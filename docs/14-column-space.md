@@ -212,6 +212,17 @@ req = contract_request(FIRST_CUT[1], window=4)   # payload for the agent to run
 case = load_contracts()[1]                       # the captured response
 ```
 
+### `offset` is invisible in the header
+
+`offset` shifts which bar a `value` column reads and leaves no trace in the header name.
+Two columns differing only by offset collide, the platform accepts it silently, and the
+section is dropped from `conditionColumns` — see cookbook trap #11. `omega.validate`
+raises `DUPLICATE_HEADER` for it.
+
+`bars` is invisible the same way: `bars: "closed"` changed `CCI_now` from 183.5 to 143.8
+in a live render while every header stayed identical. You cannot tell from a header
+whether the forming bar is in the series.
+
 ## Caveat
 
 The captured contracts and render are a **dated snapshot** — `capturedAt` is on both files.
@@ -220,10 +231,12 @@ after a deployment. Re-run the calls in `probe.FETCH_RECIPE` before trusting the
 a changed platform; if `test_trajectory_default_window_is_four_not_eight` ever fails, that is
 a real finding about the platform, not a broken test.
 
-Twenty-six shapes across four renders and four contract calls. All 16 transforms and all
-three timeframe rels are exercised, but **462 of the 488 shapes have still never been
-compiled or rendered here** — 5.3% coverage.
+Thirty-three shapes across six renders and four contract calls — **6.8%** of the space.
+Complete on every structural axis: all 16 transforms, all 3 timeframe rels, all 8 chained
+combinations, and both the `offset` and `bars` parameters.
 
-The hit rate argues for continuing: 44 columns compiled live have exposed **nine** header
-mispredictions and one shipped condition bug. There is no reason to assume the untouched
-95% is cleaner.
+**455 of the 488 shapes have still never been compiled or rendered.** 55 columns compiled
+live have exposed nine header mispredictions, one shipped condition bug, and one silent
+platform failure. The last batch found nothing, which is the first evidence that the
+structural surface may now be sound — but it is one clean batch, not a guarantee about
+the untouched 93%.

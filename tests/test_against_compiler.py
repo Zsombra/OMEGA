@@ -70,3 +70,54 @@ def test_spread_pools_are_symmetric_and_exclude_self():
         assert metric not in operands, f"{metric} lists itself as a spread operand"
         for other in operands:
             assert metric in graph["edges"][other], f"{metric}->{other} is not reciprocal"
+
+
+# --- colliding headers: silent on the platform, an error here ---------------
+
+def test_duplicate_headers_in_one_section_are_an_error():
+    """Two columns that compile to the same header make the section unaddressable.
+
+    Verified live (data/contract/columns/_renders_collision.json): a section with
+    RSI14 at offset 0 and offset 3 renders BOTH columns under the header `RSI14`,
+    and the platform raises nothing. But that section then produces NO
+    conditionColumns entry at all - the agent can read the table while no condition
+    can reference either column. The failure is completely silent.
+
+    omega refuses it up front instead.
+    """
+    from omega.types import Column, CustomSection, RelTimeframe
+    from omega.validate import validate_section
+
+    cols = [Column(metric="RSI14", transformId="value",
+                   timeframe=RelTimeframe(rel="anchor"), offset=0),
+            Column(metric="RSI14", transformId="value",
+                   timeframe=RelTimeframe(rel="anchor"), offset=3)]
+    section = CustomSection(kind="custom", title="collide",
+                            benchmarkTicker=None, columns=cols)
+    errs = [f for f in validate_section(section) if f.severity == "error"]
+    assert errs, "a header collision must not pass validation"
+    assert any(f.code == "DUPLICATE_HEADER" for f in errs), [f.code for f in errs]
+    assert "RSI14" in errs[0].message
+
+
+def test_offset_alone_does_not_distinguish_a_header():
+    """`offset` changes the VALUE but never appears in the header."""
+    from omega.fanout import outputs_for
+    from omega.types import Column, RelTimeframe
+
+    base = Column(metric="RSI14", transformId="value", timeframe=RelTimeframe(rel="anchor"))
+    assert [o.header for o in outputs_for(base.model_copy(update={"offset": 0}))] \
+        == [o.header for o in outputs_for(base.model_copy(update={"offset": 7}))] \
+        == ["RSI14"]
+
+
+def test_distinct_headers_still_pass():
+    """The guard must not fire on a legitimate section."""
+    from omega.types import Column, CustomSection, RelTimeframe
+    from omega.validate import validate_section
+
+    cols = [Column(metric="RSI14", transformId="value", timeframe=RelTimeframe(rel="anchor")),
+            Column(metric="ADX", transformId="value", timeframe=RelTimeframe(rel="anchor"))]
+    section = CustomSection(kind="custom", title="fine",
+                            benchmarkTicker=None, columns=cols)
+    assert not [f for f in validate_section(section) if f.severity == "error"]

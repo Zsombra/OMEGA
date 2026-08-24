@@ -126,7 +126,7 @@ docs/              00–14
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py
-tests/             344 tests, incl. 20 compiler + 22 membership probes replayed
+tests/             347 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -139,14 +139,15 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 344 passed
+python -m pytest tests/ -q     # 347 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector
 - 20/20 compiler probes: the validator's verdict matches the live compiler
 - every predicted header string matches the compiler's `outputs[]` exactly — verified
   against live renders covering **all 16 transforms and all 3 timeframe rels**, which
-  corrected **nine** header mispredictions across four captures
+  corrected **nine** header mispredictions across six captures, and surfaced a silent
+  platform failure where colliding headers drop a section from `conditionColumns`
 - aggregation matches `simulate_aggregate_score` to the last digit
 - spread pools verified symmetric and self-excluding
 - all 22 membership probes replay against the offline predictor, module-for-module

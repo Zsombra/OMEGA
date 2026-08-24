@@ -185,6 +185,28 @@ must decide what that means — an absent reading is not a low reading.
 
 ---
 
+### 11. Two columns, one header — and the section goes dark
+
+`offset` changes a column's **value** and never appears in its **header**. So two
+`RSI14 × value` columns at `offset: 0` and `offset: 3` compile to the same header.
+
+The platform does not stop you. It renders both:
+
+```
+| coin | RSI14 | RSI14 |
+| BTC  | 62.7  | 67.8  |
+```
+
+…and then **omits the whole section from `conditionColumns`**. The agent still reads the
+table; no condition can reference any column in it. No error, anywhere.
+
+Verified live in `data/contract/columns/_renders_collision.json` — in every other capture
+`conditionColumns[0]` is the custom section; in that one it starts at `session-field`.
+
+`omega.validate` now raises `DUPLICATE_HEADER` before you get near the platform. If you
+need the same metric at two offsets, they must differ in something the header carries —
+a different transform, timeframe rel, or operand.
+
 ## Workflow
 
 ```

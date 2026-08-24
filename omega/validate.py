@@ -233,6 +233,28 @@ def validate_section(
             col, section_timeframe=section.timeframe,
             path=f"{path}.columns[{i}]", contract=c))
 
+    # THE SILENT ONE. Two columns compiling to the same header do not raise on the
+    # platform - it renders both under the duplicate name and then omits the whole
+    # section from conditionColumns, so the agent can read the table while no
+    # condition can address any column in it. Verified live in
+    # data/contract/columns/_renders_collision.json. `offset` is the easy way to
+    # trip it: it changes the value and never appears in the header.
+    from .fanout import outputs_for          # local import: fanout imports nothing here
+    first_seen: dict[str, int] = {}
+    for i, col in enumerate(section.columns):
+        if col.metric not in c.metrics:
+            continue                          # validate_column already reported it
+        for out_ in outputs_for(col, c):
+            if out_.header in first_seen:
+                out.append(Finding(
+                    "error", "DUPLICATE_HEADER", f"{path}.columns[{i}]",
+                    f"header {out_.header!r} is already produced by "
+                    f"columns[{first_seen[out_.header]}]. The platform accepts this "
+                    f"silently and then drops the whole section from "
+                    f"conditionColumns, leaving every column in it unreferenceable."))
+            else:
+                first_seen[out_.header] = i
+
     # A section-level diagnosis that is easy to miss column-by-column.
     if section.timeframe is not None:
         inert = [col.metric for col in section.columns

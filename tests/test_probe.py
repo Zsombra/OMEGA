@@ -232,10 +232,22 @@ def test_fanout_predicts_every_rendered_header_exactly():
 
     for payload in load_all_renders():
         section = payload["request"]["sections"][0]
-        live = [o["header"] for o in payload["response"]["conditionColumns"][0]["outputs"]]
         predicted = []
         for spec in section["columns"]:
             predicted += [o.header for o in outputs_for(Column(**spec))]
+
+        custom = [cc for cc in payload["response"]["conditionColumns"]
+                  if cc["sectionKey"].startswith("custom:")]
+        if not custom:
+            # The collision capture, and only that one: a duplicate header makes the
+            # platform drop the whole section from conditionColumns. Assert that is
+            # what we are looking at rather than skipping quietly.
+            assert len(predicted) != len(set(predicted)), (
+                "a custom section vanished from conditionColumns with no header "
+                f"collision to explain it: {payload['capturedAt']}")
+            continue
+
+        live = [o["header"] for o in custom[0]["outputs"]]
         assert predicted == live, f"predicted {predicted}\nlive      {live}"
 
 
