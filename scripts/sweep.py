@@ -17,9 +17,15 @@ a per-column sum - it is the deepest history the report needs, in BARS. So the
 cap that binds a sweep is `sectionColumns: 32`, and a batch is limited by how
 far back its hungriest column reaches, not by how many columns it holds.
 
-Consequence: metrics needing more than 32 bars of history (SMA50, SMA200)
-cannot share a section budget with anything. They are planned into their own
-batch so one deep column cannot fail an otherwise good one.
+It is also CONSTANT. Across 13 live renders of 1, 4, 8, 9, 12, 18, 24 and 30
+columns, spanning every transform and including SMA200, `columnLookback` came
+back as exactly 24 every single time. It never moved. So it is not driven by
+metric period either - a 200-period SMA costs no more than a close price.
+
+The DEEP_HISTORY split below therefore turned out to be unnecessary: SMA50 and
+SMA200 render like anything else. It is kept because it costs one extra call
+and is the safe side of a guess, but it is documented as measured-false rather
+than quietly deleted.
 """
 from __future__ import annotations
 
@@ -42,8 +48,9 @@ COLUMN_CAP = 32
 
 BATCH_COLUMNS = 30        # under the measured cap of 32, leaving headroom
 
-# Metrics whose own period exceeds the 32-bar lookback cap. Isolated so one
-# deep column cannot take an otherwise valid batch down with it.
+# Isolated on the theory that a long metric period would blow the lookback cap.
+# MEASURED FALSE 2026-08-24: SMA200 renders fine and reports the same
+# columnLookback (24) as everything else. Retained as cheap insurance only.
 DEEP_HISTORY = {"SMA50", "SMA200"}
 
 # DECLARED LEGAL, CANNOT RENDER
