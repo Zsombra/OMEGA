@@ -304,6 +304,28 @@ cross-coin-comparable percentages, so unlike `VOLUME` they need no normalising �
 ranking adds nothing a threshold cannot say. Verified: `crowdAcc between 60 and 100`
 resolved UP on SOL (88.9) and XRP (100.0), NEITHER on BTC (40.0).
 
+### 15. `offset` is invisible in the header, so a lag cannot sit beside its own present
+
+`value` accepts `offset`, which reads the metric N bars back. But the header carries
+only the metric code — `CLOSE × value` emits `close` at every offset. Two `value`
+columns on one metric therefore collide, the section is dropped from
+`conditionColumns`, and every condition on it goes `UNRESOLVED` (trap 11).
+
+So you **cannot** put `close` and `close 12 bars ago` in one section and difference
+them with a condition. `omega.validate` raises `DUPLICATE_HEADER` before you try.
+
+Two real routes to the same idea:
+
+- `trajectory` — emits `_t3 … _t1 _now` as *distinct* headers, so the history is
+  addressable. This is the supported way to compare now against then.
+- separate sections — headers only collide within a section, and a condition clause
+  can name a `sectionKey` explicitly. Costs a second section and a second lookback
+  budget.
+
+And mind the ceiling: lookback is `window + offset` capped at 32, and a plain `value`
+carries an implicit window of 24. **The largest usable offset is 8**, not the 64 the
+schema advertises.
+
 ## Workflow
 
 ```

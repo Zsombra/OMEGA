@@ -21,12 +21,34 @@ than sampled.
 
 ## What the budget actually is
 
-`columnLookback` is **constant**. Thirteen renders of 1, 4, 5, 8, 9, 12, 18, 24 and
-30 columns — every transform, SMA200 included — reported `columnLookback: 24` every
-single time. It never moved.
+`columnLookback` is **`max(window + offset)` across the report's columns**, capped at
+32. It is not a per-column sum and not a function of metric period.
 
-So it is not a per-column cost, and not a function of metric period. The cap that
-binds a batch is **`sectionColumns: 32`**.
+It read exactly 24 in thirteen straight renders, and I wrote that down as "constant,
+carries no information." That was wrong, and the reason is embarrassing in a useful
+way: **every one of those renders used default parameters**, and the defaults put the
+maximum at 24 — `aggregate` and `maxShare` default to `window: 24`, and a plain
+`value` column carries an implicit window of 24 too. The number never moved because I
+never moved it.
+
+The platform stated the rule itself once a parameter was pushed:
+
+```
+REPORT_COLUMN_LOOKBACK_EXCEEDED
+Column 'CLOSE × value' requests a lookback of 36 bars (window + offset)
+— the cap is 32.
+receivedValue: { window: 24, offset: 12, lookback: 36 }
+```
+
+Confirmed from the other side: `value` at `offset: 8`, `trajectory` at `window: 32`
+and `efficiency` at `window: 32` render together and report `columnLookback: 32/32`.
+
+Two consequences:
+
+- A plain `value` column can only be lagged by **8 bars** (24 implicit + 8 = 32), not
+  the 64 the schema's `offset` bound suggests.
+- The binding cap depends on what you are building. `sectionColumns: 32` binds a wide
+  report of shallow columns; `columnLookback: 32` binds a narrow report of deep ones.
 
 This corrects a hypothesis written into `scripts/sweep.py` earlier the same day:
 SMA50 and SMA200 were isolated on the theory that a 200-period metric would blow a
