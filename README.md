@@ -35,6 +35,7 @@ strategies from a thesis.
 | [07 · Signal Membership](docs/07-signal-membership.md) | which of the 84 signals your report can actually feed — offline |
 | [08 · Strategy Generation](docs/08-strategy-generation.md) | compose a complete validated strategy from a thesis |
 | [09 · Conditions](docs/09-conditions.md) | the condition DSL, ambient headers, and offline type-checking |
+| [10 · Outcome Feedback](docs/10-outcome-feedback.md) | which signals earned their allocation — and when to refuse to say |
 
 ## What the extraction found
 
@@ -48,7 +49,7 @@ strategies from a thesis.
 | Compiler probes | 20, all matching the derived matrix |
 | Membership probes | 24, mapping 52 metrics to 17 signal modules |
 
-Six findings that shape everything:
+Seven findings that shape everything:
 
 1. **The metric×transform matrix is a sparse partial function.** `ADX × classifyState` is
    rejected — yet `includeTrendStrength` uses exactly that pair. Some pairs are reserved
@@ -66,6 +67,10 @@ Six findings that shape everything:
 6. **Conditions are advisory, not a gate** — *"they may make you more selective, never
    less."* And three ambient sections (`session-field`, `market-breadth`,
    `reference-pairs`) are referenceable for free, costing nothing against your budget.
+7. **There is no realised outcome data to learn from yet.** 23 of 24 agents have never
+   evaluated anything; the one with history has 18 closed trades against a platform
+   minimum sample of 20. `omega/performance.py` is built and gated accordingly — it
+   returns *no* recommendation rather than a confident one drawn from noise.
 
 ## Toolkit
 
@@ -102,20 +107,22 @@ emit(report, "mr-panel")                  # -> out/mr-panel.json  (NOT submitted
 | `omega/membership.py` | predict signal membership offline; flag allocation that can't be fed |
 | `omega/conditions.py` | condition DSL builders; type-check clauses against real headers |
 | `omega/generate.py` | compose a whole strategy from a thesis; critique it |
+| `omega/performance.py` | per-signal edge from realised trades; refuses to rate a small sample |
 | `omega/emit.py` | write a validated payload to `out/` — never submits |
 
 ## Layout
 
 ```
 data/contract/     raw extraction (metrics, transforms, templates, categories) + _manifest.json
+data/performance/  one real signal-log/outcome pair (parser fixture)
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
                    composition rules, compiler probes, aggregate oracle,
                    signal module map
-docs/              00–09
+docs/              00–10
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py
-tests/             181 tests, incl. 20 compiler + 22 membership probes replayed
+tests/             201 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -128,7 +135,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 181 passed
+python -m pytest tests/ -q     # 201 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector

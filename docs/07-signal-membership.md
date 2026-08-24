@@ -98,9 +98,19 @@ decorative for signal purposes; only the directional split counts.
 `SMART_RETAIL`, `CAPTAIN_CONF`, `CONFIDENCE`. The entire `includeCrowdIntelligence` and
 `includeCvdCrowdConvergence` surface is read-only context.
 
-## The boundary: 7 unreachable signals
+## The boundary: 7 signals unreachable *through column design*
 
 Two modules never went `IN_REPORT` in any probe.
+
+> **Amended after reading a live signal log.** `comparison_sector_momentum` was observed
+> **firing at runtime** — `triggered: true, score: 1.0, effectiveAllocation: 1`, contributing
+> 7% attribution to a real trade. So these signals are not inert; they are simply not fed by
+> report **columns**. COMPARISON is fed by the *comparison coin set* (benchmarks and sector
+> peers, which the log carries with correlations), which is why a tool that derives
+> membership from columns correctly reports it absent. See
+> [10 · Outcome Feedback](10-outcome-feedback.md). The statement below is accurate for
+> column design, which is what this document is about — but "unreachable" means "you cannot
+> feed it by choosing columns", not "it never evaluates".
 
 **CONFLUENCE** (`mtf_aligned_bull/bear`, `mtf_pullback_long/short`). These are
 `kind: "synthesis"` — they fire off *other signals* firing, not off columns. Probe MTF

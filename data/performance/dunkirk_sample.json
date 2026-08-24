@@ -1,0 +1,513 @@
+{
+  "_note": "One real signal-log/outcome pair from the archived Dunkirk agent, distilled from get_signal_log + list_trade_outcomes. Used to test the parser against real shapes. NOT a sample to draw conclusions from.",
+  "agentId": "dc8776cd-ef43-445f-be00-50159986904b",
+  "agentName": "[ARCHIVED] Dunkirk",
+  "observations": [
+    {
+      "logId": "99b91ef9-7995-415a-bce3-dd51615eda3c",
+      "coinTicker": "TON",
+      "aggregateScore": 0.68,
+      "conviction": 0.55,
+      "terminalStatus": "PASS",
+      "evaluatedCount": 66,
+      "outcome": {
+        "tradeOutcome": "WIN",
+        "netPnl": 1.428318,
+        "roePercent": 17.8,
+        "closeReason": "TAKE_PROFIT",
+        "durationSeconds": 2458
+      },
+      "signals": [
+        {
+          "id": "bollinger_cci_overbought",
+          "triggered": true,
+          "score": 0.269,
+          "effectiveAllocation": 2,
+          "attributionPercent": 4
+        },
+        {
+          "id": "bollinger_cci_oversold",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "bollinger_lower_touch",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "bollinger_squeeze",
+          "triggered": true,
+          "score": 0.73,
+          "effectiveAllocation": 2,
+          "attributionPercent": 10
+        },
+        {
+          "id": "bollinger_upper_touch",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "comparison_btc_decorrelation",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "comparison_sector_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "comparison_sector_momentum",
+          "triggered": true,
+          "score": 1.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 7
+        },
+        {
+          "id": "cvd_bear_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "cvd_bearish",
+          "triggered": true,
+          "score": 0.5,
+          "effectiveAllocation": 2,
+          "attributionPercent": 7
+        },
+        {
+          "id": "cvd_bull_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "cvd_bullish",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "funding_extreme_negative",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "funding_extreme_positive",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "funding_rate_flipping",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "ma_ema_aligned_bear",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "ma_ema_aligned_bull",
+          "triggered": true,
+          "score": 0.333,
+          "effectiveAllocation": 1,
+          "attributionPercent": 2
+        },
+        {
+          "id": "ma_ema_bear_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "ma_ema_bull_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "ma_sma200_above",
+          "triggered": true,
+          "score": 0.39,
+          "effectiveAllocation": 1,
+          "attributionPercent": 3
+        },
+        {
+          "id": "ma_sma200_below",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "macd_bear_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "macd_bear_divergence",
+          "triggered": true,
+          "score": 1.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 14
+        },
+        {
+          "id": "macd_bull_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "macd_bull_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "mfi_bear_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "mfi_bull_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "mfi_overbought",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "mfi_oversold",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "mfi_sustained_bearish",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "mfi_sustained_bullish",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "oi_divergence_bear",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "oi_divergence_bull",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "oi_surge",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "regime_alignment",
+          "triggered": true,
+          "score": 0.667,
+          "effectiveAllocation": 2,
+          "attributionPercent": 9
+        },
+        {
+          "id": "regime_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "regime_trend_shift",
+          "triggered": true,
+          "score": 1.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 14
+        },
+        {
+          "id": "regime_volatility_shift",
+          "triggered": true,
+          "score": 1.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 14
+        },
+        {
+          "id": "rel_ppo_bear_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "rel_ppo_bull_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "rel_roc_negative",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "rel_roc_positive",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "rsi_bear_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "rsi_bull_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "rsi_overbought",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "rsi_oversold",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "sr_at_resistance",
+          "triggered": true,
+          "score": 0.113,
+          "effectiveAllocation": 2,
+          "attributionPercent": 2
+        },
+        {
+          "id": "sr_at_support",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "sr_resistance_break",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "sr_support_break",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "stoch_bear_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "stoch_bull_cross",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "stoch_overbought",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "stoch_oversold",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "structure_fvg_approach",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "structure_ob_approach",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "structure_zone_cluster",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "structure_zone_confluence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 1,
+          "attributionPercent": 0
+        },
+        {
+          "id": "trend_adx_ranging",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "trend_adx_trending",
+          "triggered": true,
+          "score": 1.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 14
+        },
+        {
+          "id": "volatility_atr_contracting",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "volatility_atr_expanding",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "volume_dry_up",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "volume_obv_bear_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "volume_obv_bull_divergence",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        },
+        {
+          "id": "volume_surge",
+          "triggered": false,
+          "score": 0.0,
+          "effectiveAllocation": 2,
+          "attributionPercent": 0
+        }
+      ]
+    }
+  ],
+  "agentTotals": {
+    "totalEvaluations": 159,
+    "totalEntryDecisions": 151,
+    "enterCount": 48,
+    "skipCount": 103,
+    "executedCount": 18,
+    "outcomeCount": 18,
+    "winCount": 5,
+    "lossCount": 13,
+    "winRate": 0.2777777777777778,
+    "avgNetPnl": -0.248160045,
+    "totalNetPnl": -4.46688081,
+    "avgAggregateScore": 0.6503899371069183,
+    "fillRatePct": 39
+  },
+  "convictionCalibration": {
+    "windowDays": 90,
+    "minSampleSize": 20,
+    "totalSampleSize": 7,
+    "allBandsReadiness": "INSUFFICIENT_DATA",
+    "note": "The platform refuses to report a win rate below minSampleSize. omega mirrors this."
+  },
+  "fleetStatus": {
+    "agents": 24,
+    "agentsWithAnyHistory": 1,
+    "note": "23 Fleet agents bound to the user's own strategies have zero evaluations and zero trades. list_signal_logs returns {entries: [], total: 0}."
+  }
+}
