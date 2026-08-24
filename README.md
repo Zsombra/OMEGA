@@ -31,6 +31,7 @@ a proposed column **before** it touches your account.
 | [04 · Sections & Budgets](docs/04-section-report-budget.md) | composition rules, timeframe resolution, what actually costs you |
 | [05 · Aggregation Math](docs/05-signal-aggregation-math.md) | the scoring derivation and what follows from it |
 | [06 · Cookbook](docs/06-cookbook.md) | recipes that compile, and ten traps |
+| [07 · Signal Membership](docs/07-signal-membership.md) | which of the 84 signals your report can actually feed — offline |
 
 ## What the extraction found
 
@@ -42,6 +43,7 @@ a proposed column **before** it touches your account.
 | Platform-privileged pairs | **4** (used by preset sections, denied to authors) |
 | Platform section templates | 25, spanning 124 columns over 74 metrics |
 | Compiler probes | 20, all matching the derived matrix |
+| Membership probes | 24, mapping 52 metrics to 17 signal modules |
 
 Four findings that shape everything:
 
@@ -54,6 +56,10 @@ Four findings that shape everything:
    confirmed exactly: `Σ(score×alloc)/Σ(alloc) ≥ gate`. **Tier 0 carries zero weight.**
 4. **Timeframe-inert metrics can't sit in a section with a timeframe override** — a
    section-level rule invisible from metric contracts alone.
+5. **Signal membership is module-level, and 34 of 86 metrics feed no signal at all** —
+   including `VWAP`, `CLOSE_CHANGE`, `TRADES` and every crowd and derived metric. Weighting
+   a signal your report can't feed adds to the aggregation denominator and *suppresses*
+   your score.
 
 ## Toolkit
 
@@ -87,6 +93,7 @@ emit(report, "mr-panel")                  # -> out/mr-panel.json  (NOT submitted
 | `omega/validate.py` | offline pre-flight — catches errors without a round-trip |
 | `omega/fanout.py` | predict headers, cost the report against every budget |
 | `omega/aggregate.py` | the scoring math, `minimum_score_to_route` inversion |
+| `omega/membership.py` | predict signal membership offline; flag allocation that can't be fed |
 | `omega/emit.py` | write a validated payload to `out/` — never submits |
 
 ## Layout
@@ -94,12 +101,13 @@ emit(report, "mr-panel")                  # -> out/mr-panel.json  (NOT submitted
 ```
 data/contract/     raw extraction (metrics, transforms, templates, categories) + _manifest.json
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
-                   composition rules, compiler probes, aggregate oracle
+                   composition rules, compiler probes, aggregate oracle,
+                   signal module map
 docs/              00–06
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py
-tests/             44 tests, incl. 20 probes replayed against the validator
+tests/             97 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -112,7 +120,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 44 passed
+python -m pytest tests/ -q     # 97 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector
@@ -120,6 +128,7 @@ python -m pytest tests/ -q     # 44 passed
 - every predicted header string matches the compiler's `outputs[]` exactly
 - aggregation matches `simulate_aggregate_score` to the last digit
 - spread pools verified symmetric and self-excluding
+- all 22 membership probes replay against the offline predictor, module-for-module
 
 ## Caveat
 

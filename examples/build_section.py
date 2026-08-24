@@ -6,9 +6,10 @@ Emits: out/mean-reversion-panel.json   (nothing is submitted to BattleGrid)
 from __future__ import annotations
 
 from omega.aggregate import Signal, aggregate, minimum_score_to_route
+from omega.membership import analyse, check_allocations, suggest_columns_for
 from omega.emit import emit
 from omega.fanout import cost_report, outputs_for
-from omega.types import Column, CustomSection, Report
+from omega.types import Column, CustomSection, Report, Rule
 from omega.validate import validate_report
 
 # ---------------------------------------------------------------------------
@@ -71,20 +72,43 @@ def main() -> None:
     print()
 
     print("=" * 72)
+    print("SIGNAL MEMBERSHIP  (predicted offline - no connector call)")
+    print("=" * 72)
+    print(analyse(report).render())
+    print()
+
+    print("=" * 72)
+    print("ALLOCATION CHECK")
+    print("=" * 72)
+    rules = [
+        Rule(signalId="rsi_oversold", allocation=3, required=False),
+        Rule(signalId="bollinger_lower_touch", allocation=2, required=False),
+        Rule(signalId="cvd_bull_divergence", allocation=2, required=False),
+        Rule(signalId="funding_extreme_negative", allocation=1, required=False),
+        Rule(signalId="regime_alignment", allocation=0, required=False),
+    ]
+    findings = check_allocations(report, rules)
+    print(chr(10).join(str(f) for f in findings) if findings else "OK  every allocation is fed")
+    print()
+    for sid, feeders in suggest_columns_for(["bollinger_lower_touch"]).items():
+        print(f"  to feed {sid}: add any of {feeders}")
+    print()
+
+    print("=" * 72)
     print("SCORECARD WHAT-IF")
     print("=" * 72)
-    signals = [
+    whatif = [
         Signal("rsi_oversold", 0.90, 3),
         Signal("bollinger_lower_touch", 0.70, 2),
         Signal("cvd_bull_divergence", 0.40, 2),
         Signal("funding_extreme_negative", 0.85, 1),
         Signal("regime_alignment", 1.00, 0),   # informational only - zero weight
     ]
-    res = aggregate(signals, gate=0.65)
+    res = aggregate(whatif, gate=0.65)
     print(res.render())
     print()
     for label in ("cvd_bull_divergence", "regime_alignment"):
-        need = minimum_score_to_route(signals, 0.65, label)
+        need = minimum_score_to_route(whatif, 0.65, label)
         if need is None:
             print(f"  {label}: cannot change the outcome on its own")
         else:
