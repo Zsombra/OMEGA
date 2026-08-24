@@ -333,3 +333,65 @@ def test_market_read_references_only_verdict_conditions():
             assert token in p.market_read_text
         else:
             assert token not in p.market_read_text
+
+
+# --- the declared vocabulary is not always the real one ----------------------
+# Measured 2026-08-24. ADX_zone and MFI14_zone declare
+# ["overbought","oversold","neutral"] and emit none of them. Worse, the platform
+# REFUSES the labels they do emit (CONDITION_LITERAL_UNSUPPORTED). So no label
+# works: every legal one is FALSE forever, every useful one is rejected. omega
+# refuses the clause and names the numeric replacement instead.
+
+def _zone_report(metric):
+    from omega.types import Column, CustomSection, RelTimeframe, Report
+    col = Column(metric=metric, transformId="classifyZone",
+                 timeframe=RelTimeframe(rel="anchor"))
+    return Report(anchor="1h", sections=[CustomSection(
+        kind="custom", title="z", benchmarkTicker=None, columns=[col])])
+
+
+def _findings(report, defn):
+    from omega.conditions import condition, validate_conditions
+    return validate_conditions(report, [condition("TEST_ZONE", "t", defn)])
+
+
+def test_a_disjoint_zone_header_cannot_carry_a_condition_at_all():
+    """Not a warning - there is no working label, so the clause is refused."""
+    from omega.conditions import is_
+    f = _findings(_zone_report("ADX"), is_("ADX_zone", "neutral"))
+    assert [x for x in f if x.severity == "error"], "must refuse, not warn"
+
+
+def test_the_refusal_names_the_numeric_replacement():
+    """A refusal that does not say what to do instead is half a finding."""
+    from omega.conditions import is_
+    msg = _findings(_zone_report("MFI14"), is_("MFI14_zone", "neutral"))[0].message
+    assert "MFI14 lt 50" in msg and "trap 13" in msg
+
+
+def test_the_observed_labels_are_still_rejected_because_the_platform_rejects_them():
+    """omega must not emit a payload the platform refuses."""
+    from omega.conditions import in_
+    f = _findings(_zone_report("ADX"), in_("ADX_zone", ["trending", "developing"]))
+    assert [x for x in f if x.severity == "error"]
+
+
+def test_a_consistent_zone_header_draws_nothing():
+    """RSI14_zone declares and emits the same labels - it must stay clean."""
+    from omega.conditions import is_
+    assert not _findings(_zone_report("RSI14"), is_("RSI14_zone", "neutral"))
+
+
+def test_the_measured_vocabulary_is_never_treated_as_exhaustive():
+    from omega.conditions import observed_vocabulary
+    for header, m in observed_vocabulary().items():
+        assert m["complete"] is False, (
+            f"{header}: one capture cannot enumerate a label set")
+
+
+def test_every_disjoint_header_carries_a_numeric_replacement():
+    """The refusal path depends on this key existing."""
+    from omega.conditions import observed_vocabulary
+    for header, m in observed_vocabulary().items():
+        if m.get("observedInDeclared") == 0:
+            assert m.get("numericReplacement"), f"{header} refuses with no way out"

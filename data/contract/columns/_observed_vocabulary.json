@@ -1,0 +1,168 @@
+{
+  "capturedAt": "2026-08-24",
+  "method": "preview_strategy_report over 12 ranked CRYPTO coins, one timepoint, anchor 1h",
+  "coins": [
+    "AAVE",
+    "BTC",
+    "DOGE",
+    "ENA",
+    "ETH",
+    "FARTCOIN",
+    "HYPE",
+    "PUMP",
+    "SOL",
+    "TRUMP",
+    "XRP",
+    "ZEC"
+  ],
+  "why": [
+    "The platform publishes a conditionVocabulary per categorical header. For two classifyZone",
+    "columns that published set is disjoint from reality: the column never emits any label it",
+    "declares, and the platform refuses every label it does emit.",
+    "",
+    "So there is no label that works. A condition on ADX_zone or MFI14_zone is either rejected at",
+    "validation (CONDITION_LITERAL_UNSUPPORTED) or FALSE forever. omega therefore refuses the whole",
+    "clause and points at the numeric replacement, which was verified live to reproduce the zone",
+    "exactly. The observed set is a measurement used to DETECT this, never to widen what is legal -",
+    "widening would emit payloads the platform rejects."
+  ],
+  "headers": {
+    "ADX_zone": {
+      "declared": [
+        "overbought",
+        "oversold",
+        "neutral"
+      ],
+      "observed": [
+        "trending",
+        "developing",
+        "weak"
+      ],
+      "observedInDeclared": 0,
+      "samples": 12,
+      "complete": false,
+      "verdict": "DISJOINT - no declared label was ever emitted",
+      "numericReplacement": "ADX gte 25 (trending) / ADX lt 20 (weak)"
+    },
+    "MFI14_zone": {
+      "declared": [
+        "overbought",
+        "oversold",
+        "neutral"
+      ],
+      "observed": [
+        "bearish",
+        "bullish"
+      ],
+      "observedInDeclared": 0,
+      "samples": 12,
+      "complete": false,
+      "verdict": "DISJOINT - no declared label was ever emitted",
+      "numericReplacement": "MFI14 lt 50 (bearish) / MFI14 gte 50 (bullish)"
+    },
+    "RSI14_zone": {
+      "declared": [
+        "overbought",
+        "oversold",
+        "neutral"
+      ],
+      "observed": [
+        "neutral"
+      ],
+      "observedInDeclared": 12,
+      "samples": 12,
+      "complete": false,
+      "verdict": "CONSISTENT"
+    },
+    "RSI7_zone": {
+      "declared": [
+        "overbought",
+        "oversold",
+        "neutral"
+      ],
+      "observed": [
+        "neutral",
+        "oversold"
+      ],
+      "observedInDeclared": 12,
+      "samples": 12,
+      "complete": false,
+      "verdict": "CONSISTENT"
+    },
+    "K_zone": {
+      "declared": [
+        "overbought",
+        "oversold",
+        "neutral"
+      ],
+      "observed": [
+        "neutral",
+        "oversold"
+      ],
+      "observedInDeclared": 12,
+      "samples": 12,
+      "complete": false,
+      "verdict": "CONSISTENT"
+    }
+  },
+  "platformRejectsObservedLabels": {
+    "measured": "2026-08-24",
+    "probe": "condition ADX_zone in [trending, developing, weak]",
+    "response": "VALIDATION_ERROR CONDITION_LITERAL_UNSUPPORTED - \"'trending' is not a value 'ADX_zone' can take - its vocabulary is overbought | oversold | neutral. Nearest canonical key: 'oversold'.\"",
+    "consequence": "There is no label that works. The platform refuses every label the column emits and evaluates every label it accepts as FALSE. ADX_zone and MFI14_zone cannot carry a condition at all - they are display-only columns."
+  },
+  "workaround": {
+    "rule": "Replace the categorical zone column with its underlying numeric column and threshold on it.",
+    "verifiedLive": "2026-08-24, BTC / SOL / XRP",
+    "reproducesZoneExactly": true,
+    "evidence": [
+      {
+        "coin": "BTC",
+        "ADX": 21.9,
+        "ADX_zone": "developing",
+        "ADX_lt_20": false,
+        "MFI14": 42.8,
+        "MFI14_zone": "bearish",
+        "MFI14_lt_50": true
+      },
+      {
+        "coin": "SOL",
+        "ADX": 15.7,
+        "ADX_zone": "weak",
+        "ADX_lt_20": true,
+        "MFI14": 63.8,
+        "MFI14_zone": "bullish",
+        "MFI14_lt_50": false
+      },
+      {
+        "coin": "XRP",
+        "ADX": 10.8,
+        "ADX_zone": "weak",
+        "ADX_lt_20": true,
+        "MFI14": 43.4,
+        "MFI14_zone": "bearish",
+        "MFI14_lt_50": true
+      }
+    ],
+    "inferredCutoffs": {
+      "note": "CONSISTENT WITH the observations, not extracted from the platform. The zone thresholds are not published anywhere; these are the boundaries the observed pairs imply, and they match the conventional ADX 20/25 and MFI 50 midline. Treat as a starting point and re-measure before relying on an edge case.",
+      "ADX_zone": {
+        "weak": "< 20",
+        "developing": "20 - 25",
+        "trending": ">= 25",
+        "samplesSupporting": 5
+      },
+      "MFI14_zone": {
+        "bearish": "< 50",
+        "bullish": ">= 50",
+        "samplesSupporting": 15
+      }
+    }
+  },
+  "crowdRankWorkaround": {
+    "finding": "CROWD x rank compiles (header crowdAcc_rank_hi) but never renders. Tested 1 coin and 10 coins, ordering hi and lo, with complete non-null data across every coin. INTERNAL_ERROR in all variants.",
+    "contractDifference": "Crowd ranks are documented as 'ordinal across THIS REPORT's coins ... computed per request', unlike every other rank which reads the tracked universe. The per-request path is what fails.",
+    "rule": "Use CROWD_* x value directly. Crowd metrics are already cross-coin-comparable percentages (0-100), so unlike VOLUME they need no normalisation - the rank transform adds nothing a threshold cannot express.",
+    "verifiedLive": "condition crowdAcc between 60 and 100 resolved UP on SOL (88.9) and XRP (100.0), NEITHER on BTC (40.0)"
+  }
+}

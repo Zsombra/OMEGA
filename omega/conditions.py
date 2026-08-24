@@ -33,6 +33,29 @@ NUMERIC_OPS = ("lt", "lte", "gte", "gt")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
 
 
+OBSERVED_VOCAB = DERIVED_DIR.parent / "contract" / "columns" / "_observed_vocabulary.json"
+
+
+@lru_cache(maxsize=1)
+def observed_vocabulary() -> dict[str, dict]:
+    """What categorical headers were MEASURED to emit, per header.
+
+    The platform publishes a `conditionVocabulary` per categorical header, and for
+    two `classifyZone` columns that published set is disjoint from reality:
+    `ADX_zone` emits trending / developing / weak, `MFI14_zone` emits bearish /
+    bullish, and neither ever emits the overbought / oversold / neutral it declares.
+
+    A condition written from the declared set is permanently FALSE - not an error,
+    not UNRESOLVED. So the declared set alone cannot be the legality test. This is
+    the measured counterpart, used only to WIDEN what is legal.
+    """
+    try:
+        import json as _json
+        return _json.loads(OBSERVED_VOCAB.read_text(encoding="utf-8"))["headers"]
+    except (OSError, KeyError, ValueError):
+        return {}
+
+
 @lru_cache(maxsize=1)
 def _surface() -> dict:
     return json.loads((DERIVED_DIR / "condition_surface.json").read_text(encoding="utf-8"))
@@ -279,16 +302,41 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"{header!r} does not accept {op!r}. Allowed: {allowed}"))
 
     vocab = spec["vocab"]
+    measured = observed_vocabulary().get(header, {})
+    observed = measured.get("observed") or []
+    # A header whose declared vocabulary is DISJOINT from what it emits cannot be
+    # used in a condition at all. The platform rejects the labels it emits
+    # (CONDITION_LITERAL_UNSUPPORTED) and evaluates the labels it accepts as FALSE
+    # forever. There is no third option, so omega refuses the whole clause rather
+    # than emitting one that is dead on arrival. Measured live 2026-08-24.
+    disjoint = bool(observed) and measured.get("observedInDeclared") == 0
+
+    def _trap(_labels: list[str]) -> None:
+        if not disjoint:
+            return
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"{header!r} cannot carry a condition. It declares {list(vocab)} and was "
+            f"observed to emit only {observed} ({measured['samples']} samples). The "
+            f"platform refuses the labels it emits (CONDITION_LITERAL_UNSUPPORTED) and "
+            f"reads the labels it accepts as FALSE forever. Threshold the numeric "
+            f"column instead: {measured['numericReplacement']}. Cookbook trap 13."))
+
     if op == "is":
         label = defn.get("label")
         if vocab and label not in vocab:
             out.append(ConditionFinding("error", key, path,
                                         f"{label!r} is not in {header!r} vocabulary {vocab}"))
+        else:
+            _trap([label])
     elif op == "in":
-        bad = [x for x in (defn.get("labels") or []) if vocab and x not in vocab]
+        labels = defn.get("labels") or []
+        bad = [x for x in labels if vocab and x not in vocab]
         if bad:
             out.append(ConditionFinding("error", key, path,
                                         f"{bad} not in {header!r} vocabulary {vocab}"))
+        else:
+            _trap(labels)
     elif op == "between":
         low, high = defn.get("low"), defn.get("high")
         if low is not None and high is not None and low >= high:

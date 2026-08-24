@@ -86,7 +86,21 @@ This is the worse of the two defects, because it is **silent**. A condition
 `ADX_zone is "neutral"` — written from the vocabulary the platform publishes, using
 the operator the platform lists — is permanently `FALSE`. Not an error. Not
 `UNRESOLVED`, which would at least signal a missing input. It looks like a working
-condition that happens never to fire. See cookbook trap 13.
+condition that happens never to fire.
+
+And the obvious fix does not work. Writing the label the column actually shows is
+refused:
+
+```
+CONDITION_LITERAL_UNSUPPORTED
+'trending' is not a value 'ADX_zone' can take — its vocabulary is
+overbought | oversold | neutral.   Nearest canonical key: 'oversold'
+```
+
+Both directions are closed: every label that would fire is rejected at validation,
+every label that is accepted reads FALSE forever. `ADX_zone` and `MFI14_zone` are
+**display-only** — renderable for an agent to read, impossible to condition on. See
+cookbook trap 13.
 
 ## The legality model, confirmed from the other side
 
@@ -136,3 +150,42 @@ back, render, reconcile — is closed end to end for columns, conditions and mar
 read. What remains untested is `CREATE` from scratch (quota is 25/25, and every
 CREATE attempt predates the connector change) and agent binding, which is deferred
 by choice.
+
+## Workarounds
+
+Both defects have a clean replacement, and both were verified live rather than
+reasoned about.
+
+### Zone columns → threshold the numeric column
+
+`ADX × value` and `MFI14 × value` reproduce their broken zone columns exactly:
+
+| coin | `ADX` | `ADX_zone` | `ADX lt 20` | `MFI14` | `MFI14_zone` | `MFI14 lt 50` |
+|---|---|---|---|---|---|---|
+| BTC | 21.9 | developing | FALSE | 42.8 | bearish | TRUE |
+| SOL | 15.7 | weak | TRUE | 63.8 | bullish | FALSE |
+| XRP | 10.8 | weak | TRUE | 43.4 | bearish | TRUE |
+
+The cutoffs (`ADX` 20/25, `MFI14` 50) are **consistent with** the observations, not
+extracted — the zone thresholds are published nowhere. They match the conventional
+values, which is reassuring but not evidence. Re-measure at an edge before trusting
+one.
+
+### `CROWD × rank` → threshold the value
+
+Crowd metrics are already cross-coin-comparable percentages, so unlike `VOLUME` they
+need no normalising and `rank` adds nothing a threshold cannot express. `crowdAcc
+between 60 and 100` resolved UP on SOL (88.9) and XRP (100.0), NEITHER on BTC (40.0).
+
+### And omega now refuses the trap offline
+
+`omega.conditions.validate_conditions` rejects a clause on a disjoint zone header and
+names the numeric replacement in the error. That closes the loop: the failure that
+was silent on the platform is now loud before the round-trip.
+
+**One correction worth recording.** The first fix I wrote *widened* the legal
+vocabulary to `declared ∪ observed`, so that `ADX_zone is "developing"` would be
+accepted. That was wrong, and only the live probe caught it — the platform rejects
+exactly those labels, so the "fix" would have produced payloads that fail validation.
+The rule holds: mirror what the platform *does*, and find out what it does by asking
+it.

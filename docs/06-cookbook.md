@@ -230,7 +230,7 @@ the residuals in doc 15's verification panel are display rounding, not error, an
 grow as the metric's precision shrinks (DOGE's 4-decimal price gives a 0.03pp residual
 on `spread` where BTC's gives 0.002pp).
 
-### 13. A zone column whose published vocabulary it never emits
+### 13. Two zone columns that cannot carry a condition at all
 
 Every `classifyZone` column declares the same `conditionVocabulary`:
 
@@ -238,10 +238,9 @@ Every `classifyZone` column declares the same `conditionVocabulary`:
 ["overbought", "oversold", "neutral"]
 ```
 
-Two of the five never emit any of those values. Measured across 12 coins on
-2026-08-24:
+Two of the five never emit any of those. Measured across 12 coins on 2026-08-24:
 
-| column | declared | actually observed | in vocabulary |
+| column | declared | actually emits | in vocabulary |
 |---|---|---|---|
 | `ADX_zone` | overbought / oversold / neutral | `trending`, `developing`, `weak` | **0 of 12** |
 | `MFI14_zone` | overbought / oversold / neutral | `bearish`, `bullish` | **0 of 12** |
@@ -249,15 +248,61 @@ Two of the five never emit any of those values. Measured across 12 coins on
 | `RSI7_zone` | " | `neutral`, `oversold` | 12 of 12 |
 | `K_zone` | " | `neutral`, `oversold` | 12 of 12 |
 
-So a condition like `ADX_zone is "neutral"` — written from the vocabulary the
-platform itself publishes, in the operator the platform itself lists — is
-**permanently FALSE**. It does not error. It does not come back `UNRESOLVED`,
-which would at least say an input was missing. It reads as a clean, working
-condition that happens never to fire.
+So `ADX_zone is "neutral"` is **permanently FALSE** — not an error, not `UNRESOLVED`,
+just a clean-looking condition that never fires.
 
-**Fix:** never author an `is` / `in` condition from `conditionVocabulary` alone.
-Render the column first and read the labels it actually produces. The published
-vocabulary is a claim about the column, and for these two it is wrong.
+And you cannot fix it by using the label the column actually shows. The platform
+refuses that:
+
+```
+CONDITION_LITERAL_UNSUPPORTED
+'trending' is not a value 'ADX_zone' can take — its vocabulary is
+overbought | oversold | neutral.   Nearest canonical key: 'oversold'
+```
+
+**Both directions are closed.** Every label that would work is rejected at
+validation; every label that is accepted reads FALSE forever. `ADX_zone` and
+`MFI14_zone` are display-only: fine to render for an agent to read, impossible to
+condition on.
+
+**Fix — threshold the numeric column instead.** Verified live on BTC / SOL / XRP,
+and it reproduces the zone exactly:
+
+| coin | `ADX` | `ADX_zone` | `ADX lt 20` | `MFI14` | `MFI14_zone` | `MFI14 lt 50` |
+|---|---|---|---|---|---|---|
+| BTC | 21.9 | developing | FALSE | 42.8 | bearish | TRUE |
+| SOL | 15.7 | weak | TRUE | 63.8 | bullish | FALSE |
+| XRP | 10.8 | weak | TRUE | 43.4 | bearish | TRUE |
+
+```
+ADX_zone is "trending"   ->   ADX   gte 25
+ADX_zone is "weak"       ->   ADX   lt  20
+MFI14_zone is "bearish"  ->   MFI14 lt  50
+MFI14_zone is "bullish"  ->   MFI14 gte 50
+```
+
+Those cutoffs are **consistent with** the observations, not extracted — the zone
+thresholds are published nowhere. They match the conventional ADX 20/25 and MFI 50
+midline, so treat them as a starting point and re-measure at an edge.
+
+`omega.conditions.validate_conditions` refuses these clauses offline and names the
+replacement, so you cannot author one by accident.
+
+### 14. `CROWD × rank` compiles and never renders
+
+Every crowd metric declares `transforms: ["rank", "value"]`. The rank column
+compiles cleanly — `get_strategy_column_contract` returns `crowdAcc_rank_hi` with a
+full formula — and then returns `INTERNAL_ERROR` on every render. Tested at 1 coin
+and 10, ordering `hi` and `lo`, with complete non-null crowd data on every coin.
+
+The contract hints at why. Crowd ranks are the only ones documented as *"ordinal
+across THIS REPORT's coins … computed per request"*; every other rank reads the
+tracked universe. The per-request path is the one that fails.
+
+**Fix:** use `CROWD_* × value` and threshold it. Crowd metrics are already
+cross-coin-comparable percentages, so unlike `VOLUME` they need no normalising —
+ranking adds nothing a threshold cannot say. Verified: `crowdAcc between 60 and 100`
+resolved UP on SOL (88.9) and XRP (100.0), NEITHER on BTC (40.0).
 
 ## Workflow
 
