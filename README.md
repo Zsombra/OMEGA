@@ -45,7 +45,7 @@ a proposed column **before** it touches your account.
 | Compiler probes | 20, all matching the derived matrix |
 | Membership probes | 24, mapping 52 metrics to 17 signal modules |
 
-Four findings that shape everything:
+Five findings that shape everything:
 
 1. **The metric×transform matrix is a sparse partial function.** `ADX × classifyState` is
    rejected — yet `includeTrendStrength` uses exactly that pair. Some pairs are reserved
@@ -103,7 +103,7 @@ data/contract/     raw extraction (metrics, transforms, templates, categories) +
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
                    composition rules, compiler probes, aggregate oracle,
                    signal module map
-docs/              00–06
+docs/              00–07
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py
