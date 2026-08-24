@@ -326,6 +326,22 @@ And mind the ceiling: lookback is `window + offset` capped at 32, and a plain `v
 carries an implicit window of 24. **The largest usable offset is 8**, not the 64 the
 schema advertises.
 
+### 16. A null value reads FALSE, so "missing" and "wrong" are the same answer
+
+The platform documents three outcomes and says so in every conditions block:
+*"UNRESOLVED means an input was missing, not that the read was false."* Measured, a
+null column value does not produce it.
+
+`crowdAccLive` renders `—` whenever no concurrent sessions are running. The clause
+`crowdAccLive gt 50` returns **FALSE**, evidence `operand: "—"`, and the group's
+`unresolvedCount` stays at `0`.
+
+**Fix:** on any nullable metric, never let a bare threshold stand for presence. Pair it
+with a second clause that establishes the data exists, or prefer a metric that is
+always populated. Nullable ones to watch: every `CROWD_*_LIVE`, and the venue closes
+`SPOT_CLOSE_CB` / `SPOT_CLOSE_BN`, which the contract says are absent when older than
+15 minutes.
+
 ## Workflow
 
 ```

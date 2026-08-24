@@ -230,3 +230,57 @@ Both generated conditions for `trend-continuation` were submitted to the live
 resolved, both conditions evaluated with full evidence, and both marker tokens came back
 `status: "condition"` with `unreferenceableReason: null`. All five presets type-check with
 zero errors offline.
+
+
+## Measured 2026-08-24: the layer is wider and shallower than it looks
+
+### `benchmarkTicker` pins a whole section to one ticker
+
+A custom section carries `benchmarkTicker`. Setting it does **not** change what the
+columns compute — it changes *whose* data they read. The section renders a single row
+for that ticker, identical for every coin being evaluated:
+
+> "Every reading below is BTC's, not the coin being evaluated — this section is bound
+> to BTC."
+
+That is the cross-asset primitive. Two sections with identical columns, one bound and
+one not, put `this coin` and `BTC` side by side in the same report.
+
+### Headers collide inside a section, not across sections
+
+When two sections emit the same header, the platform qualifies the marker tokens with
+the section key — `custom:aaaa….chg24h` rather than a bare `chg24h` — and a condition
+clause addresses each by naming its `sectionKey`. Verified: `COIN_UP_24H` on the
+unbound section and `BTC_STRONG` on the bound one resolved independently, and a group
+over both produced a correct relative read (TRUE on ETH and SOL, FALSE on DOGE).
+
+**You may also supply your own `sectionKey`** on a custom section — the server accepts
+`custom:<uuid>` as given rather than minting one. That removes the compile-first step
+when authoring conditions, since you already know the key you will reference.
+
+### A null value reads FALSE, not UNRESOLVED
+
+The platform documents three outcomes, and its own boilerplate is explicit:
+
+> "TRUE / FALSE / UNRESOLVED are three distinct states; UNRESOLVED means an input was
+> missing, not that the read was false."
+
+It does not behave that way for null column data. `crowdAccLive` rendered `—`, and
+`crowdAccLive gt 50` returned **FALSE**, with the evidence line carrying
+`operand: "—"`. The connective table follows from that, and is plain two-valued logic:
+
+| expression | members | result |
+|---|---|---|
+| `ALL` | TRUE, null | FALSE |
+| `ANY` | TRUE, null | TRUE |
+| `ANY` | FALSE, null | FALSE |
+| `NOT` | null | TRUE |
+| `N_OF n=1` | TRUE, FALSE, null | TRUE, `unresolvedCount: 0` |
+
+`unresolvedCount` stayed at zero throughout, so the null never entered the third state
+at all. **Whatever reaches UNRESOLVED, it is not a null column value** — which is the
+obvious path and the one an author would assume.
+
+This matters for design. `crowdAccLive` is null whenever no concurrent sessions are
+running, which is most of the time. A condition on it reads FALSE, and FALSE is
+indistinguishable from "the crowd was measured and was wrong."
