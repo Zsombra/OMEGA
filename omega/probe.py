@@ -85,3 +85,49 @@ def render_request(shapes: Sequence[ColumnShape], tickers: Sequence[str],
             "columns": [s.to_column().wire() for s in shapes],
         }],
     }
+
+
+# --- reading the captures ---------------------------------------------------
+
+def _read(name: str) -> dict:
+    p = COLUMNS_DIR / name
+    if not p.exists():
+        raise FileNotFoundError(
+            f"{p} not captured yet - run the calls in omega.probe.FETCH_RECIPE")
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+def load_contracts() -> list[dict]:
+    """Captured get_strategy_column_contract cases, verbatim.
+
+    Each case is {"request": ..., "response": ...} - the exact payload sent and the
+    exact result returned, so a reader can always see what was asked as well as
+    what came back.
+    """
+    return _read("_contracts.json")["cases"]
+
+
+def load_renders() -> dict:
+    """The captured preview_strategy_report payload, verbatim."""
+    return _read("_renders.json")
+
+
+def effective_parameters(case: dict) -> dict:
+    """The parameters the platform ACTUALLY applied - not the ones we sent.
+
+    Defaults are not guessable and are not echoes of the request: `trajectory`
+    resolves window to 4, `efficiency` to 21, a chained `rank` resolves ordering to
+    "hi", and `bars` resolves to "all" - which includes the live forming bar, so a
+    trajectory's `now` slot repeats its last closed observation until that bar
+    closes. Always read this rather than assuming.
+    """
+    return case["response"]["contract"]["effectiveParameters"]
+
+
+def headers(case: dict) -> list[str]:
+    """Output header names, in the order the compiler returned them.
+
+    Note the stem is the metric's `code`, not its key: CCI20 renders as CCI_t3,
+    CCI_now, CCI_trend.
+    """
+    return [o["header"] for o in case["response"]["contract"]["outputs"]]
