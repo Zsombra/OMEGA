@@ -131,8 +131,8 @@ unreachable through column design: it isn't fed by columns at all.
 **16 divergence and cross signals** — `rsi_bull_divergence`, `macd_bear_cross`,
 `cvd_bull_divergence` and their kin. The platform documents these only qualitatively
 ("scales with the gap"). The *direction* of the relationship is known; the curve is not.
-Every one observed live so far returned exactly 1.0 when it fired, which is suggestive and
-nowhere near sufficient.
+Five live firings have now been observed and **every one returned exactly 1.0** — see
+*Open*, below. Suggestive, and still not sufficient.
 
 **`regime_alignment`** — the one outright contradiction. Its definition states plainly:
 
@@ -179,30 +179,56 @@ much it overshot.
 
 ## Verification
 
-`tests/test_scoring.py` — 24 tests. Fourteen replay real
-(`indicatorValues` → `score`) pairs from `data/performance/score_probes.json`, captured
-from live previews, and assert **exact** float equality. The rest pin the clamp, the
-refusal behaviour, and the corpus/code agreement.
+`tests/test_scoring.py` — 59 tests. Most replay real (`indicatorValues` → `score`) pairs
+from `data/performance/score_probes.json`, captured from live previews, and assert
+**exact** float equality. The rest pin the clamp, the refusal behaviour, and the
+corpus/code agreement.
 
 | | |
 |---|---|
 | signals covered | 84 / 84 |
-| verified | 71 |
-| inferred from a fetched mirror | 12 |
+| verified | 73 |
+| inferred from a fetched mirror | 10 |
 | documented mismatch | 1 |
-| **bit-exact against live data** | **18** |
+| **bit-exact against live data** | **29** |
+
+The probe set deliberately spans asset classes — BTC and ETH (crypto), GOOGL (equity),
+GOLD (commodity). That breadth is what verified the families that crypto never exercised
+in the sample: PRICE_STRUCTURE fired only on GOOGL and GOLD, both CCI directions only on
+GOOGL and GOLD, and `stoch_oversold` only on GOOGL.
+
+Each stored scorecard is also checked against the platform's own reported
+`aggregateScorePercent` — all five reproduce exactly, which catches any transcription
+error in the fixtures.
 
 A completeness test asserts `SCORERS ∪ UNCOMPUTABLE` equals exactly the 84 signals in
 `signal_module_map.json` — no silent gaps in either direction — and a drift test asserts
 the JSON corpus and the Python module agree on which signals are unmodellable.
 
+## Signal availability differs by asset class
+
+The BattleGrid universe is not crypto-only — `get_top_ranked_coins` returns equities,
+indices and commodities alongside it. That matters for scoring:
+
+| module | availability |
+|---|---|
+| `FLOW_DIVERGENCE` | **crypto only.** GOOGL and GOLD both returned *"Perp/spot flow data unavailable"* |
+| `FUNDING`, `OPEN_INTEREST` | **available everywhere** — these are synthetic perp markets. GOOGL carried funding `0.0000044395` and OI `123.1M` |
+| `COMPARISON` | **intermittent everywhere**, returning *"Comparison data unavailable"* even with peers listed in the same payload |
+
+Under fired-set semantics an unavailable module is costless, but a crypto-tuned scorecard
+silently carries less evidence off-crypto.
+
 ## Open
 
-- `bollinger_cci_*` is unverified against live data: CCI sat inside ±100 on every preview
-  captured, so the formula rests on the definition's examples alone. An earlier note in
-  this project claimed a live 0.269 against a computed 0.538; that reading could not be
-  reproduced — it is absent from the stored sample, and the strategy it was attributed to
-  carries the default threshold 100. Recorded as my transcription error, not engine
-  behaviour.
-- `regime_alignment`, above.
-- The 16 divergence magnitudes.
+- **`bollinger_cci_*` — RESOLVED.** Both directions are now verified bit-exact:
+  `bollinger_cci_oversold` on GOOGL (CCI −179.617 → 0.7961719428) and
+  `bollinger_cci_overbought` on GOLD (CCI 248.718 → raw 1.487, clamped to 1). The earlier
+  claim of a live 0.269 against a computed 0.538 could not be reproduced and is recorded
+  as my transcription error, not engine behaviour.
+- `regime_alignment`, above — still unresolved.
+- The 16 divergence magnitudes. Five live firings have now been observed
+  (`macd_bear_divergence`, `macd_bull_divergence`, `cvd_bull_divergence` ×2,
+  `oi_divergence_bull`) and **every one returned exactly 1.0**. Suggestive of a fixed
+  score — but the `oi_divergence_bull` definition publishes a 0.50 example, so magnitude
+  clearly can vary. Still refused.

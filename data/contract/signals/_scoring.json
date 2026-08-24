@@ -1,7 +1,8 @@
 {
   "_note": "How each signal turns an indicator reading into a score. Families are generalised from 57 fetched definitions and corrected against bit-exact live measurements. Every entry carries provenance.",
   "clamp": "EVERY score is clamped to [0,1] by the engine. The signal DEFINITIONS publish raw examples that exceed 1.0 (ma_sma200_above '+10% -> 2.0') and those examples are misleading. Four independent clamp proofs measured live: SMA200 gap +10.23% raw 2.047 -> 1; SMA200 gap +24.71% raw 4.94 -> 1; ADX 62.69 vs 25 raw 1.508 -> 1; EMA gap 2.660% raw 2.660 -> 1. Trust the clamp, not the published examples.",
-  "aggregateLink": "These scores feed aggregate = SUM(score x allocation) / SUM(allocation). Because every score is clamped to 1.0, the maximum achievable aggregate is SUM(allocation of signals that CAN fire together) / SUM(all allocations) - which is why a gate above that ratio is unreachable.",
+  "assetClassAvailability": "The BattleGrid universe spans crypto, equities, indices and commodities. FLOW_DIVERGENCE is crypto-only: GOOGL and GOLD both returned 'Perp/spot flow data unavailable', so flow_perp_spot_bull/bear_divergence can never fire off crypto. FUNDING and OPEN_INTEREST DO evaluate on equities and commodities (synthetic perp markets - GOOGL carried funding 0.0000044395 and OI 123.1M). COMPARISON is intermittent everywhere, returning 'Comparison data unavailable' even when peers are listed in the same payload.",
+  "aggregateLink": "These scores feed aggregate = SUM(score x allocation) / SUM(allocation) over the signals that FIRED - unfired signals enter neither sum. So there is no structural ceiling; the maximum aggregate is 1.0 for any scorecard. What the clamp bounds is each signal's pull on the mean. A fired signal raises the aggregate iff its score exceeds the current aggregate. See docs/12.",
   "families": {
     "linear_below": {
       "formula": "score = clamp((threshold - value) / normaliser, 0, 1)",
@@ -49,17 +50,17 @@
     },
     "unspecified_magnitude": {
       "formula": "score scales with the indicator-vs-price gap (exact form not published)",
-      "note": "The platform documents these only qualitatively. The DIRECTION of the relationship is known; the exact curve is not. Every divergence signal observed live so far returned exactly 1.0 when it fired, but that is too few samples to call it a fixed score. Read the engine's number."
+      "note": "The platform documents these only qualitatively. The DIRECTION of the relationship is known; the exact curve is not. FIVE live firings have now been observed - macd_bear_divergence (BTC), macd_bull_divergence (GOLD), cvd_bull_divergence (GOOGL and GOLD), oi_divergence_bull (GOLD) - and EVERY ONE returned exactly 1.0. That is suggestive of a fixed score, but the oi_divergence_bull definition publishes a 0.50 example, so the magnitude clearly can vary. Still refused: read the engine's number."
     }
   },
   "coverage": {
     "signals": 84,
     "byProvenance": {
-      "verified": 71,
-      "inferred_mirror": 12,
+      "verified": 73,
+      "inferred_mirror": 10,
       "documented_mismatch": 1
     },
-    "bitExactAgainstLiveData": 18,
+    "bitExactAgainstLiveData": 29,
     "byFamily": {
       "linear_below": 16,
       "unspecified_magnitude": 16,
@@ -92,7 +93,10 @@
           1.5
         ]
       ],
-      "note": "An earlier note in this project recorded a live 0.269 against a computed 0.538. That reading could not be reproduced: it is absent from the stored Dunkirk sample, and the Apex strategy it was attributed to carries the default threshold 100. Treated as a transcription error on my part, not an engine behaviour. The formula remains unverified against live data - CCI sat inside the band on every preview captured."
+      "verifiedLive": [
+        "GOLD 1h CCI 248.71764935 -> raw 1.487, engine reports 1 (CLAMP PROOF)"
+      ],
+      "note": "RESOLVED. An earlier note in this project recorded a live 0.269 against a computed 0.538 and flagged it as an unexplained halving. It was a transcription error on my part: absent from the stored Dunkirk sample, and the Apex strategy it was attributed to carries the default threshold 100. Both CCI directions are now verified bit-exact against live equity and commodity readings."
     },
     "bollinger_cci_oversold": {
       "family": "linear_below",
@@ -109,6 +113,9 @@
           -250,
           1.5
         ]
+      ],
+      "verifiedLive": [
+        "GOOGL 1h CCI -179.61719428 -> 0.7961719428 exact"
       ]
     },
     "bollinger_lower_touch": {
@@ -117,7 +124,10 @@
       "threshold": 0.05,
       "normaliser": "threshold",
       "indicator": "bb_percent_b",
-      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0"
+      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0",
+      "verifiedLive": [
+        "GOOGL 1h %B 0.04655411641544565 -> 0.06891767169108706 exact"
+      ]
     },
     "bollinger_squeeze": {
       "family": "linear_below",
@@ -136,7 +146,10 @@
       "threshold": 0.95,
       "normaliser": "1 - threshold",
       "indicator": "bb_percent_b",
-      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0"
+      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0",
+      "verifiedLive": [
+        "GOLD 1h %B 0.9571582849660679 -> 0.1431656993213591 exact"
+      ]
     },
     "comparison_btc_decorrelation": {
       "family": "linear_below",
@@ -154,7 +167,10 @@
       "provenance": "verified",
       "denominator": "peers.length",
       "gate": "divergentCount >= peers.length * minPeerFraction",
-      "minPeerFraction": 0.5
+      "minPeerFraction": 0.5,
+      "verifiedLive": [
+        "GOLD 1h 2 of 3 peers diverging -> 0.6666666666666666 exact"
+      ]
     },
     "comparison_sector_momentum": {
       "family": "count_ratio",
@@ -290,11 +306,14 @@
     },
     "htf_trend_adx_ranging": {
       "family": "linear_below",
-      "provenance": "inferred_mirror",
+      "provenance": "verified",
       "threshold": 20,
       "normaliser": "threshold",
+      "indicator": "htf_adx_value",
       "rung": "REGIME_RUNG",
-      "mirrorOf": "htf_trend_adx_trending"
+      "verifiedLive": [
+        "GOOGL 1h HTF ADX 12.88840508 -> 0.355579746 exact"
+      ]
     },
     "htf_trend_adx_trending": {
       "family": "linear_above",
@@ -412,10 +431,13 @@
     },
     "ma_sma200_below": {
       "family": "pct_gap_scaled",
-      "provenance": "inferred_mirror",
+      "provenance": "verified",
       "divisor": 5,
+      "reads": "(sma200 - price) / sma200 * 100",
       "indicator": "sma200, price",
-      "mirrorOf": "ma_sma200_above"
+      "verifiedLive": [
+        "GOOGL 1h price 343.18 vs SMA200 344.5431 -> 0.07912507898140898 exact"
+      ]
     },
     "macd_bear_cross": {
       "family": "unspecified_magnitude",
@@ -683,6 +705,7 @@
       "provenance": "verified",
       "proximityPct": 0.005,
       "indicator": "swing_high, price",
+      "reads": "distance = (swing_high - price) / PRICE, not / swing_high",
       "examples": [
         [
           "0.2% away",
@@ -694,7 +717,8 @@
         ]
       ],
       "verifiedLive": [
-        "Dunkirk 0.4435% away -> 0.1130 exact"
+        "Dunkirk 0.4435% away -> 0.1130 exact",
+        "GOLD 1h swing_high 4657.5 price 4637.8 -> 0.15045926948122745 exact"
       ]
     },
     "sr_at_support": {
@@ -702,6 +726,7 @@
       "provenance": "verified",
       "proximityPct": 0.005,
       "indicator": "swing_low, price",
+      "reads": "distance = (price - swing_low) / PRICE, not / swing_low",
       "examples": [
         [
           "0.2% away",
@@ -711,6 +736,9 @@
           "0.05% away",
           0.9
         ]
+      ],
+      "verifiedLive": [
+        "GOOGL 1h swing_low 342.66 price 343.18 -> 0.6969520368319938 exact"
       ]
     },
     "sr_resistance_break": {
@@ -794,6 +822,9 @@
           5,
           0.75
         ]
+      ],
+      "verifiedLive": [
+        "GOOGL 1h K=7.07962432 D=18.85527585 -> 0.646018784 exact (confirms the MINIMUM of the pair is read)"
       ]
     },
     "structure_fvg_approach": {
@@ -801,6 +832,7 @@
       "provenance": "verified",
       "proximityPct": 1.0,
       "indicator": "distancePct",
+      "reads": "distancePct is already in PERCENT units; proximityPct 1.0 means 1%",
       "examples": [
         [
           "0.3% away",
@@ -810,6 +842,9 @@
           "0.05% away",
           0.95
         ]
+      ],
+      "verifiedLive": [
+        "GOLD 1h distancePct 0.5401267842511575 -> 0.45987321574884255 exact"
       ]
     },
     "structure_ob_approach": {
@@ -843,6 +878,9 @@
           "3+ zones",
           1.0
         ]
+      ],
+      "verifiedLive": [
+        "GOLD 1h zoneCount 3 -> 1.0 exact"
       ]
     },
     "structure_zone_confluence": {
@@ -851,7 +889,12 @@
       "high": 1.0,
       "low": 0.8,
       "reads": "1.0 when the overlap is exact (<0.05%), 0.8 when merely aligned",
-      "indicator": "overlapPct"
+      "indicator": "overlapPct",
+      "verifiedLive": [
+        "GOOGL 1h overlapPct 0.0294175328495516 -> 1.0 (below 0.05%)",
+        "GOLD 1h overlapPct 0.0784117640374269 -> 0.8 (above 0.05%)",
+        "the pair brackets the 0.05% boundary from both sides"
+      ]
     },
     "trend_adx_ranging": {
       "family": "linear_below",
@@ -950,6 +993,9 @@
           4.0,
           1.0
         ]
+      ],
+      "verifiedLive": [
+        "GOOGL 1h ratio 2.351166937666714 -> 0.17558346883335707 exact"
       ]
     }
   }

@@ -2,12 +2,16 @@
   "_note": "Unweighted coin scorecards from live get_coin_signal_preview (omit agentId -> every signal at effectiveAllocation 1). Only NON-ZERO scores are listed; every signal absent from a coin's map scored exactly 0 and did not trigger. Read-only capture, no state mutated.",
   "_capturedAt": "2026-08-24",
   "_useFor": "omega.feasibility.simulate - re-weight these with any hypothetical allocation vector.",
+  "_assetClasses": "The BattleGrid universe is NOT crypto-only. get_top_ranked_coins returns equities (GOOGL, TSLA, AMD, NFLX, TSM, INTC, MU, HOOD), indices (SP500, JP225, XYZ100, EWJ, EWY, URNM), commodities (GOLD, COPPER, PALLADIUM, NATGAS, BRENTOIL, CL) alongside crypto. Sample across classes: signal availability differs by class - see _availabilityByClass.",
+  "_availabilityByClass": {
+    "FLOW_DIVERGENCE": "crypto only. GOOGL and GOLD both returned 'Perp/spot flow data unavailable', so flow_perp_spot_bull/bear_divergence can NEVER fire on an equity or commodity. Costless under fired-set semantics, but a crypto-tuned scorecard silently loses this module off-crypto.",
+    "FUNDING and OPEN_INTEREST": "available on equities and commodities - GOOGL carried funding_rate 0.0000044395 and OI 123.1M; GOLD carried funding_rate 0.0000140769 and OI 386.5M. These are synthetic perp markets, so the module is NOT crypto-only.",
+    "COMPARISON": "intermittent everywhere. 'Comparison data unavailable' seen on SOL (comparison_sector_momentum) and GOOGL (comparison_sector_momentum) despite peers being listed in the same payload."
+  },
   "observations": [
     {
-      "ticker": "BTC",
-      "interval": "1h",
-      "platformUnweightedAggregatePercent": 46,
-      "dominantBias": "MIXED",
+      "ticker": "BTC", "interval": "1h", "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 46, "dominantBias": "MIXED",
       "scores": {
         "htf_rsi_overbought": 0.08283703366666657,
         "macd_bear_divergence": 1,
@@ -26,10 +30,8 @@
       }
     },
     {
-      "ticker": "SOL",
-      "interval": "1h",
-      "platformUnweightedAggregatePercent": 52,
-      "dominantBias": "BEARISH",
+      "ticker": "SOL", "interval": "1h", "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 52, "dominantBias": "BEARISH",
       "scores": {
         "bollinger_squeeze": 0.18892032949791113,
         "ma_sma200_above": 1,
@@ -43,10 +45,55 @@
       }
     },
     {
-      "ticker": "ETH",
-      "interval": "4h",
-      "platformUnweightedAggregatePercent": 56,
-      "dominantBias": "BULLISH",
+      "ticker": "GOOGL", "interval": "1h", "assetClass": "equity",
+      "platformUnweightedAggregatePercent": 47, "dominantBias": "BULLISH",
+      "scores": {
+        "stoch_oversold": 0.646018784,
+        "volume_surge": 0.17558346883335707,
+        "bollinger_squeeze": 0.7525829874074237,
+        "bollinger_lower_touch": 0.06891767169108706,
+        "bollinger_cci_oversold": 0.7961719428,
+        "ma_sma200_below": 0.07912507898140898,
+        "ltf_ma_aligned_bear": 0.08555979699130492,
+        "trend_adx_ranging": 0.196243958,
+        "htf_trend_adx_ranging": 0.355579746,
+        "ltf_trend_adx_ranging": 0.06442022900000008,
+        "rel_roc_negative": 0.000800906,
+        "sr_at_support": 0.6969520368319938,
+        "mfi_sustained_bearish": 0.5435875266666665,
+        "structure_zone_confluence": 1,
+        "cvd_bullish": 1,
+        "cvd_bull_divergence": 1
+      }
+    },
+    {
+      "ticker": "GOLD", "interval": "1h", "assetClass": "commodity",
+      "platformUnweightedAggregatePercent": 60, "dominantBias": "BULLISH",
+      "scores": {
+        "rsi_overbought": 0.1365797109999998,
+        "htf_rsi_overbought": 0.3365634746666667,
+        "macd_bull_divergence": 1,
+        "bollinger_squeeze": 0.7664233400280437,
+        "bollinger_upper_touch": 0.1431656993213591,
+        "bollinger_cci_overbought": 1,
+        "ma_ema_aligned_bull": 0.30414019291431044,
+        "ma_sma200_above": 0.6668257519397176,
+        "ltf_ma_aligned_bull": 0.08687713893852372,
+        "trend_adx_trending": 0.155999422,
+        "oi_divergence_bull": 1,
+        "sr_at_resistance": 0.15045926948122745,
+        "mfi_sustained_bullish": 0.6587537290000001,
+        "comparison_sector_divergence": 0.6666666666666666,
+        "structure_fvg_approach": 0.45987321574884255,
+        "structure_zone_cluster": 1,
+        "structure_zone_confluence": 0.8,
+        "cvd_bullish": 1,
+        "cvd_bull_divergence": 1
+      }
+    },
+    {
+      "ticker": "ETH", "interval": "4h", "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 56, "dominantBias": "BULLISH",
       "scores": {
         "rsi_overbought": 0.03447811999999999,
         "htf_rsi_overbought": 0.29929267633333345,

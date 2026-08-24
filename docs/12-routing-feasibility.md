@@ -25,8 +25,10 @@ The formula never changed. What changed is which signals are in the sums.
 | BTC 1h preview | **46%** | **45.7%** | 7.6% |
 | SOL 1h preview | **52%** | **52.0%** | 5.6% |
 | ETH 4h preview | **56%** | **55.8%** | 12.6% |
+| GOOGL 1h preview | **47%** | **46.8%** | 8.9% |
+| GOLD 1h preview | **60%** | **59.8%** | 13.5% |
 
-Four independent confirmations, one of them a real closed trade. `simulate_aggregate_score`
+Six independent confirmations, one of them a real closed trade. `simulate_aggregate_score`
 was never wrong — it computes over exactly the signal set you hand it, and the live engine
 hands it the fired set. I had been handing it whole scorecards padded with zeros, which
 answers a different and misleading question.
@@ -133,18 +135,57 @@ print(drag_ranking(list(allocs.items()), obs))
 ```
 
 ```
-gate 50.0%   2/3 coins would route   best observed 56.8%
+gate 50.0%   2/4 coins would route   best observed 59.1%
 
-  ROUTES  ETH     56.8%  18 fired (weight 29)   regime_volatility_shift 12%, ...
+  ROUTES  GOLD    59.1%  19 fired (weight 32)   macd_bull_divergence 11%, ...
   ROUTES  SOL     50.7%   9 fired (weight 14)   ma_sma200_above 28%, cvd_bearish 28%, ...
     held  BTC     48.0%  13 fired (weight 22)   macd_bear_divergence 19%, ...
+    held  GOOGL   46.6%  16 fired (weight 26)   cvd_bullish 17%, ...
 
-  allocated but never fired across 3 coins - COSTLESS, not dead weight:
-    56 signals; they enter neither sum
+  allocated but never fired across 4 coins - COSTLESS, not dead weight:
+    45 signals; they enter neither sum
 ```
 
 `leverage(rules, observation)` gives the per-signal marginal effect on one coin;
-`drag_ranking` averages it across the sample.
+`drag_ranking` aggregates across the sample.
+
+### Coverage is reported separately from magnitude
+
+`drag_ranking` splits its output into **CONSISTENT** (fired on at least half the sample)
+and **OCCASIONAL**. A signal that fired on one coin out of five has a mean computed from a
+single observation — noise wearing a decimal point — and ranking it beside a signal that
+fired on all five invites exactly the wrong conclusion. Same discipline
+[10 · Outcome Feedback](10-outcome-feedback.md) applies with its 20-trade minimum.
+
+Across five coins spanning crypto, equity and commodity, the consistent findings are:
+
+| | signal | mean leverage | fired on |
+|---|---|---:|---:|
+| **drag** | `rel_roc_negative` | **+5.48pp** | 3/5 |
+| **drag** | `ltf_ma_aligned_bear` | +3.87pp | 3/5 |
+| **drag** | `htf_rsi_overbought` | +2.55pp | 3/5 |
+| carries | `ma_sma200_above` | −4.28pp | 4/5 |
+| carries | `cvd_bullish` | −4.12pp | 3/5 |
+| carries | `cvd_bearish` | −3.86pp | 2/5 |
+
+`bollinger_squeeze` fires on 4 of 5 and is a mild drag (+0.59pp) — it triggers almost
+always but at middling scores.
+
+## The universe spans asset classes
+
+`get_top_ranked_coins` returns equities (GOOGL, TSLA, AMD, NFLX, TSM), indices (SP500,
+JP225, XYZ100), and commodities (GOLD, COPPER, NATGAS, BRENTOIL) alongside crypto. A
+feasibility sweep drawn only from crypto is not representative of what your agent will
+actually be offered.
+
+One module is genuinely class-bound: **`FLOW_DIVERGENCE` is crypto-only** — GOOGL and GOLD
+both returned *"Perp/spot flow data unavailable"*. `FUNDING` and `OPEN_INTEREST`, by
+contrast, evaluate everywhere, because these are synthetic perp markets: GOOGL carried a
+funding rate of `0.0000044395` and open interest of `123.1M`.
+
+Under fired-set semantics none of this costs you anything. It does mean a crypto-tuned
+scorecard carries measurably less evidence off-crypto — GOLD fired 19 signals, GOOGL 16,
+SOL only 9.
 
 ## What this does not measure
 

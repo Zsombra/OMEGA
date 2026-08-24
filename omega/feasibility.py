@@ -230,24 +230,42 @@ def leverage(rules: Iterable, observation: Observation) -> list[Leverage]:
 
 
 def drag_ranking(rules: Iterable, observations: Sequence[Observation],
-                 gate: float | None = None) -> str:
-    """Which fired signals cost you the most aggregate, summed across the sample."""
+                 min_coverage: float = 0.5) -> str:
+    """Which fired signals cost you the most aggregate, across the sample.
+
+    Split by COVERAGE, not just magnitude. A signal that fired on one coin out of
+    five has a mean computed from a single observation - that is noise wearing a
+    decimal point, and ranking it beside a signal that fired on all five invites
+    exactly the wrong conclusion. `min_coverage` is the fraction of the sample a
+    signal must fire on to be reported as consistent evidence.
+    """
+    n = len(observations)
     totals: dict[str, list[float]] = {}
     for obs in observations:
         for lv in leverage(rules, obs):
             totals.setdefault(lv.signal_id, []).append(lv.delta_pp)
 
+    need = max(2, round(n * min_coverage))
     rows = sorted(((sum(v) / len(v), len(v), sid) for sid, v in totals.items()),
                   key=lambda r: -r[0])
-    lines = [f"mean leverage across {len(observations)} coins "
-             "(positive = removing it RAISES the aggregate)", ""]
-    for mean_pp, fired_on, sid in rows:
+    consistent = [r for r in rows if r[1] >= need]
+    occasional = [r for r in rows if r[1] < need]
+
+    def fmt(r):
+        mean_pp, fired_on, sid = r
         tag = "DRAG   " if mean_pp > 0 else "carries"
-        lines.append(f"  {tag} {sid:<34} {mean_pp:+6.2f}pp   fired on {fired_on}")
-    if gate is not None:
-        lines += ["", "  Removing a drag signal raises the mean on every coin where it "
-                      "fires below the aggregate.", "  It cannot lower the aggregate "
-                      "anywhere - an unfired signal is costless."]
+        return f"  {tag} {sid:<34} {mean_pp:+6.2f}pp   fired on {fired_on}/{n}"
+
+    lines = [f"leverage across {n} coins (positive = removing it RAISES the aggregate)", ""]
+    lines.append(f"CONSISTENT - fired on at least {need} of {n}:")
+    lines += [fmt(r) for r in consistent] or ["  (none)"]
+    if occasional:
+        lines += ["", f"OCCASIONAL - fired on fewer than {need}; too few observations to "
+                      "rank against the above:"]
+        lines += [fmt(r) for r in occasional]
+    lines += ["", "  Removing a drag signal raises the mean on every coin where it fires "
+                  "below the aggregate,", "  and cannot lower it anywhere - an unfired "
+                  "signal is costless."]
     return "\n".join(lines)
 
 

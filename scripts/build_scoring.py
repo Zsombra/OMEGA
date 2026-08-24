@@ -85,9 +85,12 @@ FAMILIES = {
     "unspecified_magnitude": {
         "formula": "score scales with the indicator-vs-price gap (exact form not published)",
         "note": ("The platform documents these only qualitatively. The DIRECTION of the "
-                 "relationship is known; the exact curve is not. Every divergence signal "
-                 "observed live so far returned exactly 1.0 when it fired, but that is too "
-                 "few samples to call it a fixed score. Read the engine's number."),
+                 "relationship is known; the exact curve is not. FIVE live firings have now "
+                 "been observed - macd_bear_divergence (BTC), macd_bull_divergence (GOLD), "
+                 "cvd_bull_divergence (GOOGL and GOLD), oi_divergence_bull (GOLD) - and "
+                 "EVERY ONE returned exactly 1.0. That is suggestive of a fixed score, but "
+                 "the oi_divergence_bull definition publishes a 0.50 example, so the "
+                 "magnitude clearly can vary. Still refused: read the engine's number."),
     },
 }
 
@@ -130,7 +133,9 @@ add("macd_bear_divergence", "unspecified_magnitude", indicator="macd_histogram v
 
 # --- STOCHASTIC -------------------------------------------------------------
 add("stoch_oversold", "linear_below", threshold=20, normaliser="threshold",
-    reads="min(%K, %D)", indicator="stoch_k, stoch_d", examples=[(15, 0.25), (5, 0.75)])
+    reads="min(%K, %D)", indicator="stoch_k, stoch_d", examples=[(15, 0.25), (5, 0.75)],
+    verifiedLive=["GOOGL 1h K=7.07962432 D=18.85527585 -> 0.646018784 exact "
+                  "(confirms the MINIMUM of the pair is read)"])
 add("stoch_overbought", "linear_above", threshold=80, normaliser="100 - threshold",
     reads="max(%K, %D)", indicator="stoch_k, stoch_d", examples=[(85, 0.25), (95, 0.75)])
 add("stoch_bull_cross", "linear_below", threshold=30, normaliser="threshold",
@@ -140,7 +145,8 @@ add("stoch_bear_cross", "linear_above", threshold=70, normaliser="100 - threshol
 
 # --- VOLUME -----------------------------------------------------------------
 add("volume_surge", "linear_above", threshold=2.0, normaliser="threshold",
-    indicator="volume_ratio", examples=[(2.4, 0.20), (4.0, 1.00)])
+    indicator="volume_ratio", examples=[(2.4, 0.20), (4.0, 1.00)],
+    verifiedLive=["GOOGL 1h ratio 2.351166937666714 -> 0.17558346883335707 exact"])
 add("volume_dry_up", "linear_below", threshold=0.5, normaliser="threshold",
     indicator="volume_ratio", examples=[(0.4, 0.20), (0.1, 0.80)])
 add("volume_obv_bull_divergence", "unspecified_magnitude", indicator="obv_value vs price")
@@ -157,19 +163,22 @@ add("bollinger_squeeze", "linear_below", threshold=0.04, normaliser="threshold",
     reads="bb_width / bb_middle", indicator="bb_width, bb_middle",
     verifiedLive=["BTC 1h width/mid 0.023276 -> 0.41808426736396376 exact"])
 add("bollinger_lower_touch", "linear_below", threshold=0.05, normaliser="threshold",
-    indicator="bb_percent_b", note=CLAMP_NOTE)
+    indicator="bb_percent_b", note=CLAMP_NOTE,
+    verifiedLive=["GOOGL 1h %B 0.04655411641544565 -> 0.06891767169108706 exact"])
 add("bollinger_upper_touch", "linear_above", threshold=0.95, normaliser="1 - threshold",
-    indicator="bb_percent_b", note=CLAMP_NOTE)
+    indicator="bb_percent_b", note=CLAMP_NOTE,
+    verifiedLive=["GOLD 1h %B 0.9571582849660679 -> 0.1431656993213591 exact"])
 add("bollinger_cci_oversold", "linear_below", threshold=-100, normaliser="100 (fixed)",
-    indicator="cci20_value", examples=[(-150, 0.50), (-250, 1.50)])
+    indicator="cci20_value", examples=[(-150, 0.50), (-250, 1.50)],
+    verifiedLive=["GOOGL 1h CCI -179.61719428 -> 0.7961719428 exact"])
 add("bollinger_cci_overbought", "linear_above", threshold=100, normaliser="100 (fixed)",
     indicator="cci20_value", examples=[(150, 0.50), (250, 1.50)],
-    note=("An earlier note in this project recorded a live 0.269 against a computed 0.538. "
-          "That reading could not be reproduced: it is absent from the stored Dunkirk "
-          "sample, and the Apex strategy it was attributed to carries the default threshold "
-          "100. Treated as a transcription error on my part, not an engine behaviour. The "
-          "formula remains unverified against live data - CCI sat inside the band on every "
-          "preview captured."))
+    verifiedLive=["GOLD 1h CCI 248.71764935 -> raw 1.487, engine reports 1 (CLAMP PROOF)"],
+    note=("RESOLVED. An earlier note in this project recorded a live 0.269 against a "
+          "computed 0.538 and flagged it as an unexplained halving. It was a transcription "
+          "error on my part: absent from the stored Dunkirk sample, and the Apex strategy "
+          "it was attributed to carries the default threshold 100. Both CCI directions are "
+          "now verified bit-exact against live equity and commodity readings."))
 
 # --- MOVING_AVERAGES --------------------------------------------------------
 add("ma_ema_aligned_bull", "pct_gap_scaled", divisor=1,
@@ -186,8 +195,10 @@ add("ma_sma200_above", "pct_gap_scaled", divisor=5,
     verifiedLive=["Dunkirk +1.951% -> 0.390 exact",
                   "BTC 1h +10.23% -> raw 2.047, engine reports 1 (CLAMP PROOF)",
                   "ETH 4h +24.71% -> raw 4.94, engine reports 1 (CLAMP PROOF)"])
-add("ma_sma200_below", "pct_gap_scaled", divisor=5, provenance=M,
-    mirror_of="ma_sma200_above", indicator="sma200, price")
+add("ma_sma200_below", "pct_gap_scaled", divisor=5,
+    reads="(sma200 - price) / sma200 * 100", indicator="sma200, price",
+    verifiedLive=["GOOGL 1h price 343.18 vs SMA200 344.5431 -> "
+                  "0.07912507898140898 exact"])
 add("htf_ma_aligned_bull", "pct_gap_scaled", divisor=5,
     reads="(price - sma50) / sma50 * 100; requires price > ema20 > sma20 > sma50",
     indicator="htf_price, htf_ema20, htf_sma20, htf_sma50", rung="REGIME_RUNG",
@@ -217,7 +228,8 @@ add("htf_trend_adx_trending", "linear_above", threshold=25, normaliser="threshol
     verifiedLive=["ETH 4h HTF ADX 33.47874556 -> 0.3391498224 exact",
                   "BTC 1h HTF ADX 62.692 -> raw 1.508, engine reports 1 (CLAMP PROOF)"])
 add("htf_trend_adx_ranging", "linear_below", threshold=20, normaliser="threshold",
-    provenance=M, mirror_of="htf_trend_adx_trending", rung="REGIME_RUNG")
+    indicator="htf_adx_value", rung="REGIME_RUNG",
+    verifiedLive=["GOOGL 1h HTF ADX 12.88840508 -> 0.355579746 exact"])
 add("ltf_trend_adx_trending", "linear_above", threshold=25, normaliser="threshold",
     indicator="ltf_adx_value", rung="LOWER")
 add("ltf_trend_adx_ranging", "linear_below", threshold=20, normaliser="threshold",
@@ -253,10 +265,14 @@ add("rel_roc_negative", "pct_gap_scaled", divisor=5, reads="abs(roc12_value)",
 
 # --- SUPPORT_RESISTANCE -----------------------------------------------------
 add("sr_at_support", "proximity", proximityPct=0.005, indicator="swing_low, price",
-    examples=[("0.2% away", 0.60), ("0.05% away", 0.90)])
-add("sr_at_resistance", "proximity", proximityPct=0.005, indicator="swing_high, price",
+    reads="distance = (price - swing_low) / PRICE, not / swing_low",
     examples=[("0.2% away", 0.60), ("0.05% away", 0.90)],
-    verifiedLive=["Dunkirk 0.4435% away -> 0.1130 exact"])
+    verifiedLive=["GOOGL 1h swing_low 342.66 price 343.18 -> 0.6969520368319938 exact"])
+add("sr_at_resistance", "proximity", proximityPct=0.005, indicator="swing_high, price",
+    reads="distance = (swing_high - price) / PRICE, not / swing_high",
+    examples=[("0.2% away", 0.60), ("0.05% away", 0.90)],
+    verifiedLive=["Dunkirk 0.4435% away -> 0.1130 exact",
+                  "GOLD 1h swing_high 4657.5 price 4637.8 -> 0.15045926948122745 exact"])
 add("sr_support_break", "break_magnitude", indicator="swing_low, price", note=CLAMP_NOTE)
 add("sr_resistance_break", "break_magnitude", provenance=M, mirror_of="sr_support_break")
 
@@ -276,7 +292,8 @@ add("mfi_sustained_bearish", "midline_scaled", midline=50, span=30,
 
 # --- COMPARISON -------------------------------------------------------------
 add("comparison_sector_divergence", "count_ratio", denominator="peers.length",
-    gate="divergentCount >= peers.length * minPeerFraction", minPeerFraction=0.5)
+    gate="divergentCount >= peers.length * minPeerFraction", minPeerFraction=0.5,
+    verifiedLive=["GOLD 1h 2 of 3 peers diverging -> 0.6666666666666666 exact"])
 add("comparison_sector_momentum", "count_ratio", denominator="peers.length",
     gate="alignedCount >= peers.length * minPeerFraction", minPeerFraction=0.6,
     verifiedLive=["ETH 4h 3/3 peers -> 1.00", "Dunkirk 3/3 peers -> 1.00"])
@@ -309,14 +326,21 @@ add("regime_divergence", "two_state", high=1.0, low=0.6,
 
 # --- PRICE_STRUCTURE --------------------------------------------------------
 add("structure_fvg_approach", "proximity", proximityPct=1.0, indicator="distancePct",
-    examples=[("0.3% away", 0.70), ("0.05% away", 0.95)])
+    reads="distancePct is already in PERCENT units; proximityPct 1.0 means 1%",
+    examples=[("0.3% away", 0.70), ("0.05% away", 0.95)],
+    verifiedLive=["GOLD 1h distancePct 0.5401267842511575 -> "
+                  "0.45987321574884255 exact"])
 add("structure_ob_approach", "proximity", proximityPct=1.0, indicator="distancePct",
     examples=[("0.3% away", 0.70), ("0.05% away", 0.95)])
 add("structure_zone_cluster", "count_ratio", denominator=3, gate="zoneCount >= 2",
-    indicator="zoneCount", examples=[("2 zones", 0.67), ("3+ zones", 1.00)])
+    indicator="zoneCount", examples=[("2 zones", 0.67), ("3+ zones", 1.00)],
+    verifiedLive=["GOLD 1h zoneCount 3 -> 1.0 exact"])
 add("structure_zone_confluence", "two_state", high=1.0, low=0.8,
     reads="1.0 when the overlap is exact (<0.05%), 0.8 when merely aligned",
-    indicator="overlapPct")
+    indicator="overlapPct",
+    verifiedLive=["GOOGL 1h overlapPct 0.0294175328495516 -> 1.0 (below 0.05%)",
+                  "GOLD 1h overlapPct 0.0784117640374269 -> 0.8 (above 0.05%)",
+                  "the pair brackets the 0.05% boundary from both sides"])
 
 # --- CVD --------------------------------------------------------------------
 add("cvd_bullish", "two_state", high=1.0, low=0.5,
@@ -392,11 +416,20 @@ def main() -> None:
             "are misleading. Four independent clamp proofs measured live: SMA200 gap +10.23% "
             "raw 2.047 -> 1; SMA200 gap +24.71% raw 4.94 -> 1; ADX 62.69 vs 25 raw 1.508 -> "
             "1; EMA gap 2.660% raw 2.660 -> 1. Trust the clamp, not the published examples."),
+        "assetClassAvailability": (
+            "The BattleGrid universe spans crypto, equities, indices and commodities. "
+            "FLOW_DIVERGENCE is crypto-only: GOOGL and GOLD both returned 'Perp/spot flow "
+            "data unavailable', so flow_perp_spot_bull/bear_divergence can never fire off "
+            "crypto. FUNDING and OPEN_INTEREST DO evaluate on equities and commodities "
+            "(synthetic perp markets - GOOGL carried funding 0.0000044395 and OI 123.1M). "
+            "COMPARISON is intermittent everywhere, returning 'Comparison data unavailable' "
+            "even when peers are listed in the same payload."),
         "aggregateLink": (
-            "These scores feed aggregate = SUM(score x allocation) / SUM(allocation). Because "
-            "every score is clamped to 1.0, the maximum achievable aggregate is "
-            "SUM(allocation of signals that CAN fire together) / SUM(all allocations) - "
-            "which is why a gate above that ratio is unreachable."),
+            "These scores feed aggregate = SUM(score x allocation) / SUM(allocation) over "
+            "the signals that FIRED - unfired signals enter neither sum. So there is no "
+            "structural ceiling; the maximum aggregate is 1.0 for any scorecard. What the "
+            "clamp bounds is each signal's pull on the mean. A fired signal raises the "
+            "aggregate iff its score exceeds the current aggregate. See docs/12."),
         "families": FAMILIES,
         "coverage": {
             "signals": len(entries),

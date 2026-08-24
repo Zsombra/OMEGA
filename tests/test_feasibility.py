@@ -84,11 +84,24 @@ def test_a_fired_signal_helps_iff_its_score_exceeds_the_aggregate():
 # --- against the real captured scorecard ------------------------------------
 
 def test_apex_sweep_reproduces_hand_computed_aggregates():
+    """Per-ticker, so adding coins to the fixture extends rather than breaks this."""
     allocs, gate = load_rules("apex-imported")
     sweep = simulate(list(allocs.items()), gate, load_observations())
     got = {r.ticker: round(r.aggregate * 100, 1) for r in sweep.results}
-    assert got == {"BTC": 48.0, "SOL": 50.7, "ETH": 56.8}
-    assert sweep.routed == 2
+    expected = {"BTC": 48.0, "SOL": 50.7, "ETH": 56.8, "GOOGL": 46.6, "GOLD": 59.1}
+    for ticker, value in expected.items():
+        assert got[ticker] == value, f"{ticker}: expected {value}, got {got[ticker]}"
+
+
+def test_drag_ranking_separates_consistent_from_occasional():
+    """A mean from one observation must not be ranked beside a mean from five."""
+    allocs, _ = load_rules("apex-imported")
+    out = drag_ranking(list(allocs.items()), load_observations(interval="1h"))
+    assert "CONSISTENT" in out and "OCCASIONAL" in out
+    consistent = out.split("OCCASIONAL")[0]
+    # bollinger_squeeze fires on all four 1h coins; volume_surge on one
+    assert "bollinger_squeeze" in consistent
+    assert "volume_surge" not in consistent
 
 
 def test_removing_the_top_drag_flips_btc_to_routing():
@@ -104,13 +117,34 @@ def test_removing_the_top_drag_flips_btc_to_routing():
     assert after.routes and after.aggregate == pytest.approx(0.5280, abs=5e-4)
 
 
-def test_roc_signals_are_the_worst_offenders():
-    """Score = ROC/5 means ROC must hit 5% for 1.0; on an hourly bar it is ~0.01%."""
+def test_roc_signals_fire_at_effectively_zero():
+    """Score = ROC/5 means ROC must reach 5% for 1.0; an hourly ROC(12) runs ~0.01%.
+
+    Asserted on the scores themselves rather than on rendered text, and on the
+    property that actually matters: whenever these fire, they fire at ~0.
+    """
+    obs = load_observations()
+    seen = 0
+    for o in obs:
+        for sid in ("rel_roc_positive", "rel_roc_negative"):
+            if sid in o.scores:
+                seen += 1
+                assert o.scores[sid] < 0.01, (
+                    f"{sid} on {o.ticker} scored {o.scores[sid]} - if ROC signals can "
+                    "score meaningfully, the drag conclusion needs revisiting")
+    assert seen >= 4, "expected several ROC firings in the sample"
+
+
+def test_roc_negative_is_the_top_consistent_drag():
     allocs, _ = load_rules("apex-imported")
-    ranking = drag_ranking(list(allocs.items()), load_observations())
-    lines = [l for l in ranking.splitlines() if "DRAG" in l]
-    top_two = {l.split()[1] for l in lines[:2]}
-    assert top_two == {"rel_roc_negative", "rel_roc_positive"}
+    obs = load_observations()
+    totals: dict[str, list[float]] = {}
+    for o in obs:
+        for lv in leverage(list(allocs.items()), o):
+            totals.setdefault(lv.signal_id, []).append(lv.delta_pp)
+    need = max(2, round(len(obs) * 0.5))
+    consistent = {sid: sum(v) / len(v) for sid, v in totals.items() if len(v) >= need}
+    assert max(consistent, key=consistent.get) == "rel_roc_negative"
 
 
 # --- the one genuine structural block ---------------------------------------
