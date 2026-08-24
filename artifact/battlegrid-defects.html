@@ -1,0 +1,844 @@
+<title>BattleGrid Authoring Defects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --ground:      #F6F7F9;
+    --surface:     #FFFFFF;
+    --surface-alt: #EEF0F4;
+    --line:        #D8DCE4;
+    --line-soft:   #E7EAF0;
+    --text:        #171B22;
+    --text-dim:    #545C6B;
+    --text-faint:  #7C8698;
+
+    --signal:      #B4681A;
+    --signal-soft: #FBF0E2;
+
+    --critical:      #C0392F;
+    --critical-soft: #FBEBE9;
+    --silent:        #9A6B12;
+    --silent-soft:   #FAF1DE;
+    --ok:            #2F7A4E;
+    --ok-soft:       #E8F4EC;
+
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0F1319;
+      --surface:     #161B23;
+      --surface-alt: #1D232D;
+      --line:        #2B3340;
+      --line-soft:   #212834;
+      --text:        #E4E8EF;
+      --text-dim:    #9BA5B5;
+      --text-faint:  #6E7889;
+
+      --signal:      #E39A45;
+      --signal-soft: #2A2016;
+
+      --critical:      #E8776C;
+      --critical-soft: #2C1917;
+      --silent:        #D9A94A;
+      --silent-soft:   #2A2214;
+      --ok:            #6BBF8B;
+      --ok-soft:       #16251C;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #0F1319;
+    --surface:     #161B23;
+    --surface-alt: #1D232D;
+    --line:        #2B3340;
+    --line-soft:   #212834;
+    --text:        #E4E8EF;
+    --text-dim:    #9BA5B5;
+    --text-faint:  #6E7889;
+
+    --signal:      #E39A45;
+    --signal-soft: #2A2016;
+
+    --critical:      #E8776C;
+    --critical-soft: #2C1917;
+    --silent:        #D9A94A;
+    --silent-soft:   #2A2214;
+    --ok:            #6BBF8B;
+    --ok-soft:       #16251C;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--signal);
+  }
+
+  h1 {
+    font-family: var(--cond);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    max-width: var(--measure);
+    font-size: 1.09rem;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--text-faint);
+  }
+  .meta b { color: var(--text-dim); font-weight: 500; }
+
+  /* ---------- section headings ---------- */
+  h2 {
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 1.65rem;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    text-wrap: balance;
+  }
+
+  p { max-width: var(--measure); margin: 0 0 1rem; }
+  p:last-child { margin-bottom: 0; }
+
+  a { color: var(--signal); }
+
+  /* ---------- triage table ---------- */
+  .scroll { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    min-width: 34rem;
+  }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 0 0.9rem 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  td {
+    padding: 0.75rem 0.9rem 0.75rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+  }
+  td.id { font-family: var(--mono); font-weight: 500; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .chip.blocking { background: var(--critical-soft); color: var(--critical); }
+  .chip.silent   { background: var(--silent-soft);   color: var(--silent); }
+  .chip.friction { background: var(--surface-alt);   color: var(--text-dim); }
+
+  /* ---------- defect panels ---------- */
+  .defects { display: flex; flex-direction: column; gap: 2rem; }
+
+  .defect {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--stripe, var(--line));
+    border-radius: 3px;
+    padding: 1.6rem 1.6rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+  .defect.is-blocking { --stripe: var(--critical); }
+  .defect.is-silent   { --stripe: var(--silent); }
+  .defect.is-friction { --stripe: var(--text-faint); }
+
+  .defect-head { display: flex; flex-direction: column; gap: 0.5rem; }
+  .defect-id {
+    display: flex; align-items: center; gap: 0.75rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+  h3 {
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 0;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+
+  /* ---------- the declared / observed split ---------- */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  @media (max-width: 34rem) { .split { grid-template-columns: 1fr; } }
+
+  .split > div {
+    background: var(--surface-alt);
+    padding: 0.9rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+  .split-label {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .split-body {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+  .split .declared .split-label { color: var(--text-faint); }
+  .split .observed .split-label { color: var(--signal); }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--surface-alt);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+  }
+  .defect blockquote {
+    margin: 0;
+    padding: 0.15rem 0 0.15rem 1.1rem;
+    border-left: 2px solid var(--stripe);
+    color: var(--text-faint);
+    font-style: italic;
+  }
+  .defect code, .fix code { background: var(--ground); }
+
+  pre {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.6;
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.85rem 1rem;
+    overflow-x: auto;
+    color: var(--text-dim);
+  }
+
+  /* ---------- workaround block ---------- */
+  .fix {
+    background: var(--signal-soft);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1rem 1.15rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .fix-label {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--signal);
+  }
+  .fix p { margin: 0; }
+  .fix pre { background: var(--surface); }
+
+  .none .fix-label { color: var(--critical); }
+  .none { background: var(--critical-soft); }
+
+  ul { max-width: var(--measure); margin: 0; padding-left: 1.1rem; }
+  li { margin-bottom: 0.4rem; }
+  li:last-child { margin-bottom: 0; }
+
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- closing ---------- */
+  .verdict {
+    border-top: 1px solid var(--line);
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .works {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 0.75rem;
+  }
+  .works div {
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--ok);
+    border-radius: 3px;
+    padding: 0.7rem 0.9rem;
+    background: var(--surface);
+    font-size: 0.88rem;
+  }
+  .works b {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ok);
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+  }
+
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Defect report &middot; Strategy authoring surface</div>
+    <h1>BattleGrid Authoring Defects</h1>
+    <p class="standfirst">
+      Seven findings from a full sweep of the strategy authoring surface — every legal column
+      shape rendered against the live compiler, the whole condition grammar exercised end to
+      end, and all 25 platform sections probed one at a time for signal membership. Each entry
+      below has a reproduction and, where one exists, a verified workaround.
+    </p>
+    <div class="meta">
+      <span><b>Date</b> 2026-08-24 &ndash; 25</span>
+      <span><b>Account</b> ANBUJEFF</span>
+      <span><b>Coverage</b> <span class="num">300/300</span> legal column shapes</span>
+      <span><b>Header mismatches</b> <span class="num">0</span></span>
+      <span><b>Platform sections</b> <span class="num">25/25</span> probed</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Triage</h2>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Finding</th><th>Impact</th><th>Workaround</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="id">BG-1</td>
+            <td><code>apply_strategy_plan</code> rejects the <code>plan</code> key its own schema marks required</td>
+            <td><span class="chip blocking">Blocking</span></td>
+            <td>Yes — omit <code>plan</code></td>
+          </tr>
+          <tr>
+            <td class="id">BG-2</td>
+            <td><code>ADX_zone</code> and <code>MFI14_zone</code> publish a vocabulary they never emit</td>
+            <td><span class="chip silent">Silent</span></td>
+            <td>Replacement only</td>
+          </tr>
+          <tr>
+            <td class="id">BG-3</td>
+            <td><code>CROWD × rank</code> compiles and never renders</td>
+            <td><span class="chip blocking">Blocking</span></td>
+            <td>Replacement only</td>
+          </tr>
+          <tr>
+            <td class="id">BG-4</td>
+            <td><code>_trend</code> is computed on values the table does not show</td>
+            <td><span class="chip friction">Friction</span></td>
+            <td>Documentation</td>
+          </tr>
+          <tr>
+            <td class="id">BG-5</td>
+            <td><code>INTERNAL_ERROR</code> is returned for transient states as well as real faults</td>
+            <td><span class="chip friction">Friction</span></td>
+            <td>Retry unchanged</td>
+          </tr>
+          <tr>
+            <td class="id">BG-6</td>
+            <td>A null column value reads <code>FALSE</code>, never <code>UNRESOLVED</code></td>
+            <td><span class="chip silent">Silent</span></td>
+            <td>Guard clause</td>
+          </tr>
+          <tr>
+            <td class="id">BG-7</td>
+            <td><code>includeHigherTimeframe</code> feeds no <code>htf_*</code> signal</td>
+            <td><span class="chip silent">Silent</span></td>
+            <td>Enable the base section</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>One pattern behind five of them</h2>
+    <p>
+      With one exception, every finding here is the same shape: <strong>the declared contract and the
+      runtime disagree</strong>. The tool schema says a field is required and the validator refuses it.
+      The metric contract says a transform is legal and the renderer crashes on it. The column
+      publishes a vocabulary and then emits different words.
+    </p>
+    <p>
+      The two findings added on 2026-08-25 are the same shape again. The condition engine's own
+      boilerplate names three outcomes and the engine delivers two (BG-6). A section named for the
+      higher timeframe delivers no higher-timeframe signal (BG-7).
+    </p>
+    <p>
+      This is not new. Grid-Commander logged the identical class on 2026-08-15 — <code>regimeAutoDerive</code>
+      and <code>regimeTimeframe</code> were declared <em>required</em> on the UPDATE plan and rejected by the
+      live validator; dropping them made the write succeed. Six instances in eleven days suggests the
+      contract and the executing code are not generated from one source, and that a conformance check
+      between them would catch this class before a caller does.
+    </p>
+  </section>
+
+  <section>
+    <h2>Findings</h2>
+    <div class="defects">
+
+      <!-- BG-1 -->
+      <article class="defect is-blocking">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-1</span><span class="chip blocking">Blocking</span></div>
+          <h3>The apply schema requires a key its validator rejects</h3>
+        </div>
+        <p>
+          <code>apply_strategy_plan</code> publishes <code>request: { plan, planToken, confirm }</code> with all
+          three required. Sending exactly that is refused. No accompanying "missing key" error appears,
+          which pins the validator's accepted set to exactly <code>{confirm, planToken}</code>.
+        </p>
+        <div class="split">
+          <div class="declared">
+            <div class="split-label">Schema declares</div>
+            <div class="split-body">required: ["plan", "planToken", "confirm"]</div>
+          </div>
+          <div class="observed">
+            <div class="split-label">Validator returns</div>
+            <div class="split-body">unrecognized_keys: ['plan']
+  at path: ['request']</div>
+          </div>
+        </div>
+        <div class="fix">
+          <div class="fix-label">Workaround — verified three times</div>
+          <p>
+            Omit <code>plan</code> entirely. The post-state is already sealed in the signed token as
+            <code>postStateDigest</code>, so the client copy is redundant on the wire.
+          </p>
+          <pre>apply_strategy_plan({ request: { confirm: true, planToken: "&lt;verbatim&gt;" } })</pre>
+          <p>
+            Confirmed on the <code>REPORT</code> axis, on <code>CONDITIONS</code>/<code>MARKET_READ</code>,
+            and on a from-scratch <code>CREATE</code>. Not a quirk of one code path.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> the schema is the stale half — it still describes a projection the
+          server no longer consumes. Either drop <code>plan</code> from the published schema, or accept and
+          ignore it. Right now the documented call is the one that fails.
+        </p>
+      </article>
+
+      <!-- BG-2 -->
+      <article class="defect is-silent">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-2</span><span class="chip silent">Silent</span></div>
+          <h3>Two zone columns cannot carry a condition at all</h3>
+        </div>
+        <p>
+          All five <code>classifyZone</code> columns declare the same
+          <code>conditionVocabulary</code>. Two of them never emit any of it. Measured across 12 coins:
+        </p>
+        <div class="split">
+          <div class="declared">
+            <div class="split-label">conditionVocabulary declares</div>
+            <div class="split-body">ADX_zone    overbought | oversold | neutral
+MFI14_zone  overbought | oversold | neutral</div>
+          </div>
+          <div class="observed">
+            <div class="split-label">Column actually emits</div>
+            <div class="split-body">ADX_zone    trending | developing | weak
+MFI14_zone  bearish | bullish
+
+in vocabulary: 0 of 12</div>
+          </div>
+        </div>
+        <p>
+          So <code>ADX_zone is "neutral"</code> — written from the vocabulary the platform publishes, using
+          the operator it lists — reads <code>FALSE</code> forever. Not an error. Not
+          <code>UNRESOLVED</code>, which would at least signal a missing input. It looks like a working
+          condition that happens never to fire.
+        </p>
+        <p>And the obvious repair is refused:</p>
+        <pre>CONDITION_LITERAL_UNSUPPORTED
+'trending' is not a value 'ADX_zone' can take — its vocabulary is
+overbought | oversold | neutral.   Nearest canonical key: 'oversold'</pre>
+        <div class="fix none">
+          <div class="fix-label">No workaround for the column</div>
+          <p>
+            Both directions are closed: every label that would fire is rejected at validation, every label
+            accepted reads <code>FALSE</code>. <code>ADX_zone</code> and <code>MFI14_zone</code> are
+            <strong>display-only</strong> — renderable for an agent to read, impossible to condition on.
+          </p>
+        </div>
+        <div class="fix">
+          <div class="fix-label">Replacement — reproduces the zone exactly</div>
+          <pre>ADX_zone   is "weak"      →  ADX    lt  20
+ADX_zone   is "trending"  →  ADX    gte 25
+MFI14_zone is "bearish"   →  MFI14  lt  50
+MFI14_zone is "bullish"   →  MFI14  gte 50</pre>
+          <p>
+            Verified on BTC / SOL / XRP — three for three on both columns. Those cutoffs are
+            <em>consistent with</em> observation, not extracted: the zone thresholds are published nowhere.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> the two columns look like they were wired to a different
+          classifier than the one their contract describes — <code>ADX</code> to a trend-strength bucket and
+          <code>MFI14</code> to a directional one, while both still advertise the oscillator vocabulary
+          <code>RSI14_zone</code> uses correctly. Publishing the real labels would make both usable
+          immediately. Publishing the threshold values too would remove the guesswork above.
+        </p>
+      </article>
+
+      <!-- BG-3 -->
+      <article class="defect is-blocking">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-3</span><span class="chip blocking">Blocking</span></div>
+          <h3>Crowd ranks compile cleanly and never render</h3>
+        </div>
+        <p>
+          Every crowd metric declares <code>transforms: ["rank", "value"]</code>.
+          <code>get_strategy_column_contract</code> returns a complete contract for the rank —
+          header, formula, glossary, null behaviour. Then every render fails.
+        </p>
+        <div class="split">
+          <div class="declared">
+            <div class="split-label">Compile returns</div>
+            <div class="split-body">header:  crowdAcc_rank_hi
+formula: ordinal(crowdAcc among the
+         ranked universe, by ordering)</div>
+          </div>
+          <div class="observed">
+            <div class="split-label">Render returns</div>
+            <div class="split-body">INTERNAL_ERROR
+Internal server error</div>
+          </div>
+        </div>
+        <p>Ruled out, each with a live probe:</p>
+        <ul>
+          <li><strong>Not the single-coin case</strong> — fails identically at 1 coin and at 10.</li>
+          <li><strong>Not null data</strong> — every coin in the 10-coin set had complete crowd values.</li>
+          <li><strong>Not ordering</strong> — <code>hi</code> and <code>lo</code> both fail.</li>
+          <li><strong>Not a subset</strong> — all 8 crowd rank shapes fail, settled and <code>_LIVE</code> alike.</li>
+        </ul>
+        <p>
+          The contract text points at the cause. Crowd ranks are the only ones documented as
+          <em>"ordinal across THIS REPORT's coins … computed per request"</em>; every other rank reads the
+          tracked universe. That per-request path is what breaks.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Replacement</div>
+          <p>
+            Use <code>CROWD_* × value</code> and threshold it. Crowd metrics are already
+            cross-coin-comparable percentages, so unlike <code>VOLUME</code> they need no normalising —
+            ranking adds nothing a threshold cannot express.
+          </p>
+          <pre>crowdAcc between 60 and 100
+  →  UP on SOL (88.9) and XRP (100.0), NEITHER on BTC (40.0)</pre>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> either repair the per-request ranking path, or drop
+          <code>rank</code> from the crowd metrics' declared transforms so the authoring surface stops
+          offering 8 shapes that cannot be delivered.
+        </p>
+      </article>
+
+      <!-- BG-4 -->
+      <article class="defect is-friction">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-4</span><span class="chip friction">Friction</span></div>
+          <h3>Trajectory direction is computed on values the table hides</h3>
+        </div>
+        <p>
+          A <code>trajectory</code> column emits its slots at the metric's display precision, but
+          <code>_trend</code> is derived from the unrounded series. The two can disagree, and the table
+          gives no way to tell. DOGE at 1h:
+        </p>
+        <div class="split">
+          <div class="declared">
+            <div class="split-label">Slots imply</div>
+            <div class="split-body">RSI14_t2   38.3
+RSI14_now  38.3
+           → flat</div>
+          </div>
+          <div class="observed">
+            <div class="split-label">Column reports</div>
+            <div class="split-body">RSI14_trend  falling</div>
+          </div>
+        </div>
+        <p>
+          The platform is right — RSI displays at <code>precision: 1</code> and the true endpoints differ
+          below it. But a reader reconciling the row sees a contradiction, and anyone recomputing a
+          direction from the rendered slots gets it wrong at exactly the close calls that matter.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Read <code>_trend</code> directly; never reconstruct a direction from the slots. Worth stating
+            in the column's own <code>meaning</code> text, since the trap is invisible from the output.
+          </p>
+        </div>
+      </article>
+
+      <!-- BG-5 -->
+      <article class="defect is-friction">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-5</span><span class="chip friction">Friction</span></div>
+          <h3><code>INTERNAL_ERROR</code> covers transient states and real faults alike</h3>
+        </div>
+        <p>
+          The same opaque error is returned for a genuinely impossible shape (BG-3, which never succeeds)
+          and for a transient condition that clears on its own. That ambiguity cost about seven hours.
+        </p>
+        <p>
+          The correct <code>apply</code> shape was found at 18:00 and refused four times with
+          <code>INTERNAL_ERROR</code>. It succeeded <strong>unchanged</strong> at 19:07. The 18:40 and 19:06
+          requests were byte-identical — same operation, same <code>expectedRevision</code>, same coins,
+          same columns — and both tokens were seconds old. Nothing client-side differed.
+        </p>
+        <p>
+          Separately, the connector returned <code>503</code> on every endpoint for several minutes, and
+          two <code>CREATE</code> applies timed out before the third succeeded.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            On <code>INTERNAL_ERROR</code>, change nothing and resend the identical request. On an ambiguous
+            timeout during <code>CREATE</code>, do not retry blind — the <code>strategyId</code> is
+            pre-allocated inside the signed token, so reading that id settles what happened before a retry
+            can duplicate.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> distinguish retryable from terminal. A typed
+          <code>UNAVAILABLE</code> or <code>RETRY_LATER</code> would have collapsed those seven hours to one
+          retry, and would separate BG-3 — which is permanent — from noise.
+        </p>
+      </article>
+
+      <!-- BG-6 -->
+      <article class="defect is-silent">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-6</span><span class="chip silent">Silent</span></div>
+          <h3>A null column value reads <code>FALSE</code>, never <code>UNRESOLVED</code></h3>
+        </div>
+        <p>
+          The condition engine documents three outcomes, and its own boilerplate is explicit about
+          what the third one means:
+        </p>
+        <blockquote>
+          &ldquo;TRUE / FALSE / UNRESOLVED are three distinct states; UNRESOLVED means an input was
+          missing, not that the read was false.&rdquo;
+        </blockquote>
+        <p>
+          Null column data does not reach that third state. <code>crowdAccLive</code> rendered
+          <code>&mdash;</code>, and <code>crowdAccLive gt 50</code> returned <strong>FALSE</strong>, with the
+          evidence line carrying <code>operand: "&mdash;"</code>. <code>unresolvedCount</code> stayed at
+          <code>0</code> throughout. The connective table that follows is plain two-valued logic:
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>expression</th><th>members</th><th>result</th></tr></thead>
+            <tbody>
+              <tr><td><code>ALL</code></td><td>TRUE, null</td><td>FALSE</td></tr>
+              <tr><td><code>ANY</code></td><td>TRUE, null</td><td>TRUE</td></tr>
+              <tr><td><code>ANY</code></td><td>FALSE, null</td><td>FALSE</td></tr>
+              <tr><td><code>NOT</code></td><td>null</td><td>TRUE</td></tr>
+              <tr><td><code>N_OF n=1</code></td><td>TRUE, FALSE, null</td><td>TRUE, <code>unresolvedCount: 0</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The cost is that <strong>&ldquo;not measured&rdquo; is indistinguishable from &ldquo;measured and
+          false&rdquo;</strong>. <code>crowdAccLive</code> is null whenever no concurrent sessions are running,
+          which is most of the time — so a condition on it reads FALSE almost always, and reads it for the
+          wrong reason. <code>NOT</code> is the sharp edge: <code>NOT(null)</code> returns TRUE, so a
+          negated guard fires precisely when there is no data to justify it.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Pair any condition on a nullable column with an <code>ALL</code> guard on a column that is never
+            null, so the absence of data cannot be read as a positive. Never put a nullable column under
+            <code>NOT</code>.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> route null operands to UNRESOLVED and count them in
+          <code>unresolvedCount</code> — which is what the boilerplate already promises. If two-valued
+          logic is the intended behaviour, the boilerplate should say so, because an author reading it
+          today will design around a state that never occurs.
+        </p>
+      </article>
+
+      <!-- BG-7 -->
+      <article class="defect is-silent">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-7</span><span class="chip silent">Silent</span></div>
+          <h3><code>includeHigherTimeframe</code> feeds no <code>htf_*</code> signal</h3>
+        </div>
+        <p>
+          All 25 platform sections were probed individually with <code>derive_strategy_rule_view</code>.
+          Seventeen feed exactly one signal module each; eight feed nothing. The mapping is otherwise
+          perfectly regular — but one of the eight is named for the thing it does not do.
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>report</th><th><code>htf_rsi_oversold</code></th></tr></thead>
+            <tbody>
+              <tr><td><code>includeHigherTimeframe</code> alone</td><td>NOT_IN_REPORT</td></tr>
+              <tr><td><code>includeRsi</code> alone</td><td><strong>IN_REPORT</strong>, <code>reportDefaultAllocation: 1</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The six rung signals — <code>htf_rsi_*</code>, <code>htf_ma_*</code>,
+          <code>htf_trend_adx_*</code> — arrive with the <em>base</em> modules. A single
+          <code>RSI14</code> column at <code>rel: anchor</code>, with no regime column anywhere in the
+          report, puts <code>htf_rsi_oversold</code> and <code>ltf_rsi_oversold</code> in report. So the
+          section that names the higher timeframe is the one section that cannot deliver it.
+        </p>
+        <p>
+          An author who wants higher-timeframe confirmation reaches for the obviously-named section,
+          allocates 3 to <code>htf_rsi_oversold</code>, and has weighted a signal that never fires.
+          Nothing in the response says so: <code>NOT_IN_REPORT</code> is reported without a cause and
+          without a remedy.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Enable the base section — <code>includeRsi</code>, <code>includeMovingAverages</code>,
+            <code>includeTrendStrength</code> — or add one of its metrics as a column. The rung variants
+            come free either way.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> have <code>derive_strategy_rule_view</code> return, for every
+          <code>NOT_IN_REPORT</code> rule, the sections and metrics that <em>would</em> feed it. The
+          server already knows the mapping — it is what produced these 25 answers. Returning it would
+          close this finding and remove the need for any caller to rebuild the map by probing.
+        </p>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="verdict">
+    <h2>What held up</h2>
+    <p>
+      A defect list is not a verdict on the product, so for balance: the authoring surface is in good
+      shape. Everything below was exercised against the live compiler and passed.
+    </p>
+    <div class="works">
+      <div><b>Header contract</b> 300 of 300 legal column shapes produced exactly the headers their contract predicted. 536 headers, zero mismatches.</div>
+      <div><b>Condition grammar</b> All 7 clause operators, all 4 group operators, <code>conditionRef</code>, a group referencing groups, <code>required</code>, and verdict resolution.</div>
+      <div><b>Provisional flag</b> Correct throughout — <code>true</code> on every condition reading a custom column, <code>false</code> on the one reading an ambient header.</div>
+      <div><b>Legality model</b> The engine correctly refused <code>BB_PCT_B × classifyZone</code> as non-composable, and named the allowed transforms in the error.</div>
+      <div><b>Write path</b> All seven axes commit — <code>IDENTITY</code>, <code>TIMEFRAME_PROFILE</code>, <code>REPORT</code>, <code>MARKET_READ</code>, <code>CONDITIONS</code>, <code>SETUP_GATES</code>, <code>LIFECYCLE</code>.</div>
+      <div><b>Error quality</b> Validation errors are genuinely good — they name the key, the allowed domain, and the nearest valid value. BG-5 is the exception, not the rule.</div>
+      <div><b>Section membership</b> Regular, not ad hoc. 17 of 25 platform sections feed exactly one module each, with no overlap, and every one delivers its module's <em>full</em> signal set — rung variants included. A section and its metric are interchangeable: <code>includeRsi</code> and one <code>RSI14</code> column produce byte-identical membership.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How this was tested</h2>
+    <p>
+      Every column shape the metric contract declares legal was enumerated offline, batched under the
+      measured <code>sectionColumns</code> cap, and rendered live — 15 batches, 300 shapes, one coin per
+      batch for the header comparison and multi-coin renders for value checks. The condition grammar was
+      exercised in a single report carrying every construct at once. Findings were then written to a
+      sandbox strategy and read back to confirm persistence. Signal membership was measured separately
+      on 2026-08-25: each of the 25 platform sections submitted alone to
+      <code>derive_strategy_rule_view</code> and its IN_REPORT set recorded. The four sections in the
+      final probe were measured jointly — membership is a union, so an empty union proves each member
+      individually empty.
+    </p>
+    <p>
+      One incidental note for the budget model: <code>columnLookback</code> reported exactly
+      <span class="num">24</span> in all 13 renders — 1 through 30 columns, every transform,
+      <code>SMA200</code> included. It never moved, so it carries no information for a caller sizing a
+      report. The cap that actually binds is <code>sectionColumns</code>.
+    </p>
+  </section>
+
+</div>

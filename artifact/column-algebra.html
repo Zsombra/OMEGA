@@ -1,0 +1,795 @@
+<title>BattleGrid Column Algebra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&display=swap">
+
+<style>
+  :root {
+    --ground:      #F7F8F7;
+    --surface:     #FFFFFF;
+    --surface-alt: #EDF0EE;
+    --line:        #D6DBD8;
+    --line-soft:   #E5E9E7;
+    --text:        #141A18;
+    --text-dim:    #4F5A56;
+    --text-faint:  #7C8783;
+
+    --accent:      #0C6E60;
+    --accent-soft: #E3F0ED;
+    --limit:       #A44A52;
+    --limit-soft:  #F7E9EA;
+
+    --serif: "Newsreader", Georgia, "Times New Roman", serif;
+    --mono:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --measure: 66ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #101413;
+      --surface:     #171D1B;
+      --surface-alt: #1E2523;
+      --line:        #2C3532;
+      --line-soft:   #222A28;
+      --text:        #E6EBE9;
+      --text-dim:    #9DA9A5;
+      --text-faint:  #707C78;
+
+      --accent:      #57C4B0;
+      --accent-soft: #14322D;
+      --limit:       #E08A90;
+      --limit-soft:  #2E1C1E;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #101413;
+    --surface:     #171D1B;
+    --surface-alt: #1E2523;
+    --line:        #2C3532;
+    --line-soft:   #222A28;
+    --text:        #E6EBE9;
+    --text-dim:    #9DA9A5;
+    --text-faint:  #707C78;
+
+    --accent:      #57C4B0;
+    --accent-soft: #14322D;
+    --limit:       #E08A90;
+    --limit-soft:  #2E1C1E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2.5rem, 6.5vw, 3.9rem);
+    line-height: 1.03;
+    letter-spacing: -0.022em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.75rem;
+    letter-spacing: -0.012em;
+    margin: 0 0 1rem;
+    text-wrap: balance;
+  }
+
+  h3 {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.5rem;
+  }
+
+  p { max-width: var(--measure); margin: 0 0 1rem; }
+  p:last-child { margin-bottom: 0; }
+  .lede { font-size: 1.16rem; color: var(--text-dim); }
+
+  header.masthead { display: flex; flex-direction: column; gap: 1.15rem; }
+
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0 2rem;
+    padding-top: 1.15rem; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: 0.75rem; color: var(--text-faint);
+  }
+  .meta b { color: var(--text-dim); font-weight: 500; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: var(--surface-alt);
+    padding: 0.1em 0.34em;
+    border-radius: 2px;
+  }
+
+  pre {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.79rem;
+    line-height: 1.62;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 0.85rem 1rem;
+    overflow-x: auto;
+    color: var(--text-dim);
+  }
+  pre b { color: var(--text); font-weight: 500; }
+
+  /* ---------- the pipeline ---------- */
+  .pipe {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.5rem 1.4rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    align-items: stretch;
+    overflow-x: auto;
+  }
+  @media (max-width: 44rem) { .pipe { grid-template-columns: 1fr; gap: 0.75rem; } }
+
+  .stage { padding: 0 1.1rem; border-left: 1px solid var(--line-soft); min-width: 9rem; }
+  .stage:first-child { border-left: none; padding-left: 0; }
+  @media (max-width: 44rem) {
+    .stage { border-left: none; border-top: 1px solid var(--line-soft); padding: 0.75rem 0 0; }
+    .stage:first-child { border-top: none; padding-top: 0; }
+  }
+  .stage .n {
+    font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-faint); display: block; margin-bottom: 0.3rem;
+  }
+  .stage .what { font-weight: 500; font-size: 1.02rem; display: block; margin-bottom: 0.25rem; }
+  .stage .detail { font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; }
+  .stage.optional .what { color: var(--accent); }
+
+  /* ---------- tables ---------- */
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 38rem; }
+  th {
+    text-align: left; font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint);
+    padding: 0 0.85rem 0.55rem 0; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  td { padding: 0.7rem 0.85rem 0.7rem 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  th.n { text-align: right; }
+  td.cls { font-weight: 500; white-space: nowrap; }
+  td.mono { font-family: var(--mono); font-size: 0.8rem; }
+
+  /* ---------- recipe cards ---------- */
+  .recipes { display: flex; flex-direction: column; gap: 1.25rem; }
+  .recipe {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--accent);
+    border-radius: 3px;
+    padding: 1.15rem 1.25rem 1.25rem;
+    display: flex; flex-direction: column; gap: 0.7rem;
+  }
+  .recipe .name { font-weight: 600; font-size: 1.12rem; }
+  .recipe p { margin: 0; font-size: 0.97rem; }
+
+  /* ---------- limits ---------- */
+  .limits { display: flex; flex-direction: column; gap: 0.85rem; }
+  .limit {
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--limit);
+    background: var(--limit-soft);
+    border-radius: 3px;
+    padding: 0.85rem 1.05rem 0.95rem;
+  }
+  .limit b { display: block; font-family: var(--mono); font-size: 0.73rem; letter-spacing: 0.05em;
+             color: var(--limit); font-weight: 600; margin-bottom: 0.25rem; }
+  .limit span { font-size: 0.95rem; color: var(--text-dim); }
+
+  .callout {
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.15rem 1.3rem;
+  }
+  .callout p { margin: 0; }
+
+  ul { max-width: var(--measure); margin: 0; padding-left: 1.15rem; }
+  li { margin-bottom: 0.42rem; }
+  li:last-child { margin-bottom: 0; }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Reference &middot; What a custom column can compute</div>
+    <h1>BattleGrid Column Algebra</h1>
+    <p class="lede">
+      Every custom column is one metric put through at most two operators. Sixteen operators exist,
+      they fall into seven mathematical classes, and exactly one of those classes can be composed.
+      But the column is only the first of <strong>four</strong> layers that compute — and the ones
+      above it are where the cross-asset and logical families live.
+    </p>
+    <div class="meta">
+      <span><b>Metrics</b> 86</span>
+      <span><b>Operators</b> 16</span>
+      <span><b>Legal atoms</b> 322</span>
+      <span><b>Structural shapes</b> 488</span>
+      <span><b>With operands &amp; orderings</b> 2,200</span>
+      <span><b>Fully parameterised</b> ~70,700</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Four layers, not one</h2>
+    <p>
+      It is easy to read &ldquo;custom tables&rdquo; as a single feature. It is a stack, and each level
+      has its own algebra. What one level computes becomes an input to the next.
+    </p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Layer</th><th>Operates on</th><th>Algebra</th><th>Produces</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="cls">1 &middot; Column</td>
+            <td>one metric, one coin</td>
+            <td>16 operators, 2 stages, 5 parameter axes</td>
+            <td>a number or a label</td>
+          </tr>
+          <tr>
+            <td class="cls">2 &middot; Section</td>
+            <td>a set of columns</td>
+            <td><code>benchmarkTicker</code> binds the section to a fixed ticker</td>
+            <td>this coin&rsquo;s reading, or a reference coin&rsquo;s</td>
+          </tr>
+          <tr>
+            <td class="cls">3 &middot; Condition</td>
+            <td>headers, addressed by section</td>
+            <td>thresholds + <code>ALL</code> <code>ANY</code> <code>NOT</code> <code>N_OF</code>, composed as a DAG</td>
+            <td>TRUE / FALSE, and a verdict</td>
+          </tr>
+          <tr>
+            <td class="cls">4 &middot; Scorecard</td>
+            <td>platform signals, not columns</td>
+            <td>weighted mean over signals that <em>fired</em>, allocations 0&ndash;3 as weights</td>
+            <td>an aggregate score, gated</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:1rem">
+      This page covers layers 1 to 3. Layer 4 consumes platform signals rather than the columns you
+      author, so it is a separate subject.
+    </p>
+  </section>
+
+  <section>
+    <h2>The grammar</h2>
+    <p>
+      A column is a pipeline. You choose a metric, apply one operator to get a quantity, and
+      <em>optionally</em> apply a second operator to turn that quantity into a statistic. The second
+      stage is where the interesting indicators live, and it is the stage with the tightest rule.
+    </p>
+    <div class="pipe">
+      <div class="stage">
+        <span class="n">Input</span>
+        <span class="what">Metric</span>
+        <span class="detail">86 available<br>10 families<br>price, oscillator,<br>percent, count…</span>
+      </div>
+      <div class="stage">
+        <span class="n">Stage 1 &mdash; required</span>
+        <span class="what">Operator</span>
+        <span class="detail">16 available<br>metric &rarr; quantity<br>322 legal pairs</span>
+      </div>
+      <div class="stage optional">
+        <span class="n">Stage 2 &mdash; optional</span>
+        <span class="what">Window or rank</span>
+        <span class="detail">4 available<br>quantity &rarr; statistic<br>only on 2 of the 16</span>
+      </div>
+      <div class="stage">
+        <span class="n">Output</span>
+        <span class="what">Headers</span>
+        <span class="detail">1 header, or N+1<br>if the last stage is<br>a trajectory of<br>window N</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Seven classes of operator</h2>
+    <p>
+      The sixteen operators are not sixteen ideas. Grouped by what they actually do to a series,
+      they collapse into seven — and three of them are the same operation pointed at different
+      references.
+    </p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Class</th><th>Operators</th><th>Formula</th>
+            <th class="n">Atoms</th><th>Returns</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cls">Selection</td>
+            <td class="mono">value</td>
+            <td class="mono">base[t &minus; offset]</td>
+            <td class="n">85</td><td>native unit</td>
+          </tr>
+          <tr>
+            <td class="cls">Normalised gap</td>
+            <td class="mono">distance<br>spread<br>nearestZoneDist</td>
+            <td class="mono">(price &minus; base) / base &times; 100<br>(base &minus; op) / op &times; 100<br>(price &minus; mid) / mid &times; 100</td>
+            <td class="n">76</td><td>percent</td>
+          </tr>
+          <tr>
+            <td class="cls">Window reduction</td>
+            <td class="mono">aggregate<br>maxShare<br>efficiency</td>
+            <td class="mono">&Sigma;x / n<br>max(x) / &Sigma;x<br>|last &minus; first| / &Sigma;|&Delta;|</td>
+            <td class="n">60</td><td>scalar</td>
+          </tr>
+          <tr>
+            <td class="cls">Window sequence</td>
+            <td class="mono">trajectory</td>
+            <td class="mono">last N values + compare(first, last)</td>
+            <td class="n">46</td><td>N slots + label</td>
+          </tr>
+          <tr>
+            <td class="cls">Cross-sectional</td>
+            <td class="mono">rank</td>
+            <td class="mono">ordinal(base among universe)</td>
+            <td class="n">31</td><td>n / N</td>
+          </tr>
+          <tr>
+            <td class="cls">Classification</td>
+            <td class="mono">classifyZone<br>bandTouch<br>crossDetect</td>
+            <td class="mono">oscillatorZone(base)<br>bandTouch(base, price)<br>crossDirection(base[t&minus;1], base[t])</td>
+            <td class="n">20</td><td>label</td>
+          </tr>
+          <tr>
+            <td class="cls">Set</td>
+            <td class="mono">count<br>nearestZoneType<br>nearestZoneRange<br>nearestZoneAge</td>
+            <td class="mono">cardinality(base)<br>type(nearest)<br>[low, high] of nearest<br>floor((now &minus; detectedAt) / 1h)</td>
+            <td class="n">4</td><td>count · label · range · hours</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:1rem">
+      <strong>Distance, spread and nearest-zone-distance are one operation.</strong> All three compute
+      <code>(a &minus; b) / b &times; 100</code>; they differ only in what <code>b</code> is — a price
+      level, another metric, or a structure zone's midpoint. That is why they are the most productive
+      class in the whole system despite being three entries in a list of sixteen.
+    </p>
+  </section>
+
+  <section>
+    <h2>The composition law</h2>
+    <div class="callout">
+      <p>
+        <strong>Only the normalised-gap class can be chained.</strong> Of the sixteen operators, exactly
+        two — <code>spread</code> and <code>distance</code> — accept a second stage. Everything else is
+        terminal.
+      </p>
+    </div>
+    <p style="margin-top:1.25rem">
+      Stage 2 offers four operators, and the chained shapes divide almost evenly between the first three:
+    </p>
+    <pre><b>stage 1</b>                 <b>stage 2</b>                 <b>shapes</b>
+spread   (118 shapes) ──┐   trajectory            52
+distance  (48 shapes) ──┤   aggregate             52
+                        ├─  efficiency            52
+                        └─  rank                  10   (distance always;
+                                                        spread only where the
+                                                        operand is whitelisted)</pre>
+    <p style="margin-top:1.25rem">
+      This is not an arbitrary restriction — it is the system telling you its opinion. The window
+      operators already work directly on raw metrics (<code>aggregate</code>, <code>efficiency</code>,
+      <code>trajectory</code> and <code>rank</code> are all available as stage 1). So chaining adds
+      exactly one capability: <strong>applying a window or a peer rank to a quantity that has already
+      been normalised into a percentage.</strong>
+    </p>
+    <p>
+      That matters because of units. The mean of <code>EMA5</code> is a price — meaningless across
+      coins. The mean of <code>EMA5 spread EMA13</code> is a percentage — directly comparable between
+      BTC and DOGE. Chaining is the mechanism for <em>cross-coin-comparable second-order statistics</em>,
+      and the grammar refuses to let you build the meaningless version.
+    </p>
+  </section>
+
+  <section>
+    <h2>Parameters are a fifth axis, not a detail</h2>
+    <p>
+      Seven of the sixteen operators take parameters, and they are not cosmetic — they change what the
+      operator computes. An <code>efficiency</code> at window 4 and one at window 32 are different
+      indicators, not one indicator configured twice.
+    </p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Parameter</th><th>On</th><th>Range</th><th>What it is, mathematically</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">window</td>
+            <td class="mono">trajectory, efficiency,<br>aggregate, maxShare</td>
+            <td class="mono">1 &ndash; 32</td>
+            <td><b>Timescale selection.</b> The support of the reduction. Fast and slow versions of the same statistic.</td>
+          </tr>
+          <tr>
+            <td class="mono">offset</td>
+            <td class="mono">value</td>
+            <td class="mono">0 &ndash; 8</td>
+            <td><b>Lag operator.</b> Reads the metric N bars back.</td>
+          </tr>
+          <tr>
+            <td class="mono">bars</td>
+            <td class="mono">trajectory, efficiency,<br>maxShare</td>
+            <td class="mono">closed | all</td>
+            <td><b>Forming-bar switch.</b> <code>all</code> includes the live incomplete bar, which changes the last term of the series.</td>
+          </tr>
+          <tr>
+            <td class="mono">ordering</td>
+            <td class="mono">rank</td>
+            <td class="mono">hi | lo | far | near</td>
+            <td><b>Sort direction</b> of the cross-sectional ordinal.</td>
+          </tr>
+          <tr>
+            <td class="mono">side</td>
+            <td class="mono">nearestZone&hellip;</td>
+            <td class="mono">support | resistance</td>
+            <td><b>Subset selector</b> over the zone set before reducing.</td>
+          </tr>
+          <tr>
+            <td class="mono">inputs</td>
+            <td class="mono">spread</td>
+            <td class="mono">1 &ndash; 17 operands</td>
+            <td><b>Choice of denominator.</b> The single largest axis in the system.</td>
+          </tr>
+          <tr>
+            <td class="mono">timeframe</td>
+            <td class="mono">all candle-mode</td>
+            <td class="mono">3 rel + 13 abs</td>
+            <td><b>Sampling rate.</b> Either a rung relative to the section, or an absolute interval from 1m to 1w.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout" style="margin-top:1.25rem">
+      <p>
+        <strong>One budget governs the whole parameter axis.</strong> Every column has a
+        <em>lookback</em> of <code>window + offset</code>, and the report&rsquo;s largest lookback is
+        capped at 32. That is what limits <code>window</code> to 32 rather than the schema&rsquo;s 64 —
+        and what limits <code>offset</code> to 8, because a plain <code>value</code> column carries an
+        implicit window of 24.
+      </p>
+    </div>
+    <p style="margin-top:1.25rem">
+      Counting the parameter axes against that cap, the 2,200 shapes become roughly
+      <strong>70,700 distinct columns</strong>. <code>spread</code> accounts for most of it: 57 metrics,
+      up to 17 operands each, four chain options, each with its own window and bars.
+    </p>
+    <p>
+      The fan-out matters too. A <code>trajectory</code> of window N emits <strong>N + 1 headers</strong>
+      &mdash; <code>_t(N&minus;1) &hellip; _t1</code>, <code>_now</code>, <code>_trend</code>. At window 32
+      that is 33 headers from a single column, which costs one of the 32
+      <code>sectionColumns</code> but consumes the report&rsquo;s width and its token budget.
+    </p>
+  </section>
+
+  <section>
+    <h2>What you can build</h2>
+    <p>
+      Nine indicator families follow from the primitives above. Each is a real column spec, not a
+      sketch.
+    </p>
+    <div class="recipes">
+
+      <div class="recipe">
+        <span class="name">Normalised stretch</span>
+        <pre>X <b>spread</b> Y        →   (X − Y) / Y × 100</pre>
+        <p>
+          Any metric against any whitelisted operand. 57 metrics offer <code>spread</code>, most with
+          14–17 operand choices. Price against a moving average, one MA against another, mark against
+          spot, perp CVD against spot CVD.
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Stretch history — is the gap opening or closing?</span>
+        <pre>X <b>spread</b> Y <b>→ trajectory</b>   →   last N gap values + direction</pre>
+        <p>
+          The slots hold the <em>spread</em> series, not the base metric. This is the cleanest
+          divergence primitive in the system: the gap's own trend, in one column.
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Mean-reversion baseline</span>
+        <pre>X <b>spread</b> Y <b>→ aggregate</b>   →   mean gap over the window (default 24)</pre>
+        <p>
+          Ship this beside the un-chained spread and a condition can compare current gap to its own
+          recent mean — a reversion signal built from two columns and one clause.
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Trend purity (Kaufman efficiency ratio)</span>
+        <pre>X <b>→ efficiency</b>              →   |net move| / Σ|steps|,  window 21</pre>
+        <p>
+          1.0 is a straight line, near 0 is chop. Works on a raw metric or on a normalised gap. The
+          closest thing the system has to a noise measure.
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Cross-coin stretch ranking</span>
+        <pre>X <b>distance → rank</b>           →   which coin is most stretched, n/N</pre>
+        <p>
+          The only construct that leaves the coin and looks at the field. Four orderings —
+          <code>hi</code>, <code>lo</code>, <code>far</code>, <code>near</code>.
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Burstiness / concentration</span>
+        <pre>X <b>→ maxShare</b>                →   max(x) / Σx over 24 observations</pre>
+        <p>
+          1.0 means one bar carried the entire window; 1/24 is perfectly even. A single-number answer
+          to "was this move one candle or a sustained push?"
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Regime and event labels</span>
+        <pre>X <b>→ classifyZone</b> · <b>bandTouch</b> · <b>crossDetect</b></pre>
+        <p>
+          Categorical reads. <code>crossDetect</code> is a discrete first derivative — the sign change
+          between two consecutive bars. Note that <code>ADX_zone</code> and <code>MFI14_zone</code> are
+          display-only and cannot carry a condition; use numeric thresholds instead.
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Structure proximity</span>
+        <pre>STRUCT_ZONES <b>→ nearestZoneDist</b> · <b>Type</b> · <b>Range</b> · <b>Age</b>   (side: support | resistance)</pre>
+        <p>
+          Distance to the nearest order block or fair-value gap, what kind it is, how wide, and how many
+          hours old. Four columns describe a level completely.
+        </p>
+      </div>
+
+      <div class="recipe">
+        <span class="name">Multi-timeframe versions of any of the above</span>
+        <pre>timeframe: { <b>rel</b>: "anchor" | "lower" | "regime" }
+timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
+        <p>
+          Two addressing modes, and the absolute one is the stronger: a column can be pinned to a fixed
+          interval regardless of the section anchor, so 1h RSI and 1d RSI sit in one table without
+          touching the section. Rank is the exception — it compiles as
+          <code>timeframeMode: "timeless"</code>, so the timeframe is accepted and ignored.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Layer 2 &mdash; the section binds a reference</h2>
+    <p>
+      A custom section carries <code>benchmarkTicker</code>. Setting it does not change what the columns
+      compute; it changes <em>whose</em> data they read. The section renders one row for that ticker,
+      identical no matter which coin is being evaluated:
+    </p>
+    <pre>| coin | chg24h | RSI14 |     <b>← section bound to BTC</b>
+|------|--------|-------|
+| BTC  | +1.46% |  59.0 |     the same row for every coin evaluated</pre>
+    <p style="margin-top:1rem">
+      That is the cross-asset primitive. Two sections with identical columns &mdash; one bound, one not
+      &mdash; put <em>this coin</em> and <em>the benchmark</em> side by side in one report. Headers
+      collide only <em>within</em> a section; across sections the platform qualifies them by section key,
+      and a clause names the <code>sectionKey</code> it means.
+    </p>
+    <div class="callout">
+      <p>
+        You may supply your own <code>sectionKey</code> as <code>custom:&lt;uuid&gt;</code> &mdash; the
+        server accepts it rather than minting one. That removes the compile-first step when authoring
+        conditions, because you already know the key you will reference.
+      </p>
+    </div>
+    <p style="margin-top:1.25rem">
+      This is what makes relative-strength families buildable: <em>coin up while benchmark down</em>
+      (decoupling), <em>coin up with benchmark up</em> (beta ride), <em>coin oversold while the benchmark
+      is not</em>. Verified live from two threshold clauses and one group &mdash; TRUE on ETH and SOL,
+      FALSE on DOGE.
+    </p>
+  </section>
+
+  <section>
+    <h2>Layer 3 &mdash; the condition algebra</h2>
+    <p>
+      Conditions are where constants live. A column takes no coefficient; a clause compares a header to a
+      literal, and the connectives compose those predicates into a DAG.
+    </p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Construct</th><th>Form</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">lt lte gte gt</td><td class="mono">1[ x &lowast; c ]</td><td>threshold predicate on a number</td></tr>
+          <tr><td class="mono">between</td><td class="mono">1[ a &le; x &le; b ]</td><td>interval membership</td></tr>
+          <tr><td class="mono">is &middot; in</td><td class="mono">1[ x &isin; S ]</td><td>set membership on a label</td></tr>
+          <tr><td class="mono">ALL &middot; ANY &middot; NOT</td><td class="mono">&and; &nbsp; &or; &nbsp; &not;</td><td>Boolean connectives</td></tr>
+          <tr><td class="mono">N_OF (n, S)</td><td class="mono">1[ &Sigma;1[s] &ge; n ]</td><td><b>counting gate</b> &mdash; reports trueCount / total</td></tr>
+          <tr><td class="mono">conditionRef</td><td class="mono">f(g(h(&hellip;)))</td><td>composition; verified three levels deep</td></tr>
+          <tr><td class="mono">verdict</td><td class="mono">&rarr; UP &middot; DOWN &middot; NEITHER</td><td>maps a condition onto a directional read</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:1rem">
+      <code>N_OF</code> is the one with no column-layer equivalent: a majority-style gate that counts how
+      many members hold. &ldquo;Two of these three agree&rdquo; is not expressible in a column, and is one
+      clause here.
+    </p>
+    <div class="limit" style="margin-top:1.25rem">
+      <b>The documented third state is not reachable from null data</b>
+      <span>
+        The platform says TRUE / FALSE / UNRESOLVED are three distinct states, and that UNRESOLVED means
+        an input was missing. Measured, a null column value returns <strong>FALSE</strong>:
+        <code>crowdAccLive</code> rendered <code>&mdash;</code> and <code>crowdAccLive gt 50</code> read
+        FALSE with <code>unresolvedCount: 0</code>. For null data the logic is two-valued, and
+        &ldquo;missing&rdquo; is indistinguishable from &ldquo;wrong&rdquo;. Pair any clause on a nullable
+        metric with a presence check.
+      </span>
+    </div>
+  </section>
+
+  <section>
+    <h2>What you cannot build</h2>
+    <p>
+      The boundary is as useful as the surface. These are absent from the operator set entirely — not
+      hard, not undocumented, <em>absent</em>.
+    </p>
+    <div class="limits">
+      <div class="limit">
+        <b>No dispersion — so no true z-score</b>
+        <span>
+          There is no <code>stddev</code>, <code>variance</code>, <code>percentile</code> or
+          <code>median</code>. The only reducers are mean, max-share and efficiency. A z-score needs a
+          standard deviation, so it cannot be computed in a column. <code>efficiency</code> is the
+          nearest available proxy for "how noisy has this been", and it is not the same quantity.
+        </span>
+      </div>
+      <div class="limit">
+        <b>No free arithmetic between two columns</b>
+        <span>
+          You cannot divide column A by column B of your choosing. The only metric-to-metric operation
+          is <code>spread</code>, and only against operands the contract whitelists for that metric.
+        </span>
+      </div>
+      <div class="limit">
+        <b>A lag cannot sit beside its own present</b>
+        <span>
+          <code>offset</code> reads a metric N bars back, but the header carries only the metric code —
+          <code>close</code> at every offset. Two <code>value</code> columns on one metric collide and
+          the section is dropped. Use <code>trajectory</code>, whose slots are distinct headers, or put
+          them in separate sections.
+        </span>
+      </div>
+      <div class="limit">
+        <b>No coefficients or constants</b>
+        <span>
+          A column takes no user-supplied multiplier or offset term. Thresholds live in the conditions
+          layer, not in the column's arithmetic.
+        </span>
+      </div>
+      <div class="limit">
+        <b>Two stages, and no chain onto a chain</b>
+        <span>
+          <code>chainedTransformId</code> is a single field. You cannot take a spread, average it, and
+          then rank the average.
+        </span>
+      </div>
+      <div class="limit">
+        <b>No conditional or piecewise arithmetic</b>
+        <span>
+          A column computes one expression unconditionally. Branching belongs to the conditions layer,
+          which reads columns and returns TRUE / FALSE / UNRESOLVED.
+        </span>
+      </div>
+      <div class="limit">
+        <b>No correlation or covariance <em>as a number</em></b>
+        <span>
+          Nothing returns a &rho; or a &beta;. Cross-asset <em>comparison</em> is available &mdash; bind a
+          section to a benchmark and compare thresholded reads &mdash; but the result is a Boolean
+          relationship, not a coefficient.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The addressable surface</h2>
+    <p>
+      Counting what is actually reachable, rather than multiplying 86 by 16:
+    </p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Level</th><th class="n">Count</th><th>What it counts</th></tr></thead>
+        <tbody>
+          <tr><td class="cls">Metric &times; operator pairs</td><td class="n">1,376</td><td>the naive product, mostly illegal</td></tr>
+          <tr><td class="cls">Legal atoms</td><td class="n">322</td><td>single-stage columns the engine accepts</td></tr>
+          <tr><td class="cls">Structural shapes</td><td class="n">488</td><td>atoms plus 166 two-stage chains</td></tr>
+          <tr><td class="cls">Expanded</td><td class="n">2,200</td><td>with operand choice and rank ordering</td></tr>
+          <tr><td class="cls">&mdash; carrying an operand</td><td class="n">1,807</td><td>spread against a specific metric</td></tr>
+          <tr><td class="cls">&mdash; carrying an ordering</td><td class="n">188</td><td>rank, hi / lo / far / near</td></tr>
+          <tr><td class="cls">&mdash; plain</td><td class="n">273</td><td>neither axis applies</td></tr>
+          <tr><td class="cls">Fully parameterised</td><td class="n">~70,700</td><td>with window, offset, bars and side, under the lookback cap</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:1rem">
+      A single report holds up to 32 columns across up to 32 sections, so any one strategy samples a
+      very small part of this. Of the 488 structural shapes, platform templates use 139 — leaving
+      <strong>349 that no shipped template has ever put on screen</strong>.
+    </p>
+  </section>
+
+  <section>
+    <h2>Reading the table as a whole</h2>
+    <p>
+      If you want one sentence for how to think about designing a column: <em>normalise first, then
+      measure over time or across peers.</em> The grammar enforces it. Raw metrics can be selected,
+      classified, ranked and reduced, but only a percentage can be carried into a second operator —
+      and a percentage is the only form that means the same thing on every coin in the pool.
+    </p>
+    <p>
+      The productive region is therefore narrower and sharper than 2,200 suggests: <code>spread</code>
+      and <code>distance</code>, pointed at a well-chosen reference, then pushed through
+      <code>trajectory</code>, <code>aggregate</code>, <code>efficiency</code> or <code>rank</code>.
+      That is 166 shapes, and it is where nearly every numeric indicator worth building lives.
+    </p>
+    <p>
+      But do not stop at the column. The relationships a strategy actually trades &mdash; this coin
+      against a benchmark, two of three filters agreeing, a regime holding while momentum turns
+      &mdash; are expressed one layer up. The column layer supplies the quantities; sections and
+      conditions turn them into a read.
+    </p>
+  </section>
+
+</div>

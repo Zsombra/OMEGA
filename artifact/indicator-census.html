@@ -1,0 +1,683 @@
+<title>Indicator Census</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&display=swap">
+
+<style>
+  :root {
+    --ground:#F7F8F7; --surface:#FFFFFF; --surface-alt:#EDF0EE;
+    --line:#D6DBD8; --line-soft:#E5E9E7;
+    --text:#141A18; --text-dim:#4F5A56; --text-faint:#7C8783;
+    --yes:#0C6E60; --yes-soft:#E3F0ED;
+    --no:#A44A52;  --no-soft:#F7E9EA;
+    --serif:"Newsreader",Georgia,serif;
+    --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+    --measure:66ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#101413; --surface:#171D1B; --surface-alt:#1E2523;
+      --line:#2C3532; --line-soft:#222A28;
+      --text:#E6EBE9; --text-dim:#9DA9A5; --text-faint:#707C78;
+      --yes:#57C4B0; --yes-soft:#14322D;
+      --no:#E08A90;  --no-soft:#2E1C1E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#101413; --surface:#171D1B; --surface-alt:#1E2523;
+    --line:#2C3532; --line-soft:#222A28;
+    --text:#E6EBE9; --text-dim:#9DA9A5; --text-faint:#707C78;
+    --yes:#57C4B0; --yes-soft:#14322D;
+    --no:#E08A90;  --no-soft:#2E1C1E;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--text);font-family:var(--serif);
+       font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:60rem;margin:0 auto;padding:3.5rem 1.5rem 6rem;
+        display:flex;flex-direction:column;gap:3.25rem}
+
+  .eyebrow{font-family:var(--mono);font-size:.68rem;font-weight:500;letter-spacing:.16em;
+           text-transform:uppercase;color:var(--yes)}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(2.4rem,6vw,3.7rem);
+     line-height:1.03;letter-spacing:-.022em;margin:0;text-wrap:balance}
+  h2{font-family:var(--serif);font-weight:600;font-size:1.7rem;letter-spacing:-.012em;
+     margin:0 0 1rem;text-wrap:balance}
+  h3{font-family:var(--mono);font-weight:600;font-size:.72rem;letter-spacing:.11em;
+     text-transform:uppercase;color:var(--text-faint);margin:0 0 .7rem}
+  p{max-width:var(--measure);margin:0 0 1rem}
+  p:last-child{margin-bottom:0}
+  .lede{font-size:1.15rem;color:var(--text-dim)}
+  header.masthead{display:flex;flex-direction:column;gap:1.1rem}
+  .meta{display:flex;flex-wrap:wrap;gap:0 2rem;padding-top:1.1rem;
+        border-top:1px solid var(--line);font-family:var(--mono);
+        font-size:.75rem;color:var(--text-faint)}
+  .meta b{color:var(--text-dim);font-weight:500}
+  code{font-family:var(--mono);font-size:.85em;background:var(--surface-alt);
+       padding:.1em .34em;border-radius:2px}
+
+  .thesis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+          border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  @media(max-width:40rem){.thesis{grid-template-columns:1fr}}
+  .thesis>div{background:var(--surface);padding:1.2rem 1.3rem;display:flex;
+              flex-direction:column;gap:.55rem}
+  .thesis .h{font-family:var(--mono);font-size:.68rem;letter-spacing:.11em;
+             text-transform:uppercase;font-weight:600}
+  .thesis .can .h{color:var(--yes)} .thesis .cant .h{color:var(--no)}
+  .thesis ul{margin:0;padding-left:1.1rem;font-size:.95rem}
+  .thesis li{margin-bottom:.3rem}
+
+  .domain{display:flex;flex-direction:column;gap:.6rem;margin-bottom:2rem}
+  .domain:last-child{margin-bottom:0}
+  .ind{display:grid;grid-template-columns:1.6rem 1fr;gap:.7rem;
+       border-bottom:1px solid var(--line-soft);padding-bottom:.6rem}
+  .ind:last-child{border-bottom:none}
+  .mark{font-family:var(--mono);font-size:.78rem;font-weight:600;line-height:1.5}
+  .mark.y{color:var(--yes)} .mark.n{color:var(--no)}
+  .ind .body{min-width:0}
+  .ind .nm{font-weight:600}
+  .ind .at{color:var(--text-faint);font-weight:400;font-size:.9em}
+  .ind .sp{font-family:var(--mono);font-size:.78rem;color:var(--text-dim);
+           margin-top:.2rem;overflow-x:auto;white-space:pre-wrap;overflow-wrap:break-word}
+  .ind .nt{font-size:.92rem;color:var(--text-dim);margin-top:.2rem}
+
+  .scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;min-width:34rem}
+  th{text-align:left;font-family:var(--mono);font-size:.64rem;font-weight:500;
+     letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);
+     padding:0 .8rem .5rem 0;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:.6rem .8rem .6rem 0;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+  th.n{text-align:right}
+  td.mono{font-family:var(--mono);font-size:.78rem}
+
+  .callout{background:var(--yes-soft);border:1px solid var(--line);
+           border-radius:4px;padding:1.1rem 1.25rem}
+  .callout.warn{background:var(--no-soft)}
+  .callout p{margin:0}
+  :focus-visible{outline:2px solid var(--yes);outline-offset:2px}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Companion to Column Algebra</div>
+  <h1>Indicator Census</h1>
+  <p class="lede">
+    Which named and academic indicators are actually constructible from BattleGrid&rsquo;s
+    primitives &mdash; and which are structurally out of reach. Sixty buildable
+    families &mdash; retail, academic and institutional &mdash; twenty-seven blocked, and two
+    rules that decide nearly all of it.
+  </p>
+  <div class="meta">
+    <span><b>Pre-computed</b> 14 classical indicators</span>
+    <span><b>Buildable</b> 60 families</span>
+    <span><b>Blocked</b> 27 families</span>
+    <span><b>Spread pairs</b> 608 ordered</span>
+  </div>
+</header>
+
+<section>
+  <h2>The one-line characterisation</h2>
+  <p>
+    The system computes <strong>first-moment, ratio, ordinal and path statistics</strong>. It
+    computes no <strong>second moment, no joint moment, and no transform</strong>. Almost every
+    entry in both lists below follows from that sentence.
+  </p>
+  <div class="thesis">
+    <div class="can">
+      <span class="h">Supported</span>
+      <ul>
+        <li><b>First moment</b> &mdash; <code>aggregate</code>, the arithmetic mean</li>
+        <li><b>Ratio</b> &mdash; <code>spread</code>, <code>distance</code>, within a unit class</li>
+        <li><b>Ordinal</b> &mdash; <code>rank</code>, across coins</li>
+        <li><b>Path</b> &mdash; <code>efficiency</code>, net move over distance travelled</li>
+        <li><b>Concentration</b> &mdash; <code>maxShare</code>, max over sum</li>
+        <li><b>Sequence</b> &mdash; <code>trajectory</code>, the last N values</li>
+        <li><b>Counting</b> &mdash; <code>N_OF</code>, at layer 3</li>
+      </ul>
+    </div>
+    <div class="cant">
+      <span class="h">Absent</span>
+      <ul>
+        <li><b>Second moment</b> &mdash; no variance, no &sigma;</li>
+        <li><b>Joint moment</b> &mdash; no covariance, no &rho;, no &beta;</li>
+        <li><b>Regression</b> &mdash; no least squares, no slope</li>
+        <li><b>Time-series percentile</b> &mdash; <code>rank</code> is cross-sectional only</li>
+        <li><b>Transcendental</b> &mdash; no log, exp, or power</li>
+        <li><b>Recursion</b> &mdash; no cumulative sums, no exponential weighting</li>
+        <li><b>Higher moments</b> &mdash; no skew, no kurtosis, no autocorrelation</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>The rule that gates everything: unit cliques</h2>
+  <p>
+    <code>spread</code> is the only metric-to-metric operator, and it is <strong>within-unit-class
+    only</strong>. You may ratio a price against a price, an oscillator against an oscillator, a
+    percentage against a percentage &mdash; never across. This is why several standard
+    constructions are unreachable: they are cross-class ratios.
+  </p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Unit class</th><th class="n">Metrics</th><th class="n">Ordered pairs</th><th>Members</th></tr></thead>
+      <tbody>
+        <tr><td>price</td><td class="n">18</td><td class="n">306</td><td class="mono">CLOSE OPEN HIGH LOW LAST MARK ORACLE VWAP EMA5 EMA13 EMA20 SMA20 SMA50 SMA200 SWING_HIGH SWING_LOW SPOT_CLOSE_CB SPOT_CLOSE_BN</td></tr>
+        <tr><td>percent</td><td class="n">15</td><td class="n">210</td><td class="mono">PPO ROC12 FUNDING_RATE FUNDING_ANN OI_CHG ATR_PCT BB_WIDTH_PCT HIGH_DEV LOW_DEV CLOSE_CHANGE CHG_5M CHG_15M CHG_1H CHG_4H CHG_24H</td></tr>
+        <tr><td>oscillator</td><td class="n">7</td><td class="n">42</td><td class="mono">RSI14 RSI7 MFI14 STOCH_K STOCH_D CCI20 ADX</td></tr>
+        <tr><td>signedPrice</td><td class="n">5</td><td class="n">20</td><td class="mono">CVD SPOT_CVD MACD ATR BB_WIDTH</td></tr>
+        <tr><td>largeCount</td><td class="n">5</td><td class="n">20</td><td class="mono">VOLUME VOL_SMA20 BUY_VOLUME SELL_VOLUME OBV</td></tr>
+        <tr><td>count</td><td class="n">3</td><td class="n">6</td><td class="mono">TRADES BUY_TRADES SELL_TRADES</td></tr>
+        <tr><td>fraction</td><td class="n">2</td><td class="n">2</td><td class="mono">BB_PCT_B BUY_PRESSURE</td></tr>
+        <tr><td>usdLargeCount</td><td class="n">2</td><td class="n">2</td><td class="mono">OI NOTIONAL_VOLUME_1D</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>The second gating rule: only stored series can be chained</h2>
+  <p>
+    Unit cliques decide which <em>pairs</em> exist. A second rule decides which of those pairs can carry
+    a stage-2 window operator, and it is just as sharp: <strong>a spread chains only when its base metric
+    has a stored bar-indexed series.</strong>
+  </p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Class</th><th>Chains</th><th>Does not chain</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>price</td>
+          <td class="mono">CLOSE OPEN HIGH LOW VWAP EMA5 EMA13 EMA20 SMA20 SMA50 SMA200 SWING_HIGH SWING_LOW</td>
+          <td class="mono">MARK LAST ORACLE SPOT_CLOSE_CB SPOT_CLOSE_BN</td>
+        </tr>
+        <tr>
+          <td>percent</td>
+          <td class="mono">PPO ROC12 ATR_PCT BB_WIDTH_PCT CLOSE_CHANGE</td>
+          <td class="mono">CHG_5M CHG_15M CHG_1H CHG_4H CHG_24H FUNDING_RATE FUNDING_ANN OI_CHG HIGH_DEV LOW_DEV</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:1rem">
+    The non-chaining ones are exactly the point-in-time reads. <code>MARK</code>, <code>LAST</code> and
+    <code>ORACLE</code> are documented as &ldquo;read live at report build time &mdash; not a bar
+    close&rdquo;; the <code>SPOT_CLOSE_*</code> are venue snapshots; <code>CHG_*</code> are published
+    values; <code>FUNDING_*</code> and <code>OI_CHG</code> sample on their own schedule. No stored
+    series means nothing for a window operator to consume.
+  </p>
+  <div class="callout warn">
+    <p>
+      <strong>This costs one construction I claimed earlier.</strong> Basis momentum &mdash;
+      <code>MARK spread SPOT_CLOSE_CB &rarr; trajectory</code> &mdash; is <em>not</em> buildable as a
+      single column, because <code>MARK</code>&rsquo;s spread does not chain. The basis itself is fine;
+      its evolution has to be read from the market-read text or across sections instead.
+    </p>
+  </div>
+  <p style="margin-top:1.25rem">
+    A narrower rule governs the chain to <code>rank</code>: only the moving-average family, the swing
+    levels and <code>VWAP</code> can spread-then-rank &mdash; <code>EMA5 EMA13 EMA20 SMA20 SMA50 SMA200
+    SWING_HIGH SWING_LOW VWAP</code>.
+  </p>
+</section>
+
+<section>
+  <h2>Buildable &mdash; 60 families</h2>
+  <p>
+    Each entry gives the exact construction. <code>&rarr;</code> marks a stage-2 chain. Attribution
+    is given where the construction is a named result rather than folklore.
+  </p>
+
+  <h3>Classical trend &amp; moving-average systems</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">01</span><div class="body">
+      <span class="nm">Moving-average envelope / price oscillator</span>
+      <div class="sp">CLOSE spread SMA20</div>
+      <div class="nt">Percentage deviation from any of 18 price-class references.</div></div></div>
+    <div class="ind"><span class="mark y">02</span><div class="body">
+      <span class="nm">Arbitrary-period PPO</span> <span class="at">&mdash; Appel</span>
+      <div class="sp">EMA5 spread EMA13   ·   SMA50 spread SMA200</div>
+      <div class="nt">The platform&rsquo;s <code>PPO</code> is fixed at 12/26. This gives you any pair from the price clique.</div></div></div>
+    <div class="ind"><span class="mark y">03</span><div class="body">
+      <span class="nm">Golden / death cross, as a magnitude</span>
+      <div class="sp">SMA50 spread SMA200  →  trajectory</div>
+      <div class="nt">Not just the event &mdash; the continuous distance and whether it is widening.</div></div></div>
+    <div class="ind"><span class="mark y">04</span><div class="body">
+      <span class="nm">Moving-average ribbon</span> <span class="at">&mdash; Guppy</span>
+      <div class="sp">several EMAx spread EMAy columns</div></div></div>
+    <div class="ind"><span class="mark y">05</span><div class="body">
+      <span class="nm">VWAP deviation</span>
+      <div class="sp">VWAP distance   ·   VWAP distance → aggregate</div>
+      <div class="nt">The execution benchmark, plus its own recent mean for a reversion baseline.</div></div></div>
+    <div class="ind"><span class="mark y">06</span><div class="body">
+      <span class="nm">Donchian-style range position</span> <span class="at">&mdash; Donchian</span>
+      <div class="sp">CLOSE spread SWING_HIGH   ·   CLOSE spread SWING_LOW   ·   PRICE_ZONE</div></div></div>
+    <div class="ind"><span class="mark y">07</span><div class="body">
+      <span class="nm">Cross-venue spot dislocation</span>
+      <div class="sp">SPOT_CLOSE_CB spread SPOT_CLOSE_BN</div>
+      <div class="nt">Coinbase against Binance &mdash; a venue arbitrage spread.</div></div></div>
+  </div>
+
+  <h3>Oscillator constructions</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">08</span><div class="body">
+      <span class="nm">Fast-vs-slow momentum differential</span>
+      <div class="sp">RSI14 spread RSI7</div>
+      <div class="nt">Momentum of momentum, in one column, from the 7-member oscillator clique.</div></div></div>
+    <div class="ind"><span class="mark y">09</span><div class="body">
+      <span class="nm">Price-vs-money-flow divergence</span>
+      <div class="sp">RSI14 spread MFI14</div>
+      <div class="nt">RSI is price-only, MFI is volume-weighted; the gap is the divergence as a number rather than an eyeballed chart pattern.</div></div></div>
+    <div class="ind"><span class="mark y">10</span><div class="body">
+      <span class="nm">Stochastic %K&ndash;%D separation</span> <span class="at">&mdash; Lane</span>
+      <div class="sp">STOCH_K spread STOCH_D</div></div></div>
+    <div class="ind"><span class="mark y">11</span><div class="body">
+      <span class="nm">Trend-strength-adjusted momentum</span>
+      <div class="sp">RSI14 spread ADX</div></div></div>
+    <div class="ind"><span class="mark y">12</span><div class="body">
+      <span class="nm">Oscillator zone regime</span>
+      <div class="sp">RSI14 classifyZone   ·   RSI7 classifyZone   ·   STOCH_K classifyZone</div>
+      <div class="nt"><code>ADX_zone</code> and <code>MFI14_zone</code> are display-only &mdash; threshold the numeric column instead.</div></div></div>
+    <div class="ind"><span class="mark y">13</span><div class="body">
+      <span class="nm">Crossover event detection</span>
+      <div class="sp">MACD crossDetect   ·   ROC12 crossDetect</div>
+      <div class="nt">A discrete first derivative: the sign change between two consecutive bars.</div></div></div>
+  </div>
+
+  <h3>Cross-sectional / factor</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">14</span><div class="body">
+      <span class="nm">Cross-sectional momentum</span> <span class="at">&mdash; Jegadeesh &amp; Titman 1993</span>
+      <div class="sp">ROC12 rank ordering=hi   ·   PPO rank   ·   CLOSE_CHANGE rank</div>
+      <div class="nt">The canonical momentum factor: rank the universe, act on the top. Note the <code>CHG_*</code> metrics are <em>not</em> rankable &mdash; only 31 of 86 metrics are, and among momentum only <code>ROC12</code>, <code>PPO</code> and <code>CLOSE_CHANGE</code>.</div></div></div>
+    <div class="ind"><span class="mark y">15</span><div class="body">
+      <span class="nm">Short-horizon cross-sectional reversal</span> <span class="at">&mdash; Lehmann 1990; Lo &amp; MacKinlay 1990</span>
+      <div class="sp">CLOSE_CHANGE rank ordering=lo</div></div></div>
+    <div class="ind"><span class="mark y">16</span><div class="body">
+      <span class="nm">Cross-sectional volatility ranking</span>
+      <div class="sp">ATR_PCT rank   ·   BB_WIDTH_PCT rank</div></div></div>
+    <div class="ind"><span class="mark y">17</span><div class="body">
+      <span class="nm">Stretch ranking</span>
+      <div class="sp">VWAP distance → rank   ·   SMA20 distance → rank</div>
+      <div class="nt">Which coin is most extended from its own reference &mdash; a chained rank.</div></div></div>
+    <div class="ind"><span class="mark y">18</span><div class="body">
+      <span class="nm">Relative strength vs a benchmark</span> <span class="at">&mdash; Mansfield / Dorsey RS</span>
+      <div class="sp">section A (unbound) + section B (benchmarkTicker: "BTC"), compared by conditions</div>
+      <div class="nt">Boolean form, not a continuous RS line &mdash; see the blocked list.</div></div></div>
+    <div class="ind"><span class="mark y">19</span><div class="body">
+      <span class="nm">Decoupling / beta-ride classification</span>
+      <div class="sp">ALL[ coin.chg24h gt 0 , benchmark.chg24h lt 0 ]</div>
+      <div class="nt">Verified live: TRUE on ETH and SOL, FALSE on DOGE.</div></div></div>
+    <div class="ind"><span class="mark y">20</span><div class="body">
+      <span class="nm">Market breadth / advance-decline</span>
+      <div class="sp">mktBreadth_all   ·   mktUp_all   ·   mktAvgChg_all</div>
+      <div class="nt">Ambient &mdash; free, costs no column budget.</div></div></div>
+  </div>
+
+  <h3>Microstructure &amp; order flow</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">21</span><div class="body">
+      <span class="nm">Order-flow imbalance</span>
+      <div class="sp">BUY_PRESSURE   ·   BUY_VOLUME spread SELL_VOLUME</div></div></div>
+    <div class="ind"><span class="mark y">22</span><div class="body">
+      <span class="nm">Perp-vs-spot CVD divergence</span>
+      <div class="sp">CVD spread SPOT_CVD  →  trajectory</div>
+      <div class="nt">Derivative flow against cash flow &mdash; the signedPrice clique permits it.</div></div></div>
+    <div class="ind"><span class="mark y">23</span><div class="body">
+      <span class="nm">Effort vs result</span> <span class="at">&mdash; Wyckoff</span>
+      <div class="sp">OI_CHG spread CHG_24H</div>
+      <div class="nt">Positioning change against price change, as one signed number instead of a four-quadrant table.</div></div></div>
+    <div class="ind"><span class="mark y">24</span><div class="body">
+      <span class="nm">Volume climax / concentration</span>
+      <div class="sp">VOLUME maxShare window=24</div>
+      <div class="nt">A C1 concentration ratio &mdash; the share of the window carried by its largest bar.</div></div></div>
+    <div class="ind"><span class="mark y">25</span><div class="body">
+      <span class="nm">Relative volume regime</span>
+      <div class="sp">RVOL   ·   VOLUME spread VOL_SMA20   ·   RVOL → efficiency</div></div></div>
+    <div class="ind"><span class="mark y">26</span><div class="body">
+      <span class="nm">OBV divergence</span> <span class="at">&mdash; Granville 1963</span>
+      <div class="sp">OBV spread VOLUME   ·   OBV → trajectory</div></div></div>
+    <div class="ind"><span class="mark y">27</span><div class="body">
+      <span class="nm">Trade-count asymmetry</span>
+      <div class="sp">BUY_TRADES spread SELL_TRADES</div></div></div>
+  </div>
+
+  <h3>Derivatives, carry &amp; positioning</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">28</span><div class="body">
+      <span class="nm">Perpetual basis / premium</span> <span class="at">&mdash; cost of carry</span>
+      <div class="sp">MARK spread SPOT_CLOSE_CB   ·   MARK spread ORACLE</div></div></div>
+    <div class="ind"><span class="mark y">29</span><div class="body">
+      <span class="nm">Carry-adjusted momentum</span>
+      <div class="sp">FUNDING_RATE spread CHG_24H</div>
+      <div class="nt">What you pay against what you earned &mdash; both are percent-class, so the ratio is legal.</div></div></div>
+    <div class="ind"><span class="mark y">30</span><div class="body">
+      <span class="nm">Funding mean reversion</span>
+      <div class="sp">FUNDING_RATE → aggregate window=24, compared to the current rate</div></div></div>
+    <div class="ind"><span class="mark y">31</span><div class="body">
+      <span class="nm">Funding term structure</span>
+      <div class="sp">FUNDING_RATE spread FUNDING_ANN</div></div></div>
+    <div class="ind"><span class="mark y">32</span><div class="body">
+      <span class="nm">Open-interest turnover</span>
+      <div class="sp">OI spread NOTIONAL_VOLUME_1D</div>
+      <div class="nt">The entire usdLargeCount clique &mdash; exactly one legal pair.</div></div></div>
+    <div class="ind"><span class="mark y">33</span><div class="body">
+      <span class="nm">Positioning momentum</span>
+      <div class="sp">OI_CHG spread PPO   ·   OI_CHG spread ROC12   ·   OI → trajectory</div></div></div>
+    <div class="ind"><span class="mark y">34</span><div class="body">
+      <span class="nm">OI regime classification</span>
+      <div class="sp">OI_PX_REGIME   ·   OI_VELOCITY</div>
+      <div class="nt">Pre-computed: new longs / new shorts / short covering / long liquidation.</div></div></div>
+  </div>
+
+  <h3>Time-series &amp; statistical</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">35</span><div class="body">
+      <span class="nm">Efficiency ratio</span> <span class="at">&mdash; Kaufman 1995</span>
+      <div class="sp">CLOSE efficiency window=21</div>
+      <div class="nt">Fractal / directional efficiency: |net| &divide; &Sigma;|steps|. The system&rsquo;s only native noise measure.</div></div></div>
+    <div class="ind"><span class="mark y">36</span><div class="body">
+      <span class="nm">Scale-dependent efficiency</span>
+      <div class="sp">CLOSE efficiency window=4   beside   CLOSE efficiency window=32</div>
+      <div class="nt">Efficient short-term but not long-term implies a countertrend push. Two columns, no extra machinery.</div></div></div>
+    <div class="ind"><span class="mark y">37</span><div class="body">
+      <span class="nm">Crude mean-reversion baseline</span>
+      <div class="sp">EMA5 spread EMA13 → aggregate, beside the un-chained spread</div>
+      <div class="nt">Current gap against its own recent mean. A z-score without the &sigma; &mdash; the closest reachable substitute.</div></div></div>
+    <div class="ind"><span class="mark y">38</span><div class="body">
+      <span class="nm">Momentum term structure</span>
+      <div class="sp">CHG_1H spread CHG_24H   ·   CHG_15M spread CHG_4H</div>
+      <div class="nt">Five published horizons all sit in the percent clique, so any pair is a legal ratio.</div></div></div>
+    <div class="ind"><span class="mark y">39</span><div class="body">
+      <span class="nm">Multi-timeframe alignment</span>
+      <div class="sp">RSI14 at {abs:"1h"}, {abs:"4h"}, {abs:"1d"} in one section</div>
+      <div class="nt">Absolute timeframes let one table hold the same indicator at three sampling rates.</div></div></div>
+    <div class="ind"><span class="mark y">40</span><div class="body">
+      <span class="nm">Volatility regime &amp; squeeze</span> <span class="at">&mdash; Bollinger</span>
+      <div class="sp">BB_WIDTH_PCT → trajectory   ·   ATR_PCT → efficiency</div></div></div>
+  </div>
+
+
+  <h3>Institutional &amp; quant-desk constructions</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">44</span><div class="body">
+      <span class="nm">Cross-sectional carry factor</span> <span class="at">&mdash; Koijen, Moskowitz, Pedersen &amp; Vrugt 2018</span>
+      <div class="sp">FUNDING_RATE rank ordering=hi</div>
+      <div class="nt">In perpetuals the funding rate <em>is</em> the carry. Ranking the universe by it reproduces
+      the carry factor directly &mdash; arguably the single most institutionally recognisable construction
+      available here.</div></div></div>
+    <div class="ind"><span class="mark y">45</span><div class="body">
+      <span class="nm">Risk-adjusted carry</span>
+      <div class="sp">FUNDING_RATE spread ATR_PCT</div>
+      <div class="nt">Carry per unit of volatility &mdash; the standard desk normalisation, legal because both are percent-class.</div></div></div>
+    <div class="ind"><span class="mark y">46</span><div class="body">
+      <span class="nm">Low-volatility factor</span> <span class="at">&mdash; Frazzini &amp; Pedersen adjacent</span>
+      <div class="sp">ATR_PCT rank ordering=lo   ·   BB_WIDTH_PCT rank ordering=lo</div>
+      <div class="nt">Not betting-against-beta &mdash; that needs &beta;. This is the volatility-sorted cousin.</div></div></div>
+    <div class="ind"><span class="mark y">47</span><div class="body">
+      <span class="nm">Time-series momentum</span> <span class="at">&mdash; Moskowitz, Ooi &amp; Pedersen 2012</span>
+      <div class="sp">ROC12 gt 0   ·   CLOSE_CHANGE trajectory</div>
+      <div class="nt">A distinct family from Jegadeesh&ndash;Titman: own-history sign, not cross-sectional ordering.
+      Both are reachable, and they are different strategies.</div></div></div>
+    <div class="ind"><span class="mark y">48</span><div class="body">
+      <span class="nm">Realised-skew proxy</span>
+      <div class="sp">HIGH_DEV spread LOW_DEV</div>
+      <div class="nt">Intrabar upside excursion against downside excursion. Not a third moment, but it captures
+      the directional asymmetry that realised skew is usually reached for.</div></div></div>
+    <div class="ind"><span class="mark y">49</span><div class="body">
+      <span class="nm">Range-based volatility</span> <span class="at">&mdash; linear cousin of Parkinson 1980</span>
+      <div class="sp">HIGH spread LOW</div>
+      <div class="nt">Parkinson needs (ln H/L)&sup2;. This is the same information without the log or the square.</div></div></div>
+    <div class="ind"><span class="mark y">50</span><div class="body">
+      <span class="nm">Volatility-estimator divergence</span>
+      <div class="sp">ATR_PCT spread BB_WIDTH_PCT</div>
+      <div class="nt">True-range vol against dispersion vol. They disagree when moves are gappy rather than
+      continuous &mdash; a jump-vs-diffusion tell without needing either model.</div></div></div>
+    <div class="ind"><span class="mark y">51</span><div class="body">
+      <span class="nm">Order-flow toxicity proxy</span> <span class="at">&mdash; VPIN-adjacent, Easley, López de Prado &amp; O&rsquo;Hara 2012</span>
+      <div class="sp">BUY_PRESSURE efficiency   ·   BUY_PRESSURE spread &hellip; → trajectory</div>
+      <div class="nt">VPIN proper needs volume-clock bucketing and an absolute imbalance. Persistence of
+      one-sided pressure is the reachable substitute.</div></div></div>
+    <div class="ind"><span class="mark y">52</span><div class="body">
+      <span class="nm">Aggressor-count imbalance</span>
+      <div class="sp">BUY_TRADES spread SELL_TRADES</div>
+      <div class="nt">Distinct from volume imbalance: counts trades, not size. Divergence between the two
+      indicates a change in participant size mix.</div></div></div>
+    <div class="ind"><span class="mark y">53</span><div class="body">
+      <span class="nm">Positioning change per unit of risk</span>
+      <div class="sp">OI_CHG spread ATR_PCT</div></div></div>
+    <div class="ind"><span class="mark y">54</span><div class="body">
+      <span class="nm">Open-interest size factor</span>
+      <div class="sp">OI rank</div>
+      <div class="nt">The nearest reachable size sort. <code>NOTIONAL_VOLUME_1D</code> is <strong>not</strong>
+      rankable, so a turnover-based liquidity factor is out.</div></div></div>
+    <div class="ind"><span class="mark y">55</span><div class="body">
+      <span class="nm">Execution-stretch ranking</span>
+      <div class="sp">VWAP distance → rank</div>
+      <div class="nt">Which name is furthest from its own execution benchmark &mdash; an implementation-shortfall
+      screen across the universe.</div></div></div>
+    <div class="ind"><span class="mark y">56</span><div class="body">
+      <span class="nm">Regime persistence / state duration</span>
+      <div class="sp">REGIME_TREND trajectory   ·   REGIME_VOL trajectory</div>
+      <div class="nt">Categorical trajectories. The slots hold past <em>states</em>, so you can read how long a
+      regime has held &mdash; a duration variable without a hazard model.</div></div></div>
+    <div class="ind"><span class="mark y">57</span><div class="body">
+      <span class="nm">Cross-sectional positioning extreme</span> <span class="at">&mdash; COT-style, cross-sectional</span>
+      <div class="sp">CROWD_UPBIAS rank   ·   CROWD_PICK rank</div></div></div>
+    <div class="ind"><span class="mark y">58</span><div class="body">
+      <span class="nm">Skill-weighted consensus</span>
+      <div class="sp">CROWD_ACC beside CROWD_UPBIAS, combined by conditions</div>
+      <div class="nt">Fade the crowd only where the crowd has been wrong. The institutional analogue is broker
+      flow weighted by historical hit rate.</div></div></div>
+    <div class="ind"><span class="mark y">59</span><div class="body">
+      <span class="nm">Multi-factor composite screen</span>
+      <div class="sp">N_OF n=2 [ momentum rank top , carry rank top , low-vol rank top ]</div>
+      <div class="nt">The counting gate is a factor-blend operator. Two-of-three on ranked factors is a
+      composite screen expressed in one clause.</div></div></div>
+    <div class="ind"><span class="mark y">60</span><div class="body">
+      <span class="nm">Cross-venue dislocation &amp; basis</span>
+      <div class="sp">SPOT_CLOSE_CB spread SPOT_CLOSE_BN   ·   MARK spread ORACLE</div>
+      <div class="nt">Venue arbitrage and perpetual premium. Both are single-read only &mdash; neither chains.</div></div></div>
+  </div>
+
+  <h3>Structure, sentiment &amp; ensemble</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark y">41</span><div class="body">
+      <span class="nm">Liquidity-zone proximity</span> <span class="at">&mdash; SMC / order-block models</span>
+      <div class="sp">STRUCT_ZONES nearestZoneDist side=support   ·   …Type   ·   …Range   ·   …Age   ·   count</div>
+      <div class="nt">Four columns describe a level completely: how far, what kind, how wide, how old.</div></div></div>
+    <div class="ind"><span class="mark y">42</span><div class="body">
+      <span class="nm">Contrarian sentiment fade</span>
+      <div class="sp">CROWD_UPBIAS   ·   CROWD_PICK   ·   CROWD_ACC   ·   captConc_session</div>
+      <div class="nt">Positioning as a contrarian input. Mind that every <code>_LIVE</code> variant reads FALSE when null.</div></div></div>
+    <div class="ind"><span class="mark y">43</span><div class="body">
+      <span class="nm">N-of-M voting ensemble</span>
+      <div class="sp">N_OF n=2 [ filter A , filter B , filter C ]</div>
+      <div class="nt">A majority-vote classifier over any set of conditions. No column-layer equivalent exists.</div></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Blocked &mdash; 26 families, by cause</h2>
+
+  <h3>No second moment &mdash; there is no variance or &sigma;</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Z-score / standardisation</span><div class="nt">The single most consequential absence. Blocks every statistical-arbitrage normalisation.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Bollinger Bands on a derived series</span> <span class="at">&mdash; Bollinger</span><div class="nt">Given as metrics on price; not constructible on anything you build.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Keltner Channels</span> <span class="at">&mdash; Keltner / Chester</span><div class="nt">Needs EMA &plusmn; k&middot;ATR. Blocked twice: no coefficient <code>k</code>, and EMA&ndash;ATR is a cross-clique pair.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Sharpe / information ratio</span><div class="nt">Return over &sigma;.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Volatility of volatility</span></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Historical-volatility cones</span></div></div>
+  </div>
+
+  <h3>No joint moment &mdash; nothing measures two series together</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Pearson correlation &rho;</span></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Spearman rank correlation</span><div class="nt"><code>rank</code> is cross-sectional at one instant, not a series to correlate.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Beta / CAPM</span> <span class="at">&mdash; Sharpe 1964</span><div class="nt">Benchmark sections give comparison, not covariance over variance.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Cointegration &amp; pairs spreads</span> <span class="at">&mdash; Engle &amp; Granger 1987</span></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">PCA / factor decomposition</span></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Correlation-based regime detection</span></div></div>
+  </div>
+
+  <h3>No regression &mdash; no least squares</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Linear regression channel / Raff channel</span></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Least-squares trend slope</span><div class="nt"><code>trajectory</code> gives a first-and-last comparison, not a fitted slope.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Hurst exponent / R+S analysis</span> <span class="at">&mdash; Mandelbrot</span><div class="nt"><code>efficiency</code> is a crude cousin, not the same statistic.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Detrended fluctuation analysis</span></div></div>
+  </div>
+
+  <h3>No time-series percentile &mdash; <code>rank</code> looks sideways, not backwards</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">&ldquo;RSI in its own 90th percentile&rdquo;</span><div class="nt">The contract is explicit: the ranked set holds current values only, so there is no historical ordinal to reach into.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Percentile-based volatility regime</span></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Rolling min / max of a series</span><div class="nt"><code>maxShare</code> returns a <em>share</em>, never the max itself.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Turnover-based liquidity factor</span><div class="nt"><code>NOTIONAL_VOLUME_1D</code> is not rankable. Only 31 of 86 metrics are, and no price-class metric is rankable directly &mdash; only through <code>distance &rarr; rank</code>.</div></div></div>
+  </div>
+
+  <h3>No cross-clique arithmetic</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Amihud illiquidity</span> <span class="at">&mdash; Amihud 2002</span><div class="nt">|return| &divide; volume &mdash; percent over largeCount, two different cliques.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Average trade size</span><div class="nt">volume &divide; trades &mdash; largeCount over count.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Custom money flow</span><div class="nt">price &times; volume. <code>spread</code> divides; nothing multiplies.</div></div></div>
+  </div>
+
+  <h3>No recursion or transform</h3>
+  <div class="domain">
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Custom cumulative series</span><div class="nt">CVD and OBV are given; you cannot accumulate anything new.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Adaptive moving averages</span> <span class="at">&mdash; KAMA, VIDYA</span><div class="nt">The efficiency ratio input exists; the recursive smoothing step does not.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">EMA of a derived series</span><div class="nt"><code>aggregate</code> is a flat mean &mdash; no exponential weighting.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Log returns, entropy, Fourier / wavelet</span><div class="nt">No transcendental functions anywhere in the operator set.</div></div></div>
+    <div class="ind"><span class="mark n">&times;</span><div class="body"><span class="nm">Skew, kurtosis, autocorrelation</span></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Blocked how, exactly? Data vs operator</h2>
+  <p>
+    &ldquo;Blocked&rdquo; hides an important distinction. For nearly every entry above, the
+    <strong>data is present and only the operator is missing</strong>. That is a very different
+    situation from the data not existing, and it changes what you do about it.
+  </p>
+
+  <div class="callout">
+    <p>
+      <strong>Proof, from one render.</strong> Put a 12-slot return trajectory on an unbound section and
+      the same column on a section bound to BTC. The platform prints two time-aligned return vectors:
+    </p>
+    <div class="ind" style="border:none;padding:0;margin-top:.8rem"><span class="mark y">&nbsp;</span><div class="body">
+      <div class="sp">SOL   0.48  -1.33   1.13   0.35  -0.42  -0.73   0.55   0.61   0.01   1.02  -0.01   0.46
+BTC   0.89  -0.72   1.17  -0.57  -0.06  -0.39   0.22  -0.24   0.23   0.06  -0.31   0.04</div>
+    </div></div>
+    <p style="margin-top:.8rem">
+      From those two rows: &sigma;(SOL) = 0.717, &sigma;(BTC) = 0.557, cov = 0.256,
+      <strong>&rho; = 0.642</strong>, <strong>&beta; = 0.827</strong>. Every one of those is
+      &ldquo;impossible&rdquo; in the column layer, and every one is computable from data the platform
+      already put on the page.
+    </p>
+  </div>
+
+  <div class="scroll" style="margin-top:1.5rem">
+    <table>
+      <thead><tr><th>Cause</th><th class="n">Families</th><th>What would unlock them</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Data present, operator absent</b></td>
+          <td class="n">22</td>
+          <td>New stage-2 operators. <code>stddev</code> alone unlocks 5; <code>covariance</code> unlocks 6;
+              <code>slope</code> unlocks 4; <code>percentile</code>, <code>min</code>/<code>max</code>,
+              and the transcendentals account for the rest.</td>
+        </tr>
+        <tr>
+          <td><b>Operator present, unit guard refuses</b></td>
+          <td class="n">2</td>
+          <td>Amihud illiquidity and average trade size are ordinary divisions that the clique rule
+              rejects. <code>VOLUME &divide; TRADES</code> is dimensionally sound &mdash; size per trade
+              &mdash; but crosses <code>largeCount</code> and <code>count</code>.</td>
+        </tr>
+        <tr>
+          <td><b>Needs state, not a function</b></td>
+          <td class="n">2</td>
+          <td>Cumulative series and adaptive moving averages need recursive evaluation, which is an
+              architectural change rather than a new operator.</td>
+        </tr>
+        <tr>
+          <td><b>Data genuinely absent</b></td>
+          <td class="n">1</td>
+          <td>Historical cross-sectional rank. The contract is explicit: the ranked set holds current
+              values only. Nothing to reach back into.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:1.25rem">
+    There is also a soft ceiling that is neither: the <strong>32-bar lookback cap</strong>. A 12-period
+    correlation is reachable; a 200-period one is not, because no column can see that far back.
+  </p>
+
+  <h3 style="margin-top:2rem">Which layer needs the number?</h3>
+  <p>
+    This is the practical consequence, and it is the thing worth taking away.
+  </p>
+  <div class="thesis" style="margin-top:1rem">
+    <div class="can">
+      <span class="h">For the agent to reason with</span>
+      <ul>
+        <li>Ship the <code>trajectory</code> slots and let the model compute it.</li>
+        <li>&rho;, &beta;, &sigma;, slope, percentile &mdash; all recoverable from rendered history.</li>
+        <li>Costs header width and tokens, nothing else.</li>
+      </ul>
+    </div>
+    <div class="cant">
+      <span class="h">For a deterministic gate</span>
+      <ul>
+        <li>It must be a column &mdash; conditions read headers, not reasoning.</li>
+        <li>So Class-A statistics genuinely cannot gate anything.</li>
+        <li>Compute outside and bring the answer in as a threshold.</li>
+      </ul>
+    </div>
+  </div>
+  <p style="margin-top:1.25rem">
+    So the census&rsquo;s blocked list is really a list of <em>things the condition layer cannot decide
+    on</em> &mdash; not things the strategy cannot use. The platform&rsquo;s own framing supports this:
+    conditions are &ldquo;deterministic reads &hellip; advisory: they may make you more selective, never
+    less.&rdquo; The reasoning was always meant to be the agent&rsquo;s job. The column layer&rsquo;s job
+    is to put legible quantities in front of it &mdash; and a trajectory of returns is a perfectly
+    legible quantity.
+  </p>
+</section>
+
+<section>
+  <h2>What this adds up to</h2>
+  <div class="callout">
+    <p>
+      This is a <strong>ratio-and-rank engine</strong>, not a statistics engine. It is unusually strong
+      at the things a discretionary trader reads off a chart &mdash; how far is this from that, is the
+      gap widening, which coin is most extended, how cleanly has price travelled &mdash; and it has no
+      apparatus at all for the things a quant reads off a covariance matrix.
+    </p>
+  </div>
+  <p style="margin-top:1.25rem">
+    That is a coherent design rather than an oversight. Every supported operator returns something
+    directly interpretable by a language model reading a table: a percentage, an ordinal, a label, a
+    short sequence. Variance, &beta; and spectral density are not things you glance at in a row of
+    numbers and reason about &mdash; they need a model, and the model here is the agent, not the column.
+  </p>
+  <div class="callout warn" style="margin-top:1.25rem">
+    <p>
+      <strong>The practical consequence.</strong> Anything named after a standard deviation, a
+      correlation, or a regression must be computed <em>outside</em> and brought in as a threshold, or
+      approximated. The nearest substitutes: <code>efficiency</code> for noise, <code>spread &rarr;
+      aggregate</code> for standardisation, <code>rank</code> for relative extremity, and benchmark
+      sections for dependence.
+    </p>
+  </div>
+</section>
+
+</div>
