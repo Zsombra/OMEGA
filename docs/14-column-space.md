@@ -336,3 +336,40 @@ No price-class metric is rankable directly — only through `distance → rank` 
 that chain. Among momentum metrics only `ROC12`, `PPO` and `CLOSE_CHANGE` rank; **the
 `CHG_*` family cannot be ranked at all**, which matters because they are the obvious
 choice for a cross-sectional momentum sort and they do not work.
+
+
+## Blocked how: data absent, or operator absent?
+
+Measured 2026-08-24. A trajectory on an unbound section beside the same column on a
+benchmark-bound section returns **two time-aligned series in one render**:
+
+```
+SOL   0.48  -1.33  1.13  0.35  -0.42  -0.73  0.55  0.61  0.01  1.02  -0.01  0.46
+BTC   0.89  -0.72  1.17 -0.57  -0.06  -0.39  0.22 -0.24  0.23  0.06  -0.31  0.04
+```
+
+From those rows: sigma(SOL)=0.717, sigma(BTC)=0.557, cov=0.256, **rho=0.642**,
+**beta=0.827**. Every one is unavailable in the column layer, and every one is
+computable from data the platform already printed.
+
+So the blocked list splits four ways:
+
+| cause | families | note |
+|---|---:|---|
+| data present, operator absent | 22 | `stddev` alone unlocks 5; `covariance` 6; `slope` 4 |
+| operator present, unit guard refuses | 2 | Amihud, average trade size — ordinary divisions the clique rule rejects |
+| needs recursive state, not a function | 2 | cumulative series, adaptive MAs |
+| data genuinely absent | 1 | historical cross-sectional rank — the ranked set holds current values only |
+
+Plus a soft ceiling that is neither: the 32-bar lookback cap. A 12-period correlation
+is reachable; a 200-period one is not.
+
+**The distinction that matters for design.** If a number is needed for a *deterministic
+gate*, it must be a column, so the Class-A statistics genuinely cannot gate anything.
+If it is needed for the *agent's reasoning*, ship the trajectory slots and let the model
+compute it — cost is header width and tokens, nothing else.
+
+That is consistent with the platform's own framing: conditions are "deterministic reads
+… advisory: they may make you more selective, never less." The reasoning was always the
+agent's job; the column layer's job is to put legible quantities in front of it, and a
+trajectory of returns is a legible quantity.
