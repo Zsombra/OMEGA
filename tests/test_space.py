@@ -9,8 +9,10 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from omega.contract import DERIVED_DIR
-from omega.space import ColumnShape, enumerate_shapes
+from omega.contract import DERIVED_DIR, load
+from omega.space import (
+    ColumnShape, enumerate_shapes, header_cost, platform_used, query,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -98,3 +100,48 @@ def test_shape_converts_to_a_validatable_column():
     assert col.chainedTransformId == "trajectory"
     assert col.inputs is not None and col.inputs[0].metric == "EMA13"
     assert col.timeframe.rel == "anchor"
+
+
+# --- querying the space -----------------------------------------------------
+
+def test_only_trajectory_fans_out():
+    """composition_rules.fanOut: every other transform emits exactly one header."""
+    plain = ColumnShape(metric="RSI14", transform="value")
+    traj = ColumnShape(metric="RSI14", transform="trajectory")
+    assert header_cost(plain) == 1
+    assert header_cost(traj, window=4) == 5      # 4 slots + _trend
+    assert header_cost(traj, window=8) == 9
+
+
+def test_platform_used_pairs_come_from_the_shipped_templates():
+    used = platform_used()
+    assert used, "platform templates must yield at least one (metric, transform) pair"
+    assert all(isinstance(p, tuple) and len(p) == 2 for p in used)
+
+
+def test_query_filters_by_family():
+    want = {m for m, mm in load().metrics.items() if mm.family == "volumeFlow"}
+    got = query(family="volumeFlow")
+    assert got
+    assert {s.metric for s in got} == want
+
+
+def test_query_by_max_headers_excludes_fan_out():
+    cheap = query(max_headers=1)
+    assert cheap
+    assert all("trajectory" not in (s.transform, s.chained) for s in cheap)
+
+
+def test_query_can_isolate_what_the_platform_never_uses():
+    """The 'what haven't I thought of' question, answered against shipped templates."""
+    unused = query(platform_uses=False)
+    used = query(platform_uses=True)
+    assert unused and used
+    assert not ({(s.metric, s.transform) for s in used}
+                & {(s.metric, s.transform) for s in unused})
+    assert len(unused) + len(used) == 488
+
+
+def test_query_with_no_filters_is_the_whole_space():
+    assert len(query()) == 488
+    assert len(query(expand_operands=True)) == 2200

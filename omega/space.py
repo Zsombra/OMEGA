@@ -29,6 +29,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from .contract import Contract, Metric, load
+from .fanout import outputs_for
 from .types import Column, Operand, RelTimeframe
 
 
@@ -93,4 +94,68 @@ def enumerate_shapes(expand_operands: bool = False,
                             out.append(ColumnShape(name, transform, succ, operand, o))
                     else:
                         out.append(ColumnShape(name, transform, succ, operand, ordering))
+    return out
+
+
+# --- querying ---------------------------------------------------------------
+
+def header_cost(shape: ColumnShape, window: int = 4,
+                contract: Contract | None = None) -> int:
+    """How many report headers this shape emits.
+
+    Only `trajectory` fans out (composition_rules.fanOut); everything else is 1.
+    `window` matters only when trajectory is present, and defaults to 4 because
+    that is the platform's own default for the transform - not a guess.
+    """
+    col = shape.to_column()
+    if "trajectory" in (shape.transform, shape.chained):
+        col = col.model_copy(update={"window": window})
+    return len(outputs_for(col, contract))
+
+
+def platform_used(contract: Contract | None = None) -> set[tuple[str, str]]:
+    """(metric, transformId) pairs the platform's own shipped templates use.
+
+    This is the honest denominator for "what has nobody built yet" - far stronger
+    than measuring against the eight cookbook recipes, and free, because the
+    templates are already extracted.
+    """
+    c = contract or load()
+    out: set[tuple[str, str]] = set()
+    for template in c.platform_templates.values():
+        for col in template.get("columns", []) or []:
+            metric, transform = col.get("metric"), col.get("transformId")
+            if metric and transform:
+                out.add((metric, transform))
+                if chained := col.get("chainedTransformId"):
+                    out.add((metric, chained))
+    return out
+
+
+def query(*, family: str | None = None, transform: str | None = None,
+          unit: str | None = None, timeframe_mode: str | None = None,
+          chained: bool | None = None, max_headers: int | None = None,
+          platform_uses: bool | None = None, expand_operands: bool = False,
+          contract: Contract | None = None) -> list[ColumnShape]:
+    """Filter the space. Every argument is optional; omitted means 'do not filter'."""
+    c = contract or load()
+    used = platform_used(c) if platform_uses is not None else set()
+    out: list[ColumnShape] = []
+    for s in enumerate_shapes(expand_operands, c):
+        m = c.metrics[s.metric]
+        if family is not None and m.family != family:
+            continue
+        if transform is not None and transform not in (s.transform, s.chained):
+            continue
+        if unit is not None and m.unit != unit:
+            continue
+        if timeframe_mode is not None and m.timeframe_mode != timeframe_mode:
+            continue
+        if chained is not None and (s.chained is not None) != chained:
+            continue
+        if max_headers is not None and header_cost(s, contract=c) > max_headers:
+            continue
+        if platform_uses is not None and ((s.metric, s.transform) in used) != platform_uses:
+            continue
+        out.append(s)
     return out
