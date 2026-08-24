@@ -1,0 +1,448 @@
+<title>BattleGrid Column Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ground:#EDEFF2; --panel:#F6F7F9; --sunk:#E3E7EC;
+  --ink:#111820; --ink-2:#495768; --ink-3:#7C8B9C;
+  --edge:#D2D8DF; --edge-2:#C0C8D2;
+  --dead:#DCE1E7;
+  --conduct:#1E8F87; --conduct-soft:#B9E3DF; --conduct-ink:#0B5C56;
+  --reserve:#A8721F; --reserve-soft:#F0DCB6;
+  --focus:#1E8F87;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F151C; --panel:#151D26; --sunk:#0A0F14;
+    --ink:#E8EDF3; --ink-2:#9DAEC0; --ink-3:#64748696;
+    --ink-3:#697A8C;
+    --edge:#243040; --edge-2:#33445A;
+    --dead:#1A232E;
+    --conduct:#35B0A7; --conduct-soft:#153833; --conduct-ink:#7FD8D0;
+    --reserve:#C98A2E; --reserve-soft:#3A2C13;
+    --focus:#35B0A7;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F151C; --panel:#151D26; --sunk:#0A0F14;
+  --ink:#E8EDF3; --ink-2:#9DAEC0; --ink-3:#697A8C;
+  --edge:#243040; --edge-2:#33445A;
+  --dead:#1A232E;
+  --conduct:#35B0A7; --conduct-soft:#153833; --conduct-ink:#7FD8D0;
+  --reserve:#C98A2E; --reserve-soft:#3A2C13;
+  --focus:#35B0A7;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.wrap{max-width:1240px; margin:0 auto; padding:0 24px}
+
+/* ---------- masthead ---------- */
+header.top{border-bottom:1px solid var(--edge); background:var(--panel)}
+.top-in{display:flex; flex-wrap:wrap; gap:20px 32px; align-items:flex-end;
+  justify-content:space-between; padding:44px 0 30px}
+h1{
+  font-family:Archivo,system-ui,sans-serif; font-weight:700;
+  font-size:clamp(30px,4.6vw,50px); line-height:1.02; letter-spacing:-.026em;
+  margin:0; text-wrap:balance; max-width:15ch;
+}
+h1 em{font-style:normal; color:var(--conduct)}
+.sub{color:var(--ink-2); max-width:56ch; margin:14px 0 0; font-size:15.5px}
+.stamp{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3); display:flex; gap:8px;
+  flex-direction:column; align-items:flex-start; white-space:nowrap;
+}
+.stamp b{color:var(--ink-2); font-weight:500}
+
+/* ---------- stat strip ---------- */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
+  border-top:1px solid var(--edge); border-bottom:1px solid var(--edge); background:var(--ground)}
+.stat{padding:16px 20px; border-right:1px solid var(--edge)}
+.stat:last-child{border-right:none}
+.stat .n{font-family:Archivo,sans-serif; font-weight:600; font-size:26px;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1.1}
+.stat .n.hi{color:var(--conduct)}
+.stat .n.warn{color:var(--reserve)}
+.stat .l{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.085em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:4px}
+
+/* ---------- contact sheet hero ---------- */
+.sheet-sec{padding:40px 0 12px}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 10px}
+.sheet-head{display:flex; flex-wrap:wrap; gap:8px 28px; align-items:baseline; margin-bottom:18px}
+.sheet-head h2{font-family:Archivo,sans-serif; font-size:19px; font-weight:600;
+  letter-spacing:-.012em; margin:0}
+.sheet-head p{margin:0; color:var(--ink-2); font-size:14px; max-width:60ch}
+.sheet{
+  display:grid; grid-template-columns:repeat(86,1fr); gap:2px;
+  background:var(--panel); border:1px solid var(--edge); border-radius:3px;
+  padding:12px; overflow-x:auto;
+}
+.sheet i{display:block; aspect-ratio:1; border-radius:1px; background:var(--dead); min-width:3px}
+.sheet i.on{background:var(--conduct)}
+.sheet i.rs{background:var(--reserve)}
+.sheet-axis{display:flex; justify-content:space-between; margin-top:8px;
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-3)}
+
+/* ---------- controls ---------- */
+.controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  padding:26px 0 14px; border-bottom:1px solid var(--edge)}
+.chip{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.03em;
+  padding:5px 11px; border:1px solid var(--edge-2); border-radius:2px;
+  background:transparent; color:var(--ink-2); cursor:pointer; transition:.13s;
+}
+.chip:hover{border-color:var(--ink-3); color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--conduct); border-color:var(--conduct); color:var(--ground)}
+.chip:focus-visible,.cell:focus-visible,.tog:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+input.search{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 11px;
+  border:1px solid var(--edge-2); border-radius:2px; background:var(--panel);
+  color:var(--ink); min-width:190px;
+}
+input.search::placeholder{color:var(--ink-3)}
+.spacer{flex:1}
+.tog{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-2);
+  background:none; border:1px solid var(--edge-2); border-radius:2px; padding:5px 11px; cursor:pointer}
+
+/* ---------- matrix ---------- */
+.board{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:22px;
+  align-items:start; padding:20px 0 60px}
+@media (max-width:960px){.board{grid-template-columns:minmax(0,1fr)}}
+.scroll{overflow:auto; max-height:74vh; border:1px solid var(--edge);
+  border-radius:3px; background:var(--panel)}
+.grid{display:grid; grid-template-columns:var(--gtc); min-width:max-content}
+.hd,.rl,.cell,.band{border-right:1px solid var(--edge); border-bottom:1px solid var(--edge)}
+.hd{
+  position:sticky; top:0; z-index:2; background:var(--sunk);
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.04em;
+  color:var(--ink-2); padding:9px 5px; text-align:center; white-space:nowrap; cursor:help;
+}
+.hd.corner{left:0; z-index:4; text-align:left; padding-left:12px; color:var(--ink-3)}
+.hd.res{color:var(--reserve); border-left:2px solid var(--reserve)}
+.rl{
+  position:sticky; left:0; z-index:1; background:var(--panel);
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:0 12px;
+  display:flex; align-items:center; gap:7px; white-space:nowrap;
+}
+.rl .tf{font-size:9px; letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase}
+.rl .tf.inert{color:var(--reserve)}
+.band{
+  grid-column:1/-1; position:sticky; left:0; background:var(--sunk);
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3); padding:7px 12px;
+  border-right:none; z-index:1;
+}
+.band b{color:var(--conduct); font-weight:500}
+.cell{
+  height:26px; background:transparent; border-top:none; border-left:none;
+  cursor:default; padding:0; position:relative; display:block; width:100%;
+}
+.cell.on{background:var(--conduct-soft); cursor:pointer}
+.cell.on::after{content:""; position:absolute; inset:6px; border-radius:1px; background:var(--conduct)}
+.cell.on.pf::after{inset:5px; border-radius:50%}
+.cell.rs{background:var(--reserve-soft); cursor:pointer}
+.cell.rs::after{content:""; position:absolute; inset:6px; border:1.5px solid var(--reserve); border-radius:1px}
+.cell.on:hover::after,.cell.rs:hover::after{inset:3px}
+.cell.sel{box-shadow:inset 0 0 0 2px var(--ink)}
+.row-dim{opacity:.24}
+
+/* ---------- detail rail ---------- */
+.rail{position:sticky; top:16px; border:1px solid var(--edge); border-radius:3px;
+  background:var(--panel); padding:18px; min-height:260px}
+@media (max-width:960px){.rail{position:static}}
+.rail .ph{color:var(--ink-3); font-size:13.5px; margin:0}
+.rail h3{font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600;
+  margin:0 0 2px; letter-spacing:-.01em; word-break:break-word}
+.rail h3 .x{color:var(--ink-3); font-weight:400}
+.rail .cap{font-size:12.5px; color:var(--ink-2); margin:0 0 14px}
+.rail dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font-size:12.5px}
+.rail dt{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-3); padding-top:2px}
+.rail dd{margin:0; color:var(--ink); word-break:break-word}
+.fx{font-family:"IBM Plex Mono",monospace; font-size:11.5px; background:var(--sunk);
+  border:1px solid var(--edge); border-radius:2px; padding:9px 10px; margin:12px 0;
+  overflow-x:auto; white-space:pre-wrap; line-height:1.5; color:var(--conduct-ink)}
+.warnbox{border-left:2px solid var(--reserve); background:var(--reserve-soft);
+  padding:9px 11px; margin:12px 0; font-size:12.5px}
+.warnbox b{color:var(--reserve)}
+.taglist{display:flex; flex-wrap:wrap; gap:4px; margin-top:4px}
+.tag{font-family:"IBM Plex Mono",monospace; font-size:10.5px; padding:2px 6px;
+  border:1px solid var(--edge-2); border-radius:2px; color:var(--ink-2)}
+
+/* ---------- legend + footer ---------- */
+.legend{display:flex; flex-wrap:wrap; gap:18px; padding:14px 0 0;
+  font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-2)}
+.legend span{display:flex; align-items:center; gap:7px}
+.sw{width:13px; height:13px; border-radius:1px; position:relative; flex:none}
+.sw.on{background:var(--conduct-soft)} .sw.on::after{content:"";position:absolute;inset:3px;background:var(--conduct);border-radius:1px}
+.sw.pf{background:var(--conduct-soft)} .sw.pf::after{content:"";position:absolute;inset:2px;background:var(--conduct);border-radius:50%}
+.sw.rs{background:var(--reserve-soft)} .sw.rs::after{content:"";position:absolute;inset:3px;border:1.5px solid var(--reserve);border-radius:1px}
+.sw.dead{background:var(--dead)}
+footer{border-top:1px solid var(--edge); background:var(--panel); padding:26px 0 40px;
+  color:var(--ink-3); font-size:12.5px}
+footer p{margin:0 0 6px; max-width:78ch}
+footer code{font-family:"IBM Plex Mono",monospace; color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap top-in">
+    <div>
+      <h1>Only <em>322</em> of 1,376 columns exist.</h1>
+      <p class="sub">BattleGrid's Strategy Builder looks like an 86&nbsp;&times;&nbsp;16 grid of metric &times; transform.
+        It isn't. It's a sparse partial function — and the holes are the whole story.</p>
+    </div>
+    <div class="stamp">
+      <span>Extracted <b id="stamp-date"></b></span>
+      <span>Read-only · quota untouched</span>
+      <span>Source <b>get_metric_construction_hints</b></span>
+    </div>
+  </div>
+  <div class="wrap"><div class="stats" id="stats"></div></div>
+</header>
+
+<main>
+  <section class="wrap sheet-sec">
+    <p class="eyebrow">The whole contract, one cell per pair</p>
+    <div class="sheet-head">
+      <h2>Contact sheet</h2>
+      <p>Every metric is a column of this strip; every transform a row. Lit cells conduct.
+         The density you're looking at is <strong>23.4%</strong>.</p>
+    </div>
+    <div class="sheet" id="sheet" role="img"
+         aria-label="Micro view of the 86 by 16 composability matrix; 322 of 1376 cells are legal."></div>
+    <div class="sheet-axis"><span>86 metrics &rarr;</span><span>16 transforms &darr;</span></div>
+  </section>
+
+  <section class="wrap">
+    <div class="controls" id="controls">
+      <input class="search" id="search" type="search" placeholder="filter metrics…" aria-label="Filter metrics">
+      <span class="spacer"></span>
+      <button class="tog" id="legalOnly" aria-pressed="false">show composable only</button>
+    </div>
+    <div class="legend">
+      <span><i class="sw on"></i>composable</span>
+      <span><i class="sw pf"></i>composable · used by a preset section</span>
+      <span><i class="sw rs"></i>reserved — the platform uses it, you can't</span>
+      <span><i class="sw dead"></i>no resolution home</span>
+    </div>
+
+    <div class="board">
+      <div class="scroll"><div class="grid" id="grid"></div></div>
+      <aside class="rail" id="rail" aria-live="polite">
+        <p class="ph">Select any lit cell to read its contract — formula, parameters, null behaviour,
+           and the whitelists that govern it.</p>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Four mechanisms carve the holes:</strong> per-metric transform whitelists; unit-typed
+      spread pools (8 pools, fully symmetric, self-excluded); per-metric rank orderings; and platform
+      privilege. Two produce results opposite to intuition — <code>CLOSE_CHANGE</code> offers only
+      <code>far</code>/<code>near</code> ranking while <code>FUNDING_RATE</code>, equally signed, offers all four.</p>
+    <p>A dated snapshot of a live system. Verified against the compiler: 20 columns submitted to
+      <code>get_strategy_column_contract</code>, every verdict matching. Re-extract before trusting it
+      against a changed platform.</p>
+  </div>
+</footer>
+
+<script>
+const D = __DATA__;
+
+/* ---------- stats ---------- */
+const S = D.stats;
+document.getElementById('stamp-date').textContent = D.extractedOn;
+document.getElementById('stats').innerHTML = [
+  ['metrics', S.metrics, ''],
+  ['transforms', S.transforms, ''],
+  ['pairs possible', S.cells.toLocaleString(), ''],
+  ['actually composable', S.legal, 'hi'],
+  ['density', S.density + '%', 'hi'],
+  ['reserved pairs', S.privilegedPairs, 'warn'],
+  ['spread pools', S.pools, ''],
+].map(([l, n, c]) => `<div class="stat"><div class="n ${c}">${n}</div><div class="l">${l}</div></div>`).join('');
+
+/* ---------- contact sheet: metrics as columns, transforms as rows ---------- */
+const sheet = document.getElementById('sheet');
+let sh = '';
+for (const t of D.transforms) {
+  for (const m of D.metrics) {
+    const c = m.cells[t.id];
+    sh += `<i class="${c ? (c.s === 'legal' ? 'on' : 'rs') : ''}"></i>`;
+  }
+}
+sheet.innerHTML = sh;
+
+/* ---------- main grid ---------- */
+const grid = document.getElementById('grid');
+const famMap = Object.fromEntries(D.families.map(f => [f.id, f]));
+grid.style.setProperty('--gtc', `232px repeat(${D.transforms.length}, 46px) 46px`);
+
+function buildGrid() {
+  let h = `<div class="hd corner">metric</div>`;
+  for (const t of D.transforms)
+    h += `<div class="hd" title="${t.label} — supported on ${t.supported} metrics">${t.short}</div>`;
+  h += `<div class="hd res" title="${D.reserved.label} — platform-only, absent from every metric's whitelist">${D.reserved.short}</div>`;
+
+  let fam = null;
+  for (const m of D.metrics) {
+    if (m.fam !== fam) {
+      fam = m.fam;
+      const f = famMap[fam];
+      h += `<div class="band">${f.label} · <b>${f.count}</b> metrics</div>`;
+    }
+    const inert = m.tf === 'timeless';
+    h += `<div class="rl" data-row="${m.k}" title="${m.label}">${m.k}<span class="tf ${inert ? 'inert' : ''}">${inert ? 'inert' : ''}</span></div>`;
+    for (const t of D.transforms) {
+      const c = m.cells[t.id];
+      if (!c) { h += `<div class="cell" data-row="${m.k}"></div>`; continue; }
+      const cls = c.s === 'legal' ? ('on' + (c.pf ? ' pf' : '')) : 'rs';
+      h += `<button class="cell ${cls}" data-row="${m.k}" data-m="${m.k}" data-t="${t.id}"
+             aria-label="${m.k} by ${t.id}: ${c.s === 'legal' ? 'composable' : 'reserved'}"></button>`;
+    }
+    const rs = D.reserved.usedOn.includes(m.k);
+    h += rs
+      ? `<button class="cell rs" data-row="${m.k}" data-m="${m.k}" data-t="__reserved"
+           aria-label="${m.k} by classifyState: reserved for the platform"></button>`
+      : `<div class="cell" data-row="${m.k}"></div>`;
+  }
+  grid.innerHTML = h;
+}
+buildGrid();
+
+/* ---------- detail rail ---------- */
+const rail = document.getElementById('rail');
+const tById = Object.fromEntries(D.transforms.map(t => [t.id, t]));
+const mByK = Object.fromEntries(D.metrics.map(m => [m.k, m]));
+const esc = s => String(s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+const tags = a => `<div class="taglist">${a.map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div>`;
+
+function show(mk, tid) {
+  const m = mByK[mk];
+  if (tid === '__reserved') {
+    rail.innerHTML = `<h3>${esc(m.k)} <span class="x">&times;</span> classifyState</h3>
+      <p class="cap">${esc(D.reserved.label)}</p>
+      <div class="warnbox"><b>Reserved.</b> ${esc(D.reserved.summary)} It is absent from every
+        metric's authorable whitelist, so a custom column using it is rejected with
+        <code>REPORT_COLUMN_PAIR_UNSUPPORTED</code>.</div>
+      <dl><dt>used on</dt><dd>${D.reserved.usedOn.join(', ')}</dd>
+      <dt>by sections</dt><dd>${D.reserved.usedBy.join(', ')}</dd>
+      <dt>substitute</dt><dd>${m.cells.classifyZone ? '<code>classifyZone</code>' : 'none available'}</dd></dl>`;
+    return;
+  }
+  const t = tById[tid], c = m.cells[tid];
+  if (!c) return;
+
+  if (c.s === 'priv') {
+    rail.innerHTML = `<h3>${esc(m.k)} <span class="x">&times;</span> ${esc(t.id)}</h3>
+      <p class="cap">${esc(t.label)}</p>
+      <div class="warnbox"><b>Reserved.</b> The preset section <code>${esc(c.sec)}</code> uses this
+        exact pair, but it is missing from ${esc(m.k)}'s whitelist — so you can't.
+        ${m.range ? '' : `<br><br>${esc(t.id)} classifies a <em>bounded</em> series, and
+        ${esc(m.k)}'s contract declares no range. No canonical bounds, no zone policy for authors.`}</div>
+      <dl><dt>your options</dt><dd>${Object.keys(m.cells).filter(k => m.cells[k].s === 'legal').join(', ')}</dd></dl>`;
+    return;
+  }
+
+  const bits = [];
+  bits.push(`<h3>${esc(m.k)} <span class="x">&times;</span> ${esc(t.id)}</h3>
+    <p class="cap">${esc(t.summary)}</p>
+    <div class="fx">${esc(t.formula)}</div>`);
+
+  const dl = [];
+  dl.push(['emits', t.emits === 'window + 1'
+    ? '<strong>window + 1</strong> headers — the only fan-out transform'
+    : esc(t.emits) + ' header']);
+  dl.push(['header', `<code>${esc(headerFor(m, t))}</code>`]);
+  dl.push(['metric', `${esc(m.kind)}${m.unit ? ' · ' + esc(m.unit) : ''}${m.range ? ' · [' + (m.range.min ?? '') + (m.range.max != null ? '–' + m.range.max : '+') + ']' : ''}`]);
+  dl.push(['timeframe', m.tf === 'timeless'
+    ? '<strong>inert</strong> — barred from a section with a timeframe override'
+    : 'candle-backed']);
+  if (c.ord && c.ord.length) dl.push(['orderings', tags(c.ord)]);
+  if (c.chain) dl.push(['chains into', tags(c.chain)]);
+  if (c.cro) dl.push(['chained rank ord.', tags(c.cro)]);
+  if (c.pf) dl.push(['preset use', 'a platform section uses this pair']);
+  bits.push(`<dl>${dl.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`);
+
+  if (c.rso) bits.push(`<div class="warnbox"><b>Narrow chain.</b> <code>spread &rarr; rank</code> resolves
+    only for the operand ${c.rso.map(x => '<code>' + esc(x) + '</code>').join(', ')}. Raw price-unit
+    metrics never rank — an ordinal over a price level sorts by token denomination.</div>`);
+
+  if (t.params.length) bits.push(`<dl>${t.params.map(p =>
+    `<dt>${esc(p.name)}</dt><dd>${p.required ? '<strong>required</strong>' : 'default <code>' + esc(String(p.default)) + '</code>'} — ${esc(p.desc)}</dd>`).join('')}</dl>`);
+
+  if (c.ops) bits.push(`<dl><dt>spread operands</dt><dd>${c.ops.length} in the
+    <code>${esc(m.unit)}</code> pool${tags(c.ops)}</dd></dl>`);
+
+  bits.push(`<dl><dt>null when</dt><dd>${esc(t.nullBehavior)}</dd></dl>`);
+  if (t.note) bits.push(`<dl><dt>note</dt><dd>${esc(t.note)}</dd></dl>`);
+  rail.innerHTML = bits.join('');
+}
+
+function headerFor(m, t) {
+  const c = m.code;
+  switch (t.id) {
+    case 'value': return c;
+    case 'trajectory': return `${c}_t3 … ${c}_now, ${c}_trend`;
+    case 'distance': return `dist_${c}`;
+    case 'spread': return `${c}_{operand}_spread`;
+    case 'efficiency': return `${c}_er`;
+    case 'maxShare': return `${c}_maxShare`;
+    case 'aggregate': return `${c}_mean24`;
+    case 'bandTouch': return `${c}_touch`;
+    case 'rank': return `${c}_rank_{ord}`;
+    case 'count': return `${c}_count`;
+    case 'classifyZone': case 'crossDetect': return c;
+    default: return `${c}_{side}_${t.id.replace('nearestZone', '').toLowerCase()}`;
+  }
+}
+
+let sel = null;
+grid.addEventListener('click', e => {
+  const b = e.target.closest('button.cell');
+  if (!b) return;
+  if (sel) sel.classList.remove('sel');
+  sel = b; b.classList.add('sel');
+  show(b.dataset.m, b.dataset.t);
+});
+
+/* ---------- filters ---------- */
+const search = document.getElementById('search');
+const legalOnly = document.getElementById('legalOnly');
+function applyFilters() {
+  const q = search.value.trim().toUpperCase();
+  const only = legalOnly.getAttribute('aria-pressed') === 'true';
+  const hidden = new Set();
+  for (const m of D.metrics) {
+    const qMiss = q && !(m.k.includes(q) || m.label.toUpperCase().includes(q) || m.fam.toUpperCase().includes(q));
+    if (qMiss) hidden.add(m.k);
+  }
+  grid.querySelectorAll('[data-row]').forEach(el => {
+    el.style.display = hidden.has(el.dataset.row) ? 'none' : '';
+  });
+  grid.querySelectorAll('.cell:not(.on):not(.rs)').forEach(el => {
+    el.classList.toggle('row-dim', only);
+  });
+}
+search.addEventListener('input', applyFilters);
+legalOnly.addEventListener('click', () => {
+  const on = legalOnly.getAttribute('aria-pressed') === 'true';
+  legalOnly.setAttribute('aria-pressed', String(!on));
+  legalOnly.classList.toggle('chip', !on);
+  applyFilters();
+});
+</script>

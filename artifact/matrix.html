@@ -1,0 +1,448 @@
+<title>BattleGrid Column Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap">
+
+<style>
+:root{
+  --ground:#EDEFF2; --panel:#F6F7F9; --sunk:#E3E7EC;
+  --ink:#111820; --ink-2:#495768; --ink-3:#7C8B9C;
+  --edge:#D2D8DF; --edge-2:#C0C8D2;
+  --dead:#DCE1E7;
+  --conduct:#1E8F87; --conduct-soft:#B9E3DF; --conduct-ink:#0B5C56;
+  --reserve:#A8721F; --reserve-soft:#F0DCB6;
+  --focus:#1E8F87;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F151C; --panel:#151D26; --sunk:#0A0F14;
+    --ink:#E8EDF3; --ink-2:#9DAEC0; --ink-3:#64748696;
+    --ink-3:#697A8C;
+    --edge:#243040; --edge-2:#33445A;
+    --dead:#1A232E;
+    --conduct:#35B0A7; --conduct-soft:#153833; --conduct-ink:#7FD8D0;
+    --reserve:#C98A2E; --reserve-soft:#3A2C13;
+    --focus:#35B0A7;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F151C; --panel:#151D26; --sunk:#0A0F14;
+  --ink:#E8EDF3; --ink-2:#9DAEC0; --ink-3:#697A8C;
+  --edge:#243040; --edge-2:#33445A;
+  --dead:#1A232E;
+  --conduct:#35B0A7; --conduct-soft:#153833; --conduct-ink:#7FD8D0;
+  --reserve:#C98A2E; --reserve-soft:#3A2C13;
+  --focus:#35B0A7;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+.wrap{max-width:1240px; margin:0 auto; padding:0 24px}
+
+/* ---------- masthead ---------- */
+header.top{border-bottom:1px solid var(--edge); background:var(--panel)}
+.top-in{display:flex; flex-wrap:wrap; gap:20px 32px; align-items:flex-end;
+  justify-content:space-between; padding:44px 0 30px}
+h1{
+  font-family:Archivo,system-ui,sans-serif; font-weight:700;
+  font-size:clamp(30px,4.6vw,50px); line-height:1.02; letter-spacing:-.026em;
+  margin:0; text-wrap:balance; max-width:15ch;
+}
+h1 em{font-style:normal; color:var(--conduct)}
+.sub{color:var(--ink-2); max-width:56ch; margin:14px 0 0; font-size:15.5px}
+.stamp{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--ink-3); display:flex; gap:8px;
+  flex-direction:column; align-items:flex-start; white-space:nowrap;
+}
+.stamp b{color:var(--ink-2); font-weight:500}
+
+/* ---------- stat strip ---------- */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
+  border-top:1px solid var(--edge); border-bottom:1px solid var(--edge); background:var(--ground)}
+.stat{padding:16px 20px; border-right:1px solid var(--edge)}
+.stat:last-child{border-right:none}
+.stat .n{font-family:Archivo,sans-serif; font-weight:600; font-size:26px;
+  letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1.1}
+.stat .n.hi{color:var(--conduct)}
+.stat .n.warn{color:var(--reserve)}
+.stat .l{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.085em;
+  text-transform:uppercase; color:var(--ink-3); margin-top:4px}
+
+/* ---------- contact sheet hero ---------- */
+.sheet-sec{padding:40px 0 12px}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 10px}
+.sheet-head{display:flex; flex-wrap:wrap; gap:8px 28px; align-items:baseline; margin-bottom:18px}
+.sheet-head h2{font-family:Archivo,sans-serif; font-size:19px; font-weight:600;
+  letter-spacing:-.012em; margin:0}
+.sheet-head p{margin:0; color:var(--ink-2); font-size:14px; max-width:60ch}
+.sheet{
+  display:grid; grid-template-columns:repeat(86,1fr); gap:2px;
+  background:var(--panel); border:1px solid var(--edge); border-radius:3px;
+  padding:12px; overflow-x:auto;
+}
+.sheet i{display:block; aspect-ratio:1; border-radius:1px; background:var(--dead); min-width:3px}
+.sheet i.on{background:var(--conduct)}
+.sheet i.rs{background:var(--reserve)}
+.sheet-axis{display:flex; justify-content:space-between; margin-top:8px;
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-3)}
+
+/* ---------- controls ---------- */
+.controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+  padding:26px 0 14px; border-bottom:1px solid var(--edge)}
+.chip{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.03em;
+  padding:5px 11px; border:1px solid var(--edge-2); border-radius:2px;
+  background:transparent; color:var(--ink-2); cursor:pointer; transition:.13s;
+}
+.chip:hover{border-color:var(--ink-3); color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--conduct); border-color:var(--conduct); color:var(--ground)}
+.chip:focus-visible,.cell:focus-visible,.tog:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+input.search{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; padding:6px 11px;
+  border:1px solid var(--edge-2); border-radius:2px; background:var(--panel);
+  color:var(--ink); min-width:190px;
+}
+input.search::placeholder{color:var(--ink-3)}
+.spacer{flex:1}
+.tog{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-2);
+  background:none; border:1px solid var(--edge-2); border-radius:2px; padding:5px 11px; cursor:pointer}
+
+/* ---------- matrix ---------- */
+.board{display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:22px;
+  align-items:start; padding:20px 0 60px}
+@media (max-width:960px){.board{grid-template-columns:minmax(0,1fr)}}
+.scroll{overflow:auto; max-height:74vh; border:1px solid var(--edge);
+  border-radius:3px; background:var(--panel)}
+.grid{display:grid; grid-template-columns:var(--gtc); min-width:max-content}
+.hd,.rl,.cell,.band{border-right:1px solid var(--edge); border-bottom:1px solid var(--edge)}
+.hd{
+  position:sticky; top:0; z-index:2; background:var(--sunk);
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.04em;
+  color:var(--ink-2); padding:9px 5px; text-align:center; white-space:nowrap; cursor:help;
+}
+.hd.corner{left:0; z-index:4; text-align:left; padding-left:12px; color:var(--ink-3)}
+.hd.res{color:var(--reserve); border-left:2px solid var(--reserve)}
+.rl{
+  position:sticky; left:0; z-index:1; background:var(--panel);
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; padding:0 12px;
+  display:flex; align-items:center; gap:7px; white-space:nowrap;
+}
+.rl .tf{font-size:9px; letter-spacing:.06em; color:var(--ink-3); text-transform:uppercase}
+.rl .tf.inert{color:var(--reserve)}
+.band{
+  grid-column:1/-1; position:sticky; left:0; background:var(--sunk);
+  font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--ink-3); padding:7px 12px;
+  border-right:none; z-index:1;
+}
+.band b{color:var(--conduct); font-weight:500}
+.cell{
+  height:26px; background:transparent; border-top:none; border-left:none;
+  cursor:default; padding:0; position:relative; display:block; width:100%;
+}
+.cell.on{background:var(--conduct-soft); cursor:pointer}
+.cell.on::after{content:""; position:absolute; inset:6px; border-radius:1px; background:var(--conduct)}
+.cell.on.pf::after{inset:5px; border-radius:50%}
+.cell.rs{background:var(--reserve-soft); cursor:pointer}
+.cell.rs::after{content:""; position:absolute; inset:6px; border:1.5px solid var(--reserve); border-radius:1px}
+.cell.on:hover::after,.cell.rs:hover::after{inset:3px}
+.cell.sel{box-shadow:inset 0 0 0 2px var(--ink)}
+.row-dim{opacity:.24}
+
+/* ---------- detail rail ---------- */
+.rail{position:sticky; top:16px; border:1px solid var(--edge); border-radius:3px;
+  background:var(--panel); padding:18px; min-height:260px}
+@media (max-width:960px){.rail{position:static}}
+.rail .ph{color:var(--ink-3); font-size:13.5px; margin:0}
+.rail h3{font-family:"IBM Plex Mono",monospace; font-size:14px; font-weight:600;
+  margin:0 0 2px; letter-spacing:-.01em; word-break:break-word}
+.rail h3 .x{color:var(--ink-3); font-weight:400}
+.rail .cap{font-size:12.5px; color:var(--ink-2); margin:0 0 14px}
+.rail dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font-size:12.5px}
+.rail dt{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ink-3); padding-top:2px}
+.rail dd{margin:0; color:var(--ink); word-break:break-word}
+.fx{font-family:"IBM Plex Mono",monospace; font-size:11.5px; background:var(--sunk);
+  border:1px solid var(--edge); border-radius:2px; padding:9px 10px; margin:12px 0;
+  overflow-x:auto; white-space:pre-wrap; line-height:1.5; color:var(--conduct-ink)}
+.warnbox{border-left:2px solid var(--reserve); background:var(--reserve-soft);
+  padding:9px 11px; margin:12px 0; font-size:12.5px}
+.warnbox b{color:var(--reserve)}
+.taglist{display:flex; flex-wrap:wrap; gap:4px; margin-top:4px}
+.tag{font-family:"IBM Plex Mono",monospace; font-size:10.5px; padding:2px 6px;
+  border:1px solid var(--edge-2); border-radius:2px; color:var(--ink-2)}
+
+/* ---------- legend + footer ---------- */
+.legend{display:flex; flex-wrap:wrap; gap:18px; padding:14px 0 0;
+  font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-2)}
+.legend span{display:flex; align-items:center; gap:7px}
+.sw{width:13px; height:13px; border-radius:1px; position:relative; flex:none}
+.sw.on{background:var(--conduct-soft)} .sw.on::after{content:"";position:absolute;inset:3px;background:var(--conduct);border-radius:1px}
+.sw.pf{background:var(--conduct-soft)} .sw.pf::after{content:"";position:absolute;inset:2px;background:var(--conduct);border-radius:50%}
+.sw.rs{background:var(--reserve-soft)} .sw.rs::after{content:"";position:absolute;inset:3px;border:1.5px solid var(--reserve);border-radius:1px}
+.sw.dead{background:var(--dead)}
+footer{border-top:1px solid var(--edge); background:var(--panel); padding:26px 0 40px;
+  color:var(--ink-3); font-size:12.5px}
+footer p{margin:0 0 6px; max-width:78ch}
+footer code{font-family:"IBM Plex Mono",monospace; color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap top-in">
+    <div>
+      <h1>Only <em>322</em> of 1,376 columns exist.</h1>
+      <p class="sub">BattleGrid's Strategy Builder looks like an 86&nbsp;&times;&nbsp;16 grid of metric &times; transform.
+        It isn't. It's a sparse partial function — and the holes are the whole story.</p>
+    </div>
+    <div class="stamp">
+      <span>Extracted <b id="stamp-date"></b></span>
+      <span>Read-only · quota untouched</span>
+      <span>Source <b>get_metric_construction_hints</b></span>
+    </div>
+  </div>
+  <div class="wrap"><div class="stats" id="stats"></div></div>
+</header>
+
+<main>
+  <section class="wrap sheet-sec">
+    <p class="eyebrow">The whole contract, one cell per pair</p>
+    <div class="sheet-head">
+      <h2>Contact sheet</h2>
+      <p>Every metric is a column of this strip; every transform a row. Lit cells conduct.
+         The density you're looking at is <strong>23.4%</strong>.</p>
+    </div>
+    <div class="sheet" id="sheet" role="img"
+         aria-label="Micro view of the 86 by 16 composability matrix; 322 of 1376 cells are legal."></div>
+    <div class="sheet-axis"><span>86 metrics &rarr;</span><span>16 transforms &darr;</span></div>
+  </section>
+
+  <section class="wrap">
+    <div class="controls" id="controls">
+      <input class="search" id="search" type="search" placeholder="filter metrics…" aria-label="Filter metrics">
+      <span class="spacer"></span>
+      <button class="tog" id="legalOnly" aria-pressed="false">show composable only</button>
+    </div>
+    <div class="legend">
+      <span><i class="sw on"></i>composable</span>
+      <span><i class="sw pf"></i>composable · used by a preset section</span>
+      <span><i class="sw rs"></i>reserved — the platform uses it, you can't</span>
+      <span><i class="sw dead"></i>no resolution home</span>
+    </div>
+
+    <div class="board">
+      <div class="scroll"><div class="grid" id="grid"></div></div>
+      <aside class="rail" id="rail" aria-live="polite">
+        <p class="ph">Select any lit cell to read its contract — formula, parameters, null behaviour,
+           and the whitelists that govern it.</p>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>Four mechanisms carve the holes:</strong> per-metric transform whitelists; unit-typed
+      spread pools (8 pools, fully symmetric, self-excluded); per-metric rank orderings; and platform
+      privilege. Two produce results opposite to intuition — <code>CLOSE_CHANGE</code> offers only
+      <code>far</code>/<code>near</code> ranking while <code>FUNDING_RATE</code>, equally signed, offers all four.</p>
+    <p>A dated snapshot of a live system. Verified against the compiler: 20 columns submitted to
+      <code>get_strategy_column_contract</code>, every verdict matching. Re-extract before trusting it
+      against a changed platform.</p>
+  </div>
+</footer>
+
+<script>
+const D = {"reserved":{"id":"classifyState","short":"cSta","label":"State label","summary":"Platform-only. Classify a metric into its canonical state vocabulary.","usedOn":["ADX","CVD","MFI14"],"usedBy":["includeCvd","includeHigherTimeframe","includeMfi","includeMtfConfluence","includeTrendStrength"]},"transforms":[{"id":"value","short":"val","label":"Value","summary":"Select one value at the requested offset.","formula":"output = base[t - offset]","emits":"1","nullBehavior":"Returns null when the requested slot is absent or the source value is null.","params":[{"name":"offset","required":false,"default":0,"desc":"Bars before the latest value; 0 selects the current resolved value."}],"supported":85,"note":null},{"id":"trajectory","short":"traj","label":"Trajectory","summary":"Render the recent build-up plus its rising, falling, or flat direction.","formula":"slots = last window non-null base values; trend = compare(first, last)","emits":"window + 1","nullBehavior":"Missing observations produce null slots; an empty series has null now and trend.","params":[{"name":"window","required":false,"default":4,"desc":"Number of non-null observations represented by the trajectory."},{"name":"bars","required":false,"default":"all","desc":"Which bars feed the series: 'all' includes the live forming bar as now; 'closed' uses closed bars only."}],"supported":46,"note":null},{"id":"distance","short":"dist","label":"Distance from price","summary":"Measure signed percentage distance from current price to a price-level metric.","formula":"output = ((price - base) / base) × 100","emits":"1","nullBehavior":"Returns null when price or the base level is null, or when the base level is zero.","params":[],"supported":18,"note":null},{"id":"spread","short":"sprd","label":"Spread vs metric","summary":"Measure the signed percentage gap between the base and one operand metric.","formula":"output = (base - inputs[0]) / inputs[0] × 100","emits":"1","nullBehavior":"Returns null when either operand is null or the second operand is zero.","params":[{"name":"inputs","required":true,"default":null,"desc":"Exactly one candle-backed operand metric, resolved at the base column timeframe."}],"supported":57,"note":null},{"id":"efficiency","short":"eff","label":"Efficiency (ER)","summary":"Measure how directly the series travelled: net movement divided by the total distance covered.","formula":"output = |base[last] - base[first]| / sum(|base[i] - base[i-1]|) over the window","emits":"1","nullBehavior":"Returns null when the window holds fewer than two non-null points, or when every consecutive delta is zero (a flat series has no efficiency).","params":[{"name":"window","required":false,"default":21,"desc":"Number of non-null POINTS in the window — N moves needs window N+1."},{"name":"bars","required":false,"default":"all","desc":"Which bars feed the series: 'all' includes the live forming bar; 'closed' uses closed bars only."}],"supported":43,"note":null},{"id":"aggregate","short":"agg","label":"Windowed aggregate","summary":"Compute the mean of non-null history values in the selected window.","formula":"output = sum(nonNull(base[-window:])) / count(nonNull(base[-window:]))","emits":"1","nullBehavior":"Returns null when the selected history window has no non-null values.","params":[{"name":"window","required":false,"default":24,"desc":"Number of history observations included in the canonical mean."}],"supported":3,"note":"Mean only — there is no sum/min/max variant."},{"id":"maxShare","short":"mxSh","label":"Largest share","summary":"Report how much of the window total sits in its single largest observation.","formula":"output = max(nonNull(base[-window:])) / sum(nonNull(base[-window:]))","emits":"1","nullBehavior":"Returns null when the window holds no non-null values, or when they total zero (a share of nothing is not a number).","params":[{"name":"window","required":false,"default":24,"desc":"Number of non-null observations included in the window total."},{"name":"bars","required":false,"default":"all","desc":"Which bars feed the series: 'all' includes the live forming bar; 'closed' uses closed bars only."}],"supported":14,"note":null},{"id":"rank","short":"rank","label":"Peer rank","summary":"Read the platform-computed ordinal for the base metric across the tracked universe. The ranked set holds current values only, so there is no historical ordinal to offset into.","formula":"output = ordinal(base among the ranked universe, by the chosen ordering)","emits":"1","nullBehavior":"Returns null when the ranked universe carries no entry for the asset.","params":[{"name":"ordering","required":false,"default":"hi","desc":"Which end of the universe rank 1 names: Highest, Lowest, Furthest from zero, or Closest to zero. The magnitude pair is offered only where the metric can be negative."}],"supported":31,"note":"Current values only — no historical offset. Allowed orderings are per-metric policy (see rankOrderings), NOT derivable from whether the metric can be negative."},{"id":"classifyZone","short":"zone","label":"Zone label","summary":"Classify a bounded oscillator with its canonical overbought and oversold policy.","formula":"output = oscillatorZone(base)","emits":"1","nullBehavior":"Returns null when the source oscillator is null.","params":[],"supported":5,"note":null},{"id":"crossDetect","short":"xdet","label":"Cross detect","summary":"Detect a bullish or bearish crossing in the canonical source series.","formula":"output = crossDirection(base[t - 1], base[t])","emits":"1","nullBehavior":"Returns null when the two observations required for crossing are unavailable.","params":[],"supported":2,"note":null},{"id":"bandTouch","short":"band","label":"Band touch","summary":"Classify current price proximity to the canonical upper and lower bands.","formula":"output = bandTouch(base, current price)","emits":"1","nullBehavior":"Returns null when the price or band values required by the classifier are unavailable.","params":[],"supported":13,"note":"Authorable but used by ZERO platform templates."},{"id":"count","short":"cnt","label":"Zone count","summary":"Count active entities in the resolved set.","formula":"output = cardinality(base)","emits":"1","nullBehavior":"An empty resolved set returns zero; an unavailable entity set returns null.","params":[],"supported":1,"note":null},{"id":"nearestZoneType","short":"nzTy","label":"Nearest zone type","summary":"Return the canonical type of the nearest zone on the selected side.","formula":"output = type(nearest(base filtered by side))","emits":"1","nullBehavior":"Returns null when no active zone exists on the selected side.","params":[{"name":"side","required":true,"default":null,"desc":"Select whether the nearest support or resistance zone is resolved."}],"supported":1,"note":null},{"id":"nearestZoneRange","short":"nzRg","label":"Nearest zone range","summary":"Return the low-to-high price range of the nearest zone on the selected side.","formula":"output = [low, high] of nearest(base filtered by side)","emits":"1","nullBehavior":"Returns null when no active zone exists on the selected side.","params":[{"name":"side","required":true,"default":null,"desc":"Select whether the nearest support or resistance zone is resolved."}],"supported":1,"note":null},{"id":"nearestZoneDist","short":"nzDs","label":"Nearest zone distance","summary":"Measure signed percentage distance from price to the nearest zone midpoint.","formula":"output = ((price - midpoint(nearest zone)) / midpoint(nearest zone)) × 100","emits":"1","nullBehavior":"Returns null when no active zone exists on the selected side or its midpoint is zero.","params":[{"name":"side","required":true,"default":null,"desc":"Select whether the nearest support or resistance zone is resolved."}],"supported":1,"note":null},{"id":"nearestZoneAge","short":"nzAg","label":"Nearest zone age","summary":"Return whole hours since the nearest zone was detected.","formula":"output = floor((now - detectedAt(nearest zone)) / 1 hour)","emits":"1","nullBehavior":"Returns null when no active zone exists on the selected side.","params":[{"name":"side","required":true,"default":null,"desc":"Select whether the nearest support or resistance zone is resolved."}],"supported":1,"note":null}],"metrics":[{"k":"BAR_FORMING","code":"bar","label":"Bar state","fam":"price","kind":"classification","unit":null,"tf":"candle","range":null,"vocab":["forming","closed"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"CLOSE","code":"close","label":"Close price","fam":"price","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency"]},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal","pf":true},"bandTouch":{"s":"legal"}},"n":6},{"k":"HIGH","code":"high","label":"High price","fam":"price","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency"]},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"LAST","code":"last","label":"Last traded price","fam":"price","kind":"numeric","unit":"price","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"distance":{"s":"legal"},"spread":{"s":"legal","op":true,"ops":["OPEN","HIGH","LOW","CLOSE","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]}},"n":3},{"k":"LOW","code":"low","label":"Low price","fam":"price","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency"]},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"MARK","code":"mark","label":"Mark price","fam":"price","kind":"numeric","unit":"price","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"distance":{"s":"legal"},"spread":{"s":"legal","op":true,"ops":["OPEN","HIGH","LOW","CLOSE","LAST","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"],"pf":true}},"n":3},{"k":"OPEN","code":"open","label":"Open price","fam":"price","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency"]},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"ORACLE","code":"oracle","label":"Oracle price","fam":"price","kind":"numeric","unit":"price","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"distance":{"s":"legal"},"spread":{"s":"legal","op":true,"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]}},"n":3},{"k":"SPOT_CLOSE_BN","code":"bnClose","label":"Spot close (Binance)","fam":"price","kind":"numeric","unit":"price","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"distance":{"s":"legal"},"spread":{"s":"legal","op":true,"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]}},"n":3},{"k":"SPOT_CLOSE_CB","code":"cbClose","label":"Spot close (Coinbase)","fam":"price","kind":"numeric","unit":"price","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"distance":{"s":"legal"},"spread":{"s":"legal","op":true,"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]}},"n":3},{"k":"CCI20","code":"CCI","label":"CCI (20)","fam":"momentum","kind":"numeric","unit":"oscillator","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["RSI14","RSI7","STOCH_K","STOCH_D","MFI14","ADX"]},"efficiency":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo","far","near"]},"classifyZone":{"s":"priv","sec":"includeBollingerBands"}},"n":5},{"k":"CHG_15M","code":"chg15m","label":"Change (15m)","fam":"momentum","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]}},"n":2},{"k":"CHG_1H","code":"chg1h","label":"Change (1h)","fam":"momentum","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]}},"n":2},{"k":"CHG_24H","code":"chg24h","label":"Change (24h)","fam":"momentum","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]}},"n":2},{"k":"CHG_4H","code":"chg4h","label":"Change (4h)","fam":"momentum","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]}},"n":2},{"k":"CHG_5M","code":"chg5m","label":"Change (5m)","fam":"momentum","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]}},"n":2},{"k":"CLOSE_CHANGE","code":"closeChg","label":"Close change","fam":"momentum","kind":"numeric","unit":"percent","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["PPO","ROC12","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},"efficiency":{"s":"legal"},"rank":{"s":"legal","ord":["far","near"],"pf":true}},"n":5},{"k":"MACD","code":"MACD","label":"MACD histogram","fam":"momentum","kind":"numeric","unit":"signedPrice","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["ATR","BB_WIDTH","CVD","SPOT_CVD"]},"efficiency":{"s":"legal"},"crossDetect":{"s":"legal","pf":true}},"n":5},{"k":"MFI14","code":"MFI14","label":"MFI (14)","fam":"momentum","kind":"numeric","unit":"oscillator","tf":"candle","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["RSI14","RSI7","STOCH_K","STOCH_D","CCI20","ADX"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]},"classifyZone":{"s":"legal"}},"n":7},{"k":"PPO","code":"PPO","label":"PPO histogram","fam":"momentum","kind":"numeric","unit":"percent","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},"efficiency":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo","far","near"]}},"n":5},{"k":"ROC12","code":"ROC","label":"ROC (12)","fam":"momentum","kind":"numeric","unit":"percent","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["PPO","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},"efficiency":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo","far","near"]},"crossDetect":{"s":"legal","pf":true}},"n":6},{"k":"RSI14","code":"RSI14","label":"RSI (14)","fam":"momentum","kind":"numeric","unit":"oscillator","tf":"candle","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["RSI7","STOCH_K","STOCH_D","MFI14","CCI20","ADX"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]},"classifyZone":{"s":"legal","pf":true}},"n":7},{"k":"RSI7","code":"RSI7","label":"RSI (7)","fam":"momentum","kind":"numeric","unit":"oscillator","tf":"candle","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["RSI14","STOCH_K","STOCH_D","MFI14","CCI20","ADX"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]},"classifyZone":{"s":"legal","pf":true}},"n":7},{"k":"STOCH_D","code":"D","label":"Stochastic %D","fam":"momentum","kind":"numeric","unit":"oscillator","tf":"candle","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["RSI14","RSI7","STOCH_K","MFI14","CCI20","ADX"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]}},"n":6},{"k":"STOCH_K","code":"K","label":"Stochastic %K","fam":"momentum","kind":"numeric","unit":"oscillator","tf":"candle","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["RSI14","RSI7","STOCH_D","MFI14","CCI20","ADX"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]},"classifyZone":{"s":"legal","pf":true}},"n":7},{"k":"ADX","code":"ADX","label":"ADX (14)","fam":"trend","kind":"numeric","unit":"oscillator","tf":"candle","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["RSI14","RSI7","STOCH_K","STOCH_D","MFI14","CCI20"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]},"classifyZone":{"s":"legal"}},"n":7},{"k":"EMA13","code":"EMA13","label":"EMA (13)","fam":"trend","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"EMA20","code":"EMA20","label":"EMA (20)","fam":"trend","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"EMA5","code":"EMA5","label":"EMA (5)","fam":"trend","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"rso":["EMA13"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"],"pf":true},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"EMA_CROSS","code":"EMA5_13","label":"EMA 5/13 cross","fam":"trend","kind":"event","unit":null,"tf":"candle","range":null,"vocab":["Bullish","Bearish"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"MA_ALIGN","code":"MAalign","label":"MA alignment","fam":"trend","kind":"classification","unit":null,"tf":"candle","range":null,"vocab":["bullish","bearish","mixed"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"SMA20","code":"SMA20","label":"SMA (20)","fam":"trend","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"SMA200","code":"SMA200","label":"SMA (200)","fam":"trend","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"SMA50","code":"SMA50","label":"SMA (50)","fam":"trend","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"ATR","code":"ATR","label":"ATR (14)","fam":"volatility","kind":"numeric","unit":"signedPrice","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["MACD","BB_WIDTH","CVD","SPOT_CVD"]},"efficiency":{"s":"legal"}},"n":4},{"k":"ATR_PCT","code":"atrPct","label":"ATR % of price","fam":"volatility","kind":"numeric","unit":"percent","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},"efficiency":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo","far","near"],"pf":true}},"n":5},{"k":"BB_WIDTH","code":"BBwidth","label":"Bollinger width","fam":"volatility","kind":"numeric","unit":"signedPrice","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["MACD","ATR","CVD","SPOT_CVD"]},"efficiency":{"s":"legal"}},"n":4},{"k":"BB_WIDTH_PCT","code":"bbWidthPct","label":"Bollinger width % of middle","fam":"volatility","kind":"numeric","unit":"percent","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},"efficiency":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo","far","near"],"pf":true}},"n":5},{"k":"HIGH_DEV","code":"highDev","label":"Bar high vs open","fam":"volatility","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},"rank":{"s":"legal","ord":["hi","lo","far","near"]}},"n":3},{"k":"LOW_DEV","code":"lowDev","label":"Bar low vs open","fam":"volatility","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},"rank":{"s":"legal","ord":["hi","lo","far","near"]}},"n":3},{"k":"BUY_PRESSURE","code":"buyPres","label":"Buy pressure","fam":"volumeFlow","kind":"numeric","unit":"fraction","tf":"candle","range":{"min":0,"max":1},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["BB_PCT_B"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]}},"n":6},{"k":"BUY_TRADES","code":"buyTr","label":"Buy trades","fam":"volumeFlow","kind":"numeric","unit":"count","tf":"candle","range":{"min":0},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["TRADES","SELL_TRADES"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]}},"n":6},{"k":"BUY_VOLUME","code":"buyVol","label":"Buy volume","fam":"volumeFlow","kind":"numeric","unit":"largeCount","tf":"candle","range":{"min":0},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["VOLUME","VOL_SMA20","SELL_VOLUME","OBV"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"}},"n":5},{"k":"CVD","code":"CVD","label":"CVD (session)","fam":"volumeFlow","kind":"numeric","unit":"signedPrice","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["MACD","ATR","BB_WIDTH","SPOT_CVD"]},"efficiency":{"s":"legal"}},"n":4},{"k":"NOTIONAL_VOLUME_1D","code":"vol24hUsd","label":"Notional volume (24h)","fam":"volumeFlow","kind":"numeric","unit":"usdLargeCount","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"spread":{"s":"legal","op":true,"ops":["OI"]}},"n":2},{"k":"OBV","code":"OBV","label":"OBV","fam":"volumeFlow","kind":"numeric","unit":"largeCount","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["VOLUME","VOL_SMA20","BUY_VOLUME","SELL_VOLUME"]},"efficiency":{"s":"legal"}},"n":4},{"k":"RVOL","code":"RVOL","label":"RVOL (relative volume)","fam":"volumeFlow","kind":"numeric","unit":"ratio","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"efficiency":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo","far","near"],"pf":true}},"n":4},{"k":"SELL_TRADES","code":"sellTr","label":"Sell trades","fam":"volumeFlow","kind":"numeric","unit":"count","tf":"candle","range":{"min":0},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["TRADES","BUY_TRADES"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]}},"n":6},{"k":"SELL_VOLUME","code":"sellVol","label":"Sell volume","fam":"volumeFlow","kind":"numeric","unit":"largeCount","tf":"candle","range":{"min":0},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["VOLUME","VOL_SMA20","BUY_VOLUME","OBV"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"}},"n":5},{"k":"SPOT_CVD","code":"spotCVD","label":"Spot CVD (composite)","fam":"volumeFlow","kind":"numeric","unit":"signedPrice","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"ops":["MACD","ATR","BB_WIDTH","CVD"]},"efficiency":{"s":"legal"},"aggregate":{"s":"legal"}},"n":5},{"k":"TRADES","code":"trades","label":"Trades","fam":"volumeFlow","kind":"numeric","unit":"count","tf":"candle","range":{"min":0},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["BUY_TRADES","SELL_TRADES"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]}},"n":6},{"k":"VOLUME","code":"volBase","label":"Volume","fam":"volumeFlow","kind":"numeric","unit":"largeCount","tf":"candle","range":{"min":0},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["VOL_SMA20","BUY_VOLUME","SELL_VOLUME","OBV"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal","pf":true}},"n":5},{"k":"VOL_SMA20","code":"volSMA20","label":"Volume SMA (20)","fam":"volumeFlow","kind":"numeric","unit":"largeCount","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal"},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["VOLUME","BUY_VOLUME","SELL_VOLUME","OBV"]},"efficiency":{"s":"legal"}},"n":4},{"k":"FUNDING_ANN","code":"ann","label":"Funding annualized","fam":"derivatives","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","OI_CHG"]}},"n":2},{"k":"FUNDING_LABEL","code":"rateLbl","label":"Funding label","fam":"derivatives","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["low","moderate","elevated","extreme"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"FUNDING_RATE","code":"rate","label":"Funding rate","fam":"derivatives","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_ANN","OI_CHG"]},"efficiency":{"s":"legal"},"aggregate":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo","far","near"]}},"n":6},{"k":"OI","code":"OI","label":"Open interest","fam":"derivatives","kind":"numeric","unit":"usdLargeCount","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["NOTIONAL_VOLUME_1D"]},"efficiency":{"s":"legal"},"aggregate":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo","far","near"]}},"n":6},{"k":"OI_CHG","code":"oiChg","label":"OI change","fam":"derivatives","kind":"numeric","unit":"percent","tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"ops":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN"]},"rank":{"s":"legal","ord":["hi","lo","far","near"]}},"n":3},{"k":"OI_PX_REGIME","code":"oiRegime","label":"OI · price regime","fam":"derivatives","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["new longs","new shorts","short covering","long liquidation"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"OI_VELOCITY","code":"oiVel","label":"OI velocity","fam":"derivatives","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["accelerating","decelerating","steady"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"BB_PCT_B","code":"pctB","label":"Bollinger %B","fam":"structure","kind":"numeric","unit":"fraction","tf":"candle","range":{"min":0,"max":1},"vocab":null,"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["BUY_PRESSURE"]},"efficiency":{"s":"legal"},"maxShare":{"s":"legal"},"rank":{"s":"legal","ord":["hi","lo"]}},"n":6},{"k":"BB_TOUCH","code":"BBtouch","label":"Band touch","fam":"structure","kind":"classification","unit":null,"tf":"candle","range":null,"vocab":["upper","lower","none"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"PRICE_ZONE","code":"zone","label":"Price zone","fam":"structure","kind":"classification","unit":null,"tf":"candle","range":null,"vocab":["breakout high","breakdown low","near high","near low","mid-range"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"STRUCT_ZONES","code":"zones","label":"Structure zones","fam":"structure","kind":"entitySet","unit":null,"tf":"candle","range":null,"vocab":null,"cells":{"count":{"s":"legal","pf":true},"nearestZoneType":{"s":"legal","side":true,"pf":true},"nearestZoneRange":{"s":"legal","side":true,"pf":true},"nearestZoneDist":{"s":"legal","side":true,"pf":true},"nearestZoneAge":{"s":"legal","side":true,"pf":true}},"n":5},{"k":"SWING_HIGH","code":"swingHi","label":"Swing high","fam":"structure","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_LOW","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"SWING_LOW","code":"swingLo","label":"Swing low","fam":"structure","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","VWAP"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"VWAP","code":"VWAP","label":"VWAP (session)","fam":"structure","kind":"numeric","unit":"price","tf":"candle","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true},"trajectory":{"s":"legal"},"distance":{"s":"legal","chain":["trajectory","aggregate","efficiency","rank"],"cro":["hi","lo","far","near"],"pf":true},"spread":{"s":"legal","op":true,"chain":["trajectory","aggregate","efficiency"],"ops":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW"]},"efficiency":{"s":"legal"},"bandTouch":{"s":"legal"}},"n":6},{"k":"REGIME_MOM","code":"regMom","label":"Regime · momentum","fam":"regime","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["bullish","bearish","neutral","diverging"],"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true}},"n":2},{"k":"REGIME_TREND","code":"regTrend","label":"Regime · trend","fam":"regime","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["trending up","trending down","ranging"],"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true}},"n":2},{"k":"REGIME_VOL","code":"regVol","label":"Regime · volatility","fam":"regime","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["expanding","contracting","normal"],"cells":{"value":{"s":"legal"},"trajectory":{"s":"legal","pf":true}},"n":2},{"k":"CROWD_ACC","code":"crowdAcc","label":"Crowd accuracy","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"CROWD_ACC_LIVE","code":"crowdAccLive","label":"Crowd accuracy (live)","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"CROWD_CAPT","code":"captRate","label":"Crowd captain rate","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"CROWD_CAPT_LIVE","code":"captRateLive","label":"Crowd captain rate (live)","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"CROWD_PICK","code":"pick","label":"Crowd pick rate","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"CROWD_PICK_LIVE","code":"pickLive","label":"Crowd pick rate (live)","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"CROWD_UPBIAS","code":"upBias","label":"Crowd up-bias","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"CROWD_UPBIAS_LIVE","code":"upBiasLive","label":"Crowd up-bias (live)","fam":"crowd","kind":"numeric","unit":"percent","tf":"timeless","range":{"min":0,"max":100},"vocab":null,"cells":{"value":{"s":"legal","pf":true},"rank":{"s":"legal","ord":["hi","lo"]}},"n":2},{"k":"SETTLED_AT","code":"settledAt","label":"Settled at","fam":"crowd","kind":"date","unit":null,"tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal"}},"n":1},{"k":"CAPTAIN_CONF","code":"captainConf","label":"Captain confidence","fam":"derived","kind":"boolean","unit":null,"tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"CONFIDENCE","code":"conf","label":"Convergence confidence","fam":"derived","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["high","moderate","low"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"FLOW_ALIGN","code":"flowAlign","label":"Flow alignment","fam":"derived","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["aligned bullish","aligned bearish","divergent","neutral"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"PERP_SPOT_CONFIRMS","code":"perpSpotConf","label":"Perp/spot confirms","fam":"derived","kind":"boolean","unit":null,"tf":"timeless","range":null,"vocab":null,"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"PERP_SPOT_FLOW","code":"perpSpotFlow","label":"Perp/spot flow","fam":"derived","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["confirmed_bull","confirmed_bear","perp_led_fragile","spot_led_accumulation","neutral"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"PERP_SPOT_STRENGTH","code":"perpSpotStr","label":"Perp/spot strength","fam":"derived","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["high","moderate","low"],"cells":{"value":{"s":"legal","pf":true}},"n":1},{"k":"SMART_RETAIL","code":"smartRetail","label":"Smart vs retail","fam":"derived","kind":"classification","unit":null,"tf":"timeless","range":null,"vocab":["hidden accumulation","hidden distribution","confirmed"],"cells":{"value":{"s":"legal","pf":true}},"n":1}],"families":[{"id":"price","label":"Price","purpose":"Read the raw traded price and the individual bar’s own open, high, low, and close.","count":10},{"id":"momentum","label":"Momentum","purpose":"Describe directional impulse, exhaustion, and the pace of price movement.","count":15},{"id":"trend","label":"Trend","purpose":"Describe direction, persistence, and price location relative to trend references.","count":9},{"id":"volatility","label":"Volatility","purpose":"Describe the magnitude and expansion or contraction of market movement.","count":6},{"id":"volumeFlow","label":"Volume & Flow","purpose":"Describe participation and the balance of buying and selling pressure.","count":13},{"id":"derivatives","label":"Derivatives","purpose":"Describe positioning, leverage demand, and funding pressure in perpetual markets.","count":7},{"id":"structure","label":"Structure","purpose":"Describe price location, reference levels, and active support or resistance zones.","count":7},{"id":"regime","label":"Regime","purpose":"Describe the platform-classified trend, volatility, and momentum environment.","count":3},{"id":"crowd","label":"Crowd","purpose":"Describe aggregate player positioning, confidence, and historical accuracy.","count":9},{"id":"derived","label":"Derived","purpose":"Describe platform-owned cross-family classifications and convergence facts.","count":7}],"pools":{"count":["BUY_TRADES","SELL_TRADES","TRADES"],"fraction":["BB_PCT_B","BUY_PRESSURE"],"largeCount":["BUY_VOLUME","OBV","SELL_VOLUME","VOLUME","VOL_SMA20"],"oscillator":["ADX","CCI20","MFI14","RSI14","RSI7","STOCH_D","STOCH_K"],"percent":["ATR_PCT","BB_WIDTH_PCT","CHG_15M","CHG_1H","CHG_24H","CHG_4H","CHG_5M","CLOSE_CHANGE","FUNDING_ANN","FUNDING_RATE","HIGH_DEV","LOW_DEV","OI_CHG","PPO","ROC12"],"price":["CLOSE","EMA13","EMA20","EMA5","HIGH","LAST","LOW","MARK","OPEN","ORACLE","SMA20","SMA200","SMA50","SPOT_CLOSE_BN","SPOT_CLOSE_CB","SWING_HIGH","SWING_LOW","VWAP"],"signedPrice":["ATR","BB_WIDTH","CVD","MACD","SPOT_CVD"],"usdLargeCount":["NOTIONAL_VOLUME_1D","OI"]},"noSpread":["BAR_FORMING","BB_TOUCH","CAPTAIN_CONF","CONFIDENCE","CROWD_ACC","CROWD_ACC_LIVE","CROWD_CAPT","CROWD_CAPT_LIVE","CROWD_PICK","CROWD_PICK_LIVE","CROWD_UPBIAS","CROWD_UPBIAS_LIVE","EMA_CROSS","FLOW_ALIGN","FUNDING_LABEL","MA_ALIGN","OI_PX_REGIME","OI_VELOCITY","PERP_SPOT_CONFIRMS","PERP_SPOT_FLOW","PERP_SPOT_STRENGTH","PRICE_ZONE","REGIME_MOM","REGIME_TREND","REGIME_VOL","RVOL","SETTLED_AT","SMART_RETAIL","STRUCT_ZONES"],"stats":{"metrics":86,"transforms":16,"cells":1376,"legal":322,"density":23.4,"privilegedPairs":4,"privInGrid":1,"pools":8},"extractedOn":"2026-08-24"};
+
+/* ---------- stats ---------- */
+const S = D.stats;
+document.getElementById('stamp-date').textContent = D.extractedOn;
+document.getElementById('stats').innerHTML = [
+  ['metrics', S.metrics, ''],
+  ['transforms', S.transforms, ''],
+  ['pairs possible', S.cells.toLocaleString(), ''],
+  ['actually composable', S.legal, 'hi'],
+  ['density', S.density + '%', 'hi'],
+  ['reserved pairs', S.privilegedPairs, 'warn'],
+  ['spread pools', S.pools, ''],
+].map(([l, n, c]) => `<div class="stat"><div class="n ${c}">${n}</div><div class="l">${l}</div></div>`).join('');
+
+/* ---------- contact sheet: metrics as columns, transforms as rows ---------- */
+const sheet = document.getElementById('sheet');
+let sh = '';
+for (const t of D.transforms) {
+  for (const m of D.metrics) {
+    const c = m.cells[t.id];
+    sh += `<i class="${c ? (c.s === 'legal' ? 'on' : 'rs') : ''}"></i>`;
+  }
+}
+sheet.innerHTML = sh;
+
+/* ---------- main grid ---------- */
+const grid = document.getElementById('grid');
+const famMap = Object.fromEntries(D.families.map(f => [f.id, f]));
+grid.style.setProperty('--gtc', `232px repeat(${D.transforms.length}, 46px) 46px`);
+
+function buildGrid() {
+  let h = `<div class="hd corner">metric</div>`;
+  for (const t of D.transforms)
+    h += `<div class="hd" title="${t.label} — supported on ${t.supported} metrics">${t.short}</div>`;
+  h += `<div class="hd res" title="${D.reserved.label} — platform-only, absent from every metric's whitelist">${D.reserved.short}</div>`;
+
+  let fam = null;
+  for (const m of D.metrics) {
+    if (m.fam !== fam) {
+      fam = m.fam;
+      const f = famMap[fam];
+      h += `<div class="band">${f.label} · <b>${f.count}</b> metrics</div>`;
+    }
+    const inert = m.tf === 'timeless';
+    h += `<div class="rl" data-row="${m.k}" title="${m.label}">${m.k}<span class="tf ${inert ? 'inert' : ''}">${inert ? 'inert' : ''}</span></div>`;
+    for (const t of D.transforms) {
+      const c = m.cells[t.id];
+      if (!c) { h += `<div class="cell" data-row="${m.k}"></div>`; continue; }
+      const cls = c.s === 'legal' ? ('on' + (c.pf ? ' pf' : '')) : 'rs';
+      h += `<button class="cell ${cls}" data-row="${m.k}" data-m="${m.k}" data-t="${t.id}"
+             aria-label="${m.k} by ${t.id}: ${c.s === 'legal' ? 'composable' : 'reserved'}"></button>`;
+    }
+    const rs = D.reserved.usedOn.includes(m.k);
+    h += rs
+      ? `<button class="cell rs" data-row="${m.k}" data-m="${m.k}" data-t="__reserved"
+           aria-label="${m.k} by classifyState: reserved for the platform"></button>`
+      : `<div class="cell" data-row="${m.k}"></div>`;
+  }
+  grid.innerHTML = h;
+}
+buildGrid();
+
+/* ---------- detail rail ---------- */
+const rail = document.getElementById('rail');
+const tById = Object.fromEntries(D.transforms.map(t => [t.id, t]));
+const mByK = Object.fromEntries(D.metrics.map(m => [m.k, m]));
+const esc = s => String(s).replace(/[&<>]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[ch]));
+const tags = a => `<div class="taglist">${a.map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div>`;
+
+function show(mk, tid) {
+  const m = mByK[mk];
+  if (tid === '__reserved') {
+    rail.innerHTML = `<h3>${esc(m.k)} <span class="x">&times;</span> classifyState</h3>
+      <p class="cap">${esc(D.reserved.label)}</p>
+      <div class="warnbox"><b>Reserved.</b> ${esc(D.reserved.summary)} It is absent from every
+        metric's authorable whitelist, so a custom column using it is rejected with
+        <code>REPORT_COLUMN_PAIR_UNSUPPORTED</code>.</div>
+      <dl><dt>used on</dt><dd>${D.reserved.usedOn.join(', ')}</dd>
+      <dt>by sections</dt><dd>${D.reserved.usedBy.join(', ')}</dd>
+      <dt>substitute</dt><dd>${m.cells.classifyZone ? '<code>classifyZone</code>' : 'none available'}</dd></dl>`;
+    return;
+  }
+  const t = tById[tid], c = m.cells[tid];
+  if (!c) return;
+
+  if (c.s === 'priv') {
+    rail.innerHTML = `<h3>${esc(m.k)} <span class="x">&times;</span> ${esc(t.id)}</h3>
+      <p class="cap">${esc(t.label)}</p>
+      <div class="warnbox"><b>Reserved.</b> The preset section <code>${esc(c.sec)}</code> uses this
+        exact pair, but it is missing from ${esc(m.k)}'s whitelist — so you can't.
+        ${m.range ? '' : `<br><br>${esc(t.id)} classifies a <em>bounded</em> series, and
+        ${esc(m.k)}'s contract declares no range. No canonical bounds, no zone policy for authors.`}</div>
+      <dl><dt>your options</dt><dd>${Object.keys(m.cells).filter(k => m.cells[k].s === 'legal').join(', ')}</dd></dl>`;
+    return;
+  }
+
+  const bits = [];
+  bits.push(`<h3>${esc(m.k)} <span class="x">&times;</span> ${esc(t.id)}</h3>
+    <p class="cap">${esc(t.summary)}</p>
+    <div class="fx">${esc(t.formula)}</div>`);
+
+  const dl = [];
+  dl.push(['emits', t.emits === 'window + 1'
+    ? '<strong>window + 1</strong> headers — the only fan-out transform'
+    : esc(t.emits) + ' header']);
+  dl.push(['header', `<code>${esc(headerFor(m, t))}</code>`]);
+  dl.push(['metric', `${esc(m.kind)}${m.unit ? ' · ' + esc(m.unit) : ''}${m.range ? ' · [' + (m.range.min ?? '') + (m.range.max != null ? '–' + m.range.max : '+') + ']' : ''}`]);
+  dl.push(['timeframe', m.tf === 'timeless'
+    ? '<strong>inert</strong> — barred from a section with a timeframe override'
+    : 'candle-backed']);
+  if (c.ord && c.ord.length) dl.push(['orderings', tags(c.ord)]);
+  if (c.chain) dl.push(['chains into', tags(c.chain)]);
+  if (c.cro) dl.push(['chained rank ord.', tags(c.cro)]);
+  if (c.pf) dl.push(['preset use', 'a platform section uses this pair']);
+  bits.push(`<dl>${dl.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`);
+
+  if (c.rso) bits.push(`<div class="warnbox"><b>Narrow chain.</b> <code>spread &rarr; rank</code> resolves
+    only for the operand ${c.rso.map(x => '<code>' + esc(x) + '</code>').join(', ')}. Raw price-unit
+    metrics never rank — an ordinal over a price level sorts by token denomination.</div>`);
+
+  if (t.params.length) bits.push(`<dl>${t.params.map(p =>
+    `<dt>${esc(p.name)}</dt><dd>${p.required ? '<strong>required</strong>' : 'default <code>' + esc(String(p.default)) + '</code>'} — ${esc(p.desc)}</dd>`).join('')}</dl>`);
+
+  if (c.ops) bits.push(`<dl><dt>spread operands</dt><dd>${c.ops.length} in the
+    <code>${esc(m.unit)}</code> pool${tags(c.ops)}</dd></dl>`);
+
+  bits.push(`<dl><dt>null when</dt><dd>${esc(t.nullBehavior)}</dd></dl>`);
+  if (t.note) bits.push(`<dl><dt>note</dt><dd>${esc(t.note)}</dd></dl>`);
+  rail.innerHTML = bits.join('');
+}
+
+function headerFor(m, t) {
+  const c = m.code;
+  switch (t.id) {
+    case 'value': return c;
+    case 'trajectory': return `${c}_t3 … ${c}_now, ${c}_trend`;
+    case 'distance': return `dist_${c}`;
+    case 'spread': return `${c}_{operand}_spread`;
+    case 'efficiency': return `${c}_er`;
+    case 'maxShare': return `${c}_maxShare`;
+    case 'aggregate': return `${c}_mean24`;
+    case 'bandTouch': return `${c}_touch`;
+    case 'rank': return `${c}_rank_{ord}`;
+    case 'count': return `${c}_count`;
+    case 'classifyZone': case 'crossDetect': return c;
+    default: return `${c}_{side}_${t.id.replace('nearestZone', '').toLowerCase()}`;
+  }
+}
+
+let sel = null;
+grid.addEventListener('click', e => {
+  const b = e.target.closest('button.cell');
+  if (!b) return;
+  if (sel) sel.classList.remove('sel');
+  sel = b; b.classList.add('sel');
+  show(b.dataset.m, b.dataset.t);
+});
+
+/* ---------- filters ---------- */
+const search = document.getElementById('search');
+const legalOnly = document.getElementById('legalOnly');
+function applyFilters() {
+  const q = search.value.trim().toUpperCase();
+  const only = legalOnly.getAttribute('aria-pressed') === 'true';
+  const hidden = new Set();
+  for (const m of D.metrics) {
+    const qMiss = q && !(m.k.includes(q) || m.label.toUpperCase().includes(q) || m.fam.toUpperCase().includes(q));
+    if (qMiss) hidden.add(m.k);
+  }
+  grid.querySelectorAll('[data-row]').forEach(el => {
+    el.style.display = hidden.has(el.dataset.row) ? 'none' : '';
+  });
+  grid.querySelectorAll('.cell:not(.on):not(.rs)').forEach(el => {
+    el.classList.toggle('row-dim', only);
+  });
+}
+search.addEventListener('input', applyFilters);
+legalOnly.addEventListener('click', () => {
+  const on = legalOnly.getAttribute('aria-pressed') === 'true';
+  legalOnly.setAttribute('aria-pressed', String(!on));
+  legalOnly.classList.toggle('chip', !on);
+  applyFilters();
+});
+</script>

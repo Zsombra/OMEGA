@@ -6,3 +6,6 @@ venv/
 .pytest_cache/
 out/
 .DS_Store
+
+# artifact build intermediate
+scratch_matrix.json
