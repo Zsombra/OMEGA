@@ -3,10 +3,15 @@
 Which of the 84 signals can your report actually feed — answered offline.
 
 [05](05-signal-aggregation-math.md) established the coupling: allocation converts evidence
-into influence but cannot manufacture evidence. A `NOT_IN_REPORT` signal at allocation 3
-adds 3 to the aggregation denominator and ~0 to the numerator, **actively suppressing your
-aggregate**. Until now the only way to check was `derive_strategy_rule_view`. This is the
-offline model, derived from 24 probes.
+into influence but cannot manufacture evidence. A `NOT_IN_REPORT` signal never fires, and
+the aggregate's denominator counts **only signals that fired** — so it costs nothing
+arithmetically. What it costs is **evidence**: you believe you have allocated weight to a
+module and you have not. Your scorecard is narrower than it looks. Until now the only way
+to check was `derive_strategy_rule_view`. This is the offline model, derived from 24 probes.
+
+> **Corrected 2026-08-24.** This document previously said such a signal "actively
+> suppresses your aggregate". It does not — see [12](12-routing-feasibility.md) for the
+> four measurements that settled the denominator question.
 
 ---
 
@@ -167,7 +172,8 @@ for f in check_allocations(report, rules):
 
 ```
 [error] bollinger_lower_touch: NOT_IN_REPORT - the BOLLINGER module has no feeding
-        column. Allocation 2 adds 2 to the denominator and ~0 to the numerator.
+        column, so it never fires and allocation 2 is inert. You have less
+        evidence than the scorecard suggests.
         Add one of: BB_PCT_B, BB_WIDTH, BB_WIDTH_PCT, BB_TOUCH, CCI20
 ```
 

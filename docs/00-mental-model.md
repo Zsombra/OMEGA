@@ -98,14 +98,17 @@ only appears when you compile a column inside a section context.
 The scorecard maths is a plain allocation-weighted mean:
 
 ```
-aggregate  = Σ(scoreᵢ × allocᵢ) / Σ(allocᵢ)
+aggregate  = Σ(scoreᵢ × allocᵢ) / Σ(allocᵢ)      over the signals that FIRED
 routes iff   aggregate ≥ gate
 ```
 
+Both sums range over the **fired set**. A signal that does not trigger is excluded from
+the numerator *and* the denominator — it is costless, not dead weight.
+
 Allocation tier **0 contributes exactly zero weight** — it is informational, not a light vote.
 And allocation only converts evidence into influence; it cannot manufacture evidence. Give
-`bollinger_lower_touch` allocation 3 with no Bollinger column in your report and you have
-added nothing but a denominator.
+`bollinger_lower_touch` allocation 3 with no Bollinger column in your report and it simply
+never fires: no cost, but no evidence either. Your scorecard is narrower than it looks.
 
 ---
 

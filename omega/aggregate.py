@@ -8,6 +8,20 @@ signals {score 1 @ alloc 3, score 0 @ alloc 1} -> aggregate 0.75 = (1*3 + 0*1) /
     wouldRoute    = aggregate >= gate
 
 Allocation tier 0 carries ZERO weight - it is informational, not a light vote.
+
+WHICH SIGNALS GO IN THE SUMS
+----------------------------
+This function computes over exactly the signals you pass it, which is also what
+`simulate_aggregate_score` does. The LIVE ENGINE passes it the FIRED SET ONLY -
+a signal that did not trigger is excluded from the numerator and the denominator
+both. So to reproduce a live aggregate, pass only the signals that fired.
+
+    Dunkirk log: aggregateScore 0.68
+      numerator 14.2810 / fired allocation  21 = 0.680   <- matches
+      numerator 14.2810 / total allocation 119 = 0.120
+
+Passing your whole scorecard including zeros answers a different (and misleading)
+question. omega.feasibility handles the fired-set semantics for you.
 """
 from __future__ import annotations
 

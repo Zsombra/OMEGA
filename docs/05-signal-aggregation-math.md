@@ -60,9 +60,20 @@ cvd_bull_divergence        tier 2 @ 0.40   →  14%
 
 A tier-1 signal scoring well outweighs a tier-2 signal scoring poorly.
 
-**Every added signal dilutes.** Because the denominator is Σallocation, a report with many
-tier-3 signals needs broad agreement to clear a high gate. Concentration is a real lever:
-three tier-3 signals clear a 0.7 gate far more easily than nine do.
+**Every signal that FIRES dilutes — unfired ones are free.** The sums range over the
+signals that actually fired, so breadth costs nothing until a signal triggers. Once it
+does, it pulls the mean toward its own score. The exact condition:
+
+> A fired signal raises the aggregate **iff its score exceeds the current aggregate.**
+
+Concentration is still a real lever, but for a subtler reason than "fewer signals, smaller
+denominator": a signal that fires *often* at a *low* score is the expensive one. See
+[12 · Routing Feasibility](12-routing-feasibility.md).
+
+> **Corrected 2026-08-24.** This section previously read *"Because the denominator is
+> Σallocation, a report with many tier-3 signals needs broad agreement"*, treating every
+> allocated signal as permanently in the denominator. It is Σallocation **over the fired
+> set**.
 
 ## Gate calibration
 
@@ -88,9 +99,9 @@ Allocation converts evidence into influence. It **cannot manufacture evidence.**
 For the 7-column panel in `examples/build_section.py`, 15 signals came back in-report — but
 `bollinger_lower_touch` did not, because the panel carries no Bollinger column.
 
-A `NOT_IN_REPORT` signal at tier 3 is pure denominator: it adds 3 to Σallocation and,
-having nothing to read, contributes ~0 to the numerator. **It actively suppresses your
-aggregate.**
+A `NOT_IN_REPORT` signal at tier 3 never fires, so it never enters either sum — it costs
+you **nothing arithmetically**. What it costs is evidence: you believed you had weighted
+that module and you had not. **Your scorecard is narrower than it looks.**
 
 > Run `derive_strategy_rule_view` after designing the report and *before* assigning
 > allocations. Report membership is not derivable from the column list by inspection —

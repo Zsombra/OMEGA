@@ -165,7 +165,7 @@ the two or three series whose *shape* matters; read the rest with `value`.
 
 ### 8. Weighting a signal your report doesn't feed
 
-A `NOT_IN_REPORT` signal at tier 3 adds 3 to the denominator and ~0 to the numerator — it
+A `NOT_IN_REPORT` signal never fires, so it never enters the aggregate — it
 actively suppresses your aggregate.
 
 **Fix:** `derive_strategy_rule_view` after report design, before allocation.

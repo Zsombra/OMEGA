@@ -123,9 +123,14 @@ class AllocationFinding:
 def check_allocations(report: Report, rules: list) -> list[AllocationFinding]:
     """Flag allocations the report cannot actually feed.
 
-    A NOT_IN_REPORT signal at allocation 3 adds 3 to the aggregation denominator and,
-    having nothing to read, contributes ~0 to the numerator. It actively suppresses
-    the aggregate. This is the single most expensive silent mistake in strategy design.
+    A NOT_IN_REPORT signal never fires, and the aggregate's denominator counts only
+    signals that FIRED - so it costs nothing arithmetically. What it costs is
+    EVIDENCE: you believed you had allocated weight to that module and you have not.
+    The scorecard is narrower than it looks.
+
+    (Before 2026-08-24 this docstring claimed such a signal was "pure denominator"
+    and suppressed the aggregate. That was wrong - see omega.feasibility for the
+    four measurements that settled it.)
     """
     mem = analyse(report)
     m = _map()
@@ -147,15 +152,17 @@ def check_allocations(report: Report, rules: list) -> list[AllocationFinding]:
             out.append(AllocationFinding(
                 "error", sid,
                 f"{module} was unreachable in every probe - no column set is known to feed it. "
-                f"Allocation {alloc} is pure denominator and will suppress your aggregate."))
+                f"Allocation {alloc} buys nothing: the signal never fires, so it never "
+                f"enters the aggregate at all."))
         else:
             module = next(k for k, v in m["moduleSignals"].items() if sid in v)
             feeders = m["moduleSatisfiedBy"][module]
             out.append(AllocationFinding(
                 "error", sid,
-                f"NOT_IN_REPORT - the {module} module has no feeding column. "
-                f"Allocation {alloc} adds {alloc} to the denominator and ~0 to the numerator. "
-                f"Add one of: {', '.join(feeders)}"))
+                f"NOT_IN_REPORT - the {module} module has no feeding column, so this "
+                f"signal never fires and allocation {alloc} is inert (the aggregate "
+                f"denominator counts only fired signals). You have less evidence than "
+                f"the scorecard suggests. Add one of: {', '.join(feeders)}"))
 
     for rule in rules:
         if rule.signalId in mem.signals_in and rule.allocation == 0:

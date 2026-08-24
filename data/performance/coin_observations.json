@@ -1,0 +1,73 @@
+{
+  "_note": "Unweighted coin scorecards from live get_coin_signal_preview (omit agentId -> every signal at effectiveAllocation 1). Only NON-ZERO scores are listed; every signal absent from a coin's map scored exactly 0 and did not trigger. Read-only capture, no state mutated.",
+  "_capturedAt": "2026-08-24",
+  "_useFor": "omega.feasibility.simulate - re-weight these with any hypothetical allocation vector.",
+  "observations": [
+    {
+      "ticker": "BTC",
+      "interval": "1h",
+      "platformUnweightedAggregatePercent": 46,
+      "dominantBias": "MIXED",
+      "scores": {
+        "htf_rsi_overbought": 0.08283703366666657,
+        "macd_bear_divergence": 1,
+        "bollinger_squeeze": 0.41808426736396376,
+        "ma_ema_aligned_bull": 0.161500412875903,
+        "ma_sma200_above": 1,
+        "ltf_ma_aligned_bear": 0.10972626277389559,
+        "trend_adx_ranging": 0.415879273,
+        "htf_trend_adx_trending": 1,
+        "ltf_trend_adx_ranging": 0.06946187199999994,
+        "mfi_sustained_bearish": 0.12988096066666657,
+        "rel_roc_positive": 0.000789982,
+        "regime_alignment": 0.7,
+        "cvd_bullish": 1,
+        "flow_perp_spot_bear_divergence": 0.30359968751644006
+      }
+    },
+    {
+      "ticker": "SOL",
+      "interval": "1h",
+      "platformUnweightedAggregatePercent": 52,
+      "dominantBias": "BEARISH",
+      "scores": {
+        "bollinger_squeeze": 0.18892032949791113,
+        "ma_sma200_above": 1,
+        "ltf_ma_aligned_bear": 0.22295962276140605,
+        "trend_adx_ranging": 0.44925212600000003,
+        "htf_trend_adx_trending": 1,
+        "ltf_trend_adx_trending": 0.17676258320000002,
+        "rel_roc_negative": 0.003595388,
+        "mfi_sustained_bearish": 0.6424903816666667,
+        "cvd_bearish": 1
+      }
+    },
+    {
+      "ticker": "ETH",
+      "interval": "4h",
+      "platformUnweightedAggregatePercent": 56,
+      "dominantBias": "BULLISH",
+      "scores": {
+        "rsi_overbought": 0.03447811999999999,
+        "htf_rsi_overbought": 0.29929267633333345,
+        "ma_ema_aligned_bull": 1,
+        "ma_sma200_above": 1,
+        "htf_ma_aligned_bull": 1,
+        "ltf_ma_aligned_bull": 0.0705425369855601,
+        "trend_adx_trending": 1,
+        "htf_trend_adx_trending": 0.3391498224,
+        "ltf_trend_adx_ranging": 0.15157469799999995,
+        "rel_roc_negative": 0.004280666000000001,
+        "mfi_sustained_bullish": 0.5747839020000001,
+        "comparison_btc_decorrelation": 0.5,
+        "comparison_sector_momentum": 1,
+        "regime_trend_shift": 0.5,
+        "regime_volatility_shift": 1,
+        "regime_alignment": 0.7,
+        "cvd_bearish": 0.5,
+        "flow_perp_spot_bear_divergence": 0.2392909896129719,
+        "mtf_aligned_bull": 0.6901808456618533
+      }
+    }
+  ]
+}

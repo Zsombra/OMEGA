@@ -38,18 +38,17 @@ The published signal definitions actively mislead here. `ma_sma200_above` docume
 
 Four independent proofs. The definitions publish *raw formula output*; the engine clamps.
 
-This matters beyond tidiness. Earlier in this project I read those definition examples,
-concluded scores could exceed 1.0, and retracted a correct claim about an unreachable gate
-on that basis. The retraction was the error. Because every score is capped at 1.0, a
-strategy's maximum possible aggregate is:
+The clamp matters because the aggregate is a **mean**: a score of 1.0 is the most any one
+signal can pull the mean upward, and there is no way to buy extra leverage with an
+unusually strong reading.
 
-```
-max aggregate = Σ(allocation of signals that CAN fire together) / Σ(all allocations)
-```
-
-A gate above that ratio is arithmetically unreachable, and the direction-paired signals
-(every `_bull`/`_bear`, `_above`/`_below` couple) guarantee that only one side of each pair
-contributes to the numerator while **both** sit in the denominator.
+> **Corrected 2026-08-24.** This section originally continued: *"a strategy's maximum
+> possible aggregate is Σ(allocation of signals that CAN fire together) / Σ(all
+> allocations)"*. That is wrong. It assumed the denominator counts every allocated
+> signal; it counts only signals that **fired**. There is no structural ceiling — the
+> maximum aggregate is 1.0 for any scorecard. See
+> [12 · Routing Feasibility](12-routing-feasibility.md) for the four measurements that
+> settled it.
 
 ## The twelve families
 
