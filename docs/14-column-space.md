@@ -223,6 +223,49 @@ raises `DUPLICATE_HEADER` for it.
 in a live render while every header stayed identical. You cannot tell from a header
 whether the forming bar is in the series.
 
+## The loop, from one command
+
+```bash
+python -m omega.table explore --unused --family volumeFlow --max-headers 1
+python -m omega.table explain EMA5 spread:EMA13 --chain trajectory
+python -m omega.table author  CCI20 trajectory --window 4 --out out/
+```
+
+`explore` browses the space and **always states what it truncated** — a capped list that
+reads as a complete one is the same failure as a guessed number. `explain` prints the
+math, the effective parameters and the rendered values, each labelled with the file it
+came from. `author` runs validate → fanout → emit and refuses rather than emitting a
+column the platform would reject.
+
+### What `explain` prints
+
+```
+EMA5 × spread → trajectory  (operand EMA13)
+
+THE MATH            source: data/contract/transforms/_authoring.json
+  stage 1  Spread vs metric
+           output = (base - inputs[0]) / inputs[0] × 100
+  stage 2  Trajectory
+           slots = last window non-null base values; trend = compare(first, last)
+
+KNOWN DEFECT in the platform's own wording
+  ... the slots actually hold the SPREAD series, not the base metric.
+  The text above is stored exactly as BattleGrid returns it.
+
+EFFECTIVE           source: data/contract/columns/_contracts.json
+  {'window': 4, 'inputs': [{'metric': 'EMA13'}], 'bars': 'all'}
+  These are what the platform APPLIED, not what was requested.
+
+VALUES              source: data/contract/columns/_renders*.json
+  BTC    ..._t3=0.64  ..._t2=0.83  ..._t1=0.79  ..._now=0.82  ..._trend=rising
+```
+
+**`explain` computes nothing** — a test asserts no arithmetic appears in the module. For a
+column nobody has probed it prints the transform formula (always known, from the authoring
+contract) and says the rest is *not captured*, pointing at `omega.probe.FETCH_RECIPE`. It
+never fills the gap: a plausible number is indistinguishable from a measured one once it is
+rendered as text.
+
 ## Caveat
 
 The captured contracts and render are a **dated snapshot** — `capturedAt` is on both files.
