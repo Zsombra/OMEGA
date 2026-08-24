@@ -1,0 +1,75 @@
+{
+  "capturedAt": "2026-08-24",
+  "what": "Every legal column shape rendered against the live compiler, plus the full condition grammar and the market-read marker layer.",
+
+  "columnSweep": {
+    "legalShapes": 300,
+    "verified": 300,
+    "headerMismatches": 0,
+    "predictedHeaders": 536,
+    "batches": 15,
+    "claim": "omega.fanout.outputs_for predicts the platform's headers exactly for every legal shape - all 16 transforms, chained forms, categorical trajectories, rank orderings, structure counts, and the deep moving averages.",
+    "quarantined": {
+      "count": 8,
+      "reason": "declared legal by the contract, INTERNAL_ERROR when rendered",
+      "shapes": [
+        "CROWD_ACC x rank", "CROWD_ACC_LIVE x rank",
+        "CROWD_CAPT x rank", "CROWD_CAPT_LIVE x rank",
+        "CROWD_PICK x rank", "CROWD_PICK_LIVE x rank",
+        "CROWD_UPBIAS x rank", "CROWD_UPBIAS_LIVE x rank"
+      ]
+    }
+  },
+
+  "budgetModel": {
+    "finding": "columnLookback is constant, not a per-column cost and not a function of metric period.",
+    "evidence": "13 renders of 1, 4, 5, 8, 9, 12, 18, 24 and 30 columns, spanning every transform and including SMA200, all reported columnLookback = 24 exactly.",
+    "bindingCap": "sectionColumns, 32",
+    "correctedHypothesis": "SMA50 and SMA200 were isolated on the theory that a long metric period would exceed the 32-bar cap. Measured false - both render normally at the same lookback as a close price."
+  },
+
+  "conditionGrammar": {
+    "allConstructsExercisedInOneRender": true,
+    "clauseOps": {
+      "lt": "TRUE", "lte": "TRUE", "gte": "TRUE", "gt": "TRUE",
+      "between": "TRUE", "is": "TRUE", "in": "FALSE (correctly - see zoneVocabularyDefect)"
+    },
+    "groupOps": {
+      "ALL": "TRUE", "ANY": "TRUE", "NOT": "TRUE",
+      "N_OF": "TRUE, counts {trueCount:3, total:3, unresolvedCount:0}"
+    },
+    "conditionRef": "resolves",
+    "nestedGroupReferencingGroups": "resolves - NESTED_GROUP referenced two groups (CONF_UP, TWO_OF_THREE), a three-level DAG",
+    "required": "AMBIENT_REQ with required:true enforced upstream",
+    "verdicts": { "resolved": "UP", "decidedBy": "CONF_UP", "tally": {"UP": 2, "DOWN": 0, "NEITHER": 0, "UNRESOLVED": 0} },
+    "provisionalFlag": {
+      "customColumns": true,
+      "ambientColumns": false,
+      "note": "Exactly as documented: the live forming bar propagates from column to condition. The one condition reading an ambient header (usdtUsdDev_market) came back provisional:false; all 12 reading custom columns came back true."
+    },
+    "markerResolution": { "markers": 5, "resolved": 5, "asConditions": 3, "asColumns": 2, "unreferenceable": 0 },
+    "conditionsAreAdvisory": "Platform wording, verbatim: 'they may make you more selective, never less - they do not gate, score, or qualify anything.' The exception is required:true, enforced upstream."
+  },
+
+  "zoneVocabularyDefect": {
+    "severity": "silent - an authored condition is permanently FALSE with no error",
+    "what": "All five classifyZone columns declare conditionVocabulary [overbought, oversold, neutral]. Two of them never emit any of those values.",
+    "measuredAcross": 12,
+    "coins": ["AAVE","BTC","DOGE","ENA","ETH","FARTCOIN","HYPE","PUMP","SOL","TRUMP","XRP","ZEC"],
+    "columns": {
+      "ADX_zone":   { "declared": ["overbought","oversold","neutral"], "observed": ["trending","developing","weak"], "inVocabulary": "0 of 12" },
+      "MFI14_zone": { "declared": ["overbought","oversold","neutral"], "observed": ["bearish","bullish"],            "inVocabulary": "0 of 12" },
+      "RSI14_zone": { "declared": ["overbought","oversold","neutral"], "observed": ["neutral"],                      "inVocabulary": "12 of 12" },
+      "RSI7_zone":  { "declared": ["overbought","oversold","neutral"], "observed": ["neutral","oversold"],           "inVocabulary": "12 of 12" },
+      "K_zone":     { "declared": ["overbought","oversold","neutral"], "observed": ["neutral","oversold"],           "inVocabulary": "12 of 12" }
+    },
+    "consequence": "An `is` or `in` condition on ADX_zone or MFI14_zone, written from the vocabulary the platform itself publishes, can never evaluate TRUE. It returns FALSE, not UNRESOLVED, so nothing signals that the author used an impossible label."
+  },
+
+  "legalityModelConfirmed": {
+    "case": "BB_PCT_B x classifyZone",
+    "platform": "VALIDATION_ERROR REPORT_COLUMN_PAIR_UNSUPPORTED - 'not a composable pair - the engine has no resolution home for it'",
+    "omega": "already excluded from the enumeration",
+    "note": "The platform's error also names the allowed set for that metric: value, trajectory, spread, efficiency, maxShare, rank."
+  }
+}

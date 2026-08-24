@@ -230,6 +230,35 @@ the residuals in doc 15's verification panel are display rounding, not error, an
 grow as the metric's precision shrinks (DOGE's 4-decimal price gives a 0.03pp residual
 on `spread` where BTC's gives 0.002pp).
 
+### 13. A zone column whose published vocabulary it never emits
+
+Every `classifyZone` column declares the same `conditionVocabulary`:
+
+```
+["overbought", "oversold", "neutral"]
+```
+
+Two of the five never emit any of those values. Measured across 12 coins on
+2026-08-24:
+
+| column | declared | actually observed | in vocabulary |
+|---|---|---|---|
+| `ADX_zone` | overbought / oversold / neutral | `trending`, `developing`, `weak` | **0 of 12** |
+| `MFI14_zone` | overbought / oversold / neutral | `bearish`, `bullish` | **0 of 12** |
+| `RSI14_zone` | " | `neutral` | 12 of 12 |
+| `RSI7_zone` | " | `neutral`, `oversold` | 12 of 12 |
+| `K_zone` | " | `neutral`, `oversold` | 12 of 12 |
+
+So a condition like `ADX_zone is "neutral"` — written from the vocabulary the
+platform itself publishes, in the operator the platform itself lists — is
+**permanently FALSE**. It does not error. It does not come back `UNRESOLVED`,
+which would at least say an input was missing. It reads as a clean, working
+condition that happens never to fire.
+
+**Fix:** never author an `is` / `in` condition from `conditionVocabulary` alone.
+Render the column first and read the labels it actually produces. The published
+vocabulary is a claim about the column, and for these two it is wrong.
+
 ## Workflow
 
 ```
