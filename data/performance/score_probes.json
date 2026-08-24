@@ -1,0 +1,78 @@
+{
+  "_note": "Exact (indicatorValues -> score) pairs captured from live get_coin_signal_preview calls. These are the ground truth omega.scoring is tested against. Read-only capture; no state mutated.",
+  "_capturedAt": "2026-08-24",
+  "probes": [
+    {
+      "source": "get_coin_signal_preview BTC 1h",
+      "context": {"price": 77103, "aggregateScorePercent": 46, "dominantBias": "MIXED"},
+      "signals": [
+        {"id": "htf_rsi_overbought", "triggered": true, "score": 0.08283703366666657,
+         "indicatorValues": {"htf_rsi14": 72.48511101}, "params": {"threshold": 70},
+         "details": "HTF RSI(14) at 72.5 - overbought on higher timeframe (> 70)"},
+
+        {"id": "macd_bear_divergence", "triggered": true, "score": 1,
+         "indicatorValues": {"macd_histogram": 7.41899217, "prev_macd_histogram": 10.59060947,
+                             "price": 77522, "prev_price": 76944}, "params": {},
+         "details": "MACD bear divergence: price higher but histogram falling"},
+
+        {"id": "bollinger_squeeze", "triggered": true, "score": 0.41808426736396376,
+         "indicatorValues": {"bb_width": 1798.1312521600048, "bb_middle": 77250.5,
+                             "bb_upper": 78149.56562608, "bb_lower": 76351.43437392},
+         "params": {"bandwidthPct": 0.04},
+         "details": "Bollinger squeeze: bandwidth 2.33% (threshold 4.00%)"},
+
+        {"id": "ma_ema_aligned_bull", "triggered": true, "score": 0.161500412875903,
+         "indicatorValues": {"ema5": 77464.93120658, "ema13": 77413.73509359,
+                             "ema20": 77340.02674407}, "params": {},
+         "details": "EMA bullish alignment: EMA5 > EMA13 > EMA20"},
+
+        {"id": "ma_sma200_above", "triggered": true, "score": 1,
+         "indicatorValues": {"sma200": 69944.975, "price": 77103}, "params": {},
+         "details": "Price 77103.00 above SMA200 69944.98 (+10.2%)",
+         "_significance": "raw formula gives 10.2338/5 = 2.047; engine reports 1 - PROOF OF CLAMP"},
+
+        {"id": "ltf_ma_aligned_bear", "triggered": true, "score": 0.10972626277389559,
+         "indicatorValues": {"ltf_price": 77026, "ltf_ema20": 77391.24841694,
+                             "ltf_sma20": 77443.9, "ltf_sma50": 77450.92}, "params": {},
+         "details": "LTF bearish MA stack: price < EMA20 < SMA20 < SMA50"},
+
+        {"id": "trend_adx_ranging", "triggered": true, "score": 0.415879273,
+         "indicatorValues": {"adx_value": 11.68241454}, "params": {"threshold": 20},
+         "details": "ADX at 11.7 - ranging market (< 20)"},
+
+        {"id": "htf_trend_adx_trending", "triggered": true, "score": 1,
+         "indicatorValues": {"htf_adx_value": 62.69246122}, "params": {"threshold": 25},
+         "details": "HTF ADX at 62.7 - strong trend (> 25)",
+         "_significance": "raw (62.69-25)/25 = 1.508; engine reports 1 - second clamp proof"},
+
+        {"id": "ltf_trend_adx_ranging", "triggered": true, "score": 0.06946187199999994,
+         "indicatorValues": {"ltf_adx_value": 18.61076256}, "params": {"threshold": 20},
+         "details": "LTF ADX at 18.6 - ranging on lower timeframe (< 20)"},
+
+        {"id": "mfi_sustained_bearish", "triggered": true, "score": 0.12988096066666657,
+         "indicatorValues": {"mfi14_value": 46.10357118}, "params": {},
+         "details": "MFI sustained bearish: 46.1 (below 50, prev 44.6)"},
+
+        {"id": "rel_roc_positive", "triggered": true, "score": 0.000789982,
+         "indicatorValues": {"roc12_value": 0.00394991, "prev_roc12_value": -0.00757117},
+         "params": {},
+         "details": "ROC(12) positive and accelerating: 0.00% (prev: -0.01%)"},
+
+        {"id": "regime_alignment", "triggered": true, "score": 0.7,
+         "indicatorValues": {}, "params": {},
+         "details": "Regime aligned: trend=trending_up, mom=bullish, vol=normal"},
+
+        {"id": "cvd_bullish", "triggered": true, "score": 1,
+         "indicatorValues": {"cvd_value": 114.19563}, "params": {},
+         "details": "CVD bullish: 114 (positive, rising)"},
+
+        {"id": "flow_perp_spot_bear_divergence", "triggered": true,
+         "score": 0.30359968751644006,
+         "indicatorValues": {"perp_cvd_value": 114.19563, "prev_perp_cvd_value": -209.443,
+                             "spot_cvd_value": -92.83566948,
+                             "prev_spot_cvd_value": -305.78315228}, "params": {},
+         "details": "Perp-led bear divergence: perp rate 1.00 outpacing spot 0.70"}
+      ]
+    }
+  ]
+}

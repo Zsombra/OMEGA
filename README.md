@@ -36,6 +36,7 @@ strategies from a thesis.
 | [08 · Strategy Generation](docs/08-strategy-generation.md) | compose a complete validated strategy from a thesis |
 | [09 · Conditions](docs/09-conditions.md) | the condition DSL, ambient headers, and offline type-checking |
 | [10 · Outcome Feedback](docs/10-outcome-feedback.md) | which signals earned their allocation — and when to refuse to say |
+| [11 · Signal Scoring](docs/11-signal-scoring.md) | how a raw indicator reading becomes the 0–1 number that gets aggregated |
 
 ## What the extraction found
 
@@ -118,7 +119,7 @@ data/performance/  one real signal-log/outcome pair (parser fixture)
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
                    composition rules, compiler probes, aggregate oracle,
                    signal module map
-docs/              00–10
+docs/              00–11
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py

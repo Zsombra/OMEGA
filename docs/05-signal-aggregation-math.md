@@ -3,6 +3,11 @@
 The layer above the report: 84 canonical signals across 19 modules, each carrying an
 allocation tier and a `required` flag, aggregated into one number and compared to a gate.
 
+> Where the scores themselves come from — the transformation from a raw indicator
+> reading to the 0–1 value this document aggregates — is
+> [11 · Signal Scoring](11-signal-scoring.md). Every score is clamped to [0, 1],
+> which is what makes the ceiling arithmetic below binding.
+
 ---
 
 ## The formula

@@ -1,0 +1,956 @@
+{
+  "_note": "How each signal turns an indicator reading into a score. Families are generalised from 57 fetched definitions and corrected against bit-exact live measurements. Every entry carries provenance.",
+  "clamp": "EVERY score is clamped to [0,1] by the engine. The signal DEFINITIONS publish raw examples that exceed 1.0 (ma_sma200_above '+10% -> 2.0') and those examples are misleading. Four independent clamp proofs measured live: SMA200 gap +10.23% raw 2.047 -> 1; SMA200 gap +24.71% raw 4.94 -> 1; ADX 62.69 vs 25 raw 1.508 -> 1; EMA gap 2.660% raw 2.660 -> 1. Trust the clamp, not the published examples.",
+  "aggregateLink": "These scores feed aggregate = SUM(score x allocation) / SUM(allocation). Because every score is clamped to 1.0, the maximum achievable aggregate is SUM(allocation of signals that CAN fire together) / SUM(all allocations) - which is why a gate above that ratio is unreachable.",
+  "families": {
+    "linear_below": {
+      "formula": "score = clamp((threshold - value) / normaliser, 0, 1)",
+      "note": "Distance below a threshold, normalised. Fires when value < threshold."
+    },
+    "linear_above": {
+      "formula": "score = clamp((value - threshold) / normaliser, 0, 1)",
+      "note": "Distance above a threshold, normalised. For a metric bounded at 100 or 1 the normaliser is the distance to that ceiling; for an unbounded or ratio quantity it is the threshold itself. ADX is the exception: bounded 0-100 but normalised by the threshold, not by 100-threshold."
+    },
+    "proximity": {
+      "formula": "score = 1 - (distance / proximityPct)",
+      "note": "Closeness to a level. 1.0 at the level, 0 at the proximity boundary."
+    },
+    "count_ratio": {
+      "formula": "score = count / denominator",
+      "note": "Fraction of a discrete set that agrees."
+    },
+    "pct_gap_scaled": {
+      "formula": "score = clamp(gapPercent / divisor, 0, 1)",
+      "note": "Percentage gap from a REFERENCE level over a fixed divisor. The MA-stack signals measure price against SMA50; ma_ema_aligned measures EMA5 against EMA20 with divisor 1. The reference is ALWAYS the denominator, in both directions - the bear variants divide by SMA50 exactly as the bull variants do, not by whichever level happens to be larger. Dividing by the larger value instead produces a ~0.5% error that looks entirely plausible; it surfaced only under bit-exact comparison with a live reading."
+    },
+    "midline_scaled": {
+      "formula": "score = clamp(abs(value - 50) / 30, 0, 1)",
+      "note": "Distance from the 50 midline over a span of 30, so 80 (or 20) reaches 1.0."
+    },
+    "two_state": {
+      "formula": "score = high if <primary condition> else low",
+      "note": "A fixed pair of scores selected by a secondary test."
+    },
+    "fixed": {
+      "formula": "score = constant",
+      "note": "Event detection with no magnitude dimension."
+    },
+    "break_magnitude": {
+      "formula": "score = clamp(breakDistancePercent, 0, 1)",
+      "note": "The break distance in percentage points, used directly."
+    },
+    "flow_rate_gap": {
+      "formula": "rate(x) = clamp((x - prev_x) / abs(prev_x), -1, 1); score = rate(leader) - rate(follower)",
+      "note": "Each CVD stream becomes a self-normalised rate of change clamped to +/-1; the score is the gap between them. Verified bit-exact on two coins."
+    },
+    "synthesis": {
+      "formula": "score = f(component signal scores)",
+      "note": "Second-order: computed from other signals' post-clamp scores at full float precision, not from indicators."
+    },
+    "unspecified_magnitude": {
+      "formula": "score scales with the indicator-vs-price gap (exact form not published)",
+      "note": "The platform documents these only qualitatively. The DIRECTION of the relationship is known; the exact curve is not. Every divergence signal observed live so far returned exactly 1.0 when it fired, but that is too few samples to call it a fixed score. Read the engine's number."
+    }
+  },
+  "coverage": {
+    "signals": 84,
+    "byProvenance": {
+      "verified": 71,
+      "inferred_mirror": 12,
+      "documented_mismatch": 1
+    },
+    "bitExactAgainstLiveData": 18,
+    "byFamily": {
+      "linear_below": 16,
+      "unspecified_magnitude": 16,
+      "linear_above": 15,
+      "pct_gap_scaled": 10,
+      "two_state": 6,
+      "count_ratio": 4,
+      "synthesis": 4,
+      "proximity": 4,
+      "fixed": 3,
+      "flow_rate_gap": 2,
+      "midline_scaled": 2,
+      "break_magnitude": 2
+    }
+  },
+  "signals": {
+    "bollinger_cci_overbought": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 100,
+      "normaliser": "100 (fixed)",
+      "indicator": "cci20_value",
+      "examples": [
+        [
+          150,
+          0.5
+        ],
+        [
+          250,
+          1.5
+        ]
+      ],
+      "note": "An earlier note in this project recorded a live 0.269 against a computed 0.538. That reading could not be reproduced: it is absent from the stored Dunkirk sample, and the Apex strategy it was attributed to carries the default threshold 100. Treated as a transcription error on my part, not an engine behaviour. The formula remains unverified against live data - CCI sat inside the band on every preview captured."
+    },
+    "bollinger_cci_oversold": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": -100,
+      "normaliser": "100 (fixed)",
+      "indicator": "cci20_value",
+      "examples": [
+        [
+          -150,
+          0.5
+        ],
+        [
+          -250,
+          1.5
+        ]
+      ]
+    },
+    "bollinger_lower_touch": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 0.05,
+      "normaliser": "threshold",
+      "indicator": "bb_percent_b",
+      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0"
+    },
+    "bollinger_squeeze": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 0.04,
+      "normaliser": "threshold",
+      "reads": "bb_width / bb_middle",
+      "indicator": "bb_width, bb_middle",
+      "verifiedLive": [
+        "BTC 1h width/mid 0.023276 -> 0.41808426736396376 exact"
+      ]
+    },
+    "bollinger_upper_touch": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 0.95,
+      "normaliser": "1 - threshold",
+      "indicator": "bb_percent_b",
+      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0"
+    },
+    "comparison_btc_decorrelation": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 0.3,
+      "normaliser": "2 x threshold",
+      "reads": "correlationToTarget",
+      "verifiedLive": [
+        "ETH 4h corr 0.00 vs maxCorrelation 0.3 -> 0.5 exact; confirms normaliser = 2 x maxCorrelation"
+      ],
+      "note": "inactive when the evaluated coin IS BTC, and when comparison data is unavailable"
+    },
+    "comparison_sector_divergence": {
+      "family": "count_ratio",
+      "provenance": "verified",
+      "denominator": "peers.length",
+      "gate": "divergentCount >= peers.length * minPeerFraction",
+      "minPeerFraction": 0.5
+    },
+    "comparison_sector_momentum": {
+      "family": "count_ratio",
+      "provenance": "verified",
+      "denominator": "peers.length",
+      "gate": "alignedCount >= peers.length * minPeerFraction",
+      "minPeerFraction": 0.6,
+      "verifiedLive": [
+        "ETH 4h 3/3 peers -> 1.00",
+        "Dunkirk 3/3 peers -> 1.00"
+      ]
+    },
+    "cvd_bear_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "cvd_value vs price"
+    },
+    "cvd_bearish": {
+      "family": "two_state",
+      "provenance": "verified",
+      "high": 1.0,
+      "low": 0.5,
+      "reads": "CVD < 0; 1.0 if falling, 0.5 if flat",
+      "indicator": "cvd_value",
+      "verifiedLive": [
+        "ETH 4h CVD -11775.74 negative but RISING -> 0.5",
+        "Dunkirk CVD -12.57M flat -> 0.5"
+      ]
+    },
+    "cvd_bull_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "cvd_value vs price"
+    },
+    "cvd_bullish": {
+      "family": "two_state",
+      "provenance": "verified",
+      "high": 1.0,
+      "low": 0.5,
+      "reads": "CVD > 0; 1.0 if rising, 0.5 if flat",
+      "indicator": "cvd_value",
+      "verifiedLive": [
+        "BTC 1h CVD 114.196 positive and rising -> 1.0"
+      ]
+    },
+    "flow_perp_spot_bear_divergence": {
+      "family": "flow_rate_gap",
+      "provenance": "verified",
+      "reads": "score = rate(perp) - rate(spot); fires when perp leads",
+      "indicator": "perp_cvd_value, prev_perp_cvd_value, spot_cvd_value, prev_spot_cvd_value",
+      "verifiedLive": [
+        "BTC 1h -> 0.30359968751644006 exact (perp rate clamped from 1.545 to 1.0)",
+        "ETH 4h -> 0.2392909896129719 exact"
+      ],
+      "note": "suppressed when the previous sample crosses the daily 00:00-UTC anchor"
+    },
+    "flow_perp_spot_bull_divergence": {
+      "family": "flow_rate_gap",
+      "provenance": "verified",
+      "reads": "score = rate(spot) - rate(perp); fires when spot leads",
+      "indicator": "spot_cvd_value, prev_spot_cvd_value, perp_cvd_value, prev_perp_cvd_value",
+      "note": "suppressed when the previous sample crosses the daily 00:00-UTC anchor"
+    },
+    "funding_extreme_negative": {
+      "family": "linear_below",
+      "provenance": "inferred_mirror",
+      "threshold": -0.0005,
+      "normaliser": "threshold",
+      "indicator": "funding_rate",
+      "mirrorOf": "funding_extreme_positive"
+    },
+    "funding_extreme_positive": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 0.0005,
+      "normaliser": "threshold",
+      "indicator": "funding_rate",
+      "examples": [
+        [
+          0.001,
+          1.0
+        ],
+        [
+          0.0006,
+          0.2
+        ]
+      ]
+    },
+    "funding_rate_flipping": {
+      "family": "fixed",
+      "provenance": "verified",
+      "constant": 0.6,
+      "indicator": "funding_rate, prev_funding_rate"
+    },
+    "htf_ma_aligned_bear": {
+      "family": "pct_gap_scaled",
+      "provenance": "inferred_mirror",
+      "divisor": 5,
+      "rung": "REGIME_RUNG",
+      "mirrorOf": "htf_ma_aligned_bull"
+    },
+    "htf_ma_aligned_bull": {
+      "family": "pct_gap_scaled",
+      "provenance": "verified",
+      "divisor": 5,
+      "reads": "(price - sma50) / sma50 * 100; requires price > ema20 > sma20 > sma50",
+      "indicator": "htf_price, htf_ema20, htf_sma20, htf_sma50",
+      "rung": "REGIME_RUNG",
+      "verifiedLive": [
+        "ETH 4h +28.24% -> raw 5.648, engine reports 1 (CLAMP PROOF)"
+      ],
+      "note": "NOT a mirror of ma_ema_aligned_bull - different stack AND different divisor"
+    },
+    "htf_rsi_overbought": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 70,
+      "normaliser": "100 - threshold",
+      "indicator": "htf_rsi14",
+      "rung": "REGIME_RUNG",
+      "verifiedLive": [
+        "BTC 1h 72.48511101 -> 0.08283703366666657 exact",
+        "ETH 4h 78.97878029 -> 0.29929267633333345 exact"
+      ]
+    },
+    "htf_rsi_oversold": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 30,
+      "normaliser": "threshold",
+      "indicator": "htf_rsi14",
+      "rung": "REGIME_RUNG"
+    },
+    "htf_trend_adx_ranging": {
+      "family": "linear_below",
+      "provenance": "inferred_mirror",
+      "threshold": 20,
+      "normaliser": "threshold",
+      "rung": "REGIME_RUNG",
+      "mirrorOf": "htf_trend_adx_trending"
+    },
+    "htf_trend_adx_trending": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 25,
+      "normaliser": "threshold",
+      "indicator": "htf_adx_value",
+      "rung": "REGIME_RUNG",
+      "verifiedLive": [
+        "ETH 4h HTF ADX 33.47874556 -> 0.3391498224 exact",
+        "BTC 1h HTF ADX 62.692 -> raw 1.508, engine reports 1 (CLAMP PROOF)"
+      ]
+    },
+    "ltf_ma_aligned_bear": {
+      "family": "pct_gap_scaled",
+      "provenance": "verified",
+      "divisor": 5,
+      "reads": "(sma50 - price) / sma50 * 100; requires price < ema20 < sma20 < sma50",
+      "indicator": "ltf_price, ltf_ema20, ltf_sma20, ltf_sma50",
+      "rung": "LOWER",
+      "verifiedLive": [
+        "BTC 1h price 77026 vs SMA50 77450.92 -> 0.10972626277389559 exact"
+      ]
+    },
+    "ltf_ma_aligned_bull": {
+      "family": "pct_gap_scaled",
+      "provenance": "verified",
+      "divisor": 5,
+      "reads": "(price - sma50) / sma50 * 100; requires price > ema20 > sma20 > sma50",
+      "indicator": "ltf_price, ltf_ema20, ltf_sma20, ltf_sma50",
+      "rung": "LOWER",
+      "verifiedLive": [
+        "ETH 4h price 2444 vs SMA50 2435.41 -> 0.0705425369855601 exact"
+      ]
+    },
+    "ltf_rsi_overbought": {
+      "family": "linear_above",
+      "provenance": "inferred_mirror",
+      "threshold": 70,
+      "normaliser": "100 - threshold",
+      "indicator": "ltf_rsi14",
+      "rung": "LOWER",
+      "mirrorOf": "ltf_rsi_oversold"
+    },
+    "ltf_rsi_oversold": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 30,
+      "normaliser": "threshold",
+      "indicator": "ltf_rsi14",
+      "rung": "LOWER"
+    },
+    "ltf_trend_adx_ranging": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 20,
+      "normaliser": "threshold",
+      "indicator": "ltf_adx_value",
+      "rung": "LOWER",
+      "verifiedLive": [
+        "BTC 1h LTF ADX 18.61076256 -> 0.06946187199999994 exact",
+        "ETH 4h LTF ADX 16.96850604 -> 0.15157469799999995 exact"
+      ]
+    },
+    "ltf_trend_adx_trending": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 25,
+      "normaliser": "threshold",
+      "indicator": "ltf_adx_value",
+      "rung": "LOWER"
+    },
+    "ma_ema_aligned_bear": {
+      "family": "pct_gap_scaled",
+      "provenance": "inferred_mirror",
+      "divisor": 1,
+      "indicator": "ema5, ema13, ema20",
+      "mirrorOf": "ma_ema_aligned_bull"
+    },
+    "ma_ema_aligned_bull": {
+      "family": "pct_gap_scaled",
+      "provenance": "verified",
+      "divisor": 1,
+      "reads": "(ema5 - ema20) / ema20 * 100",
+      "indicator": "ema5, ema13, ema20",
+      "verifiedLive": [
+        "Dunkirk gap 0.3328% -> 0.333",
+        "BTC 1h gap 0.16150041% -> 0.161500412875903 exact",
+        "ETH 4h gap 2.660% -> raw 2.660, engine reports 1 (CLAMP PROOF)"
+      ]
+    },
+    "ma_ema_bear_cross": {
+      "family": "fixed",
+      "provenance": "inferred_mirror",
+      "constant": 0.7,
+      "mirrorOf": "ma_ema_bull_cross"
+    },
+    "ma_ema_bull_cross": {
+      "family": "fixed",
+      "provenance": "verified",
+      "constant": 0.7,
+      "indicator": "(cross-detection service)"
+    },
+    "ma_sma200_above": {
+      "family": "pct_gap_scaled",
+      "provenance": "verified",
+      "divisor": 5,
+      "reads": "(price - sma200) / sma200 * 100",
+      "indicator": "sma200, price",
+      "verifiedLive": [
+        "Dunkirk +1.951% -> 0.390 exact",
+        "BTC 1h +10.23% -> raw 2.047, engine reports 1 (CLAMP PROOF)",
+        "ETH 4h +24.71% -> raw 4.94, engine reports 1 (CLAMP PROOF)"
+      ]
+    },
+    "ma_sma200_below": {
+      "family": "pct_gap_scaled",
+      "provenance": "inferred_mirror",
+      "divisor": 5,
+      "indicator": "sma200, price",
+      "mirrorOf": "ma_sma200_above"
+    },
+    "macd_bear_cross": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "macd_histogram"
+    },
+    "macd_bear_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "macd_histogram vs price",
+      "verifiedLive": [
+        "BTC 1h -> 1.0 (price higher, histogram falling)"
+      ]
+    },
+    "macd_bull_cross": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "macd_histogram"
+    },
+    "macd_bull_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "macd_histogram vs price"
+    },
+    "mfi_bear_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "mfi14_value vs price"
+    },
+    "mfi_bull_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "mfi14_value vs price"
+    },
+    "mfi_overbought": {
+      "family": "linear_above",
+      "provenance": "inferred_mirror",
+      "threshold": 80,
+      "normaliser": "100 - threshold",
+      "indicator": "mfi14_value",
+      "mirrorOf": "mfi_oversold"
+    },
+    "mfi_oversold": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 20,
+      "normaliser": "threshold",
+      "indicator": "mfi14_value",
+      "examples": [
+        [
+          13,
+          0.35
+        ],
+        [
+          5,
+          0.75
+        ]
+      ]
+    },
+    "mfi_sustained_bearish": {
+      "family": "midline_scaled",
+      "provenance": "verified",
+      "midline": 50,
+      "span": 30,
+      "reads": "requires mfi < 50 AND prevMfi < 50",
+      "indicator": "mfi14_value",
+      "verifiedLive": [
+        "BTC 1h MFI 46.10357118 -> 0.12988096066666657 exact"
+      ]
+    },
+    "mfi_sustained_bullish": {
+      "family": "midline_scaled",
+      "provenance": "verified",
+      "midline": 50,
+      "span": 30,
+      "reads": "requires mfi > 50 AND prevMfi > 50",
+      "indicator": "mfi14_value",
+      "verifiedLive": [
+        "ETH 4h MFI 67.24351706 -> 0.5747839020000001 exact"
+      ]
+    },
+    "mtf_aligned_bear": {
+      "family": "synthesis",
+      "provenance": "verified",
+      "reads": "score = (ltf_score + primary_score + htf_score) / 3",
+      "gate": "all three rung alignment signals fire",
+      "indicator": "rungs_aligned"
+    },
+    "mtf_aligned_bull": {
+      "family": "synthesis",
+      "provenance": "verified",
+      "reads": "score = (ltf_score + primary_score + htf_score) / 3",
+      "gate": "all three rung alignment signals fire",
+      "indicator": "rungs_aligned",
+      "verifiedLive": [
+        "ETH 4h (0.0705425369855601 + 1.0 + 1.0)/3 = 0.6901808456618533 exact"
+      ],
+      "note": "consumes each component's exact post-clamp score at full float precision"
+    },
+    "mtf_pullback_long": {
+      "family": "synthesis",
+      "provenance": "verified",
+      "reads": "score = the LTF oversold score",
+      "gate": "HTF bull-alignment AND LTF oversold both fire",
+      "indicator": "htf_score, ltf_score"
+    },
+    "mtf_pullback_short": {
+      "family": "synthesis",
+      "provenance": "inferred_mirror",
+      "reads": "score = the LTF overbought score",
+      "indicator": "htf_score, ltf_score",
+      "mirrorOf": "mtf_pullback_long"
+    },
+    "oi_divergence_bear": {
+      "family": "unspecified_magnitude",
+      "provenance": "inferred_mirror",
+      "indicator": "open_interest vs price",
+      "mirrorOf": "oi_divergence_bull"
+    },
+    "oi_divergence_bull": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "open_interest vs price"
+    },
+    "oi_surge": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 0.05,
+      "normaliser": "threshold",
+      "reads": "(oi - prevOi) / prevOi",
+      "indicator": "open_interest",
+      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0"
+    },
+    "regime_alignment": {
+      "family": "count_ratio",
+      "provenance": "documented_mismatch",
+      "denominator": 3,
+      "gate": "alignedCount >= 2",
+      "examples": [
+        [
+          "3 of 3",
+          1.0
+        ],
+        [
+          "2 of 3",
+          0.67
+        ]
+      ],
+      "observedLive": [
+        "Dunkirk -> 0.667 (= 2/3, consistent with the published formula)",
+        "BTC 1h  -> 0.7 for trend=trending_up, mom=bullish, vol=normal",
+        "ETH 4h  -> 0.7 for trend=trending_up, mom=bullish, vol=normal"
+      ],
+      "note": "UNRESOLVED. The definition states 'Score = alignedCount / 3' with examples 3/3 -> 1.00 and 2/3 -> 0.67. No integer count over 3 yields 0.7, yet two independent previews returned exactly 0.7 for the same regime triple. 0.7 == 2.1/3, which would imply fractional credit for a non-directional volatility state - but that is a hypothesis fitted to two identical samples, not a measurement. omega.scoring refuses to compute this one."
+    },
+    "regime_divergence": {
+      "family": "two_state",
+      "provenance": "verified",
+      "high": 1.0,
+      "low": 0.6,
+      "reads": "1.0 when momentum diverges from trend, 0.6 on trend-momentum conflict"
+    },
+    "regime_trend_shift": {
+      "family": "two_state",
+      "provenance": "verified",
+      "high": 1.0,
+      "low": 0.5,
+      "reads": "1.0 if the shift is current, 0.5 if one window back",
+      "verifiedLive": [
+        "ETH 4h 'trending_up -> trending_up' -> 0.5"
+      ]
+    },
+    "regime_volatility_shift": {
+      "family": "two_state",
+      "provenance": "verified",
+      "high": 1.0,
+      "low": 0.5,
+      "reads": "1.0 if the shift is current, 0.5 if one window back",
+      "verifiedLive": [
+        "ETH 4h 'expanding -> normal' -> 1.0"
+      ]
+    },
+    "rel_ppo_bear_cross": {
+      "family": "unspecified_magnitude",
+      "provenance": "inferred_mirror",
+      "indicator": "ppo_histogram",
+      "mirrorOf": "rel_ppo_bull_cross"
+    },
+    "rel_ppo_bull_cross": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "ppo_histogram"
+    },
+    "rel_roc_negative": {
+      "family": "pct_gap_scaled",
+      "provenance": "verified",
+      "divisor": 5,
+      "reads": "abs(roc12_value)",
+      "indicator": "roc12_value",
+      "note": "also requires ROC < prevROC (decelerating)",
+      "verifiedLive": [
+        "ETH 4h ROC -0.02140333 -> 0.004280666000000001 exact"
+      ]
+    },
+    "rel_roc_positive": {
+      "family": "pct_gap_scaled",
+      "provenance": "verified",
+      "divisor": 5,
+      "reads": "roc12_value",
+      "indicator": "roc12_value",
+      "note": "also requires ROC > prevROC (accelerating)",
+      "verifiedLive": [
+        "BTC 1h ROC 0.00394991 -> 0.000789982 exact"
+      ]
+    },
+    "rsi_bear_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "rsi14 vs price"
+    },
+    "rsi_bull_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "rsi14 vs price"
+    },
+    "rsi_overbought": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 70,
+      "normaliser": "100 - threshold",
+      "indicator": "rsi14",
+      "examples": [
+        [
+          73,
+          0.1
+        ],
+        [
+          85,
+          0.5
+        ]
+      ],
+      "verifiedLive": [
+        "ETH 4h RSI 71.0343436 -> 0.03447811999999999 exact"
+      ]
+    },
+    "rsi_oversold": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 30,
+      "normaliser": "threshold",
+      "indicator": "rsi14",
+      "examples": [
+        [
+          27,
+          0.1
+        ],
+        [
+          15,
+          0.5
+        ]
+      ]
+    },
+    "sr_at_resistance": {
+      "family": "proximity",
+      "provenance": "verified",
+      "proximityPct": 0.005,
+      "indicator": "swing_high, price",
+      "examples": [
+        [
+          "0.2% away",
+          0.6
+        ],
+        [
+          "0.05% away",
+          0.9
+        ]
+      ],
+      "verifiedLive": [
+        "Dunkirk 0.4435% away -> 0.1130 exact"
+      ]
+    },
+    "sr_at_support": {
+      "family": "proximity",
+      "provenance": "verified",
+      "proximityPct": 0.005,
+      "indicator": "swing_low, price",
+      "examples": [
+        [
+          "0.2% away",
+          0.6
+        ],
+        [
+          "0.05% away",
+          0.9
+        ]
+      ]
+    },
+    "sr_resistance_break": {
+      "family": "break_magnitude",
+      "provenance": "inferred_mirror",
+      "mirrorOf": "sr_support_break"
+    },
+    "sr_support_break": {
+      "family": "break_magnitude",
+      "provenance": "verified",
+      "indicator": "swing_low, price",
+      "note": "definition publishes a raw example above 1.0; the engine clamps to 1.0"
+    },
+    "stoch_bear_cross": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 70,
+      "normaliser": "100 - threshold",
+      "reads": "%D at the cross",
+      "indicator": "stoch_k/d",
+      "examples": [
+        [
+          85,
+          0.5
+        ],
+        [
+          72,
+          0.07
+        ]
+      ]
+    },
+    "stoch_bull_cross": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 30,
+      "normaliser": "threshold",
+      "reads": "%D at the cross",
+      "indicator": "stoch_k/d",
+      "examples": [
+        [
+          15,
+          0.5
+        ],
+        [
+          28,
+          0.07
+        ]
+      ]
+    },
+    "stoch_overbought": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 80,
+      "normaliser": "100 - threshold",
+      "reads": "max(%K, %D)",
+      "indicator": "stoch_k, stoch_d",
+      "examples": [
+        [
+          85,
+          0.25
+        ],
+        [
+          95,
+          0.75
+        ]
+      ]
+    },
+    "stoch_oversold": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 20,
+      "normaliser": "threshold",
+      "reads": "min(%K, %D)",
+      "indicator": "stoch_k, stoch_d",
+      "examples": [
+        [
+          15,
+          0.25
+        ],
+        [
+          5,
+          0.75
+        ]
+      ]
+    },
+    "structure_fvg_approach": {
+      "family": "proximity",
+      "provenance": "verified",
+      "proximityPct": 1.0,
+      "indicator": "distancePct",
+      "examples": [
+        [
+          "0.3% away",
+          0.7
+        ],
+        [
+          "0.05% away",
+          0.95
+        ]
+      ]
+    },
+    "structure_ob_approach": {
+      "family": "proximity",
+      "provenance": "verified",
+      "proximityPct": 1.0,
+      "indicator": "distancePct",
+      "examples": [
+        [
+          "0.3% away",
+          0.7
+        ],
+        [
+          "0.05% away",
+          0.95
+        ]
+      ]
+    },
+    "structure_zone_cluster": {
+      "family": "count_ratio",
+      "provenance": "verified",
+      "denominator": 3,
+      "gate": "zoneCount >= 2",
+      "indicator": "zoneCount",
+      "examples": [
+        [
+          "2 zones",
+          0.67
+        ],
+        [
+          "3+ zones",
+          1.0
+        ]
+      ]
+    },
+    "structure_zone_confluence": {
+      "family": "two_state",
+      "provenance": "verified",
+      "high": 1.0,
+      "low": 0.8,
+      "reads": "1.0 when the overlap is exact (<0.05%), 0.8 when merely aligned",
+      "indicator": "overlapPct"
+    },
+    "trend_adx_ranging": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 20,
+      "normaliser": "threshold",
+      "indicator": "adx_value",
+      "verifiedLive": [
+        "BTC 1h ADX 11.68241454 -> 0.415879273 exact"
+      ]
+    },
+    "trend_adx_trending": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 25,
+      "normaliser": "threshold",
+      "indicator": "adx_value",
+      "verifiedLive": [
+        "ETH 4h ADX 56.077 -> raw 1.243, engine reports 1 (CLAMP PROOF)"
+      ],
+      "note": "bounded 0-100 yet normalised by the threshold, NOT by 100-threshold"
+    },
+    "volatility_atr_contracting": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 0.7,
+      "normaliser": "threshold",
+      "indicator": "atr_value / prev_atr_value",
+      "examples": [
+        [
+          0.6,
+          0.14
+        ],
+        [
+          0.3,
+          0.57
+        ]
+      ]
+    },
+    "volatility_atr_expanding": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 1.5,
+      "normaliser": "threshold",
+      "indicator": "atr_value / prev_atr_value",
+      "examples": [
+        [
+          1.8,
+          0.2
+        ],
+        [
+          3.0,
+          1.0
+        ]
+      ]
+    },
+    "volume_dry_up": {
+      "family": "linear_below",
+      "provenance": "verified",
+      "threshold": 0.5,
+      "normaliser": "threshold",
+      "indicator": "volume_ratio",
+      "examples": [
+        [
+          0.4,
+          0.2
+        ],
+        [
+          0.1,
+          0.8
+        ]
+      ]
+    },
+    "volume_obv_bear_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "obv_value vs price"
+    },
+    "volume_obv_bull_divergence": {
+      "family": "unspecified_magnitude",
+      "provenance": "verified",
+      "indicator": "obv_value vs price"
+    },
+    "volume_surge": {
+      "family": "linear_above",
+      "provenance": "verified",
+      "threshold": 2.0,
+      "normaliser": "threshold",
+      "indicator": "volume_ratio",
+      "examples": [
+        [
+          2.4,
+          0.2
+        ],
+        [
+          4.0,
+          1.0
+        ]
+      ]
+    }
+  }
+}
