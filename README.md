@@ -11,7 +11,8 @@ across ten MCP discovery tools and written down nowhere.
 
 This repository extracts the whole contract from the live connector, classifies every
 dimension of it, documents the underlying maths, and ships a Python toolkit that validates
-a proposed column **before** it touches your account.
+a proposed column **before** it touches your account — and a generator that composes whole
+strategies from a thesis.
 
 > **Read-only by construction.** Nothing here calls a BattleGrid write tool. The toolkit
 > emits a submit-ready payload to `out/`; submitting stays a separate, human-initiated act.
@@ -32,6 +33,7 @@ a proposed column **before** it touches your account.
 | [05 · Aggregation Math](docs/05-signal-aggregation-math.md) | the scoring derivation and what follows from it |
 | [06 · Cookbook](docs/06-cookbook.md) | recipes that compile, and ten traps |
 | [07 · Signal Membership](docs/07-signal-membership.md) | which of the 84 signals your report can actually feed — offline |
+| [08 · Strategy Generation](docs/08-strategy-generation.md) | compose a complete validated strategy from a thesis |
 
 ## What the extraction found
 
@@ -94,6 +96,7 @@ emit(report, "mr-panel")                  # -> out/mr-panel.json  (NOT submitted
 | `omega/fanout.py` | predict headers, cost the report against every budget |
 | `omega/aggregate.py` | the scoring math, `minimum_score_to_route` inversion |
 | `omega/membership.py` | predict signal membership offline; flag allocation that can't be fed |
+| `omega/generate.py` | compose a whole strategy from a thesis; critique it |
 | `omega/emit.py` | write a validated payload to `out/` — never submits |
 
 ## Layout
@@ -103,11 +106,11 @@ data/contract/     raw extraction (metrics, transforms, templates, categories) +
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
                    composition rules, compiler probes, aggregate oracle,
                    signal module map
-docs/              00–07
+docs/              00–08
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
-examples/          build_section.py
-tests/             97 tests, incl. 20 compiler + 22 membership probes replayed
+examples/          build_section.py, build_strategy.py
+tests/             132 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -120,7 +123,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 97 passed
+python -m pytest tests/ -q     # 132 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector
@@ -129,6 +132,10 @@ python -m pytest tests/ -q     # 97 passed
 - aggregation matches `simulate_aggregate_score` to the last digit
 - spread pools verified symmetric and self-excluding
 - all 22 membership probes replay against the offline predictor, module-for-module
+- the generated `squeeze-breakout` strategy's predicted membership matches the live
+  connector exactly — 18 signals, signal for signal
+- the membership map independently reproduces two production strategies' scorecards:
+  `EL_ALAMEIN` (32 non-zero allocations) and `MATH-C3` (15)
 
 ## Caveat
 

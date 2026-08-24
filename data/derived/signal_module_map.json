@@ -1,7 +1,6 @@
 {
   "_note": "Metric -> signal-module map, derived empirically from 22 derive_strategy_rule_view probes. Lets report membership be predicted OFFLINE instead of calling the connector.",
   "capturedAgainst": "BattleGrid MCP connector, account ANBUJEFF",
-
   "rules": {
     "granularity": "MODULE, not column. Any ONE satisfying metric puts the module's ENTIRE signal set in report. RSI14 alone and RSI7 alone unlock the identical 8 signals.",
     "transformIrrelevant": "The transform, timeframe rel, window and other column parameters do not affect membership. Only which METRICS appear.",
@@ -9,78 +8,285 @@
     "union": "Membership over a multi-column report is the UNION of each metric's module contribution. No probe showed a conjunctive requirement.",
     "defaultAllocation": "Every IN_REPORT signal is returned with reportDefaultAllocation = 1; NOT_IN_REPORT returns 0."
   },
-
   "moduleSignals": {
-    "RSI": ["rsi_oversold", "rsi_overbought", "rsi_bull_divergence", "rsi_bear_divergence", "htf_rsi_oversold", "htf_rsi_overbought", "ltf_rsi_oversold", "ltf_rsi_overbought"],
-    "MACD": ["macd_bull_cross", "macd_bear_cross", "macd_bull_divergence", "macd_bear_divergence"],
-    "STOCHASTIC": ["stoch_oversold", "stoch_overbought", "stoch_bull_cross", "stoch_bear_cross"],
-    "VOLUME": ["volume_surge", "volume_dry_up", "volume_obv_bull_divergence", "volume_obv_bear_divergence"],
-    "VOLATILITY": ["volatility_atr_expanding", "volatility_atr_contracting"],
-    "BOLLINGER": ["bollinger_squeeze", "bollinger_lower_touch", "bollinger_upper_touch", "bollinger_cci_oversold", "bollinger_cci_overbought"],
-    "MOVING_AVERAGES": ["ma_ema_aligned_bull", "ma_ema_aligned_bear", "ma_ema_bull_cross", "ma_ema_bear_cross", "ma_sma200_above", "ma_sma200_below", "htf_ma_aligned_bull", "htf_ma_aligned_bear", "ltf_ma_aligned_bull", "ltf_ma_aligned_bear"],
-    "TREND_STRENGTH": ["trend_adx_trending", "trend_adx_ranging", "htf_trend_adx_trending", "htf_trend_adx_ranging", "ltf_trend_adx_trending", "ltf_trend_adx_ranging"],
-    "FUNDING": ["funding_extreme_positive", "funding_extreme_negative", "funding_rate_flipping"],
-    "OPEN_INTEREST": ["oi_surge", "oi_divergence_bull", "oi_divergence_bear"],
-    "RELATIVE_STRENGTH": ["rel_ppo_bull_cross", "rel_ppo_bear_cross", "rel_roc_positive", "rel_roc_negative"],
-    "SUPPORT_RESISTANCE": ["sr_at_support", "sr_at_resistance", "sr_support_break", "sr_resistance_break"],
-    "MFI": ["mfi_overbought", "mfi_oversold", "mfi_bull_divergence", "mfi_bear_divergence", "mfi_sustained_bullish", "mfi_sustained_bearish"],
-    "REGIME": ["regime_trend_shift", "regime_volatility_shift", "regime_alignment", "regime_divergence"],
-    "PRICE_STRUCTURE": ["structure_fvg_approach", "structure_ob_approach", "structure_zone_cluster", "structure_zone_confluence"],
-    "CVD": ["cvd_bullish", "cvd_bearish", "cvd_bull_divergence", "cvd_bear_divergence"],
-    "FLOW_DIVERGENCE": ["flow_perp_spot_bull_divergence", "flow_perp_spot_bear_divergence"],
-    "CONFLUENCE": ["mtf_aligned_bull", "mtf_aligned_bear", "mtf_pullback_long", "mtf_pullback_short"],
-    "COMPARISON": ["comparison_sector_divergence", "comparison_btc_decorrelation", "comparison_sector_momentum"]
+    "RSI": [
+      "rsi_oversold",
+      "rsi_overbought",
+      "rsi_bull_divergence",
+      "rsi_bear_divergence",
+      "htf_rsi_oversold",
+      "htf_rsi_overbought",
+      "ltf_rsi_oversold",
+      "ltf_rsi_overbought"
+    ],
+    "MACD": [
+      "macd_bull_cross",
+      "macd_bear_cross",
+      "macd_bull_divergence",
+      "macd_bear_divergence"
+    ],
+    "STOCHASTIC": [
+      "stoch_oversold",
+      "stoch_overbought",
+      "stoch_bull_cross",
+      "stoch_bear_cross"
+    ],
+    "VOLUME": [
+      "volume_surge",
+      "volume_dry_up",
+      "volume_obv_bull_divergence",
+      "volume_obv_bear_divergence"
+    ],
+    "VOLATILITY": [
+      "volatility_atr_expanding",
+      "volatility_atr_contracting"
+    ],
+    "BOLLINGER": [
+      "bollinger_squeeze",
+      "bollinger_lower_touch",
+      "bollinger_upper_touch",
+      "bollinger_cci_oversold",
+      "bollinger_cci_overbought"
+    ],
+    "MOVING_AVERAGES": [
+      "ma_ema_aligned_bull",
+      "ma_ema_aligned_bear",
+      "ma_ema_bull_cross",
+      "ma_ema_bear_cross",
+      "ma_sma200_above",
+      "ma_sma200_below",
+      "htf_ma_aligned_bull",
+      "htf_ma_aligned_bear",
+      "ltf_ma_aligned_bull",
+      "ltf_ma_aligned_bear"
+    ],
+    "TREND_STRENGTH": [
+      "trend_adx_trending",
+      "trend_adx_ranging",
+      "htf_trend_adx_trending",
+      "htf_trend_adx_ranging",
+      "ltf_trend_adx_trending",
+      "ltf_trend_adx_ranging"
+    ],
+    "FUNDING": [
+      "funding_extreme_positive",
+      "funding_extreme_negative",
+      "funding_rate_flipping"
+    ],
+    "OPEN_INTEREST": [
+      "oi_surge",
+      "oi_divergence_bull",
+      "oi_divergence_bear"
+    ],
+    "RELATIVE_STRENGTH": [
+      "rel_ppo_bull_cross",
+      "rel_ppo_bear_cross",
+      "rel_roc_positive",
+      "rel_roc_negative"
+    ],
+    "SUPPORT_RESISTANCE": [
+      "sr_at_support",
+      "sr_at_resistance",
+      "sr_support_break",
+      "sr_resistance_break"
+    ],
+    "MFI": [
+      "mfi_overbought",
+      "mfi_oversold",
+      "mfi_bull_divergence",
+      "mfi_bear_divergence",
+      "mfi_sustained_bullish",
+      "mfi_sustained_bearish"
+    ],
+    "REGIME": [
+      "regime_trend_shift",
+      "regime_volatility_shift",
+      "regime_alignment",
+      "regime_divergence"
+    ],
+    "PRICE_STRUCTURE": [
+      "structure_fvg_approach",
+      "structure_ob_approach",
+      "structure_zone_cluster",
+      "structure_zone_confluence"
+    ],
+    "CVD": [
+      "cvd_bullish",
+      "cvd_bearish",
+      "cvd_bull_divergence",
+      "cvd_bear_divergence"
+    ],
+    "FLOW_DIVERGENCE": [
+      "flow_perp_spot_bull_divergence",
+      "flow_perp_spot_bear_divergence"
+    ],
+    "CONFLUENCE": [
+      "mtf_aligned_bull",
+      "mtf_aligned_bear",
+      "mtf_pullback_long",
+      "mtf_pullback_short"
+    ],
+    "COMPARISON": [
+      "comparison_sector_divergence",
+      "comparison_btc_decorrelation",
+      "comparison_sector_momentum"
+    ]
   },
-
   "moduleSatisfiedBy": {
-    "RSI": ["RSI14", "RSI7"],
-    "MACD": ["MACD"],
-    "STOCHASTIC": ["STOCH_K", "STOCH_D"],
-    "VOLUME": ["VOLUME", "VOL_SMA20", "OBV", "RVOL"],
-    "VOLATILITY": ["ATR", "ATR_PCT"],
-    "BOLLINGER": ["BB_PCT_B", "BB_WIDTH", "BB_WIDTH_PCT", "BB_TOUCH", "CCI20"],
-    "MOVING_AVERAGES": ["SMA20", "SMA50", "SMA200", "EMA5", "EMA13", "EMA20", "EMA_CROSS", "MA_ALIGN"],
-    "TREND_STRENGTH": ["ADX"],
-    "FUNDING": ["FUNDING_RATE", "FUNDING_ANN", "FUNDING_LABEL"],
-    "OPEN_INTEREST": ["OI", "OI_CHG", "OI_VELOCITY", "OI_PX_REGIME"],
-    "RELATIVE_STRENGTH": ["PPO", "ROC12"],
-    "SUPPORT_RESISTANCE": ["SWING_HIGH", "SWING_LOW", "PRICE_ZONE"],
-    "MFI": ["MFI14"],
-    "REGIME": ["REGIME_TREND", "REGIME_VOL", "REGIME_MOM"],
-    "PRICE_STRUCTURE": ["STRUCT_ZONES"],
-    "CVD": ["CVD", "BUY_PRESSURE", "BUY_VOLUME", "SELL_VOLUME", "BUY_TRADES", "SELL_TRADES"],
-    "FLOW_DIVERGENCE": ["SPOT_CVD", "PERP_SPOT_FLOW", "PERP_SPOT_STRENGTH", "PERP_SPOT_CONFIRMS"],
+    "RSI": [
+      "RSI14",
+      "RSI7"
+    ],
+    "MACD": [
+      "MACD"
+    ],
+    "STOCHASTIC": [
+      "STOCH_K",
+      "STOCH_D"
+    ],
+    "VOLUME": [
+      "VOLUME",
+      "VOL_SMA20",
+      "OBV",
+      "RVOL"
+    ],
+    "VOLATILITY": [
+      "ATR",
+      "ATR_PCT"
+    ],
+    "BOLLINGER": [
+      "BB_PCT_B",
+      "BB_WIDTH",
+      "BB_WIDTH_PCT",
+      "BB_TOUCH",
+      "CCI20"
+    ],
+    "MOVING_AVERAGES": [
+      "SMA20",
+      "SMA50",
+      "SMA200",
+      "EMA5",
+      "EMA13",
+      "EMA20",
+      "EMA_CROSS",
+      "MA_ALIGN"
+    ],
+    "TREND_STRENGTH": [
+      "ADX"
+    ],
+    "FUNDING": [
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "FUNDING_LABEL"
+    ],
+    "OPEN_INTEREST": [
+      "OI",
+      "OI_CHG",
+      "OI_VELOCITY",
+      "OI_PX_REGIME"
+    ],
+    "RELATIVE_STRENGTH": [
+      "PPO",
+      "ROC12"
+    ],
+    "SUPPORT_RESISTANCE": [
+      "SWING_HIGH",
+      "SWING_LOW",
+      "PRICE_ZONE"
+    ],
+    "MFI": [
+      "MFI14"
+    ],
+    "REGIME": [
+      "REGIME_TREND",
+      "REGIME_VOL",
+      "REGIME_MOM"
+    ],
+    "PRICE_STRUCTURE": [
+      "STRUCT_ZONES"
+    ],
+    "CVD": [
+      "CVD",
+      "BUY_PRESSURE",
+      "BUY_VOLUME",
+      "SELL_VOLUME",
+      "BUY_TRADES",
+      "SELL_TRADES"
+    ],
+    "FLOW_DIVERGENCE": [
+      "SPOT_CVD",
+      "PERP_SPOT_FLOW",
+      "PERP_SPOT_STRENGTH",
+      "PERP_SPOT_CONFIRMS"
+    ],
     "CONFLUENCE": [],
     "COMPARISON": []
   },
-
   "unreachableModules": {
     "_note": "No column combination tried put these 7 signals in report - including a custom section carrying MA_ALIGN at all three rungs plus RSI14 and ADX, and a section with benchmarkTicker set. They are presumably gated on strategy-level configuration this stateless tool does not model.",
     "CONFLUENCE": {
-      "signals": ["mtf_aligned_bull", "mtf_aligned_bear", "mtf_pullback_long", "mtf_pullback_short"],
+      "signals": [
+        "mtf_aligned_bull",
+        "mtf_aligned_bear",
+        "mtf_pullback_long",
+        "mtf_pullback_short"
+      ],
       "kind": "synthesis",
-      "dependencies": ["PRIMARY", "REGIME_RUNG", "LOWER", "SYNTHESIS"],
+      "dependencies": [
+        "PRIMARY",
+        "REGIME_RUNG",
+        "LOWER",
+        "SYNTHESIS"
+      ],
       "evidence": "Probe MTF supplied MA_ALIGN at rel lower/anchor/regime + RSI14 classifyZone at 3 rungs + ADX at regime. ma_*, htf_ma_*, ltf_ma_*, rsi_*, trend_adx_* all went IN_REPORT; all four mtf_* stayed NOT_IN_REPORT.",
       "reading": "These are second-order: they fire off OTHER signals firing, not off columns directly. Do not budget allocation for them from column design alone."
     },
     "COMPARISON": {
-      "signals": ["comparison_sector_divergence", "comparison_btc_decorrelation", "comparison_sector_momentum"],
+      "signals": [
+        "comparison_sector_divergence",
+        "comparison_btc_decorrelation",
+        "comparison_sector_momentum"
+      ],
       "evidence": "Probe CMP set benchmarkTicker='BTC' with PPO + ROC12 + CLOSE_CHANGE rank. rel_* went IN_REPORT; all three comparison_* stayed NOT_IN_REPORT. Setting benchmarkTicker alone does not unlock them.",
       "reading": "Likely requires the includeReferencePairs / includeMarketBreadth machinery, which ships with zero columns and contributed nothing in probe PLAT_MTF."
     }
   },
-
   "metricsSatisfyingNoModule": [
-    "OPEN", "HIGH", "LOW", "CLOSE", "LAST", "MARK", "ORACLE", "SPOT_CLOSE_CB", "SPOT_CLOSE_BN", "BAR_FORMING",
-    "CLOSE_CHANGE", "CHG_5M", "CHG_15M", "CHG_1H", "CHG_4H", "CHG_24H",
-    "HIGH_DEV", "LOW_DEV",
+    "OPEN",
+    "HIGH",
+    "LOW",
+    "CLOSE",
+    "LAST",
+    "MARK",
+    "ORACLE",
+    "SPOT_CLOSE_CB",
+    "SPOT_CLOSE_BN",
+    "BAR_FORMING",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "HIGH_DEV",
+    "LOW_DEV",
     "VWAP",
-    "TRADES", "NOTIONAL_VOLUME_1D",
-    "CROWD_PICK", "CROWD_UPBIAS", "CROWD_ACC", "CROWD_CAPT",
-    "CROWD_PICK_LIVE", "CROWD_UPBIAS_LIVE", "CROWD_ACC_LIVE", "CROWD_CAPT_LIVE", "SETTLED_AT",
-    "FLOW_ALIGN", "SMART_RETAIL", "CAPTAIN_CONF", "CONFIDENCE"
+    "TRADES",
+    "NOTIONAL_VOLUME_1D",
+    "CROWD_PICK",
+    "CROWD_UPBIAS",
+    "CROWD_ACC",
+    "CROWD_CAPT",
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS_LIVE",
+    "CROWD_ACC_LIVE",
+    "CROWD_CAPT_LIVE",
+    "SETTLED_AT",
+    "FLOW_ALIGN",
+    "SMART_RETAIL",
+    "CAPTAIN_CONF",
+    "CONFIDENCE"
   ],
-
   "surprises": [
     {
       "finding": "VWAP satisfies NOTHING",
@@ -113,47 +319,321 @@
       "consequence": "Do not assume a platform section feeds the module its columns suggest. Verify with derive_strategy_rule_view."
     }
   ],
-
   "probes": [
-    {"id": "RSI14", "metrics": ["RSI14"], "modules": ["RSI"]},
-    {"id": "RSI7", "metrics": ["RSI7"], "modules": ["RSI"]},
-    {"id": "BUY_PRESSURE", "metrics": ["BUY_PRESSURE"], "modules": ["CVD"]},
-    {"id": "CVD", "metrics": ["CVD"], "modules": ["CVD"]},
-    {"id": "MACD", "metrics": ["MACD"], "modules": ["MACD"]},
-    {"id": "STOCH_K", "metrics": ["STOCH_K"], "modules": ["STOCHASTIC"]},
-    {"id": "STOCH_D", "metrics": ["STOCH_D"], "modules": ["STOCHASTIC"]},
-    {"id": "VOLUME", "metrics": ["VOLUME"], "modules": ["VOLUME"]},
-    {"id": "G1", "metrics": ["ATR", "BB_PCT_B", "SMA20", "ADX", "FUNDING_RATE", "OI", "PPO", "SWING_HIGH", "MFI14", "REGIME_TREND", "STRUCT_ZONES", "SPOT_CVD", "VOL_SMA20"],
-     "modules": ["VOLUME", "VOLATILITY", "BOLLINGER", "MOVING_AVERAGES", "TREND_STRENGTH", "FUNDING", "OPEN_INTEREST", "RELATIVE_STRENGTH", "SUPPORT_RESISTANCE", "MFI", "REGIME", "PRICE_STRUCTURE", "FLOW_DIVERGENCE"]},
-    {"id": "G2", "metrics": ["ATR_PCT", "BB_WIDTH", "SMA50", "FUNDING_ANN", "OI_CHG", "ROC12", "SWING_LOW", "REGIME_VOL", "PERP_SPOT_FLOW", "OBV"],
-     "modules": ["VOLUME", "VOLATILITY", "BOLLINGER", "MOVING_AVERAGES", "FUNDING", "OPEN_INTEREST", "RELATIVE_STRENGTH", "SUPPORT_RESISTANCE", "REGIME", "FLOW_DIVERGENCE"]},
-    {"id": "G3", "metrics": ["OPEN", "HIGH", "LOW", "CLOSE", "LAST", "MARK", "ORACLE", "SPOT_CLOSE_CB", "SPOT_CLOSE_BN", "BAR_FORMING", "CHG_1H", "HIGH_DEV", "SETTLED_AT"],
-     "modules": []},
-    {"id": "G4", "metrics": ["RVOL", "BB_WIDTH_PCT", "SMA200", "OI_VELOCITY", "FUNDING_LABEL", "REGIME_MOM", "PRICE_ZONE", "CLOSE_CHANGE", "PERP_SPOT_STRENGTH", "CROWD_PICK"],
-     "modules": ["VOLUME", "BOLLINGER", "MOVING_AVERAGES", "FUNDING", "OPEN_INTEREST", "SUPPORT_RESISTANCE", "REGIME", "FLOW_DIVERGENCE"]},
-    {"id": "G5", "metrics": ["TRADES", "BB_TOUCH", "EMA5", "OI_PX_REGIME", "VWAP", "PERP_SPOT_CONFIRMS", "FLOW_ALIGN", "CROWD_UPBIAS", "CHG_5M"],
-     "modules": ["BOLLINGER", "MOVING_AVERAGES", "OPEN_INTEREST", "FLOW_DIVERGENCE"]},
-    {"id": "G6", "metrics": ["BUY_VOLUME", "CCI20", "EMA13", "SMART_RETAIL", "CONFIDENCE", "CAPTAIN_CONF", "LOW_DEV", "CROWD_ACC"],
-     "modules": ["BOLLINGER", "MOVING_AVERAGES", "CVD"]},
-    {"id": "G7", "metrics": ["SELL_VOLUME", "EMA20", "CROWD_CAPT", "CHG_15M", "CROWD_PICK_LIVE"],
-     "modules": ["MOVING_AVERAGES", "CVD"]},
-    {"id": "G8", "metrics": ["BUY_TRADES", "EMA_CROSS", "CROWD_UPBIAS_LIVE", "CHG_4H"],
-     "modules": ["MOVING_AVERAGES", "CVD"]},
-    {"id": "G9", "metrics": ["SELL_TRADES", "MA_ALIGN", "CROWD_ACC_LIVE", "CHG_24H"],
-     "modules": ["MOVING_AVERAGES", "CVD"]},
-    {"id": "G10", "metrics": ["NOTIONAL_VOLUME_1D", "CROWD_CAPT_LIVE"], "modules": []},
-    {"id": "FA", "metrics": ["FLOW_ALIGN"], "modules": []},
-    {"id": "MTF", "metrics": ["MA_ALIGN", "RSI14", "ADX"],
-     "modules": ["RSI", "MOVING_AVERAGES", "TREND_STRENGTH"],
-     "note": "MA_ALIGN at lower/anchor/regime, RSI14 classifyZone at 3 rungs, ADX at regime. CONFLUENCE still absent."},
-    {"id": "CMP", "metrics": ["PPO", "ROC12", "CLOSE_CHANGE"], "benchmarkTicker": "BTC",
-     "modules": ["RELATIVE_STRENGTH"],
-     "note": "benchmarkTicker set; COMPARISON still absent."},
-    {"id": "PLAT_RSI", "platformSections": ["includeRsi"], "modules": ["RSI"]},
-    {"id": "PLAT_MTF", "platformSections": ["includeMtfConfluence"], "modules": [],
-     "note": "Zero contribution despite carrying MA_ALIGN, RSI14 and ADX columns."}
+    {
+      "id": "RSI14",
+      "metrics": [
+        "RSI14"
+      ],
+      "modules": [
+        "RSI"
+      ]
+    },
+    {
+      "id": "RSI7",
+      "metrics": [
+        "RSI7"
+      ],
+      "modules": [
+        "RSI"
+      ]
+    },
+    {
+      "id": "BUY_PRESSURE",
+      "metrics": [
+        "BUY_PRESSURE"
+      ],
+      "modules": [
+        "CVD"
+      ]
+    },
+    {
+      "id": "CVD",
+      "metrics": [
+        "CVD"
+      ],
+      "modules": [
+        "CVD"
+      ]
+    },
+    {
+      "id": "MACD",
+      "metrics": [
+        "MACD"
+      ],
+      "modules": [
+        "MACD"
+      ]
+    },
+    {
+      "id": "STOCH_K",
+      "metrics": [
+        "STOCH_K"
+      ],
+      "modules": [
+        "STOCHASTIC"
+      ]
+    },
+    {
+      "id": "STOCH_D",
+      "metrics": [
+        "STOCH_D"
+      ],
+      "modules": [
+        "STOCHASTIC"
+      ]
+    },
+    {
+      "id": "VOLUME",
+      "metrics": [
+        "VOLUME"
+      ],
+      "modules": [
+        "VOLUME"
+      ]
+    },
+    {
+      "id": "G1",
+      "metrics": [
+        "ATR",
+        "BB_PCT_B",
+        "SMA20",
+        "ADX",
+        "FUNDING_RATE",
+        "OI",
+        "PPO",
+        "SWING_HIGH",
+        "MFI14",
+        "REGIME_TREND",
+        "STRUCT_ZONES",
+        "SPOT_CVD",
+        "VOL_SMA20"
+      ],
+      "modules": [
+        "VOLUME",
+        "VOLATILITY",
+        "BOLLINGER",
+        "MOVING_AVERAGES",
+        "TREND_STRENGTH",
+        "FUNDING",
+        "OPEN_INTEREST",
+        "RELATIVE_STRENGTH",
+        "SUPPORT_RESISTANCE",
+        "MFI",
+        "REGIME",
+        "PRICE_STRUCTURE",
+        "FLOW_DIVERGENCE"
+      ]
+    },
+    {
+      "id": "G2",
+      "metrics": [
+        "ATR_PCT",
+        "BB_WIDTH",
+        "SMA50",
+        "FUNDING_ANN",
+        "OI_CHG",
+        "ROC12",
+        "SWING_LOW",
+        "REGIME_VOL",
+        "PERP_SPOT_FLOW",
+        "OBV"
+      ],
+      "modules": [
+        "VOLUME",
+        "VOLATILITY",
+        "BOLLINGER",
+        "MOVING_AVERAGES",
+        "FUNDING",
+        "OPEN_INTEREST",
+        "RELATIVE_STRENGTH",
+        "SUPPORT_RESISTANCE",
+        "REGIME",
+        "FLOW_DIVERGENCE"
+      ]
+    },
+    {
+      "id": "G3",
+      "metrics": [
+        "OPEN",
+        "HIGH",
+        "LOW",
+        "CLOSE",
+        "LAST",
+        "MARK",
+        "ORACLE",
+        "SPOT_CLOSE_CB",
+        "SPOT_CLOSE_BN",
+        "BAR_FORMING",
+        "CHG_1H",
+        "HIGH_DEV",
+        "SETTLED_AT"
+      ],
+      "modules": []
+    },
+    {
+      "id": "G4",
+      "metrics": [
+        "RVOL",
+        "BB_WIDTH_PCT",
+        "SMA200",
+        "OI_VELOCITY",
+        "FUNDING_LABEL",
+        "REGIME_MOM",
+        "PRICE_ZONE",
+        "CLOSE_CHANGE",
+        "PERP_SPOT_STRENGTH",
+        "CROWD_PICK"
+      ],
+      "modules": [
+        "VOLUME",
+        "BOLLINGER",
+        "MOVING_AVERAGES",
+        "FUNDING",
+        "OPEN_INTEREST",
+        "SUPPORT_RESISTANCE",
+        "REGIME",
+        "FLOW_DIVERGENCE"
+      ]
+    },
+    {
+      "id": "G5",
+      "metrics": [
+        "TRADES",
+        "BB_TOUCH",
+        "EMA5",
+        "OI_PX_REGIME",
+        "VWAP",
+        "PERP_SPOT_CONFIRMS",
+        "FLOW_ALIGN",
+        "CROWD_UPBIAS",
+        "CHG_5M"
+      ],
+      "modules": [
+        "BOLLINGER",
+        "MOVING_AVERAGES",
+        "OPEN_INTEREST",
+        "FLOW_DIVERGENCE"
+      ]
+    },
+    {
+      "id": "G6",
+      "metrics": [
+        "BUY_VOLUME",
+        "CCI20",
+        "EMA13",
+        "SMART_RETAIL",
+        "CONFIDENCE",
+        "CAPTAIN_CONF",
+        "LOW_DEV",
+        "CROWD_ACC"
+      ],
+      "modules": [
+        "BOLLINGER",
+        "MOVING_AVERAGES",
+        "CVD"
+      ]
+    },
+    {
+      "id": "G7",
+      "metrics": [
+        "SELL_VOLUME",
+        "EMA20",
+        "CROWD_CAPT",
+        "CHG_15M",
+        "CROWD_PICK_LIVE"
+      ],
+      "modules": [
+        "MOVING_AVERAGES",
+        "CVD"
+      ]
+    },
+    {
+      "id": "G8",
+      "metrics": [
+        "BUY_TRADES",
+        "EMA_CROSS",
+        "CROWD_UPBIAS_LIVE",
+        "CHG_4H"
+      ],
+      "modules": [
+        "MOVING_AVERAGES",
+        "CVD"
+      ]
+    },
+    {
+      "id": "G9",
+      "metrics": [
+        "SELL_TRADES",
+        "MA_ALIGN",
+        "CROWD_ACC_LIVE",
+        "CHG_24H"
+      ],
+      "modules": [
+        "MOVING_AVERAGES",
+        "CVD"
+      ]
+    },
+    {
+      "id": "G10",
+      "metrics": [
+        "NOTIONAL_VOLUME_1D",
+        "CROWD_CAPT_LIVE"
+      ],
+      "modules": []
+    },
+    {
+      "id": "FA",
+      "metrics": [
+        "FLOW_ALIGN"
+      ],
+      "modules": []
+    },
+    {
+      "id": "MTF",
+      "metrics": [
+        "MA_ALIGN",
+        "RSI14",
+        "ADX"
+      ],
+      "modules": [
+        "RSI",
+        "MOVING_AVERAGES",
+        "TREND_STRENGTH"
+      ],
+      "note": "MA_ALIGN at lower/anchor/regime, RSI14 classifyZone at 3 rungs, ADX at regime. CONFLUENCE still absent."
+    },
+    {
+      "id": "CMP",
+      "metrics": [
+        "PPO",
+        "ROC12",
+        "CLOSE_CHANGE"
+      ],
+      "benchmarkTicker": "BTC",
+      "modules": [
+        "RELATIVE_STRENGTH"
+      ],
+      "note": "benchmarkTicker set; COMPARISON still absent."
+    },
+    {
+      "id": "PLAT_RSI",
+      "platformSections": [
+        "includeRsi"
+      ],
+      "modules": [
+        "RSI"
+      ]
+    },
+    {
+      "id": "PLAT_MTF",
+      "platformSections": [
+        "includeMtfConfluence"
+      ],
+      "modules": [],
+      "note": "Zero contribution despite carrying MA_ALIGN, RSI14 and ADX columns."
+    }
   ],
-
   "coverage": {
     "signalsTotal": 84,
     "signalsReachable": 77,
@@ -163,5 +643,170 @@
     "modulesReachable": 17,
     "modulesUnreachable": 2,
     "probeCount": 24
-  }
+  },
+  "defaultParams": {
+    "bollinger_cci_overbought": {
+      "threshold": 100
+    },
+    "bollinger_cci_oversold": {
+      "threshold": -100
+    },
+    "bollinger_lower_touch": {
+      "pctBThreshold": 0.05
+    },
+    "bollinger_squeeze": {
+      "bandwidthPct": 0.04
+    },
+    "bollinger_upper_touch": {
+      "pctBThreshold": 0.95
+    },
+    "comparison_btc_decorrelation": {
+      "maxCorrelation": 0.3
+    },
+    "comparison_sector_divergence": {
+      "minPeerFraction": 0.5
+    },
+    "comparison_sector_momentum": {
+      "minPeerFraction": 0.6
+    },
+    "cvd_bear_divergence": {},
+    "cvd_bearish": {},
+    "cvd_bull_divergence": {},
+    "cvd_bullish": {},
+    "flow_perp_spot_bear_divergence": {},
+    "flow_perp_spot_bull_divergence": {},
+    "funding_extreme_negative": {
+      "thresholdPct": 0.0005
+    },
+    "funding_extreme_positive": {
+      "thresholdPct": 0.0005
+    },
+    "funding_rate_flipping": {},
+    "htf_ma_aligned_bear": {},
+    "htf_ma_aligned_bull": {},
+    "htf_rsi_overbought": {
+      "threshold": 70
+    },
+    "htf_rsi_oversold": {
+      "threshold": 30
+    },
+    "htf_trend_adx_ranging": {
+      "threshold": 20
+    },
+    "htf_trend_adx_trending": {
+      "threshold": 25
+    },
+    "ltf_ma_aligned_bear": {},
+    "ltf_ma_aligned_bull": {},
+    "ltf_rsi_overbought": {
+      "threshold": 70
+    },
+    "ltf_rsi_oversold": {
+      "threshold": 30
+    },
+    "ltf_trend_adx_ranging": {
+      "threshold": 20
+    },
+    "ltf_trend_adx_trending": {
+      "threshold": 25
+    },
+    "ma_ema_aligned_bear": {},
+    "ma_ema_aligned_bull": {},
+    "ma_ema_bear_cross": {},
+    "ma_ema_bull_cross": {},
+    "ma_sma200_above": {},
+    "ma_sma200_below": {},
+    "macd_bear_cross": {},
+    "macd_bear_divergence": {},
+    "macd_bull_cross": {},
+    "macd_bull_divergence": {},
+    "mfi_bear_divergence": {},
+    "mfi_bull_divergence": {},
+    "mfi_overbought": {
+      "threshold": 80
+    },
+    "mfi_oversold": {
+      "threshold": 20
+    },
+    "mfi_sustained_bearish": {},
+    "mfi_sustained_bullish": {},
+    "mtf_aligned_bear": {},
+    "mtf_aligned_bull": {},
+    "mtf_pullback_long": {},
+    "mtf_pullback_short": {},
+    "oi_divergence_bear": {},
+    "oi_divergence_bull": {},
+    "oi_surge": {
+      "thresholdPct": 0.05
+    },
+    "regime_alignment": {},
+    "regime_divergence": {},
+    "regime_trend_shift": {},
+    "regime_volatility_shift": {},
+    "rel_ppo_bear_cross": {},
+    "rel_ppo_bull_cross": {},
+    "rel_roc_negative": {},
+    "rel_roc_positive": {},
+    "rsi_bear_divergence": {},
+    "rsi_bull_divergence": {},
+    "rsi_overbought": {
+      "threshold": 70
+    },
+    "rsi_oversold": {
+      "threshold": 30
+    },
+    "sr_at_resistance": {
+      "proximityPct": 0.005
+    },
+    "sr_at_support": {
+      "proximityPct": 0.005
+    },
+    "sr_resistance_break": {},
+    "sr_support_break": {},
+    "stoch_bear_cross": {
+      "zoneThreshold": 70
+    },
+    "stoch_bull_cross": {
+      "zoneThreshold": 30
+    },
+    "stoch_overbought": {
+      "threshold": 80
+    },
+    "stoch_oversold": {
+      "threshold": 20
+    },
+    "structure_fvg_approach": {
+      "proximityPct": 1
+    },
+    "structure_ob_approach": {
+      "proximityPct": 1
+    },
+    "structure_zone_cluster": {
+      "rangePct": 2
+    },
+    "structure_zone_confluence": {
+      "alignmentPct": 0.5
+    },
+    "trend_adx_ranging": {
+      "threshold": 20
+    },
+    "trend_adx_trending": {
+      "threshold": 25
+    },
+    "volatility_atr_contracting": {
+      "multiplier": 0.7
+    },
+    "volatility_atr_expanding": {
+      "multiplier": 1.5
+    },
+    "volume_dry_up": {
+      "multiplier": 0.5
+    },
+    "volume_obv_bear_divergence": {},
+    "volume_obv_bull_divergence": {},
+    "volume_surge": {
+      "multiplier": 2
+    }
+  },
+  "_defaultParamsNote": "Report-default signal params, taken verbatim from derive_strategy_rule_view and cross-checked against two live strategies (EL_ALAMEIN, MATH-C3)."
 }

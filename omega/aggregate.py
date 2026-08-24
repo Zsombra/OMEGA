@@ -54,10 +54,21 @@ class AggregateResult:
         return "\n".join(lines)
 
 
+# `simulate_aggregate_score` accepts at most 20 signals per call. That is an API
+# limit, NOT a property of the maths or of strategies: EL_ALAMEIN carries 32 non-zero
+# allocations. So a full production scorecard cannot be checked with that tool in one
+# call, and local aggregation is the only way to evaluate one.
+SIMULATE_TOOL_MAX_SIGNALS = 20
+
+
 def aggregate(signals: list[Signal], gate: float) -> AggregateResult:
-    """Allocation-weighted mean of signal scores, compared against the routing gate."""
-    if not 1 <= len(signals) <= 20:
-        raise ValueError(f"expected 1..20 signals, got {len(signals)}")
+    """Allocation-weighted mean of signal scores, compared against the routing gate.
+
+    Accepts any number of signals. See SIMULATE_TOOL_MAX_SIGNALS for why the
+    connector's own what-if tool cannot always be used to check the result.
+    """
+    if not signals:
+        raise ValueError("expected at least one signal")
     if not 0.0 <= gate <= 1.0:
         raise ValueError(f"gate {gate} outside [0,1]")
 
