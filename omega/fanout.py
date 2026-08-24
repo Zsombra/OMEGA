@@ -13,10 +13,18 @@ from .types import Column, CustomSection, PlatformSection, Report
 
 REL_INFIX = {"anchor": "", "lower": "_ltf_", "regime": "_htf_"}
 
-# Rough per-header token cost: header name + value + glossary share, measured
-# against observed get_strategy_column_contract payloads.
-TOKENS_PER_HEADER = 18
-TOKENS_PER_SECTION = 25
+# APPROXIMATE. Three live preview_strategy_report renders (o200k_base):
+#     6 headers /  2 columns / 1 section ->  164 tokens  (27.3 per header)
+#    33 headers / 13 columns / 1 section ->  976 tokens  (29.6 per header)
+#    34 headers / 11 columns / 2 sections -> 824 tokens  (24.2 per header)
+# Note sample 3 has MORE headers than sample 2 but FEWER tokens: the cost is dominated
+# by per-metric glossary prose, not by header count, so no simple linear model fits.
+# A two-parameter fit on the first two samples looked accurate to 1% and then missed
+# the third by 13% - it was overfitting.
+# Treat this as a planning aid with roughly +/-15% error. preview_strategy_report
+# returns the server's own estimatedTokens as used/cap and is authoritative.
+TOKENS_PER_HEADER = 27
+TOKEN_ESTIMATE_ERROR_PCT = 15
 
 
 @dataclass(frozen=True)
@@ -62,6 +70,12 @@ def _stage1_header(column: Column, contract: Contract) -> str:
         return f"{code}_mean{column.window or 24}"
     if tid == "bandTouch":
         return f"{code}_touch"
+    if tid == "classifyZone":
+        return f"{code}_zone"
+    if tid == "crossDetect":
+        return f"{code}_cross"
+    if tid == "classifyState":          # platform-only, listed for completeness
+        return f"{code}_state"
     if tid == "rank":
         return f"{code}_rank_{column.ordering or 'hi'}"
     if tid.startswith("nearestZone"):
@@ -109,9 +123,16 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
         kind = m.native_output["kind"]
     else:
         kind = "numeric"
+    # vocabularies confirmed against preview_strategy_report renders
     vocab = tuple(m.vocab or ()) if tid == "value" else ()
     if tid == "bandTouch":
         vocab = ("upper", "lower", "none")
+    elif tid == "classifyZone":
+        vocab = ("overbought", "oversold", "neutral")
+    elif tid == "crossDetect":
+        vocab = ("Bullish", "Bearish")
+    elif tid == "classifyState":
+        vocab = ()          # platform-only; vocabulary varies per metric
     return [Output(base, kind, vocab)]
 
 
@@ -136,7 +157,8 @@ class BudgetReport:
             f"columns             {self.columns:>5}",
             f"output headers      {self.headers:>5}   <- the real cost driver",
             f"distinct timeframes {len(self.distinct_timeframes):>5} / {b['distinctTimeframes']}  {self.distinct_timeframes}",
-            f"estimated tokens    {self.estimated_tokens:>5} / {b['estimatedTokens']}",
+            f"estimated tokens   ~{self.estimated_tokens:>5} / {b['estimatedTokens']}"
+            f"   (+/-{TOKEN_ESTIMATE_ERROR_PCT}%; preview_strategy_report is authoritative)",
         ]
         if self.breaches:
             lines.append("")
@@ -175,15 +197,18 @@ def cost_report(report: Report, contract: Contract | None = None) -> BudgetRepor
                 if tf:
                     timeframes.add(tf)
 
-    tokens = headers * TOKENS_PER_HEADER + len(report.sections) * TOKENS_PER_SECTION
+    tokens = headers * TOKENS_PER_HEADER
     b = c.budgets
     breaches = []
     if len(report.sections) > b["sections"]:
         breaches.append(f"sections {len(report.sections)} > {b['sections']}")
     if len(timeframes) > b["distinctTimeframes"]:
         breaches.append(f"distinct timeframes {len(timeframes)} > {b['distinctTimeframes']}")
-    if tokens > b["estimatedTokens"]:
-        breaches.append(f"estimated tokens {tokens} > {b['estimatedTokens']}")
+    upper = tokens * (1 + TOKEN_ESTIMATE_ERROR_PCT / 100)
+    if upper > b["estimatedTokens"]:
+        breaches.append(
+            f"estimated tokens ~{tokens} (+/-{TOKEN_ESTIMATE_ERROR_PCT}%) may exceed "
+            f"{b['estimatedTokens']} - confirm with preview_strategy_report")
 
     return BudgetReport(
         sections=len(report.sections), columns=columns, headers=headers,

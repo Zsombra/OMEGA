@@ -34,6 +34,7 @@ strategies from a thesis.
 | [06 · Cookbook](docs/06-cookbook.md) | recipes that compile, and ten traps |
 | [07 · Signal Membership](docs/07-signal-membership.md) | which of the 84 signals your report can actually feed — offline |
 | [08 · Strategy Generation](docs/08-strategy-generation.md) | compose a complete validated strategy from a thesis |
+| [09 · Conditions](docs/09-conditions.md) | the condition DSL, ambient headers, and offline type-checking |
 
 ## What the extraction found
 
@@ -47,7 +48,7 @@ strategies from a thesis.
 | Compiler probes | 20, all matching the derived matrix |
 | Membership probes | 24, mapping 52 metrics to 17 signal modules |
 
-Five findings that shape everything:
+Six findings that shape everything:
 
 1. **The metric×transform matrix is a sparse partial function.** `ADX × classifyState` is
    rejected — yet `includeTrendStrength` uses exactly that pair. Some pairs are reserved
@@ -62,6 +63,9 @@ Five findings that shape everything:
    including `VWAP`, `CLOSE_CHANGE`, `TRADES` and every crowd and derived metric. Weighting
    a signal your report can't feed adds to the aggregation denominator and *suppresses*
    your score.
+6. **Conditions are advisory, not a gate** — *"they may make you more selective, never
+   less."* And three ambient sections (`session-field`, `market-breadth`,
+   `reference-pairs`) are referenceable for free, costing nothing against your budget.
 
 ## Toolkit
 
@@ -96,6 +100,7 @@ emit(report, "mr-panel")                  # -> out/mr-panel.json  (NOT submitted
 | `omega/fanout.py` | predict headers, cost the report against every budget |
 | `omega/aggregate.py` | the scoring math, `minimum_score_to_route` inversion |
 | `omega/membership.py` | predict signal membership offline; flag allocation that can't be fed |
+| `omega/conditions.py` | condition DSL builders; type-check clauses against real headers |
 | `omega/generate.py` | compose a whole strategy from a thesis; critique it |
 | `omega/emit.py` | write a validated payload to `out/` — never submits |
 
@@ -106,11 +111,11 @@ data/contract/     raw extraction (metrics, transforms, templates, categories) +
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
                    composition rules, compiler probes, aggregate oracle,
                    signal module map
-docs/              00–08
+docs/              00–09
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py
-tests/             132 tests, incl. 20 compiler + 22 membership probes replayed
+tests/             181 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -123,7 +128,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 132 passed
+python -m pytest tests/ -q     # 181 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector
@@ -136,6 +141,8 @@ python -m pytest tests/ -q     # 132 passed
   connector exactly — 18 signals, signal for signal
 - the membership map independently reproduces two production strategies' scorecards:
   `EL_ALAMEIN` (32 non-zero allocations) and `MATH-C3` (15)
+- generated conditions and `marketReadText` verified against a live
+  `preview_strategy_report` render: every clause resolved, both markers referenceable
 
 ## Caveat
 

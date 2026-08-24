@@ -16,7 +16,13 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
+import uuid
+
 from .aggregate import Signal, aggregate
+from .conditions import (
+    all_of, condition, is_, market_read_text, n_of, num, validate_conditions,
+    validate_market_read,
+)
 from .contract import DERIVED_DIR, load
 from .fanout import cost_report, outputs_for
 from .membership import _map, analyse, check_allocations, signals_for
@@ -106,6 +112,44 @@ MODULE_RECIPES: dict[str, list[dict]] = {
     ],
 }
 
+# Directional reads per module, expressed over headers the recipes above produce.
+# `up` / `down` are clause factories; `filter` is non-directional.
+# Every one of these is type-checked against predicted headers in the tests.
+MODULE_CLAUSES: dict[str, dict] = {
+    "RSI":               {"up": lambda: num("RSI14_now", "gt", 50),
+                          "down": lambda: num("RSI14_now", "lt", 50)},
+    "MACD":              {"up": lambda: is_("MACD_trend", "rising"),
+                          "down": lambda: is_("MACD_trend", "falling")},
+    "MOVING_AVERAGES":   {"up": lambda: is_("MAalign", "bullish"),
+                          "down": lambda: is_("MAalign", "bearish")},
+    "TREND_STRENGTH":    {"filter": lambda: num("ADX_now", "gte", 25)},
+    "BOLLINGER":         {"up": lambda: num("pctB_now", "lt", 0.05),
+                          "down": lambda: num("pctB_now", "gt", 0.95)},
+    "CVD":               {"up": lambda: is_("CVD_trend", "rising"),
+                          "down": lambda: is_("CVD_trend", "falling")},
+    "VOLUME":            {"up": lambda: is_("OBV_trend", "rising"),
+                          "down": lambda: is_("OBV_trend", "falling")},
+    "VOLATILITY":        {"filter": lambda: is_("ATR_trend", "rising")},
+    "MFI":               {"up": lambda: is_("MFI14_zone", "oversold"),
+                          "down": lambda: is_("MFI14_zone", "overbought")},
+    "STOCHASTIC":        {"up": lambda: is_("K_zone", "oversold"),
+                          "down": lambda: is_("K_zone", "overbought")},
+    "RELATIVE_STRENGTH": {"up": lambda: is_("PPO_trend", "rising"),
+                          "down": lambda: is_("PPO_trend", "falling")},
+    "SUPPORT_RESISTANCE": {"up": lambda: is_("zone", "near low"),
+                           "down": lambda: is_("zone", "near high")},
+    "PRICE_STRUCTURE":   {"up": lambda: num("zones_support_dist", "lt", 1.0),
+                          "down": lambda: num("zones_resistance_dist", "gt", -1.0)},
+    "FUNDING":           {"up": lambda: num("rate", "lt", 0),
+                          "down": lambda: num("rate", "gt", 0)},
+    "OPEN_INTEREST":     {"up": lambda: is_("OI_trend", "rising"),
+                          "down": lambda: is_("OI_trend", "falling")},
+    "REGIME":            {"up": lambda: is_("regTrend_now", "trending up"),
+                          "down": lambda: is_("regTrend_now", "trending down")},
+    "FLOW_DIVERGENCE":   {"up": lambda: is_("perpSpotFlow", "spot_led_accumulation"),
+                          "down": lambda: is_("perpSpotFlow", "perp_led_fragile")},
+}
+
 # Modules whose oscillators substantially agree. Taking more than two is paying
 # token cost for one piece of evidence - and, if weighted, counting it twice.
 CORRELATED_OSCILLATORS = {"RSI", "STOCHASTIC", "MFI", "BOLLINGER"}
@@ -182,6 +226,13 @@ class StrategyPlan:
     thesis: Thesis
     report: Report
     rules: list[Rule]
+    conditions: list[dict] = field(default_factory=list)
+    market_read_text: str = ""
+
+    def condition_findings(self):
+        out = validate_conditions(self.report, self.conditions)
+        out += validate_market_read(self.market_read_text, self.conditions, self.report)
+        return out
 
     # -- analysis ---------------------------------------------------------
     def validation(self):
@@ -213,6 +264,9 @@ class StrategyPlan:
                 out.append(f"wasted allocation: {f}")
         if mem.dead_metrics:
             out.append(f"context-only metrics (feed no signal): {', '.join(sorted(mem.dead_metrics))}")
+
+        for f in self.condition_findings():
+            out.append(f"condition {f.severity}: {f}")
 
         osc = CORRELATED_OSCILLATORS & set(self.thesis.weights)
         if len(osc) > 2:
@@ -246,7 +300,8 @@ class StrategyPlan:
             "cadence": CADENCE_FOR_ANCHOR[self.thesis.anchor],
             "regimeTimeframe": REGIME_TF_FOR_ANCHOR[self.thesis.anchor],
             "sections": self.report.wire(),
-            "conditions": [],
+            "conditions": self.conditions,
+            "marketReadText": self.market_read_text,
             "signalRules": [
                 {
                     "signalId": s,
@@ -276,12 +331,22 @@ class StrategyPlan:
         for tier in sorted(by_tier, reverse=True):
             lines.append(f"  tier {tier}  ({len(by_tier[tier])})  {', '.join(sorted(by_tier[tier])[:4])}"
                          + (" ..." if len(by_tier[tier]) > 4 else ""))
+        if self.conditions:
+            lines += ["", f"conditions        {len(self.conditions):>3}"]
+            for cond in self.conditions:
+                v = cond.get("verdict") or "-"
+                lines.append(f"  {cond['conditionKey']:<16} {v:<8} {cond['name']}")
         if sim:
             lines += ["", f"all-signals-at-0.75 -> aggregate {sim.aggregate_score_percent}% "
                           f"vs gate {sim.gate_percent}% -> "
                           f"{'ROUTES' if sim.would_route else 'held'}"]
         lines += ["", "critique:"] + [f"  - {x}" for x in self.critique()]
         return "\n".join(lines)
+
+
+def _section_key(title: str) -> str:
+    """Deterministic custom sectionKey so conditions can reference the section."""
+    return f"custom:{uuid.uuid5(uuid.NAMESPACE_URL, f'omega/{title}')}"
 
 
 def _split_by_timeframe_mode(modules: list[str]) -> tuple[list[dict], list[dict]]:
@@ -305,12 +370,14 @@ def plan(thesis: Thesis) -> StrategyPlan:
 
     sections: list[CustomSection] = []
     if candle:
+        title = f"{thesis.name[:44]} Signals"[:60]
         sections.append(CustomSection(
-            title=f"{thesis.name[:44]} Signals"[:60], benchmarkTicker=None,
+            title=title, sectionKey=_section_key(title), benchmarkTicker=None,
             columns=[Column.model_validate(s) for s in candle]))
     if inert:
+        title = f"{thesis.name[:40]} Context"[:60]
         sections.append(CustomSection(
-            title=f"{thesis.name[:40]} Context"[:60], benchmarkTicker=None,
+            title=title, sectionKey=_section_key(title), benchmarkTicker=None,
             columns=[Column.model_validate(s) for s in inert]))
 
     report = Report(anchor=thesis.anchor, sections=sections)
@@ -323,7 +390,37 @@ def plan(thesis: Thesis) -> StrategyPlan:
             if sid in feedable and tier > 0:
                 rules.append(Rule(signalId=sid, allocation=tier,
                                   required=sid in thesis.required))
-    return StrategyPlan(thesis=thesis, report=report, rules=rules)
+    conditions = _build_conditions(thesis)
+    text = market_read_text(
+        f"{thesis.name}. {thesis.description}".strip(), conditions) if conditions else ""
+    return StrategyPlan(thesis=thesis, report=report, rules=rules,
+                        conditions=conditions, market_read_text=text)
+
+
+def _build_conditions(thesis: Thesis) -> list[dict]:
+    """One UP and one DOWN confluence condition over the thesis's weighted modules.
+
+    Modelled on EL_ALAMEIN: an N_OF checklist the agent reads as a single verdict
+    rather than re-deriving. Non-directional modules become a shared filter clause
+    wrapped in ALL alongside the checklist.
+    """
+    directional = [m for m in thesis.weights if "up" in MODULE_CLAUSES.get(m, {})]
+    filters = [m for m in thesis.weights if "filter" in MODULE_CLAUSES.get(m, {})]
+    if len(directional) < 2:
+        return []
+
+    prefix = "".join(w[0] for w in thesis.name.split()[:2]).upper() or "SETUP"
+    n = max(2, (len(directional) * 2) // 3)          # two-thirds of the checklist
+    out = []
+    for side, verdict in (("up", "UP"), ("down", "DOWN")):
+        checklist = n_of(n, *[MODULE_CLAUSES[m][side]() for m in directional])
+        definition = (all_of(checklist, *[MODULE_CLAUSES[m]["filter"]() for m in filters])
+                      if filters else checklist)
+        out.append(condition(
+            f"{prefix}_{verdict}",
+            f"{n} of {len(directional)} filters agree - {side}",
+            definition, verdict=verdict))
+    return out
 
 
 def plan_for_signals(signal_ids: list[str], *, name: str = "Ad-hoc", tier: int = 2,
