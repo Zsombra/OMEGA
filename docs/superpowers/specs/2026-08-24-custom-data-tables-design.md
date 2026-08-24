@@ -75,6 +75,10 @@ a compiled contract.
 
 Three new modules, each with one job.
 
+**No module in `omega/` opens a network connection.** The agent runs the read-only
+connector tools; `omega` builds the request payloads and ingests the saved responses. This
+is the existing house rule, not a new constraint.
+
 ### `omega/space.py` — enumeration and query
 
 Builds `ColumnSpec` objects from the existing contract corpus. No network.
@@ -90,18 +94,23 @@ the legality of all 322 atoms.
 
 ### `omega/probe.py` — the one-to-one bridge
 
-The only module that talks to BattleGrid. Both calls are read-only.
+**`omega` cannot call MCP tools.** This is the established house rule, stated at
+`omega/performance.py:244` and honoured by every script (`build_corpus.py`: *"Pure local
+computation - performs no network or MCP calls"*). The corpus is built by the agent running
+read-only tools and saving responses verbatim into a batch file, which a pure-local script
+then merges. `probe.py` follows that pattern exactly — it is **not** a live client.
 
-- `column_contract(spec)` calls `get_strategy_column_contract`. Returns
-  `effectiveParameters`, resolved output headers with types and `meaning`, `operandOrder`,
-  `formula`, `calculationSummary`, `glossary`, `nullBehavior`, and timeframe resolution. It
-  reads no market values.
-- `render(specs, coins, timeframe)` calls `preview_strategy_report`. Returns live computed
-  values. Documented as rendering *"without saving or mutating strategy state"* — no write,
-  no strategy slot, no quota.
+Two halves, neither of which opens a socket:
 
-Both responses are cached verbatim to `data/contract/columns/`. Nothing is normalised on
-the way in; interpretation happens at read time.
+- **Request builder.** `contract_requests(specs)` and `render_request(specs, coins,
+  timeframe)` return the exact JSON payloads to hand to `get_strategy_column_contract` and
+  `preview_strategy_report`. A `FETCH_RECIPE` module constant documents the procedure, in
+  the style of `performance.FETCH_RECIPE`.
+- **Verbatim ingester.** `load_contracts()` and `load_renders()` read the saved responses
+  from `data/contract/columns/`, validating shape but normalising nothing.
+
+Both connector tools are read-only. `preview_strategy_report` is documented as rendering
+*"without saving or mutating strategy state"* — no write, no strategy slot, no quota.
 
 ### `omega/explain.py` — the trace
 
