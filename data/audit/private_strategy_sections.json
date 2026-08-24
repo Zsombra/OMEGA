@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-08-25",
+  "source": "BattleGrid connector, get_strategy on every PRIVATE strategy",
+  "method": "verbatim read of strategy.sections[].kind, strategy.conditions, strategy.forkedFromStrategyId",
+  "quota": { "used": 25, "limit": 25, "remaining": 0 },
+  "summary": {
+    "privateStrategies": 25,
+    "withAnyCustomSection": 0,
+    "withAnyCondition": 0,
+    "forked": 1,
+    "platformSectionsOnly": 25
+  },
+  "strategies": [
+    { "name": "OMEGA-TEST: Fork Build", "id": "f0d2d328-b09f-4509-b8f2-ffa4e3c08181", "created": "2026-08-24", "revision": 4, "sections": [], "custom": 0, "conditions": 0, "forkedFrom": "6280a7c0-1ea3-47e2-80c2-ed26db731663" },
+
+    { "name": "ABS-01: Dual Oscillator Double-Extreme", "id": "a2d28f52-3aee-4dab-a2e9-7d3951c4445f", "created": "2026-07-29", "revision": 7, "sections": ["includePriceAction", "includeRsi", "includeStochastic", "includeVolume", "includeHigherTimeframe", "includeMtfConfluence"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "ABS-02: Extreme Money Flow & RSI Climax", "id": "95213630-ae6d-498b-8faa-65716737ceaf", "created": "2026-07-29", "revision": 7, "sections": ["includePriceAction", "includeRsi", "includeMfi", "includeVolatility", "includeHigherTimeframe", "includeMtfConfluence"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "ABS-03: 15m Speed-Reversion Scalp", "id": "00f44667-2753-4a91-8d14-6b24d94d7c50", "created": "2026-07-29", "revision": 5, "sections": ["includePriceAction", "includeRsi", "includeSubTimeframe", "includeBollingerBands"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "DIST-01: ATR-Normalized MA Stretch", "id": "f80bef6d-6a3e-4d36-9882-3ad202b69c57", "created": "2026-07-29", "revision": 14, "sections": ["includePriceAction", "includeMovingAverages", "includeVolatility", "includeRsi"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "DIST-02: VWAP Elasticity Snapback", "id": "0bd6e443-5629-4a73-ae15-af5323fb68f1", "created": "2026-07-29", "revision": 4, "sections": ["includePriceAction", "includeMovingAverages", "includeCvd", "includeVolume"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "SQZ-01: Positive Funding Short Fade", "id": "6b820630-1f08-4529-8479-d8be8508ca4c", "created": "2026-07-29", "revision": 5, "sections": ["includePriceAction", "includeFundingRates", "includeOpenInterest", "includeSubTimeframe"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "SQZ-02: Negative Funding Long Bounce", "id": "5c8010b4-3c31-4284-90fb-0c8422b40e99", "created": "2026-07-29", "revision": 7, "sections": ["includePriceAction", "includeFundingRates", "includeOpenInterest", "includeRsi", "includeHigherTimeframe", "includeMtfConfluence"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "SQZ-03: Stalling OI with CVD Divergence", "id": "c5984f71-e97b-42d7-84ca-6c2b2ca0e0f8", "created": "2026-07-29", "revision": 5, "sections": ["includePriceAction", "includeOpenInterest", "includeCvd", "includeSupportResistance"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "TRAJ-01: Price-RSI Trajectory Divergence", "id": "8fe2a6f3-45c0-462a-81d6-bcd4b0e6d043", "created": "2026-07-29", "revision": 4, "sections": ["includePriceAction", "includeRsi", "includeVolume", "includeMacd"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "TRAJ-03: MACD Histogram Acceleration Decay", "id": "bd1fc858-7bfe-4f6a-adaf-b0103ca45dbd", "created": "2026-07-29", "revision": 7, "sections": ["includePriceAction", "includeMacd", "includeRsi", "includeOpenInterest", "includeHigherTimeframe", "includeMtfConfluence"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "VOL-01: Bollinger Band %B Outer Breach", "id": "44c1f769-1703-4703-b94f-09358e633ddf", "created": "2026-07-29", "revision": 7, "sections": ["includePriceAction", "includeBollingerBands", "includeStochastic", "includeVolume"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "VOL-02: Band Width Squeeze Snapback", "id": "df18ef30-2ba1-44cb-87e3-3290fcc32044", "created": "2026-07-29", "revision": 5, "sections": ["includePriceAction", "includeBollingerBands", "includeVolatility", "includeVolume"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "ZSCORE-01: 24-Period Funding Rate Z-Score", "id": "4893a91f-a373-4ad5-8310-3ed311963472", "created": "2026-07-29", "revision": 5, "sections": ["includePriceAction", "includeFundingRates", "includeOpenInterest", "includeRsi"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "ZSCORE-02: 12-Period OI Volatility Z-Score", "id": "5b156349-7920-4062-9de6-270c768249f7", "created": "2026-07-29", "revision": 5, "sections": ["includePriceAction", "includeOpenInterest", "includeVolatility", "includeCvd"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "ZSCORE-03: 24-Period Relative PPO Z-Score", "id": "7fdf521e-9b48-49dd-8e04-1cefdcfede41", "created": "2026-07-29", "revision": 4, "sections": ["includePriceAction", "includeRelativeStrength", "includeVolume"], "custom": 0, "conditions": 0, "forkedFrom": null },
+
+    { "name": "MATH-C1: Trend Continuation", "id": "b3665946-9c3b-4f9d-a9fc-acf5aa8bd10c", "created": "2026-08-17", "revision": 2, "sections": ["includePriceAction", "includeSubTimeframe", "includeTrendStrength", "includeVolatility"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C2: Pullback in Trend", "id": "78011f26-10da-47c3-81ea-033324482ee3", "created": "2026-08-17", "revision": 2, "sections": ["includePriceAction", "includeHigherTimeframe", "includeSubTimeframe", "includeMovingAverages"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C3: Mean Reversion to VWAP", "id": "a6e79721-1048-4571-87dd-bc170cea4224", "created": "2026-08-17", "revision": 1, "sections": ["includePriceAction", "includeVolatility", "includeRsi", "includeBollingerBands"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C4: Volatility Breakout", "id": "c3614cae-f1f4-4f74-bae4-4dffbf4e3e06", "created": "2026-08-17", "revision": 1, "sections": ["includePriceAction", "includeVolatility", "includeVolume", "includeBollingerBands"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C5: SMC Liquidity Structure", "id": "dd8d29fc-c3f8-4f2f-b356-fa7463e6b760", "created": "2026-08-17", "revision": 1, "sections": ["includePriceAction", "includeStructureZones", "includeHigherTimeframe"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C6: Volume Profile Convergence", "id": "6280a7c0-1ea3-47e2-80c2-ed26db731663", "created": "2026-08-17", "revision": 1, "sections": ["includePriceAction", "includeVolume"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C8: Perp-Spot Basis", "id": "53bbf7a2-0d4f-4bf7-9b1c-5a265ca48aff", "created": "2026-08-17", "revision": 1, "sections": ["includePriceAction", "includePerpSpotFlow"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C10: Funding & Crowding Fade", "id": "91ddd9df-d8f3-4542-8323-5690e312b489", "created": "2026-08-17", "revision": 1, "sections": ["includePriceAction", "includeFundingRates"], "custom": 0, "conditions": 0, "forkedFrom": null },
+    { "name": "MATH-C13: Crowd Fade", "id": "c5585741-2054-4d27-b98c-8ff17dc2d994", "created": "2026-08-17", "revision": 2, "sections": ["includePriceAction", "includeCrowdIntelligence", "includeVolatility"], "custom": 0, "conditions": 0, "forkedFrom": null }
+  ]
+}

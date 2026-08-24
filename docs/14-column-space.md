@@ -68,6 +68,9 @@ measurable against what actually ships, rather than against eight cookbook recip
 | the platform's templates use | 139 |
 | **nothing has ever used** | **349** |
 
+Untouched by the platform, and untouched here too: none of this account's 25
+private strategies carries a single custom column. See doc 15.
+
 **71% of the legal space is untouched.** By family:
 
 | family | unused shapes |
