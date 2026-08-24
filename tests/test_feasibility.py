@@ -13,7 +13,8 @@ import pytest
 
 from omega.feasibility import (
     Observation, blocking_requirements, drag_ranking, leverage,
-    load_observations, load_rules, simulate,
+    load_captures, load_observations, load_rules, simulate, stability,
+    temporal_drag_ranking, temporal_estimates,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -183,3 +184,118 @@ def test_observation_from_preview_keeps_only_fired_scores():
 def test_empty_scorecard_does_not_divide_by_zero():
     r = simulate([("a", 2)], 0.5, [Observation("T", "1h", {})]).results[0]
     assert r.aggregate == 0.0 and r.fired == 0 and not r.routes
+
+
+# --- the second axis: time --------------------------------------------------
+#
+# Five coins at one instant and one coin at five instants both give n=5 and
+# support completely different conclusions. These pin the separation.
+
+def _rules():
+    """The real allocation map - for tests that run against captured data."""
+    allocs, _ = load_rules("apex-imported")
+    return list(allocs.items())
+
+
+# synthetic signal ids for the unit cases: `leverage` only reports signals the
+# rules allocate to, so made-up ids need a made-up rule set
+_SYN = [("x", 1), ("d", 1)]
+
+
+def test_load_captures_spans_files_and_stamps_each_observation():
+    single, spanning = load_observations(), load_captures()
+    assert len(spanning) > len(single)
+    stamps = {o.captured_at for o in spanning}
+    assert len(stamps) >= 2, "captures must be distinguishable by stamp"
+    assert all(o.captured_at for o in spanning), "every capture carries a stamp"
+
+
+def test_stability_reports_both_axes_separately():
+    st = stability(load_captures())
+    coins, times = st["bollinger_squeeze"]
+    assert coins == 4 and times == 2
+    # a signal seen at only one timepoint must not claim two
+    assert st["volume_surge"][1] == 1
+
+
+def test_a_coin_captured_twice_still_counts_once():
+    """The pseudoreplication fix: repeated looks at one coin are not more coins."""
+    once = [Observation("T", "1h", {"a": 1.0, "b": 0.2}, "t1")]
+    twice = once + [Observation("T", "1h", {"a": 1.0, "b": 0.2}, "t2")]
+    e1 = temporal_estimates([("a", 1), ("b", 1)], once)["b"]
+    e2 = temporal_estimates([("a", 1), ("b", 1)], twice)["b"]
+    assert e1.coins == e2.coins == 1, "a second look is not a second coin"
+    assert e2.times == 2 and e1.times == 1
+    assert e2.estimate_pp == pytest.approx(e1.estimate_pp),         "an identical re-read must not move the estimate"
+
+
+def test_coin_means_not_observation_means():
+    """One coin seen twice must not outvote another coin seen once."""
+    obs = [Observation("A", "1h", {"x": 1.0, "d": 0.2}, "t1"),
+           Observation("A", "1h", {"x": 1.0, "d": 0.2}, "t2"),
+           Observation("B", "1h", {"x": 1.0, "d": 0.9}, "t1")]
+    est = temporal_estimates(_SYN, obs)["d"]
+    assert est.coins == 2
+    # A contributes one coin-mean, B one - not two A observations against one B
+    a = temporal_estimates(_SYN, obs[:1])["d"].estimate_pp
+    b = temporal_estimates(_SYN, obs[2:])["d"].estimate_pp
+    assert est.estimate_pp == pytest.approx((a + b) / 2)
+
+
+def test_noise_floor_is_measured_from_the_same_coin_across_time():
+    """Drift on one coin between two reads is what the estimate is judged against."""
+    obs = [Observation("A", "1h", {"x": 1.0, "d": 0.50}, "t1"),
+           Observation("A", "1h", {"x": 1.0, "d": 0.54}, "t2")]
+    est = temporal_estimates(_SYN, obs)["d"]
+    assert est.noise_pp is not None
+    assert est.noise_pp == pytest.approx(
+        abs(leverage(_SYN, obs[0])[0].delta_pp
+            - leverage(_SYN, obs[1])[0].delta_pp) / 2, abs=1e-9)
+
+
+def test_noise_is_unestimable_when_no_single_coin_fired_twice():
+    """Two coins one time each carries no drift information, however large."""
+    obs = [Observation("A", "1h", {"x": 1.0, "d": 0.5}, "t1"),
+           Observation("B", "1h", {"x": 1.0, "d": 0.5}, "t2")]
+    est = temporal_estimates(_SYN, obs)["d"]
+    assert est.coins == 2 and est.times == 2
+    assert est.noise_pp is None
+    assert not est.resolved, "no drift information means no direction claimed"
+    assert est.verdict.strip() == "?"
+
+
+def test_an_estimate_inside_its_own_drift_claims_no_direction():
+    small = [Observation("A", "1h", {"x": 0.2, "d": 0.9}, "t1"),
+             Observation("A", "1h", {"x": 0.2, "d": 0.1}, "t2")]
+    est = temporal_estimates(_SYN, small)["d"]
+    assert abs(est.estimate_pp) < est.noise_pp
+    assert not est.resolved and est.verdict.strip() == "?"
+
+
+def test_a_stable_estimate_larger_than_its_drift_does_claim_one():
+    obs = [Observation("A", "1h", {"x": 1.0, "d": 0.2}, "t1"),
+           Observation("A", "1h", {"x": 1.0, "d": 0.2}, "t2")]
+    est = temporal_estimates(_SYN, obs)["d"]
+    assert est.noise_pp == pytest.approx(0.0)
+    assert est.resolved and est.verdict.strip() in ("DRAG", "carries")
+
+
+def test_temporal_ranking_gates_on_coins_not_observation_count():
+    """Two captures must not promote a one-coin signal into CONSISTENT."""
+    out = temporal_drag_ranking(_rules(), load_captures())
+    consistent = out.split("OCCASIONAL")[0]
+    assert "bollinger_squeeze" in consistent      # 4 coins x 2 times
+    assert "volume_surge" not in consistent       # 1 coin  x 1 time
+    assert "ltf_trend_adx_trending" not in consistent   # 1 coin x 2 times
+
+
+def test_the_top_drag_survives_the_second_timepoint():
+    """The finding the single-instant sample produced, re-checked against time."""
+    est = temporal_estimates(_rules(), load_captures())
+    ranked = sorted(est.values(), key=lambda e: -e.estimate_pp)
+    top = ranked[0]
+    assert top.signal_id == "rel_roc_negative"
+    assert top.coins >= 3 and top.times == 2 and top.resolved
+    carry = min(est.values(), key=lambda e: e.estimate_pp)
+    assert carry.signal_id == "macd_bear_divergence"
+    assert not carry.resolved, "biggest carry is a 2-coin, no-overlap estimate"

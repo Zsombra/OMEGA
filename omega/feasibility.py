@@ -100,6 +100,7 @@ class Observation:
     ticker: str
     interval: str
     scores: Mapping[str, float]
+    captured_at: str = ""
 
     @classmethod
     def from_preview(cls, payload: Mapping, interval: str = "") -> "Observation":
@@ -297,6 +298,160 @@ def load_observations(interval: str | None = None) -> list[Observation]:
     out = [Observation(o["ticker"], o["interval"], o["scores"])
            for o in raw["observations"]]
     return [o for o in out if interval is None or o.interval == interval]
+
+
+def load_captures(interval: str | None = None) -> list[Observation]:
+    """Every capture file, flattened - each Observation stamped with its capture.
+
+    `load_observations` reads one file and is the single-instant view. This reads
+    all of them, so the same (ticker, interval) pair appears once per timepoint.
+    Anything ranking over the result must therefore separate the two axes: five
+    coins at one instant and one coin at five instants both give you n=5, and they
+    support completely different conclusions.
+    """
+    out: list[Observation] = []
+    for f in sorted((_ROOT / "data" / "performance").glob("coin_observations*.json")):
+        raw = json.loads(f.read_text(encoding="utf-8"))
+        stamp = raw.get("_capturedAt", f.stem)
+        out += [Observation(o["ticker"], o["interval"], o["scores"],
+                            o.get("capturedAt", stamp))
+                for o in raw["observations"]]
+    return [o for o in out if interval is None or o.interval == interval]
+
+
+def stability(observations: Sequence[Observation]) -> dict[str, tuple[int, int]]:
+    """For each signal: (distinct coins it fired on, distinct timepoints it fired at)."""
+    coins: dict[str, set[str]] = {}
+    times: dict[str, set[str]] = {}
+    for o in observations:
+        for sid in o.scores:
+            coins.setdefault(sid, set()).add(f"{o.ticker}/{o.interval}")
+            times.setdefault(sid, set()).add(o.captured_at)
+    return {sid: (len(coins[sid]), len(times[sid])) for sid in coins}
+
+
+def temporal_estimates(rules: Iterable, observations: Sequence[Observation]
+                       ) -> dict[str, "TemporalEstimate"]:
+    """Per signal: a coin-averaged leverage estimate plus both coverage axes.
+
+    THE ESTIMATE AVERAGES WITHIN COIN FIRST
+    ---------------------------------------
+    Pooling every observation into one list treats a second look at BTC as
+    independent evidence about coins. It is not - it is a second look at BTC.
+    So each coin is collapsed to its own mean across the timepoints where the
+    signal fired, and the reported estimate is the mean OF THOSE COIN MEANS.
+    A coin captured twice therefore carries exactly the weight of a coin
+    captured once, which is the only thing that makes `coins` a real n.
+
+    THE NOISE FLOOR IS MEASURED, NOT ASSUMED
+    ----------------------------------------
+    Wherever a signal fired on the same coin at two different timepoints, the
+    gap between those two readings is drift the market handed us for free -
+    same coin, same rules, only the clock changed. Averaging the half-gap over
+    such coins gives that signal its own noise floor. An estimate smaller than
+    its own noise floor has no direction worth reporting, however many coins it
+    fired on - which is a different question from whether it fired widely.
+    """
+    per: dict[str, dict[str, dict[str, float]]] = {}
+    for obs in observations:
+        coin = f"{obs.ticker}/{obs.interval}"
+        for lv in leverage(rules, obs):
+            per.setdefault(lv.signal_id, {}).setdefault(coin, {})[obs.captured_at] = lv.delta_pp
+
+    out: dict[str, TemporalEstimate] = {}
+    for sid, by_coin in per.items():
+        coin_means = [sum(t.values()) / len(t) for t in by_coin.values()]
+        estimate = sum(coin_means) / len(coin_means)
+        # half-range per coin, over coins that saw this signal fire more than once
+        gaps = [(max(t.values()) - min(t.values())) / 2
+                for t in by_coin.values() if len(t) > 1]
+        out[sid] = TemporalEstimate(
+            signal_id=sid,
+            estimate_pp=estimate,
+            coins=len(by_coin),
+            times=len({stamp for t in by_coin.values() for stamp in t}),
+            noise_pp=(sum(gaps) / len(gaps)) if gaps else None,
+        )
+    return out
+
+
+@dataclass(frozen=True)
+class TemporalEstimate:
+    """One signal's leverage, with the evidence behind it kept visible."""
+
+    signal_id: str
+    estimate_pp: float
+    coins: int          # distinct (ticker, interval) pairs it fired on
+    times: int          # distinct capture stamps it fired at
+    noise_pp: float | None   # None when no coin saw it fire twice
+
+    @property
+    def resolved(self) -> bool:
+        """Is the sign of this estimate bigger than the drift behind it?"""
+        return self.noise_pp is not None and abs(self.estimate_pp) > self.noise_pp
+
+    @property
+    def verdict(self) -> str:
+        if not self.resolved:
+            return "?      "
+        return "DRAG   " if self.estimate_pp > 0 else "carries"
+
+
+def temporal_drag_ranking(rules: Iterable, observations: Sequence[Observation],
+                          min_coins: int = 3) -> str:
+    """Rank drag/carry across BOTH axes: how many coins, and how many timepoints.
+
+    `drag_ranking` pools every observation into one flat list, so its "fired on
+    n/5" collapses the two axes into one number. Feed it two captures and 3 coins
+    x 2 times becomes indistinguishable from 6 coins x 1 time - the
+    pseudoreplication trap.
+
+    Measured on the first two captures (~42 minutes apart, apex-imported rules):
+
+        fired on   signals   mean |shift|   max |shift|
+          1/5           19        0.99pp        3.97pp
+          2/5            8        0.65pp        2.68pp
+          3/5            9        0.69pp        2.22pp
+          4/5            2        0.18pp        0.33pp
+
+    Coverage predicts how far the MAGNITUDE moves. It does not predict SIGN
+    stability - `ma_ema_aligned_bull` fired on 3 coins and still crossed zero
+    (+0.63 -> -0.68) because its magnitude sits inside its own drift. The two
+    failure modes are gated separately here: `min_coins` promotes on breadth,
+    the measured noise floor decides whether a direction is claimed at all.
+    """
+    est = temporal_estimates(rules, observations)
+    n_coins = len({f"{o.ticker}/{o.interval}" for o in observations})
+    n_times = len({o.captured_at for o in observations})
+    need = min(min_coins, n_coins)
+
+    rows = sorted(est.values(), key=lambda e: -e.estimate_pp)
+    consistent = [e for e in rows if e.coins >= need]
+    occasional = [e for e in rows if e.coins < need]
+
+    def fmt(e: TemporalEstimate) -> str:
+        cover = f"{e.coins} coin{'s' if e.coins != 1 else ' '} x {e.times} time{'s' if e.times != 1 else ' '}"
+        why = ""
+        if not e.resolved:
+            why = ("   unresolved: no single coin fired it at both timepoints"
+                   if e.noise_pp is None
+                   else f"   unresolved: |{e.estimate_pp:+.2f}| within drift {e.noise_pp:.2f}pp")
+        return f"  {e.verdict} {e.signal_id:<32}{e.estimate_pp:+6.2f}pp   {cover}{why}"
+
+    lines = [f"leverage across {n_coins} coins x {n_times} timepoints "
+             f"(positive = removing it RAISES the aggregate)",
+             "  each coin is averaged across time before coins are averaged together,",
+             "  so a coin captured twice still counts once", ""]
+    lines.append(f"CONSISTENT - fired on at least {need} of {n_coins} coins:")
+    lines += [fmt(e) for e in consistent] or ["  (none)"]
+    if occasional:
+        lines += ["", f"OCCASIONAL - fired on fewer than {need} coins; too few coins "
+                      "to rank against the above:"]
+        lines += [fmt(e) for e in occasional]
+    lines += ["", "  A '?' means the estimate is smaller than the drift measured on the "
+                  "same coin", "  across timepoints - it fired, but this sample cannot "
+                  "say in which direction."]
+    return chr(10).join(lines)
 
 
 def load_rules(name: str) -> tuple[dict[str, int], float]:

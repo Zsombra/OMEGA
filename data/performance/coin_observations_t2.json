@@ -1,0 +1,127 @@
+{
+  "_note": "Second timepoint for the same five (ticker, interval) pairs in coin_observations.json. Same capture method: unweighted get_coin_signal_preview, non-zero scores only, read-only.",
+  "_capturedAt": "2026-08-24T05:23:58Z",
+  "_pairsWith": "coin_observations.json",
+  "_useFor": "Temporal spread - lets drag/carry leverage be separated into 'holds across coins' vs 'holds across time'.",
+  "_integrity": "Every scorecard below reproduces the platform's own reported aggregateScorePercent under the fired-set mean. Verified at write time.",
+  "observations": [
+    {
+      "ticker": "BTC",
+      "interval": "1h",
+      "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 54,
+      "dominantBias": "BEARISH",
+      "capturedAt": "2026-08-24T05:23:58Z",
+      "scores": {
+        "bollinger_squeeze": 0.5710697991177802,
+        "bollinger_cci_oversold": 0.015472039299999948,
+        "ma_sma200_above": 1,
+        "ltf_ma_aligned_bear": 0.042997109848240914,
+        "trend_adx_ranging": 0.42097144350000004,
+        "htf_trend_adx_trending": 1,
+        "rel_roc_negative": 0.001324624,
+        "mfi_bull_divergence": 1,
+        "mfi_sustained_bearish": 0.3935629706666667,
+        "cvd_bearish": 1
+      }
+    },
+    {
+      "ticker": "SOL",
+      "interval": "1h",
+      "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 56,
+      "dominantBias": "BEARISH",
+      "capturedAt": "2026-08-24T05:23:58Z",
+      "scores": {
+        "macd_bear_divergence": 1,
+        "bollinger_squeeze": 0.2672103224867842,
+        "ma_sma200_above": 1,
+        "trend_adx_ranging": 0.42591737399999996,
+        "htf_trend_adx_trending": 1,
+        "ltf_trend_adx_trending": 0.17537485559999993,
+        "mfi_sustained_bearish": 0.4571981073333333,
+        "cvd_bearish": 0.5,
+        "flow_perp_spot_bull_divergence": 0.2421094388008913
+      }
+    },
+    {
+      "ticker": "GOOGL",
+      "interval": "1h",
+      "assetClass": "equity",
+      "platformUnweightedAggregatePercent": 43,
+      "dominantBias": "BEARISH",
+      "capturedAt": "2026-08-24T05:23:58Z",
+      "scores": {
+        "stoch_oversold": 0.527575468,
+        "volume_dry_up": 0.3280096177830373,
+        "bollinger_squeeze": 0.7337821106839757,
+        "bollinger_cci_oversold": 0.9148465404000001,
+        "ma_ema_aligned_bear": 0.1813392385103625,
+        "ma_sma200_below": 0.07961767262710896,
+        "ltf_ma_aligned_bear": 0.07030527719048332,
+        "trend_adx_ranging": 0.242042558,
+        "htf_trend_adx_ranging": 0.355579746,
+        "ltf_trend_adx_ranging": 0.14318853699999998,
+        "rel_roc_negative": 0.00095727,
+        "sr_at_support": 0.7144106076060309,
+        "mfi_sustained_bearish": 0.6287905703333333,
+        "structure_zone_confluence": 1,
+        "cvd_bullish": 0.5
+      }
+    },
+    {
+      "ticker": "GOLD",
+      "interval": "1h",
+      "assetClass": "commodity",
+      "platformUnweightedAggregatePercent": 58,
+      "dominantBias": "BULLISH",
+      "capturedAt": "2026-08-24T05:23:58Z",
+      "scores": {
+        "rsi_overbought": 0.08935532933333311,
+        "htf_rsi_overbought": 0.3365634746666667,
+        "bollinger_squeeze": 0.7486285912654621,
+        "bollinger_upper_touch": 0.5066638921730489,
+        "bollinger_cci_overbought": 0.6979146109000002,
+        "ma_ema_aligned_bull": 0.30885682900661127,
+        "ma_sma200_above": 0.6791293551509823,
+        "ltf_ma_aligned_bull": 0.09181989805958372,
+        "trend_adx_trending": 0.27464046080000004,
+        "oi_divergence_bull": 1,
+        "sr_at_resistance": 0.32786143604987766,
+        "mfi_sustained_bullish": 0.5836290046666667,
+        "comparison_sector_divergence": 0.6666666666666666,
+        "structure_fvg_approach": 0.3720243865658537,
+        "structure_zone_cluster": 1,
+        "structure_zone_confluence": 0.8,
+        "cvd_bullish": 1,
+        "cvd_bull_divergence": 1
+      }
+    },
+    {
+      "ticker": "ETH",
+      "interval": "4h",
+      "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 60,
+      "dominantBias": "BULLISH",
+      "capturedAt": "2026-08-24T05:23:58Z",
+      "scores": {
+        "htf_rsi_overbought": 0.29929267633333345,
+        "ma_ema_aligned_bull": 1,
+        "ma_sma200_above": 1,
+        "htf_ma_aligned_bull": 1,
+        "trend_adx_trending": 1,
+        "htf_trend_adx_trending": 0.3391498224,
+        "ltf_trend_adx_ranging": 0.213118563,
+        "oi_divergence_bull": 0.20133736400835542,
+        "rel_roc_negative": 0.0067421980000000005,
+        "mfi_sustained_bullish": 0.34731149966666663,
+        "comparison_btc_decorrelation": 0.5,
+        "comparison_sector_momentum": 1,
+        "regime_trend_shift": 0.5,
+        "regime_volatility_shift": 1,
+        "regime_alignment": 0.7,
+        "cvd_bearish": 0.5
+      }
+    }
+  ]
+}

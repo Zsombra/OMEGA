@@ -1,6 +1,7 @@
 {
   "_note": "Unweighted coin scorecards from live get_coin_signal_preview (omit agentId -> every signal at effectiveAllocation 1). Only NON-ZERO scores are listed; every signal absent from a coin's map scored exactly 0 and did not trigger. Read-only capture, no state mutated.",
-  "_capturedAt": "2026-08-24",
+  "_capturedAt": "2026-08-24T04:42:25Z",
+  "_capturedAtNote": "APPROXIMATE. The original capture recorded a date only. This stamp is the commit time of 7029035, which introduced the file - so the true capture is at or shortly before it, within a few minutes. Later captures stamp themselves at write time and are exact. Kept so the two timepoints order correctly and cannot collide.",
   "_useFor": "omega.feasibility.simulate - re-weight these with any hypothetical allocation vector.",
   "_assetClasses": "The BattleGrid universe is NOT crypto-only. get_top_ranked_coins returns equities (GOOGL, TSLA, AMD, NFLX, TSM, INTC, MU, HOOD), indices (SP500, JP225, XYZ100, EWJ, EWY, URNM), commodities (GOLD, COPPER, PALLADIUM, NATGAS, BRENTOIL, CL) alongside crypto. Sample across classes: signal availability differs by class - see _availabilityByClass.",
   "_availabilityByClass": {
@@ -10,8 +11,11 @@
   },
   "observations": [
     {
-      "ticker": "BTC", "interval": "1h", "assetClass": "crypto",
-      "platformUnweightedAggregatePercent": 46, "dominantBias": "MIXED",
+      "ticker": "BTC",
+      "interval": "1h",
+      "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 46,
+      "dominantBias": "MIXED",
       "scores": {
         "htf_rsi_overbought": 0.08283703366666657,
         "macd_bear_divergence": 1,
@@ -30,8 +34,11 @@
       }
     },
     {
-      "ticker": "SOL", "interval": "1h", "assetClass": "crypto",
-      "platformUnweightedAggregatePercent": 52, "dominantBias": "BEARISH",
+      "ticker": "SOL",
+      "interval": "1h",
+      "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 52,
+      "dominantBias": "BEARISH",
       "scores": {
         "bollinger_squeeze": 0.18892032949791113,
         "ma_sma200_above": 1,
@@ -45,8 +52,11 @@
       }
     },
     {
-      "ticker": "GOOGL", "interval": "1h", "assetClass": "equity",
-      "platformUnweightedAggregatePercent": 47, "dominantBias": "BULLISH",
+      "ticker": "GOOGL",
+      "interval": "1h",
+      "assetClass": "equity",
+      "platformUnweightedAggregatePercent": 47,
+      "dominantBias": "BULLISH",
       "scores": {
         "stoch_oversold": 0.646018784,
         "volume_surge": 0.17558346883335707,
@@ -67,8 +77,11 @@
       }
     },
     {
-      "ticker": "GOLD", "interval": "1h", "assetClass": "commodity",
-      "platformUnweightedAggregatePercent": 60, "dominantBias": "BULLISH",
+      "ticker": "GOLD",
+      "interval": "1h",
+      "assetClass": "commodity",
+      "platformUnweightedAggregatePercent": 60,
+      "dominantBias": "BULLISH",
       "scores": {
         "rsi_overbought": 0.1365797109999998,
         "htf_rsi_overbought": 0.3365634746666667,
@@ -92,8 +105,11 @@
       }
     },
     {
-      "ticker": "ETH", "interval": "4h", "assetClass": "crypto",
-      "platformUnweightedAggregatePercent": 56, "dominantBias": "BULLISH",
+      "ticker": "ETH",
+      "interval": "4h",
+      "assetClass": "crypto",
+      "platformUnweightedAggregatePercent": 56,
+      "dominantBias": "BULLISH",
       "scores": {
         "rsi_overbought": 0.03447811999999999,
         "htf_rsi_overbought": 0.29929267633333345,
