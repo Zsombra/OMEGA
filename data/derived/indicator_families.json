@@ -14,6 +14,7 @@
   "  needs-state      requires recursive evaluation, not a new function",
   "  data-absent      the input genuinely does not exist",
   "",
+  "  renderer-fails  declared legal by the contract, INTERNAL_ERROR when rendered",
   "Measured 2026-08-24 against the live connector."
  ],
  "buildable": [
@@ -299,10 +300,10 @@
       {
        "metric": "SPOT_CVD"
       }
-     ],
-     "chainedTransformId": "trajectory"
+     ]
     }
-   ]
+   ],
+   "note": "Unchained only. SPOT_CVD 'resolves from the bundle and has no per-bar value', so it blocks a chain as an operand - and SPOT_CVD as a base offers no chain successors at all. Chain against MACD or ATR instead if you need the trajectory of a CVD relation."
   },
   {
    "id": "effort-vs-result",
@@ -758,17 +759,6 @@
     }
    ],
    "note": "Categorical trajectories: the slots hold past states, so you can read how long a regime has held."
-  },
-  {
-   "id": "positioning-extreme",
-   "name": "Cross-sectional positioning extreme",
-   "domain": "institutional",
-   "columns": [
-    {
-     "metric": "CROWD_UPBIAS",
-     "transformId": "rank"
-    }
-   ]
   }
  ],
  "blocked": [
@@ -944,6 +934,28 @@
    "name": "Historical cross-sectional rank",
    "cause": "data-absent",
    "note": "The contract is explicit: the ranked set holds current values only, so there is no historical ordinal to offset into."
+  },
+  {
+   "id": "positioning-extreme",
+   "name": "Cross-sectional positioning extreme",
+   "cause": "renderer-fails",
+   "note": "CROWD_UPBIAS x rank is declared legal and returns INTERNAL_ERROR on every render. All 8 crowd rank shapes do. Offline validation passes, which is exactly why the census is also checked against the live renderer."
   }
- ]
+ ],
+ "_liveVerification": {
+  "at": "2026-08-24",
+  "coins": [
+   "BTC",
+   "SOL"
+  ],
+  "families": 46,
+  "distinctColumns": 56,
+  "batches": 3,
+  "result": "46 of 46 families rendered; 3 of 3 batches header-exact against omega.fanout",
+  "caughtBeforeRendering": [
+   "positioning-extreme (CROWD_UPBIAS x rank) - offline-legal, INTERNAL_ERROR live. Moved to blocked, cause renderer-fails.",
+   "perp-spot-cvd chained to trajectory - SPOT_CVD has no per-bar value, so it blocks the chain as an operand. Chain removed."
+  ],
+  "scaleCaveat": "spread is (A-B)/B x 100, so it is only informative when A and B are of comparable magnitude. Several legal same-unit pairs are not: rate_chg24h_spread read -99.91% because funding (~0.0013%) is three orders of magnitude below the 24h change (~1.4%). Same for rate_atrPct_spread (-99.84%), oiChg_PPO_spread (-2115% / +2947%), highDev_lowDev_spread (-343% / -806%) and OBV_volBase_spread (-956%). Arithmetically correct, practically dominated by the denominator. Cookbook trap 17."
+ }
 }

@@ -1,0 +1,701 @@
+[
+ {
+  "index": 0,
+  "families": [
+   "cross-magnitude",
+   "crossover-event",
+   "effort-vs-result",
+   "ma-envelope",
+   "momentum-differential",
+   "order-flow-imbalance",
+   "oscillator-zone",
+   "perp-spot-cvd",
+   "ppo-arbitrary",
+   "price-vs-flow-momentum",
+   "range-position",
+   "relative-volume",
+   "stoch-separation",
+   "stretch-ranking",
+   "trend-adjusted-momentum",
+   "venue-dislocation",
+   "volume-concentration",
+   "vwap-deviation",
+   "xs-momentum",
+   "xs-reversal",
+   "xs-volatility"
+  ],
+  "columns": [
+   {
+    "metric": "CLOSE",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SMA20"
+     }
+    ]
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ]
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory",
+    "inputs": [
+     {
+      "metric": "SMA200"
+     }
+    ]
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SWING_HIGH"
+     }
+    ]
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SWING_LOW"
+     }
+    ]
+   },
+   {
+    "metric": "SPOT_CLOSE_CB",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SPOT_CLOSE_BN"
+     }
+    ]
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "RSI7"
+     }
+    ]
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "MFI14"
+     }
+    ]
+   },
+   {
+    "metric": "STOCH_K",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "STOCH_D"
+     }
+    ]
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "ADX"
+     }
+    ]
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MACD",
+    "transformId": "crossDetect",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ROC12",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "ordering": "hi"
+   },
+   {
+    "metric": "ROC12",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "ordering": "lo"
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "BUY_VOLUME",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SELL_VOLUME"
+     }
+    ]
+   },
+   {
+    "metric": "BUY_PRESSURE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CVD",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SPOT_CVD"
+     }
+    ]
+   },
+   {
+    "metric": "OI_CHG",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "CHG_24H"
+     }
+    ]
+   },
+   {
+    "metric": "VOLUME",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 24
+   },
+   {
+    "metric": "RVOL",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "close_SMA20_spread",
+   "EMA5_EMA13_spread",
+   "SMA50_SMA200_spread_t3",
+   "SMA50_SMA200_spread_t2",
+   "SMA50_SMA200_spread_t1",
+   "SMA50_SMA200_spread_now",
+   "SMA50_SMA200_spread_trend",
+   "dist_VWAP",
+   "dist_VWAP_mean24",
+   "close_swingHi_spread",
+   "close_swingLo_spread",
+   "cbClose_bnClose_spread",
+   "RSI14_RSI7_spread",
+   "RSI14_MFI14_spread",
+   "K_D_spread",
+   "RSI14_ADX_spread",
+   "RSI14_zone",
+   "MACD_cross",
+   "ROC_rank_hi",
+   "ROC_rank_lo",
+   "atrPct_rank_hi",
+   "dist_VWAP_rank_hi",
+   "buyVol_sellVol_spread",
+   "buyPres",
+   "CVD_spotCVD_spread",
+   "oiChg_chg24h_spread",
+   "volBase_maxShare",
+   "RVOL"
+  ],
+  "lookback": 24
+ },
+ {
+  "index": 1,
+  "families": [
+   "basis",
+   "carry-vs-momentum",
+   "efficiency-ratio",
+   "funding-term",
+   "obv-divergence",
+   "oi-turnover",
+   "positioning-momentum",
+   "relative-volume"
+  ],
+  "columns": [
+   {
+    "metric": "VOLUME",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "VOL_SMA20"
+     }
+    ]
+   },
+   {
+    "metric": "OBV",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "VOLUME"
+     }
+    ]
+   },
+   {
+    "metric": "MARK",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SPOT_CLOSE_CB"
+     }
+    ]
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "CHG_24H"
+     }
+    ]
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "FUNDING_ANN"
+     }
+    ]
+   },
+   {
+    "metric": "OI",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "NOTIONAL_VOLUME_1D"
+     }
+    ]
+   },
+   {
+    "metric": "OI_CHG",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "PPO"
+     }
+    ]
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 21
+   }
+  ],
+  "predictedHeaders": [
+   "volBase_volSMA20_spread",
+   "OBV_volBase_spread",
+   "mark_cbClose_spread",
+   "rate_chg24h_spread",
+   "rate_ann_spread",
+   "OI_vol24hUsd_spread",
+   "oiChg_PPO_spread",
+   "close_er"
+  ],
+  "lookback": 24
+ },
+ {
+  "index": 2,
+  "families": [
+   "aggressor-imbalance",
+   "carry-factor",
+   "crowd-fade",
+   "flow-toxicity",
+   "low-vol-factor",
+   "momentum-term-structure",
+   "oi-size-factor",
+   "positioning-per-risk",
+   "range-volatility",
+   "realised-skew-proxy",
+   "regime-persistence",
+   "reversion-baseline",
+   "risk-adjusted-carry",
+   "scale-dependent-efficiency",
+   "ts-momentum",
+   "vol-estimator-divergence",
+   "volatility-regime",
+   "zone-proximity"
+  ],
+  "columns": [
+   {
+    "metric": "CLOSE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 4
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 32
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate",
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ]
+   },
+   {
+    "metric": "CHG_1H",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "CHG_24H"
+     }
+    ]
+   },
+   {
+    "metric": "BB_WIDTH_PCT",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STRUCT_ZONES",
+    "transformId": "nearestZoneDist",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "side": "support"
+   },
+   {
+    "metric": "STRUCT_ZONES",
+    "transformId": "nearestZoneAge",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "side": "support"
+   },
+   {
+    "metric": "STRUCT_ZONES",
+    "transformId": "count",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_UPBIAS",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_ACC",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "ordering": "hi"
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "ATR_PCT"
+     }
+    ]
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "ordering": "lo"
+   },
+   {
+    "metric": "CLOSE_CHANGE",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH_DEV",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "LOW_DEV"
+     }
+    ]
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "LOW"
+     }
+    ]
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "BB_WIDTH_PCT"
+     }
+    ]
+   },
+   {
+    "metric": "BUY_PRESSURE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_TRADES",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SELL_TRADES"
+     }
+    ]
+   },
+   {
+    "metric": "OI_CHG",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "ATR_PCT"
+     }
+    ]
+   },
+   {
+    "metric": "OI",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "REGIME_TREND",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "REGIME_VOL",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "close_er",
+   "RSI14_er",
+   "EMA5_EMA13_spread_mean24",
+   "chg1h_chg24h_spread",
+   "bbWidthPct_t3",
+   "bbWidthPct_t2",
+   "bbWidthPct_t1",
+   "bbWidthPct_now",
+   "bbWidthPct_trend",
+   "atrPct_er",
+   "zones_support_dist",
+   "zones_support_age_h",
+   "zones_count",
+   "upBias",
+   "crowdAcc",
+   "rate_rank_hi",
+   "rate_atrPct_spread",
+   "atrPct_rank_lo",
+   "closeChg_t3",
+   "closeChg_t2",
+   "closeChg_t1",
+   "closeChg_now",
+   "closeChg_trend",
+   "highDev_lowDev_spread",
+   "high_low_spread",
+   "atrPct_bbWidthPct_spread",
+   "buyPres_er",
+   "buyTr_sellTr_spread",
+   "oiChg_atrPct_spread",
+   "OI_rank_hi",
+   "regTrend_t3",
+   "regTrend_t2",
+   "regTrend_t1",
+   "regTrend_now",
+   "regTrend_trend",
+   "regVol_t3",
+   "regVol_t2",
+   "regVol_t1",
+   "regVol_now",
+   "regVol_trend"
+  ],
+  "lookback": 32
+ }
+]

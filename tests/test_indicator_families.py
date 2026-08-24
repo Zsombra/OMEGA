@@ -25,7 +25,8 @@ FAMILIES = json.loads((DERIVED_DIR / "indicator_families.json").read_text(encodi
 BUILDABLE = FAMILIES["buildable"]
 BLOCKED = FAMILIES["blocked"]
 
-CAUSES = {"operator-absent", "guard-refuses", "needs-state", "data-absent"}
+CAUSES = {"operator-absent", "guard-refuses", "needs-state", "data-absent",
+          "renderer-fails"}
 
 
 def _column(spec: dict) -> Column:
@@ -166,3 +167,18 @@ def test_rank_orderings_split_into_three_groups():
                                {"hi", "lo", "far", "near"}))) == set(groups)
     # CLOSE_CHANGE is the only far/near-only metric
     assert groups[frozenset({"far", "near"})] == ["CLOSE_CHANGE"]
+
+
+
+def test_no_buildable_family_uses_a_shape_the_renderer_refuses():
+    """Offline-legal is not the same as live-renderable. The 8 crowd rank shapes
+    validate cleanly and INTERNAL_ERROR on every render, so the census has to be
+    checked against the quarantine list too - this is how the cross-sectional
+    positioning family was caught."""
+    import sys
+    sys.path.insert(0, "scripts")
+    from sweep import UNRENDERABLE
+    for fam in BUILDABLE:
+        for spec in fam["columns"]:
+            key = (spec["metric"], spec.get("chainedTransformId") or spec["transformId"])
+            assert key not in UNRENDERABLE, f"{fam['id']} uses unrenderable {key}"

@@ -64,6 +64,23 @@ DEEP_HISTORY = {"SMA50", "SMA200"}
 #
 # Quarantined rather than deleted: they are legal by the contract, so omega
 # must keep enumerating them, but shipping one poisons a whole batch.
+# CHAINS omega ENUMERATES THAT THE ENGINE REFUSES
+# ----------------------------------------------
+# Measured 2026-08-24, two distinct causes:
+#
+#   (SPOT_CVD, "spread") -> any chain
+#       REPORT_COLUMN_CHAIN_UNSUPPORTED with candidates: []. The engine offers no
+#       chain successors for this metric's spread, though the extracted contract
+#       says otherwise. omega.space over-enumerates here.
+#
+#   any base x spread(SPOT_CVD) -> any chain
+#       REPORT_COLUMN_CONSTRUCTION_FAILED: "spotCVD resolves from the bundle and
+#       has no per-bar value, so the relation is a single scalar with no series to
+#       build". Chaining needs a per-bar series on BOTH sides of the spread, which
+#       omega.space does not model - it only checks the base.
+CHAIN_REFUSED_BASE = {("SPOT_CVD", "spread")}
+CHAIN_REFUSED_OPERAND = {"SPOT_CVD"}
+
 UNRENDERABLE = {(m, "rank") for m in (
     "CROWD_ACC", "CROWD_ACC_LIVE", "CROWD_CAPT", "CROWD_CAPT_LIVE",
     "CROWD_PICK", "CROWD_PICK_LIVE", "CROWD_UPBIAS", "CROWD_UPBIAS_LIVE",

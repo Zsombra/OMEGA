@@ -11,6 +11,22 @@ and runs it through `omega.validate` and `omega.space`. The census cannot rot in
 lie quietly: if the platform's contract moves so a family stops being constructible,
 a test fails.
 
+**Verified live 2026-08-24: 46 of 46 families rendered, 3 of 3 batches header-exact.**
+`scripts/family_probe.py` packs every family's columns into batches that respect the
+column, lookback and header-uniqueness limits, and diffs the rendered header row
+against `omega.fanout`.
+
+Two families were caught *before* the live run and moved or corrected:
+
+- `positioning-extreme` (`CROWD_UPBIAS x rank`) validates offline and returns
+  `INTERNAL_ERROR` on every render. Moved to blocked with cause `renderer-fails`.
+- `perp-spot-cvd` claimed a chain to `trajectory`. `SPOT_CVD` "resolves from the bundle
+  and has no per-bar value", so it blocks a chain **as an operand** - and as a base it
+  offers no chain successors at all, which `omega.space` over-enumerates. Chain removed.
+
+That second one refines the chaining rule in doc 14: a spread chains only when there is
+a per-bar series on **both sides**, not just the base.
+
 ```
 python -m omega.table families              # everything
 python -m omega.table families --domain institutional

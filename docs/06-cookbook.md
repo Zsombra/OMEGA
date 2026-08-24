@@ -342,6 +342,30 @@ always populated. Nullable ones to watch: every `CROWD_*_LIVE`, and the venue cl
 `SPOT_CLOSE_CB` / `SPOT_CLOSE_BN`, which the contract says are absent when older than
 15 minutes.
 
+### 17. A legal spread whose operands differ by orders of magnitude
+
+`spread` is `(A - B) / B x 100`. That is only informative when A and B are of comparable
+size. The unit-clique rule guarantees they are the *same kind* of quantity; it says
+nothing about scale.
+
+Measured live on BTC / SOL, all legal, all rendering:
+
+| column | BTC | SOL | why |
+|---|---|---|---|
+| `rate_chg24h_spread` | -99.91% | -99.95% | funding ~0.0013% vs 24h change ~1.4% |
+| `rate_atrPct_spread` | -99.84% | -99.91% | funding vs ATR% |
+| `oiChg_PPO_spread` | -2115% | +2948% | PPO near zero, so the ratio explodes |
+| `highDev_lowDev_spread` | -343% | -806% | upside vs downside excursion |
+| `OBV_volBase_spread` | -956% | -60% | cumulative OBV vs a single bar's volume |
+
+When `A << B` the result pins near -100%; when `B` approaches zero it explodes. Neither is
+a bug, and neither is readable as "the percentage gap" in the way `EMA5_EMA13_spread`
+(+0.21%) is.
+
+**Fix:** pair operands of similar magnitude - `EMA5` vs `EMA13`, `RSI14` vs `RSI7`,
+`STOCH_K` vs `STOCH_D`, `HIGH` vs `LOW`. Where you want two quantities of different scale,
+ship them as separate columns and let a condition compare each to its own threshold.
+
 ## Workflow
 
 ```
