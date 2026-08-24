@@ -286,3 +286,53 @@ live have exposed nine header mispredictions, one shipped condition bug, and one
 platform failure. The last batch found nothing, which is the first evidence that the
 structural surface may now be sound — but it is one clean batch, not a guarantee about
 the untouched 93%.
+
+
+## Two rules gate the whole space (measured 2026-08-24)
+
+### 1. `spread` is within-unit-class only
+
+Every metric carries a unit, and `spread` refuses any pair that crosses units. The
+whitelist is not a lookup table — it is dimensional analysis, enforced. Eight cliques,
+608 ordered pairs (ordered because the denominator differs: `A spread B` is not
+`B spread A`):
+
+| unit | metrics | ordered pairs |
+|---|---:|---:|
+| price | 18 | 306 |
+| percent | 15 | 210 |
+| oscillator | 7 | 42 |
+| signedPrice | 5 | 20 |
+| largeCount | 5 | 20 |
+| count | 3 | 6 |
+| fraction | 2 | 2 |
+| usdLargeCount | 2 | 2 |
+
+Price and percent are 85% of the surface. This is also why several standard
+constructions are unreachable: Amihud illiquidity is `percent ÷ largeCount`, average
+trade size is `largeCount ÷ count`. Cross-clique edges do not exist.
+
+### 2. A spread chains only when its base metric has a stored bar series
+
+| class | chains | does not chain |
+|---|---|---|
+| price | CLOSE OPEN HIGH LOW VWAP EMA5 EMA13 EMA20 SMA20 SMA50 SMA200 SWING_HIGH SWING_LOW | MARK LAST ORACLE SPOT_CLOSE_CB SPOT_CLOSE_BN |
+| percent | PPO ROC12 ATR_PCT BB_WIDTH_PCT CLOSE_CHANGE | CHG_5M CHG_15M CHG_1H CHG_4H CHG_24H FUNDING_RATE FUNDING_ANN OI_CHG HIGH_DEV LOW_DEV |
+
+The non-chaining ones are exactly the point-in-time reads. `MARK`, `LAST` and `ORACLE`
+are documented as "read live at report build time — not a bar close"; `SPOT_CLOSE_*`
+are venue snapshots; `CHG_*` are published values; `FUNDING_*` and `OI_CHG` sample on
+their own schedule. No stored series means nothing for a window operator to consume.
+
+**Consequence:** basis momentum (`MARK spread SPOT_CLOSE_CB → trajectory`) is *not*
+buildable as one column. The basis is fine; its evolution is not.
+
+A narrower rule governs the chain to `rank` — only `EMA5 EMA13 EMA20 SMA20 SMA50
+SMA200 SWING_HIGH SWING_LOW VWAP` can spread-then-rank.
+
+### 3. Only 31 of 86 metrics are rankable
+
+No price-class metric is rankable directly — only through `distance → rank` on the 13
+that chain. Among momentum metrics only `ROC12`, `PPO` and `CLOSE_CHANGE` rank; **the
+`CHG_*` family cannot be ranked at all**, which matters because they are the obvious
+choice for a cross-sectional momentum sort and they do not work.
