@@ -207,6 +207,29 @@ Verified live in `data/contract/columns/_renders_collision.json` — in every ot
 need the same metric at two offsets, they must differ in something the header carries —
 a different transform, timeframe rel, or operand.
 
+### 12. `_trend` is computed on values you cannot see
+
+A `trajectory` column emits its slots (`_t2`, `_t1`, `_now`) at the metric's declared
+display precision, but `_trend` is derived from the **unrounded** series. The two can
+disagree, and the table gives you no way to tell.
+
+Measured live on 2026-08-24, DOGE at 1h:
+
+| RSI14_t2 | RSI14_t1 | RSI14_now | RSI14_trend |
+|---|---|---|---|
+| 38.3 | 39.7 | 38.3 | **falling** |
+
+`_t2` and `_now` print identically, so the slots imply `flat`. The platform says
+`falling`, and the platform is right — RSI is displayed at `precision: 1`, and the true
+endpoints differ below that.
+
+**Fix:** never recompute a direction from rendered slots, and never write a condition
+that reconstructs one. Read `_trend` directly — it is the only place the unrounded
+comparison is exposed. The same applies to any derived column beside its own inputs:
+the residuals in doc 15's verification panel are display rounding, not error, and they
+grow as the metric's precision shrinks (DOGE's 4-decimal price gives a 0.03pp residual
+on `spread` where BTC's gives 0.002pp).
+
 ## Workflow
 
 ```
