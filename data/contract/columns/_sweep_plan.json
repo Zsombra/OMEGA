@@ -1,0 +1,4947 @@
+[
+ {
+  "index": 0,
+  "shapes": [
+   [
+    "ADX",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "ADX",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "ADX",
+    "classifyZone",
+    null,
+    null,
+    null
+   ],
+   [
+    "ADX",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "ADX",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "ADX",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "ATR",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "ATR",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "ATR",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "ATR_PCT",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "ATR_PCT",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "ATR_PCT",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "ATR_PCT",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "BAR_FORMING",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_PCT_B",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_PCT_B",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_PCT_B",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_PCT_B",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_PCT_B",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_TOUCH",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_WIDTH",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_WIDTH",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_WIDTH",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_WIDTH_PCT",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_WIDTH_PCT",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_WIDTH_PCT",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "BB_WIDTH_PCT",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_PRESSURE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_PRESSURE",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_PRESSURE",
+    "efficiency",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "ADX",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ADX",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ADX",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ADX",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ADX",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ADX",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ATR_PCT",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BAR_FORMING",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_PCT_B",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_PCT_B",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_PCT_B",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_PCT_B",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_PCT_B",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_TOUCH",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_WIDTH",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_WIDTH",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_WIDTH",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_WIDTH_PCT",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_WIDTH_PCT",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_WIDTH_PCT",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BB_WIDTH_PCT",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_PRESSURE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_PRESSURE",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_PRESSURE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "ADX",
+   "ADX_t3",
+   "ADX_t2",
+   "ADX_t1",
+   "ADX_now",
+   "ADX_trend",
+   "ADX_zone",
+   "ADX_er",
+   "ADX_maxShare",
+   "ADX_rank_hi",
+   "ATR",
+   "ATR_t3",
+   "ATR_t2",
+   "ATR_t1",
+   "ATR_now",
+   "ATR_trend",
+   "ATR_er",
+   "atrPct",
+   "atrPct_t3",
+   "atrPct_t2",
+   "atrPct_t1",
+   "atrPct_now",
+   "atrPct_trend",
+   "atrPct_er",
+   "atrPct_rank_hi",
+   "bar",
+   "pctB",
+   "pctB_t3",
+   "pctB_t2",
+   "pctB_t1",
+   "pctB_now",
+   "pctB_trend",
+   "pctB_er",
+   "pctB_maxShare",
+   "pctB_rank_hi",
+   "BBtouch",
+   "BBwidth",
+   "BBwidth_t3",
+   "BBwidth_t2",
+   "BBwidth_t1",
+   "BBwidth_now",
+   "BBwidth_trend",
+   "BBwidth_er",
+   "bbWidthPct",
+   "bbWidthPct_t3",
+   "bbWidthPct_t2",
+   "bbWidthPct_t1",
+   "bbWidthPct_now",
+   "bbWidthPct_trend",
+   "bbWidthPct_er",
+   "bbWidthPct_rank_hi",
+   "buyPres",
+   "buyPres_t3",
+   "buyPres_t2",
+   "buyPres_t1",
+   "buyPres_now",
+   "buyPres_trend",
+   "buyPres_er"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 1,
+  "shapes": [
+   [
+    "BUY_PRESSURE",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_PRESSURE",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_TRADES",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_TRADES",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_TRADES",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_TRADES",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_TRADES",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_VOLUME",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_VOLUME",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_VOLUME",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "BUY_VOLUME",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "CAPTAIN_CONF",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CCI20",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CCI20",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "CCI20",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "CCI20",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "CHG_15M",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CHG_1H",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CHG_24H",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CHG_4H",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CHG_5M",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "CLOSE",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "CLOSE_CHANGE",
+    "value",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "BUY_PRESSURE",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_PRESSURE",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_TRADES",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_TRADES",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_TRADES",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_TRADES",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_TRADES",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_VOLUME",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_VOLUME",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_VOLUME",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "BUY_VOLUME",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CAPTAIN_CONF",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CCI20",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CCI20",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CCI20",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CCI20",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CHG_15M",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CHG_1H",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CHG_24H",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CHG_4H",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CHG_5M",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CLOSE",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CLOSE_CHANGE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "buyPres_maxShare",
+   "buyPres_rank_hi",
+   "buyTr",
+   "buyTr_t3",
+   "buyTr_t2",
+   "buyTr_t1",
+   "buyTr_now",
+   "buyTr_trend",
+   "buyTr_er",
+   "buyTr_maxShare",
+   "buyTr_rank_hi",
+   "buyVol",
+   "buyVol_t3",
+   "buyVol_t2",
+   "buyVol_t1",
+   "buyVol_now",
+   "buyVol_trend",
+   "buyVol_er",
+   "buyVol_maxShare",
+   "captainConf",
+   "CCI",
+   "CCI_t3",
+   "CCI_t2",
+   "CCI_t1",
+   "CCI_now",
+   "CCI_trend",
+   "CCI_er",
+   "CCI_rank_hi",
+   "chg15m",
+   "chg1h",
+   "chg24h",
+   "chg4h",
+   "chg5m",
+   "close",
+   "close_t3",
+   "close_t2",
+   "close_t1",
+   "close_now",
+   "close_trend",
+   "dist_close",
+   "dist_close_t3",
+   "dist_close_t2",
+   "dist_close_t1",
+   "dist_close_now",
+   "dist_close_trend",
+   "dist_close_mean24",
+   "dist_close_er",
+   "close_er",
+   "close_touch",
+   "closeChg"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 2,
+  "shapes": [
+   [
+    "CLOSE_CHANGE",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "CLOSE_CHANGE",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "CONFIDENCE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_ACC",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_ACC_LIVE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_CAPT",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_CAPT_LIVE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_PICK",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_PICK_LIVE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_UPBIAS",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CROWD_UPBIAS_LIVE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CVD",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "CVD",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "CVD",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "distance",
+    "rank",
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA13",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "distance",
+    "rank",
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "CLOSE_CHANGE",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CLOSE_CHANGE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CONFIDENCE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_ACC",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_ACC_LIVE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_CAPT",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_CAPT_LIVE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_PICK",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_PICK_LIVE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_UPBIAS",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CROWD_UPBIAS_LIVE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CVD",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CVD",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "CVD",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA13",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   }
+  ],
+  "predictedHeaders": [
+   "closeChg_t3",
+   "closeChg_t2",
+   "closeChg_t1",
+   "closeChg_now",
+   "closeChg_trend",
+   "closeChg_er",
+   "conf",
+   "crowdAcc",
+   "crowdAccLive",
+   "captRate",
+   "captRateLive",
+   "pick",
+   "pickLive",
+   "upBias",
+   "upBiasLive",
+   "CVD",
+   "CVD_t3",
+   "CVD_t2",
+   "CVD_t1",
+   "CVD_now",
+   "CVD_trend",
+   "CVD_er",
+   "EMA13",
+   "EMA13_t3",
+   "EMA13_t2",
+   "EMA13_t1",
+   "EMA13_now",
+   "EMA13_trend",
+   "dist_EMA13",
+   "dist_EMA13_t3",
+   "dist_EMA13_t2",
+   "dist_EMA13_t1",
+   "dist_EMA13_now",
+   "dist_EMA13_trend",
+   "dist_EMA13_mean24",
+   "dist_EMA13_er",
+   "dist_EMA13_rank_hi",
+   "EMA13_er",
+   "EMA13_touch",
+   "EMA20",
+   "EMA20_t3",
+   "EMA20_t2",
+   "EMA20_t1",
+   "EMA20_now",
+   "EMA20_trend",
+   "dist_EMA20",
+   "dist_EMA20_t3",
+   "dist_EMA20_t2",
+   "dist_EMA20_t1",
+   "dist_EMA20_now",
+   "dist_EMA20_trend",
+   "dist_EMA20_mean24",
+   "dist_EMA20_er",
+   "dist_EMA20_rank_hi"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 3,
+  "shapes": [
+   [
+    "EMA20",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA20",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "distance",
+    "rank",
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA5",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "EMA_CROSS",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "FLOW_ALIGN",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "FUNDING_ANN",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "FUNDING_LABEL",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "FUNDING_RATE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "FUNDING_RATE",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "FUNDING_RATE",
+    "aggregate",
+    null,
+    null,
+    null
+   ],
+   [
+    "FUNDING_RATE",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "FUNDING_RATE",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "HIGH",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "HIGH_DEV",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "HIGH_DEV",
+    "rank",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "EMA20",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA20",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA5",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "EMA_CROSS",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FLOW_ALIGN",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_ANN",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_LABEL",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "aggregate",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "FUNDING_RATE",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH_DEV",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "HIGH_DEV",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "EMA20_er",
+   "EMA20_touch",
+   "EMA5",
+   "EMA5_t3",
+   "EMA5_t2",
+   "EMA5_t1",
+   "EMA5_now",
+   "EMA5_trend",
+   "dist_EMA5",
+   "dist_EMA5_t3",
+   "dist_EMA5_t2",
+   "dist_EMA5_t1",
+   "dist_EMA5_now",
+   "dist_EMA5_trend",
+   "dist_EMA5_mean24",
+   "dist_EMA5_er",
+   "dist_EMA5_rank_hi",
+   "EMA5_er",
+   "EMA5_touch",
+   "EMA5_13",
+   "flowAlign",
+   "ann",
+   "rateLbl",
+   "rate",
+   "rate_t3",
+   "rate_t2",
+   "rate_t1",
+   "rate_now",
+   "rate_trend",
+   "rate_mean24",
+   "rate_er",
+   "rate_rank_hi",
+   "high",
+   "high_t3",
+   "high_t2",
+   "high_t1",
+   "high_now",
+   "high_trend",
+   "dist_high",
+   "dist_high_t3",
+   "dist_high_t2",
+   "dist_high_t1",
+   "dist_high_now",
+   "dist_high_trend",
+   "dist_high_mean24",
+   "dist_high_er",
+   "high_er",
+   "high_touch",
+   "highDev",
+   "highDev_rank_hi"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 4,
+  "shapes": [
+   [
+    "LAST",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "LAST",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "LOW",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "LOW_DEV",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "LOW_DEV",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "MA_ALIGN",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "MACD",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "MACD",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "MACD",
+    "crossDetect",
+    null,
+    null,
+    null
+   ],
+   [
+    "MACD",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "MARK",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "MARK",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "MFI14",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "MFI14",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "MFI14",
+    "classifyZone",
+    null,
+    null,
+    null
+   ],
+   [
+    "MFI14",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "MFI14",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "MFI14",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "NOTIONAL_VOLUME_1D",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "OBV",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "OBV",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "OBV",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI",
+    "value",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "LAST",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LAST",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LOW",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LOW",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "LOW",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LOW",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LOW_DEV",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "LOW_DEV",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MA_ALIGN",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MACD",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MACD",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MACD",
+    "transformId": "crossDetect",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MACD",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MARK",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MARK",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MFI14",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MFI14",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MFI14",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MFI14",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MFI14",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "MFI14",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "NOTIONAL_VOLUME_1D",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OBV",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OBV",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OBV",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "last",
+   "dist_last",
+   "low",
+   "low_t3",
+   "low_t2",
+   "low_t1",
+   "low_now",
+   "low_trend",
+   "dist_low",
+   "dist_low_t3",
+   "dist_low_t2",
+   "dist_low_t1",
+   "dist_low_now",
+   "dist_low_trend",
+   "dist_low_mean24",
+   "dist_low_er",
+   "low_er",
+   "low_touch",
+   "lowDev",
+   "lowDev_rank_hi",
+   "MAalign",
+   "MACD",
+   "MACD_t3",
+   "MACD_t2",
+   "MACD_t1",
+   "MACD_now",
+   "MACD_trend",
+   "MACD_cross",
+   "MACD_er",
+   "mark",
+   "dist_mark",
+   "MFI14",
+   "MFI14_t3",
+   "MFI14_t2",
+   "MFI14_t1",
+   "MFI14_now",
+   "MFI14_trend",
+   "MFI14_zone",
+   "MFI14_er",
+   "MFI14_maxShare",
+   "MFI14_rank_hi",
+   "vol24hUsd",
+   "OBV",
+   "OBV_t3",
+   "OBV_t2",
+   "OBV_t1",
+   "OBV_now",
+   "OBV_trend",
+   "OBV_er",
+   "OI"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 5,
+  "shapes": [
+   [
+    "OI",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI",
+    "aggregate",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI_CHG",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI_CHG",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI_PX_REGIME",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "OI_VELOCITY",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "OPEN",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "ORACLE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "ORACLE",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "PERP_SPOT_CONFIRMS",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "PERP_SPOT_FLOW",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "PERP_SPOT_STRENGTH",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "PPO",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "PPO",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "PPO",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "PPO",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "PRICE_ZONE",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "REGIME_MOM",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "REGIME_MOM",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "REGIME_TREND",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "REGIME_TREND",
+    "trajectory",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "OI",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI",
+    "transformId": "aggregate",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI_CHG",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI_CHG",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI_PX_REGIME",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OI_VELOCITY",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "OPEN",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ORACLE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ORACLE",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PERP_SPOT_CONFIRMS",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PERP_SPOT_FLOW",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PERP_SPOT_STRENGTH",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PPO",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PPO",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PPO",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PPO",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "PRICE_ZONE",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "REGIME_MOM",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "REGIME_MOM",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "REGIME_TREND",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "REGIME_TREND",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "OI_t3",
+   "OI_t2",
+   "OI_t1",
+   "OI_now",
+   "OI_trend",
+   "OI_mean24",
+   "OI_er",
+   "OI_rank_hi",
+   "oiChg",
+   "oiChg_rank_hi",
+   "oiRegime",
+   "oiVel",
+   "open",
+   "open_t3",
+   "open_t2",
+   "open_t1",
+   "open_now",
+   "open_trend",
+   "dist_open",
+   "dist_open_t3",
+   "dist_open_t2",
+   "dist_open_t1",
+   "dist_open_now",
+   "dist_open_trend",
+   "dist_open_mean24",
+   "dist_open_er",
+   "open_er",
+   "open_touch",
+   "oracle",
+   "dist_oracle",
+   "perpSpotConf",
+   "perpSpotFlow",
+   "perpSpotStr",
+   "PPO",
+   "PPO_t3",
+   "PPO_t2",
+   "PPO_t1",
+   "PPO_now",
+   "PPO_trend",
+   "PPO_er",
+   "PPO_rank_hi",
+   "zone",
+   "regMom",
+   "regMom_t3",
+   "regMom_t2",
+   "regMom_t1",
+   "regMom_now",
+   "regMom_trend",
+   "regTrend",
+   "regTrend_t3",
+   "regTrend_t2",
+   "regTrend_t1",
+   "regTrend_now",
+   "regTrend_trend"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 6,
+  "shapes": [
+   [
+    "REGIME_VOL",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "REGIME_VOL",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "ROC12",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "ROC12",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "ROC12",
+    "crossDetect",
+    null,
+    null,
+    null
+   ],
+   [
+    "ROC12",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "ROC12",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI14",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI14",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI14",
+    "classifyZone",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI14",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI14",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI14",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI7",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI7",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI7",
+    "classifyZone",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI7",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI7",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "RSI7",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "RVOL",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "RVOL",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "RVOL",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "RVOL",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_TRADES",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_TRADES",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_TRADES",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_TRADES",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_TRADES",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_VOLUME",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_VOLUME",
+    "trajectory",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "REGIME_VOL",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "REGIME_VOL",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ROC12",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ROC12",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ROC12",
+    "transformId": "crossDetect",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ROC12",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "ROC12",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI14",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI7",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI7",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI7",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI7",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI7",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RSI7",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RVOL",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RVOL",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RVOL",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "RVOL",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_TRADES",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_TRADES",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_TRADES",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_TRADES",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_TRADES",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_VOLUME",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_VOLUME",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "regVol",
+   "regVol_t3",
+   "regVol_t2",
+   "regVol_t1",
+   "regVol_now",
+   "regVol_trend",
+   "ROC",
+   "ROC_t3",
+   "ROC_t2",
+   "ROC_t1",
+   "ROC_now",
+   "ROC_trend",
+   "ROC_cross",
+   "ROC_er",
+   "ROC_rank_hi",
+   "RSI14",
+   "RSI14_t3",
+   "RSI14_t2",
+   "RSI14_t1",
+   "RSI14_now",
+   "RSI14_trend",
+   "RSI14_zone",
+   "RSI14_er",
+   "RSI14_maxShare",
+   "RSI14_rank_hi",
+   "RSI7",
+   "RSI7_t3",
+   "RSI7_t2",
+   "RSI7_t1",
+   "RSI7_now",
+   "RSI7_trend",
+   "RSI7_zone",
+   "RSI7_er",
+   "RSI7_maxShare",
+   "RSI7_rank_hi",
+   "RVOL",
+   "RVOL_t3",
+   "RVOL_t2",
+   "RVOL_t1",
+   "RVOL_now",
+   "RVOL_trend",
+   "RVOL_er",
+   "RVOL_rank_hi",
+   "sellTr",
+   "sellTr_t3",
+   "sellTr_t2",
+   "sellTr_t1",
+   "sellTr_now",
+   "sellTr_trend",
+   "sellTr_er",
+   "sellTr_maxShare",
+   "sellTr_rank_hi",
+   "sellVol",
+   "sellVol_t3",
+   "sellVol_t2",
+   "sellVol_t1",
+   "sellVol_now",
+   "sellVol_trend"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 7,
+  "shapes": [
+   [
+    "SELL_VOLUME",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "SELL_VOLUME",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "SETTLED_AT",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "distance",
+    "rank",
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA20",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMART_RETAIL",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CLOSE_BN",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CLOSE_BN",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CLOSE_CB",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CLOSE_CB",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CVD",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CVD",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CVD",
+    "aggregate",
+    null,
+    null,
+    null
+   ],
+   [
+    "SPOT_CVD",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_D",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_D",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_D",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_D",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_D",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_K",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_K",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_K",
+    "classifyZone",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_K",
+    "efficiency",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "SELL_VOLUME",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SELL_VOLUME",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SETTLED_AT",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA20",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMART_RETAIL",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CLOSE_BN",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CLOSE_BN",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CLOSE_CB",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CLOSE_CB",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CVD",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CVD",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CVD",
+    "transformId": "aggregate",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SPOT_CVD",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_D",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_D",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_D",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_D",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_D",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_K",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_K",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_K",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_K",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "sellVol_er",
+   "sellVol_maxShare",
+   "settledAt",
+   "SMA20",
+   "SMA20_t3",
+   "SMA20_t2",
+   "SMA20_t1",
+   "SMA20_now",
+   "SMA20_trend",
+   "dist_SMA20",
+   "dist_SMA20_t3",
+   "dist_SMA20_t2",
+   "dist_SMA20_t1",
+   "dist_SMA20_now",
+   "dist_SMA20_trend",
+   "dist_SMA20_mean24",
+   "dist_SMA20_er",
+   "dist_SMA20_rank_hi",
+   "SMA20_er",
+   "SMA20_touch",
+   "smartRetail",
+   "bnClose",
+   "dist_bnClose",
+   "cbClose",
+   "dist_cbClose",
+   "spotCVD",
+   "spotCVD_t3",
+   "spotCVD_t2",
+   "spotCVD_t1",
+   "spotCVD_now",
+   "spotCVD_trend",
+   "spotCVD_mean24",
+   "spotCVD_er",
+   "D",
+   "D_t3",
+   "D_t2",
+   "D_t1",
+   "D_now",
+   "D_trend",
+   "D_er",
+   "D_maxShare",
+   "D_rank_hi",
+   "K",
+   "K_t3",
+   "K_t2",
+   "K_t1",
+   "K_now",
+   "K_trend",
+   "K_zone",
+   "K_er"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 8,
+  "shapes": [
+   [
+    "STOCH_K",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "STOCH_K",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "STRUCT_ZONES",
+    "count",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "distance",
+    "rank",
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_HIGH",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "distance",
+    "rank",
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "SWING_LOW",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "TRADES",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "TRADES",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "TRADES",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "TRADES",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "TRADES",
+    "rank",
+    null,
+    null,
+    null
+   ],
+   [
+    "VOL_SMA20",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "VOL_SMA20",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "VOL_SMA20",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "VOLUME",
+    "value",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "STOCH_K",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STOCH_K",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "STRUCT_ZONES",
+    "transformId": "count",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_HIGH",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SWING_LOW",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "TRADES",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "TRADES",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "TRADES",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "TRADES",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "TRADES",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VOL_SMA20",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VOL_SMA20",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VOL_SMA20",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VOLUME",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "K_maxShare",
+   "K_rank_hi",
+   "zones_count",
+   "swingHi",
+   "swingHi_t3",
+   "swingHi_t2",
+   "swingHi_t1",
+   "swingHi_now",
+   "swingHi_trend",
+   "dist_swingHi",
+   "dist_swingHi_t3",
+   "dist_swingHi_t2",
+   "dist_swingHi_t1",
+   "dist_swingHi_now",
+   "dist_swingHi_trend",
+   "dist_swingHi_mean24",
+   "dist_swingHi_er",
+   "dist_swingHi_rank_hi",
+   "swingHi_er",
+   "swingHi_touch",
+   "swingLo",
+   "swingLo_t3",
+   "swingLo_t2",
+   "swingLo_t1",
+   "swingLo_now",
+   "swingLo_trend",
+   "dist_swingLo",
+   "dist_swingLo_t3",
+   "dist_swingLo_t2",
+   "dist_swingLo_t1",
+   "dist_swingLo_now",
+   "dist_swingLo_trend",
+   "dist_swingLo_mean24",
+   "dist_swingLo_er",
+   "dist_swingLo_rank_hi",
+   "swingLo_er",
+   "swingLo_touch",
+   "trades",
+   "trades_t3",
+   "trades_t2",
+   "trades_t1",
+   "trades_now",
+   "trades_trend",
+   "trades_er",
+   "trades_maxShare",
+   "trades_rank_hi",
+   "volSMA20",
+   "volSMA20_t3",
+   "volSMA20_t2",
+   "volSMA20_t1",
+   "volSMA20_now",
+   "volSMA20_trend",
+   "volSMA20_er",
+   "volBase"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 9,
+  "shapes": [
+   [
+    "VOLUME",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "VOLUME",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "VOLUME",
+    "maxShare",
+    null,
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "distance",
+    "rank",
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "VWAP",
+    "bandTouch",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "VOLUME",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VOLUME",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VOLUME",
+    "transformId": "maxShare",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "VWAP",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "volBase_t3",
+   "volBase_t2",
+   "volBase_t1",
+   "volBase_now",
+   "volBase_trend",
+   "volBase_er",
+   "volBase_maxShare",
+   "VWAP",
+   "VWAP_t3",
+   "VWAP_t2",
+   "VWAP_t1",
+   "VWAP_now",
+   "VWAP_trend",
+   "dist_VWAP",
+   "dist_VWAP_t3",
+   "dist_VWAP_t2",
+   "dist_VWAP_t1",
+   "dist_VWAP_now",
+   "dist_VWAP_trend",
+   "dist_VWAP_mean24",
+   "dist_VWAP_er",
+   "dist_VWAP_rank_hi",
+   "VWAP_er",
+   "VWAP_touch"
+  ],
+  "deepHistory": []
+ },
+ {
+  "index": 10,
+  "shapes": [
+   [
+    "SMA200",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA200",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA200",
+    "distance",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA200",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "SMA200",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA200",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA200",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA200",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   }
+  ],
+  "predictedHeaders": [
+   "SMA200",
+   "SMA200_t3",
+   "SMA200_t2",
+   "SMA200_t1",
+   "SMA200_now",
+   "SMA200_trend",
+   "dist_SMA200",
+   "dist_SMA200_t3",
+   "dist_SMA200_t2",
+   "dist_SMA200_t1",
+   "dist_SMA200_now",
+   "dist_SMA200_trend"
+  ],
+  "deepHistory": [
+   "SMA200"
+  ]
+ },
+ {
+  "index": 11,
+  "shapes": [
+   [
+    "SMA200",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "SMA200",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "SMA200",
+    "distance",
+    "rank",
+    null,
+    null
+   ],
+   [
+    "SMA200",
+    "efficiency",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "SMA200",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "SMA200",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "SMA200",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   },
+   {
+    "metric": "SMA200",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "dist_SMA200_mean24",
+   "dist_SMA200_er",
+   "dist_SMA200_rank_hi",
+   "SMA200_er"
+  ],
+  "deepHistory": [
+   "SMA200"
+  ]
+ },
+ {
+  "index": 12,
+  "shapes": [
+   [
+    "SMA200",
+    "bandTouch",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA50",
+    "value",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA50",
+    "trajectory",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA50",
+    "distance",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "SMA200",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "SMA200_touch",
+   "SMA50",
+   "SMA50_t3",
+   "SMA50_t2",
+   "SMA50_t1",
+   "SMA50_now",
+   "SMA50_trend",
+   "dist_SMA50"
+  ],
+  "deepHistory": [
+   "SMA200",
+   "SMA50"
+  ]
+ },
+ {
+  "index": 13,
+  "shapes": [
+   [
+    "SMA50",
+    "distance",
+    "trajectory",
+    null,
+    null
+   ],
+   [
+    "SMA50",
+    "distance",
+    "aggregate",
+    null,
+    null
+   ],
+   [
+    "SMA50",
+    "distance",
+    "efficiency",
+    null,
+    null
+   ],
+   [
+    "SMA50",
+    "distance",
+    "rank",
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "SMA50",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "trajectory"
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "aggregate"
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "efficiency"
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "rank"
+   }
+  ],
+  "predictedHeaders": [
+   "dist_SMA50_t3",
+   "dist_SMA50_t2",
+   "dist_SMA50_t1",
+   "dist_SMA50_now",
+   "dist_SMA50_trend",
+   "dist_SMA50_mean24",
+   "dist_SMA50_er",
+   "dist_SMA50_rank_hi"
+  ],
+  "deepHistory": [
+   "SMA50"
+  ]
+ },
+ {
+  "index": 14,
+  "shapes": [
+   [
+    "SMA50",
+    "efficiency",
+    null,
+    null,
+    null
+   ],
+   [
+    "SMA50",
+    "bandTouch",
+    null,
+    null,
+    null
+   ]
+  ],
+  "columns": [
+   {
+    "metric": "SMA50",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   {
+    "metric": "SMA50",
+    "transformId": "bandTouch",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   }
+  ],
+  "predictedHeaders": [
+   "SMA50_er",
+   "SMA50_touch"
+  ],
+  "deepHistory": [
+   "SMA50"
+  ]
+ }
+]
