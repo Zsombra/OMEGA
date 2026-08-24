@@ -39,6 +39,7 @@ strategies from a thesis.
 | [11 · Signal Scoring](docs/11-signal-scoring.md) | how a raw indicator reading becomes the 0–1 number that gets aggregated |
 | [12 · Routing Feasibility](docs/12-routing-feasibility.md) | would this strategy route — and which signals are holding it back |
 | [13 · Temporal Spread](docs/13-temporal-spread.md) | the second axis: what survives across time, and what was one instant |
+| [14 · Column Space](docs/14-column-space.md) | every table you could build: 488 shapes, 2200 expanded, and the 349 nothing has ever used |
 
 ## What the extraction found
 
@@ -121,11 +122,11 @@ data/performance/  one real signal-log/outcome pair (parser fixture)
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
                    composition rules, compiler probes, aggregate oracle,
                    signal module map
-docs/              00–13
+docs/              00–14
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py
-tests/             305 tests, incl. 20 compiler + 22 membership probes replayed
+tests/             337 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -138,7 +139,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 305 passed
+python -m pytest tests/ -q     # 337 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector

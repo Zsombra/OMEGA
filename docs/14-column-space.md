@@ -1,0 +1,166 @@
+# 14 · Column Space
+
+Every table you could build, counted — and what the platform itself has never touched.
+
+Docs 01–03 describe the pieces: 86 metrics, 16 transforms, and the rules that decide which
+pair up. This one asks the question those leave open — *what can I actually make?* — and
+answers it with a number rather than a shrug.
+
+## The space is finite
+
+`composition_rules.chaining.stages` is **2**. A column is one metric, one transform, and at
+most one chained successor. That cap is the whole reason this is countable:
+
+| level | count |
+|---|---:|
+| metric × transform pairs | 1376 |
+| **legal atoms** | **322** |
+| atoms accepting a chained stage | 52 — 42 × 3 successors, 10 × 4 including `rank` |
+| **structural shapes** | **488** |
+| expanded by spread operand and rank ordering | **2200** |
+| documented in the cookbook (doc 06) | 8 |
+
+```python
+from omega.space import enumerate_shapes, query
+len(enumerate_shapes())                      # 488
+len(enumerate_shapes(expand_operands=True))  # 2200
+```
+
+### Three ordering axes, not one
+
+A `rank` **atom** varies over the metric's `rankOrderings`. A **chained** `rank` varies over
+the atom's own `chainedRankOrderings`, which the contract publishes separately —
+`EMA13 × distance` carries `chainSuccessors: [..., "rank"]` *and*
+`chainedRankOrderings: [hi, lo, far, near]`. Treating those as one axis undercounts the
+space by 78 (2122 instead of 2200).
+
+## Parameters are not enumerated
+
+`window` is 1–64, `offset` 0–64, `bars` is one of two values, and `inputs` takes up to four
+metrics. Materialising that cross-product would produce millions of rows of no value.
+Parameters are axes you vary on a shape you have already chosen.
+
+More importantly, **their effective values are not guessable**. Ask the platform:
+
+| transform | parameter | default |
+|---|---|---|
+| `trajectory` | `window` | **4** |
+| `efficiency` | `window` | **21** |
+| any windowed transform | `bars` | **`all`** |
+| chained `rank` | `ordering` | **`hi`** |
+
+Every one of those was measured, not assumed — a contract request that sent neither
+`window` nor `bars` came back with both filled in.
+
+`bars: "all"` is the one that bites. It **includes the live forming bar**, which is trap #1
+in the cookbook. You can watch it happen in the captured render below: `CCI_t1` and
+`CCI_now` are identical on both coins, because the forming bar occupies `now` and repeats
+the last closed observation until it closes.
+
+## What the platform itself uses
+
+`data/contract/templates/platform/_all.json` holds BattleGrid's own **25** templates,
+carrying **106** distinct (metric, transform) pairs between them. That makes "unexplored"
+measurable against what actually ships, rather than against eight cookbook recipes:
+
+| | shapes |
+|---|---:|
+| the platform's templates use | 139 |
+| **nothing has ever used** | **349** |
+
+**71% of the legal space is untouched.** By family:
+
+| family | unused shapes |
+|---|---:|
+| volumeFlow | 82 |
+| momentum | 78 |
+| price | 60 |
+| trend | 51 |
+| structure | 29 |
+| volatility | 28 |
+| crowd | 9 |
+| derivatives | 9 |
+| regime | 3 |
+
+One transform is untouched entirely: **`bandTouch`** appears in no platform template at all,
+while remaining fully authorable.
+
+```python
+query(platform_uses=False, family="volumeFlow")   # 82 shapes nobody has built
+query(max_headers=1)                              # 390 shapes that cost one header
+```
+
+## Extract, never compute
+
+No code in `omega` evaluates a transform. Formulas and values come from BattleGrid verbatim
+and are cached under `data/contract/columns/`. Two read-only tools supply them:
+
+- `get_strategy_column_contract` — compiles one column into effective parameters, output
+  headers with types, `formula`, `glossary`, and `nullBehavior`. Reads no market values.
+- `preview_strategy_report` — renders live values *"without saving or mutating strategy
+  state"*. No write, no strategy slot, no quota.
+
+`omega` cannot call MCP tools (see `omega/performance.py:244`). `omega.probe` builds the
+payloads and ingests the saved responses; the agent runs the calls. `probe.FETCH_RECIPE`
+documents the procedure, and a test enforces the no-network rule against the import graph.
+
+### The header stem is the metric's `code`
+
+`CCI20 × trajectory` renders as `CCI_t3 … CCI_now, CCI_trend` — **not** `CCI20_*`. The stem
+comes from the metric's `code` field, not its key. `omega.fanout.outputs_for` predicts this
+correctly; a test asserts its output matches the live compiler header-for-header on every
+captured case.
+
+### The platform's formula text contains a known error
+
+For a chained `spread → trajectory`, the live contract returns:
+
+```
+output = (EMA5 - EMA13) / EMA13 × 100; slots = last 4 non-null EMA5 values; trend = compare(first, last)
+```
+
+The slots hold the **spread** series, not raw EMA5 values.
+
+This is stored **verbatim** and is asserted by a test that would fail if someone "fixed" it.
+One-to-one means the stored text is what BattleGrid says; the correction lives beside it, in
+`composition_rules.chaining.knownDocDefect` and here. A reader must be able to see both.
+
+The same policy covers `classifyState`, recorded as `PLATFORM_ONLY` — used by five platform
+templates but rejected for authoring with `REPORT_COLUMN_PAIR_UNSUPPORTED`.
+
+## A worked loop
+
+Four shapes spanning the structurally distinct cases — an atom, a chain, a bare fan-out, and
+a rank-chain — rendered against BTC and GOOGL at `1h`:
+
+| coin | RSI14 | EMA5_EMA13_spread_now | EMA5_EMA13_spread_trend | CCI_t1 | CCI_now | CCI_trend | dist_VWAP_rank_hi |
+|---|---|---|---|---|---|---|---|
+| BTC | 64.9 | 0.82 | rising | 183.5 | 183.5 | falling | 14/78 |
+| GOOGL | 73.4 | 0.69 | rising | 247.8 | 247.8 | rising | 10/78 |
+
+Three things to read off it:
+
+1. `CCI_t1 == CCI_now` on both coins — the forming bar, as promised above.
+2. `dist_VWAP_rank_hi` renders as **`14/78`**, an ordinal over the universe size, not a bare
+   integer. The response's own `rankScopingNote` warns that rank spans the full active
+   market, not the previewed selection — so a coin can show a rank larger than the row count.
+3. Four columns cost **24 of the 32** `columnLookback` budget. Fan-out is the expensive
+   axis: only `trajectory` fans out, and two of these four carry one.
+
+```python
+from omega.probe import FIRST_CUT, contract_request, render_request, load_contracts
+
+req = contract_request(FIRST_CUT[1], window=4)   # payload for the agent to run
+case = load_contracts()[1]                       # the captured response
+```
+
+## Caveat
+
+The captured contracts and render are a **dated snapshot** — `capturedAt` is on both files.
+The connector's own instructions warn that cached capability lists stop being authoritative
+after a deployment. Re-run the calls in `probe.FETCH_RECIPE` before trusting the defaults on
+a changed platform; if `test_trajectory_default_window_is_four_not_eight` ever fails, that is
+a real finding about the platform, not a broken test.
+
+Four shapes is a proof of the round-trip, not coverage. 484 of the 488 shapes have never
+been compiled or rendered here.
