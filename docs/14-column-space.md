@@ -128,6 +128,34 @@ been passing it because the generator and the predictor shared the same wrong as
 only ground truth breaks the tie.** A generated strategy carrying that condition would
 have been unresolvable live.
 
+### The timeframe marker: infix for most, suffix for two
+
+`REL_INFIX` maps `anchor` to nothing, `lower` to `_ltf_`, `regime` to `_htf_`. Two
+renders at non-anchor timeframes corrected four more predictions — every one a branch
+that silently dropped the marker:
+
+| transform @ `rel: lower` | predicted | live |
+|---|---|---|
+| `CLOSE × bandTouch` | `close_touch` | **`close_ltf_touch`** |
+| `ADX × classifyZone` | `ADX_zone` | **`ADX_ltf_zone`** |
+| `MACD × crossDetect` | `MACD_cross` | **`MACD_ltf_cross`** |
+| `ADX × rank` | `ADX_rank_hi` | **`ADX_ltf_rank_hi`** |
+| `VWAP × distance` | `dist_ltf_VWAP` | **`dist_VWAP_ltf`** |
+
+The rule that emerged: **`value` and `distance` carry the marker as a trailing suffix;
+every other transform takes it as an infix** between the code and the suffix. Nothing in
+doc 02 or 03 states this — it came out of the renders.
+
+### The rank denominator contradicts its own prose
+
+For a non-anchor rank the section text claims the ordinal is *"across THIS REPORT's coins
+… rendered as rank/report-size"*. That render previewed **one** coin and returned
+`32/78` and `12/78`. The denominator is the tracked universe, not the report.
+
+The `conditionColumns` `meaning` for the same headers says *"across the tracked universe"*,
+and the trailing `rankScopingNote` agrees. The section prose is the outlier, contradicted
+by its own numbers. Stored verbatim; recorded, not repaired.
+
 ### `aggregate` cannot be an atom in a timeframed section
 
 `aggregate` has exactly **3** atoms — `FUNDING_RATE`, `OI`, `SPOT_CVD` — and all three are
@@ -192,6 +220,10 @@ after a deployment. Re-run the calls in `probe.FETCH_RECIPE` before trusting the
 a changed platform; if `test_trajectory_default_window_is_four_not_eight` ever fails, that is
 a real finding about the platform, not a broken test.
 
-Fifteen shapes across two renders is transform-complete, not shape-complete: all 16
-transforms have been exercised, but 473 of the 488 shapes have still never been compiled
-or rendered here.
+Twenty-six shapes across four renders and four contract calls. All 16 transforms and all
+three timeframe rels are exercised, but **462 of the 488 shapes have still never been
+compiled or rendered here** — 5.3% coverage.
+
+The hit rate argues for continuing: 44 columns compiled live have exposed **nine** header
+mispredictions and one shipped condition bug. There is no reason to assume the untouched
+95% is cleaner.

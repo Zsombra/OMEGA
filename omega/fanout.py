@@ -53,12 +53,21 @@ def _infix(column: Column) -> str:
 
 
 def _stage1_header(column: Column, contract: Contract) -> str:
-    """Header produced by the first transform stage (before any chaining)."""
+    """Header produced by the first transform stage (before any chaining).
+
+    EVERY branch must place the timeframe infix. `bandTouch`, `classifyZone`,
+    `crossDetect` and `rank` silently dropped it until live renders at rel=lower
+    proved otherwise (close_ltf_touch, ADX_ltf_zone, MACD_ltf_cross,
+    ADX_ltf_rank_hi). `distance` and `value` are the two that carry the marker as a
+    trailing SUFFIX rather than an infix.
+    """
     m = contract.metric(column.metric)
     code, infix, tid = m.code, _infix(column), column.transformId
 
     if tid == "distance":
-        return f"dist{infix or '_'}{code}" if infix else f"dist_{code}"
+        # The rel marker is a SUFFIX here, not an infix: dist_VWAP_ltf, never
+        # dist_ltf_VWAP. Verified against _renders_tfvariants.json.
+        return f"dist_{code}{infix.rstrip('_')}"
     if tid == "spread":
         operand = contract.metric(column.inputs[0].metric).code if column.inputs else "?"
         return f"{code}{infix or '_'}{operand}_spread" if infix else f"{code}_{operand}_spread"
@@ -69,15 +78,15 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     if tid == "aggregate":
         return f"{code}_mean{column.window or 24}"
     if tid == "bandTouch":
-        return f"{code}_touch"
+        return f"{code}{infix or '_'}touch"
     if tid == "classifyZone":
-        return f"{code}_zone"
+        return f"{code}{infix or '_'}zone"
     if tid == "crossDetect":
-        return f"{code}_cross"
+        return f"{code}{infix or '_'}cross"
     if tid == "classifyState":          # platform-only, listed for completeness
         return f"{code}_state"
     if tid == "rank":
-        return f"{code}_rank_{column.ordering or 'hi'}"
+        return f"{code}{infix or '_'}rank_{column.ordering or 'hi'}"
     if tid.startswith("nearestZone"):
         # Verified against live renders (data/contract/columns/_renders_coverage.json),
         # which corrected two guesses here:

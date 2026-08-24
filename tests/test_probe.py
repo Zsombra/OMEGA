@@ -258,3 +258,56 @@ def test_zone_age_carries_its_hours_unit_in_the_header():
     col = ColumnShape("STRUCT_ZONES", "nearestZoneAge").to_column()
     assert [o.header for o in outputs_for(col.model_copy(update={"side": "support"}))] \
         == ["zones_support_age_h"]
+
+
+# --- the timeframe infix, pinned per transform ------------------------------
+
+def test_every_transform_places_the_timeframe_infix():
+    """Four branches silently dropped it until live renders at rel=lower said no.
+
+    Verified against _renders_tfvariants.json and _renders_infix.json. `value` and
+    `distance` carry the marker as a trailing SUFFIX; every other transform takes it
+    as an INFIX between the code and the suffix.
+    """
+    from omega.fanout import outputs_for
+    from omega.types import Column, Operand, RelTimeframe
+
+    def header(**kw):
+        return outputs_for(Column(timeframe=RelTimeframe(rel=kw.pop("rel")), **kw))[0].header
+
+    # suffix-carrying
+    assert header(metric="RSI14", transformId="value", rel="lower") == "RSI14_ltf"
+    assert header(metric="RSI14", transformId="value", rel="regime") == "RSI14_htf"
+    assert header(metric="VWAP", transformId="distance", rel="lower") == "dist_VWAP_ltf"
+    assert header(metric="VWAP", transformId="distance", rel="anchor") == "dist_VWAP"
+
+    # infix-carrying - these four were the bugs
+    assert header(metric="CLOSE", transformId="bandTouch", rel="lower") == "close_ltf_touch"
+    assert header(metric="ADX", transformId="classifyZone", rel="lower") == "ADX_ltf_zone"
+    assert header(metric="MACD", transformId="crossDetect", rel="lower") == "MACD_ltf_cross"
+    assert header(metric="ADX", transformId="rank", rel="lower") == "ADX_ltf_rank_hi"
+
+    # and unchanged at anchor
+    assert header(metric="CLOSE", transformId="bandTouch", rel="anchor") == "close_touch"
+    assert header(metric="ADX", transformId="classifyZone", rel="anchor") == "ADX_zone"
+    assert header(metric="MACD", transformId="crossDetect", rel="anchor") == "MACD_cross"
+    assert header(metric="ADX", transformId="rank", rel="anchor") == "ADX_rank_hi"
+
+
+def test_rank_denominator_is_the_universe_not_the_report():
+    """A platform prose defect, caught by its own numbers.
+
+    The section text for a non-anchor rank claims the ordinal is 'across THIS
+    REPORT'S coins ... rank/report-size'. That render previewed ONE coin and the
+    values came back 32/78 and 12/78, so the denominator is the tracked universe.
+    The conditionColumns `meaning` and the trailing rankScopingNote both say
+    universe; the section prose is the outlier. Stored verbatim, recorded here.
+    """
+    payload = load_renders("_renders_infix.json")
+    text = payload["response"]["renderedSections"][0]["section"]["text"]
+    assert "rank/report-size" in text, "the misleading prose, kept verbatim"
+    assert len(payload["request"]["coinSelection"]["tickers"]) == 1
+    row = next(r for r in text.splitlines() if r.startswith("| BTC |"))
+    assert "32/78" in row and "12/78" in row, "denominator is 78, not the 1-coin report"
+    note = payload["response"]["rankScopingNote"]
+    assert "not the previewed coin selection" in note
