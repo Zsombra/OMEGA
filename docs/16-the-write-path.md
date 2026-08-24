@@ -147,3 +147,32 @@ Rendered live across BTC, ETH, SOL, GOLD and DOGE:
 
 That last row is the finding. DOGE printed `RSI14_t2 = 38.3` and `RSI14_now = 38.3` with
 `RSI14_trend = falling`. The direction is computed before rounding.
+
+## CREATE, proven
+
+The last unexercised path closed on 2026-08-24 at 20:16Z. `OMEGA-TEST: From Scratch`
+(`43f16fa4-…`) exists at revision 1 with `forkedFromStrategyId: null` — genuinely
+created, not forked — carrying 6 custom columns, 10 conditions and a market read.
+All seven axes committed at once: `IDENTITY`, `TIMEFRAME_PROFILE`, `REPORT`,
+`MARKET_READ`, `CONDITIONS`, `SETUP_GATES`, `LIFECYCLE`.
+
+Three things worth keeping from the run.
+
+**Quota is freed by archiving.** `archive_strategy` on the fork (revision 6 → 7,
+`isActive: false`) released the slot, and the archived record keeps its sections and
+conditions intact, so `restore_strategy` puts it back.
+
+**A timeout is neither a failure nor a success.** The apply timed out twice before
+landing. The safe move is not to retry blind: the `strategyId` is **pre-allocated
+inside the signed token**, so `get_strategy` on that id settles what happened. It
+returned `NOT_FOUND`, which proved nothing had been written and a retry could not
+duplicate. Then the same token applied cleanly on the third attempt.
+
+**The apply shape held a third time.** `{request: {confirm, planToken}}`, no `plan`
+key — now confirmed on `REPORT`, on `CONDITIONS`/`MARKET_READ`, and on a
+from-scratch `CREATE`.
+
+The compile also revealed the seeding behaviour: `creationSeed` returned **84**
+signal rules, and the 10 `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT` mismatches are simply
+that default seed activating signals whose data a deliberately narrow 6-column report
+does not carry. Non-blocking — viability stayed true.

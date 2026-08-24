@@ -246,5 +246,133 @@
       }
     ],
     "source": "session transcript 52049ed9-723d-458e-abc1-cf3bbbbd70f0.jsonl, tool_use/tool_result pairs"
+  },
+  "createTest": {
+    "status": "PROVEN",
+    "quotaFreedBy": {
+      "action": "archive_strategy",
+      "strategyId": "f0d2d328-b09f-4509-b8f2-ffa4e3c08181",
+      "expectedRevision": 6,
+      "committedRevision": 7,
+      "isActive": false,
+      "reversible": "restore_strategy at revision 7; all sections and conditions preserved in the archived record"
+    },
+    "compile": {
+      "operation": "CREATE",
+      "viable": true,
+      "proposedRevision": 1,
+      "preallocatedStrategyId": "43f16fa4-b04a-4ebe-84fb-73ffc0082af6",
+      "mintedSectionKey": "custom:5266befa-739f-48b2-9b77-a85c3ba04ef7",
+      "changedAxes": [
+        "IDENTITY",
+        "TIMEFRAME_PROFILE",
+        "REPORT",
+        "MARKET_READ",
+        "CONDITIONS",
+        "SETUP_GATES",
+        "LIFECYCLE"
+      ],
+      "conditions": 10,
+      "columns": 6,
+      "creationSeedSignalRules": 84,
+      "mismatches": 10,
+      "mismatchNote": "All ACTIVE_SIGNAL_DATA_NOT_IN_REPORT. The server's creationSeed activates 84 signal rules by default, and this deliberately narrow 6-column report does not carry the data several of them score on. Non-blocking - viability stayed true.",
+      "expiresAt": "2026-08-24T20:19:11.553Z"
+    },
+    "apply": {
+      "attempts": 3,
+      "sequence": [
+        {
+          "n": 1,
+          "result": "The connector's server isn't responding"
+        },
+        {
+          "n": 2,
+          "result": "The connector's server isn't responding"
+        },
+        {
+          "check": "get_strategy on the pre-allocated id returned NOT_FOUND, proving nothing had been written and a retry could not duplicate"
+        },
+        {
+          "n": 3,
+          "result": "APPLIED"
+        }
+      ],
+      "shape": "{request: {confirm, planToken}} - plan omitted, third independent confirmation",
+      "appliedImpact": {
+        "operation": "CREATE",
+        "previousRevision": null,
+        "committedRevision": 1,
+        "changedAxes": [
+          "IDENTITY",
+          "TIMEFRAME_PROFILE",
+          "REPORT",
+          "MARKET_READ",
+          "CONDITIONS",
+          "SETUP_GATES",
+          "LIFECYCLE"
+        ],
+        "boundAgentCount": 0,
+        "openPositionCount": 0
+      },
+      "created": {
+        "id": "43f16fa4-b04a-4ebe-84fb-73ffc0082af6",
+        "name": "OMEGA-TEST: From Scratch",
+        "revision": 1,
+        "forkedFromStrategyId": null,
+        "sections": 1,
+        "columns": 6,
+        "conditions": 10,
+        "minAggregateScore": 0.99,
+        "boundAgentCount": 0
+      },
+      "lesson": "A timeout is not a failure and not a success. The strategyId is pre-allocated inside the signed token, so reading that id settles it before a retry can duplicate. Check, then resend the same token."
+    },
+    "designNote": "The from-scratch strategy deliberately uses the workarounds found earlier: ADX and MFI14 numeric thresholds instead of their classifyZone columns, and CROWD_ACC value instead of the crowd rank that never renders.",
+    "renderVerification": {
+      "renderedAt": "2026-08-24T20:17Z",
+      "coins": [
+        "BTC",
+        "SOL",
+        "XRP"
+      ],
+      "rows": [
+        {
+          "coin": "BTC",
+          "ADX": 21.9,
+          "MFI14": 42.8,
+          "crowdAcc": 40.0,
+          "RSI14": 55.8,
+          "dist_VWAP": 0.08,
+          "atrPct": 0.89,
+          "verdict": "NEITHER",
+          "decidedBy": null
+        },
+        {
+          "coin": "SOL",
+          "ADX": 15.7,
+          "MFI14": 63.8,
+          "crowdAcc": 88.9,
+          "RSI14": 55.4,
+          "dist_VWAP": 0.83,
+          "atrPct": 1.4,
+          "verdict": "NEITHER",
+          "decidedBy": "NO_EDGE"
+        },
+        {
+          "coin": "XRP",
+          "ADX": 10.8,
+          "MFI14": 43.4,
+          "crowdAcc": 100.0,
+          "RSI14": 45.1,
+          "dist_VWAP": -1.19,
+          "atrPct": 2.01,
+          "verdict": "NEITHER",
+          "decidedBy": "NO_EDGE"
+        }
+      ],
+      "markers": "4/4 resolved, 0 unreferenceable",
+      "agentBlock": "tradeConditionsBlockText generated for the SOL lens, with per-condition evidence lines"
+    }
   }
 }
