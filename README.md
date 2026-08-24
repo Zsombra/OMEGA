@@ -14,9 +14,14 @@ dimension of it, documents the underlying maths, and ships a Python toolkit that
 a proposed column **before** it touches your account — and a generator that composes whole
 strategies from a thesis.
 
-> **Read-only by construction.** Nothing here calls a BattleGrid write tool. The toolkit
-> emits a submit-ready payload to `out/`; submitting stays a separate, human-initiated act.
-> Private-strategy quota at extraction: **24/25 used, untouched**.
+> **The toolkit is read-only by construction.** Nothing in `omega/` calls a BattleGrid
+> write tool; it emits a submit-ready payload to `out/` and submitting stays a separate,
+> human-initiated act.
+>
+> **The write path itself is now proven**, exercised by hand against the connector on
+> 2026-08-24. A custom table, a full condition set and a from-scratch strategy were all
+> written and read back — see [16 · The write path](docs/16-the-write-path.md). Quota is
+> **25/25**, of which two are OMEGA test objects and one of those is archived.
 
 ---
 
@@ -40,6 +45,10 @@ strategies from a thesis.
 | [12 · Routing Feasibility](docs/12-routing-feasibility.md) | would this strategy route — and which signals are holding it back |
 | [13 · Temporal Spread](docs/13-temporal-spread.md) | the second axis: what survives across time, and what was one instant |
 | [14 · Column Space](docs/14-column-space.md) | every table you could build: 488 shapes, 2200 expanded, and the 349 nothing has ever used |
+| [15 · What the account has built](docs/15-what-the-account-has-built.md) | the audit: not one custom column has ever existed on this account |
+| [16 · The write path](docs/16-the-write-path.md) | how to actually write — and the published schema that refuses its own required key |
+| [17 · The full sweep](docs/17-the-full-sweep.md) | 300 of 300 shapes verified live, and the two the platform declares but cannot deliver |
+| [18 · Indicator census](docs/18-indicator-census.md) | which named indicators this platform can build, which it cannot, and **why not** |
 
 ## What the extraction found
 

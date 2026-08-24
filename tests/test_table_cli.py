@@ -96,3 +96,38 @@ def test_author_reports_cost_before_emitting(capsys, tmp_path):
 def test_author_emits_nothing_when_it_refuses(capsys, tmp_path):
     main(["author", "VOLUME", "rank", "--out", str(tmp_path)])
     assert not list(tmp_path.glob("*.json")), "a refused column must leave no file"
+
+
+# --- families ---------------------------------------------------------------
+
+def test_families_lists_buildable_constructions(capsys):
+    assert main(["families"]) == 0
+    out = capsys.readouterr().out
+    assert "buildable families" in out
+    assert "FUNDING_RATE rank" in out, "the carry factor should be listed with its spec"
+
+
+def test_families_filters_by_domain(capsys):
+    assert main(["families", "--domain", "institutional"]) == 0
+    out = capsys.readouterr().out
+    assert "in institutional" in out
+    assert "Moving-average envelope" not in out, "a classical family must be filtered out"
+
+
+def test_families_rejects_an_unknown_domain():
+    with pytest.raises(SystemExit):
+        main(["families", "--domain", "not_a_domain"])
+
+
+def test_families_blocked_groups_by_cause(capsys):
+    assert main(["families", "--blocked"]) == 0
+    out = capsys.readouterr().out
+    assert "operator-absent" in out and "data-absent" in out
+    assert "needs stddev" in out, "a blocked family must say which operator it wants"
+
+
+def test_families_blocked_can_filter_to_one_cause(capsys):
+    assert main(["families", "--blocked", "--cause", "data-absent"]) == 0
+    out = capsys.readouterr().out
+    assert "Historical cross-sectional rank" in out
+    assert "operator-absent" not in out

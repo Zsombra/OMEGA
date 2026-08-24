@@ -19,7 +19,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from .contract import load
+from .contract import DERIVED_DIR, load
 from .explain import explain, render_text
 from .fanout import outputs_for
 from .space import ColumnShape, header_cost, platform_used, query
@@ -111,6 +111,63 @@ def _cmd_author(a: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_families(a: argparse.Namespace) -> int:
+    """Browse the indicator census - what named families this platform can build.
+
+    The census lives in data/derived/indicator_families.json and is checked by
+    tests/test_indicator_families.py, which builds every buildable entry. So this
+    is a report on verified constructions, not a wish list.
+    """
+    import json
+    data = json.loads((DERIVED_DIR / "indicator_families.json").read_text(encoding="utf-8"))
+
+    if a.blocked:
+        rows = data["blocked"]
+        if a.cause:
+            rows = [f for f in rows if f["cause"] == a.cause]
+        by_cause: dict[str, list] = {}
+        for f in rows:
+            by_cause.setdefault(f["cause"], []).append(f)
+        print(f"{len(rows)} blocked families")
+        for cause in ("operator-absent", "guard-refuses", "needs-state", "data-absent"):
+            group = by_cause.get(cause)
+            if not group:
+                continue
+            print()
+            print(f"  {cause}  ({len(group)})")
+            for f in group:
+                needs = f" needs {f['needs']}" if f.get("needs") else ""
+                print(f"    {f['name']}{needs}")
+        return 0
+
+    rows = data["buildable"]
+    if a.domain:
+        rows = [f for f in rows if f["domain"] == a.domain]
+    if not rows:
+        domains = sorted({f["domain"] for f in data["buildable"]})
+        sys.exit(f"no families in domain {a.domain!r} - one of {', '.join(domains)}")
+
+    print(f"{len(rows)} buildable families"
+          + (f" in {a.domain}" if a.domain else ""))
+    for f in rows:
+        attr = f"  [{f['attribution']}]" if f.get("attribution") else ""
+        print()
+        print(f"  {f['name']}{attr}")
+        for spec in f["columns"]:
+            bits = [spec["metric"], spec["transformId"]]
+            if spec.get("inputs"):
+                bits.append("(" + ", ".join(i["metric"] for i in spec["inputs"]) + ")")
+            if spec.get("chainedTransformId"):
+                bits.append("-> " + spec["chainedTransformId"])
+            for k in ("window", "offset", "ordering", "side", "bars"):
+                if spec.get(k) is not None:
+                    bits.append(f"{k}={spec[k]}")
+            print("      " + " ".join(bits))
+        if f.get("note"):
+            print(f"      note: {f['note']}")
+    return 0
+
+
 def _add_column_args(p: argparse.ArgumentParser) -> None:
     p.add_argument("metric")
     p.add_argument("transform", help="transformId, optionally transform:OPERAND")
@@ -150,6 +207,14 @@ def main(argv: list[str] | None = None) -> int:
     w.add_argument("--anchor", default="1h",
                    choices=["5m", "15m", "1h", "4h"])
     w.set_defaults(fn=_cmd_author)
+
+    f = sub.add_parser("families", help="browse the indicator census")
+    f.add_argument("--domain", help="classical, oscillator, factor, microstructure, "
+                                    "derivatives, statistical, structure, sentiment, institutional")
+    f.add_argument("--blocked", action="store_true", help="show what cannot be built, and why")
+    f.add_argument("--cause", choices=["operator-absent", "guard-refuses",
+                                       "needs-state", "data-absent"])
+    f.set_defaults(fn=_cmd_families)
 
     a = parser.parse_args(argv)
     return a.fn(a)

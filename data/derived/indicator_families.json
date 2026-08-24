@@ -1,0 +1,949 @@
+{
+ "_note": [
+  "Named indicator families and whether this platform can build them.",
+  "",
+  "Every entry with status 'buildable' carries a real column spec, and",
+  "tests/test_indicator_families.py builds each one and puts it through",
+  "omega.validate and omega.space. If the platform's contract changes so a",
+  "family stops being constructible, that test fails - the census cannot rot",
+  "into a lie quietly.",
+  "",
+  "'blocked' entries carry a cause, which is the useful half:",
+  "  operator-absent  the data is present, the equation is not",
+  "  guard-refuses    the operator exists, the unit-clique rule rejects the pair",
+  "  needs-state      requires recursive evaluation, not a new function",
+  "  data-absent      the input genuinely does not exist",
+  "",
+  "Measured 2026-08-24 against the live connector."
+ ],
+ "buildable": [
+  {
+   "id": "ma-envelope",
+   "name": "Moving-average envelope / price oscillator",
+   "domain": "classical",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SMA20"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ppo-arbitrary",
+   "name": "Arbitrary-period PPO",
+   "attribution": "Appel",
+   "domain": "classical",
+   "columns": [
+    {
+     "metric": "EMA5",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "EMA13"
+      }
+     ]
+    }
+   ],
+   "note": "The platform's PPO metric is fixed at 12/26; any price-clique pair is available here."
+  },
+  {
+   "id": "cross-magnitude",
+   "name": "Golden/death cross as a magnitude",
+   "domain": "classical",
+   "columns": [
+    {
+     "metric": "SMA50",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SMA200"
+      }
+     ],
+     "chainedTransformId": "trajectory"
+    }
+   ]
+  },
+  {
+   "id": "vwap-deviation",
+   "name": "VWAP deviation",
+   "domain": "classical",
+   "columns": [
+    {
+     "metric": "VWAP",
+     "transformId": "distance"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "aggregate"
+    }
+   ]
+  },
+  {
+   "id": "range-position",
+   "name": "Donchian-style range position",
+   "attribution": "Donchian",
+   "domain": "classical",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SWING_HIGH"
+      }
+     ]
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SWING_LOW"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "venue-dislocation",
+   "name": "Cross-venue spot dislocation",
+   "domain": "classical",
+   "columns": [
+    {
+     "metric": "SPOT_CLOSE_CB",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SPOT_CLOSE_BN"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "momentum-differential",
+   "name": "Fast-vs-slow momentum differential",
+   "domain": "oscillator",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "RSI7"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "price-vs-flow-momentum",
+   "name": "Price-vs-money-flow divergence",
+   "domain": "oscillator",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "MFI14"
+      }
+     ]
+    }
+   ],
+   "note": "RSI is price-only, MFI is volume-weighted; the gap is the divergence as a number."
+  },
+  {
+   "id": "stoch-separation",
+   "name": "Stochastic %K-%D separation",
+   "attribution": "Lane",
+   "domain": "oscillator",
+   "columns": [
+    {
+     "metric": "STOCH_K",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "STOCH_D"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "trend-adjusted-momentum",
+   "name": "Trend-strength-adjusted momentum",
+   "domain": "oscillator",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "ADX"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "oscillator-zone",
+   "name": "Oscillator zone regime",
+   "domain": "oscillator",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone"
+    }
+   ],
+   "note": "ADX_zone and MFI14_zone are display-only - see cookbook trap 13."
+  },
+  {
+   "id": "crossover-event",
+   "name": "Crossover event detection",
+   "domain": "oscillator",
+   "columns": [
+    {
+     "metric": "MACD",
+     "transformId": "crossDetect"
+    }
+   ],
+   "note": "A discrete first derivative: the sign change between two consecutive bars."
+  },
+  {
+   "id": "xs-momentum",
+   "name": "Cross-sectional momentum",
+   "attribution": "Jegadeesh & Titman 1993",
+   "domain": "factor",
+   "columns": [
+    {
+     "metric": "ROC12",
+     "transformId": "rank",
+     "ordering": "hi"
+    }
+   ],
+   "note": "CHG_* metrics are NOT rankable. Only ROC12, PPO and CLOSE_CHANGE among momentum."
+  },
+  {
+   "id": "xs-reversal",
+   "name": "Short-horizon cross-sectional reversal",
+   "attribution": "Lehmann 1990; Lo & MacKinlay 1990",
+   "domain": "factor",
+   "columns": [
+    {
+     "metric": "ROC12",
+     "transformId": "rank",
+     "ordering": "lo"
+    }
+   ],
+   "note": "CLOSE_CHANGE is the one metric restricted to far/near orderings - it is a signed bar change, so distance from zero is the sort the platform offers. A hi/lo sort needs ROC12, PPO or one of the other 29."
+  },
+  {
+   "id": "xs-volatility",
+   "name": "Cross-sectional volatility ranking",
+   "domain": "factor",
+   "columns": [
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank"
+    }
+   ]
+  },
+  {
+   "id": "stretch-ranking",
+   "name": "Stretch ranking",
+   "domain": "factor",
+   "columns": [
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank"
+    }
+   ]
+  },
+  {
+   "id": "order-flow-imbalance",
+   "name": "Order-flow imbalance",
+   "domain": "microstructure",
+   "columns": [
+    {
+     "metric": "BUY_VOLUME",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SELL_VOLUME"
+      }
+     ]
+    },
+    {
+     "metric": "BUY_PRESSURE",
+     "transformId": "value"
+    }
+   ]
+  },
+  {
+   "id": "perp-spot-cvd",
+   "name": "Perp-vs-spot CVD divergence",
+   "domain": "microstructure",
+   "columns": [
+    {
+     "metric": "CVD",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SPOT_CVD"
+      }
+     ],
+     "chainedTransformId": "trajectory"
+    }
+   ]
+  },
+  {
+   "id": "effort-vs-result",
+   "name": "Effort vs result",
+   "attribution": "Wyckoff",
+   "domain": "microstructure",
+   "columns": [
+    {
+     "metric": "OI_CHG",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "CHG_24H"
+      }
+     ]
+    }
+   ],
+   "note": "Positioning change against price change, as one signed number."
+  },
+  {
+   "id": "volume-concentration",
+   "name": "Volume climax / concentration",
+   "domain": "microstructure",
+   "columns": [
+    {
+     "metric": "VOLUME",
+     "transformId": "maxShare",
+     "window": 24
+    }
+   ],
+   "note": "A C1 concentration ratio - the share of the window carried by its largest bar."
+  },
+  {
+   "id": "relative-volume",
+   "name": "Relative volume regime",
+   "domain": "microstructure",
+   "columns": [
+    {
+     "metric": "RVOL",
+     "transformId": "value"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "VOL_SMA20"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "obv-divergence",
+   "name": "OBV divergence",
+   "attribution": "Granville 1963",
+   "domain": "microstructure",
+   "columns": [
+    {
+     "metric": "OBV",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "VOLUME"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "basis",
+   "name": "Perpetual basis / premium",
+   "attribution": "cost of carry",
+   "domain": "derivatives",
+   "columns": [
+    {
+     "metric": "MARK",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SPOT_CLOSE_CB"
+      }
+     ]
+    }
+   ],
+   "note": "Single read only - MARK's spread does not chain, so basis momentum is unavailable."
+  },
+  {
+   "id": "carry-vs-momentum",
+   "name": "Carry-adjusted momentum",
+   "domain": "derivatives",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "CHG_24H"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "funding-term",
+   "name": "Funding term structure",
+   "domain": "derivatives",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "FUNDING_ANN"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "oi-turnover",
+   "name": "Open-interest turnover",
+   "domain": "derivatives",
+   "columns": [
+    {
+     "metric": "OI",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "NOTIONAL_VOLUME_1D"
+      }
+     ]
+    }
+   ],
+   "note": "The entire usdLargeCount clique - exactly one legal pair."
+  },
+  {
+   "id": "positioning-momentum",
+   "name": "Positioning momentum",
+   "domain": "derivatives",
+   "columns": [
+    {
+     "metric": "OI_CHG",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "PPO"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "efficiency-ratio",
+   "name": "Efficiency ratio",
+   "attribution": "Kaufman 1995",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "efficiency",
+     "window": 21
+    }
+   ],
+   "note": "Fractal / directional efficiency. The system's only native noise measure."
+  },
+  {
+   "id": "scale-dependent-efficiency",
+   "name": "Scale-dependent efficiency",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "efficiency",
+     "window": 4
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "efficiency",
+     "window": 32
+    }
+   ],
+   "note": "Two windows on different metrics - same metric twice would collide on the header."
+  },
+  {
+   "id": "reversion-baseline",
+   "name": "Crude mean-reversion baseline",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "EMA5",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "EMA13"
+      }
+     ],
+     "chainedTransformId": "aggregate"
+    }
+   ],
+   "note": "A z-score without the sigma - the closest reachable substitute."
+  },
+  {
+   "id": "momentum-term-structure",
+   "name": "Momentum term structure",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "CHG_1H",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "CHG_24H"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "volatility-regime",
+   "name": "Volatility regime & squeeze",
+   "attribution": "Bollinger",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "trajectory"
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "efficiency"
+    }
+   ]
+  },
+  {
+   "id": "zone-proximity",
+   "name": "Liquidity-zone proximity",
+   "attribution": "SMC / order-block models",
+   "domain": "structure",
+   "columns": [
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "count"
+    }
+   ]
+  },
+  {
+   "id": "crowd-fade",
+   "name": "Contrarian sentiment fade",
+   "domain": "sentiment",
+   "columns": [
+    {
+     "metric": "CROWD_UPBIAS",
+     "transformId": "value"
+    },
+    {
+     "metric": "CROWD_ACC",
+     "transformId": "value"
+    }
+   ],
+   "note": "Every CROWD_*_LIVE variant reads FALSE when null - cookbook trap 16."
+  },
+  {
+   "id": "carry-factor",
+   "name": "Cross-sectional carry factor",
+   "attribution": "Koijen, Moskowitz, Pedersen & Vrugt 2018",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "rank",
+     "ordering": "hi"
+    }
+   ],
+   "note": "In perpetuals the funding rate IS the carry. The most institutionally recognisable construction here."
+  },
+  {
+   "id": "risk-adjusted-carry",
+   "name": "Risk-adjusted carry",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "ATR_PCT"
+      }
+     ]
+    }
+   ],
+   "note": "Carry per unit of volatility - the standard desk normalisation."
+  },
+  {
+   "id": "low-vol-factor",
+   "name": "Low-volatility factor",
+   "attribution": "Frazzini & Pedersen adjacent",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "ordering": "lo"
+    }
+   ],
+   "note": "Not betting-against-beta, which needs beta. This is the volatility-sorted cousin."
+  },
+  {
+   "id": "ts-momentum",
+   "name": "Time-series momentum",
+   "attribution": "Moskowitz, Ooi & Pedersen 2012",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory"
+    }
+   ],
+   "note": "Own-history sign, distinct from the cross-sectional sort."
+  },
+  {
+   "id": "realised-skew-proxy",
+   "name": "Realised-skew proxy",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "HIGH_DEV",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "LOW_DEV"
+      }
+     ]
+    }
+   ],
+   "note": "Intrabar upside excursion against downside. Not a third moment, but the asymmetry skew is reached for."
+  },
+  {
+   "id": "range-volatility",
+   "name": "Range-based volatility",
+   "attribution": "linear cousin of Parkinson 1980",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "HIGH",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "LOW"
+      }
+     ]
+    }
+   ],
+   "note": "Parkinson needs (ln H/L)^2. Same information without the log or the square."
+  },
+  {
+   "id": "vol-estimator-divergence",
+   "name": "Volatility-estimator divergence",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "ATR_PCT",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "BB_WIDTH_PCT"
+      }
+     ]
+    }
+   ],
+   "note": "True-range vol against dispersion vol. They disagree when moves are gappy rather than continuous."
+  },
+  {
+   "id": "flow-toxicity",
+   "name": "Order-flow toxicity proxy",
+   "attribution": "VPIN-adjacent; Easley, Lopez de Prado & O'Hara 2012",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "BUY_PRESSURE",
+     "transformId": "efficiency"
+    }
+   ],
+   "note": "VPIN proper needs volume-clock bucketing. Persistence of one-sided pressure is the reachable substitute."
+  },
+  {
+   "id": "aggressor-imbalance",
+   "name": "Aggressor-count imbalance",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "BUY_TRADES",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "SELL_TRADES"
+      }
+     ]
+    }
+   ],
+   "note": "Counts trades, not size. Divergence from volume imbalance indicates a change in participant size mix."
+  },
+  {
+   "id": "positioning-per-risk",
+   "name": "Positioning change per unit of risk",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "OI_CHG",
+     "transformId": "spread",
+     "inputs": [
+      {
+       "metric": "ATR_PCT"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "oi-size-factor",
+   "name": "Open-interest size factor",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "OI",
+     "transformId": "rank"
+    }
+   ],
+   "note": "NOTIONAL_VOLUME_1D is NOT rankable, so a turnover-based liquidity factor is out."
+  },
+  {
+   "id": "regime-persistence",
+   "name": "Regime persistence / state duration",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "REGIME_TREND",
+     "transformId": "trajectory"
+    },
+    {
+     "metric": "REGIME_VOL",
+     "transformId": "trajectory"
+    }
+   ],
+   "note": "Categorical trajectories: the slots hold past states, so you can read how long a regime has held."
+  },
+  {
+   "id": "positioning-extreme",
+   "name": "Cross-sectional positioning extreme",
+   "domain": "institutional",
+   "columns": [
+    {
+     "metric": "CROWD_UPBIAS",
+     "transformId": "rank"
+    }
+   ]
+  }
+ ],
+ "blocked": [
+  {
+   "id": "zscore",
+   "name": "Z-score / standardisation",
+   "cause": "operator-absent",
+   "needs": "stddev",
+   "note": "The single most consequential absence. Blocks every statistical-arbitrage normalisation."
+  },
+  {
+   "id": "bollinger-derived",
+   "name": "Bollinger Bands on a derived series",
+   "attribution": "Bollinger",
+   "cause": "operator-absent",
+   "needs": "stddev + a coefficient term"
+  },
+  {
+   "id": "keltner",
+   "name": "Keltner Channels",
+   "cause": "operator-absent",
+   "needs": "a coefficient term; also EMA-vs-ATR is a cross-clique pair"
+  },
+  {
+   "id": "sharpe",
+   "name": "Sharpe / information ratio",
+   "cause": "operator-absent",
+   "needs": "stddev"
+  },
+  {
+   "id": "vol-of-vol",
+   "name": "Volatility of volatility",
+   "cause": "operator-absent",
+   "needs": "stddev"
+  },
+  {
+   "id": "vol-cones",
+   "name": "Historical-volatility cones",
+   "cause": "operator-absent",
+   "needs": "stddev + percentile"
+  },
+  {
+   "id": "correlation",
+   "name": "Pearson correlation",
+   "cause": "operator-absent",
+   "needs": "covariance",
+   "note": "Data proven present: a trajectory on an unbound section beside one on a benchmark-bound section returns two time-aligned series."
+  },
+  {
+   "id": "spearman",
+   "name": "Spearman rank correlation",
+   "cause": "operator-absent",
+   "needs": "covariance over ranks"
+  },
+  {
+   "id": "beta",
+   "name": "Beta / CAPM",
+   "attribution": "Sharpe 1964",
+   "cause": "operator-absent",
+   "needs": "covariance"
+  },
+  {
+   "id": "cointegration",
+   "name": "Cointegration & pairs spreads",
+   "attribution": "Engle & Granger 1987",
+   "cause": "operator-absent",
+   "needs": "regression + a stationarity test"
+  },
+  {
+   "id": "pca",
+   "name": "PCA / factor decomposition",
+   "cause": "operator-absent",
+   "needs": "covariance matrix ops"
+  },
+  {
+   "id": "corr-regime",
+   "name": "Correlation-based regime detection",
+   "cause": "operator-absent",
+   "needs": "covariance"
+  },
+  {
+   "id": "regression-channel",
+   "name": "Linear regression channel / Raff channel",
+   "cause": "operator-absent",
+   "needs": "slope"
+  },
+  {
+   "id": "ls-slope",
+   "name": "Least-squares trend slope",
+   "cause": "operator-absent",
+   "needs": "slope",
+   "note": "trajectory gives a first-and-last comparison, not a fitted slope."
+  },
+  {
+   "id": "hurst",
+   "name": "Hurst exponent / R-S analysis",
+   "attribution": "Mandelbrot",
+   "cause": "operator-absent",
+   "needs": "slope + log"
+  },
+  {
+   "id": "dfa",
+   "name": "Detrended fluctuation analysis",
+   "cause": "operator-absent",
+   "needs": "slope + log"
+  },
+  {
+   "id": "ts-percentile",
+   "name": "Value in its own historical percentile",
+   "cause": "operator-absent",
+   "needs": "percentile over a window",
+   "note": "Bounded by the 32-bar lookback cap even if added."
+  },
+  {
+   "id": "percentile-vol-regime",
+   "name": "Percentile-based volatility regime",
+   "cause": "operator-absent",
+   "needs": "percentile"
+  },
+  {
+   "id": "rolling-minmax",
+   "name": "Rolling min / max of a series",
+   "cause": "operator-absent",
+   "needs": "min / max",
+   "note": "maxShare returns a share, never the max itself."
+  },
+  {
+   "id": "higher-moments",
+   "name": "Skew, kurtosis, autocorrelation",
+   "cause": "operator-absent",
+   "needs": "higher-moment operators"
+  },
+  {
+   "id": "log-entropy-fourier",
+   "name": "Log returns, entropy, Fourier / wavelet",
+   "cause": "operator-absent",
+   "needs": "transcendental functions"
+  },
+  {
+   "id": "money-flow-custom",
+   "name": "Custom money flow",
+   "cause": "operator-absent",
+   "needs": "multiplication",
+   "note": "spread divides; nothing multiplies."
+  },
+  {
+   "id": "amihud",
+   "name": "Amihud illiquidity",
+   "attribution": "Amihud 2002",
+   "cause": "guard-refuses",
+   "note": "|return| / volume - percent over largeCount. The division exists; the clique rule rejects the pair."
+  },
+  {
+   "id": "avg-trade-size",
+   "name": "Average trade size",
+   "cause": "guard-refuses",
+   "note": "volume / trades - largeCount over count. Dimensionally sound, still refused."
+  },
+  {
+   "id": "cumulative-custom",
+   "name": "Custom cumulative series",
+   "cause": "needs-state",
+   "note": "CVD and OBV are given; you cannot accumulate anything new."
+  },
+  {
+   "id": "adaptive-ma",
+   "name": "Adaptive moving averages (KAMA, VIDYA)",
+   "cause": "needs-state",
+   "note": "The efficiency-ratio input exists; the recursive smoothing step does not."
+  },
+  {
+   "id": "historical-rank",
+   "name": "Historical cross-sectional rank",
+   "cause": "data-absent",
+   "note": "The contract is explicit: the ranked set holds current values only, so there is no historical ordinal to offset into."
+  }
+ ]
+}
