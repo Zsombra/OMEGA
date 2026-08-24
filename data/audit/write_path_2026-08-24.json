@@ -4,7 +4,6 @@
   "strategyId": "f0d2d328-b09f-4509-b8f2-ffa4e3c08181",
   "strategyName": "OMEGA-TEST: Fork Build",
   "forkedFromStrategyId": "6280a7c0-1ea3-47e2-80c2-ed26db731663",
-
   "attempts": [
     {
       "shape": "{request: {confirm, planToken, plan}}",
@@ -21,20 +20,28 @@
         "operation": "UPDATE",
         "previousRevision": 4,
         "committedRevision": 5,
-        "changedAxes": ["REPORT"],
+        "changedAxes": [
+          "REPORT"
+        ],
         "boundAgentCount": 0,
         "propagatedAgentCount": 0,
         "openPositionCount": 0
       }
     }
   ],
-
   "tokenPayloadKeys": [
-    "authoringCatalogDigest", "credentialId", "expectedRevision", "expiresAtEpochMs",
-    "materializationFenceDigest", "operation", "postStateDigest", "proposedRevision",
-    "strategyId", "userId", "version"
+    "authoringCatalogDigest",
+    "credentialId",
+    "expectedRevision",
+    "expiresAtEpochMs",
+    "materializationFenceDigest",
+    "operation",
+    "postStateDigest",
+    "proposedRevision",
+    "strategyId",
+    "userId",
+    "version"
   ],
-
   "sectionWritten": {
     "kind": "custom",
     "sectionKey": "custom:3b1ce9ed-c82c-4612-8d01-836d992f0c18",
@@ -44,23 +51,102 @@
     "columnCount": 8,
     "headerCount": 11,
     "budgetUsage": {
-      "sections": { "used": 1, "cap": 32 },
-      "sectionColumns": { "used": 8, "cap": 32 },
-      "columnLookback": { "used": 24, "cap": 32 },
-      "distinctTimeframes": { "used": 1, "cap": 8 },
-      "estimatedTokens": { "used": 309, "cap": 16000 }
+      "sections": {
+        "used": 1,
+        "cap": 32
+      },
+      "sectionColumns": {
+        "used": 8,
+        "cap": 32
+      },
+      "columnLookback": {
+        "used": 24,
+        "cap": 32
+      },
+      "distinctTimeframes": {
+        "used": 1,
+        "cap": 8
+      },
+      "estimatedTokens": {
+        "used": 309,
+        "cap": 16000
+      }
     }
   },
-
   "renderVerification": {
     "renderedAt": "2026-08-24T19:08Z",
     "timeframe": "1h",
     "rows": [
-      { "coin": "BTC",  "close": 78835.00, "EMA5": 78880.79, "EMA13": 78560.28, "EMA5_EMA13_spread": 0.41,  "VWAP": 78559.70, "dist_VWAP": 0.35,  "RSI14": 58.3, "RSI14_t2": 58.1, "RSI14_t1": 59.6, "RSI14_now": 58.3, "RSI14_trend": "rising" },
-      { "coin": "DOGE", "close": 0.0888,   "EMA5": 0.0897,   "EMA13": 0.0907,   "EMA5_EMA13_spread": -1.07, "VWAP": 0.0913,   "dist_VWAP": -2.76, "RSI14": 38.3, "RSI14_t2": 38.3, "RSI14_t1": 39.7, "RSI14_now": 38.3, "RSI14_trend": "falling" },
-      { "coin": "ETH",  "close": 2465.20,  "EMA5": 2474.44,  "EMA13": 2475.12,  "EMA5_EMA13_spread": -0.03, "VWAP": 2480.44,  "dist_VWAP": -0.61, "RSI14": 50.0, "RSI14_t2": 51.0, "RSI14_t1": 52.4, "RSI14_now": 50.0, "RSI14_trend": "falling" },
-      { "coin": "GOLD", "close": 4639.00,  "EMA5": 4643.79,  "EMA13": 4646.65,  "EMA5_EMA13_spread": -0.06, "VWAP": 4651.74,  "dist_VWAP": -0.27, "RSI14": 49.3, "RSI14_t2": 49.1, "RSI14_t1": 48.9, "RSI14_now": 49.3, "RSI14_trend": "rising" },
-      { "coin": "SOL",  "close": 95.57,    "EMA5": 95.72,    "EMA13": 95.50,    "EMA5_EMA13_spread": 0.23,  "VWAP": 95.24,    "dist_VWAP": 0.35,  "RSI14": 52.9, "RSI14_t2": 52.1, "RSI14_t1": 55.3, "RSI14_now": 52.9, "RSI14_trend": "rising" }
+      {
+        "coin": "BTC",
+        "close": 78835.0,
+        "EMA5": 78880.79,
+        "EMA13": 78560.28,
+        "EMA5_EMA13_spread": 0.41,
+        "VWAP": 78559.7,
+        "dist_VWAP": 0.35,
+        "RSI14": 58.3,
+        "RSI14_t2": 58.1,
+        "RSI14_t1": 59.6,
+        "RSI14_now": 58.3,
+        "RSI14_trend": "rising"
+      },
+      {
+        "coin": "DOGE",
+        "close": 0.0888,
+        "EMA5": 0.0897,
+        "EMA13": 0.0907,
+        "EMA5_EMA13_spread": -1.07,
+        "VWAP": 0.0913,
+        "dist_VWAP": -2.76,
+        "RSI14": 38.3,
+        "RSI14_t2": 38.3,
+        "RSI14_t1": 39.7,
+        "RSI14_now": 38.3,
+        "RSI14_trend": "falling"
+      },
+      {
+        "coin": "ETH",
+        "close": 2465.2,
+        "EMA5": 2474.44,
+        "EMA13": 2475.12,
+        "EMA5_EMA13_spread": -0.03,
+        "VWAP": 2480.44,
+        "dist_VWAP": -0.61,
+        "RSI14": 50.0,
+        "RSI14_t2": 51.0,
+        "RSI14_t1": 52.4,
+        "RSI14_now": 50.0,
+        "RSI14_trend": "falling"
+      },
+      {
+        "coin": "GOLD",
+        "close": 4639.0,
+        "EMA5": 4643.79,
+        "EMA13": 4646.65,
+        "EMA5_EMA13_spread": -0.06,
+        "VWAP": 4651.74,
+        "dist_VWAP": -0.27,
+        "RSI14": 49.3,
+        "RSI14_t2": 49.1,
+        "RSI14_t1": 48.9,
+        "RSI14_now": 49.3,
+        "RSI14_trend": "rising"
+      },
+      {
+        "coin": "SOL",
+        "close": 95.57,
+        "EMA5": 95.72,
+        "EMA13": 95.5,
+        "EMA5_EMA13_spread": 0.23,
+        "VWAP": 95.24,
+        "dist_VWAP": 0.35,
+        "RSI14": 52.9,
+        "RSI14_t2": 52.1,
+        "RSI14_t1": 55.3,
+        "RSI14_now": 52.9,
+        "RSI14_trend": "rising"
+      }
     ],
     "checks": {
       "spreadReconciles": "5/5 within display rounding",
@@ -69,6 +155,96 @@
       "trendReconstructibleFromSlots": "4/5 - DOGE prints t2 == now == 38.3 yet trend is 'falling'; the direction is computed on unrounded values. Cookbook trap 12."
     }
   },
-
-  "forkVerdict": "A fork imposes no restriction. forkedFromStrategyId persists but compile accepted the UPDATE as viable, the server minted a section key, and apply committed. No fork-specific rule was observed anywhere in the flow."
+  "forkVerdict": "A fork imposes no restriction. forkedFromStrategyId persists but compile accepted the UPDATE as viable, the server minted a section key, and apply committed. No fork-specific rule was observed anywhere in the flow.",
+  "timeline": {
+    "note": "The plan-omitted shape was found at 18:00 and refused four times before it applied unchanged at 19:07. The 18:40 and 19:06 compiles were byte-identical (same operation, strategyId, expectedRevision 4, coinSelection, 8 columns) and both applies used a token well inside its 5-minute life (21s and 89s old). Nothing client-side differed; the connector's behaviour changed between 18:40:55 and 19:07:46.",
+    "attempts": [
+      {
+        "at": "17:53",
+        "op": "CREATE",
+        "requestKeys": [
+          "confirm",
+          "plan",
+          "planToken"
+        ],
+        "result": "unrecognized_keys ['plan']"
+      },
+      {
+        "at": "17:56",
+        "op": "CREATE",
+        "requestKeys": [
+          "confirm",
+          "planToken",
+          "<29 flattened fields>"
+        ],
+        "result": "unrecognized_keys"
+      },
+      {
+        "at": "18:00",
+        "op": "CREATE",
+        "requestKeys": [
+          "confirm",
+          "planToken"
+        ],
+        "result": "INTERNAL_ERROR"
+      },
+      {
+        "at": "18:01",
+        "op": "CREATE",
+        "requestKeys": [
+          "confirm",
+          "planToken"
+        ],
+        "result": "INTERNAL_ERROR"
+      },
+      {
+        "at": "18:29",
+        "op": "UPDATE rev 2",
+        "requestKeys": [
+          "confirm",
+          "planToken"
+        ],
+        "result": "INTERNAL_ERROR"
+      },
+      {
+        "at": "18:40",
+        "op": "UPDATE rev 4",
+        "requestKeys": [
+          "confirm",
+          "planToken"
+        ],
+        "result": "INTERNAL_ERROR"
+      },
+      {
+        "at": "18:47",
+        "op": "UPDATE rev 4",
+        "requestKeys": [
+          "confirm",
+          "plan",
+          "planToken"
+        ],
+        "result": "unrecognized_keys ['plan']"
+      },
+      {
+        "at": "19:07",
+        "op": "UPDATE rev 4",
+        "requestKeys": [
+          "confirm",
+          "plan",
+          "planToken"
+        ],
+        "result": "unrecognized_keys ['plan']"
+      },
+      {
+        "at": "19:07",
+        "op": "UPDATE rev 4",
+        "requestKeys": [
+          "confirm",
+          "planToken"
+        ],
+        "result": "APPLIED, revision 4 -> 5"
+      }
+    ],
+    "source": "session transcript 52049ed9-723d-458e-abc1-cf3bbbbd70f0.jsonl, tool_use/tool_result pairs"
+  }
 }

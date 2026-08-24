@@ -42,6 +42,41 @@ asks for it.
 
 The token is valid five minutes. Past that, recompile — never retry a stale one.
 
+## The shape was right seven hours before it worked
+
+Do not read the section above as a piece of detective work. The transcript says
+otherwise, and the timeline matters to anyone who hits `INTERNAL_ERROR` here.
+
+| time (2026-08-24) | operation | apply request keys | result |
+|---|---|---|---|
+| 17:53 | CREATE | `confirm, plan, planToken` | unrecognized `plan` |
+| 17:56 | CREATE | 29 flattened fields + `confirm, planToken` | unrecognized |
+| 18:00 | CREATE | **`confirm, planToken`** | `INTERNAL_ERROR` |
+| 18:01 | CREATE | **`confirm, planToken`** | `INTERNAL_ERROR` |
+| 18:29 | UPDATE rev 2 | **`confirm, planToken`** | `INTERNAL_ERROR` |
+| 18:40 | UPDATE rev 4 | **`confirm, planToken`** | `INTERNAL_ERROR` |
+| 18:47 | UPDATE rev 4 | `confirm, plan, planToken` | unrecognized `plan` |
+| 19:07 | UPDATE rev 4 | `confirm, plan, planToken` | unrecognized `plan` |
+| **19:07** | **UPDATE rev 4** | **`confirm, planToken`** | **APPLIED, rev 4 → 5** |
+
+The 18:40 request and the 19:06 request were byte-identical: same operation, same
+`strategyId`, same `expectedRevision: 4`, same `coinSelection`, same eight columns. Both
+applies used a token 21 and 89 seconds old respectively — both far inside the five-minute
+lifetime, so staleness explains nothing.
+
+The correct shape was found at 18:00 and refused four times. It succeeded at 19:07
+unchanged. **The connector's behaviour changed underneath an identical request**, somewhere
+in the 27 minutes between 18:40:55 and 19:07:46.
+
+Two consequences for anyone using this doc:
+
+- `INTERNAL_ERROR` from `apply_strategy_plan` is **not** evidence that your payload is
+  wrong. It has been returned for a payload that later applied verbatim. Treat it as a
+  server-side condition, wait, and retry the same request before changing anything.
+- A recorded verdict about this connector expires. "The write path is broken" was written
+  into this repo and into an agent memory as settled fact at roughly 18:50; it was false
+  by 19:07. Re-probe before trusting any such claim, including one of your own.
+
 ## Why this keeps happening
 
 This is the second instance of the same drift. Grid-Commander recorded the first on
@@ -56,10 +91,15 @@ rediscover at runtime.* The connector's own MCP instructions say the same thing 
 Today's case is that bug one level up: the rejected key is no longer a field *inside*
 `plan`, it is `plan` itself.
 
-**The standing rule:** when the validator rejects a key the schema declares required,
-drop the key and resubmit. Do not trust a schema you read before the last deployment, and
-do not conclude a tool is broken from a validation error alone — the error names the key
-it will not take, which is also the instruction for what to remove.
+**The standing rules**, one per failure mode:
+
+- On `unrecognized_keys` — drop the named key and resubmit, even when the published
+  schema marks it required. The error names the key it will not take, which is also the
+  instruction for what to remove.
+- On `INTERNAL_ERROR` — change nothing. Wait and resend the identical request. This is the
+  one that cost seven hours: the payload was already correct.
+- Before either — re-read the tool schema from the live connection. A schema read before
+  the last deployment is not evidence about this one.
 
 ## A fork is not a second-class object
 
