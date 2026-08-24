@@ -17,11 +17,15 @@ to check was `derive_strategy_rule_view`. This is the offline model, derived fro
 
 ## The rule
 
-**Membership is module-level, not column-level.**
+**Membership is module-level, not column-level** — and there are two ways in.
 
 ```
-report metrics  →  signal modules  →  signals
+report metrics    →  signal modules  →  signals
+platform sections →  signal modules  →  signals
 ```
+
+Both routes reach the same **77 of 84** signals. Neither reaches CONFLUENCE or
+COMPARISON.
 
 Any **one** satisfying metric puts the module's **entire** signal set in report.
 `RSI14` alone and `RSI7` alone unlock the identical 8 signals.
@@ -131,16 +135,62 @@ machinery — both of which ship with **zero columns**.
 The toolkit reports these as unreachable rather than guessing. **Don't budget allocation for
 them from column design alone.**
 
-## Platform sections are not modelled
+## Platform sections — measured 2026-08-25
 
-They behave inconsistently:
+> **This section replaces an earlier claim that platform sections "behave
+> inconsistently" and are "not modelled".** Both were wrong, and the second one was
+> expensive. `omega.membership.analyse` iterated a report's sections but only
+> `CustomSection` contributed metrics, so a platform-built report measured as **zero
+> metrics** and `check_allocations` returned a confident `error` — *"the RSI module has
+> no feeding column … Add one of: RSI14, RSI7"* — for a report the connector reports as
+> having all 8 RSI signals in report. Every one of the 25 private strategies on this
+> account is platform-sections-only, so the tool was wrong for **every strategy that
+> exists**. All 25 sections have now been probed one at a time.
 
-- `includeRsi` alone → **8 signals**
-- `includeMtfConfluence` alone → **zero**, despite carrying `MA_ALIGN`, `RSI14` and `ADX` columns
+A platform section feeds **exactly one signal module, or none.** There is nothing
+inconsistent about it:
 
-So a platform section does *not* reliably feed the modules its columns suggest.
-`omega.membership` reads custom sections only. If your report uses platform sections,
-confirm with `derive_strategy_rule_view`.
+| section | signals | module |
+|---|---:|---|
+| `includeRsi` | 8 | RSI |
+| `includeMovingAverages` | 10 | MOVING_AVERAGES |
+| `includeMfi` | 6 | MFI |
+| `includeTrendStrength` | 6 | TREND_STRENGTH |
+| `includeBollingerBands` | 5 | BOLLINGER |
+| `includeMacd` `includeVolume` `includeStochastic` `includeRelativeStrength` `includeSupportResistance` `includeCvd` `includeRegimeContext` `includeStructureZones` | 4 each | MACD, VOLUME, STOCHASTIC, RELATIVE_STRENGTH, SUPPORT_RESISTANCE, CVD, REGIME, PRICE_STRUCTURE |
+| `includeFundingRates` `includeOpenInterest` | 3 each | FUNDING, OPEN_INTEREST |
+| `includeVolatility` `includePerpSpotFlow` | 2 each | VOLATILITY, FLOW_DIVERGENCE |
+
+Seventeen sections, seventeen modules, no overlap. **Every count equals its module's
+full size**, rung variants included — which is why `includeMovingAverages` measures 10
+and not 6. And `includeRsi` alone gives membership *byte-identical* to a single `RSI14`
+column: a section and its metric are interchangeable.
+
+### The eight that feed nothing
+
+```
+includePriceAction   includeSubTimeframe   includeHigherTimeframe   includeMtfConfluence
+includeCrowdIntelligence   includeCvdCrowdConvergence   includeMarketBreadth   includeReferencePairs
+```
+
+The earlier "inconsistency" was `includeMtfConfluence` yielding zero despite carrying
+`MA_ALIGN`, `RSI14` and `ADX`. That is not inconsistency — CONFLUENCE is
+`kind: "synthesis"`, so it fires off *other signals firing* and no section can feed it.
+Same for COMPARISON, which is fed by the comparison coin set. The column list a section
+carries was never the thing that determines membership.
+
+**`includeHigherTimeframe` is the trap.** The section named for the higher timeframe
+feeds **no `htf_*` signal at all**. Those come free with RSI, MOVING_AVERAGES and
+TREND_STRENGTH. Enable `includeHigherTimeframe`, allocate 3 to `htf_rsi_oversold`, and
+you have allocated to a signal that never fires. `check_allocations` now names this
+case specifically.
+
+### When a section is not in the map
+
+If the platform adds a 26th section, `analyse` marks the report **incomplete** and
+`check_allocations` degrades to `warn` — *"cannot determine … confirm with
+`derive_strategy_rule_view`"* — instead of asserting NOT_IN_REPORT. A tool that says
+"I don't know" is safe; one that invents a remedy is the bug this document is about.
 
 ## Using it
 
@@ -172,9 +222,10 @@ for f in check_allocations(report, rules):
 
 ```
 [error] bollinger_lower_touch: NOT_IN_REPORT - the BOLLINGER module has no feeding
-        column, so it never fires and allocation 2 is inert. You have less
-        evidence than the scorecard suggests.
-        Add one of: BB_PCT_B, BB_WIDTH, BB_WIDTH_PCT, BB_TOUCH, CCI20
+        column or section, so this signal never fires and allocation 2 is inert.
+        You have less evidence than the scorecard suggests. To fix, add a column
+        on one of: BB_PCT_B, BB_WIDTH, BB_WIDTH_PCT, BB_TOUCH, CCI20, or enable
+        the includeBollingerBands platform section.
 ```
 
 Or work backwards from the signals you want:
@@ -184,12 +235,21 @@ suggest_columns_for(["cvd_bullish", "mtf_aligned_bull"])
 # {'cvd_bullish': ['CVD', 'BUY_PRESSURE', 'BUY_VOLUME', ...], 'mtf_aligned_bull': []}
 ```
 
-An empty list means unreachable.
+An empty list means unreachable. `suggest_sections_for` answers the same question in
+platform-section terms:
+
+```python
+suggest_sections_for(["cvd_bullish", "mtf_aligned_bull"])
+# {'cvd_bullish': 'includeCvd', 'mtf_aligned_bull': None}
+```
 
 ## Verification
 
-All 22 metric probes replay against the predictor in `tests/test_membership.py`, matching
-the connector's module set and signal set exactly. The 7-column panel from
+All 22 metric probes replay against the predictor in `tests/test_membership.py`, and all
+25 platform-section probes replay in `tests/test_platform_sections.py`, matching
+the connector's module set and signal set exactly. The section tests check the
+**measured** signal count against the derived module size, so they cross-check
+measurement against derivation rather than derivation against itself. The 7-column panel from
 `examples/build_section.py` reproduces the connector's recorded 15 signals. The map is also
 checked for internal consistency: 84 distinct signals, no metric feeding two modules, and
 mapped ∪ dead = all 86 metrics.
