@@ -1,0 +1,22 @@
+[project]
+name = "omega"
+version = "0.1.0"
+description = "BattleGrid Strategy Builder: contract corpus, classification, and local column-authoring toolkit"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["omega*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

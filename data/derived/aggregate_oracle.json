@@ -1,0 +1,77 @@
+{
+  "_note": "Recorded simulate_aggregate_score responses used as the oracle for omega.aggregate. Formula confirmed: aggregate = SUM(score*alloc)/SUM(alloc); attribution = (score*alloc)/SUM(score*alloc); routes iff aggregate >= gate.",
+  "cases": [
+    {
+      "id": "equal-scores-across-all-tiers",
+      "gate": 0.5,
+      "signals": [
+        {"label": "A_alloc0", "score": 1, "allocation": 0},
+        {"label": "B_alloc1", "score": 1, "allocation": 1},
+        {"label": "C_alloc2", "score": 1, "allocation": 2},
+        {"label": "D_alloc3", "score": 1, "allocation": 3}
+      ],
+      "expect": {
+        "aggregateScore": 1,
+        "aggregateScorePercent": 100,
+        "wouldRoute": true,
+        "attributionPercent": {"A_alloc0": 0, "B_alloc1": 17, "C_alloc2": 33, "D_alloc3": 50}
+      },
+      "teaches": "Allocation tier IS the weight. Tier 0 contributes nothing."
+    },
+    {
+      "id": "denominator-is-sum-of-allocations",
+      "gate": 0.5,
+      "signals": [
+        {"label": "X", "score": 1, "allocation": 3},
+        {"label": "Y", "score": 0, "allocation": 1}
+      ],
+      "expect": {
+        "aggregateScore": 0.75,
+        "aggregateScorePercent": 75,
+        "wouldRoute": true,
+        "attributionPercent": {"X": 100, "Y": 0}
+      },
+      "teaches": "(1*3 + 0*1) / (3+1) = 0.75 - the denominator is total allocation, not total contribution."
+    },
+    {
+      "id": "mean-reversion-panel-whatif",
+      "gate": 0.65,
+      "signals": [
+        {"label": "rsi_oversold", "score": 0.9, "allocation": 3},
+        {"label": "bollinger_lower_touch", "score": 0.7, "allocation": 2},
+        {"label": "cvd_bull_divergence", "score": 0.4, "allocation": 2},
+        {"label": "funding_extreme_negative", "score": 0.85, "allocation": 1},
+        {"label": "regime_alignment", "score": 1, "allocation": 0}
+      ],
+      "expect": {
+        "aggregateScore": 0.7187499999999999,
+        "aggregateScorePercent": 72,
+        "wouldRoute": true,
+        "attributionPercent": {
+          "rsi_oversold": 47,
+          "bollinger_lower_touch": 24,
+          "cvd_bull_divergence": 14,
+          "funding_extreme_negative": 15,
+          "regime_alignment": 0
+        }
+      },
+      "teaches": "A tier-1 signal at 0.85 (15%) outweighs a tier-2 signal at 0.40 (14%). Score and weight trade off."
+    }
+  ],
+
+  "reportMembership": {
+    "_note": "derive_strategy_rule_view response for the 7-column MR Stretch Panel in examples/build_section.py. Demonstrates that signals carry REPORT DEPENDENCIES: allocating weight to a NOT_IN_REPORT signal is wasted, because the report gives it nothing to read.",
+    "sectionColumns": ["VWAP.distance", "VWAP.distance->rank", "RSI14.trajectory", "RSI14.classifyZone", "CLOSE.efficiency@lower", "FUNDING_RATE.aggregate", "BUY_PRESSURE.trajectory"],
+    "inReport": [
+      "rsi_oversold", "rsi_overbought", "rsi_bull_divergence", "rsi_bear_divergence",
+      "funding_extreme_positive", "funding_extreme_negative", "funding_rate_flipping",
+      "cvd_bullish", "cvd_bearish", "cvd_bull_divergence", "cvd_bear_divergence",
+      "htf_rsi_oversold", "htf_rsi_overbought", "ltf_rsi_oversold", "ltf_rsi_overbought"
+    ],
+    "inReportCount": 15,
+    "totalSignals": 84,
+    "notableAbsence": "bollinger_lower_touch is NOT_IN_REPORT - the panel carries no Bollinger column, so any allocation given to that signal is dead weight.",
+    "reportDefaultAllocation": 1,
+    "lesson": "Always run derive_strategy_rule_view after designing a report and BEFORE assigning allocations. Report membership is not derivable from the column list by inspection."
+  }
+}

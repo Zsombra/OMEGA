@@ -1,0 +1,37 @@
+{
+  "metric": "SPOT_CVD",
+  "label": "Spot CVD (composite)",
+  "code": "spotCVD",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    }
+  ],
+  "spreadOperands": [
+    "MACD",
+    "ATR",
+    "BB_WIDTH",
+    "CVD"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "metric": "PERP_SPOT_STRENGTH",
+  "label": "Perp/spot strength",
+  "code": "perpSpotStr",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "high",
+      "moderate",
+      "low"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

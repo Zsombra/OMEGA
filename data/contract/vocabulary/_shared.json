@@ -1,0 +1,40 @@
+{
+  "_note": "Category-invariant blocks returned identically by list_strategy_vocabulary for every category. Captured from the 'derived' category response.",
+  "transforms": [
+    {"id":"value","label":"Value"},
+    {"id":"trajectory","label":"Trajectory"},
+    {"id":"distance","label":"Distance from price"},
+    {"id":"spread","label":"Spread vs metric"},
+    {"id":"efficiency","label":"Efficiency (ER)"},
+    {"id":"bandTouch","label":"Band touch"},
+    {"id":"classifyZone","label":"Zone label"},
+    {"id":"maxShare","label":"Largest share"},
+    {"id":"rank","label":"Peer rank"},
+    {"id":"crossDetect","label":"Cross detect"},
+    {"id":"count","label":"Zone count"},
+    {"id":"nearestZoneType","label":"Nearest zone type"},
+    {"id":"nearestZoneRange","label":"Nearest zone range"},
+    {"id":"nearestZoneDist","label":"Nearest zone distance"},
+    {"id":"nearestZoneAge","label":"Nearest zone age"},
+    {"id":"aggregate","label":"Windowed aggregate"}
+  ],
+  "timeframeRefs": [
+    {"rel":"anchor","resolvedByAnchor":{"5m":"5m","15m":"15m","1h":"1h","4h":"4h"}},
+    {"rel":"lower","resolvedByAnchor":{"5m":"1m","15m":"5m","1h":"15m","4h":"1h"}},
+    {"rel":"regime","resolvedByAnchor":{"5m":null,"15m":null,"1h":null,"4h":null}}
+  ],
+  "budgets": {
+    "sections": 32,
+    "sectionColumns": 32,
+    "columnLookback": 32,
+    "distinctTimeframes": 8,
+    "strategyConditions": 16,
+    "conditionClauses": 16,
+    "estimatedTokens": 16000
+  },
+  "previewExecutionLimits": {"maxResultBytes": 256000, "deadlineMs": 15000},
+  "timeframes": ["5m","15m","1h","4h"],
+  "rankedTimeframes": ["1m","5m","15m","1h","4h","1d"],
+  "absoluteTimeframes": ["1m","3m","5m","15m","30m","1h","2h","4h","8h","12h","1d","3d","1w"],
+  "nullSentinel": "—"
+}

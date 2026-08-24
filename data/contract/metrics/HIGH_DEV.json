@@ -1,0 +1,47 @@
+{
+  "metric": "HIGH_DEV",
+  "label": "Bar high vs open",
+  "code": "highDev",
+  "family": "volatility",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "PPO",
+    "ROC12",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

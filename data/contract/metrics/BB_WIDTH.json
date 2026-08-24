@@ -1,0 +1,39 @@
+{
+  "metric": "BB_WIDTH",
+  "label": "Bollinger width",
+  "code": "BBwidth",
+  "family": "volatility",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    }
+  ],
+  "spreadOperands": [
+    "MACD",
+    "ATR",
+    "CVD",
+    "SPOT_CVD"
+  ]
+}

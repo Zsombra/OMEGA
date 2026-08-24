@@ -1,0 +1,58 @@
+{
+  "metric": "RSI14",
+  "label": "RSI (14)",
+  "code": "RSI14",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "classifyZone"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "RSI7",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "CCI20",
+    "ADX"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

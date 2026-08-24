@@ -1,0 +1,33 @@
+{
+  "metric": "STRUCT_ZONES",
+  "label": "Structure zones",
+  "code": "zones",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "entitySet",
+    "entity": "structureZone"
+  },
+  "outputKind": "entitySet",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "count"
+    },
+    {
+      "id": "nearestZoneType",
+      "sideRequired": true
+    },
+    {
+      "id": "nearestZoneRange",
+      "sideRequired": true
+    },
+    {
+      "id": "nearestZoneDist",
+      "sideRequired": true
+    },
+    {
+      "id": "nearestZoneAge",
+      "sideRequired": true
+    }
+  ]
+}

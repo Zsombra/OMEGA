@@ -1,0 +1,43 @@
+{
+  "extractedOn": "2026-08-24",
+  "source": "BattleGrid MCP connector (account ANBUJEFF), read-only tools only",
+  "warning": "This is a dated snapshot of a LIVE system. The connector's instructions state that cached capability lists are not authoritative after a deployment. Re-run the extraction before trusting the matrix against a changed platform.",
+  "toolsUsed": [
+    "list_strategy_categories",
+    "list_strategy_vocabulary",
+    "get_metric_construction_hints",
+    "get_strategy_column_contract",
+    "derive_strategy_rule_view",
+    "simulate_aggregate_score",
+    "list_strategies"
+  ],
+  "writeToolsUsed": [],
+  "counts": {
+    "metrics": 86,
+    "families": 10,
+    "authorableTransforms": 16,
+    "platformSectionTemplates": 25,
+    "platformTemplateColumns": 124,
+    "composabilityCells": 1376,
+    "composabilityLegal": 322,
+    "composabilityDensityPct": 23.4,
+    "platformPrivilegedPairInstances": 8,
+    "platformPrivilegedPairsUnique": 4,
+    "compilerProbes": 20,
+    "aggregateOracleCases": 3
+  },
+  "verification": {
+    "metricRosterMatchesToolSchemaEnum": true,
+    "familyCountsReconcileWithConnector": true,
+    "compilerProbesMatchingValidator": "20/20",
+    "spreadGraphAsymmetricEdges": 0
+  },
+  "accountStateAtExtraction": {
+    "privateStrategyQuota": {
+      "used": 24,
+      "limit": 25,
+      "remaining": 1
+    },
+    "note": "No strategy was created, updated, forked or archived. Quota untouched."
+  }
+}

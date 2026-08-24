@@ -1,0 +1,58 @@
+{
+  "metric": "BB_WIDTH_PCT",
+  "label": "Bollinger width % of middle",
+  "code": "bbWidthPct",
+  "family": "volatility",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "PPO",
+    "ROC12",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "ATR_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

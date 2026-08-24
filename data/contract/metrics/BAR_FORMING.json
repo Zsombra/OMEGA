@@ -1,0 +1,20 @@
+{
+  "metric": "BAR_FORMING",
+  "label": "Bar state",
+  "code": "bar",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "forming",
+      "closed"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

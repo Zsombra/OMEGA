@@ -1,0 +1,50 @@
+{
+  "metric": "BB_PCT_B",
+  "label": "Bollinger %B",
+  "code": "pctB",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "fraction",
+    "precision": 2,
+    "range": {
+      "min": 0,
+      "max": 1
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "BUY_PRESSURE"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

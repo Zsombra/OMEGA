@@ -1,0 +1,21 @@
+{
+  "metric": "SMART_RETAIL",
+  "label": "Smart vs retail",
+  "code": "smartRetail",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "hidden accumulation",
+      "hidden distribution",
+      "confirmed"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "metric": "RVOL",
+  "label": "RVOL (relative volume)",
+  "code": "RVOL",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "ratio",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ],
+  "_note": "No spread transform at all - the 'ratio' unit has no operand pool."
+}

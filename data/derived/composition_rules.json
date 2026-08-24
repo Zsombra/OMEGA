@@ -1,0 +1,92 @@
+{
+  "_note": "Rules synthesised from live get_strategy_column_contract responses (see compiler_probes.json). These govern composition ABOVE the per-metric transform whitelist and are not visible from get_metric_construction_hints alone.",
+
+  "sectionTimeframe": {
+    "rule": "A timeframe-inert (timeframeMode == 'timeless') metric may NOT appear in a custom section that sets an explicit `timeframe` override. It accepts only the section anchor.",
+    "errorCode": "REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED",
+    "contractFlags": {
+      "candle": {"requiresSectionTimeframe": true, "sectionTimeframeOverrideAllowed": true},
+      "timeless": {"requiresSectionTimeframe": false, "sectionTimeframeOverrideAllowed": false}
+    },
+    "consequence": "Mixing candle and timeless metrics in one custom section forces that section to omit its timeframe override. To pin a section to an explicit timeframe, every column in it must be candle-backed."
+  },
+
+  "timeframeResolution": {
+    "anchors": ["5m", "15m", "1h", "4h"],
+    "rel": {
+      "anchor": {"5m": "5m", "15m": "15m", "1h": "1h", "4h": "4h"},
+      "lower": {"5m": "1m", "15m": "5m", "1h": "15m", "4h": "1h"},
+      "regime": {"5m": null, "15m": null, "1h": null, "4h": null}
+    },
+    "note": "For timeless metrics `resolved` is always null regardless of the requested rel."
+  },
+
+  "headerNaming": {
+    "base": "the metric's `code` field, not its METRIC key (e.g. VWAP->VWAP, BUY_PRESSURE->buyPres, CLOSE_CHANGE->closeChg, STRUCT_ZONES->zones)",
+    "relInfix": {"anchor": "", "lower": "_ltf_", "regime": "_htf_"},
+    "patterns": {
+      "value": "{code}",
+      "trajectory": "{code}_t{n-1} … {code}_t1, {code}_now, {code}_trend",
+      "distance": "dist_{code}",
+      "spread": "{code}_{operandCode}_spread",
+      "efficiency": "{code}_er",
+      "maxShare": "{code}_maxShare",
+      "aggregate": "{code}_mean{window}",
+      "bandTouch": "{code}_touch",
+      "rank": "{code}_rank_{ordering}",
+      "chainedRank": "{stage1Header}_rank_{ordering}",
+      "nearestZone*": "{code}_{side}_{dist|type|range|age}"
+    },
+    "warning": "Header names are NOT derivable from the metric key alone. Always confirm via get_strategy_column_contract before writing a strategy condition that references a header."
+  },
+
+  "rankUniverses": {
+    "trackedUniverse": {
+      "appliesTo": "market metrics (price, momentum, trend, volatility, volumeFlow, derivatives, structure)",
+      "semantics": "ordinal across the platform's tracked universe, rendered rank/universe-size; the standing as of the last close, unchanged until the next one"
+    },
+    "reportScoped": {
+      "appliesTo": "crowd metrics (CROWD_*)",
+      "semantics": "ordinal across THIS REPORT's coins, rendered rank/report-size; computed per request, so it reflects the coins in this report and not the wider market"
+    },
+    "warning": "Two different denominators behind one transform. A crowd rank of 3 means something different from a VWAP-distance rank of 3."
+  },
+
+  "rankingDoctrine": {
+    "principle": "Raw price-unit metrics never rank. An ordinal over a price level sorts by token denomination - BTC beats DOGE every bar whatever the metric measures.",
+    "remedy": "Rank the COMPOSITION, not the level: `VWAP x distance x rank` earns the `dist_VWAP` ordinal without VWAP itself ranking.",
+    "fallback": "Where no composition can produce the quantity, a catalogued percent twin is the remedy, but only with a named consumer (the `atrPct` precedent).",
+    "sameLogicApplies": "raw base-unit VOLUME also has no rank; use RVOL (a ratio) instead."
+  },
+
+  "chaining": {
+    "stages": 2,
+    "field": "chainedTransformId",
+    "generalSuccessors": ["trajectory", "aggregate", "efficiency"],
+    "rankSuccessor": {
+      "availableOn": "distance (all price-level metrics) and spread (only where rankableSpreadOperands names the operand)",
+      "orderingWhitelist": "chainedRankOrderings, which is separate from the metric's top-level rankOrderings"
+    },
+    "formulaComposition": "The compiled `formula` is the two stages concatenated with '; '.",
+    "knownDocDefect": "For a chained spread->trajectory the compiler's formula text reads 'slots = last N non-null EMA5 values' when the slots actually hold the SPREAD series, not the base metric. Cosmetic in the glossary only; the computed values are correct."
+  },
+
+  "fanOut": {
+    "rule": "Only `trajectory` fans out. Every other transform emits exactly one output header.",
+    "trajectoryOutputs": "window + 1 (window value slots plus one _trend direction output)",
+    "typePropagation": "Slot outputs inherit the BASE metric's nativeOutput kind (numeric stays numeric; classification stays classification with full vocab). The _trend output is always kind 'direction' with vocabulary [rising, falling, flat].",
+    "budgetImpact": "A section of 32 trajectory columns at window 8 emits 32 x 9 = 288 headers. The 32-column limit is not the binding constraint - the ~16000 estimatedTokens budget is."
+  },
+
+  "conditionOperators": {
+    "numeric": ["lt", "lte", "gte", "gt", "between"],
+    "rank": ["lt", "lte", "gte", "gt", "between"],
+    "classification": ["is", "in"],
+    "direction": ["is", "in"],
+    "event": ["is", "in"],
+    "boolean": ["is"],
+    "date": ["lt", "lte", "gte", "gt", "between"]
+  },
+
+  "nullSentinel": "—"
+}

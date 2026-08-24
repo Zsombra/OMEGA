@@ -1,0 +1,202 @@
+# 06 · Cookbook
+
+Recipes that compile, and the traps that don't.
+
+---
+
+## Recipes
+
+### Normalised stretch — "how far, relative to peers"
+
+Raw distance is comparable across assets (it's a percentage); its *ordinal* tells you
+whether this coin is the outlier right now.
+
+```json
+{"metric":"VWAP","transformId":"distance","timeframe":{"rel":"anchor"}}
+{"metric":"VWAP","transformId":"distance","chainedTransformId":"rank",
+ "timeframe":{"rel":"anchor"},"ordering":"far"}
+```
+→ `dist_VWAP`, `dist_VWAP_rank_far`
+
+Swap `VWAP` for any of `SMA20 SMA50 SMA200 EMA5 EMA13 EMA20 SWING_HIGH SWING_LOW`. Those
+nine — the moving averages, the swings and VWAP — are the **only** metrics whose `distance`
+chains into `rank`, and they allow all four orderings.
+
+`OPEN HIGH LOW CLOSE` and the timeless price reads (`LAST MARK ORACLE SPOT_CLOSE_*`) offer
+`distance` but **not** `distance → rank`: a bar's own extreme isn't a reference level the
+platform ranks a universe against.
+
+### Impulse vs chop — was the move clean?
+
+```json
+{"metric":"CLOSE","transformId":"efficiency","timeframe":{"rel":"lower"},
+ "window":6,"bars":"closed"}
+```
+→ `close_ltf_er`, a fraction in [0,1]. 1 is a straight line, near 0 is chop.
+
+Efficiency is the most underused transform in the catalogue — it separates *"price moved
+3%"* from *"price moved 3% in a straight line"*, which is usually the distinction that
+matters. Remember `window` counts **points**: N moves needs `window` N+1.
+
+### Momentum trajectory with an honest read
+
+```json
+{"metric":"RSI14","transformId":"trajectory","timeframe":{"rel":"anchor"},
+ "window":4,"bars":"closed"}
+```
+→ `RSI14_t3 RSI14_t2 RSI14_t1 RSI14_now RSI14_trend` (5 headers)
+
+`bars:"closed"` excludes the forming bar. On an oscillator this matters less than on a
+volume metric, but it makes the series comparable bar-to-bar.
+
+### Fast/slow separation, and its rank
+
+```json
+{"metric":"EMA5","transformId":"spread","chainedTransformId":"trajectory",
+ "timeframe":{"rel":"anchor"},"inputs":[{"metric":"EMA13"}],"window":5}
+{"metric":"EMA5","transformId":"spread","chainedTransformId":"rank",
+ "timeframe":{"rel":"anchor"},"inputs":[{"metric":"EMA13"}],"ordering":"far"}
+```
+
+`EMA13` is the **only** operand that chains into `rank` here
+(`rankableSpreadOperands: ["EMA13"]`). Any other operand is rejected.
+
+### Funding pressure over a window
+
+```json
+{"metric":"FUNDING_RATE","transformId":"aggregate","timeframe":{"rel":"anchor"},"window":24}
+```
+→ `rate_mean24`
+
+`aggregate` computes a **mean** and nothing else — there is no sum/min/max variant. Only
+`FUNDING_RATE`, `OI` and `SPOT_CVD` offer it directly (others reach it via chaining).
+
+**This column forces its section to have no `timeframe` override.**
+
+### Concentration — was it one bar or many?
+
+```json
+{"metric":"TRADES","transformId":"maxShare","timeframe":{"rel":"anchor"},
+ "window":24,"bars":"closed"}
+```
+→ `trades_maxShare` in [0,1]. 1 means one bar carried everything; 1/24 is perfectly even.
+
+A clean way to distinguish a single print from sustained participation.
+
+### Room to structure
+
+```json
+{"metric":"STRUCT_ZONES","transformId":"nearestZoneDist","timeframe":{"rel":"regime"},"side":"support"}
+{"metric":"STRUCT_ZONES","transformId":"nearestZoneAge","timeframe":{"rel":"regime"},"side":"support"}
+{"metric":"STRUCT_ZONES","transformId":"count","timeframe":{"rel":"regime"}}
+```
+
+`side` is **required** on every `nearestZone*` transform. Pair distance with age — a zone
+detected 40 hours ago is a different object from one detected 40 minutes ago.
+
+### Band proximity without Bollinger columns
+
+```json
+{"metric":"OPEN","transformId":"bandTouch","timeframe":{"rel":"anchor"}}
+```
+→ `open_touch` ∈ `upper | lower | none`
+
+`bandTouch` is authorable on the **13 candle-backed** price-unit metrics — `OPEN HIGH LOW
+CLOSE`, the six moving averages, both swings and `VWAP` — and used by **zero** platform
+templates. The five timeless price reads (`LAST MARK ORACLE SPOT_CLOSE_CB SPOT_CLOSE_BN`)
+don't offer it: bands are computed on a candle series. If you want something the preset
+sections don't give you, start here.
+
+---
+
+## Traps
+
+### 1. The forming bar ramps from zero
+
+`bars` defaults to `"all"`, which includes the live forming bar. On `VOLUME`, `TRADES`,
+`BUY_VOLUME`, `SELL_VOLUME`, `BUY_TRADES`, `SELL_TRADES` the forming bar's quantity climbs
+from zero across the interval, so every fresh bar reads as a participation collapse.
+
+**Fix:** `bars: "closed"` on any raw per-bar quantity. `omega.validate` raises
+`FORMING_BAR_RAMP`.
+
+### 2. Raw base-unit volume is not comparable across assets
+
+44,723 BTC beside 2,100,000 DOGE compares *denominations*, not activity. This is why
+`VOLUME` has no `rank` at all.
+
+**Fix:** use `RVOL` (a ratio) for cohort columns; keep raw `VOLUME` for single-coin
+thresholds only.
+
+### 3. Ranking a price level
+
+Same disease. An ordinal over a price sorts by token denomination — BTC wins every bar.
+The engine refuses.
+
+**Fix:** rank the *composition*: `VWAP × distance × rank`, not `VWAP × rank`.
+
+### 4. `rank` orderings are per-metric policy
+
+`CLOSE_CHANGE` offers only `far`/`near`; `FUNDING_RATE` — also signed — offers all four.
+There is no rule you can derive from sign or range. Check `rankOrderings`.
+
+### 5. Mixing timeless metrics into a pinned section
+
+One `FUNDING_RATE` column silently invalidates a section's `timeframe` override.
+
+**Fix:** two sections — one pinned and fully candle-backed, one on the anchor.
+
+### 6. Correlated oscillators are not independent evidence
+
+The platform says this outright: *"Stacking several correlated oscillators as independent
+evidence."* `RSI14`, `RSI7`, `STOCH_K`, `STOCH_D`, `MFI14`, `CCI20` largely agree. Six
+oscillator columns is one piece of evidence at six times the token cost — and if you then
+allocate weight to six oscillator signals, you have six-counted a single observation.
+
+**Fix:** one or two oscillators, then spend the budget on an *independent* axis — flow,
+derivatives, structure.
+
+### 7. Trajectory windows eat the token budget
+
+32 columns × `window: 8` = 288 headers from one section.
+
+**Fix:** run `omega.fanout.cost_report` before submitting. Reserve wide trajectories for
+the two or three series whose *shape* matters; read the rest with `value`.
+
+### 8. Weighting a signal your report doesn't feed
+
+A `NOT_IN_REPORT` signal at tier 3 adds 3 to the denominator and ~0 to the numerator — it
+actively suppresses your aggregate.
+
+**Fix:** `derive_strategy_rule_view` after report design, before allocation.
+
+### 9. Assuming header names
+
+`CLOSE_CHANGE` → `closeChg`, and `rel:lower` inserts `_ltf_`. Conditions reference headers
+by name.
+
+**Fix:** `omega.fanout.outputs_for()` predicts them; `get_strategy_column_contract` confirms.
+
+### 10. Silent nulls
+
+A flat series has no `efficiency` (null, not 0). A zero-total window has no `maxShare`.
+`spread` nulls when the *second* operand is zero. Nulls render as `—` and your conditions
+must decide what that means — an absent reading is not a low reading.
+
+---
+
+## Workflow
+
+```
+ 1. sketch columns              omega.types.Column
+ 2. validate offline            omega.validate.validate_report      ← catches 1–5, 7, 9
+ 3. cost it                     omega.fanout.cost_report            ← catches 7
+ 4. confirm compilation         get_strategy_column_contract        ← confirms 9
+ 5. check signal membership     derive_strategy_rule_view           ← catches 8
+ 6. tune allocations            omega.aggregate + simulate_aggregate_score
+ 7. emit payload                omega.emit.emit                     ← writes to out/
+ 8. submit                      deliberate, human-initiated, separate
+```
+
+Steps 1–3 and 6–7 are offline and free. Steps 4–5 are read-only connector calls. Step 8 is
+the only one that touches your account.

@@ -1,0 +1,23 @@
+{
+  "metric": "PERP_SPOT_FLOW",
+  "label": "Perp/spot flow",
+  "code": "perpSpotFlow",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "confirmed_bull",
+      "confirmed_bear",
+      "perp_led_fragile",
+      "spot_led_accumulation",
+      "neutral"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

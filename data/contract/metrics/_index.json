@@ -1,0 +1,111 @@
+{
+  "metricCount": 86,
+  "byFamily": {
+    "crowd": [
+      "CROWD_ACC",
+      "CROWD_ACC_LIVE",
+      "CROWD_CAPT",
+      "CROWD_CAPT_LIVE",
+      "CROWD_PICK",
+      "CROWD_PICK_LIVE",
+      "CROWD_UPBIAS",
+      "CROWD_UPBIAS_LIVE",
+      "SETTLED_AT"
+    ],
+    "derivatives": [
+      "FUNDING_ANN",
+      "FUNDING_LABEL",
+      "FUNDING_RATE",
+      "OI",
+      "OI_CHG",
+      "OI_PX_REGIME",
+      "OI_VELOCITY"
+    ],
+    "derived": [
+      "CAPTAIN_CONF",
+      "CONFIDENCE",
+      "FLOW_ALIGN",
+      "PERP_SPOT_CONFIRMS",
+      "PERP_SPOT_FLOW",
+      "PERP_SPOT_STRENGTH",
+      "SMART_RETAIL"
+    ],
+    "momentum": [
+      "CCI20",
+      "CHG_15M",
+      "CHG_1H",
+      "CHG_24H",
+      "CHG_4H",
+      "CHG_5M",
+      "CLOSE_CHANGE",
+      "MACD",
+      "MFI14",
+      "PPO",
+      "ROC12",
+      "RSI14",
+      "RSI7",
+      "STOCH_D",
+      "STOCH_K"
+    ],
+    "price": [
+      "BAR_FORMING",
+      "CLOSE",
+      "HIGH",
+      "LAST",
+      "LOW",
+      "MARK",
+      "OPEN",
+      "ORACLE",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB"
+    ],
+    "regime": [
+      "REGIME_MOM",
+      "REGIME_TREND",
+      "REGIME_VOL"
+    ],
+    "structure": [
+      "BB_PCT_B",
+      "BB_TOUCH",
+      "PRICE_ZONE",
+      "STRUCT_ZONES",
+      "SWING_HIGH",
+      "SWING_LOW",
+      "VWAP"
+    ],
+    "trend": [
+      "ADX",
+      "EMA13",
+      "EMA20",
+      "EMA5",
+      "EMA_CROSS",
+      "MA_ALIGN",
+      "SMA20",
+      "SMA200",
+      "SMA50"
+    ],
+    "volatility": [
+      "ATR",
+      "ATR_PCT",
+      "BB_WIDTH",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV"
+    ],
+    "volumeFlow": [
+      "BUY_PRESSURE",
+      "BUY_TRADES",
+      "BUY_VOLUME",
+      "CVD",
+      "NOTIONAL_VOLUME_1D",
+      "OBV",
+      "RVOL",
+      "SELL_TRADES",
+      "SELL_VOLUME",
+      "SPOT_CVD",
+      "TRADES",
+      "VOLUME",
+      "VOL_SMA20"
+    ]
+  }
+}

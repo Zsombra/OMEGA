@@ -1,0 +1,43 @@
+{
+  "metric": "OI",
+  "label": "Open interest",
+  "code": "OI",
+  "family": "derivatives",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "usdLargeCount",
+    "precision": 1
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "NOTIONAL_VOLUME_1D"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "metric": "CCI20",
+  "label": "CCI (20)",
+  "code": "CCI",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "ADX"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ],
+  "_note": "Unbounded oscillator (no range in nativeOutput) -> classifyZone NOT authorable, though platform template includeBollingerBands uses CCI20 x classifyZone."
+}

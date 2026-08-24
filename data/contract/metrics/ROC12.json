@@ -1,0 +1,61 @@
+{
+  "metric": "ROC12",
+  "label": "ROC (12)",
+  "code": "ROC",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "PPO",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

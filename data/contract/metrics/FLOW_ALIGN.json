@@ -1,0 +1,22 @@
+{
+  "metric": "FLOW_ALIGN",
+  "label": "Flow alignment",
+  "code": "flowAlign",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "aligned bullish",
+      "aligned bearish",
+      "divergent",
+      "neutral"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

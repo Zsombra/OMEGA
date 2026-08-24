@@ -1,0 +1,21 @@
+{
+  "metric": "CONFIDENCE",
+  "label": "Convergence confidence",
+  "code": "conf",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "high",
+      "moderate",
+      "low"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

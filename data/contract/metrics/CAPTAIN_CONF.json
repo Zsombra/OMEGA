@@ -1,0 +1,16 @@
+{
+  "metric": "CAPTAIN_CONF",
+  "label": "Captain confidence",
+  "code": "captainConf",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

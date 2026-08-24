@@ -1,0 +1,44 @@
+{
+  "metric": "MARK",
+  "label": "Mark price",
+  "code": "mark",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "distance"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
+  ],
+  "spreadOperands": [
+    "OPEN",
+    "HIGH",
+    "LOW",
+    "CLOSE",
+    "LAST",
+    "ORACLE",
+    "SPOT_CLOSE_CB",
+    "SPOT_CLOSE_BN",
+    "SMA20",
+    "SMA50",
+    "SMA200",
+    "EMA5",
+    "EMA13",
+    "EMA20",
+    "SWING_HIGH",
+    "SWING_LOW",
+    "VWAP"
+  ]
+}

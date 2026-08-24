@@ -1,0 +1,44 @@
+{
+  "metric": "ORACLE",
+  "label": "Oracle price",
+  "code": "oracle",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "distance"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
+  ],
+  "spreadOperands": [
+    "OPEN",
+    "HIGH",
+    "LOW",
+    "CLOSE",
+    "LAST",
+    "MARK",
+    "SPOT_CLOSE_CB",
+    "SPOT_CLOSE_BN",
+    "SMA20",
+    "SMA50",
+    "SMA200",
+    "EMA5",
+    "EMA13",
+    "EMA20",
+    "SWING_HIGH",
+    "SWING_LOW",
+    "VWAP"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "metric": "OI_VELOCITY",
+  "label": "OI velocity",
+  "code": "oiVel",
+  "family": "derivatives",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "accelerating",
+      "decelerating",
+      "steady"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

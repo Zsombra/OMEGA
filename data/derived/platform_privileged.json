@@ -1,0 +1,121 @@
+{
+  "_note": "Pairs referenced by platform section templates that are ABSENT from the metric's authorable transform whitelist. Custom columns using these are rejected with REPORT_COLUMN_PAIR_UNSUPPORTED.",
+  "pairCount": 8,
+  "pairs": [
+    {
+      "metric": "CCI20",
+      "transform": "classifyZone",
+      "usedBySection": "includeBollingerBands",
+      "sectionTitle": "Bollinger Bands",
+      "authorableAlternatives": [
+        "efficiency",
+        "rank",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    },
+    {
+      "metric": "ADX",
+      "transform": "classifyState",
+      "usedBySection": "includeTrendStrength",
+      "sectionTitle": "Trend Strength",
+      "authorableAlternatives": [
+        "classifyZone",
+        "efficiency",
+        "maxShare",
+        "rank",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    },
+    {
+      "metric": "MFI14",
+      "transform": "classifyState",
+      "usedBySection": "includeMfi",
+      "sectionTitle": "Money Flow Index",
+      "authorableAlternatives": [
+        "classifyZone",
+        "efficiency",
+        "maxShare",
+        "rank",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    },
+    {
+      "metric": "CVD",
+      "transform": "classifyState",
+      "usedBySection": "includeCvd",
+      "sectionTitle": "Volume Delta (CVD)",
+      "authorableAlternatives": [
+        "efficiency",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    },
+    {
+      "metric": "ADX",
+      "transform": "classifyState",
+      "usedBySection": "includeHigherTimeframe",
+      "sectionTitle": "Higher Timeframe Context",
+      "authorableAlternatives": [
+        "classifyZone",
+        "efficiency",
+        "maxShare",
+        "rank",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    },
+    {
+      "metric": "ADX",
+      "transform": "classifyState",
+      "usedBySection": "includeMtfConfluence",
+      "sectionTitle": "Multi-Timeframe Confluence",
+      "authorableAlternatives": [
+        "classifyZone",
+        "efficiency",
+        "maxShare",
+        "rank",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    },
+    {
+      "metric": "ADX",
+      "transform": "classifyState",
+      "usedBySection": "includeMtfConfluence",
+      "sectionTitle": "Multi-Timeframe Confluence",
+      "authorableAlternatives": [
+        "classifyZone",
+        "efficiency",
+        "maxShare",
+        "rank",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    },
+    {
+      "metric": "ADX",
+      "transform": "classifyState",
+      "usedBySection": "includeMtfConfluence",
+      "sectionTitle": "Multi-Timeframe Confluence",
+      "authorableAlternatives": [
+        "classifyZone",
+        "efficiency",
+        "maxShare",
+        "rank",
+        "spread",
+        "trajectory",
+        "value"
+      ]
+    }
+  ]
+}

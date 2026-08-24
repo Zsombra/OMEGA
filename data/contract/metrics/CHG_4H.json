@@ -1,0 +1,38 @@
+{
+  "metric": "CHG_4H",
+  "label": "Change (4h)",
+  "code": "chg4h",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
+  ],
+  "spreadOperands": [
+    "PPO",
+    "ROC12",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_24H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ]
+}

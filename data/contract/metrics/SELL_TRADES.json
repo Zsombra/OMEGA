@@ -1,0 +1,50 @@
+{
+  "metric": "SELL_TRADES",
+  "label": "Sell trades",
+  "code": "sellTr",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0,
+    "range": {
+      "min": 0
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "TRADES",
+    "BUY_TRADES"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

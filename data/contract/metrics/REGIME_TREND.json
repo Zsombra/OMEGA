@@ -1,0 +1,24 @@
+{
+  "metric": "REGIME_TREND",
+  "label": "Regime · trend",
+  "code": "regTrend",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "trending up",
+      "trending down",
+      "ranging"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    }
+  ]
+}

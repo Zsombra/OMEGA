@@ -1,0 +1,45 @@
+{
+  "metric": "BUY_VOLUME",
+  "label": "Buy volume",
+  "code": "buyVol",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "largeCount",
+    "precision": 1,
+    "range": {
+      "min": 0
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    }
+  ],
+  "spreadOperands": [
+    "VOLUME",
+    "VOL_SMA20",
+    "SELL_VOLUME",
+    "OBV"
+  ]
+}

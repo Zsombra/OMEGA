@@ -1,0 +1,56 @@
+{
+  "metric": "STOCH_D",
+  "label": "Stochastic %D",
+  "code": "D",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 0,
+    "range": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "STOCH_K",
+    "MFI14",
+    "CCI20",
+    "ADX"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ],
+  "_note": "No classifyZone (unlike STOCH_K)."
+}

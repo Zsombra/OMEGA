@@ -1,0 +1,22 @@
+{
+  "metric": "OI_PX_REGIME",
+  "label": "OI · price regime",
+  "code": "oiRegime",
+  "family": "derivatives",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "new longs",
+      "new shorts",
+      "short covering",
+      "long liquidation"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

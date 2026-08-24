@@ -1,0 +1,21 @@
+{
+  "metric": "MA_ALIGN",
+  "label": "MA alignment",
+  "code": "MAalign",
+  "family": "trend",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "bullish",
+      "bearish",
+      "mixed"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

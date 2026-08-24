@@ -1,0 +1,16 @@
+{
+  "metric": "PERP_SPOT_CONFIRMS",
+  "label": "Perp/spot confirms",
+  "code": "perpSpotConf",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

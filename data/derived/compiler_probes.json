@@ -1,0 +1,172 @@
+{
+  "_note": "Ground-truth oracle. Each case was submitted to get_strategy_column_contract on the live connector and the observed result recorded verbatim. omega.validate must agree with `expect` on every case.",
+  "capturedAgainst": "BattleGrid MCP connector, account ANBUJEFF",
+  "cases": [
+    {
+      "id": "bandTouch-on-price-level",
+      "column": {"metric": "OPEN", "transformId": "bandTouch", "timeframe": {"rel": "anchor"}},
+      "sectionTimeframe": "1h",
+      "expect": "legal",
+      "headers": ["open_touch"],
+      "note": "bandTouch is authorable but used by ZERO platform templates."
+    },
+    {
+      "id": "spread-chain-rank-allowed-operand",
+      "column": {"metric": "EMA5", "transformId": "spread", "chainedTransformId": "rank", "timeframe": {"rel": "anchor"}, "inputs": [{"metric": "EMA13"}], "ordering": "far"},
+      "sectionTimeframe": "1h",
+      "expect": "legal",
+      "headers": ["EMA5_EMA13_spread_rank_far"],
+      "outputKind": "rank"
+    },
+    {
+      "id": "spread-chain-rank-disallowed-operand",
+      "column": {"metric": "EMA5", "transformId": "spread", "chainedTransformId": "rank", "timeframe": {"rel": "anchor"}, "inputs": [{"metric": "EMA20"}], "ordering": "far"},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_CHAIN_UNSUPPORTED",
+      "rule": "rankableSpreadOperands for EMA5.spread is exactly ['EMA13']",
+      "engineRationale": "raw price-unit metrics never rank: an ordinal over a price level sorts by token denomination, so BTC beats DOGE every bar. Rank the COMPOSITION, not the level."
+    },
+    {
+      "id": "rank-ordering-not-offered",
+      "column": {"metric": "CLOSE_CHANGE", "transformId": "rank", "timeframe": {"rel": "anchor"}, "ordering": "hi"},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "rule": "CLOSE_CHANGE.rankOrderings == ['far','near']; 'hi' is not offered",
+      "engineRationale": "its ranked set stores an absolute value, so a signed ordering would label a magnitude reading as a signed one"
+    },
+    {
+      "id": "spread-on-metric-without-pool",
+      "column": {"metric": "RVOL", "transformId": "spread", "timeframe": {"rel": "anchor"}, "inputs": [{"metric": "VOLUME"}]},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "rule": "RVOL has unit 'ratio' with a single-member pool, so spread is not offered at all",
+      "candidates": ["value", "trajectory", "efficiency", "rank"]
+    },
+    {
+      "id": "classifyZone-asymmetry-stoch",
+      "column": {"metric": "STOCH_D", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "rule": "STOCH_K offers classifyZone; STOCH_D does not",
+      "candidates": ["value", "trajectory", "spread", "efficiency", "maxShare", "rank"]
+    },
+    {
+      "id": "classifyZone-privileged-cci",
+      "column": {"metric": "CCI20", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "rule": "PLATFORM-PRIVILEGED: includeBollingerBands uses this exact pair, authors cannot. CCI20 is an unbounded oscillator (no range in nativeOutput)."
+    },
+    {
+      "id": "series-transform-on-seriesless-timeless",
+      "column": {"metric": "LAST", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "rule": "LAST is timeless AND seriesless",
+      "candidates": ["value", "distance", "spread"]
+    },
+    {
+      "id": "entityset-nearest-zone",
+      "column": {"metric": "STRUCT_ZONES", "transformId": "nearestZoneDist", "timeframe": {"rel": "regime"}, "side": "support"},
+      "sectionTimeframe": "1h",
+      "expect": "legal",
+      "headers": ["zones_htf_support_dist"],
+      "note": "rel:regime injects the '_htf_' infix and resolves to null"
+    },
+    {
+      "id": "timeless-metric-in-overridden-section",
+      "column": {"metric": "FUNDING_RATE", "transformId": "aggregate", "timeframe": {"rel": "anchor"}, "window": 24},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED",
+      "rule": "SECTION-LEVEL: a timeframe-inert (timeless) metric cannot sit in a section carrying a timeframe override"
+    },
+    {
+      "id": "timeless-metric-without-override",
+      "column": {"metric": "FUNDING_RATE", "transformId": "aggregate", "timeframe": {"rel": "anchor"}, "window": 24},
+      "sectionTimeframe": null,
+      "expect": "legal",
+      "headers": ["rate_mean24"],
+      "note": "Same column, no section override -> legal. requiresSectionTimeframe=false, sectionTimeframeOverrideAllowed=false"
+    },
+    {
+      "id": "trajectory-over-classification",
+      "column": {"metric": "REGIME_TREND", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4},
+      "sectionTimeframe": null,
+      "expect": "legal",
+      "headers": ["regTrend_t3", "regTrend_t2", "regTrend_t1", "regTrend_now", "regTrend_trend"],
+      "note": "Slot outputs keep kind 'classification' with full vocab; the _trend output is kind 'direction'."
+    },
+    {
+      "id": "rank-report-scoped-universe",
+      "column": {"metric": "CROWD_PICK", "transformId": "rank", "timeframe": {"rel": "anchor"}, "ordering": "hi"},
+      "sectionTimeframe": null,
+      "expect": "legal",
+      "headers": ["pick_rank_hi"],
+      "note": "Crowd ranks span THIS REPORT's coins, computed per request - NOT the tracked universe."
+    },
+    {
+      "id": "distance-chain-rank",
+      "column": {"metric": "VWAP", "transformId": "distance", "chainedTransformId": "rank", "timeframe": {"rel": "anchor"}, "ordering": "far"},
+      "sectionTimeframe": "1h",
+      "expect": "legal",
+      "headers": ["dist_VWAP_rank_far"],
+      "note": "The canonical 'rank the composition' pattern. Ranks across the tracked universe as of last close."
+    },
+    {
+      "id": "maxShare-closed-bars",
+      "column": {"metric": "TRADES", "transformId": "maxShare", "timeframe": {"rel": "anchor"}, "window": 24, "bars": "closed"},
+      "sectionTimeframe": "1h",
+      "expect": "legal",
+      "headers": ["trades_maxShare"],
+      "note": "Output is unit 'fraction' range 0-1 regardless of the base metric's unit."
+    },
+    {
+      "id": "spread-within-fraction-pool",
+      "column": {"metric": "BUY_PRESSURE", "transformId": "spread", "timeframe": {"rel": "anchor"}, "inputs": [{"metric": "BB_PCT_B"}]},
+      "sectionTimeframe": "1h",
+      "expect": "legal",
+      "headers": ["buyPres_pctB_spread"],
+      "note": "The 'fraction' pool has exactly two members."
+    },
+    {
+      "id": "rank-not-offered-on-volume",
+      "column": {"metric": "VOLUME", "transformId": "rank", "timeframe": {"rel": "anchor"}, "ordering": "hi"},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "rule": "raw base-unit volume never ranks (denomination problem); use RVOL instead",
+      "candidates": ["value", "trajectory", "spread", "efficiency", "maxShare"]
+    },
+    {
+      "id": "classifyState-privileged-mfi",
+      "column": {"metric": "MFI14", "transformId": "classifyState", "timeframe": {"rel": "anchor"}},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "rule": "PLATFORM-PRIVILEGED: includeMfi uses it; classifyZone is the authorable substitute"
+    },
+    {
+      "id": "classifyZone-on-unbounded-macd",
+      "column": {"metric": "MACD", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}},
+      "sectionTimeframe": "1h",
+      "expect": "illegal",
+      "errorCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+      "candidates": ["value", "trajectory", "spread", "crossDetect", "efficiency"]
+    },
+    {
+      "id": "efficiency-on-lower-timeframe",
+      "column": {"metric": "CLOSE", "transformId": "efficiency", "timeframe": {"rel": "lower"}, "window": 5, "bars": "closed"},
+      "sectionTimeframe": "1h",
+      "expect": "legal",
+      "headers": ["close_ltf_er"],
+      "note": "rel:lower resolves 1h -> 15m and injects the '_ltf_' infix."
+    }
+  ]
+}

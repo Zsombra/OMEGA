@@ -1,0 +1,23 @@
+{
+  "metric": "PRICE_ZONE",
+  "label": "Price zone",
+  "code": "zone",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "breakout high",
+      "breakdown low",
+      "near high",
+      "near low",
+      "mid-range"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "metric": "EMA_CROSS",
+  "label": "EMA 5/13 cross",
+  "code": "EMA5_13",
+  "family": "trend",
+  "nativeOutput": {
+    "kind": "event",
+    "vocab": [
+      "Bullish",
+      "Bearish"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

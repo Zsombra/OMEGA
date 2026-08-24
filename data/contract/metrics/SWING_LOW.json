@@ -1,0 +1,70 @@
+{
+  "metric": "SWING_LOW",
+  "label": "Swing low",
+  "code": "swingLo",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "distance",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "rank"
+      ],
+      "chainedRankOrderings": [
+        "hi",
+        "lo",
+        "far",
+        "near"
+      ]
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "bandTouch"
+    }
+  ],
+  "spreadOperands": [
+    "OPEN",
+    "HIGH",
+    "LOW",
+    "CLOSE",
+    "LAST",
+    "MARK",
+    "ORACLE",
+    "SPOT_CLOSE_CB",
+    "SPOT_CLOSE_BN",
+    "SMA20",
+    "SMA50",
+    "SMA200",
+    "EMA5",
+    "EMA13",
+    "EMA20",
+    "SWING_HIGH",
+    "VWAP"
+  ]
+}

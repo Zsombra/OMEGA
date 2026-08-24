@@ -1,0 +1,39 @@
+{
+  "metric": "OBV",
+  "label": "OBV",
+  "code": "OBV",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "largeCount",
+    "precision": 1
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "efficiency"
+    }
+  ],
+  "spreadOperands": [
+    "VOLUME",
+    "VOL_SMA20",
+    "BUY_VOLUME",
+    "SELL_VOLUME"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "metric": "BB_TOUCH",
+  "label": "Band touch",
+  "code": "BBtouch",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "upper",
+      "lower",
+      "none"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

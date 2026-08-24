@@ -1,0 +1,29 @@
+{
+  "metric": "CROWD_CAPT_LIVE",
+  "label": "Crowd captain rate (live)",
+  "code": "captRateLive",
+  "family": "crowd",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

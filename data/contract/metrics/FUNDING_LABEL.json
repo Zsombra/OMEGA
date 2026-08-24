@@ -1,0 +1,22 @@
+{
+  "metric": "FUNDING_LABEL",
+  "label": "Funding label",
+  "code": "rateLbl",
+  "family": "derivatives",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "low",
+      "moderate",
+      "elevated",
+      "extreme"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "metric": "SETTLED_AT",
+  "label": "Settled at",
+  "code": "settledAt",
+  "family": "crowd",
+  "nativeOutput": {
+    "kind": "date"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

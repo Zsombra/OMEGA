@@ -1,0 +1,56 @@
+{
+  "metric": "FUNDING_RATE",
+  "label": "Funding rate",
+  "code": "rate",
+  "family": "derivatives",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 4
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "PPO",
+    "ROC12",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

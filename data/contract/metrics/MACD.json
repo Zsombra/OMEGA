@@ -1,0 +1,42 @@
+{
+  "metric": "MACD",
+  "label": "MACD histogram",
+  "code": "MACD",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "efficiency"
+    }
+  ],
+  "spreadOperands": [
+    "ATR",
+    "BB_WIDTH",
+    "CVD",
+    "SPOT_CVD"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "metric": "REGIME_MOM",
+  "label": "Regime · momentum",
+  "code": "regMom",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "bullish",
+      "bearish",
+      "neutral",
+      "diverging"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    }
+  ]
+}
