@@ -20,7 +20,8 @@ import uuid
 
 from .aggregate import Signal, aggregate
 from .conditions import (
-    all_of, condition, is_, market_read_text, n_of, num, validate_conditions,
+    all_of, condition, crowd_leaning_down, crowd_leaning_up, is_, market_read_text,
+    n_of, num, ref, stables_at_par, tape_bearish, tape_bullish, validate_conditions,
     validate_market_read,
 )
 from .contract import DERIVED_DIR, load
@@ -116,24 +117,35 @@ MODULE_RECIPES: dict[str, list[dict]] = {
 # `up` / `down` are clause factories; `filter` is non-directional.
 # Every one of these is type-checked against predicted headers in the tests.
 MODULE_CLAUSES: dict[str, dict] = {
+    # `up`/`down` are the ALIGN (trend) reading; `fade_up`/`fade_down` the contrarian
+    # one. Without this split a reversion thesis would buy strength and a breakout
+    # thesis would buy the lower band - both legal, both backwards.
     "RSI":               {"up": lambda: num("RSI14_now", "gt", 50),
-                          "down": lambda: num("RSI14_now", "lt", 50)},
+                          "down": lambda: num("RSI14_now", "lt", 50),
+                          "fade_up": lambda: num("RSI14_now", "lt", 35),
+                          "fade_down": lambda: num("RSI14_now", "gt", 65)},
     "MACD":              {"up": lambda: is_("MACD_trend", "rising"),
                           "down": lambda: is_("MACD_trend", "falling")},
     "MOVING_AVERAGES":   {"up": lambda: is_("MAalign", "bullish"),
                           "down": lambda: is_("MAalign", "bearish")},
     "TREND_STRENGTH":    {"filter": lambda: num("ADX_now", "gte", 25)},
-    "BOLLINGER":         {"up": lambda: num("pctB_now", "lt", 0.05),
-                          "down": lambda: num("pctB_now", "gt", 0.95)},
+    "BOLLINGER":         {"up": lambda: num("pctB_now", "gt", 0.95),
+                          "down": lambda: num("pctB_now", "lt", 0.05),
+                          "fade_up": lambda: num("pctB_now", "lt", 0.05),
+                          "fade_down": lambda: num("pctB_now", "gt", 0.95)},
     "CVD":               {"up": lambda: is_("CVD_trend", "rising"),
                           "down": lambda: is_("CVD_trend", "falling")},
     "VOLUME":            {"up": lambda: is_("OBV_trend", "rising"),
                           "down": lambda: is_("OBV_trend", "falling")},
     "VOLATILITY":        {"filter": lambda: is_("ATR_trend", "rising")},
-    "MFI":               {"up": lambda: is_("MFI14_zone", "oversold"),
-                          "down": lambda: is_("MFI14_zone", "overbought")},
-    "STOCHASTIC":        {"up": lambda: is_("K_zone", "oversold"),
-                          "down": lambda: is_("K_zone", "overbought")},
+    "MFI":               {"up": lambda: is_("MFI14_zone", "overbought"),
+                          "down": lambda: is_("MFI14_zone", "oversold"),
+                          "fade_up": lambda: is_("MFI14_zone", "oversold"),
+                          "fade_down": lambda: is_("MFI14_zone", "overbought")},
+    "STOCHASTIC":        {"up": lambda: is_("K_zone", "overbought"),
+                          "down": lambda: is_("K_zone", "oversold"),
+                          "fade_up": lambda: is_("K_zone", "oversold"),
+                          "fade_down": lambda: is_("K_zone", "overbought")},
     "RELATIVE_STRENGTH": {"up": lambda: is_("PPO_trend", "rising"),
                           "down": lambda: is_("PPO_trend", "falling")},
     "SUPPORT_RESISTANCE": {"up": lambda: is_("zone", "near low"),
@@ -168,6 +180,9 @@ class Thesis:
     gate: float = 0.65
     # module -> allocation tier (0-3) applied to every signal in that module
     weights: dict[str, int] = field(default_factory=dict)
+    # ALIGN: the tape should agree with the direction (trend theses).
+    # FADE:  the crowd should be leaning the OTHER way (contrarian theses).
+    stance: str = "ALIGN"
     required: list[str] = field(default_factory=list)   # signalIds treated as vetoes
     context: list[str] = field(default_factory=list)    # modules included but weighted 0
 
@@ -182,6 +197,7 @@ PRESETS: dict[str, Thesis] = {
         name="Mean Reversion at Extremes",
         tagline="Fade the stretch, only with flow agreeing",
         description="Oscillator extreme plus band breach, confirmed by flow and paid for by funding.",
+        stance="FADE",
         gate=0.65,
         weights={"BOLLINGER": 3, "RSI": 2, "CVD": 2, "FUNDING": 1, "VOLATILITY": 1},
         context=["REGIME"],
@@ -190,6 +206,7 @@ PRESETS: dict[str, Thesis] = {
         name="Trend Continuation",
         tagline="Never fight an aligned stack",
         description="Full MA alignment with trend strength, entered on momentum resumption.",
+        stance="ALIGN",
         gate=0.60,
         weights={"MOVING_AVERAGES": 3, "TREND_STRENGTH": 2, "MACD": 2, "VOLUME": 1},
         context=["REGIME"],
@@ -198,6 +215,7 @@ PRESETS: dict[str, Thesis] = {
         name="Squeeze Breakout",
         tagline="Coiled, then released",
         description="Volatility contraction into expansion, validated by participation and OI.",
+        stance="ALIGN",
         gate=0.55,
         weights={"BOLLINGER": 3, "VOLATILITY": 3, "VOLUME": 2, "OPEN_INTEREST": 1},
         context=["REGIME"],
@@ -206,6 +224,7 @@ PRESETS: dict[str, Thesis] = {
         name="Spot-Led Accumulation",
         tagline="Organic demand ahead of leverage",
         description="Spot CVD outpacing perp flow while funding stays unexcited.",
+        stance="FADE",
         gate=0.60,
         weights={"FLOW_DIVERGENCE": 3, "CVD": 2, "FUNDING": 2, "OPEN_INTEREST": 1},
         context=["REGIME"],
@@ -214,6 +233,7 @@ PRESETS: dict[str, Thesis] = {
         name="Structure Reversal",
         tagline="Turn at a level that means something",
         description="Price arriving at a structural zone with momentum divergence and flow confirmation.",
+        stance="FADE",
         gate=0.65,
         weights={"PRICE_STRUCTURE": 3, "SUPPORT_RESISTANCE": 2, "RSI": 2, "CVD": 1},
         context=["REGIME"],
@@ -391,18 +411,35 @@ def plan(thesis: Thesis) -> StrategyPlan:
                 rules.append(Rule(signalId=sid, allocation=tier,
                                   required=sid in thesis.required))
     conditions = _build_conditions(thesis)
+    verdicts = [c for c in conditions if c.get("verdict") in ("UP", "DOWN")]
     text = market_read_text(
-        f"{thesis.name}. {thesis.description}".strip(), conditions) if conditions else ""
+        f"{thesis.name}. {thesis.description}".strip(), verdicts) if verdicts else ""
     return StrategyPlan(thesis=thesis, report=report, rules=rules,
                         conditions=conditions, market_read_text=text)
 
 
-def _build_conditions(thesis: Thesis) -> list[dict]:
-    """One UP and one DOWN confluence condition over the thesis's weighted modules.
+def _clause_for(module: str, side: str, fade: bool) -> dict:
+    """Pick the reading that matches the thesis stance."""
+    spec = MODULE_CLAUSES[module]
+    if fade and f"fade_{side}" in spec:
+        return spec[f"fade_{side}"]()
+    return spec[side]()
 
-    Modelled on EL_ALAMEIN: an N_OF checklist the agent reads as a single verdict
-    rather than re-deriving. Non-directional modules become a shared filter clause
-    wrapped in ALL alongside the checklist.
+
+def _build_conditions(thesis: Thesis) -> list[dict]:
+    """A layered condition DAG, not one flat checklist.
+
+    Building blocks carry verdict=None and are composed by conditionRef into the two
+    verdict-bearing conditions. Context comes from the AMBIENT sections, which cost
+    nothing against the column or token budget:
+
+        {P}_RISK_ON    stablecoin pairs at par            (ambient, free)
+        {P}_CTX_UP     tape / crowd context for longs     (ambient, free)
+        {P}_CTX_DOWN   tape / crowd context for shorts    (ambient, free)
+        {P}_CORE_UP    N_OF checklist over the modules    (your columns)
+        {P}_CORE_DOWN  ...
+        {P}_UP         ALL(CORE_UP, CTX_UP, RISK_ON)      -> verdict UP
+        {P}_DOWN       ALL(CORE_DOWN, CTX_DOWN, RISK_ON)  -> verdict DOWN
     """
     directional = [m for m in thesis.weights if "up" in MODULE_CLAUSES.get(m, {})]
     filters = [m for m in thesis.weights if "filter" in MODULE_CLAUSES.get(m, {})]
@@ -411,15 +448,33 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
 
     prefix = "".join(w[0] for w in thesis.name.split()[:2]).upper() or "SETUP"
     n = max(2, (len(directional) * 2) // 3)          # two-thirds of the checklist
-    out = []
+    fade = thesis.stance == "FADE"
+
+    out = [
+        condition(f"{prefix}_RISK_ON", "Stablecoin pairs at par",
+                  stables_at_par(), verdict=None),
+        condition(f"{prefix}_CTX_UP",
+                  "Crowd leaning down - room to fade up" if fade else "Broad tape up",
+                  crowd_leaning_down() if fade else tape_bullish(), verdict=None),
+        condition(f"{prefix}_CTX_DOWN",
+                  "Crowd leaning up - room to fade down" if fade else "Broad tape down",
+                  crowd_leaning_up() if fade else tape_bearish(), verdict=None),
+    ]
     for side, verdict in (("up", "UP"), ("down", "DOWN")):
-        checklist = n_of(n, *[MODULE_CLAUSES[m][side]() for m in directional])
-        definition = (all_of(checklist, *[MODULE_CLAUSES[m]["filter"]() for m in filters])
-                      if filters else checklist)
+        checklist = n_of(n, *[_clause_for(m, side, fade) for m in directional])
+        core = (all_of(checklist, *[MODULE_CLAUSES[m]["filter"]() for m in filters])
+                if filters else checklist)
+        out.append(condition(f"{prefix}_CORE_{verdict}",
+                             f"{n} of {len(directional)} filters agree - {side}",
+                             core, verdict=None))
+    for verdict in ("UP", "DOWN"):
         out.append(condition(
             f"{prefix}_{verdict}",
-            f"{n} of {len(directional)} filters agree - {side}",
-            definition, verdict=verdict))
+            f"Setup confirmed - {verdict.lower()}",
+            all_of(ref(f"{prefix}_CORE_{verdict}"),
+                   ref(f"{prefix}_CTX_{verdict}"),
+                   ref(f"{prefix}_RISK_ON")),
+            verdict=verdict))
     return out
 
 

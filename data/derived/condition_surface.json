@@ -1,22 +1,68 @@
 {
   "_note": "The condition-authoring surface, captured from preview_strategy_report (a live render that explicitly does not save or mutate strategy state) and from the compile_strategy_plan JSON Schema.",
-
   "grammar": {
     "_source": "compile_strategy_plan / preview_strategy_report JSON Schema - authoritative",
     "condition": {
       "conditionKey": "^[A-Z][A-Z0-9_]{1,39}$",
       "name": "1-80 chars",
       "definition": "Definition (below)",
-      "verdict": ["UP", "DOWN", "NEITHER", null],
+      "verdict": [
+        "UP",
+        "DOWN",
+        "NEITHER",
+        null
+      ],
       "required": "boolean"
     },
     "definitionKinds": {
-      "clause.numeric": {"kind": "clause", "column": {"sectionKey": "string|null", "header": "string"}, "op": ["lt", "lte", "gte", "gt"], "value": "number"},
-      "clause.between": {"kind": "clause", "column": "...", "op": "between", "low": "number", "high": "number"},
-      "clause.is": {"kind": "clause", "column": "...", "op": "is", "label": "string 1-80"},
-      "clause.in": {"kind": "clause", "column": "...", "op": "in", "labels": "1-32 strings"},
-      "conditionRef": {"kind": "conditionRef", "conditionKey": "^[A-Z][A-Z0-9_]{1,39}$"},
-      "group": {"kind": "group", "op": ["ALL", "ANY", "NOT", "N_OF"], "members": "1-64 definitions", "n": "1-64, required for N_OF"}
+      "clause.numeric": {
+        "kind": "clause",
+        "column": {
+          "sectionKey": "string|null",
+          "header": "string"
+        },
+        "op": [
+          "lt",
+          "lte",
+          "gte",
+          "gt"
+        ],
+        "value": "number"
+      },
+      "clause.between": {
+        "kind": "clause",
+        "column": "...",
+        "op": "between",
+        "low": "number",
+        "high": "number"
+      },
+      "clause.is": {
+        "kind": "clause",
+        "column": "...",
+        "op": "is",
+        "label": "string 1-80"
+      },
+      "clause.in": {
+        "kind": "clause",
+        "column": "...",
+        "op": "in",
+        "labels": "1-32 strings"
+      },
+      "conditionRef": {
+        "kind": "conditionRef",
+        "conditionKey": "^[A-Z][A-Z0-9_]{1,39}$"
+      },
+      "group": {
+        "kind": "group",
+        "op": [
+          "ALL",
+          "ANY",
+          "NOT",
+          "N_OF"
+        ],
+        "members": "1-64 definitions",
+        "n": "1-64, required for N_OF"
+      }
     },
     "notes": [
       "Group ops are ALL | ANY | NOT | N_OF - not ALL_OF/ANY_OF.",
@@ -26,7 +72,6 @@
       "Schema allows 64 conditions; the discovery budget caps strategyConditions at 16."
     ]
   },
-
   "semantics": {
     "_source": "verbatim from preview_strategy_report conditionsTableText",
     "advisory": "Conditions are deterministic reads of your report columns, resolved server-side at prompt-build time. They are advisory: they may make you more selective, never less - they do not gate, score, or qualify anything.",
@@ -34,67 +79,220 @@
     "provisional": "A value marked (provisional) came from the live forming bar and can still change before that bar closes.",
     "consequence": "Do NOT think of conditions as the gate. minAggregateScore over the signal scorecard is the gate. Conditions shape what the agent reads and how selective it is."
   },
-
   "marketReadText": {
     "interpolation": "Bare tokens (no braces needed in the rendered output) resolve against condition keys and column headers. preview_strategy_report returns marketReadMarkers with status 'condition' | 'column' for each token found.",
     "maxLength": 2000,
     "unreferenceable": "markerConditions[].unreferenceableReason names any condition that cannot be referenced."
   },
-
   "ambientSections": {
     "_note": "Sections that exist for CONDITION REFERENCE without you adding any column. They cost no columns and no tokens against your report budget. This is why the platform templates includeMarketBreadth and includeReferencePairs ship with ZERO columns - the data is ambient, the template is a no-op.",
     "session-field": {
       "title": "Session Field",
       "outputs": [
-        {"header": "fieldPlayers_session", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "players in this session"},
-        {"header": "fieldUpBias_session", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "share of the field's directional picks that are up (%); absent when no bias has been measured"},
-        {"header": "fieldBiasDir_session", "ops": ["is", "in"], "vocab": ["UP", "DOWN"], "meaning": "the direction the field leans; absent at an exact 50/50"},
-        {"header": "captConc_session", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "share of captain picks landing on the single most-captained coin (%)"},
-        {"header": "picksSpread_session", "ops": [], "meaning": "distinct coins picked, over distinct coins available - NOT conditionable (empty operator set)"}
+        {
+          "header": "fieldPlayers_session",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "players in this session"
+        },
+        {
+          "header": "fieldUpBias_session",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "share of the field's directional picks that are up (%); absent when no bias has been measured"
+        },
+        {
+          "header": "fieldBiasDir_session",
+          "ops": [
+            "is",
+            "in"
+          ],
+          "vocab": [
+            "UP",
+            "DOWN"
+          ],
+          "meaning": "the direction the field leans; absent at an exact 50/50"
+        },
+        {
+          "header": "captConc_session",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "share of captain picks landing on the single most-captained coin (%)"
+        },
+        {
+          "header": "picksSpread_session",
+          "ops": [],
+          "meaning": "distinct coins picked, over distinct coins available - NOT conditionable (empty operator set)"
+        }
       ]
     },
     "market-breadth": {
       "title": "Market Breadth",
       "outputs": [
-        {"header": "mktUp_all", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "share of the scope's coins that closed up (%)"},
-        {"header": "mktDown_all", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "share of the scope's coins that closed down (%)"},
-        {"header": "mktBreadth_all", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "net breadth - up share minus down share (%), signed; negative is a broadly red field"},
-        {"header": "mktAvgChg_all", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "mean close-change across the scope (%), signed"}
+        {
+          "header": "mktUp_all",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "share of the scope's coins that closed up (%)"
+        },
+        {
+          "header": "mktDown_all",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "share of the scope's coins that closed down (%)"
+        },
+        {
+          "header": "mktBreadth_all",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "net breadth - up share minus down share (%), signed; negative is a broadly red field"
+        },
+        {
+          "header": "mktAvgChg_all",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "mean close-change across the scope (%), signed"
+        }
       ]
     },
     "reference-pairs": {
       "title": "Reference Pairs",
       "outputs": [
-        {"header": "usdtUsdDev_market", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "USDT/USD deviation from par (%), signed; absent when the close is older than 15 minutes"},
-        {"header": "usdcUsdtDev_market", "ops": ["lt", "lte", "gte", "gt", "between"], "meaning": "USDC/USDT deviation from par (%), signed; absent when the close is older than 15 minutes"}
+        {
+          "header": "usdtUsdDev_market",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "USDT/USD deviation from par (%), signed; absent when the close is older than 15 minutes"
+        },
+        {
+          "header": "usdcUsdtDev_market",
+          "ops": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "meaning": "USDC/USDT deviation from par (%), signed; absent when the close is older than 15 minutes"
+        }
       ]
     }
   },
-
   "headerCorrections": {
     "_note": "Header patterns the live render corrected. These were WRONG in omega.fanout before this capture and are now fixed and regression-tested.",
-    "classifyZone": {"pattern": "{code}_zone", "wasPredicted": "{code}", "evidence": "RSI14 -> RSI14_zone (vocab overbought/oversold/neutral); MFI14 -> MFI14_zone"},
-    "crossDetect": {"pattern": "{code}_cross", "wasPredicted": "{code}", "evidence": "MACD -> MACD_cross (vocab Bullish/Bearish)"},
-    "classifyState": {"pattern": "{code}_state", "note": "platform-only transform; ADX -> ADX_state in EL_ALAMEIN"}
+    "classifyZone": {
+      "pattern": "{code}_zone",
+      "wasPredicted": "{code}",
+      "evidence": "RSI14 -> RSI14_zone (vocab overbought/oversold/neutral); MFI14 -> MFI14_zone"
+    },
+    "crossDetect": {
+      "pattern": "{code}_cross",
+      "wasPredicted": "{code}",
+      "evidence": "MACD -> MACD_cross (vocab Bullish/Bearish)"
+    },
+    "classifyState": {
+      "pattern": "{code}_state",
+      "note": "platform-only transform; ADX -> ADX_state in EL_ALAMEIN"
+    }
   },
-
   "tokenCalibration": {
     "_note": "preview_strategy_report returns the server's own estimatedTokens as used/cap, counted with o200k_base. Two renders give a two-parameter fit.",
     "tokenCountModel": "o200k_base",
     "samples": [
-      {"columns": 2, "headers": 6, "serverTokens": 164},
-      {"columns": 13, "headers": 33, "serverTokens": 976}
+      {
+        "columns": 2,
+        "headers": 6,
+        "serverTokens": 164
+      },
+      {
+        "columns": 13,
+        "headers": 33,
+        "serverTokens": 976
+      }
     ],
     "model": "tokens ~= headers * 19 + columns * 26",
-    "predicts": [166, 965],
-    "errorPct": [1.2, -1.1],
+    "predicts": [
+      166,
+      965
+    ],
+    "errorPct": [
+      1.2,
+      -1.1
+    ],
     "why": "Each header costs a table cell; each COLUMN additionally costs a glossary sentence, which is why column count is a separate term.",
     "authority": "The server figure is authoritative. Use preview_strategy_report before committing a large report."
   },
-
   "verdictAggregation": {
     "perTicker": "Each ticker gets outcomes per condition plus an overall verdict UP | DOWN | NEITHER and a decidedBy.",
     "tally": "conditionVerdictTally counts UP / DOWN / NEITHER / UNRESOLVED across the previewed coins.",
     "observed": "One condition with verdict UP evaluating FALSE on both BTC and SOL yielded verdict NEITHER for both, decidedBy null."
+  },
+  "liveVerification": {
+    "_note": "Recorded from preview_strategy_report on a generated squeeze-breakout plan.",
+    "conditionRefResolves": {
+      "evidence": "SB_UP evidence came back as [{kind:'conditionRef', conditionKey:'SB_CORE_UP', outcome:'FALSE'}, {…'SB_CTX_UP', 'TRUE'}, {…'SB_RISK_ON', 'TRUE'}]",
+      "conclusion": "Nested condition composition works; each reference reports its own outcome."
+    },
+    "ambientClausesAreFree": {
+      "sectionColumnsUsed": 4,
+      "note": "Only the report's own columns counted against sectionColumns. The ambient clauses read market-wide data at zero column and zero token cost.",
+      "observed": {
+        "usdtUsdDev_market": "-0.01%",
+        "usdcUsdtDev_market": "+0.01%",
+        "mktBreadth_all": "69.2% of 78"
+      }
+    },
+    "nullSectionKeyAutoResolves": {
+      "sent": null,
+      "resolvedTo": [
+        "reference-pairs",
+        "market-breadth",
+        "custom:<the right section>"
+      ],
+      "note": "A clause with sectionKey null is attributed to the correct section by the server."
+    },
+    "ambientIsNotProvisional": {
+      "note": "Ambient conditions returned provisional:false while column-based ones returned provisional:true. Ambient data is not read off a live forming bar, so it cannot change before the bar closes."
+    }
   }
 }

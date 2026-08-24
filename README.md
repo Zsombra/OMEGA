@@ -122,7 +122,7 @@ docs/              00–10
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py
-tests/             201 tests, incl. 20 compiler + 22 membership probes replayed
+tests/             220 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -135,7 +135,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 201 passed
+python -m pytest tests/ -q     # 220 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector
@@ -150,6 +150,8 @@ python -m pytest tests/ -q     # 201 passed
   `EL_ALAMEIN` (32 non-zero allocations) and `MATH-C3` (15)
 - generated conditions and `marketReadText` verified against a live
   `preview_strategy_report` render: every clause resolved, both markers referenceable
+- the generated condition DAG resolves live — `conditionRef` composes, and the ambient
+  context layers cost zero columns
 
 ## Caveat
 

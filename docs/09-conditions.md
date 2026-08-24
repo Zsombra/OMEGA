@@ -117,38 +117,69 @@ condition key or a header.
 
 ## Generated conditions
 
-`plan()` emits one `UP` and one `DOWN` confluence condition over the thesis's weighted
-modules, modelled on El Alamein:
+`plan()` emits a **layered DAG**, not one flat checklist. Building blocks carry
+`verdict: null` and are composed by `conditionRef` into the two verdict-bearing conditions:
 
 ```
-conditions          2
-  TC_UP            UP       2 of 3 filters agree - up
-  TC_DOWN          DOWN     2 of 3 filters agree - down
+{P}_RISK_ON    stablecoin pairs at par             ambient - free
+{P}_CTX_UP     tape / crowd context for longs      ambient - free
+{P}_CTX_DOWN   tape / crowd context for shorts     ambient - free
+{P}_CORE_UP    N_OF checklist over your modules    your columns
+{P}_CORE_DOWN  ...
+{P}_UP         ALL(CORE_UP, CTX_UP, RISK_ON)       -> verdict UP
+{P}_DOWN       ALL(CORE_DOWN, CTX_DOWN, RISK_ON)   -> verdict DOWN
 ```
 
-```jsonc
-{"kind":"group","op":"ALL","members":[
-  {"kind":"group","op":"N_OF","n":2,"members":[
-    {"kind":"clause","column":{"sectionKey":null,"header":"MAalign"},"op":"is","label":"bullish"},
-    {"kind":"clause","column":{"sectionKey":null,"header":"MACD_trend"},"op":"is","label":"rising"},
-    {"kind":"clause","column":{"sectionKey":null,"header":"OBV_trend"},"op":"is","label":"rising"}]},
-  {"kind":"clause","column":{"sectionKey":null,"header":"ADX_now"},"op":"gte","value":25}]}
-```
-
-The checklist is `N_OF` at two-thirds of the directional modules; non-directional modules
-(trend strength, volatility) become filter clauses in the surrounding `ALL`. Custom sections
-get a deterministic `sectionKey` (`custom:<uuid5 of the title>`) so clauses can name them.
-
-`marketReadText` is generated to reference each condition by key, and validated:
+Seven conditions against a budget of 16, and **three of them cost nothing** — the context
+and risk layers read only ambient headers.
 
 ```
-Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.
-
-- {TC_UP} (UP) - 2 of 3 filters agree - up.
-- {TC_DOWN} (DOWN) - 2 of 3 filters agree - down.
-
-Read these verdicts rather than re-deriving them from the columns.
+conditions          7
+  MR_RISK_ON       -        Stablecoin pairs at par
+  MR_CTX_UP        -        Crowd leaning down - room to fade up
+  MR_CTX_DOWN      -        Crowd leaning up - room to fade down
+  MR_CORE_UP       -        2 of 4 filters agree - up
+  MR_CORE_DOWN     -        2 of 4 filters agree - down
+  MR_UP            UP       Setup confirmed - up
+  MR_DOWN          DOWN     Setup confirmed - down
 ```
+
+`marketReadText` references only the two verdict conditions, so the agent reads a verdict
+rather than a lattice.
+
+### Stance decides which reading a module gets
+
+A `Thesis` carries a `stance`, and it is not cosmetic. The same module means opposite
+things to opposite theses:
+
+| module | `ALIGN` (trend) | `FADE` (contrarian) |
+|---|---|---|
+| `BOLLINGER` | `pctB_now > 0.95` — buy the breakout | `pctB_now < 0.05` — buy the lower band |
+| `RSI` | `RSI14_now > 50` — buy strength | `RSI14_now < 35` — buy the oversold |
+| `MFI` / `STOCHASTIC` | zone `overbought` | zone `oversold` |
+
+Without this split the generator produced clauses that were **legal but backwards**: a
+mean-reversion thesis buying strength while claiming to fade it, and a squeeze-breakout
+thesis buying the *lower* band. Nothing in validation catches that — the clauses type-check
+perfectly. Only the semantics are wrong, which is exactly the kind of error that survives
+into production.
+
+### The free context layer
+
+`omega.conditions` ships clause builders over the ambient sections:
+
+```python
+tape_bullish(10.0)        # mktBreadth_all > 10
+tape_bearish(-10.0)
+crowd_leaning_up(60.0)    # fieldUpBias_session > 60
+crowd_leaning_down(40.0)
+crowd_concentrated(40.0)  # captConc_session > 40
+stables_at_par(0.5)       # both deviation pairs within +/-0.5% - a risk-off veto
+```
+
+An `ALIGN` thesis wants the tape agreeing with its direction. A `FADE` thesis wants the
+**crowd leaning the other way** — you buy when the field is short. `stables_at_par` is a veto
+either way: a depeg is the market saying something the indicators have not priced.
 
 ## Checking against live market data
 
@@ -170,6 +201,27 @@ server's own `estimatedTokens` as used/cap.
 
 **Use it before committing a report.** It is the authority on token cost — see the honest
 caveat in [04](04-section-report-budget.md).
+
+## Verified live
+
+A generated `squeeze-breakout` plan went to `preview_strategy_report` with its full DAG:
+
+```jsonc
+{"conditionKey":"SB_UP","outcome":"FALSE","evidence":[
+  {"kind":"conditionRef","conditionKey":"SB_CORE_UP","outcome":"FALSE"},
+  {"kind":"conditionRef","conditionKey":"SB_CTX_UP","outcome":"TRUE"},
+  {"kind":"conditionRef","conditionKey":"SB_RISK_ON","outcome":"TRUE"}]}
+```
+
+**`conditionRef` resolves and reports each reference's own outcome.** The ambient layers
+evaluated against real market-wide data — `usdtUsdDev_market: -0.01%`,
+`usdcUsdtDev_market: +0.01%`, `mktBreadth_all: 69.2% of 78` — while `sectionColumns used`
+stayed at **4**, counting only the report's own columns. The context and risk layers were
+genuinely free.
+
+One further detail: the ambient conditions came back `provisional: false` while the
+column-based ones were `provisional: true`. Ambient data is not read off a live forming bar,
+so it cannot change under you before the bar closes.
 
 ## Verification
 

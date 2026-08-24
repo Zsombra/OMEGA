@@ -121,6 +121,53 @@ def condition(key: str, name: str, definition: dict, *,
             "verdict": verdict, "required": required}
 
 
+# --- ambient clause library -----------------------------------------------
+# Clauses over the three platform-provided sections. They reference data the report
+# already carries, so they cost NOTHING against the column or token budget - the
+# cheapest context a strategy can buy.
+
+def tape_bullish(threshold: float = 10.0) -> dict:
+    """Net breadth positive: more of the field closed up than down."""
+    return num("mktBreadth_all", "gt", threshold)
+
+
+def tape_bearish(threshold: float = -10.0) -> dict:
+    """Net breadth negative - a broadly red field."""
+    return num("mktBreadth_all", "lt", threshold)
+
+
+def crowd_leaning_up(threshold: float = 60.0) -> dict:
+    """The session's players are mostly picking up. Confirmation for a trend thesis,
+    a fade target for a contrarian one."""
+    return num("fieldUpBias_session", "gt", threshold)
+
+
+def crowd_leaning_down(threshold: float = 40.0) -> dict:
+    return num("fieldUpBias_session", "lt", threshold)
+
+
+def crowd_concentrated(threshold: float = 40.0) -> dict:
+    """Captain picks piling onto one coin - a crowding read."""
+    return num("captConc_session", "gt", threshold)
+
+
+def stables_at_par(tolerance: float = 0.5) -> dict:
+    """Both stablecoin pairs near par. Use as a risk-off veto: a depeg is the market
+    telling you something the indicators have not priced yet."""
+    return all_of(between("usdtUsdDev_market", -tolerance, tolerance),
+                  between("usdcUsdtDev_market", -tolerance, tolerance))
+
+
+AMBIENT_CLAUSES = {
+    "tape_bullish": tape_bullish,
+    "tape_bearish": tape_bearish,
+    "crowd_leaning_up": crowd_leaning_up,
+    "crowd_leaning_down": crowd_leaning_down,
+    "crowd_concentrated": crowd_concentrated,
+    "stables_at_par": stables_at_par,
+}
+
+
 # --- validation -----------------------------------------------------------
 @dataclass(frozen=True)
 class ConditionFinding:
@@ -265,6 +312,11 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
     for k in {x for x in keys if keys.count(x) > 1}:
         out.append(ConditionFinding("error", k, "", "duplicate conditionKey"))
 
+    for cycle in _find_reference_cycles(conditions):
+        out.append(ConditionFinding(
+            "error", cycle[0], ".definition",
+            f"conditionRef cycle: {' -> '.join(cycle)} -> {cycle[0]}"))
+
     clause_cap = c.budgets["conditionClauses"]
     for cond in conditions:
         key = cond.get("conditionKey", "")
@@ -282,6 +334,50 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
             out.append(ConditionFinding("error", key, ".definition",
                                         f"{clauses} clauses exceeds the budget of {clause_cap}"))
     return out
+
+
+def _reference_edges(defn: dict, out: set[str]) -> None:
+    if not isinstance(defn, dict):
+        return
+    if defn.get("kind") == "conditionRef":
+        out.add(defn.get("conditionKey", ""))
+    for member in defn.get("members") or []:
+        _reference_edges(member, out)
+
+
+def _find_reference_cycles(conditions: list[dict]) -> list[list[str]]:
+    """Detect conditionRef cycles. A cycle can never resolve, so it is an error."""
+    graph: dict[str, set[str]] = {}
+    for cond in conditions:
+        edges: set[str] = set()
+        _reference_edges(cond.get("definition") or {}, edges)
+        graph[cond.get("conditionKey", "")] = edges
+
+    cycles: list[list[str]] = []
+    seen_cycles: set[frozenset[str]] = set()
+    WHITE, GREY, BLACK = 0, 1, 2
+    colour = {k: WHITE for k in graph}
+
+    def visit(node: str, stack: list[str]) -> None:
+        colour[node] = GREY
+        stack.append(node)
+        for nxt in graph.get(node, ()):
+            if nxt not in colour:
+                continue                      # dangling ref, reported elsewhere
+            if colour[nxt] == GREY:
+                cycle = stack[stack.index(nxt):]
+                if len(cycle) > 1 and frozenset(cycle) not in seen_cycles:
+                    seen_cycles.add(frozenset(cycle))
+                    cycles.append(cycle)
+            elif colour[nxt] == WHITE:
+                visit(nxt, stack)
+        stack.pop()
+        colour[node] = BLACK
+
+    for node in list(graph):
+        if colour[node] == WHITE:
+            visit(node, [])
+    return cycles
 
 
 def validate_market_read(text: str, conditions: list[dict], report: Report) -> list[ConditionFinding]:

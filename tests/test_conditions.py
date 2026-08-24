@@ -215,9 +215,10 @@ def test_preset_conditions_type_check(name):
 
 @pytest.mark.parametrize("name", PRESET_IDS)
 def test_preset_emits_two_directional_conditions(name):
+    """Layered now: 7 conditions, of which exactly two carry a verdict."""
     p = plan(PRESETS[name])
-    assert len(p.conditions) == 2
-    assert {c["verdict"] for c in p.conditions} == {"UP", "DOWN"}
+    assert len(p.conditions) == 7
+    assert {c["verdict"] for c in p.conditions if c["verdict"]} == {"UP", "DOWN"}
 
 
 @pytest.mark.parametrize("name", PRESET_IDS)
@@ -233,7 +234,7 @@ def test_section_keys_are_deterministic():
 
 def test_wire_includes_conditions_and_market_read():
     payload = plan(PRESETS["trend-continuation"]).wire()
-    assert len(payload["conditions"]) == 2
+    assert len(payload["conditions"]) == 7
     assert "{TC_UP}" in payload["marketReadText"]
 
 
@@ -242,10 +243,9 @@ def test_trend_continuation_conditions_match_the_live_render():
     """Recorded from preview_strategy_report; both conditions resolved with evidence."""
     p = plan(PRESETS["trend-continuation"])
     keys = [c["conditionKey"] for c in p.conditions]
-    assert keys == ["TC_UP", "TC_DOWN"]
-    headers = {cl["column"]["header"]
-               for c in p.conditions
-               for cl in c["definition"]["members"][0]["members"]}
+    assert keys[-2:] == ["TC_UP", "TC_DOWN"]
+    core = [c for c in p.conditions if c["conditionKey"] == "TC_CORE_UP"][0]
+    headers = {cl["column"]["header"] for cl in core["definition"]["members"][0]["members"]}
     # every clause header appeared in the live conditionColumns for that report
     assert headers == {"MAalign", "MACD_trend", "OBV_trend"}
 
@@ -254,3 +254,82 @@ def test_token_estimate_is_labelled_approximate():
     text = plan(PRESETS["trend-continuation"]).cost().render()
     assert "+/-" in text and "authoritative" in text
     assert TOKENS_PER_HEADER == 27
+
+
+# --- layered DAG synthesis (live-verified) --------------------------------
+@pytest.mark.parametrize("name", PRESET_IDS)
+def test_preset_builds_a_layered_dag(name):
+    p = plan(PRESETS[name])
+    keys = {c["conditionKey"] for c in p.conditions}
+    pre = sorted(keys)[0].split("_")[0]
+    assert {f"{pre}_RISK_ON", f"{pre}_CTX_UP", f"{pre}_CTX_DOWN",
+            f"{pre}_CORE_UP", f"{pre}_CORE_DOWN", f"{pre}_UP", f"{pre}_DOWN"} == keys
+
+
+@pytest.mark.parametrize("name", PRESET_IDS)
+def test_only_the_top_level_conditions_carry_a_verdict(name):
+    """Building blocks are verdict=None; only the composed pair decides a direction."""
+    p = plan(PRESETS[name])
+    verdicts = {c["conditionKey"]: c["verdict"] for c in p.conditions}
+    pre = sorted(verdicts)[0].split("_")[0]
+    assert {k for k, v in verdicts.items() if v} == {f"{pre}_UP", f"{pre}_DOWN"}
+    assert verdicts[f"{pre}_UP"] == "UP" and verdicts[f"{pre}_DOWN"] == "DOWN"
+
+
+@pytest.mark.parametrize("name", PRESET_IDS)
+def test_top_level_conditions_are_built_from_condition_refs(name):
+    p = plan(PRESETS[name])
+    top = [c for c in p.conditions if c["verdict"] in ("UP", "DOWN")]
+    for c in top:
+        kinds = {m["kind"] for m in c["definition"]["members"]}
+        assert kinds == {"conditionRef"}, f"{c['conditionKey']} should compose by reference"
+
+
+def test_ambient_context_costs_no_columns():
+    """Verified live: sectionColumns counted only the report's own columns."""
+    p = plan(PRESETS["squeeze-breakout"])
+    ambient = {"mktBreadth_all", "usdtUsdDev_market", "usdcUsdtDev_market",
+               "fieldUpBias_session"}
+    used = set()
+    def walk(d):
+        if d.get("kind") == "clause":
+            used.add(d["column"]["header"])
+        for m in d.get("members") or []:
+            walk(m)
+    for c in p.conditions:
+        walk(c["definition"])
+    assert used & ambient, "expected the generated plan to use free ambient context"
+    report_metrics = {col.metric for s in p.report.sections for col in s.columns}
+    assert "mktBreadth_all" not in report_metrics    # no column pays for it
+
+
+def test_fade_and_align_select_opposite_readings():
+    """A reversion thesis must not buy strength, and a breakout must not buy the low band."""
+    def core_up(name):
+        p = plan(PRESETS[name])
+        pre = p.conditions[0]["conditionKey"].split("_")[0]
+        c = [x for x in p.conditions if x["conditionKey"] == f"{pre}_CORE_UP"][0]
+        node = c["definition"]["members"][0]
+        members = node["members"] if node.get("op") == "N_OF" else c["definition"]["members"]
+        return {(m["column"]["header"], m["op"], m.get("value")) for m in members}
+
+    fade = core_up("mean-reversion")
+    align = core_up("squeeze-breakout")
+    assert ("pctB_now", "lt", 0.05) in fade      # buy the lower band
+    assert ("pctB_now", "gt", 0.95) in align     # buy the breakout
+    assert ("RSI14_now", "lt", 35) in fade       # oversold, not "above midline"
+
+
+def test_stance_is_recorded_on_every_preset():
+    for name in PRESET_IDS:
+        assert PRESETS[name].stance in ("ALIGN", "FADE")
+
+
+def test_market_read_references_only_verdict_conditions():
+    p = plan(PRESETS["mean-reversion"])
+    for c in p.conditions:
+        token = "{" + c["conditionKey"] + "}"
+        if c["verdict"]:
+            assert token in p.market_read_text
+        else:
+            assert token not in p.market_read_text
