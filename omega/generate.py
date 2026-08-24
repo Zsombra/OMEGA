@@ -151,7 +151,8 @@ MODULE_CLAUSES: dict[str, dict] = {
     "SUPPORT_RESISTANCE": {"up": lambda: is_("zone", "near low"),
                            "down": lambda: is_("zone", "near high")},
     "PRICE_STRUCTURE":   {"up": lambda: num("zones_support_dist", "lt", 1.0),
-                          "down": lambda: num("zones_resistance_dist", "gt", -1.0)},
+                          # `resist`, not `resistance` - verified against a live render
+                          "down": lambda: num("zones_resist_dist", "gt", -1.0)},
     "FUNDING":           {"up": lambda: num("rate", "lt", 0),
                           "down": lambda: num("rate", "gt", 0)},
     "OPEN_INTEREST":     {"up": lambda: is_("OI_trend", "rising"),

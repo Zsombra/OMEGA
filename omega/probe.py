@@ -107,9 +107,20 @@ def load_contracts() -> list[dict]:
     return _read("_contracts.json")["cases"]
 
 
-def load_renders() -> dict:
-    """The captured preview_strategy_report payload, verbatim."""
-    return _read("_renders.json")
+def load_renders(name: str = "_renders.json") -> dict:
+    """One captured preview_strategy_report payload, verbatim."""
+    return _read(name)
+
+
+def load_all_renders() -> list[dict]:
+    """Every captured render, oldest file first.
+
+    Renders accumulate one file per capture rather than being merged, so each keeps
+    its own `capturedAt` and the request that produced it. A later capture never
+    rewrites an earlier one.
+    """
+    return [json.loads(p.read_text(encoding="utf-8"))
+            for p in sorted(COLUMNS_DIR.glob("_renders*.json"))]
 
 
 def effective_parameters(case: dict) -> dict:

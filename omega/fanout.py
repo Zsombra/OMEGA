@@ -79,9 +79,15 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     if tid == "rank":
         return f"{code}_rank_{column.ordering or 'hi'}"
     if tid.startswith("nearestZone"):
+        # Verified against live renders (data/contract/columns/_renders_coverage.json),
+        # which corrected two guesses here:
+        #   - `age` carries its unit: zones_support_age_h, not zones_support_age
+        #   - the side is abbreviated ASYMMETRICALLY - "resistance" becomes "resist"
+        #     while "support" stays whole
         suffix = {"nearestZoneType": "type", "nearestZoneRange": "range",
-                  "nearestZoneDist": "dist", "nearestZoneAge": "age"}[tid]
-        return f"{code}{infix or '_'}{column.side}_{suffix}" if infix else f"{code}_{column.side}_{suffix}"
+                  "nearestZoneDist": "dist", "nearestZoneAge": "age_h"}[tid]
+        side = "resist" if column.side == "resistance" else column.side
+        return f"{code}{infix or '_'}{side}_{suffix}" if infix else f"{code}_{side}_{suffix}"
     if tid == "count":
         return f"{code}{infix or '_'}count" if infix else f"{code}_count"
     # value, classifyZone, crossDetect, trajectory all key off the bare code

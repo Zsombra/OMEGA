@@ -104,6 +104,36 @@ and are cached under `data/contract/columns/`. Two read-only tools supply them:
 payloads and ingests the saved responses; the agent runs the calls. `probe.FETCH_RECIPE`
 documents the procedure, and a test enforces the no-network rule against the import graph.
 
+### All 16 transforms are exercised on live data
+
+A second render covers the 11 transforms the first did not, so every transform has now
+produced a real header from the live compiler. That capture immediately paid for itself
+by falsifying three of `omega.fanout`'s eleven header predictions:
+
+| shape | predicted | live |
+|---|---|---|
+| `STRUCT_ZONES × nearestZoneAge` | `zones_support_age` | **`zones_support_age_h`** |
+| `STRUCT_ZONES × nearestZoneRange` | `zones_resistance_range` | **`zones_resist_range`** |
+| `STRUCT_ZONES × nearestZoneType` | `zones_resistance_type` | **`zones_resist_type`** |
+
+Two rules, neither guessable: `nearestZoneAge` carries its **unit** in the header, and the
+side is abbreviated **asymmetrically** — `resistance` becomes `resist` while `support`
+stays whole.
+
+Fixing the predictor then broke a test elsewhere, which is the interesting part.
+`omega.generate`'s `PRICE_STRUCTURE` preset built a condition against
+`zones_resistance_dist` — a header the platform never emits. The offline type-checker had
+been passing it because the generator and the predictor shared the same wrong assumption.
+**Two self-consistent components agree with each other and both disagree with reality;
+only ground truth breaks the tie.** A generated strategy carrying that condition would
+have been unresolvable live.
+
+### `aggregate` cannot be an atom in a timeframed section
+
+`aggregate` has exactly **3** atoms — `FUNDING_RATE`, `OI`, `SPOT_CVD` — and all three are
+`timeless`, so none can sit in a timeframe-pinned section (doc 06, trap #5). Reaching it at
+`1h` means chaining: it is available as a chained stage on **52** candle-backed shapes.
+
 ### The header stem is the metric's `code`
 
 `CCI20 × trajectory` renders as `CCI_t3 … CCI_now, CCI_trend` — **not** `CCI20_*`. The stem
@@ -162,5 +192,6 @@ after a deployment. Re-run the calls in `probe.FETCH_RECIPE` before trusting the
 a changed platform; if `test_trajectory_default_window_is_four_not_eight` ever fails, that is
 a real finding about the platform, not a broken test.
 
-Four shapes is a proof of the round-trip, not coverage. 484 of the 488 shapes have never
-been compiled or rendered here.
+Fifteen shapes across two renders is transform-complete, not shape-complete: all 16
+transforms have been exercised, but 473 of the 488 shapes have still never been compiled
+or rendered here.

@@ -10,7 +10,7 @@ import inspect
 
 from omega.probe import (
     FETCH_RECIPE, FIRST_CUT, contract_request, effective_parameters, headers,
-    load_contracts, load_renders, render_request,
+    load_all_renders, load_contracts, load_renders, render_request,
 )
 from omega.space import ColumnShape
 from omega.validate import validate_column
@@ -48,8 +48,24 @@ def test_first_cut_spans_the_interesting_cases():
 def test_every_first_cut_shape_is_legal_before_we_spend_a_call():
     for shape in FIRST_CUT:
         findings = validate_column(shape.to_column(), section_timeframe="1h")
-        errors = [f for f in findings if f.level == "error"]
+        errors = [f for f in findings if f.severity == "error"]
         assert not errors, f"{shape} -> {errors}"
+
+
+def test_the_legality_guard_actually_bites():
+    """Guard the guard.
+
+    The check above reads `.severity`; an earlier version read `.level`, which does
+    not exist on Finding. It passed anyway, because every FIRST_CUT shape returns an
+    empty finding list and the comprehension never touched the attribute. A typo in
+    the field name would have surfaced as AttributeError on the first real finding
+    rather than as a clean failure - so pin an illegal shape here to prove the
+    attribute is read on a non-empty list.
+    """
+    illegal = ColumnShape("VOLUME", "rank").to_column()
+    findings = validate_column(illegal, section_timeframe="1h")
+    errors = [f for f in findings if f.severity == "error"]
+    assert errors, "raw VOLUME must not rank - use RVOL, which is already a ratio"
 
 
 def test_contract_request_is_the_wire_shape():
@@ -183,3 +199,62 @@ def test_bars_all_makes_now_duplicate_the_last_closed_slot():
     assert by_name["CCI_t1"] == by_name["CCI_now"], (
         "with bars='all' the forming bar occupies `now`, so it repeats the last "
         "closed observation until that bar closes")
+
+
+# --- full transform coverage, and the bug it found --------------------------
+
+def test_all_sixteen_transforms_are_exercised_on_live_data():
+    """Every transform has now produced a real header from the live compiler."""
+    from omega.contract import load
+    covered = set()
+    for case in load_contracts():
+        col = case["request"]["column"]
+        covered.add(col["transformId"])
+        if col.get("chainedTransformId"):
+            covered.add(col["chainedTransformId"])
+    for payload in load_all_renders():
+        for col in payload["request"]["sections"][0]["columns"]:
+            covered.add(col["transformId"])
+            if col.get("chainedTransformId"):
+                covered.add(col["chainedTransformId"])
+    missing = set(load().transform_ids()) - covered
+    assert not missing, f"never exercised live: {sorted(missing)}"
+
+
+def test_fanout_predicts_every_rendered_header_exactly():
+    """The predictor against live truth, for every column in every render.
+
+    This is what caught the two nearestZone* bugs: the header carries an `_h`
+    unit suffix for age, and side='resistance' is abbreviated to `resist`.
+    """
+    from omega.fanout import outputs_for
+    from omega.types import Column
+
+    for payload in load_all_renders():
+        section = payload["request"]["sections"][0]
+        live = [o["header"] for o in payload["response"]["conditionColumns"][0]["outputs"]]
+        predicted = []
+        for spec in section["columns"]:
+            predicted += [o.header for o in outputs_for(Column(**spec))]
+        assert predicted == live, f"predicted {predicted}\nlive      {live}"
+
+
+def test_zone_side_resistance_abbreviates_to_resist():
+    """side='resistance' renders as `resist`; 'support' stays whole. Asymmetric."""
+    from omega.fanout import outputs_for
+    from omega.space import ColumnShape
+
+    col = ColumnShape("STRUCT_ZONES", "nearestZoneType").to_column()
+    assert [o.header for o in outputs_for(col.model_copy(update={"side": "resistance"}))] \
+        == ["zones_resist_type"]
+    assert [o.header for o in outputs_for(col.model_copy(update={"side": "support"}))] \
+        == ["zones_support_type"]
+
+
+def test_zone_age_carries_its_hours_unit_in_the_header():
+    from omega.fanout import outputs_for
+    from omega.space import ColumnShape
+
+    col = ColumnShape("STRUCT_ZONES", "nearestZoneAge").to_column()
+    assert [o.header for o in outputs_for(col.model_copy(update={"side": "support"}))] \
+        == ["zones_support_age_h"]
