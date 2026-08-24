@@ -126,7 +126,7 @@ docs/              00–14
 omega/             the toolkit
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py
-tests/             347 tests, incl. 20 compiler + 22 membership probes replayed
+tests/             348 tests, incl. 20 compiler + 22 membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -139,7 +139,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 347 passed
+python -m pytest tests/ -q     # 348 passed
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector

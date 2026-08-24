@@ -211,11 +211,22 @@ def test_load_captures_spans_files_and_stamps_each_observation():
 
 
 def test_stability_reports_both_axes_separately():
-    st = stability(load_captures())
-    coins, times = st["bollinger_squeeze"]
-    assert coins == 4 and times == 2
-    # a signal seen at only one timepoint must not claim two
-    assert st["volume_surge"][1] == 1
+    """The two axes must stay independent and bounded by the real data.
+
+    Deliberately asserts no signal name or count: an earlier version pinned
+    bollinger_squeeze at (4 coins, 2 times), so adding a third capture broke a
+    test that was measuring the fixture rather than the code.
+    """
+    obs = load_captures()
+    n_coins = len({f"{o.ticker}/{o.interval}" for o in obs})
+    n_times = len({o.captured_at for o in obs})
+    st = stability(obs)
+    assert st, "the captures must yield at least one fired signal"
+    for sid, (coins, times) in st.items():
+        assert 1 <= coins <= n_coins, f"{sid} claims {coins} of {n_coins} coins"
+        assert 1 <= times <= n_times, f"{sid} claims {times} of {n_times} timepoints"
+    # the axes are independent: some signal must differ from the other on each
+    assert any(c != t for c, t in st.values()), "coins and times cannot be the same axis"
 
 
 def test_a_coin_captured_twice_still_counts_once():
@@ -281,12 +292,43 @@ def test_a_stable_estimate_larger_than_its_drift_does_claim_one():
 
 
 def test_temporal_ranking_gates_on_coins_not_observation_count():
-    """Two captures must not promote a one-coin signal into CONSISTENT."""
-    out = temporal_drag_ranking(_rules(), load_captures())
-    consistent = out.split("OCCASIONAL")[0]
-    assert "bollinger_squeeze" in consistent      # 4 coins x 2 times
-    assert "volume_surge" not in consistent       # 1 coin  x 1 time
-    assert "ltf_trend_adx_trending" not in consistent   # 1 coin x 2 times
+    """Repeat captures must never promote a signal into CONSISTENT.
+
+    The gate reads COIN count. Adding timepoints multiplies observations without
+    adding coins, so the split must be derivable from `stability` alone - checked
+    here against the rendered report rather than against hard-coded signal names.
+    """
+    obs = load_captures()
+    n_coins = len({f"{o.ticker}/{o.interval}" for o in obs})
+    need = min(3, n_coins)
+    st = stability(obs)
+    out = temporal_drag_ranking(_rules(), obs)
+    head, _, tail = out.partition("OCCASIONAL")
+
+    def ids_in(block: str) -> set[str]:
+        """Signal ids named in a block, by column position rather than substring.
+
+        Matching on substring would confuse `rsi_overbought` with
+        `htf_rsi_overbought`, so read the id as its own field.
+        """
+        out = set()
+        for line in block.splitlines():
+            parts = line.split()
+            if len(parts) >= 2 and parts[0] in ("DRAG", "carries", "?"):
+                out.add(parts[1])
+        return out
+
+    in_consistent, in_occasional = ids_in(head), ids_in(tail)
+    ranked = {e.signal_id for e in temporal_estimates(_rules(), obs).values()}
+    assert ranked == in_consistent | in_occasional, "every ranked signal must be printed once"
+    assert not (in_consistent & in_occasional), "a signal cannot be in both blocks"
+
+    for sid in ranked:
+        coins = st[sid][0]
+        if coins >= need:
+            assert sid in in_consistent, f"{sid} fired on {coins} coins but is OCCASIONAL"
+        else:
+            assert sid in in_occasional, f"{sid} fired on {coins} coins but is CONSISTENT"
 
 
 def test_the_top_drag_survives_the_second_timepoint():

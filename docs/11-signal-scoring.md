@@ -227,8 +227,26 @@ silently carries less evidence off-crypto.
   claim of a live 0.269 against a computed 0.538 could not be reproduced and is recorded
   as my transcription error, not engine behaviour.
 - `regime_alignment`, above — still unresolved.
-- The 16 divergence magnitudes. Five live firings have now been observed
-  (`macd_bear_divergence`, `macd_bull_divergence`, `cvd_bull_divergence` ×2,
-  `oi_divergence_bull`) and **every one returned exactly 1.0**. Suggestive of a fixed
-  score — but the `oi_divergence_bull` definition publishes a 0.50 example, so magnitude
-  clearly can vary. Still refused.
+- **The 16 divergence magnitudes — PARTLY RESOLVED.** The earlier claim here was that
+  every observed firing returned exactly 1.0, which pointed at a fixed score. Three
+  captures now hold **26** divergence firings, and **8 are not 1.0** — including in the
+  very signal named above:
+
+  | signal | coin | score |
+  |---|---|---|
+  | `oi_divergence_bull` | ETH | `0.20133736400835542` |
+  | `flow_perp_spot_bear_divergence` | ETH | `0.2392909896129719` |
+  | `flow_perp_spot_bull_divergence` | SOL | `0.2421094388008913` |
+  | `flow_perp_spot_bear_divergence` | BTC | `0.30359968751644006` |
+  | `flow_perp_spot_bear_divergence` | SOL | `0.3098538385810036` |
+  | `comparison_sector_divergence` | GOLD | `0.6666666666666666` (2 of 3 peers — a ratio) |
+
+  So magnitude **is not fixed**, which matches the 0.50 example the `oi_divergence_bull`
+  definition publishes. Six signals have still only ever been seen at 1.0
+  (`macd_bear_divergence`, `macd_bull_divergence`, `cvd_bull_divergence`,
+  `mfi_bull_divergence`, `oi_divergence_bear`, `regime_divergence`) — that is now a
+  statement about a small sample, not evidence of a constant.
+
+  Knowing the magnitude varies is not the same as knowing the formula. The scorers stay
+  refused, and `test_divergence_magnitude_is_not_fixed_at_one` pins both halves: that a
+  counterexample exists, and that `omega.scoring` still declines to guess.

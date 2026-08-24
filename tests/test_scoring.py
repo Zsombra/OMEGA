@@ -148,3 +148,42 @@ def test_score_str_is_readable():
     s = score("ma_sma200_above", {"price": 77103, "sma200": 69944.975}, {})
     assert "clamped" in str(s)
     assert "not computable" in str(score("regime_alignment", {}, {}))
+
+
+def test_divergence_magnitude_is_not_fixed_at_one():
+    """Doc 11 carried this as an open question. The captures answer it.
+
+    The claim was that every observed divergence firing returned exactly 1.0,
+    which would have suggested a fixed score. Across three captures there are
+    counterexamples, including in the very signal doc 11 named:
+
+        oi_divergence_bull       ETH    0.20133736400835542
+        flow_perp_spot_bear_*    ETH    0.2392909896129719
+        flow_perp_spot_bull_*    SOL    0.2421094388008913
+        flow_perp_spot_bear_*    BTC    0.30359968751644006
+
+    So magnitude demonstrably varies. That does NOT make the formula known - it
+    makes refusing to guess it the right call, which is what omega.scoring does.
+    """
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    firings = []
+    for f in sorted((root / "data" / "performance").glob("coin_observations*.json")):
+        for o in json.loads(f.read_text(encoding="utf-8"))["observations"]:
+            firings += [(sid, v) for sid, v in o["scores"].items() if "divergence" in sid]
+
+    assert firings, "the captures must contain divergence firings"
+    varied = [(sid, v) for sid, v in firings if v != 1]
+    assert varied, "a counterexample to 'always 1.0' must be present"
+    assert any(sid == "oi_divergence_bull" for sid, _ in varied), (
+        "oi_divergence_bull is the signal doc 11 named as always-1.0; its "
+        "counterexample is what closes the question")
+
+    # and the refusal still stands - a varying magnitude is not a known formula
+    from omega.scoring import score
+    for sid, _ in varied:
+        if sid in ("comparison_sector_divergence",):
+            continue          # a peer ratio, not a divergence magnitude
+        assert not score(sid, {}).computable, f"{sid} must still refuse to guess"

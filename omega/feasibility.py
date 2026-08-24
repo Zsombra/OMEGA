@@ -441,7 +441,7 @@ def temporal_drag_ranking(rules: Iterable, observations: Sequence[Observation],
     lines = [f"leverage across {n_coins} coins x {n_times} timepoints "
              f"(positive = removing it RAISES the aggregate)",
              "  each coin is averaged across time before coins are averaged together,",
-             "  so a coin captured twice still counts once", ""]
+             "  so repeat captures of one coin still count as one coin", ""]
     lines.append(f"CONSISTENT - fired on at least {need} of {n_coins} coins:")
     lines += [fmt(e) for e in consistent] or ["  (none)"]
     if occasional:

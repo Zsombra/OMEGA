@@ -117,11 +117,46 @@ only, and **verify each scorecard against the platform's reported
 `aggregateScorePercent` before storing it**. A hand-built fixture's most likely failure
 is a transcription slip, and that check catches it. All ten stored scorecards reconcile.
 
+## A third capture, twelve hours out
+
+The first two captures were 42 minutes apart, inside one session. A third taken ~12 hours
+later is the first that spans a real stretch of tape — and it changes the picture sharply.
+
+| | 42 minutes (t1→t2) | ~12 hours (t2→t3) |
+|---|---:|---:|
+| fired-signal slots stable | **69%** | **30%** |
+| dominant biases flipped | 2 of 5 | **3 of 5** |
+
+BTC kept **2** of its 17 fired slots. All three bias flips ran the same way,
+`BEARISH → BULLISH`, and BTC's aggregate went 54% → 81%.
+
+### The noise floor does its job
+
+With a better drift estimate, the ranking gets *less* confident — which is the point:
+
+| | 2 timepoints | 3 timepoints |
+|---|---|---|
+| `rel_roc_negative` | +6.00pp, resolved | **+6.00pp, resolved** (drift 0.24) |
+| `ma_sma200_above` | −4.44pp, resolved | −2.64pp, resolved (drift 1.14) |
+| `bollinger_squeeze` | +0.57pp, resolved | **+0.96pp, UNRESOLVED** (drift 1.17) |
+| entries claiming a direction | most | **27 of 52** |
+
+**25 of 52 entries are now unresolved.** Two captures 42 minutes apart made the rankings
+look far more settled than they were; the extra timepoint raised the measured drift and
+disqualified nearly half of them. Nothing about the estimator changed — only the evidence
+it had to judge against.
+
+`rel_roc_negative` survives all three captures as the top drag, with the *tightest* drift
+in the sample (0.24pp). `ma_sma200_above` remains the top resolved carry on the broadest
+evidence available — 5 coins × 3 timepoints — though its magnitude halved.
+
 ## Caveat
 
-Two timepoints is enough to detect drift and refuse a direction. It is not enough to
-*estimate* drift well — every noise floor here rests on at most a handful of coin-pairs,
-and the whole sample spans 42 minutes inside one trading session. Captures hours or days
-apart, across a regime change, are what would turn this from a guard into a measurement.
+Three timepoints across ~12 hours is better than two across 42 minutes, and still thin.
+Every noise floor rests on at most a handful of coin-pairs, and the whole sample is one
+day. Captures days apart, and more coins, are what would turn this into a measurement
+rather than a guard.
 
-The `?` verdicts are the honest output of a small sample, not a permanent judgement.
+The `?` verdicts are the honest output of a small sample, not a permanent judgement — and
+the count of them went **up** when better evidence arrived, which is the behaviour to
+want.
