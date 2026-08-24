@@ -115,3 +115,24 @@ Plus Grid-Commander's 2026-08-15 case (`regimeAutoDerive` / `regimeTimeframe`
 declared required, rejected live). Four instances, one shape: **the contract is a
 claim, not a guarantee.** Every number in this repo is extracted from a live render
 for exactly this reason — and now the extraction itself has been checked end to end.
+
+## All three write axes are now closed
+
+The doc-16 write moved the `REPORT` axis. This sweep closed the other two:
+`OMEGA-TEST: Fork Build` went revision 5 → 6 with
+`changedAxes: ["MARKET_READ", "CONDITIONS"]`, carrying all 13 conditions above.
+
+Two things the server does on the way in, worth knowing before you author:
+
+- **`sectionKey: null` is rewritten.** Every clause was submitted with a null
+  section key; every one came back bound to `custom:3b1ce9ed-…`, and the ambient
+  clause came back bound to `reference-pairs`. You do not resolve section keys —
+  the server does, and it stores the resolved form.
+- **The apply shape is the same one doc 16 found.** `{request: {confirm, planToken}}`,
+  no `plan` key, on a second independent axis. That is the workaround holding twice.
+
+So the full authoring chain — enumerate, validate, predict, compile, write, read
+back, render, reconcile — is closed end to end for columns, conditions and market
+read. What remains untested is `CREATE` from scratch (quota is 25/25, and every
+CREATE attempt predates the connector change) and agent binding, which is deferred
+by choice.
