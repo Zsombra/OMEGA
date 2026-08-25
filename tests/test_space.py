@@ -62,19 +62,27 @@ def test_chain_successors_split_42_and_10():
     assert len(four) == 10
 
 
-def test_expanding_operands_and_orderings_gives_2200():
-    assert len(enumerate_shapes(expand_operands=True)) == 2200
+def test_expanding_operands_and_orderings_gives_2136():
+    """2,200 until 2026-08-26, when 64 illegal shapes came out of the enumeration.
+
+    Chaining spread -> rank narrows the legal operand set via the contract's
+    `rankableSpreadOperands`; the enumerator paired the chain with all of spread's
+    operands instead. omega's own validator had always refused those 64 - only
+    enumerate_shapes disagreed. See tests/test_space_validate_agreement.py.
+    """
+    assert len(enumerate_shapes(expand_operands=True)) == 2136
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
     """chainedRankOrderings is separate from the metric's own rankOrderings.
 
-    Missing this axis undercounts the space by 78. The 10 rank-chain atoms carry
-    [hi, lo, far, near] and expand to 104 forms once spread operands multiply in.
+    Missing this axis undercounts the space. The rank-chain atoms carry
+    [hi, lo, far, near] and expand to 40 forms - 104 until 2026-08-26, when the
+    rankableSpreadOperands narrowing was applied and 64 illegal pairings were dropped.
     """
     expanded = enumerate_shapes(expand_operands=True)
     rank_chains = [s for s in expanded if s.chained == "rank"]
-    assert len(rank_chains) == 104
+    assert len(rank_chains) == 40
     assert {s.ordering for s in rank_chains} == {"hi", "lo", "far", "near"}
 
 
@@ -144,4 +152,4 @@ def test_query_can_isolate_what_the_platform_never_uses():
 
 def test_query_with_no_filters_is_the_whole_space():
     assert len(query()) == 488
-    assert len(query(expand_operands=True)) == 2200
+    assert len(query(expand_operands=True)) == 2136

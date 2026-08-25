@@ -259,7 +259,7 @@
       <span><b>Operators</b> 16</span>
       <span><b>Legal atoms</b> 322</span>
       <span><b>Structural shapes</b> 488</span>
-      <span><b>With operands &amp; orderings</b> 2,200</span>
+      <span><b>With operands &amp; orderings</b> 2,136</span>
       <span><b>Fully parameterised</b> ~70,700</span>
     </div>
   </header>
@@ -507,7 +507,7 @@ distance  (48 shapes) ──┤   aggregate             52
       </p>
     </div>
     <p style="margin-top:1.25rem">
-      Counting the parameter axes against that cap, the 2,200 shapes become roughly
+      Counting the parameter axes against that cap, the 2,136 shapes become roughly
       <strong>70,700 distinct columns</strong>. <code>spread</code> accounts for most of it: 57 metrics,
       up to 17 operands each, four chain options, each with its own window and bars.
     </p>
@@ -761,7 +761,7 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
           <tr><td class="cls">Metric &times; operator pairs</td><td class="n">1,376</td><td>the naive product, mostly illegal</td></tr>
           <tr><td class="cls">Legal atoms</td><td class="n">322</td><td>single-stage columns the engine accepts</td></tr>
           <tr><td class="cls">Structural shapes</td><td class="n">488</td><td>atoms plus 166 two-stage chains</td></tr>
-          <tr><td class="cls">Expanded</td><td class="n">2,200</td><td>with operand choice and rank ordering</td></tr>
+          <tr><td class="cls">Expanded</td><td class="n">2,136</td><td>with operand choice and rank ordering</td></tr>
           <tr><td class="cls">&mdash; carrying an operand</td><td class="n">1,807</td><td>spread against a specific metric</td></tr>
           <tr><td class="cls">&mdash; carrying an ordering</td><td class="n">188</td><td>rank, hi / lo / far / near</td></tr>
           <tr><td class="cls">&mdash; plain</td><td class="n">273</td><td>neither axis applies</td></tr>
@@ -785,7 +785,7 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
       and a percentage is the only form that means the same thing on every coin in the pool.
     </p>
     <p>
-      The productive region is therefore narrower and sharper than 2,200 suggests: <code>spread</code>
+      The productive region is therefore narrower and sharper than 2,136 suggests: <code>spread</code>
       and <code>distance</code>, pointed at a well-chosen reference, then pushed through
       <code>trajectory</code>, <code>aggregate</code>, <code>efficiency</code> or <code>rank</code>.
       That is 166 shapes, and it is where nearly every numeric indicator worth building lives.
@@ -799,11 +799,12 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
   </section>
 
   <section>
-    <h2>Addendum &mdash; nine things measured after this page was written</h2>
+    <h2>Addendum &mdash; ten things measured after this page was written</h2>
     <p>
       Everything above still holds. The counts were re-derived against the live enumeration on
-      2026-08-25 and are unchanged: <strong>322 legal atoms, 488 structural shapes, 2,200
-      operand-expanded, ~70,700 parameterised.</strong> What follows is not a correction to any of
+      2026-08-25: <strong>322 legal atoms, 488 structural shapes, 2,136 operand-expanded,
+      ~70,700 parameterised.</strong> The expanded figure was 2,200 until 2026-08-26 &mdash;
+      see item 10. What follows is not a correction to any of
       it &mdash; it is what a further round of live probing added.
     </p>
 
@@ -940,14 +941,47 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
     </p>
 
 
+    <h3>10. 64 of the &ldquo;2,200&rdquo; expanded shapes were never legal</h3>
+    <p>
+      Chaining <code>spread &rarr; rank</code> <b>narrows</b> the legal operand set. The contract
+      publishes the narrowed list as <code>rankableSpreadOperands</code>, and for
+      <code>EMA5 &times; spread</code> it holds one entry:
+    </p>
+    <pre><code>(EMA5 x spread x rank) is only resolvable for operands ['EMA13'], not 'OPEN'.
+Raw price-unit metrics never rank &mdash; rank the composition, not the level.</code></pre>
+    <p>
+      The enumerator ignored that field and paired the chain with all 16 of <code>spread</code>'s
+      operands &times; 4 orderings &mdash; <b>64 shapes</b> that the toolkit's own validator had
+      always refused. A second, smaller case sat beside it: a <code>rank</code> atom with no
+      explicit ordering resolves to <code>hi</code>, and <code>CLOSE_CHANGE</code> offers only
+      <code>['far', 'near']</code>, so its structural shape was illegal too.
+      <b>Expanded: 2,200 &rarr; 2,136.</b> The atom count (322) and the structural count (488)
+      are unchanged.
+    </p>
+    <p class="correct">
+      <b>Neither was a discovery about the platform.</b> The contract stated both rules and the
+      validator enforced both. Only the enumerator disagreed &mdash; and nothing ever compared
+      the two, so a wrong number sat in this page under the word <em>measured</em>. The fix was
+      to assert the invariant that should never have been assumable: every shape the enumerator
+      produces must be one the validator accepts. It now runs on every commit.
+    </p>
+    <p>
+      This is the counterpart to item 1. There, eight shapes were <em>legal and unrenderable</em>
+      &mdash; the platform disagreeing with the contract. Here, sixty-four were <em>enumerated
+      and illegal</em> &mdash; the toolkit disagreeing with itself. Both gaps are invisible while
+      each layer is only ever checked against the layer above it.
+    </p>
+
+
     <p class="lede" style="margin-top:1.6rem">
       The through-line: the algebra above is sound, and the gap between <em>legal</em> and
       <em>usable</em> is wider than any contract discloses. Eight shapes that cannot render, a
       chaining rule with a second condition, a parameter that changes values without changing
       names, four metrics that vanish on a third of the universe, 88 shapes that exist at one
       timeframe while the rest exist at three, and two places where the platform describes the
-      same column two contradictory ways in one response &mdash; none of it is visible until
-      something is rendered and the arithmetic checked by hand.
+      same column two contradictory ways in one response, and sixty-four shapes this page
+      counted that were never legal &mdash; none of it is visible until something is rendered
+      and the arithmetic checked by hand.
     </p>
     <p style="margin-top:1rem">
       Item 3 is worth re-reading as a method note. It was measured, it was right about

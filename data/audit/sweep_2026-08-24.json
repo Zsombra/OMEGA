@@ -7,7 +7,7 @@
     "headerMismatches": 0,
     "predictedHeaders": 536,
     "batches": 15,
-    "claim": "omega.fanout.outputs_for predicted the platform headers exactly for every shape it rendered: 300 shapes, 536 headers, 0 mismatches, across all 16 authorable transforms, chained forms, categorical trajectories, rank orderings, structure counts and the deep moving averages.",
+    "claim": "omega.fanout.outputs_for predicted the platform headers exactly for every shape it rendered: 300 structural shapes, 536 headers, 0 mismatches, across all 16 authorable transforms. It did NOT cover every legal shape - see coverageCorrection.",
     "quarantined": {
       "count": 8,
       "reason": "declared legal by the contract, INTERNAL_ERROR when rendered",
@@ -24,21 +24,40 @@
     },
     "coverageCorrection": {
       "measuredAt": "2026-08-26",
-      "what": "The claim above originally read 'for every legal shape'. It was not. Recomputed by generating each enumerated shape*s predicted headers and checking them against the 537 headers actually rendered in _sweep_seen.json.",
-      "covered": 300,
-      "ofTotal": 488,
-      "coveredPct": "61%",
-      "uncovered": 188,
-      "uncoveredByTransform": {
-        "spread": 175,
-        "rank": 9,
-        "nearestZoneType": 1,
-        "nearestZoneRange": 1,
-        "nearestZoneDist": 1,
-        "nearestZoneAge": 1
+      "script": "scripts/render_coverage.py",
+      "test": "tests/test_render_coverage.py",
+      "_correctedTwice": "I answered this with a one-liner twice and got it wrong both times, in opposite directions. First: \"300 of 488, 61% covered, 188 untested\" - outputs_for on an unexpanded spread emits the placeholder header X_?_spread, so all 175 spread structural shapes were counted uncovered BY CONSTRUCTION. Second: \"zero spread headers ever rendered\" - I read only _sweep_seen.json; six other caches hold renders and 27 spread headers sit in them. It is a script with a test now.",
+      "structural": {
+        "covered": 300,
+        "total": 313,
+        "pct": "96%",
+        "uncovered": 13,
+        "byTransform": {
+          "rank": 9,
+          "nearestZoneType": 1,
+          "nearestZoneRange": 1,
+          "nearestZoneDist": 1,
+          "nearestZoneAge": 1
+        },
+        "note": "excludes the 175 placeholder spread shapes, which carry no testable header until an operand is chosen"
       },
-      "why": "spread fans a structural shape out across operands, and the sweep rendered a sample of those pairs rather than all of them. The uncovered set is therefore concentrated, not scattered.",
-      "riskClass": "Same class as the timeless-column-timeframe defect found on 2026-08-26: omega's validator called a shape legal and the platform refused it. That one was found by accident. A sweep of the remaining 188 would find the rest of the class deliberately."
+      "operandExpanded": {
+        "covered": 333,
+        "total": 2200,
+        "pct": "15%",
+        "uncovered": 1867,
+        "byTransform": {
+          "spread": 1776,
+          "rank": 60,
+          "distance": 27,
+          "nearestZoneType": 1,
+          "nearestZoneRange": 1,
+          "nearestZoneDist": 1,
+          "nearestZoneAge": 1
+        }
+      },
+      "whichDenominatorMatters": "The operand-expanded one. A spread's legality depends on the OPERAND as well as the base - addendum item 2 established that both sides need a stored bar series - so an untested (base, operand) pair is an untested legality claim, not a repeat of one already proven.",
+      "riskClass": "Same class as the timeless-column-timeframe defect found 2026-08-26: omega calls a shape legal, the platform refuses it. That one surfaced by accident. 1,776 spread pairs have never been asked."
     }
   },
   "budgetModel": {

@@ -11,7 +11,7 @@ than sampled:
      166 chained forms   (42 atoms x 3 general successors, 10 x 4 including rank)
      488 structural shapes
 
-Expanding spread operands and rank orderings gives 2200 concrete forms.
+Expanding spread operands and rank orderings gives 2136 concrete forms.
 
 PARAMETERS ARE NOT ENUMERATED, DELIBERATELY
 -------------------------------------------
@@ -58,6 +58,13 @@ class ColumnShape:
 def _variants(m: Metric, transform: str, expand: bool) -> list[tuple[str | None, str | None]]:
     """(operand, ordering) pairs for one atom. Exactly one entry when not expanding."""
     if not expand:
+        # A rank column with no explicit ordering resolves to "hi", and not every metric
+        # offers it - CLOSE_CHANGE allows only ['far', 'near']. Leaving ordering None
+        # there emitted a shape omega's own validator refuses. Name the default when it
+        # is legal, otherwise the first ordering the metric does offer.
+        if transform == "rank" and m.rank_orderings:
+            orderings = tuple(m.rank_orderings)
+            return [(None, "hi" if "hi" in orderings else orderings[0])]
         return [(None, None)]
     if transform == "spread" and m.spread_operands:
         return [(o, None) for o in m.spread_operands]
@@ -71,7 +78,7 @@ def enumerate_shapes(expand_operands: bool = False,
     """Every structural shape in the space.
 
     `expand_operands=False` gives the 488 structural shapes. `True` enumerates each
-    spread operand and rank ordering separately, giving 2200.
+    spread operand and rank ordering separately, giving 2136.
 
     THREE ORDERING AXES, NOT ONE
     ----------------------------
@@ -79,7 +86,8 @@ def enumerate_shapes(expand_operands: bool = False,
     over the atom's own `chainedRankOrderings`, which the contract publishes
     separately - `EMA13 x distance` carries chainSuccessors [..., "rank"] AND
     chainedRankOrderings [hi, lo, far, near]. Dropping that second axis undercounts
-    the space by 78 (2122 instead of 2200), so it is enumerated explicitly below.
+    the space by 78, so it is enumerated explicitly below. Chaining to rank also
+    NARROWS the operands - see rankableSpreadOperands below.
     A shape has at most one rank stage, so a single `ordering` field serves both.
     """
     c = contract or load()
@@ -90,6 +98,15 @@ def enumerate_shapes(expand_operands: bool = False,
                 out.append(ColumnShape(name, transform, None, operand, ordering))
                 for succ in (flags.get("chainSuccessors") or ()):
                     if succ == "rank" and expand_operands:
+                        # Chaining to rank NARROWS the legal operand set. The contract
+                        # publishes rankableSpreadOperands: for EMA5 x spread that is
+                        # ['EMA13'] alone, because "raw price-unit metrics never rank -
+                        # rank the composition, not the level". Pairing the chain with
+                        # all of spread's operands emitted 64 shapes omega's own
+                        # validator refuses. See tests/test_space_validate_agreement.py.
+                        rankable = flags.get("rankableSpreadOperands")
+                        if rankable is not None and operand not in rankable:
+                            continue
                         for o in (flags.get("chainedRankOrderings") or (None,)):
                             out.append(ColumnShape(name, transform, succ, operand, o))
                     else:

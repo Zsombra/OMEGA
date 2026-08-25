@@ -17,13 +17,13 @@ most one chained successor. That cap is the whole reason this is countable:
 | **legal atoms** | **322** |
 | atoms accepting a chained stage | 52 — 42 × 3 successors, 10 × 4 including `rank` |
 | **structural shapes** | **488** |
-| expanded by spread operand and rank ordering | **2200** |
+| expanded by spread operand and rank ordering | **2136** |
 | documented in the cookbook (doc 06) | 8 |
 
 ```python
 from omega.space import enumerate_shapes, query
 len(enumerate_shapes())                      # 488
-len(enumerate_shapes(expand_operands=True))  # 2200
+len(enumerate_shapes(expand_operands=True))  # 2136
 ```
 
 ### Three ordering axes, not one
@@ -32,7 +32,16 @@ A `rank` **atom** varies over the metric's `rankOrderings`. A **chained** `rank`
 the atom's own `chainedRankOrderings`, which the contract publishes separately —
 `EMA13 × distance` carries `chainSuccessors: [..., "rank"]` *and*
 `chainedRankOrderings: [hi, lo, far, near]`. Treating those as one axis undercounts the
-space by 78 (2122 instead of 2200).
+space by 78.
+
+> **Corrected 2026-08-26: 2200 → 2136.** Chaining `spread → rank` *narrows* the legal
+> operand set — the contract publishes `rankableSpreadOperands`, and for `EMA5 × spread`
+> that is `['EMA13']` alone, because *"raw price-unit metrics never rank — rank the
+> composition, not the level."* The enumerator paired the chain with all 16 of `spread`'s
+> operands × 4 orderings, emitting **64 shapes omega's own validator had always refused**.
+> The contract stated the rule and `validate_column` enforced it; only `enumerate_shapes`
+> disagreed, and nothing compared the two. `tests/test_space_validate_agreement.py` now
+> asserts that every enumerated shape validates.
 
 ## Parameters are not enumerated
 

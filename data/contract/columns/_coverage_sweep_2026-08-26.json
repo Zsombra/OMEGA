@@ -1,0 +1,132 @@
+{
+  "_what": "Coverage sweep of 2026-08-26: every rank ordering and distance-chain variant that had never been rendered live. Planned by scripts/coverage_sweep_plan.py from scripts/render_coverage.py's gap list.",
+  "anchor": "1h",
+  "coinSelection": {
+    "mode": "explicit",
+    "tickers": [
+      "BTC",
+      "ETH"
+    ]
+  },
+  "result": "71 columns, 71 headers, 0 mismatches against omega.fanout.outputs_for. Every header also appeared in conditionColumns, so none tripped the duplicate-header section-drop.",
+  "batches": [
+    {
+      "batch": 1,
+      "columns": 32,
+      "budget": {
+        "sectionColumns": "32/32",
+        "columnLookback": "24/32",
+        "estimatedTokens": "2251/16000"
+      },
+      "headers": [
+        "ADX_rank_lo",
+        "atrPct_rank_far",
+        "atrPct_rank_near",
+        "pctB_rank_lo",
+        "bbWidthPct_rank_lo",
+        "bbWidthPct_rank_far",
+        "bbWidthPct_rank_near",
+        "buyPres_rank_lo",
+        "buyTr_rank_lo",
+        "CCI_rank_lo",
+        "CCI_rank_far",
+        "CCI_rank_near",
+        "closeChg_rank_far",
+        "closeChg_rank_near",
+        "dist_EMA13_rank_lo",
+        "dist_EMA13_rank_far",
+        "dist_EMA13_rank_near",
+        "dist_EMA20_rank_lo",
+        "dist_EMA20_rank_far",
+        "dist_EMA20_rank_near",
+        "dist_EMA5_rank_lo",
+        "dist_EMA5_rank_far",
+        "dist_EMA5_rank_near",
+        "rate_rank_lo",
+        "rate_rank_far",
+        "rate_rank_near",
+        "highDev_rank_lo",
+        "highDev_rank_far",
+        "highDev_rank_near",
+        "lowDev_rank_lo",
+        "lowDev_rank_far",
+        "lowDev_rank_near"
+      ]
+    },
+    {
+      "batch": 2,
+      "columns": 32,
+      "budget": {
+        "sectionColumns": "32/32",
+        "columnLookback": "24/32",
+        "estimatedTokens": "2255/16000"
+      },
+      "headers": [
+        "MFI14_rank_lo",
+        "OI_rank_lo",
+        "OI_rank_far",
+        "OI_rank_near",
+        "oiChg_rank_lo",
+        "oiChg_rank_far",
+        "oiChg_rank_near",
+        "PPO_rank_lo",
+        "PPO_rank_far",
+        "PPO_rank_near",
+        "ROC_rank_far",
+        "ROC_rank_near",
+        "RSI14_rank_lo",
+        "RSI7_rank_lo",
+        "RVOL_rank_lo",
+        "RVOL_rank_far",
+        "RVOL_rank_near",
+        "sellTr_rank_lo",
+        "dist_SMA20_rank_lo",
+        "dist_SMA20_rank_far",
+        "dist_SMA20_rank_near",
+        "dist_SMA200_rank_lo",
+        "dist_SMA200_rank_far",
+        "dist_SMA200_rank_near",
+        "dist_SMA50_rank_lo",
+        "dist_SMA50_rank_far",
+        "dist_SMA50_rank_near",
+        "D_rank_lo",
+        "K_rank_lo",
+        "dist_swingHi_rank_lo",
+        "dist_swingHi_rank_far",
+        "dist_swingHi_rank_near"
+      ]
+    },
+    {
+      "batch": 3,
+      "columns": 7,
+      "budget": {
+        "sectionColumns": "7/32",
+        "columnLookback": "24/32",
+        "estimatedTokens": "496/16000"
+      },
+      "headers": [
+        "dist_swingLo_rank_lo",
+        "dist_swingLo_rank_far",
+        "dist_swingLo_rank_near",
+        "trades_rank_lo",
+        "dist_VWAP_rank_lo",
+        "dist_VWAP_rank_far",
+        "dist_VWAP_rank_near"
+      ]
+    }
+  ],
+  "findings": {
+    "orderingAliases": {
+      "what": "For a metric whose values are all one sign, two of the four orderings are the SAME column under different names. Measured, not reasoned: BTC OI_rank_lo and OI_rank_near are both 78/78; RVOL_rank_lo == RVOL_rank_near (61/78); highDev_rank_lo == highDev_rank_near (39/78); dist_swingLo_rank_lo == dist_swingLo_rank_near (30/78 BTC, 20/78 ETH). And for a never-positive metric it is lo == far instead: lowDev_rank_lo == lowDev_rank_far (38/78).",
+      "rule": "non-negative metric -> rank_lo is rank_near, and rank_hi is rank_far. non-positive metric -> rank_lo is rank_far, and rank_hi is rank_near.",
+      "consequence": "Part of the operand-expanded shape count is semantic duplication rather than distinct capability. Authoring both members of an alias pair spends two of the 32 section-column slots on one measurement, and the headers differ so nothing warns you.",
+      "affects": "every rank over a single-signed metric - OI, OI_CHG, RVOL, VOLUME, TRADES, BUY_TRADES, SELL_TRADES, ATR, ATR_PCT, BB_WIDTH, BB_WIDTH_PCT, HIGH_DEV (never negative), LOW_DEV (never positive), and the dist_* chains whose sign is fixed by construction"
+    },
+    "rankScopingNote": {
+      "what": "Every response in this sweep carried a top-level `rankScopingNote`: 'Rank columns reflect the full active market, not the previewed coin selection - a coin may show a rank higher than the number of rows shown.'",
+      "significance": "Column Algebra addendum item 8 recorded that the section preamble and conditionColumns described rank scoping two contradictory ways, and that the values agreed with conditionColumns (market-wide). The platform now states it explicitly at the top level. Values here confirm it: 2 coins previewed, ranks rendered as n/78.",
+      "status": "Not re-verified as a fix - item 8's contradiction was between two OTHER fields, and this note is a third statement that happens to agree with the correct one. Recorded as an observation."
+    }
+  },
+  "_naming": "NOT named _renders*.json deliberately. omega.probe.load_all_renders() globs that prefix and requires each match to be a VERBATIM {capturedAt, request, response} capture; this file is a summary of headers and findings, so the prefix would break every consumer of the render caches. It did, briefly."
+}
