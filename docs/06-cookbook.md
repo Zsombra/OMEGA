@@ -355,6 +355,10 @@ The contract has always offered it; this is the reason to use it.
 
 Evidence and method: [19 - Is the data correct?](19-is-the-data-correct.md).
 
+**One exception: `rank` does not repaint.** Its header states *"the standing as of the
+last close, unchanged until the next one."* Rank columns are stable within the bar;
+`value`, `trajectory`, `aggregate` and the rest are not.
+
 ### 17. A legal spread whose operands differ by orders of magnitude
 
 `spread` is `(A - B) / B x 100`. That is only informative when A and B are of comparable
@@ -378,6 +382,31 @@ a bug, and neither is readable as "the percentage gap" in the way `EMA5_EMA13_sp
 **Fix:** pair operands of similar magnitude - `EMA5` vs `EMA13`, `RSI14` vs `RSI7`,
 `STOCH_K` vs `STOCH_D`, `HIGH` vs `LOW`. Where you want two quantities of different scale,
 ship them as separate columns and let a condition compare each to its own threshold.
+
+### 19. `rank` is scoped to the whole market, not your coin selection
+
+Measured 2026-08-25. A five-coin preview returned ranks of `36/78`, `48/78`, `25/78` —
+against a universe of **78**, not 5. The response says so explicitly:
+
+> Rank columns reflect the full active market, not the previewed coin selection — a coin
+> may show a rank higher than the number of rows shown.
+
+So every cross-sectional construction — carry factor, cross-sectional momentum, any
+`rank`-based family in the census — is ranking against the entire active market
+regardless of how many coins your strategy actually reads. A gate like
+`atrPct_rank_hi lte 8` means *top 8 of 78*, not top 8 of your shortlist. If your section
+selects 10 coins, that gate may match none of them.
+
+Two consequences worth internalising:
+
+- **You cannot build a within-selection ranking.** There is no scoping parameter. If you
+  need "the most volatile of the coins I am looking at", `rank` will not give it to you.
+- **Rank thresholds do not scale with your selection.** Widening or narrowing the coin
+  list changes nothing about what the rank column returns.
+
+The universe size is rendered alongside the rank (`n/78`), so a condition can be written
+against the denominator rather than assuming it — but the denominator itself moves as
+coins are listed and delisted.
 
 ## Workflow
 

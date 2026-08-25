@@ -1,0 +1,82 @@
+{
+ "_measured": "2026-08-25",
+ "_method": "preview_strategy_report, 1h anchor. Each transform is checked against its OWN trajectory slots in the same table, so no external data is needed and no sampling drift can creep in between the operand and the result. Where bars:'closed' was used, the trajectory slots were additionally diffed against data/audit/candles_btc_1h_battlegrid.json.",
+ "_why": "docs/19 verified the METRICS (RSI, ATR, SMA, EMA) against the textbook. It did not touch the TRANSFORMS, which are the layer omega's whole column algebra sits on. Before this audit exactly one of the seventeen - spread - had ever been checked against its stated formula.",
+ "_statedFormulas": "data/contract/transforms/_authoring.json",
+
+ "verified": [
+  {
+   "transform": "trajectory",
+   "stated": "slots = last window non-null base values; trend = compare(first, last)",
+   "check": "CLOSE trajectory window=5 bars=closed on BTC returned 78740, 78924, 78971, 78729, 78996 - identical to the last five CLOSED candles (19:00 through 23:00 on 2026-08-24). Confirms both the slot semantics and that bars:'closed' really does exclude the forming bar.",
+   "result": "exact"
+  },
+  {
+   "transform": "efficiency",
+   "stated": "|base[last] - base[first]| / sum(|base[i] - base[i-1]|) over the window",
+   "check": "BTC: |78996-78740| / (184+47+242+267) = 256/740 = 0.3459 -> rendered 0.35. SOL: a perfectly monotonic run, |99.05-96.50| / (0+0.99+0+1.56) = 2.55/2.55 = 1.000 -> rendered 1.00. The degenerate case landing exactly on 1.0 is the strong half of this.",
+   "result": "exact on two coins"
+  },
+  {
+   "transform": "maxShare",
+   "stated": "max(nonNull(base[-window:])) / sum(nonNull(base[-window:]))",
+   "check": "BTC VOLUME window=4 bars=closed, using exact candle volumes: 1356.15 / (1315.32+1002.39+845.79+1356.15) = 0.30005 -> rendered 0.30. SOL: 448.4K / 894.9K = 0.5011 -> rendered 0.50.",
+   "result": "exact on two coins"
+  },
+  {
+   "transform": "aggregate",
+   "stated": "sum(nonNull(base[-window:])) / count(nonNull(base[-window:]))",
+   "check": "First attempt used FUNDING_RATE, whose eight slots were all 0.0013 - a degenerate series that would match any central-tendency statistic, so it proved nothing. Re-run on OI window=6, which varies: SOL (441.3+443.6+443.6+458.7+492.2+519.1)/6 = 466.42 -> rendered $466.4M. DOGE 429.6/6 = 71.6 -> $71.6M. AVAX 95.5/6 = 15.92 -> $15.9M.",
+   "result": "exact on a varying series - it is the arithmetic mean, not a median"
+  },
+  {
+   "transform": "distance",
+   "stated": "((price - base) / base) x 100",
+   "check": "BTC (78869 - 78473.20)/78473.20 x 100 = +0.5044 -> rendered +0.50%. SOL (100.46 - 96.06)/96.06 x 100 = +4.5804 -> rendered +4.58%.",
+   "result": "exact on two coins"
+  },
+  {
+   "transform": "spread",
+   "stated": "(base - inputs[0]) / inputs[0] x 100",
+   "check": "Six columns across BTC and SOL, all consistent under interval arithmetic on the displayed operands. EMA5/EMA13 and rate/atrPct pin exactly; rate/chg24h only to 0.73pp because the denominator sits near zero. See docs/19.",
+   "result": "exact"
+  },
+  {
+   "transform": "rank",
+   "stated": "ordinal(base among the ranked universe, by the chosen ordering)",
+   "check": "ATR_PCT ranked hi and lo across five coins. Ordering is monotone in the underlying value in both directions, and rank_hi + rank_lo = 79 = universe + 1 for EVERY coin (AVAX 36+43, BTC 48+31, DOGE 25+54, ETH 40+39, SOL 29+50). That identity holds only for a true tie-free ordinal over a fixed universe, and it holds five times out of five.",
+   "result": "exact - and proves hi/lo are exact inverses over 78 coins"
+  },
+  {
+   "transform": "value",
+   "stated": "output = base[t - offset]",
+   "check": "Consistent with the rendered close on every table. NOT independently verified at a non-zero offset.",
+   "result": "partial - offset=0 only"
+  }
+ ],
+
+ "notVerified": [
+  {"transform": "bandTouch", "why": "categorical output; needs a case where price is known to sit on a band"},
+  {"transform": "classifyZone", "why": "categorical; the label vocabulary is already known to be mis-declared - see data/contract/columns/_observed_vocabulary.json"},
+  {"transform": "crossDetect", "why": "categorical; needs a bar where a cross is known to have occurred"},
+  {"transform": "count", "why": "trivial but unchecked"},
+  {"transform": "nearestZoneType", "why": "zone family - STRUCT_ZONES has no external referent (tier C)"},
+  {"transform": "nearestZoneRange", "why": "zone family - tier C"},
+  {"transform": "nearestZoneDist", "why": "zone family - tier C, though the formula mirrors distance which IS verified"},
+  {"transform": "nearestZoneAge", "why": "zone family - tier C"},
+  {"transform": "classifyState", "why": "PLATFORM_ONLY. Refused for custom columns by get_strategy_column_contract AND, confirmed 2026-08-25, by preview_strategy_report - REPORT_COLUMN_PAIR_UNSUPPORTED on ADX x classifyState. Two independent channels agree, so the exclusion from omega's 16 is correct."}
+ ],
+
+ "operationalFindings": [
+  {
+   "finding": "rank is scoped to the whole active market, not your coin selection",
+   "evidence": "The response carries rankScopingNote: 'Rank columns reflect the full active market, not the previewed coin selection - a coin may show a rank higher than the number of rows shown.' Ranks rendered as n/78 while only 5 coins were selected.",
+   "consequence": "Every cross-sectional family - carry-factor, xs-momentum, and the rest - ranks against 78 coins regardless of how many the strategy actually reads. A 'top decile' gate means top of 78, not top of your shortlist."
+  },
+  {
+   "finding": "rank does NOT repaint intra-bar, unlike every other indicator",
+   "evidence": "Header meaning states: 'the standing as of the last close, unchanged until the next one.'",
+   "consequence": "A documented exception to cookbook trap 18. Rank columns are stable within the bar; value/trajectory/aggregate columns are not."
+  }
+ ]
+}
