@@ -1,0 +1,139 @@
+{
+ "_measured": "2026-08-25",
+ "_what": "The 32 tier-C metrics have no external referent - no exchange publishes them, so docs/19's Hyperliquid method cannot touch them. But 'no external referent' is not 'uncheckable'. Most can be tested for COHERENCE against BattleGrid's own tier-A numbers, or against each other. This file records what that produced.",
+ "_honesty": "Coherence is weaker evidence than the recomputation in docs/19. It shows a metric is consistent with its stated definition and with its neighbours - it cannot show the underlying classification is CORRECT. A regime classifier could be self-consistent and still wrong about the regime. Read these verdicts as 'not broken in a way this test could see', not as 'right'.",
+ "coherent": [
+  {
+   "metrics": [
+    "CVD"
+   ],
+   "invariant": "delta CVD per bar == BUY_VOLUME - SELL_VOLUME, in BASE-ASSET units, daily-anchored",
+   "evidence": "CVD, BUY_VOLUME and SELL_VOLUME trajectories rendered side by side, bars:closed. SOL, four consecutive bars: delta CVD -68247 / -45047 / +19562 / +92080 against buyVol-sellVol of -68200 / -45000 / +19500 / +92100 - every one inside the displayed rounding of the 1-dp K values. BTC's cleanest bar has exact integer operands: 874 - 957 = -83 against a delta CVD of -84.",
+   "note": "CVD accumulates in BASE-ASSET units even though its declared unit class is signedPrice. The clique behaviour is still self-consistent, because SPOT_CVD shares that class and CVD x SPOT_CVD is the pair the perp-spot family needs. Recorded as an observation, not a defect - the unit TAG drives the spread guard, and the guard does what it should."
+  },
+  {
+   "metrics": [
+    "BUY_VOLUME",
+    "SELL_VOLUME",
+    "BUY_TRADES",
+    "SELL_TRADES",
+    "BUY_PRESSURE"
+   ],
+   "invariant": "buy+sell reconciles to VOLUME / TRADES; BUY_PRESSURE == BUY_VOLUME / VOLUME",
+   "evidence": "BTC/ETH/SOL. buyPres is exactly buyVol/volBase on all three. Residuals on the sums are small and MIXED IN SIGN (-0.42%, +1.37%, +0.07%) - sampling jitter inside the forming bar, not the systematic bias a double-count or unit error would produce."
+  },
+  {
+   "metrics": [
+    "SWING_HIGH",
+    "SWING_LOW"
+   ],
+   "invariant": "the values are real bar extremes from the tape",
+   "evidence": "BTC swingHi 80,035 and swingLo 76,862 landed exactly on the 15:00 high and the 08:00 low within a 60-bar window."
+  },
+  {
+   "metrics": [
+    "STRUCT_ZONES"
+   ],
+   "invariant": "the nearest zone is a real three-bar fair-value gap on the regime timeframe",
+   "evidence": "Scanning 148 4h bars for high[i-2] < low[i] found the rendered $77,859-$77,923 zone EXACT on both bounds, one match in twenty candidates, next-closest $2,594 away. Its age counts from that bar's CLOSE. See the transform audit."
+  },
+  {
+   "metrics": [
+    "PRICE_ZONE"
+   ],
+   "invariant": "the label matches the close's position between SWING_LOW and SWING_HIGH",
+   "evidence": "BTC (78608-78553)/(81299-78553) = 2.0% -> 'near low'. GOLD 3.8% -> 'near low'. SOL 17.4% -> 'mid-range'. Coherent 3 of 3.",
+   "limit": "The band boundary is only bracketed between 3.8% and 17.4%. Three observations cannot pin it."
+  },
+  {
+   "metrics": [
+    "OI_PX_REGIME"
+   ],
+   "invariant": "the classic four-quadrant read of OI direction against price direction",
+   "evidence": "BTC: OI trajectory rising, chg1h -0.44% -> 'new shorts'. SOL: OI trajectory falling 543.9M -> 494.2M, chg1h -1.94% -> 'long liquidation'. Both match. Coherent 2 of 2.",
+   "correction": "An earlier pass called BTC a MISMATCH by testing against OI_CHG. That was my error: OI_CHG is 'open interest against the mean of its own 24 hourly samples', not its recent change - the wrong operand entirely. With an actual OI trajectory the quadrant holds."
+  },
+  {
+   "metrics": [
+    "CROWD_PICK",
+    "CROWD_UPBIAS",
+    "CROWD_ACC",
+    "CROWD_CAPT"
+   ],
+   "invariant": "all are percentages in [0,100], and upBias and crowdAcc share a denominator - the pick count on that coin",
+   "evidence": "SOL upBias 22.2% and crowdAcc 88.9% are 2/9 and 8/9 - the same denominator of nine picks. BTC's 20.0% and 40.0% are 1/5 and 2/5. Consistent with the stated 'last 4 settled sessions' window and small samples."
+  },
+  {
+   "metrics": [
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS_LIVE",
+    "CROWD_ACC_LIVE",
+    "CROWD_CAPT_LIVE"
+   ],
+   "invariant": "null when no concurrent sessions are running",
+   "evidence": "All four rendered as an em-dash on both coins, which is what the column meaning documents. Note the interaction with trap 11: a null reads FALSE, so a condition on crowdAccLive answers from absence of data almost always."
+  },
+  {
+   "metrics": [
+    "FLOW_ALIGN"
+   ],
+   "invariant": "reflects agreement between order flow and crowd positioning",
+   "evidence": "BTC: crowd upBias 20% (bearish) and CVD falling (selling) -> 'aligned bearish'. SOL: crowd upBias 22.2% (bearish) but CVD rose sharply on the last bar (+92,080, buying) -> 'divergent'. Both read correctly from operands in the same table."
+  },
+  {
+   "metrics": [
+    "CAPTAIN_CONF"
+   ],
+   "invariant": "false when there is no captain concentration to confirm",
+   "evidence": "captRate is 0.0% on both coins and captainConf is false on both."
+  }
+ ],
+ "notVerifiable": [
+  {
+   "metrics": [
+    "REGIME_TREND",
+    "REGIME_VOL",
+    "REGIME_MOM"
+   ],
+   "why": "The driver and the horizon are not exposed. ADX is a strength measure with no direction, so 'trending up' cannot be derived from it; REGIME_VOL is evidently relative to each coin's own history (BTC 0.88%, GOLD 0.37% and SOL 1.66% atrPct all read 'normal'), and that history is not available.",
+   "observation": "All three coins read 'trending up' while all three had a negative 1h change and a negative ROC. That is not a contradiction - a multi-day trend can be up while the last hour is down - but it is unexplained, and three of three is worth a second look with a longer sample before anyone leans on this metric."
+  },
+  {
+   "metrics": [
+    "OI_VELOCITY"
+   ],
+   "why": "It is a second derivative of OI across point-in-time samples, and only a value transform is offered - no trajectory. Both coins read 'decelerating' with OI trajectories moving in opposite directions, which a four-point window cannot adjudicate."
+  },
+  {
+   "metrics": [
+    "PERP_SPOT_FLOW",
+    "PERP_SPOT_STRENGTH",
+    "PERP_SPOT_CONFIRMS"
+   ],
+   "why": "Derived from the perp-vs-spot CVD rate gap. Both coins read 'neutral', so the render carries no discriminating case - a neutral reading is consistent with every hypothesis about the calculator."
+  },
+  {
+   "metrics": [
+    "SMART_RETAIL",
+    "CONFIDENCE"
+   ],
+   "why": "SMART_RETAIL rendered null on BTC and 'confirmed' on SOL, with no stated rule for when it is absent. CONFIDENCE is a bucketed 'confidence in the convergence read' over inputs that are themselves tier C."
+  },
+  {
+   "metrics": [
+    "SETTLED_AT"
+   ],
+   "why": "A timestamp. There is nothing to recompute - but see the staleness finding below, which is what reading it actually produced."
+  }
+ ],
+ "findings": [
+  {
+   "id": "crowd-data-is-a-month-stale-and-its-timestamp-cannot-be-gated",
+   "severity": "silent",
+   "finding": "SETTLED_AT returns conditionOperators: [] - it cannot be referenced by any condition. It is the only column that carries the age of the CROWD_* block, so there is no way to write a gate that refuses stale crowd data.",
+   "cost": "A strategy gating on crowdAcc or upBias is reading month-old data. Nothing in the crowd columns themselves says so; only SETTLED_AT does - and SETTLED_AT returns conditionOperators: [], so it CANNOT be used as a freshness guard in a condition. The one column that would let you refuse stale crowd data is the one column you cannot gate on.",
+   "suggestedFix": "Give SETTLED_AT comparison operators, or expose an age-in-hours derivative of it the way STRUCT_ZONES exposes nearestZoneAge.",
+   "evidence": "SETTLED_AT read 2026-07-24 on both coins against a 2026-08-25 render - 32 days. The CROWD_* columns describe themselves as 'last 4 settled sessions', so those four ended a month ago. IMPORTANT: the staleness itself is probably account state rather than a platform bug - no sessions have settled on this account recently. What is a platform gap regardless of how stale the data happens to be is that the timestamp exposing it cannot be used in a condition."
+  }
+ ]
+}

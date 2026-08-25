@@ -509,6 +509,28 @@ does not error — it just never fires, or always fires, depending on direction.
 `ROC12` is the odd one out. The `rel_roc_positive` and `rel_roc_negative` scorecard
 signals read this metric.
 
+### 24. There is no way to gate on crowd-data freshness
+
+The `CROWD_*` block reports over *"the last 4 settled sessions"*. Whether that is an hour
+old or a month old is carried by exactly one column — `SETTLED_AT` — and
+
+```
+SETTLED_AT  ->  conditionOperators: []
+```
+
+It cannot be referenced by any condition. Measured 2026-08-25, `SETTLED_AT` read
+**2026-07-24**: the crowd numbers beside it were 32 days old, and nothing in those columns
+said so.
+
+The staleness is likely account state — no sessions had settled recently. The structural
+problem is that you cannot *detect* it from inside a strategy. Pair that with trap 11 —
+a null reads FALSE, never UNRESOLVED — and a `crowdAcc gte 60` gate answers confidently
+from month-old evidence with no guard available.
+
+**Fix:** treat every `CROWD_*` column as advisory context for the agent to read, not as a
+deterministic gate. If you must gate on one, accept that its freshness is unknowable at
+evaluation time.
+
 ## Workflow
 
 ```

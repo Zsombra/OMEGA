@@ -214,6 +214,69 @@ What that leaves genuinely irreducible is the game state: the nine `CROWD_*` met
 in principle — they *are* BattleGrid. Their correctness is not a measurable property,
 only their internal consistency over time is.
 
+## Tier C — coherence, which is weaker evidence and worth saying so
+
+The 32 tier-C metrics have no external referent, so the Hyperliquid method cannot touch
+them. But *no external referent* is not *uncheckable*: most can be tested against
+BattleGrid's own tier-A numbers, or against each other.
+
+**Read these verdicts as weaker than the ones above.** Coherence shows a metric is
+consistent with its stated definition and its neighbours. It cannot show a classification
+is *correct* — a regime classifier can be perfectly self-consistent and still wrong about
+the regime.
+
+Record: `data/audit/tier_c_coherence.json`. Guard: `tests/test_tier_c_coherence.py`.
+
+### Coherent
+
+| metric | invariant that held |
+|---|---|
+| `CVD` | ΔCVD per bar **=** `BUY_VOLUME − SELL_VOLUME`, in base-asset units, daily-anchored |
+| flow split | `buy+sell` reconciles to `VOLUME`/`TRADES`; `BUY_PRESSURE` = `BUY_VOLUME/VOLUME` exactly |
+| `SWING_HIGH/LOW` | real bar extremes from the tape |
+| `STRUCT_ZONES` | a real three-bar FVG, exact on both bounds |
+| `PRICE_ZONE` | matches the close's position between the swings, 3 of 3 |
+| `OI_PX_REGIME` | the classic four-quadrant OI-vs-price read, 2 of 2 |
+| `CROWD_*` | percentages in range, and `upBias`/`crowdAcc` share a denominator — SOL's 22.2% and 88.9% are **2/9 and 8/9** |
+| `FLOW_ALIGN` | BTC bearish crowd + selling flow → "aligned bearish"; SOL bearish crowd + buying flow → "divergent" |
+
+`CVD` accumulates in **base-asset units** despite a declared unit class of `signedPrice`.
+That is an observation, not a defect — the unit *tag* drives the spread-clique guard, and
+`SPOT_CVD` shares the class, which is exactly what the perp-spot family needs.
+
+### An error of mine, recorded
+
+I first called `OI_PX_REGIME` a mismatch on BTC. I had tested it against `OI_CHG` — which
+is *"open interest against the mean of its own 24 hourly samples"*, **not** its recent
+change. Wrong operand entirely. With an actual `OI` trajectory the quadrant holds on both
+coins.
+
+### Not verifiable, and why each is not a matter of effort
+
+- **`REGIME_TREND` / `REGIME_VOL` / `REGIME_MOM`** — the driver and horizon are not
+  exposed. ADX has no direction, so "trending up" cannot come from it; `REGIME_VOL` is
+  evidently relative to each coin's own history (atrPct 0.88 / 0.37 / 1.66 all read
+  "normal") and that history is not available. **Worth flagging:** all three coins read
+  "trending up" while all three had a negative 1h change and negative ROC. Not a
+  contradiction — a multi-day trend can be up while the hour is down — but unexplained,
+  and three of three deserves a longer sample before anyone leans on it.
+- **`OI_VELOCITY`** — a second derivative, and only `value` is offered, no `trajectory`.
+- **`PERP_SPOT_*`** — both coins read "neutral", which is consistent with every
+  hypothesis. No discriminating case.
+- **`SMART_RETAIL`, `CONFIDENCE`** — no stated rule for when they are absent.
+
+### The one thing worth acting on
+
+`SETTLED_AT` returns **`conditionOperators: []`**. It is the only column carrying the age
+of the `CROWD_*` block, and it cannot be referenced by any condition — so **there is no
+way to write a gate that refuses stale crowd data.**
+
+It read `2026-07-24` against a `2026-08-25` render: 32 days. That staleness is probably
+account state rather than a platform bug — no sessions have settled here recently. The
+gap that *is* structural is that the timestamp exposing it is ungateable, and combined
+with trap 11 a condition on `crowdAcc` answers confidently from month-old evidence with
+no available guard.
+
 ## What none of this proves
 
 Stated plainly, because the gap is the point of the document:
