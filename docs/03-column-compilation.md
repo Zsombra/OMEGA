@@ -41,6 +41,36 @@ The `bars` default is the dangerous one. On a raw per-bar quantity like `VOLUME`
 fresh bar look like a collapse in participation. `omega.validate` raises
 `FORMING_BAR_RAMP` when it sees this combination.
 
+## `bars` and `offset` are not interchangeable
+
+`value` **rejects `bars` entirely**. Measured:
+
+```
+[column-grammar] transform 'value' does not accept params.bars
+  allowedDomain: { rule: "column parameters ... must satisfy the canonical
+                          transform contract", candidates: ["offset"] }
+```
+
+So for a plain `value` read, `offset` is the *only* parameter available — and that
+matters more than it looks, because both are ways to escape the forming bar.
+
+| | excludes the forming bar | available on `value` |
+|---|---|---|
+| `bars: "closed"` | yes | **no** |
+| `offset: 1` or more | yes — the window lands on closed bars | yes |
+
+Measured on the same render: `offset: 0` drifted from a recomputation while `offset: 3`
+matched to the cent, because an offset of 1 or more reads bars that no longer move. That
+makes `offset` the only stable-read mechanism for every metric whose transform is `value`
+— which is most of them.
+
+Two costs to remember when reaching for it:
+
+- **`offset` does not appear in the header.** Two columns differing only by offset collide,
+  render anyway, and *both* vanish from `conditionColumns` — cookbook trap 20.
+- **`offset` counts against the lookback budget.** `columnLookback = max(window + offset)`,
+  capped at 32. An `offset: 3` on a default-window `value` reads 27 of the 32.
+
 ## Fan-out
 
 Only `trajectory` produces more than one header.

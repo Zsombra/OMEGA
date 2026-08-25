@@ -238,6 +238,62 @@ output = floor((now - detectedAt(nearest zone)) / 1 hour)
 - **Parameters:**
   - `side` (required) — Select whether the nearest support or resistance zone is resolved.
 
+## Which of these formulas have actually been checked
+
+The formulas above are what the contract *publishes*. Until 2026-08-25 exactly one of
+them had ever been checked against what the engine *computes*. **13 of 17 now have.**
+
+Method: render each transform beside its own `trajectory` slots in the same table, so no
+external data is needed and no sampling drift can enter between operand and result.
+Evidence in `data/audit/transform_formula_audit.json`, guarded by
+`tests/test_transform_formulas.py`.
+
+| transform | verdict |
+|---|---|
+| `trajectory` | exact — slots identical to the last five closed candles |
+| `efficiency` | exact — and a monotonic run gives exactly 1.000 |
+| `maxShare` | exact on two coins |
+| `aggregate` | exact, on a **varying** series — the arithmetic mean, not a median |
+| `distance` | exact on two coins |
+| `spread` | exact — six columns |
+| `rank` | exact — `hi + lo = universe + 1` on every coin tested |
+| `value` | exact at offset 0 **and** offset 3 |
+| `classifyZone` | behaviourally exact; threshold not pinned from three points |
+| `bandTouch` | direction verified; trigger threshold not pinned |
+| `nearestZoneType` | consistent on three coins |
+| `count` | plausible, not independently verifiable |
+| `crossDetect` | **scope exact** — reads the last pair only; trigger not pinned |
+
+The four that remain, and why each is not a matter of effort:
+
+- **`nearestZoneDist`** — measured, and the **published formula is wrong**. The engine
+  computes `((midpoint − price) / price) × 100`; the catalogue states the inverse sign
+  and a different denominator. See cookbook trap 22.
+- **`nearestZoneAge`** — detection timestamps are never exposed, so there is nothing to
+  check the hours against.
+- **`nearestZoneRange`** — returns `conditionOperators: []`, so it cannot even be gated.
+  Only indirectly confirmed, via its midpoint reproducing `nearestZoneDist`.
+- **`classifyState`** — `PLATFORM_ONLY`. Refused for custom columns by
+  `get_strategy_column_contract` *and* by `preview_strategy_report`. Not buildable, so
+  not verifiable.
+
+### The metric conventions that had a real choice
+
+Three metrics have competing definitions in the wild, so which one ships is information
+rather than a formality. Measured against 876 Hyperliquid bars:
+
+| | implemented | rejected alternative |
+|---|---|---|
+| `ADX` | **Wilder's own smoothing** (24.88 vs 24.90) | plain MA of DX — off by 10 points |
+| `CCI20` | **`0.015 ×` mean absolute deviation** (−39.27 vs −39.30) | standard deviation — off by 4 |
+| `STOCH_K/D` | **slow (14,3,3)** (21.84 / 30.82 vs 22 / 31) | fast (14,1,3); and (14,3,1) fits `%K` but not `%D` |
+
+Ten points of ADX flips `trend_adx_trending` at its 25 threshold. The `(14,3,1)` case is
+the instructive one — it reproduces `%K` *exactly* and gets `%D` wrong, so a check of
+`%K` alone would have confirmed the wrong convention.
+
+Full detail in [19 · Is the data correct?](19-is-the-data-correct.md).
+
 ## Spread operand pools
 
 `spread` is unit-typed. A metric may only spread against operands sharing its

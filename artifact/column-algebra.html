@@ -793,7 +793,7 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
   </section>
 
   <section>
-    <h2>Addendum &mdash; six things measured after this page was written</h2>
+    <h2>Addendum &mdash; eight things measured after this page was written</h2>
     <p>
       Everything above still holds. The counts were re-derived against the live enumeration on
       2026-08-25 and are unchanged: <strong>322 legal atoms, 488 structural shapes, 2,200
@@ -859,11 +859,35 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
       and says nothing.
     </p>
 
+
+    <h3>7. <code>bars</code> and <code>offset</code> are not interchangeable</h3>
+    <p>
+      This page treats parameters as a fifth axis. One asymmetry inside it matters:
+      <code>value</code> <strong>rejects <code>bars</code> outright</strong> &mdash;
+      <em>&ldquo;transform 'value' does not accept params.bars &hellip; candidates:
+      ["offset"]&rdquo;</em>. Both are ways to escape the forming bar, but only one is available
+      on a plain read, which is most of the surface. Measured on a single render:
+      <code>offset: 0</code> drifted from a recomputation while <code>offset: 3</code> matched to
+      the cent. It also costs budget &mdash;
+      <code>columnLookback = max(window + offset)</code>, capped at 32.
+    </p>
+
+    <h3>8. A rung-scoped <code>rank</code> is described two ways at once</h3>
+    <p>
+      With an explicit two-coin selection, the section preamble calls
+      <code>atrPct_ltf_rank_hi</code> &ldquo;ordinal across THIS REPORT'S coins &hellip;
+      rank/report-size&rdquo;, while <code>conditionColumns</code> calls the same header
+      &ldquo;ordinal across the tracked universe&rdquo;. It rendered <strong>47/78</strong>.
+      Report size was 2. The values agree with <code>conditionColumns</code>; the preamble is
+      wrong &mdash; at every rung, ranking is market-wide.
+    </p>
+
     <p class="lede" style="margin-top:1.6rem">
       The through-line: the algebra above is sound, and the gap between <em>legal</em> and
       <em>usable</em> is wider than any contract discloses. Eight shapes that cannot render, a
       chaining rule with a second condition, a parameter that changes values without changing
-      names, and four metrics that vanish on a third of the universe &mdash; none of it is
+      names, four metrics that vanish on a third of the universe, and two places where the
+      platform describes the same column two contradictory ways in one response &mdash; none of it is
       visible until something is rendered and the arithmetic checked by hand.
     </p>
   </section>
