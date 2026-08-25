@@ -44,13 +44,25 @@ def test_expanded_spread_header_names_both_sides(contract):
 
 def test_rendered_headers_spans_every_cache():
     """Bug 2: a single cache is not the record of what was rendered."""
-    assert len(SEEN_FILES) == 10
+    assert len(SEEN_FILES) == 11
     seen = rendered_headers()
     assert len(seen) > 900
+    # The point of this test is bug 2 itself: NO single cache is the record. Assert that
+    # directly rather than pinning a count, which the ongoing spread sweep keeps moving.
+    import json
+    from scripts.render_coverage import CACHE, _walk
+    per_file = {}
+    for name in SEEN_FILES:
+        one = set()
+        _walk(json.loads((CACHE / name).read_text(encoding="utf-8")), one)
+        per_file[name] = {h for h in one if h.endswith("_spread")}
     spreads = {h for h in seen if h.endswith("_spread")}
-    assert len(spreads) == 27, (
-        "spread renders are recorded in _family_seen.json and _renders_tfvariants.json, "
-        "not in _sweep_seen.json - reading one cache understates coverage")
+    assert len(spreads) > max(len(v) for v in per_file.values()), (
+        "the union of spread headers must exceed every individual cache - reading one "
+        "cache understates coverage, which is how this was got wrong the first time")
+    assert sum(1 for v in per_file.values() if v) >= 3, (
+        "spread renders live in several caches: _family_seen, _renders_tfvariants and "
+        "the sweep file")
 
 
 def test_no_plan_file_is_counted_as_a_render():
@@ -65,16 +77,19 @@ def test_coverage_partitions_the_space(contract):
         assert sum(byt.values()) == len(unc)
 
 
-def test_recorded_coverage_numbers(contract):
-    """Pinned so a change in the space or the caches is visible rather than silent."""
-    cov, unc, byt = coverage(False, contract)
+def test_structural_coverage_is_complete(contract):
+    cov, unc, _ = coverage(False, contract)
     assert (cov, len(unc)) == (301, 0), (
-        "structural coverage is complete: every metric x transform mechanism has been "
-        "rendered live at least once")
+        "every metric x transform mechanism has been rendered live at least once")
 
+
+def test_spread_is_the_only_remaining_gap(contract):
+    """The spread sweep is incremental, so this asserts SHAPE and DIRECTION, not a frozen
+    number - a pinned count would fail on every batch and teach us to edit it blindly."""
     cov, unc, byt = coverage(True, contract)
-    assert (cov, len(unc)) == (404, 1712)
-    assert set(byt) == {"spread"}, (
-        "spread is the ONLY remaining gap - every rank ordering and distance chain was "
-        "swept on 2026-08-26")
-    assert byt["spread"] == 1712, "the risk-relevant gap: untested (base, operand) pairs"
+    assert cov + len(unc) == 2116
+    assert set(byt) <= {"spread"}, (
+        "every rank ordering and distance chain was swept on 2026-08-26; anything else "
+        "appearing here is a regression, not sweep progress")
+    assert cov >= 596, "live coverage must not go backwards"
+    assert len(unc) <= 1520, "untested spread pairs must not grow"
