@@ -123,5 +123,9 @@ def test_recorded_distributions_do_not_contradict_the_record():
 def test_the_remaining_gap_is_stated_accurately():
     """Guards the count quoted in prose - it has been misstated in conversation."""
     remaining = still_unobserved()
-    assert len(remaining) == 8
-    assert len({m for m, _ in remaining}) == 5
+    assert len(remaining) == 6, "8 before the 2026-08-26 anchor sweep closed two"
+    assert len({m for m, _ in remaining}) == 4
+    # the two the sweep closed, pinned so a regression is visible
+    closed = {(m, l) for m, l in remaining}
+    assert ("PERP_SPOT_CONFIRMS", "true") not in closed
+    assert ("PERP_SPOT_FLOW", "confirmed_bear") not in closed

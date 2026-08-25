@@ -19,9 +19,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "data/audit/tier_c_coherence.json"
 
-# PERP_SPOT_CONFIRMS renders a boolean and so carries no conditionVocabulary. Every other
-# tracked metric must partition its contract vocabulary exactly.
-NO_VOCABULARY = {"PERP_SPOT_CONFIRMS"}
+# Every tracked metric must partition its contract vocabulary exactly. PERP_SPOT_CONFIRMS
+# was exempted here until 2026-08-26, when the live sweep showed the platform publishing
+# conditionVocabulary ["true", "false"] for it; omega.contract.Metric.vocab now derives
+# that from the boolean native kind, so the exemption is no longer needed and the
+# partition check covers it.
+NO_VOCABULARY: set[str] = set()
 
 
 def tracked() -> dict[str, dict]:

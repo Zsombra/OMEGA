@@ -44,6 +44,17 @@ class Metric:
 
     @property
     def vocab(self) -> list[str] | None:
+        """The labels an `is` / `in` condition may name.
+
+        A boolean-native metric carries no `vocab` in the metric contract - the kind is
+        the whole declaration - but the platform's rendered conditionColumns publishes
+        `conditionVocabulary: ["true", "false"]` for it, and those two strings are what a
+        condition must actually name. Returning None here answered "nothing to gate on"
+        for CAPTAIN_CONF and PERP_SPOT_CONFIRMS, both of which are gateable. Confirmed
+        live 2026-08-26 in the label sweep.
+        """
+        if self.native_output.get("kind") == "boolean":
+            return list(self.native_output.get("vocab") or ("true", "false"))
         return self.native_output.get("vocab")
 
     def offers(self, transform_id: str) -> bool:

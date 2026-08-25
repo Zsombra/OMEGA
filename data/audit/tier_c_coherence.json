@@ -181,21 +181,22 @@
     "PERP_SPOT_FLOW": {
       "seen": [
         "neutral",
-        "spot_led_accumulation"
+        "spot_led_accumulation",
+        "confirmed_bear"
       ],
       "unseen": [
         "confirmed_bull",
-        "confirmed_bear",
         "perp_led_fragile"
-      ]
+      ],
+      "note": "confirmed_bear appeared only at a 5m anchor - AAVE, AIXBT, AVAX, BNB, BTC, CAKE. At 15m, 1h and 4h the same 78 coins read neutral or spot_led_accumulation throughout. confirmed_bull plausibly needs a bullish tape; this sweep ran on a broadly red day."
     },
     "PERP_SPOT_CONFIRMS": {
       "seen": [
-        "false"
-      ],
-      "unseen": [
+        "false",
         "true"
-      ]
+      ],
+      "unseen": [],
+      "note": "FULLY OBSERVED. 'true' appeared at 5m on the same six coins that read confirmed_bear, which is consistent with its stated meaning - the perp and spot flow rates agreeing in sign. 24 of 24 'false' at 1h had made it look like a constant."
     },
     "CONFIDENCE": {
       "seen": [
@@ -367,5 +368,34 @@
     "lessonNotRederived": "The \"vary the anchor as well as the coin\" lesson was ALREADY recorded in the unobservedLabels note before today. I re-derived it and presented it as new. Before writing up a finding, read the audit record on the metric - it is the source of truth and the prose can lag it.",
     "stillUnobserved": "REGIME_VOL 'contracting'; PERP_SPOT_CONFIRMS true; PERP_SPOT_FLOW confirmed_bull / confirmed_bear / perp_led_fragile; CONFIDENCE 'low'; PRICE_ZONE 'breakout high' / 'breakdown low'",
     "evidence": "data/audit/regime_anchor_variance.json (the 5m/4h probe itself stands - REGIME_MOM varies with the anchor on 8 of 10 coins; only the novelty claim was wrong)"
+  },
+  "_anchorSweep": {
+    "_what": "The anchor sweep, run because re-anchoring is the one method that has actually moved labels off the unobserved list before.",
+    "date": "2026-08-26",
+    "method": "Five label columns - REGIME_VOL, PRICE_ZONE, CONFIDENCE, PERP_SPOT_FLOW, PERP_SPOT_CONFIRMS - rendered across the full 78-coin universe at 5m, 15m and 4h. The 1h reading was already held. Four anchors x 78 coins.",
+    "closed": {
+      "PERP_SPOT_FLOW.confirmed_bear": "6 coins at 5m",
+      "PERP_SPOT_CONFIRMS.true": "6 coins at 5m - the metric is now fully observed"
+    },
+    "stillUnobserved": {
+      "count": 6,
+      "metrics": 4,
+      "labels": [
+        "CONFIDENCE.low",
+        "PERP_SPOT_FLOW.confirmed_bull",
+        "PERP_SPOT_FLOW.perp_led_fragile",
+        "PRICE_ZONE.breakout high",
+        "PRICE_ZONE.breakdown low",
+        "REGIME_VOL.contracting"
+      ]
+    },
+    "whatTheAnchorDoesAndDoesNotBuy": "It buys the labels whose driver is timeframe-sensitive. PERP_SPOT_* read flow rates that are decisive over 5 minutes and wash out over 4 hours, so the short anchor surfaced them. It does NOT buy labels that need a market STATE this day did not have: PRICE_ZONE's extremes need price outside its swing range, and nothing in 78 coins x 4 anchors was outside. REGIME_VOL 'contracting' and CONFIDENCE 'low' are the same kind of gap. More anchors will not produce them; a different day might.",
+    "priceZoneDistribution": {
+      "5m": "near high 71, mid-range 4, near low 3",
+      "15m": "near high 48, mid-range 16, near low 14",
+      "4h": "mid-range 60, near high 12, near low 6",
+      "reading": "The zone label tracks the anchor's own swing window, and at every anchor the whole universe sat inside it. That is the expected shape on a day with no breakouts, and it is also what a broken column would look like. One day cannot separate those."
+    },
+    "honesty": "2 of 8 closed. The other 6 were not closed and no amount of re-anchoring will close them - saying so is the result, not a failure to finish."
   }
 }

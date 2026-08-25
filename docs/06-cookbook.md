@@ -540,8 +540,8 @@ coins found six columns where part of the vocabulary never appeared:
 |---|---|---|
 | `CONFIDENCE` | high, moderate | low |
 | `OI_VELOCITY` | accelerating, decelerating, steady | — *(all observed)* |
-| `PERP_SPOT_CONFIRMS` | false | true |
-| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
+| `PERP_SPOT_CONFIRMS` | false, true | — *(all observed)* |
+| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation, confirmed_bear | confirmed_bull, perp_led_fragile |
 | `PRICE_ZONE` | near low, mid-range, near high | breakout high, breakdown low |
 | `REGIME_VOL` | normal, expanding | contracting |
 
@@ -549,11 +549,18 @@ None of this proves a bug — rare labels are rare. But a gate on a label that n
 reads FALSE forever without telling you it is inert (trap 11), and a `NOT` around it fires
 *always*.
 
-> **`REGIME_VOL is expanding` came off this list, and how it did is the lesson.** Every
-> sample behind the 30-of-30 was taken at 15m or 1h. Re-render the same coins at a **4h**
-> anchor and WIF reads `expanding`. The label was never rare — the *sampling* was
-> single-anchored. See
-> [`regime_anchor_variance.json`](../data/audit/regime_anchor_variance.json).
+> **Three labels came off this list by re-anchoring, and that is the lesson.** Sweeping
+> the same 78 coins across 5m / 15m / 1h / 4h closed `PERP_SPOT_FLOW confirmed_bear` and
+> `PERP_SPOT_CONFIRMS true` — both visible **only at 5m**, on six coins, having read
+> `false` 24 of 24 at 1h. `REGIME_VOL expanding` had come off the same way earlier.
+> None was rare; the *sampling* was single-anchored.
+>
+> **But re-anchoring has a ceiling.** It surfaces labels whose driver is
+> timeframe-sensitive — flow rates decisive over 5 minutes wash out over 4 hours. It does
+> not conjure a market state: `PRICE_ZONE`'s extremes need price *outside* its swing
+> range, and across 78 coins × 4 anchors nothing was. Six values remain unobserved and
+> more anchors will not produce them. See
+> [`_anchorSweep`](../data/audit/tier_c_coherence.json).
 
 **Before gating on a categorical label, sample 25+ coins — and vary the anchor as well as
 the coin — to confirm the value actually occurs.** `PRICE_ZONE` is the cautionary case in the other direction too: its rule is

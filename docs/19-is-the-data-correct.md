@@ -311,8 +311,8 @@ these has never been seen to fire:
 |---|---|---|
 | `CONFIDENCE` | high, moderate | low |
 | `OI_VELOCITY` | accelerating, decelerating, steady | — *(all observed)* |
-| `PERP_SPOT_CONFIRMS` | false | true |
-| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
+| `PERP_SPOT_CONFIRMS` | false, true | — *(all observed)* |
+| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation, confirmed_bear | confirmed_bull, perp_led_fragile |
 | `PRICE_ZONE` | near low, mid-range, near high | breakout high, breakdown low |
 | `REGIME_VOL` | normal, expanding | contracting |
 
