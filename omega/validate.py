@@ -100,6 +100,24 @@ def validate_column(
             f"carrying a timeframe override (section timeframe={section_timeframe!r}). "
             f"Drop the section override, or move this column to its own section."))
 
+    # --- column timeframe compatibility -------------------------------------
+    # A timeless metric's own timeframe must be LITERALLY {"rel": "anchor"}. The rule is
+    # syntactic, not semantic: with anchor 1h the platform still rejects {"abs": "1h"},
+    # which resolves to the very same timeframe. All four forms probed live against
+    # REGIME_MOM - rel:lower, rel:regime, abs:4h and abs:1h each refused; see
+    # data/audit/timeless_column_timeframe.json.
+    if m.is_timeless:
+        tf = column.timeframe
+        rel = getattr(tf, "rel", None)
+        if rel != "anchor":
+            got = rel if rel is not None else getattr(tf, "abs", None)
+            out.append(Finding(
+                "error", "REPORT_COLUMN_CONSTRUCTION_FAILED", f"{path}.timeframe",
+                f"{m.metric} is timeframe-inert (a bundle read) - it accepts only the "
+                f"anchor timeframe reference, not {got!r}. Use "
+                f'timeframe={{"rel": "anchor"}}. Note an absolute timeframe is refused '
+                f"even when it equals the anchor; only the literal reference passes."))
+
     # --- spread operands ----------------------------------------------------
     if spec.get("operandRequired"):
         inputs = column.inputs or []

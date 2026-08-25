@@ -71,6 +71,33 @@ Two costs to remember when reaching for it:
 - **`offset` counts against the lookback budget.** `columnLookback = max(window + offset)`,
   capped at 32. An `offset: 3` on a default-window `value` reads 27 of the 32.
 
+## Timeframe-inert metrics take the anchor *reference*, and nothing else
+
+40 of the 86 metrics have `timeframeMode: "timeless"` — they are **bundle reads**, lifted
+from a precomputed bundle rather than computed on the candle grid. Their column
+`timeframe` must be the literal `{"rel": "anchor"}`. Everything else is refused:
+
+```
+[column-grammar] metric 'regMom' is timeframe-inert (a bundle read)
+  — it accepts only the anchor timeframe reference, not 'regime'
+```
+
+`rel:"lower"`, `rel:"regime"` and any `abs` all fail the same way. The rule is
+**syntactic, not semantic** — with a 1h anchor, `{"abs": "1h"}` resolves to exactly the
+anchor timeframe and is *still* rejected. All four forms were probed live; see
+[`timeless_column_timeframe.json`](../data/audit/timeless_column_timeframe.json). The
+error's `allowedDomain` names `offset` as the only column parameter left free.
+
+This is distinct from the *section*-level rule ([04](04-section-report-budget.md)): a
+timeless metric cannot sit in a section carrying a `timeframe` override **and** cannot
+carry a non-anchor timeframe of its own. `omega.validate` enforced only the first until
+2026-08-26 and so accepted three shapes the platform refuses.
+
+The practical consequence for analysis: a bundle read and a candle-grid metric in the
+same row are **not on the same grid**, even though they render side by side under one
+anchor. Comparing them is a category error — the mistake that made the `REGIME_MOM` rule
+search look unsolvable in [19](19-is-the-data-correct.md).
+
 ## Fan-out
 
 Only `trajectory` produces more than one header.

@@ -554,6 +554,29 @@ occurs.** `PRICE_ZONE` is the cautionary case in the other direction too: its ru
 **not** the position between `SWING_HIGH` and `SWING_LOW`, despite looking exactly like
 that on a three-coin sample — see [19](19-is-the-data-correct.md).
 
+### 26. A bundle read and a candle metric in one row are not on one grid
+
+40 metrics are `timeframe-inert` — `REGIME_*`, `OI*`, `CROWD_*`, `FUNDING_*`, `CHG_*`,
+`FLOW_ALIGN`, `SMART_RETAIL`, `CONFIDENCE`, `PERP_SPOT_*` and the rest. They are bundle
+reads. They render beside `RSI14` or `MACD` under a single anchor and *look* like
+same-instant, same-horizon readings of the same coin. They are not: the candle metrics
+are computed on the anchor's bars, and the bundle values come from the platform's own
+precomputed bundle at a horizon you cannot see or set.
+
+The visible symptom is a row that reads as self-contradictory. AMZN at a 1h anchor:
+`regMom` **bullish**, while ROC, PPO, MACD, `chg4h` and `chg24h` are *all* negative and
+RSI14 sits at 37.3.
+
+Two consequences:
+
+- **Don't write a condition that assumes agreement between the two families** — e.g.
+  `regMom is bullish AND rsi14 > 55` is not a confirmation pattern, it is a conjunction
+  across two horizons, and one of them is unknown.
+- **You cannot re-anchor a bundle read to line them up.** The column timeframe must be
+  the literal `{"rel":"anchor"}`; `rel:"regime"`, `rel:"lower"` and any `abs` are all
+  refused — including an `abs` equal to the anchor. See
+  [03](03-column-compilation.md).
+
 ## Workflow
 
 ```

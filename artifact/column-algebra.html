@@ -235,6 +235,12 @@
 
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  p.correct {
+    border-left: 3px solid var(--accent, #b8552e);
+    padding: 0.75rem 0 0.75rem 1rem;
+    margin-top: 0.85rem;
+    font-size: 0.95em;
+  }
 </style>
 
 <div class="wrap">
@@ -793,7 +799,7 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
   </section>
 
   <section>
-    <h2>Addendum &mdash; eight things measured after this page was written</h2>
+    <h2>Addendum &mdash; nine things measured after this page was written</h2>
     <p>
       Everything above still holds. The counts were re-derived against the live enumeration on
       2026-08-25 and are unchanged: <strong>322 legal atoms, 488 structural shapes, 2,200
@@ -818,14 +824,24 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
       <code>SPOT_CVD</code> offers no chain successors at all.
     </p>
 
-    <h3>3. The rungs multiply the surface by three, cleanly</h3>
+    <h3>3. The rungs multiply the surface by three &mdash; for candle-backed metrics only</h3>
     <p>
-      Every shape is available at <code>rel: lower</code>, <code>anchor</code> and
+      A candle-backed shape is available at <code>rel: lower</code>, <code>anchor</code> and
       <code>regime</code>, and the rung is carried in the header as an <code>_ltf</code> /
       <code>_htf</code> infix &mdash; <code>ADX_ltf_t2</code>, <code>atrPct_htf_rank_hi</code>,
       <code>EMA5_htf_EMA13_spread</code>. 21 columns spanning seven transform families were
       rendered at all three rungs at once: <strong>30 of 30 headers</strong> matched prediction.
       So the same metric can be read at three timeframes in one section without collision.
+    </p>
+    <p class="correct">
+      <b>Corrected 2026-08-26.</b> This item originally said <em>every</em> shape. It does not
+      hold for the 40 <code>timeframe-inert</code> metrics &mdash; see item 9 &mdash; and the
+      original measurement could not have caught it: <code>ADX</code>, <code>ATR_PCT</code>,
+      <code>EMA5</code> and <code>EMA13</code> are all candle-backed, so a candle-only sample was
+      generalised to the whole space. <strong>88 of the 488 structural shapes (18%) belong to
+      timeless metrics and exist at the anchor only.</strong> The rung-multiplied structural
+      surface is therefore <strong>1,288, not 1,464</strong> &mdash; a naive &times;3 overstates
+      it by 176 shapes, 13.7%.
     </p>
 
     <h3>4. But <code>offset</code> does <em>not</em> disambiguate</h3>
@@ -882,13 +898,51 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
       wrong &mdash; at every rung, ranking is market-wide.
     </p>
 
+    <h3>9. 40 of the 86 metrics accept exactly one timeframe reference</h3>
+    <p>
+      A metric with <code>timeframeMode: "timeless"</code> is a <b>bundle read</b> &mdash; lifted
+      from a precomputed bundle rather than computed on the candle grid. Its column
+      <code>timeframe</code> must be the literal <code>{"rel": "anchor"}</code>:
+    </p>
+    <pre><code>[column-grammar] metric 'regMom' is timeframe-inert (a bundle read)
+  &mdash; it accepts only the anchor timeframe reference, not 'regime'</code></pre>
+    <p>
+      <code>rel:"lower"</code>, <code>rel:"regime"</code> and any <code>abs</code> all fail the
+      same way. The rule is <b>syntactic, not semantic</b>: with a 1h anchor,
+      <code>{"abs": "1h"}</code> resolves to exactly the anchor timeframe and is <em>still</em>
+      rejected. That last probe is the one that fixes the rule's shape &mdash; inferring it from
+      the first error message alone yields a validator that wrongly passes an absolute timeframe
+      equal to the anchor.
+    </p>
+    <p>
+      This is separate from the section-level rule (a timeless metric cannot sit in a section
+      carrying a <code>timeframe</code> override). A timeless metric is constrained on
+      <em>both</em> axes, and the two are enforced independently.
+    </p>
+    <p>
+      The consequence for reading a report is larger than the consequence for authoring one. A
+      bundle read and a candle metric rendered side by side under one anchor are
+      <b>not on the same grid</b>, and nothing in the table says so. AMZN at a 1h anchor:
+      <code>regMom</code> <b>bullish</b>, while ROC, PPO, MACD, <code>chg4h</code> and
+      <code>chg24h</code> are all negative and RSI14 sits at 37.3. A condition pairing the two
+      families is a conjunction across two horizons, one of which you cannot see or set.
+    </p>
+
+
     <p class="lede" style="margin-top:1.6rem">
       The through-line: the algebra above is sound, and the gap between <em>legal</em> and
       <em>usable</em> is wider than any contract discloses. Eight shapes that cannot render, a
       chaining rule with a second condition, a parameter that changes values without changing
-      names, four metrics that vanish on a third of the universe, and two places where the
-      platform describes the same column two contradictory ways in one response &mdash; none of it is
-      visible until something is rendered and the arithmetic checked by hand.
+      names, four metrics that vanish on a third of the universe, 88 shapes that exist at one
+      timeframe while the rest exist at three, and two places where the platform describes the
+      same column two contradictory ways in one response &mdash; none of it is visible until
+      something is rendered and the arithmetic checked by hand.
+    </p>
+    <p style="margin-top:1rem">
+      Item 3 is worth re-reading as a method note. It was measured, it was right about
+      everything it tested, and it was still wrong &mdash; because a candle-only sample was
+      stated as a claim about every shape. The correction came from a probe that had no reason
+      to exist except that something else refused to render.
     </p>
   </section>
 

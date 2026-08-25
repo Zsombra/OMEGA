@@ -1,0 +1,71 @@
+{
+  "_source": "data/samples/tier_c_drivers_1h.md",
+  "rows": 78,
+  "anchor": "1h",
+  "results": [
+    {
+      "metric": "REGIME_MOM",
+      "rows": 78,
+      "distribution": {
+        "bearish": 51,
+        "bullish": 16,
+        "neutral": 10,
+        "diverging": 1
+      },
+      "baseline": 0.654,
+      "baselineLabel": "bearish",
+      "best": 0.692,
+      "bestRule": "RSI14 <50 bearish, >50 bullish, else neutral",
+      "margin": 0.038,
+      "verdict": "NOT identified",
+      "runnerUp": 0.667
+    },
+    {
+      "metric": "OI_VELOCITY",
+      "rows": 78,
+      "distribution": {
+        "decelerating": 44,
+        "steady": 9,
+        "accelerating": 25
+      },
+      "baseline": 0.564,
+      "baselineLabel": "decelerating",
+      "best": 0.782,
+      "bestRule": "|d_last| vs |d_prev|, tie band 0.5 quantum",
+      "margin": 0.218,
+      "verdict": "PARTIAL",
+      "runnerUp": 0.782,
+      "resolvableSubset": {
+        "metric": "OI_VELOCITY (resolvable subset)",
+        "rows": 71,
+        "distribution": {
+          "decelerating": 39,
+          "steady": 9,
+          "accelerating": 23
+        },
+        "baseline": 0.549,
+        "baselineLabel": "decelerating",
+        "best": 0.859,
+        "bestRule": "|d_last| vs |d_prev|, tie band 0.5 quantum",
+        "margin": 0.31,
+        "verdict": "PARTIAL",
+        "runnerUp": 0.859
+      }
+    },
+    {
+      "metric": "CONFIDENCE",
+      "rows": 36,
+      "distribution": {
+        "moderate": 21,
+        "high": 15
+      },
+      "baseline": 0.583,
+      "baselineLabel": "moderate",
+      "best": 0.722,
+      "bestRule": "SMART_RETAIL -> high/moderate/moderate/moderate",
+      "margin": 0.139,
+      "verdict": "NOT identified",
+      "runnerUp": 0.667
+    }
+  ]
+}

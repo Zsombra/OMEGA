@@ -1,272 +1,360 @@
 {
- "_measured": "2026-08-25",
- "_what": "The 32 tier-C metrics have no external referent - no exchange publishes them, so docs/19's Hyperliquid method cannot touch them. But 'no external referent' is not 'uncheckable'. Most can be tested for COHERENCE against BattleGrid's own tier-A numbers, or against each other. This file records what that produced.",
- "_honesty": "Coherence is weaker evidence than the recomputation in docs/19. It shows a metric is consistent with its stated definition and with its neighbours - it cannot show the underlying classification is CORRECT. A regime classifier could be self-consistent and still wrong about the regime. Read these verdicts as 'not broken in a way this test could see', not as 'right'.",
- "coherent": [
-  {
-   "metrics": [
-    "CVD"
-   ],
-   "invariant": "delta CVD per bar == BUY_VOLUME - SELL_VOLUME, in BASE-ASSET units, daily-anchored",
-   "evidence": "CVD, BUY_VOLUME and SELL_VOLUME trajectories rendered side by side, bars:closed. SOL, four consecutive bars: delta CVD -68247 / -45047 / +19562 / +92080 against buyVol-sellVol of -68200 / -45000 / +19500 / +92100 - every one inside the displayed rounding of the 1-dp K values. BTC's cleanest bar has exact integer operands: 874 - 957 = -83 against a delta CVD of -84.",
-   "note": "CVD accumulates in BASE-ASSET units even though its declared unit class is signedPrice. The clique behaviour is still self-consistent, because SPOT_CVD shares that class and CVD x SPOT_CVD is the pair the perp-spot family needs. Recorded as an observation, not a defect - the unit TAG drives the spread guard, and the guard does what it should."
-  },
-  {
-   "metrics": [
-    "BUY_VOLUME",
-    "SELL_VOLUME",
-    "BUY_TRADES",
-    "SELL_TRADES",
-    "BUY_PRESSURE"
-   ],
-   "invariant": "buy+sell reconciles to VOLUME / TRADES; BUY_PRESSURE == BUY_VOLUME / VOLUME",
-   "evidence": "BTC/ETH/SOL. buyPres is exactly buyVol/volBase on all three. Residuals on the sums are small and MIXED IN SIGN (-0.42%, +1.37%, +0.07%) - sampling jitter inside the forming bar, not the systematic bias a double-count or unit error would produce."
-  },
-  {
-   "metrics": [
-    "SWING_HIGH",
-    "SWING_LOW"
-   ],
-   "invariant": "the values are real bar extremes from the tape",
-   "evidence": "BTC swingHi 80,035 and swingLo 76,862 landed exactly on the 15:00 high and the 08:00 low within a 60-bar window."
-  },
-  {
-   "metrics": [
-    "STRUCT_ZONES"
-   ],
-   "invariant": "the nearest zone is a real three-bar fair-value gap on the regime timeframe",
-   "evidence": "Scanning 148 4h bars for high[i-2] < low[i] found the rendered $77,859-$77,923 zone EXACT on both bounds, one match in twenty candidates, next-closest $2,594 away. Its age counts from that bar's CLOSE. See the transform audit."
-  },
-  {
-   "metrics": [
-    "OI_PX_REGIME"
-   ],
-   "invariant": "the classic four-quadrant read of OI direction against price direction",
-   "evidence": "BTC: OI trajectory rising, chg1h -0.44% -> 'new shorts'. SOL: OI trajectory falling 543.9M -> 494.2M, chg1h -1.94% -> 'long liquidation'. Both match. Coherent 2 of 2.",
-   "correction": "An earlier pass called BTC a MISMATCH by testing against OI_CHG. That was my error: OI_CHG is 'open interest against the mean of its own 24 hourly samples', not its recent change - the wrong operand entirely. With an actual OI trajectory the quadrant holds."
-  },
-  {
-   "metrics": [
-    "CROWD_PICK",
-    "CROWD_UPBIAS",
-    "CROWD_ACC",
-    "CROWD_CAPT"
-   ],
-   "invariant": "all are percentages in [0,100], and upBias and crowdAcc share a denominator - the pick count on that coin",
-   "evidence": "SOL upBias 22.2% and crowdAcc 88.9% are 2/9 and 8/9 - the same denominator of nine picks. BTC's 20.0% and 40.0% are 1/5 and 2/5. Consistent with the stated 'last 4 settled sessions' window and small samples."
-  },
-  {
-   "metrics": [
-    "CROWD_PICK_LIVE",
-    "CROWD_UPBIAS_LIVE",
-    "CROWD_ACC_LIVE",
-    "CROWD_CAPT_LIVE"
-   ],
-   "invariant": "null when no concurrent sessions are running",
-   "evidence": "All four rendered as an em-dash on both coins, which is what the column meaning documents. Note the interaction with trap 11: a null reads FALSE, so a condition on crowdAccLive answers from absence of data almost always."
-  },
-  {
-   "metrics": [
-    "FLOW_ALIGN"
-   ],
-   "invariant": "sign(LAST-BAR CVD delta) against sign(CROWD_UPBIAS - 50), not the multi-bar CVD trend and not BUY_PRESSURE.",
-   "evidence": "AVAX / GRAM / LINK / PENGU with a CVD trajectory beside it: 4 of 4. PENGU is the discriminating case - its CVD_trend reads 'falling' (38.9M -> 34.7M across the window) while its LAST bar rose +12.8M, and FLOW_ALIGN reports 'divergent' against a 0% bullish crowd. Only the last-bar delta fits. Across the wider 25-coin sample, BUY_PRESSURE and CROWD_UPBIAS fit only 13 of 25, which is what prompted looking for a different proxy.",
-   "caution": "AVAX looks like a contradiction between FLOW_ALIGN and SMART_RETAIL - buyPres 0.61 implies net buying, so a positive CVD delta, yet the delta is -623. That is MY comparison error, not theirs: buyPres is a plain `value` read and lands on the FORMING bar, while the CVD trajectory was pinned with bars:'closed'. Different bars. So 'different proxy' and 'different bar' cannot be separated from this evidence, and neither is claimed."
-  },
-  {
-   "metrics": [
-    "CAPTAIN_CONF"
-   ],
-   "invariant": "false when there is no captain concentration to confirm",
-   "evidence": "captRate is 0.0% on both coins and captainConf is false on both."
-  },
-  {
-   "metrics": [
-    "SMART_RETAIL"
-   ],
-   "invariant": "sign(BUY_PRESSURE - 0.5) against sign(CROWD_UPBIAS - 50). Agreement -> 'confirmed'; bullish flow with bearish crowd -> 'hidden accumulation'; bearish flow with bullish crowd -> 'hidden distribution'. Null when either side sits too near neutral.",
-   "evidence": "25 crypto coins. 13 of 13 non-null cases fit, with no misses. The 12 nulls sit at neutrality distance 0.00-0.20 on the weaker axis while every non-null sits at 0.20-0.76, so the null rule is a joint threshold on both inputs.",
-   "limit": "The exact cut is bracketed, not pinned - the two ranges touch at 0.20."
-  },
-  {
-   "metrics": [
-    "PRICE_ZONE"
-   ],
-   "invariant": "within 1.00% of SWING_HIGH -> 'near high'; else within 1.00% of SWING_LOW -> 'near low'; else 'mid-range'. The HIGH is tested first, so a coin inside 1% of both reads 'near high'.",
-   "evidence": "215 of 216 across all four authorable anchors. The decisive runs use the platform's OWN rendered distances rather than my arithmetic on price levels: 78/78 at 5m and 78/78 at 4h. The threshold is a sharp peak at exactly 1.00% - at 5m, 0.95% fits 73/78 and 1.05% fits 77/78. The single miss (XRP at 1h) came from the earlier pass, where distances were derived from rounded swing levels rather than rendered, so it is most likely my arithmetic and not the engine.",
-   "exception": "XRP at 1h sits 0.68% above its swing low and reads 'mid-range' rather than 'near low'. Unexplained. One miss in sixty, recorded rather than smoothed over.",
-   "correctionOfMyCorrection": "THIS ENTRY WAS DOWNGRADED AND IS NOW RESTORED, ON A DIFFERENT RULE. The first pass claimed 'position between the swings' on 3 coins - wrong, and rightly downgraded when 30 coins gave 31 inverted pairs. But the downgrade note then said the rule was 'not explained by position, nor by ATR-normalised distance', which quietly implied there was nothing left to try. There was: plain PERCENTAGE DISTANCE to the nearer swing, which is neither of the two things tested. Failing to find a rule is not evidence that no rule exists, and the second write-up blurred that line.",
-   "limit": "Still one market, sampled at two anchors. The 1.00% constant is strongly indicated but not confirmed against a different day."
-  }
- ],
- "notVerifiable": [
-  {
-   "metrics": [
-    "REGIME_TREND",
-    "REGIME_VOL",
-    "REGIME_MOM"
-   ],
-   "why": "The driver and the horizon are not exposed. ADX is a strength measure with no direction, so 'trending up' cannot be derived from it; REGIME_VOL is evidently relative to each coin's own history (BTC 0.88%, GOLD 0.37% and SOL 1.66% atrPct all read 'normal'), and that history is not available.",
-   "observation": "What survives is stranger. Of 24 directionally-labelled coins, the label agrees with the sign of the 24h change only 7 times - 29%. 'Trending up' coins are 72% negative on the day; 'trending down' coins are 67% positive. A label independent of 24h direction would sit near 50%; this is INVERTED. IMPORTANT CAVEAT: these are 30 coins at ONE INSTANT in one market, so they are not independent observations - a broadly red day with an up-trending longer horizon produces exactly this pattern. The effective sample is far smaller than 24 and no significance is claimed. It needs a repeat on a different day before anyone treats it as a finding.",
-   "resolved": "THE 'STUCK' CONCERN IS CLOSED. Across 30 coins REGIME_TREND reads 'trending up' 18, 'trending down' 6, 'ranging' 6 - three distinct values, not a constant. The first pass's 3-of-3 'trending up' was coincidence. REGIME_MOM also varies across all four of its labels.",
-   "observationWithdrawn": "THE 'INVERTED DIRECTION' OBSERVATION DOES NOT REPLICATE. At a 1h anchor the label agreed with the 24h sign 7/24 = 29%, which looked strikingly inverted. The same 30 coins at a 15m anchor give 5/11 = 45% - essentially random. So the 1h reading was exactly the market-snapshot artefact the original caveat warned about: 30 coins at one instant are not 30 independent observations. The caveat was right and the observation is withdrawn. What remains true is only that REGIME_TREND's driver and horizon are not exposed.",
-   "alsoResolved": "REGIME_VOL's 'is it stuck?' flag is closed too. At 1h all 30 read 'normal'; at 15m three coins (COIN, CRCL, NVDA) read 'expanding'. It is relative to something the anchor timeframe changes. 'contracting' is still unobserved."
-  },
-  {
-   "metrics": [
-    "OI_VELOCITY"
-   ],
-   "why": "It is a second derivative of OI across point-in-time samples, and only a value transform is offered - no trajectory. Both coins read 'decelerating' with OI trajectories moving in opposite directions, which a four-point window cannot adjudicate.",
-   "resolved": "Varies: 8 accelerating, 17 decelerating across 25 coins. The rule is still unidentified - a second derivative with no trajectory transform offered - but it is not a constant."
-  },
-  {
-   "metrics": [
-    "PERP_SPOT_FLOW",
-    "PERP_SPOT_STRENGTH",
-    "PERP_SPOT_CONFIRMS"
-   ],
-   "why": "Derived from the perp-vs-spot CVD rate gap. Both coins read 'neutral', so the render carries no discriminating case - a neutral reading is consistent with every hypothesis about the calculator.",
-   "resolved": "Partly. PERP_SPOT_FLOW varies (20 neutral, 4 spot_led_accumulation) and PERP_SPOT_STRENGTH spans all three buckets. PERP_SPOT_CONFIRMS read 'false' on all 24 non-null coins - never true in any sample taken."
-  },
-  {
-   "metrics": [
-    "SETTLED_AT"
-   ],
-   "why": "A timestamp. There is nothing to recompute - but see the staleness finding below, which is what reading it actually produced."
-  },
-  {
-   "metrics": [
-    "CONFIDENCE"
-   ],
-   "why": "A bucketed 'confidence in the convergence read' over inputs that are themselves tier C. It varies - 16 moderate, 9 high across 25 coins - so it is not a constant, but its rule is over unidentified inputs and 'low' never appeared in any sample.",
-   "note": "Was previously filed jointly with SMART_RETAIL. That entry was split when SMART_RETAIL's rule was identified; CONFIDENCE's was not."
-  }
- ],
- "findings": [
-  {
-   "id": "crowd-data-is-a-month-stale-and-its-timestamp-cannot-be-gated",
-   "severity": "silent",
-   "finding": "SETTLED_AT returns conditionOperators: [] - it cannot be referenced by any condition. It is the only column that carries the age of the CROWD_* block, so there is no way to write a gate that refuses stale crowd data.",
-   "cost": "A strategy gating on crowdAcc or upBias is reading month-old data. Nothing in the crowd columns themselves says so; only SETTLED_AT does - and SETTLED_AT returns conditionOperators: [], so it CANNOT be used as a freshness guard in a condition. The one column that would let you refuse stale crowd data is the one column you cannot gate on.",
-   "suggestedFix": "Give SETTLED_AT comparison operators, or expose an age-in-hours derivative of it the way STRUCT_ZONES exposes nearestZoneAge.",
-   "evidence": "SETTLED_AT read 2026-07-24 on both coins against a 2026-08-25 render - 32 days. The CROWD_* columns describe themselves as 'last 4 settled sessions', so those four ended a month ago. IMPORTANT: the staleness itself is probably account state rather than a platform bug - no sessions have settled on this account recently. What is a platform gap regardless of how stale the data happens to be is that the timestamp exposing it cannot be used in a condition."
-  },
-  {
-   "id": "columns-that-render-a-value-no-condition-can-reference",
-   "severity": "silent",
-   "finding": "Three columns render a value and return conditionOperators: [] - no operator at all, numeric or categorical. They are visible to an agent reading the table as text and unreachable to the deterministic layer.",
-   "instances": [
-    "SETTLED_AT",
-    "STRUCT_ZONES x nearestZoneRange",
-    "picksSpread_session"
-   ],
-   "cost": "Each one is the natural guard for something. SETTLED_AT is the only column carrying the age of the CROWD_* block, so crowd freshness cannot be gated. nearestZoneRange is the only column carrying the zone's actual bounds, so 'price inside the zone' cannot be expressed - only nearestZoneDist, which is a distance to the midpoint. The gap is not that the data is missing; it is that the data is shown and cannot be used.",
-   "note": "This is a class, not three unrelated bugs - and it is worth stating as one because the fix is the same in each case: give the column operators, or expose a derived scalar that carries the same information. STRUCT_ZONES already does the second thing with nearestZoneAge, which proves the pattern is available.",
-   "suggestedFix": "Give SETTLED_AT comparison operators or an age-in-hours derivative; give nearestZoneRange a pair of scalar bounds, or a boolean 'price is inside the nearest zone'."
-  }
- ],
- "_resampled": "2026-08-25, second pass. Most of the first pass's 'not verifiable' verdicts were 'not verifiable from two or three coins', which is a different claim. Re-run against 30 coins (regime block) and 25 (flow block). Four verdicts changed - three upward, and one DOWN, because the bigger sample falsified something I had called coherent.",
- "unobservedLabels": {
-  "_what": "Vocabulary values that never appeared in any sample. Not evidence of a bug - a label can be rare and correct - but a gate written against one of these has never been seen to fire, and that is worth knowing before relying on it.",
-  "REGIME_VOL": {
-   "seen": [
-    "normal",
-    "expanding"
-   ],
-   "unseen": [
-    "contracting"
-   ],
-   "note": "'expanding' appeared only after re-anchoring to 15m - 3 of 30 coins, where 1h gave 30 of 30 'normal'. A label absent from one sample can simply need different conditions, which is why 'unobserved' is not filed as 'broken'."
-  },
-  "PERP_SPOT_FLOW": {
-   "seen": [
-    "neutral",
-    "spot_led_accumulation"
-   ],
-   "unseen": [
-    "confirmed_bull",
-    "confirmed_bear",
-    "perp_led_fragile"
-   ]
-  },
-  "PERP_SPOT_CONFIRMS": {
-   "seen": [
-    "false"
-   ],
-   "unseen": [
-    "true"
-   ]
-  },
-  "CONFIDENCE": {
-   "seen": [
-    "high",
-    "moderate"
-   ],
-   "unseen": [
-    "low"
-   ]
-  },
-  "OI_VELOCITY": {
-   "seen": [
-    "accelerating",
-    "decelerating"
-   ],
-   "unseen": [
-    "steady"
-   ]
-  },
-  "PRICE_ZONE": {
-   "seen": [
-    "near low",
-    "mid-range",
-    "near high"
-   ],
-   "unseen": [
-    "breakout high",
-    "breakdown low"
-   ],
-   "note": "Now that the rule is known, these two are targetable: 'breakout high' should need close ABOVE swingHigh, not merely within 1% of it. COIN rendered close EXACTLY equal to its swingHigh at 15m and still read 'near high', so the boundary is strict inequality or something beyond it."
-  },
-  "_reanchorNote": "All other unseen labels stayed unseen at the 15m anchor as well."
- },
- "_reanchored": "2026-08-25, third pass. The second pass left two flags needing 'a repeat on another day'. Waiting was not available, but re-rendering the SAME 30 coins at a 15m anchor changes every bar, ATR and swing while holding the coin set fixed - the closest thing to an independent re-sample on hand. Both flags resolved, and one of them resolved AGAINST the observation I had recorded.",
- "_labelSweep": {
-  "_what": "Task 1 of the plan: a bounded sweep for the label values never observed. 78 coins at 5m, 78 at 4h, plus the earlier 30 at 15m and 30 at 1h - 216 coin-observations across every authorable anchor.",
-  "_anchorNote": "Only 5m / 15m / 1h / 4h are authorable as a main candle. The schema enum lists 13 timeframes; the validator accepts 4. omega already modelled this correctly (ANCHOR_TIMEFRAMES) and doc 04 records it, so it is not a new finding - I tried 1d and was refused.",
-  "found": {
-   "OI_VELOCITY.steady": "appeared at 5m and 4h (APT, CL, ETH, GOOGL, HOOD, ORCL, PEPE, WIF)",
-   "REGIME_VOL.expanding": "appeared at 15m (COIN, CRCL, NVDA) and 4h (POPCAT, PURR, WIF)"
-  },
-  "stillUnobserved": [
-   "REGIME_VOL.contracting",
-   "PRICE_ZONE.breakout high",
-   "PRICE_ZONE.breakdown low",
-   "PERP_SPOT_FLOW.confirmed_bull",
-   "PERP_SPOT_FLOW.confirmed_bear",
-   "PERP_SPOT_FLOW.perp_led_fragile",
-   "PERP_SPOT_CONFIRMS.true",
-   "CONFIDENCE.low"
+  "_measured": "2026-08-25",
+  "_what": "The 32 tier-C metrics have no external referent - no exchange publishes them, so docs/19's Hyperliquid method cannot touch them. But 'no external referent' is not 'uncheckable'. Most can be tested for COHERENCE against BattleGrid's own tier-A numbers, or against each other. This file records what that produced.",
+  "_honesty": "Coherence is weaker evidence than the recomputation in docs/19. It shows a metric is consistent with its stated definition and with its neighbours - it cannot show the underlying classification is CORRECT. A regime classifier could be self-consistent and still wrong about the regime. Read these verdicts as 'not broken in a way this test could see', not as 'right'.",
+  "coherent": [
+    {
+      "metrics": [
+        "CVD"
+      ],
+      "invariant": "delta CVD per bar == BUY_VOLUME - SELL_VOLUME, in BASE-ASSET units, daily-anchored",
+      "evidence": "CVD, BUY_VOLUME and SELL_VOLUME trajectories rendered side by side, bars:closed. SOL, four consecutive bars: delta CVD -68247 / -45047 / +19562 / +92080 against buyVol-sellVol of -68200 / -45000 / +19500 / +92100 - every one inside the displayed rounding of the 1-dp K values. BTC's cleanest bar has exact integer operands: 874 - 957 = -83 against a delta CVD of -84.",
+      "note": "CVD accumulates in BASE-ASSET units even though its declared unit class is signedPrice. The clique behaviour is still self-consistent, because SPOT_CVD shares that class and CVD x SPOT_CVD is the pair the perp-spot family needs. Recorded as an observation, not a defect - the unit TAG drives the spread guard, and the guard does what it should."
+    },
+    {
+      "metrics": [
+        "BUY_VOLUME",
+        "SELL_VOLUME",
+        "BUY_TRADES",
+        "SELL_TRADES",
+        "BUY_PRESSURE"
+      ],
+      "invariant": "buy+sell reconciles to VOLUME / TRADES; BUY_PRESSURE == BUY_VOLUME / VOLUME",
+      "evidence": "BTC/ETH/SOL. buyPres is exactly buyVol/volBase on all three. Residuals on the sums are small and MIXED IN SIGN (-0.42%, +1.37%, +0.07%) - sampling jitter inside the forming bar, not the systematic bias a double-count or unit error would produce."
+    },
+    {
+      "metrics": [
+        "SWING_HIGH",
+        "SWING_LOW"
+      ],
+      "invariant": "the values are real bar extremes from the tape",
+      "evidence": "BTC swingHi 80,035 and swingLo 76,862 landed exactly on the 15:00 high and the 08:00 low within a 60-bar window."
+    },
+    {
+      "metrics": [
+        "STRUCT_ZONES"
+      ],
+      "invariant": "the nearest zone is a real three-bar fair-value gap on the regime timeframe",
+      "evidence": "Scanning 148 4h bars for high[i-2] < low[i] found the rendered $77,859-$77,923 zone EXACT on both bounds, one match in twenty candidates, next-closest $2,594 away. Its age counts from that bar's CLOSE. See the transform audit."
+    },
+    {
+      "metrics": [
+        "OI_PX_REGIME"
+      ],
+      "invariant": "the classic four-quadrant read of OI direction against price direction",
+      "evidence": "BTC: OI trajectory rising, chg1h -0.44% -> 'new shorts'. SOL: OI trajectory falling 543.9M -> 494.2M, chg1h -1.94% -> 'long liquidation'. Both match. Coherent 2 of 2.",
+      "correction": "An earlier pass called BTC a MISMATCH by testing against OI_CHG. That was my error: OI_CHG is 'open interest against the mean of its own 24 hourly samples', not its recent change - the wrong operand entirely. With an actual OI trajectory the quadrant holds."
+    },
+    {
+      "metrics": [
+        "CROWD_PICK",
+        "CROWD_UPBIAS",
+        "CROWD_ACC",
+        "CROWD_CAPT"
+      ],
+      "invariant": "all are percentages in [0,100], and upBias and crowdAcc share a denominator - the pick count on that coin",
+      "evidence": "SOL upBias 22.2% and crowdAcc 88.9% are 2/9 and 8/9 - the same denominator of nine picks. BTC's 20.0% and 40.0% are 1/5 and 2/5. Consistent with the stated 'last 4 settled sessions' window and small samples."
+    },
+    {
+      "metrics": [
+        "CROWD_PICK_LIVE",
+        "CROWD_UPBIAS_LIVE",
+        "CROWD_ACC_LIVE",
+        "CROWD_CAPT_LIVE"
+      ],
+      "invariant": "null when no concurrent sessions are running",
+      "evidence": "All four rendered as an em-dash on both coins, which is what the column meaning documents. Note the interaction with trap 11: a null reads FALSE, so a condition on crowdAccLive answers from absence of data almost always."
+    },
+    {
+      "metrics": [
+        "FLOW_ALIGN"
+      ],
+      "invariant": "sign(LAST-BAR CVD delta) against sign(CROWD_UPBIAS - 50), not the multi-bar CVD trend and not BUY_PRESSURE.",
+      "evidence": "AVAX / GRAM / LINK / PENGU with a CVD trajectory beside it: 4 of 4. PENGU is the discriminating case - its CVD_trend reads 'falling' (38.9M -> 34.7M across the window) while its LAST bar rose +12.8M, and FLOW_ALIGN reports 'divergent' against a 0% bullish crowd. Only the last-bar delta fits. Across the wider 25-coin sample, BUY_PRESSURE and CROWD_UPBIAS fit only 13 of 25, which is what prompted looking for a different proxy.",
+      "caution": "AVAX looks like a contradiction between FLOW_ALIGN and SMART_RETAIL - buyPres 0.61 implies net buying, so a positive CVD delta, yet the delta is -623. That is MY comparison error, not theirs: buyPres is a plain `value` read and lands on the FORMING bar, while the CVD trajectory was pinned with bars:'closed'. Different bars. So 'different proxy' and 'different bar' cannot be separated from this evidence, and neither is claimed."
+    },
+    {
+      "metrics": [
+        "CAPTAIN_CONF"
+      ],
+      "invariant": "false when there is no captain concentration to confirm",
+      "evidence": "captRate is 0.0% on both coins and captainConf is false on both."
+    },
+    {
+      "metrics": [
+        "SMART_RETAIL"
+      ],
+      "invariant": "sign(BUY_PRESSURE - 0.5) against sign(CROWD_UPBIAS - 50). Agreement -> 'confirmed'; bullish flow with bearish crowd -> 'hidden accumulation'; bearish flow with bullish crowd -> 'hidden distribution'. Null when either side sits too near neutral.",
+      "evidence": "25 crypto coins. 13 of 13 non-null cases fit, with no misses. The 12 nulls sit at neutrality distance 0.00-0.20 on the weaker axis while every non-null sits at 0.20-0.76, so the null rule is a joint threshold on both inputs.",
+      "limit": "The exact cut is bracketed, not pinned - the two ranges touch at 0.20."
+    },
+    {
+      "metrics": [
+        "PRICE_ZONE"
+      ],
+      "invariant": "within 1.00% of SWING_HIGH -> 'near high'; else within 1.00% of SWING_LOW -> 'near low'; else 'mid-range'. The HIGH is tested first, so a coin inside 1% of both reads 'near high'.",
+      "evidence": "215 of 216 across all four authorable anchors. The decisive runs use the platform's OWN rendered distances rather than my arithmetic on price levels: 78/78 at 5m and 78/78 at 4h. The threshold is a sharp peak at exactly 1.00% - at 5m, 0.95% fits 73/78 and 1.05% fits 77/78. The single miss (XRP at 1h) came from the earlier pass, where distances were derived from rounded swing levels rather than rendered, so it is most likely my arithmetic and not the engine.",
+      "exception": "XRP at 1h sits 0.68% above its swing low and reads 'mid-range' rather than 'near low'. Unexplained. One miss in sixty, recorded rather than smoothed over.",
+      "correctionOfMyCorrection": "THIS ENTRY WAS DOWNGRADED AND IS NOW RESTORED, ON A DIFFERENT RULE. The first pass claimed 'position between the swings' on 3 coins - wrong, and rightly downgraded when 30 coins gave 31 inverted pairs. But the downgrade note then said the rule was 'not explained by position, nor by ATR-normalised distance', which quietly implied there was nothing left to try. There was: plain PERCENTAGE DISTANCE to the nearer swing, which is neither of the two things tested. Failing to find a rule is not evidence that no rule exists, and the second write-up blurred that line.",
+      "limit": "Still one market, sampled at two anchors. The 1.00% constant is strongly indicated but not confirmed against a different day."
+    }
   ],
-  "structuralHypothesis": {
-   "labels": [
-    "PRICE_ZONE.breakout high",
-    "PRICE_ZONE.breakdown low"
-   ],
-   "evidence": "Across 156 observations where the platform rendered the distances directly, dist_swingHi was NEVER positive (range -22.47% to -0.00%) and dist_swingLo was NEVER negative (0.00% to +58.15%). Price never sits outside its own swing range.",
-   "claim": "If the swing levels update to contain price - which is what a swing high IS - these two labels may be STRUCTURALLY UNREACHABLE rather than rare.",
-   "honesty": "Supported, not proven. A brief lag between price exceeding the level and the level updating would produce the label, and 156 snapshots cannot rule out that window. Stated as a hypothesis."
-  }
- },
- "_ruleSearch": {
-  "_what": "Task 2: instead of guessing one or two hypotheses and declaring REGIME_TREND 'unidentified', enumerate every candidate the exposed columns can express and score them all - the method that cracked PRICE_ZONE.",
-  "operands": [
-   "MA_ALIGN",
-   "ADX",
-   "dist_SMA20"
+  "notVerifiable": [
+    {
+      "metrics": [
+        "REGIME_TREND",
+        "REGIME_VOL",
+        "REGIME_MOM"
+      ],
+      "why": "The driver and the horizon are not exposed. ADX is a strength measure with no direction, so 'trending up' cannot be derived from it; REGIME_VOL is evidently relative to each coin's own history (BTC 0.88%, GOLD 0.37% and SOL 1.66% atrPct all read 'normal'), and that history is not available.",
+      "observation": "What survives is stranger. Of 24 directionally-labelled coins, the label agrees with the sign of the 24h change only 7 times - 29%. 'Trending up' coins are 72% negative on the day; 'trending down' coins are 67% positive. A label independent of 24h direction would sit near 50%; this is INVERTED. IMPORTANT CAVEAT: these are 30 coins at ONE INSTANT in one market, so they are not independent observations - a broadly red day with an up-trending longer horizon produces exactly this pattern. The effective sample is far smaller than 24 and no significance is claimed. It needs a repeat on a different day before anyone treats it as a finding.",
+      "resolved": "THE 'STUCK' CONCERN IS CLOSED. Across 30 coins REGIME_TREND reads 'trending up' 18, 'trending down' 6, 'ranging' 6 - three distinct values, not a constant. The first pass's 3-of-3 'trending up' was coincidence. REGIME_MOM also varies across all four of its labels.",
+      "observationWithdrawn": "THE 'INVERTED DIRECTION' OBSERVATION DOES NOT REPLICATE. At a 1h anchor the label agreed with the 24h sign 7/24 = 29%, which looked strikingly inverted. The same 30 coins at a 15m anchor give 5/11 = 45% - essentially random. So the 1h reading was exactly the market-snapshot artefact the original caveat warned about: 30 coins at one instant are not 30 independent observations. The caveat was right and the observation is withdrawn. What remains true is only that REGIME_TREND's driver and horizon are not exposed.",
+      "alsoResolved": "REGIME_VOL's 'is it stuck?' flag is closed too. At 1h all 30 read 'normal'; at 15m three coins (COIN, CRCL, NVDA) read 'expanding'. It is relative to something the anchor timeframe changes. 'contracting' is still unobserved."
+    },
+    {
+      "metrics": [
+        "OI_VELOCITY"
+      ],
+      "why": "It is a second derivative of OI across point-in-time samples, and only a value transform is offered - no trajectory. Both coins read 'decelerating' with OI trajectories moving in opposite directions, which a four-point window cannot adjudicate.",
+      "resolved": "Varies: 8 accelerating, 17 decelerating across 25 coins. The rule is still unidentified - a second derivative with no trajectory transform offered - but it is not a constant."
+    },
+    {
+      "metrics": [
+        "PERP_SPOT_FLOW",
+        "PERP_SPOT_STRENGTH",
+        "PERP_SPOT_CONFIRMS"
+      ],
+      "why": "Derived from the perp-vs-spot CVD rate gap. Both coins read 'neutral', so the render carries no discriminating case - a neutral reading is consistent with every hypothesis about the calculator.",
+      "resolved": "Partly. PERP_SPOT_FLOW varies (20 neutral, 4 spot_led_accumulation) and PERP_SPOT_STRENGTH spans all three buckets. PERP_SPOT_CONFIRMS read 'false' on all 24 non-null coins - never true in any sample taken."
+    },
+    {
+      "metrics": [
+        "SETTLED_AT"
+      ],
+      "why": "A timestamp. There is nothing to recompute - but see the staleness finding below, which is what reading it actually produced."
+    },
+    {
+      "metrics": [
+        "CONFIDENCE"
+      ],
+      "why": "A bucketed 'confidence in the convergence read' over inputs that are themselves tier C. It varies - 16 moderate, 9 high across 25 coins - so it is not a constant, but its rule is over unidentified inputs and 'low' never appeared in any sample.",
+      "note": "Was previously filed jointly with SMART_RETAIL. That entry was split when SMART_RETAIL's rule was identified; CONFIDENCE's was not."
+    }
   ],
-  "candidates": "all 6 permutations mapping MA_ALIGN onto the trend vocabulary, 6 ADX thresholds x 2 direction sources, and 4 dist_SMA20 bands - 22 rules",
-  "result": "Best candidate 55% against a 53% baseline of always predicting the mode. A two-point margin on 78 observations is noise, and the 'winner' maps MA_ALIGN bullish -> 'trending down', which is nonsense and is exactly what fitting noise looks like.",
-  "conclusion": "REGIME_TREND reads something the column layer does not expose. That is now a measured conclusion with a stated search space and a margin, not an admission of not having tried.",
-  "note": "The distribution is also worth recording: at 4h, 41 'trending up', 33 'ranging', 4 'trending down'. The mode alone gets 53%, which is why any candidate must be judged against that floor rather than against zero."
- }
+  "findings": [
+    {
+      "id": "crowd-data-is-a-month-stale-and-its-timestamp-cannot-be-gated",
+      "severity": "silent",
+      "finding": "SETTLED_AT returns conditionOperators: [] - it cannot be referenced by any condition. It is the only column that carries the age of the CROWD_* block, so there is no way to write a gate that refuses stale crowd data.",
+      "cost": "A strategy gating on crowdAcc or upBias is reading month-old data. Nothing in the crowd columns themselves says so; only SETTLED_AT does - and SETTLED_AT returns conditionOperators: [], so it CANNOT be used as a freshness guard in a condition. The one column that would let you refuse stale crowd data is the one column you cannot gate on.",
+      "suggestedFix": "Give SETTLED_AT comparison operators, or expose an age-in-hours derivative of it the way STRUCT_ZONES exposes nearestZoneAge.",
+      "evidence": "SETTLED_AT read 2026-07-24 on both coins against a 2026-08-25 render - 32 days. The CROWD_* columns describe themselves as 'last 4 settled sessions', so those four ended a month ago. IMPORTANT: the staleness itself is probably account state rather than a platform bug - no sessions have settled on this account recently. What is a platform gap regardless of how stale the data happens to be is that the timestamp exposing it cannot be used in a condition."
+    },
+    {
+      "id": "columns-that-render-a-value-no-condition-can-reference",
+      "severity": "silent",
+      "finding": "Three columns render a value and return conditionOperators: [] - no operator at all, numeric or categorical. They are visible to an agent reading the table as text and unreachable to the deterministic layer.",
+      "instances": [
+        "SETTLED_AT",
+        "STRUCT_ZONES x nearestZoneRange",
+        "picksSpread_session"
+      ],
+      "cost": "Each one is the natural guard for something. SETTLED_AT is the only column carrying the age of the CROWD_* block, so crowd freshness cannot be gated. nearestZoneRange is the only column carrying the zone's actual bounds, so 'price inside the zone' cannot be expressed - only nearestZoneDist, which is a distance to the midpoint. The gap is not that the data is missing; it is that the data is shown and cannot be used.",
+      "note": "This is a class, not three unrelated bugs - and it is worth stating as one because the fix is the same in each case: give the column operators, or expose a derived scalar that carries the same information. STRUCT_ZONES already does the second thing with nearestZoneAge, which proves the pattern is available.",
+      "suggestedFix": "Give SETTLED_AT comparison operators or an age-in-hours derivative; give nearestZoneRange a pair of scalar bounds, or a boolean 'price is inside the nearest zone'."
+    }
+  ],
+  "_resampled": "2026-08-25, second pass. Most of the first pass's 'not verifiable' verdicts were 'not verifiable from two or three coins', which is a different claim. Re-run against 30 coins (regime block) and 25 (flow block). Four verdicts changed - three upward, and one DOWN, because the bigger sample falsified something I had called coherent.",
+  "unobservedLabels": {
+    "_what": "Vocabulary values that never appeared in any sample. Not evidence of a bug - a label can be rare and correct - but a gate written against one of these has never been seen to fire, and that is worth knowing before relying on it.",
+    "REGIME_VOL": {
+      "seen": [
+        "normal",
+        "expanding"
+      ],
+      "unseen": [
+        "contracting"
+      ],
+      "note": "'expanding' appeared only after re-anchoring to 15m - 3 of 30 coins, where 1h gave 30 of 30 'normal'. A label absent from one sample can simply need different conditions, which is why 'unobserved' is not filed as 'broken'."
+    },
+    "PERP_SPOT_FLOW": {
+      "seen": [
+        "neutral",
+        "spot_led_accumulation"
+      ],
+      "unseen": [
+        "confirmed_bull",
+        "confirmed_bear",
+        "perp_led_fragile"
+      ]
+    },
+    "PERP_SPOT_CONFIRMS": {
+      "seen": [
+        "false"
+      ],
+      "unseen": [
+        "true"
+      ]
+    },
+    "CONFIDENCE": {
+      "seen": [
+        "high",
+        "moderate"
+      ],
+      "unseen": [
+        "low"
+      ]
+    },
+    "OI_VELOCITY": {
+      "seen": [
+        "accelerating",
+        "decelerating"
+      ],
+      "unseen": [
+        "steady"
+      ]
+    },
+    "PRICE_ZONE": {
+      "seen": [
+        "near low",
+        "mid-range",
+        "near high"
+      ],
+      "unseen": [
+        "breakout high",
+        "breakdown low"
+      ],
+      "note": "Now that the rule is known, these two are targetable: 'breakout high' should need close ABOVE swingHigh, not merely within 1% of it. COIN rendered close EXACTLY equal to its swingHigh at 15m and still read 'near high', so the boundary is strict inequality or something beyond it."
+    },
+    "_reanchorNote": "All other unseen labels stayed unseen at the 15m anchor as well."
+  },
+  "_reanchored": "2026-08-25, third pass. The second pass left two flags needing 'a repeat on another day'. Waiting was not available, but re-rendering the SAME 30 coins at a 15m anchor changes every bar, ATR and swing while holding the coin set fixed - the closest thing to an independent re-sample on hand. Both flags resolved, and one of them resolved AGAINST the observation I had recorded.",
+  "_labelSweep": {
+    "_what": "Task 1 of the plan: a bounded sweep for the label values never observed. 78 coins at 5m, 78 at 4h, plus the earlier 30 at 15m and 30 at 1h - 216 coin-observations across every authorable anchor.",
+    "_anchorNote": "Only 5m / 15m / 1h / 4h are authorable as a main candle. The schema enum lists 13 timeframes; the validator accepts 4. omega already modelled this correctly (ANCHOR_TIMEFRAMES) and doc 04 records it, so it is not a new finding - I tried 1d and was refused.",
+    "found": {
+      "OI_VELOCITY.steady": "appeared at 5m and 4h (APT, CL, ETH, GOOGL, HOOD, ORCL, PEPE, WIF)",
+      "REGIME_VOL.expanding": "appeared at 15m (COIN, CRCL, NVDA) and 4h (POPCAT, PURR, WIF)"
+    },
+    "stillUnobserved": [
+      "REGIME_VOL.contracting",
+      "PRICE_ZONE.breakout high",
+      "PRICE_ZONE.breakdown low",
+      "PERP_SPOT_FLOW.confirmed_bull",
+      "PERP_SPOT_FLOW.confirmed_bear",
+      "PERP_SPOT_FLOW.perp_led_fragile",
+      "PERP_SPOT_CONFIRMS.true",
+      "CONFIDENCE.low"
+    ],
+    "structuralHypothesis": {
+      "labels": [
+        "PRICE_ZONE.breakout high",
+        "PRICE_ZONE.breakdown low"
+      ],
+      "evidence": "Across 156 observations where the platform rendered the distances directly, dist_swingHi was NEVER positive (range -22.47% to -0.00%) and dist_swingLo was NEVER negative (0.00% to +58.15%). Price never sits outside its own swing range.",
+      "claim": "If the swing levels update to contain price - which is what a swing high IS - these two labels may be STRUCTURALLY UNREACHABLE rather than rare.",
+      "honesty": "Supported, not proven. A brief lag between price exceeding the level and the level updating would produce the label, and 156 snapshots cannot rule out that window. Stated as a hypothesis."
+    }
+  },
+  "_ruleSearch": {
+    "_what": "Task 2: instead of guessing one or two hypotheses and declaring REGIME_TREND 'unidentified', enumerate every candidate the exposed columns can express and score them all - the method that cracked PRICE_ZONE.",
+    "operands": [
+      "MA_ALIGN",
+      "ADX",
+      "dist_SMA20"
+    ],
+    "candidates": "all 6 permutations mapping MA_ALIGN onto the trend vocabulary, 6 ADX thresholds x 2 direction sources, and 4 dist_SMA20 bands - 22 rules",
+    "result": "Best candidate 55% against a 53% baseline of always predicting the mode. A two-point margin on 78 observations is noise, and the 'winner' maps MA_ALIGN bullish -> 'trending down', which is nonsense and is exactly what fitting noise looks like.",
+    "conclusion": "REGIME_TREND reads something the column layer does not expose. That is now a measured conclusion with a stated search space and a margin, not an admission of not having tried.",
+    "note": "The distribution is also worth recording: at 4h, 41 'trending up', 33 'ranging', 4 'trending down'. The mode alone gets 53%, which is why any candidate must be judged against that floor rather than against zero."
+  },
+  "_ruleSearch2": {
+    "_what": "The same enumerate-and-score search run for REGIME_MOM, OI_VELOCITY and CONFIDENCE. I had previously written that these three 'would need the same search against operands that aren't exposed either' - and never run it. That sentence asserted an outcome. This is the run.",
+    "_source": "data/samples/tier_c_drivers_1h.md - 78 coins, 1h anchor, 2026-08-26, every label rendered beside its candidate drivers in ONE table so nothing is compared across sampling instants. The table is stored verbatim and parsed, not re-keyed.",
+    "_script": "scripts/tier_c_rule_search.py",
+    "REGIME_MOM": {
+      "operands": [
+        "ROC12",
+        "PPO",
+        "MACD",
+        "RSI14",
+        "CHG_4H",
+        "CHG_24H"
+      ],
+      "candidates": "5 drivers x 6 neutral-band thresholds, 5 RSI band splits, and 3 explicit divergence rules (momentum sign disagreeing with chg24h) - 38 rules",
+      "distribution": {
+        "bearish": 51,
+        "bullish": 16,
+        "neutral": 10,
+        "diverging": 1
+      },
+      "baseline": 0.654,
+      "best": 0.692,
+      "bestRule": "RSI14 <50 bearish, >50 bullish, else neutral",
+      "margin": 0.038,
+      "verdict": "NOT identified",
+      "result": "Best candidate 69% against a 65% baseline - a four-point margin on 78 observations, the same noise-sized win REGIME_TREND produced.",
+      "structuralExplanation": "This one has a cause, and it is not 'we did not try hard enough'. REGIME_MOM is timeframe-inert: a BUNDLE READ. Its value is not computed from the anchor candle grid at all, so scoring it against ROC/PPO/MACD/RSI14 - which are candle-grid metrics on 1h bars - compares two different grids. The platform states this itself and refuses to render the metric at any other timeframe (see _timelessTimeframe below).",
+      "corroboration": "The split falls exactly along that line. Where a bundle read is scored against SAME-BUNDLE operands (OI_VELOCITY vs OI, both timeless) the search reaches 86%. Where it is scored against candle-grid operands (REGIME_MOM) it reaches noise. AMZN is the clean illustration: labelled 'bullish' with ROC, PPO, MACD, chg4h and chg24h all negative and RSI14 at 37.3. That is not a near miss, it is an inversion - the label is reading bars these columns never touch.",
+      "whatWouldSettleIt": "A column exposing the regime bundle's own momentum input. None exists; the bundle is readable only through its already-classified outputs."
+    },
+    "OI_VELOCITY": {
+      "operands": [
+        "OI trajectory, window 4 (t3, t2, t1, now)"
+      ],
+      "candidates": "3 second-difference rules at tie bands of 0, 0.5 and 1.0 display quanta, plus last-delta sign and the rendered OI_trend direction - 5 rules",
+      "distribution": {
+        "decelerating": 44,
+        "steady": 9,
+        "accelerating": 25
+      },
+      "baseline": 0.564,
+      "best": 0.782,
+      "bestRule": "|d_last| vs |d_prev|, tie band 0.5 quantum",
+      "margin": 0.218,
+      "verdict": "PARTIAL - the family is right, the exact rule is not pinned",
+      "result": "78% of 78 rows against a 56% baseline, margin +22 points. The winning rule is the second difference of the OI trajectory: compare |last delta| against |previous delta| - growing is 'accelerating', shrinking 'decelerating', equal 'steady'. This is a real signal, not a noise-sized win, and it matches the column's stated meaning ('the pace of open-interest change').",
+      "resolvableSubset": {
+        "rows": 71,
+        "best": 0.859,
+        "baseline": 0.549,
+        "margin": 0.31,
+        "_honesty": "DIAGNOSTIC, NOT THE HEADLINE. 7 rows print all four OI values identically ($4.0M, $1.3M, $1.7B, $2.0B and so on), so their second difference is 0 minus 0 - undefined at display precision rather than wrong. Excluding only those lifts the fit to 86%. The subset was defined by 'the arithmetic is undefined here', not by 'this improves the score', and BOTH numbers are reported so the reader can judge that claim. The 78% full-sample figure stands as the result."
+      },
+      "residual": "Even on the resolvable subset 10 rows miss. Displayed OI carries one decimal place, so a true second difference smaller than the display quantum is invisible - the residual is consistent with rounding and does not require a different rule. Confirming it needs OI at more precision than any column renders.",
+      "whyThisOneWorked": "OI is itself timeless. Label and operand come from the same bundle, so unlike REGIME_MOM there is no grid mismatch."
+    },
+    "CONFIDENCE": {
+      "operands": [
+        "FLOW_ALIGN",
+        "SMART_RETAIL",
+        "PERP_SPOT_STRENGTH"
+      ],
+      "candidates": "identity against PERP_SPOT_STRENGTH, 12 distinct FLOW_ALIGN label mappings, 4 SMART_RETAIL mappings, and 2 joint flow-plus-retail rules - 19 rules",
+      "distribution": {
+        "moderate": 21,
+        "high": 15
+      },
+      "baseline": 0.583,
+      "best": 0.722,
+      "bestRule": "SMART_RETAIL -> high/moderate/moderate/moderate",
+      "margin": 0.139,
+      "verdict": "NOT identified",
+      "result": "Best candidate 72% against a 58% baseline on 36 crypto rows - a 14-point margin, below the 15-point bar this search uses for 'partial' and on the smallest sample of the three. The winner ('smartRetail confirmed -> high, else moderate') is directionally sensible rather than nonsense, so it is recorded as suggestive and nothing more.",
+      "ruledOut": "CONFIDENCE is NOT a copy of PERP_SPOT_STRENGTH, despite the contract describing perpSpotStr as using the 'CONFIDENCE idiom'. That phrase names a shared BUCKETING function, not a shared value: 32 of 36 rows read perpSpotStr 'low' while conf splits 15 high / 21 moderate. The identity candidate scored at chance.",
+      "interpretation": "'CONFIDENCE idiom' says CONFIDENCE buckets some continuous convergence strength into high/moderate/low. That underlying strength is not exposed as any column - only its bucketed output is. Same shape as REGIME_MOM: the operand is structurally unavailable, not merely unguessed.",
+      "sampleCaveat": "36 rows, not 78 - CONFIDENCE is null for all 42 non-crypto tickers (asset-class nulling, already documented). And 'low' was never observed, so a third of the vocabulary is untested here."
+    },
+    "_summary": "Three searches, three different answers, and the difference between them is explanatory rather than arbitrary. OI_VELOCITY is a partial identification at +22 points because its operand shares the label's bundle. REGIME_MOM and CONFIDENCE are negatives because their operands do not exist at the column layer - REGIME_MOM demonstrably so (it is a bundle read that the platform refuses to render off-anchor), CONFIDENCE by the contract's own description of a bucketed strength whose input is unexposed. These are measured conclusions with stated search spaces and margins, not admissions of not having tried."
+  },
+  "_timelessTimeframe": {
+    "_what": "A validator defect in OMEGA, found by the REGIME_MOM search when the search needed the metric at the regime timeframe and the platform refused.",
+    "rule": "A metric with timeframeMode == \"timeless\" accepts exactly one COLUMN timeframe: the literal {\"rel\": \"anchor\"}. Every other rel and every abs is refused - including an abs equal to the anchor. The constraint is syntactic, not semantic.",
+    "decidingProbe": "With anchor 1h, {\"abs\": \"1h\"} resolves to the anchor and is STILL rejected. Inferring the rule from the first error message alone would have produced a validator that wrongly passes it.",
+    "omegaGap": "omega/validate.py enforced the timeless rule only for a SECTION-level timeframe override. The column's own timeframe was unchecked, so omega passed rel:lower, rel:regime and abs:* on all 40 timeless metrics - shapes the platform refuses.",
+    "fixed": "omega/validate.py, guarded by tests/test_timeless_timeframe.py",
+    "evidence": "data/audit/timeless_column_timeframe.json",
+    "defectClass": "OMEGA, not BattleGrid. The platform enforces this correctly and names the reason."
+  }
 }

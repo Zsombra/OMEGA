@@ -327,19 +327,68 @@ is *"open interest against the mean of its own 24 hourly samples"*, **not** its 
 change. Wrong operand entirely. With an actual `OI` trajectory the quadrant holds on both
 coins.
 
+### The rule search, run for all three remaining metrics
+
+I had written that `REGIME_MOM`, `OI_VELOCITY` and `CONFIDENCE` *"would need the same
+search against operands that aren't exposed either"* — and never run it. That sentence
+asserted an outcome. Here is the run: 78 coins at the 1h anchor, every label rendered
+**beside its candidate drivers in one table**, every candidate the exposed columns can
+express enumerated and scored, and the winner reported next to the mode baseline it had
+to beat.
+
+| metric | rows | baseline | best | margin | verdict |
+|---|---:|---:|---:|---:|---|
+| `REGIME_MOM` | 78 | 65% | 69% | **+4** | not identified |
+| `OI_VELOCITY` | 78 | 56% | 78% | **+22** | partial |
+| `CONFIDENCE` | 36 | 58% | 72% | **+14** | not identified |
+
+Three different answers, and the difference between them is explanatory rather than
+arbitrary.
+
+**`OI_VELOCITY` is the second difference of the OI trajectory.** Compare `|last delta|`
+with `|previous delta|`: growing is `accelerating`, shrinking `decelerating`, equal
+`steady`. 78% of 78 against a 56% floor.
+
+> Seven rows print all four OI values identically — `$4.0M`, `$1.3M`, `$1.7B` — so their
+> second difference is `0 − 0`, undefined at display precision rather than wrong.
+> Excluding *only* those lifts the fit to **86%**. That subset is a diagnostic and the
+> 78% figure is the result; both are recorded, because filtering rows until a hypothesis
+> fits is the standard way to manufacture one.
+
+**`REGIME_MOM` is a bundle read, and that is why the search fails.** It is
+timeframe-inert: its value never touches the anchor candle grid, so scoring it against
+`ROC12`/`PPO`/`MACD`/`RSI14` — 1h candle-grid metrics — compares two different grids.
+AMZN is the clean case: labelled `bullish` with ROC, PPO, MACD, `chg4h` and `chg24h` all
+negative and RSI14 at 37.3. That is an inversion, not a near miss.
+
+The split falls exactly along that line. Where a bundle read is scored against a
+**same-bundle** operand (`OI_VELOCITY` against `OI`, both timeframe-inert) the search
+reaches 86%. Where it is scored against candle-grid operands it reaches noise.
+
+**`CONFIDENCE` is not `PERP_SPOT_STRENGTH`,** despite the contract describing
+`perpSpotStr` as using the *"CONFIDENCE idiom"*. That phrase names a shared **bucketing
+function**, not a shared value: 32 of 36 rows read `perpSpotStr` `low` while `conf`
+splits 15 `high` / 21 `moderate`, and the identity candidate scored at chance. So
+`CONFIDENCE` buckets some continuous convergence strength that no column exposes — the
+same shape as `REGIME_MOM`, an operand that is structurally unavailable rather than
+merely unguessed.
+
 ### Not verifiable, and why each is not a matter of effort
 
-- **`REGIME_TREND` / `REGIME_VOL` / `REGIME_MOM`** — the driver and horizon are not
-  exposed. ADX has no direction, so "trending up" cannot come from it; `REGIME_VOL` is
-  evidently relative to each coin's own history (atrPct 0.88 / 0.37 / 1.66 all read
-  "normal") and that history is not available. **Worth flagging:** all three coins read
-  "trending up" while all three had a negative 1h change and negative ROC. Not a
-  contradiction — a multi-day trend can be up while the hour is down — but unexplained,
-  and three of three deserves a longer sample before anyone leans on it.
-- **`OI_VELOCITY`** — a second derivative, and only `value` is offered, no `trajectory`.
-- **`PERP_SPOT_*`** — both coins read "neutral", which is consistent with every
-  hypothesis. No discriminating case.
-- **`SMART_RETAIL`, `CONFIDENCE`** — no stated rule for when they are absent.
+- **`REGIME_TREND` / `REGIME_MOM`** — searched exhaustively, above and in
+  [`_ruleSearch`](../data/audit/tier_c_coherence.json). Both are bundle reads whose
+  drivers the column layer does not expose; the negative is now measured, with a stated
+  search space and a margin.
+- **`REGIME_VOL`** — relative to each coin's own history (atrPct spanning 0.14%–3.11%
+  all read "normal") and that history is not available.
+- **`CONFIDENCE`** — buckets a convergence strength that is not a column. 72% against a
+  58% floor on 36 rows, which is suggestive and no more.
+- **`PERP_SPOT_*`** — no discriminating case; the observed values are consistent with
+  every hypothesis.
+- **`SMART_RETAIL`** — the *rule* is solved (13 of 13); what is unstated is when it is
+  absent.
+
+`OI_VELOCITY` has left this list — it is the second difference of the OI trajectory.
 
 ### The one thing worth acting on
 
