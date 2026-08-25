@@ -33,7 +33,10 @@ def main() -> int:
     returned = [o["header"] for s in payload["conditionColumns"]
                 if s["title"].startswith("SS ") for o in s["outputs"]]
 
-    shapes = [s for sec in plan(c)[0][:n_sections] for s in sec]
+    # Flatten across render boundaries: a batch I send by hand may span two of the
+    # planner's renders, and slicing plan()[0] alone would silently under-record it.
+    sections = [sec for render in plan(c) for sec in render]
+    shapes = [s for sec in sections[:n_sections] for s in sec]
     predicted = [o.header for s in shapes for o in outputs_for(s.to_column(), c)]
 
     if returned != predicted:

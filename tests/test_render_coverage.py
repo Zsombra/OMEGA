@@ -84,13 +84,17 @@ def test_structural_coverage_is_complete(contract):
         "every metric x transform mechanism has been rendered live at least once")
 
 
-def test_spread_is_the_only_remaining_gap(contract):
-    """The spread sweep is incremental, so this asserts SHAPE and DIRECTION, not a frozen
-    number - a pinned count would fail on every batch and teach us to edit it blindly."""
+def test_live_coverage_is_complete(contract):
+    """COMPLETED 2026-08-26. Every operand-expanded shape omega can emit has been
+    rendered against the live platform at least once, and every header matched
+    omega.fanout.outputs_for exactly.
+
+    This is the strongest form of the claim the sweep set out to make, and it is only
+    meaningful because the denominator is honest: the 357 shapes the platform refuses
+    were REMOVED from the space rather than excused from the count. A shape that cannot
+    render is not covered by declaring it out of scope.
+    """
     cov, unc, byt = coverage(True, contract)
-    assert cov + len(unc) == 1759
-    assert set(byt) <= {"spread"}, (
-        "every rank ordering and distance chain was swept on 2026-08-26; anything else "
-        "appearing here is a regression, not sweep progress")
-    assert cov >= 948, "live coverage must not go backwards"
-    assert len(unc) <= 811, "untested spread pairs must not grow"
+    assert (cov, len(unc)) == (1759, 0), (
+        "live coverage regressed - a shape is enumerated that has never been rendered")
+    assert not byt

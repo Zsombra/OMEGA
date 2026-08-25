@@ -57,7 +57,14 @@
         }
       },
       "whichDenominatorMatters": "The operand-expanded one. A spread's legality depends on the OPERAND as well as the base - addendum item 2 established that both sides need a stored bar series - so an untested (base, operand) pair is an untested legality claim, not a repeat of one already proven.",
-      "riskClass": "Same class as the timeless-column-timeframe defect found 2026-08-26: omega calls a shape legal, the platform refuses it. That one surfaced by accident. 1,776 spread pairs have never been asked."
+      "riskClass": "Same class as the timeless-column-timeframe defect found 2026-08-26: omega calls a shape legal, the platform refuses it. That one surfaced by accident. 1,776 spread pairs have never been asked.",
+      "_resolved": {
+        "date": "2026-08-26",
+        "status": "COVERAGE GAP CLOSED",
+        "result": "operand-expanded 1759/1759 rendered live (100%), structural 301/301 (100%), 0 header mismatches.",
+        "how": "11 further renders, 1355 columns, 3113 headers. See data/contract/columns/_spread_sweep_2026-08-26.json.",
+        "found": "One undocumented legality rule, at pair 545: a spread chained into a series-building transform needs a candle-backed operand. 357 shapes. data/audit/spread_chain_operand.json."
+      }
     }
   },
   "budgetModel": {

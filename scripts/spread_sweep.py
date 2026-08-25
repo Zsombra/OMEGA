@@ -33,7 +33,12 @@ MAX_SECTIONS = 32
 # Cost per header is NOT constant: measured 32/header for unchained spreads but
 # 46/header for chained ones, whose preamble text is longer. 420 headers of the
 # expensive kind would be ~19.3k against a 16k cap. Sized for the expensive case.
-HEADER_BUDGET = 300
+# THREE caps, and which one binds depends on the batch. estimatedTokens (16,000) binds
+# for wide unchained batches. But a trajectory fans out to 5 headers per column and the
+# preview is ALSO capped at 256,000 RESULT BYTES - measured at ~586 bytes/header, so 480
+# headers returned 281,346 and was refused while estimatedTokens sat at ~13k of 16k.
+# Sized against the byte cap, which is the tighter one here.
+HEADER_BUDGET = 320
 
 
 def untested(contract):
