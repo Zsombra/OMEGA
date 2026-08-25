@@ -93,7 +93,7 @@
     "PRICE_ZONE"
    ],
    "invariant": "within 1.00% of SWING_HIGH -> 'near high'; else within 1.00% of SWING_LOW -> 'near low'; else 'mid-range'. The HIGH is tested first, so a coin inside 1% of both reads 'near high'.",
-   "evidence": "59 of 60 across two anchors - 30 coins at 1h and the same 30 at 15m. The threshold sweep peaks sharply at exactly 1.00%: 0.90% fits 56/60 and 1.10% fits 56/60, which is the signature of a hard-coded constant rather than a curve fit. The high-first tie-break is forced by four coins inside 1% of BOTH swings (AAPL at 1h; META, SP500, XYZ100 at 15m) that all read 'near high' while the LOW was nearer in one of them.",
+   "evidence": "215 of 216 across all four authorable anchors. The decisive runs use the platform's OWN rendered distances rather than my arithmetic on price levels: 78/78 at 5m and 78/78 at 4h. The threshold is a sharp peak at exactly 1.00% - at 5m, 0.95% fits 73/78 and 1.05% fits 77/78. The single miss (XRP at 1h) came from the earlier pass, where distances were derived from rounded swing levels rather than rendered, so it is most likely my arithmetic and not the engine.",
    "exception": "XRP at 1h sits 0.68% above its swing low and reads 'mid-range' rather than 'near low'. Unexplained. One miss in sixty, recorded rather than smoothed over.",
    "correctionOfMyCorrection": "THIS ENTRY WAS DOWNGRADED AND IS NOW RESTORED, ON A DIFFERENT RULE. The first pass claimed 'position between the swings' on 3 coins - wrong, and rightly downgraded when 30 coins gave 31 inverted pairs. But the downgrade note then said the rule was 'not explained by position, nor by ATR-normalised distance', which quietly implied there was nothing left to try. There was: plain PERCENTAGE DISTANCE to the nearer swing, which is neither of the two things tested. Failing to find a rule is not evidence that no rule exists, and the second write-up blurred that line.",
    "limit": "Still one market, sampled at two anchors. The 1.00% constant is strongly indicated but not confirmed against a different day."
@@ -229,5 +229,44 @@
   },
   "_reanchorNote": "All other unseen labels stayed unseen at the 15m anchor as well."
  },
- "_reanchored": "2026-08-25, third pass. The second pass left two flags needing 'a repeat on another day'. Waiting was not available, but re-rendering the SAME 30 coins at a 15m anchor changes every bar, ATR and swing while holding the coin set fixed - the closest thing to an independent re-sample on hand. Both flags resolved, and one of them resolved AGAINST the observation I had recorded."
+ "_reanchored": "2026-08-25, third pass. The second pass left two flags needing 'a repeat on another day'. Waiting was not available, but re-rendering the SAME 30 coins at a 15m anchor changes every bar, ATR and swing while holding the coin set fixed - the closest thing to an independent re-sample on hand. Both flags resolved, and one of them resolved AGAINST the observation I had recorded.",
+ "_labelSweep": {
+  "_what": "Task 1 of the plan: a bounded sweep for the label values never observed. 78 coins at 5m, 78 at 4h, plus the earlier 30 at 15m and 30 at 1h - 216 coin-observations across every authorable anchor.",
+  "_anchorNote": "Only 5m / 15m / 1h / 4h are authorable as a main candle. The schema enum lists 13 timeframes; the validator accepts 4. omega already modelled this correctly (ANCHOR_TIMEFRAMES) and doc 04 records it, so it is not a new finding - I tried 1d and was refused.",
+  "found": {
+   "OI_VELOCITY.steady": "appeared at 5m and 4h (APT, CL, ETH, GOOGL, HOOD, ORCL, PEPE, WIF)",
+   "REGIME_VOL.expanding": "appeared at 15m (COIN, CRCL, NVDA) and 4h (POPCAT, PURR, WIF)"
+  },
+  "stillUnobserved": [
+   "REGIME_VOL.contracting",
+   "PRICE_ZONE.breakout high",
+   "PRICE_ZONE.breakdown low",
+   "PERP_SPOT_FLOW.confirmed_bull",
+   "PERP_SPOT_FLOW.confirmed_bear",
+   "PERP_SPOT_FLOW.perp_led_fragile",
+   "PERP_SPOT_CONFIRMS.true",
+   "CONFIDENCE.low"
+  ],
+  "structuralHypothesis": {
+   "labels": [
+    "PRICE_ZONE.breakout high",
+    "PRICE_ZONE.breakdown low"
+   ],
+   "evidence": "Across 156 observations where the platform rendered the distances directly, dist_swingHi was NEVER positive (range -22.47% to -0.00%) and dist_swingLo was NEVER negative (0.00% to +58.15%). Price never sits outside its own swing range.",
+   "claim": "If the swing levels update to contain price - which is what a swing high IS - these two labels may be STRUCTURALLY UNREACHABLE rather than rare.",
+   "honesty": "Supported, not proven. A brief lag between price exceeding the level and the level updating would produce the label, and 156 snapshots cannot rule out that window. Stated as a hypothesis."
+  }
+ },
+ "_ruleSearch": {
+  "_what": "Task 2: instead of guessing one or two hypotheses and declaring REGIME_TREND 'unidentified', enumerate every candidate the exposed columns can express and score them all - the method that cracked PRICE_ZONE.",
+  "operands": [
+   "MA_ALIGN",
+   "ADX",
+   "dist_SMA20"
+  ],
+  "candidates": "all 6 permutations mapping MA_ALIGN onto the trend vocabulary, 6 ADX thresholds x 2 direction sources, and 4 dist_SMA20 bands - 22 rules",
+  "result": "Best candidate 55% against a 53% baseline of always predicting the mode. A two-point margin on 78 observations is noise, and the 'winner' maps MA_ALIGN bullish -> 'trending down', which is nonsense and is exactly what fitting noise looks like.",
+  "conclusion": "REGIME_TREND reads something the column layer does not expose. That is now a measured conclusion with a stated search space and a margin, not an admission of not having tried.",
+  "note": "The distribution is also worth recording: at 4h, 41 'trending up', 33 'ranging', 4 'trending down'. The mode alone gets 53%, which is why any candidate must be judged against that floor rather than against zero."
+ }
 }

@@ -243,3 +243,40 @@ def test_the_ungateable_column_class_is_recorded():
     assert set(f["instances"]) == {"SETTLED_AT", "STRUCT_ZONES x nearestZoneRange",
                                    "picksSpread_session"}
     assert "shown and cannot be used" in f["cost"]
+
+
+# --- the label sweep and the rule search -------------------------------------
+
+def test_the_label_sweep_found_two_and_left_eight():
+    s = C["_labelSweep"]
+    assert set(s["found"]) == {"OI_VELOCITY.steady", "REGIME_VOL.expanding"}
+    assert len(s["stillUnobserved"]) == 8
+    assert "contracting" in " ".join(s["stillUnobserved"])
+
+
+def test_breakout_labels_are_a_hypothesis_not_a_claim():
+    """Price never sat outside its swing range in 156 observations, which SUGGESTS the
+    two breakout labels are unreachable. The record must keep that as a hypothesis -
+    a lag between price exceeding the level and the level updating would produce them."""
+    h = C["_labelSweep"]["structuralHypothesis"]
+    assert "may be STRUCTURALLY UNREACHABLE" in h["claim"]
+    assert "not proven" in h["honesty"]
+
+
+def test_the_rule_search_reports_its_margin_not_just_its_winner():
+    """A 55% winner against a 53% baseline is noise. Recording the margin is what makes
+    'unidentified' a measurement rather than a shrug."""
+    r = C["_ruleSearch"]
+    assert "55%" in r["result"] and "53%" in r["result"]
+    assert "does not expose" in r["conclusion"]
+
+    from scripts.regime_rule_search import ROWS, TREND
+    from collections import Counter
+    base = Counter(r_[TREND] for r_ in ROWS).most_common(1)[0][1] / len(ROWS)
+    assert 0.50 < base < 0.56, "the baseline moved - the margin claim needs rechecking"
+
+
+def test_price_zone_rule_is_pinned_by_rendered_distances():
+    e = next(x for x in C["coherent"] if "PRICE_ZONE" in x["metrics"])
+    assert "215 of 216" in e["evidence"]
+    assert "78/78 at 5m" in e["evidence"]
