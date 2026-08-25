@@ -792,4 +792,80 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
     </p>
   </section>
 
+  <section>
+    <h2>Addendum &mdash; six things measured after this page was written</h2>
+    <p>
+      Everything above still holds. The counts were re-derived against the live enumeration on
+      2026-08-25 and are unchanged: <strong>322 legal atoms, 488 structural shapes, 2,200
+      operand-expanded, ~70,700 parameterised.</strong> What follows is not a correction to any of
+      it &mdash; it is what a further round of live probing added.
+    </p>
+
+    <h3>1. Eight of the 488 shapes validate and never render</h3>
+    <p>
+      Every <code>CROWD_*</code> metric crossed with <code>rank</code> passes validation, is
+      enumerated by the contract, and returns <code>INTERNAL_ERROR</code> on every render attempt.
+      Legal is not the same as renderable. <strong>488 legal, 480 renderable</strong> &mdash; and
+      the eight are indistinguishable from the rest until you try them.
+    </p>
+
+    <h3>2. The chaining rule needs both sides, not just the base</h3>
+    <p>
+      This page states a <code>spread</code> chains only when its base metric has a stored bar
+      series. Measured: the <em>operand</em> must have one too. <code>CVD spread SPOT_CVD</code>
+      refuses to chain, because <code>SPOT_CVD</code> &ldquo;resolves from the bundle and has no
+      per-bar value&rdquo; &mdash; even though <code>CVD</code>, the base, does. As a base
+      <code>SPOT_CVD</code> offers no chain successors at all.
+    </p>
+
+    <h3>3. The rungs multiply the surface by three, cleanly</h3>
+    <p>
+      Every shape is available at <code>rel: lower</code>, <code>anchor</code> and
+      <code>regime</code>, and the rung is carried in the header as an <code>_ltf</code> /
+      <code>_htf</code> infix &mdash; <code>ADX_ltf_t2</code>, <code>atrPct_htf_rank_hi</code>,
+      <code>EMA5_htf_EMA13_spread</code>. 21 columns spanning seven transform families were
+      rendered at all three rungs at once: <strong>30 of 30 headers</strong> matched prediction.
+      So the same metric can be read at three timeframes in one section without collision.
+    </p>
+
+    <h3>4. But <code>offset</code> does <em>not</em> disambiguate</h3>
+    <p>
+      Two columns differing only by <code>offset</code> produce the <strong>same header</strong>.
+      Both render, with different and individually correct values &mdash; and
+      <strong>both drop out of <code>conditionColumns</code> entirely</strong>. The table looks
+      right; a condition referencing that header binds to nothing. The parameter axis this page
+      describes as a fifth dimension is real in the values and invisible in the names.
+    </p>
+
+    <h3>5. Every indicator includes the forming bar, so every indicator repaints</h3>
+    <p>
+      SMA20 over closed bars read 78,376.90; the rendered value was <strong>78,477.35</strong>
+      &mdash; the mean <em>including</em> the bar still in progress. All five indicators tested
+      matched the closed-plus-forming set exactly and none matched closed-only. A gate reading
+      <code>RSI14 lte 35</code> can be TRUE at :10 and FALSE at :50 with nothing having closed.
+      Two escapes: <code>bars: "closed"</code>, or any <code>offset</code> of 1 or more &mdash;
+      both land the window on bars that no longer move. <code>rank</code> is the one transform
+      that does not repaint on its own.
+    </p>
+
+    <h3>6. The surface shrinks off-crypto, silently</h3>
+    <p>
+      Non-crypto tickers on this platform <em>are</em> perpetuals &mdash; GOOGL and GOLD carry
+      funding, open interest and a mark price. But every metric accumulated since the daily
+      00:00-UTC anchor renders null on them: <code>CVD</code>, <code>SPOT_CVD</code>,
+      <code>OBV</code>, <code>VWAP</code>. Per-bar metrics are unaffected, including
+      <code>BUY_VOLUME</code> and <code>SELL_VOLUME</code>. Because a null read is FALSE and never
+      UNRESOLVED, a column built on those four does not error on a stock &mdash; it gates wrong
+      and says nothing.
+    </p>
+
+    <p class="lede" style="margin-top:1.6rem">
+      The through-line: the algebra above is sound, and the gap between <em>legal</em> and
+      <em>usable</em> is wider than any contract discloses. Eight shapes that cannot render, a
+      chaining rule with a second condition, a parameter that changes values without changing
+      names, and four metrics that vanish on a third of the universe &mdash; none of it is
+      visible until something is rendered and the arithmetic checked by hand.
+    </p>
+  </section>
+
 </div>
