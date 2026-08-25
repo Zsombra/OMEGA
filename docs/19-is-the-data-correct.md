@@ -66,6 +66,43 @@ exchange tape for the deep history.
 **5 of 5, exact to four decimal places.** The formulas are standard: simple mean,
 `α = 2/(n+1)` EMA, Wilder-smoothed RSI and ATR.
 
+### Three indicators where two implementations are both defensible
+
+Verifying that BattleGrid's SMA is a mean proves little — everyone's SMA is a mean. Three
+of the thirty have genuinely competing conventions in the wild, so knowing *which one
+ships* is information rather than a formality.
+
+Each was read at `offset: 1` — these metrics reject `bars`, and an offset of 1 or more is
+the documented escape from the forming bar — with a closed `CLOSE` trajectory beside them
+to pin the exact anchor bar. Recomputed from 876 Hyperliquid bars ending on that bar.
+
+| indicator | convention | computed | rendered | |
+|---|---|---:|---:|---|
+| **ADX** | Wilder's own smoothing | **24.88** | 24.90 | ✓ |
+| | plain moving average of DX | 34.78 | 24.90 | rejected by 10 points |
+| **CCI** | `0.015 ×` **mean absolute deviation** | **−39.27** | −39.30 | ✓ |
+| | `0.015 ×` standard deviation | −35.13 | −39.30 | rejected by 4 points |
+| **%K/%D** | **slow (14,3,3)** | **21.84 / 30.82** | 22 / 31 | ✓ |
+| | fast (14,1,3) | 18.15 / 21.84 | 22 / 31 | rejected |
+| | (14,3,1) | 21.84 / 21.84 | 22 / 31 | %K fits, **%D does not** |
+
+None of these is a near miss. The rejected alternatives are wrong by 10 points of ADX and
+4 points of CCI — enough to flip a `trend_adx_trending` gate at its 25 threshold, or a
+`bollinger_cci_oversold` gate at −100.
+
+The `(14,3,1)` row is the one that earns the table: it reproduces `%K` exactly and gets
+`%D` wrong, which is precisely how a half-right convention hides. Testing `%K` alone would
+have "confirmed" it.
+
+**And the header declaration was accurate.** The column meaning states `%K (14,3,3)`, and
+that is what the engine implements. Worth saying plainly, because BG-9 showed a published
+formula that was wrong — the documentation here is not uniformly unreliable, it is
+unreliable in specific places, and the only way to know which is to check.
+
+That brings tier-B metric verification to **9 of 30** — SMA20, EMA5, EMA13, RSI14, ATR,
+ADX, CCI20, STOCH_K, STOCH_D. The remaining 21 are single-definition indicators where no
+competing convention exists to distinguish.
+
 ### The finding that matters for strategy design
 
 Look at which column matched. **BattleGrid computes indicators on closed bars *plus the
