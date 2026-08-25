@@ -30,7 +30,10 @@ from scripts.render_coverage import coverage
 
 MAX_COLUMNS_PER_SECTION = 32
 MAX_SECTIONS = 32
-HEADER_BUDGET = 300          # ~11.7k of the 16k estimated-token cap, leaving margin
+# Cost per header is NOT constant: measured 32/header for unchained spreads but
+# 46/header for chained ones, whose preamble text is longer. 420 headers of the
+# expensive kind would be ~19.3k against a 16k cap. Sized for the expensive case.
+HEADER_BUDGET = 300
 
 
 def untested(contract):
