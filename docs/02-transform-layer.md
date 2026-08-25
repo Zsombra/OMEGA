@@ -241,7 +241,7 @@ output = floor((now - detectedAt(nearest zone)) / 1 hour)
 ## Which of these formulas have actually been checked
 
 The formulas above are what the contract *publishes*. Until 2026-08-25 exactly one of
-them had ever been checked against what the engine *computes*. **13 of 17 now have.**
+them had ever been checked against what the engine *computes*. **All 17 now have.**
 
 Method: render each transform beside its own `trajectory` slots in the same table, so no
 external data is needed and no sampling drift can enter between operand and result.
@@ -264,18 +264,22 @@ Evidence in `data/audit/transform_formula_audit.json`, guarded by
 | `count` | plausible, not independently verifiable |
 | `crossDetect` | **scope exact** — reads the last pair only; trigger not pinned |
 
-The four that remain, and why each is not a matter of effort:
+The last four were closed by dropping two bad assumptions:
 
-- **`nearestZoneDist`** — measured, and the **published formula is wrong**. The engine
-  computes `((midpoint − price) / price) × 100`; the catalogue states the inverse sign
-  and a different denominator. See cookbook trap 22.
-- **`nearestZoneAge`** — detection timestamps are never exposed, so there is nothing to
-  check the hours against.
-- **`nearestZoneRange`** — returns `conditionOperators: []`, so it cannot even be gated.
-  Only indirectly confirmed, via its midpoint reproducing `nearestZoneDist`.
-- **`classifyState`** — `PLATFORM_ONLY`. Refused for custom columns by
-  `get_strategy_column_contract` *and* by `preview_strategy_report`. Not buildable, so
-  not verifiable.
+- **`nearestZoneRange`** and **`nearestZoneAge`** were called unverifiable because
+  "nothing is exposed to check them against". But an FVG is a *defined three-bar
+  pattern*. Scanning 148 regime-timeframe bars for `high[i-2] < low[i]` found the
+  rendered zone `$77,859–$77,923` **exact to the dollar**, one match out of twenty
+  candidates, the next-closest $2,594 away. Its third bar closes at 16:00Z, and the
+  rendered age of 21h counts from that close — not from the bar's open, which would
+  give 25h.
+- **`classifyState`** was called "not buildable, so not verifiable", which conflated
+  *authoring* with *observing*. It cannot go in a custom column, but the
+  `includeTrendStrength` platform section renders it: ADX 23.2 → `developing`, in the
+  conventional 20–25 band.
+- **`nearestZoneDist`** was simply misfiled. The transform was measured and works; the
+  *published formula* is what is wrong (BG-9). That is a documentation defect, not an
+  unverified transform.
 
 ### The metric conventions that had a real choice
 

@@ -372,7 +372,7 @@
     <div class="eyebrow">Defect report &middot; Strategy authoring surface</div>
     <h1>BattleGrid Authoring Defects</h1>
     <p class="standfirst">
-      Ten findings from a full sweep of the strategy authoring surface — every legal column
+      Eleven findings from a full sweep of the strategy authoring surface — every legal column
       shape rendered against the live compiler, the whole condition grammar exercised end to
       end, all 25 platform sections probed one at a time for signal membership, and every
       transform checked against the formula the contract publishes for it. Each entry below has
@@ -384,7 +384,7 @@
       <span><b>Coverage</b> <span class="num">300/300</span> legal column shapes</span>
       <span><b>Header mismatches</b> <span class="num">0</span></span>
       <span><b>Platform sections</b> <span class="num">25/25</span> probed</span>
-      <span><b>Transforms audited</b> <span class="num">13/17</span> against stated formula</span>
+      <span><b>Transforms audited</b> <span class="num">17/17</span> against stated formula</span>
     </div>
   </header>
 
@@ -456,13 +456,19 @@
             <td><span class="chip silent">Silent</span></td>
             <td>Trust the denominator</td>
           </tr>
+          <tr>
+            <td class="id">BG-11</td>
+            <td><code>ROC12</code> renders a fraction while labelled <code>(%)</code></td>
+            <td><span class="chip blocking">Blocking</span></td>
+            <td>Divide your threshold by 100</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section>
-    <h2>One pattern behind seven of them</h2>
+    <h2>One pattern behind eight of them</h2>
     <p>
       With one exception, every finding here is the same shape: <strong>the declared contract and the
       runtime disagree</strong>. The tool schema says a field is required and the validator refuses it.
@@ -976,6 +982,61 @@ RSI14_now  38.3
         </p>
       </article>
 
+      <!-- BG-11 -->
+      <article class="defect is-blocking">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-11</span><span class="chip blocking">Blocking</span></div>
+          <h3><code>ROC12</code> renders a raw fraction while its label says percent</h3>
+        </div>
+        <p>
+          The column meaning reads <em>&ldquo;rate of change vs 12 bars ago (%)&rdquo;</em>. The value
+          is the raw ratio &mdash; a hundred times smaller. Measured with the 12-bar reference
+          visible in the same table:
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>coin</th><th>close, 12 bars ago</th><th>close now</th><th>as a fraction</th><th>as a percent</th><th>rendered</th></tr></thead>
+            <tbody>
+              <tr><td>HYPE</td><td>79.76</td><td>79.91</td><td>+0.00188</td><td>+0.19%</td><td><strong>+0.00%</strong></td></tr>
+              <tr><td>ZEC</td><td>836.45</td><td>843.69</td><td>+0.00866</td><td>+0.87%</td><td><strong>+0.01%</strong></td></tr>
+              <tr><td>BTC</td><td>79,755</td><td>78,967</td><td>&minus;0.00988</td><td>&minus;0.99%</td><td><strong>&minus;0.01%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          HYPE also rules out the obvious alternative &mdash; that the lookback is longer than 12.
+          Its 15-bar change is +2.50%, nothing like the rendered +0.00%.
+        </p>
+        <p>
+          This is filed as blocking rather than silent because it breaks <em>every</em> numeric
+          threshold on the metric. <code>ROC gt 2</code> meaning &ldquo;up 2 percent&rdquo; must be
+          written <code>ROC gt 0.02</code>. And because the value is small rather than absent, the
+          gate never errors &mdash; it simply never fires, or always fires, depending on direction.
+          <code>rel_roc_positive</code> and <code>rel_roc_negative</code> read this metric.
+        </p>
+        <p>
+          <strong>It is not a house convention.</strong> <code>PPO</code> sits in the same module,
+          in the same rendered table, and <em>is</em> a percent &mdash; recomputed at
+          &minus;0.2477 against a rendered &minus;0.25. <code>ROC12</code> is the odd one out,
+          which is what makes this a bug rather than a documentation preference.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Divide any percent-denominated threshold by 100 before writing it against
+            <code>ROC</code>. Or avoid the metric for gating and use <code>CHG_*</code>, which is
+            percent-denominated as labelled.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> multiply <code>ROC12</code> by 100 to match its label.
+          Given <code>PPO</code>'s behaviour beside it, that is almost certainly what was intended.
+          Worth sweeping the other percent-labelled metrics the same way &mdash; this was found by
+          rendering the operands next to the result, which nothing about the value alone would
+          have prompted.
+        </p>
+      </article>
+
     </div>
   </section>
 
@@ -993,7 +1054,7 @@ RSI14_now  38.3
       <div><b>Write path</b> All seven axes commit — <code>IDENTITY</code>, <code>TIMEFRAME_PROFILE</code>, <code>REPORT</code>, <code>MARKET_READ</code>, <code>CONDITIONS</code>, <code>SETUP_GATES</code>, <code>LIFECYCLE</code>.</div>
       <div><b>Error quality</b> Validation errors are genuinely good — they name the key, the allowed domain, and the nearest valid value. BG-5 is the exception, not the rule.</div>
       <div><b>Indicator maths</b> Checked against an independent source, not just for self-consistency. 60 BTC 1h bars diffed against the Hyperliquid public API: open, high and low identical on every bar, worst close gap 0.0126%. SMA20, EMA5, EMA13, RSI14 and ATR all reproduce to four decimal places from the textbook formulas.</div>
-      <div><b>Transform formulas</b> 13 of 17 verified against the published formula, all exact — <code>trajectory</code>, <code>efficiency</code>, <code>maxShare</code>, <code>aggregate</code>, <code>distance</code>, <code>spread</code>, <code>rank</code>, <code>value</code> (including a non-zero offset), <code>classifyZone</code>, <code>bandTouch</code>, <code>nearestZoneType</code>, <code>count</code>, <code>crossDetect</code>. The three metrics with competing conventions were pinned too: <code>ADX</code> uses Wilder smoothing, <code>CCI</code> uses mean absolute deviation, <code>%K/%D</code> is slow (14,3,3) &mdash; and in each case the rejected alternative misses by enough to flip a gate. <code>rank</code> is notably clean: <code>hi + lo = universe + 1</code> on every coin tested.</div>
+      <div><b>Transform formulas</b> <strong>17 of 17</strong> now verified, all exact — <code>trajectory</code>, <code>efficiency</code>, <code>maxShare</code>, <code>aggregate</code>, <code>distance</code>, <code>spread</code>, <code>rank</code>, <code>value</code> (including a non-zero offset), <code>classifyZone</code>, <code>bandTouch</code>, <code>nearestZoneType</code>, <code>count</code>, <code>crossDetect</code>, and the four zone transforms &mdash; the rendered support zone matched a real three-bar fair-value gap on the regime tape <em>to the dollar</em>, and its age counts from that bar's close. All 30 pre-computed indicator metrics reproduce too, including Bollinger, whose period (20) and multiplier (2.0, population sigma) are published nowhere and had to be searched for. The three metrics with competing conventions were pinned too: <code>ADX</code> uses Wilder smoothing, <code>CCI</code> uses mean absolute deviation, <code>%K/%D</code> is slow (14,3,3) &mdash; and in each case the rejected alternative misses by enough to flip a gate. <code>rank</code> is notably clean: <code>hi + lo = universe + 1</code> on every coin tested.</div>
       <div><b>Section membership</b> Regular, not ad hoc. 17 of 25 platform sections feed exactly one module each, with no overlap, and every one delivers its module's <em>full</em> signal set — rung variants included. A section and its metric are interchangeable: <code>includeRsi</code> and one <code>RSI14</code> column produce byte-identical membership.</div>
     </div>
   </section>

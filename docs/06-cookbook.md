@@ -484,6 +484,31 @@ The header prose — *"signed % from price to the nearest support zone midpoint"
 the engine. Only the machine-readable formula is wrong. Build from the prose, and read
 the value as **negative when price is above support**.
 
+### 23. `ROC12` renders a fraction while its label says percent
+
+Measured on three coins with the 12-bar reference visible in the same table:
+
+| coin | close 12 bars ago | close now | as a fraction | as a percent | **rendered** |
+|---|---:|---:|---:|---:|---:|
+| HYPE | 79.76 | 79.91 | +0.00188 | +0.19% | **+0.00%** |
+| ZEC | 836.45 | 843.69 | +0.00866 | +0.87% | **+0.01%** |
+| BTC | 79,755 | 78,967 | −0.00988 | −0.99% | **−0.01%** |
+
+The column meaning says *"rate of change vs 12 bars ago (%)"*. **The value is the raw
+ratio — one hundred times smaller than the label claims.**
+
+HYPE also rules out the obvious alternative, that the lookback is longer than 12: its
+15-bar change is +2.50%, nothing like the rendered +0.00%.
+
+**A threshold written from the label is wrong by 100×.** `ROC gt 2` meaning "up 2 percent"
+has to be `ROC gt 0.02`. And because the value is *small* rather than *absent*, the gate
+does not error — it just never fires, or always fires, depending on direction.
+
+`PPO` sits in the same module, in the same table, and **is** a percent — measured
+−0.2477 against a rendered −0.25. So this is not a house convention applied consistently;
+`ROC12` is the odd one out. The `rel_roc_positive` and `rel_roc_negative` scorecard
+signals read this metric.
+
 ## Workflow
 
 ```

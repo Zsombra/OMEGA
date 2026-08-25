@@ -136,13 +136,21 @@ def test_a_header_collision_is_recorded_as_a_platform_defect():
                for x in AUDIT["platformDefects"])
 
 
-def test_classify_state_stays_excluded_from_the_buildable_set():
-    """Refused by the contract endpoint AND by the renderer. Two channels agree, so
-    omega's 16 is right and this must not drift back in."""
+def test_classify_state_is_observable_but_still_not_authorable():
+    """Two separate facts, and an earlier version of this test conflated them.
+
+    NOT AUTHORABLE: refused for custom columns by the contract endpoint and by the
+    renderer, so it must stay out of omega's 16.
+
+    OBSERVABLE: a platform section renders it, so its behaviour CAN be checked. The
+    earlier conclusion "not buildable, so not verifiable" mistook authoring for
+    observing, and that mistake is why this sat unverified longer than it needed to."""
     from omega.contract import load
     assert "classifyState" not in load().transforms
-    entry = next(x for x in AUDIT["notVerified"] if x["transform"] == "classifyState")
-    assert "PLATFORM_ONLY" in entry["why"]
+
+    entry = next(x for x in AUDIT["verified"] if x["transform"] == "classifyState")
+    assert "PLATFORM_ONLY" in entry["stated"]
+    assert "not authorable" in entry["result"]
 
 
 # --- crossDetect scope, and the rung sweep ----------------------------------

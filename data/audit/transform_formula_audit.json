@@ -82,26 +82,34 @@
    "check": "Scanned 30 coins for a live cross after the first attempt found none on three. MACD and ROC12 crossDetect beside their own 3-slot trajectories. Three fired - PUMP MACD Bearish, PUMP ROC Bearish, BTC ROC Bearish - and the decisive evidence is the ones that did NOT. GOOGL MACD ran -0.0065 -> +0.0275 -> +0.0660 and ZEC ran +0.4217 -> -0.2616 -> -0.7253: an unambiguous zero cross in each window, one bar earlier than the last pair, and crossDetect returned null on both. So it reads the LAST PAIR only, exactly as stated, and not 'a cross anywhere in the window'.",
    "caveat": "The scope is proven. The exact trigger is not pinned to the digit: all three firing cases have operands that round to 0.00 at the displayed precision, so whether the test is a strict zero crossing or a sign change with a tolerance cannot be settled from the table.",
    "result": "scope exact (last pair only); trigger threshold not pinned"
-  }
- ],
- "notVerified": [
-  {
-   "transform": "nearestZoneRange",
-   "why": "zone family - tier C"
   },
   {
-   "transform": "nearestZoneDist",
-   "why": "MEASURED, AND THE STATED FORMULA IS WRONG - see platformDefects. The transform itself works; the documentation of it does not."
+   "transform": "nearestZoneRange",
+   "stated": "output = [low, high] of nearest(base filtered by side)",
+   "check": "The rendered BTC support zone read $77,859.00-$77,923.00. Scanning 148 Hyperliquid 4h bars for bullish fair-value gaps - a 3-bar pattern where high[i-2] < low[i] - found exactly one at [77859, 77923], formed on the bar opening 2026-08-24T12:00Z. EXACT to the dollar on both bounds, and the next-closest of the 20 FVGs found is $2,594 away.",
+   "result": "exact - and it confirms nearestZoneType too: it really is a bullish FVG"
   },
   {
    "transform": "nearestZoneAge",
-   "why": "Returned 8h / 68h / 68h. Detection timestamps are never exposed, so there is nothing to check the hours against."
+   "stated": "output = floor((now - detectedAt(nearest zone)) / 1 hour)",
+   "check": "The FVG's third bar opens 08-24T12:00Z and closes 08-24T16:00Z. Rendered age was 21h with the current 1h bar at 13:00Z on 08-25. Counting from the bar's CLOSE gives exactly 21h; counting from its OPEN gives 25h. So detectedAt is the detecting bar's close, not its open.",
+   "corrected": "An earlier reading of 8h for the same zone was flagged as suspicious. It is consistent: 16:00Z + 8h = 08-25T00:00Z, so 13 hours of market time had genuinely passed between the two renders. The suspicion was unfounded and checking is what settled it.",
+   "result": "exact - hours since the DETECTING BAR CLOSED"
+  },
+  {
+   "transform": "nearestZoneDist",
+   "stated": "output = ((price - midpoint) / midpoint) x 100  [WRONG - see BG-9]",
+   "check": "Measured as ((midpoint - price) / price) x 100 on three coins. This entry was previously filed under notVerified, which was a bookkeeping error on my part: the TRANSFORM was measured and works. What is wrong is the published formula, which is a documentation defect, not an unverified transform.",
+   "result": "exact - the published formula is what is wrong, not the engine"
   },
   {
    "transform": "classifyState",
-   "why": "PLATFORM_ONLY. Refused for custom columns by get_strategy_column_contract AND, confirmed 2026-08-25, by preview_strategy_report - REPORT_COLUMN_PAIR_UNSUPPORTED on ADX x classifyState. Two independent channels agree, so the exclusion from omega's 16 is correct."
+   "stated": "PLATFORM_ONLY - refused for custom columns",
+   "check": "Not authorable, but OBSERVABLE. Rendering the includeTrendStrength platform section returns ADX_state beside ADX_now: 23.2 -> 'developing', against a declared vocabulary of weak / developing / trending / extreme. That sits in the conventional 20-25 ADX band. An earlier note concluded 'not buildable, so not verifiable' - which conflated authoring with observing.",
+   "result": "behaviourally consistent via a platform section; still not authorable"
   }
  ],
+ "notVerified": [],
  "operationalFindings": [
   {
    "finding": "rank is scoped to the whole active market, not your coin selection",
@@ -150,6 +158,15 @@
    "repro": "ATR_PCT rank ordering=hi at rel:lower, rel:anchor and rel:regime, with an EXPLICIT two-coin selection (BTC, SOL).\n  preamble, atrPct_ltf_rank_hi: 'ordinal across THIS REPORT'S coins ... rendered as rank/report-size; computed per request, so it reflects the coins in this report and not the wider market'\n  conditionColumns, same header: 'ordinal across the tracked universe ... rank/universe-size; the standing as of the last close, unchanged until the next one'\n  rendered: BTC 47/78, SOL 20/78 - and the same for the _htf variants.\nReport size is 2. Every denominator is 78. The values agree with conditionColumns and contradict the preamble. Only the anchor rung received preamble text that is correct for all three.",
    "cost": "The preamble is what an agent reads as table context. An author reading it would believe an _ltf or _htf rank gate is relative to their own shortlist and size a threshold accordingly - 'top 3' meaning top 3 of the coins they selected. It is actually top 3 of 78, so on a ten-coin selection that gate can match nothing at all.",
    "suggestedFix": "Make the preamble match conditionColumns and the values. If report-scoped ranking is the intended future behaviour for the rungs, it is not what ships today."
+  },
+  {
+   "id": "roc12-renders-a-raw-fraction-while-labelled-percent",
+   "severity": "blocking-for-thresholds",
+   "finding": "ROC12 renders the raw fractional change while its column meaning says 'rate of change vs 12 bars ago (%)'. The value is 100x smaller than the label claims.",
+   "repro": "ROC12 at offset:1 beside a closed CLOSE trajectory of window 16, so the 12-bar and 15-bar references are both visible in the same table.\n  HYPE  close_t12 79.76 -> close_now 79.91. 12-bar change = +0.00188 as a fraction, +0.19% as a percent. RENDERED: +0.00%. Only the fraction fits.\n  ZEC   close_t12 836.45 -> 843.69 = +0.008656 fraction, +0.87% percent. RENDERED: +0.01%. Only the fraction fits.\n  BTC   close_t12 79755 -> 78967 = -0.00988 fraction, -0.988% percent. RENDERED: -0.01%. Only the fraction fits.\nHYPE also rules out the alternative that the lookback is 15 rather than 12: its 15-bar percent change is +2.50%, nothing like the rendered +0.00%.",
+   "cost": "A threshold written from the label is wrong by 100x. 'ROC gt 2' meaning 'up 2 percent' has to be written 'ROC gt 0.02'. Because the value is small rather than absent, the gate does not error - it simply never fires, or always fires, depending on direction. The rel_roc_positive and rel_roc_negative scorecard signals read this metric.",
+   "note": "PPO sits in the same module and the same table and IS a percent - measured -0.2477 against a rendered -0.25. So this is not a deliberate house convention applied consistently; ROC12 is the odd one out.",
+   "suggestedFix": "Either multiply ROC12 by 100 to match its label, or change the label to drop the (%) and say it is a ratio. The first is almost certainly what was intended, given PPO's behaviour alongside it."
   }
  ]
 }

@@ -75,12 +75,17 @@ def test_label_only_families_are_marked():
 def test_the_ungateable_transform_is_named():
     """nearestZoneRange returns conditionOperators: [] - it renders and cannot be
     referenced by any condition at all."""
-    audit = json.loads((DERIVED_DIR.parent / "audit" /
-                        "transform_formula_audit.json").read_text(encoding="utf-8"))
-    named = {x["transform"] for x in audit["notVerified"]}
-    assert "nearestZoneRange" in named
+    # nearestZoneRange is now VERIFIED (its bounds match a real FVG to the dollar) and
+    # still UNGATEABLE. Those are independent facts, and conflating them is what this
+    # test originally did - it looked the transform up in notVerified, which broke the
+    # moment the transform was verified. Gateability is its own record.
     assert FAM["_gateability"]["ungateable"] == []
     assert "nearestZoneRange" in FAM["_gateability"]["note"]
+
+    audit = json.loads((DERIVED_DIR.parent / "audit" /
+                        "transform_formula_audit.json").read_text(encoding="utf-8"))
+    entry = next(x for x in audit["verified"] if x["transform"] == "nearestZoneRange")
+    assert "exact" in entry["result"]
 
 
 # --- the attribution caveat -------------------------------------------------
