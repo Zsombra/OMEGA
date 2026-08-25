@@ -342,6 +342,19 @@ always populated. Nullable ones to watch: every `CROWD_*_LIVE`, and the venue cl
 `SPOT_CLOSE_CB` / `SPOT_CLOSE_BN`, which the contract says are absent when older than
 15 minutes.
 
+### 18. Indicators include the forming bar, so they repaint
+
+Measured 2026-08-25: SMA20 over closed bars was 78376.90, and the rendered value was
+**78477.35** - the mean including the bar still in progress. All five indicators tested
+(SMA20, EMA5, EMA13, RSI14, ATR) matched the closed-plus-forming set exactly and none
+matched closed-only.
+
+So `RSI14 lte 35` can read TRUE at :10 and FALSE at :50 within one bar, with nothing
+having closed. If a condition needs to be stable, set `bars: "closed"` on the column.
+The contract has always offered it; this is the reason to use it.
+
+Evidence and method: [19 - Is the data correct?](19-is-the-data-correct.md).
+
 ### 17. A legal spread whose operands differ by orders of magnitude
 
 `spread` is `(A - B) / B x 100`. That is only informative when A and B are of comparable

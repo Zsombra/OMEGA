@@ -49,6 +49,7 @@ strategies from a thesis.
 | [16 · The write path](docs/16-the-write-path.md) | how to actually write — and the published schema that refuses its own required key |
 | [17 · The full sweep](docs/17-the-full-sweep.md) | 300 of 300 shapes verified live, and the two the platform declares but cannot deliver |
 | [18 · Indicator census](docs/18-indicator-census.md) | which named indicators this platform can build, which it cannot, and **why not** |
+| [19 · Is the data correct?](docs/19-is-the-data-correct.md) | the tape and the indicator maths, checked against Hyperliquid rather than against BattleGrid |
 
 ## What the extraction found
 
