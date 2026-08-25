@@ -122,6 +122,41 @@ Because it composes the rest of the toolkit, every plan is:
 - **gate-consistent** — if every weighted signal scored 0.75 and it still wouldn't route,
   the critique says so
 
+None of that answers whether the plan is *worth* accepting.
+
+## Legal is not the same as sound
+
+`omega.validate` answers *"will the platform accept this"*. It cannot answer *"does this
+mean what its author thinks"*, and the extraction work has turned up four ways a plan can
+pass validation and still be quietly wrong:
+
+| trap | what it does |
+|---|---|
+| a gate on a label never observed | in an `ALL`, the condition can never fire; in an `N_OF`, the **threshold silently moves**; under a `NOT`, the clause fires *always* |
+| `ROC12` | renders a **fraction** while labelled `(%)` — a threshold written as a percent is 100× off ([BG-11](19-is-the-data-correct.md)) |
+| `rank_lo` / `rank_near` on a non-negative metric | the **same column** under two names — two of your 32 section slots for one measurement |
+| two columns compiling to one header | the platform renders both, then drops the **whole section** from `conditionColumns` |
+
+```bash
+python -m scripts.audit_generated_plans
+```
+
+Run against the five presets, this finds exactly one: `flow-divergence` gates on
+`PERP_SPOT_FLOW is 'perp_led_fragile'`, a label 78 coins × 4 anchors never produced.
+
+**The effect is not what "inert" suggests, and stating it precisely is the point.** The
+clause sits inside an `N_OF` needing 2 of 4 members. The condition still fires — what
+moves is the threshold. The gate is really **2-of-3**, tighter than the 2-of-4 the thesis
+declares. An earlier version of this audit reported it as "reads FALSE forever", which is
+true only for a bare clause or an `ALL` member. Same input, three different bugs
+depending on where it sits.
+
+It is **not** auto-substituted. Every observed alternative — `neutral`,
+`spot_led_accumulation`, `confirmed_bear` — means something materially different from
+"perp-led and fragile", so swapping one in would change what the strategy *believes*.
+That is the author's call, not the toolkit's. The finding is pinned in
+`tests/test_generated_plans_audit.py` so a **new** one fails the suite.
+
 ## The critique
 
 ```python
