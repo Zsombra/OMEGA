@@ -87,19 +87,19 @@
    "invariant": "sign(BUY_PRESSURE - 0.5) against sign(CROWD_UPBIAS - 50). Agreement -> 'confirmed'; bullish flow with bearish crowd -> 'hidden accumulation'; bearish flow with bullish crowd -> 'hidden distribution'. Null when either side sits too near neutral.",
    "evidence": "25 crypto coins. 13 of 13 non-null cases fit, with no misses. The 12 nulls sit at neutrality distance 0.00-0.20 on the weaker axis while every non-null sits at 0.20-0.76, so the null rule is a joint threshold on both inputs.",
    "limit": "The exact cut is bracketed, not pinned - the two ranges touch at 0.20."
-  }
- ],
- "notVerifiable": [
+  },
   {
    "metrics": [
     "PRICE_ZONE"
    ],
-   "why": "NOT explained by position between SWING_LOW and SWING_HIGH, and not by ATR-normalised distance to either swing. Across 30 coins the labels produce 31 INVERTED PAIRS under position ordering - e.g. XRP at 10.0% reads 'mid-range' while ETH at 22.2% reads 'near low', and AAPL at 49.4% reads 'near high' while SKHX at 86.4% reads 'mid-range'. ATR distance to the high gives 32 inversions, to the low 40. No candidate ordering separates them.",
-   "correction": "THIS WAS DOWNGRADED FROM 'coherent'. The first pass called it coherent 3 of 3 on a three-coin render. That was a small-sample artifact - the exact error this file criticises elsewhere, committed in the same file. Three points cannot distinguish a rule from a coincidence when the labels are ordered and the sample is tiny.",
-   "consequence": "The swings PRICE_ZONE references may not be the SWING_HIGH / SWING_LOW columns rendered beside it. Until the rule is identified, do not assume a gate on `zone` means what the same-table swing columns would imply.",
-   "unobserved": "Neither 'breakout high' nor 'breakdown low' appeared in 30 coins.",
-   "reanchored": "The downgrade holds at 15m: 37 inverted pairs there against 31 at 1h. Not a position rule at either anchor."
-  },
+   "invariant": "within 1.00% of SWING_HIGH -> 'near high'; else within 1.00% of SWING_LOW -> 'near low'; else 'mid-range'. The HIGH is tested first, so a coin inside 1% of both reads 'near high'.",
+   "evidence": "59 of 60 across two anchors - 30 coins at 1h and the same 30 at 15m. The threshold sweep peaks sharply at exactly 1.00%: 0.90% fits 56/60 and 1.10% fits 56/60, which is the signature of a hard-coded constant rather than a curve fit. The high-first tie-break is forced by four coins inside 1% of BOTH swings (AAPL at 1h; META, SP500, XYZ100 at 15m) that all read 'near high' while the LOW was nearer in one of them.",
+   "exception": "XRP at 1h sits 0.68% above its swing low and reads 'mid-range' rather than 'near low'. Unexplained. One miss in sixty, recorded rather than smoothed over.",
+   "correctionOfMyCorrection": "THIS ENTRY WAS DOWNGRADED AND IS NOW RESTORED, ON A DIFFERENT RULE. The first pass claimed 'position between the swings' on 3 coins - wrong, and rightly downgraded when 30 coins gave 31 inverted pairs. But the downgrade note then said the rule was 'not explained by position, nor by ATR-normalised distance', which quietly implied there was nothing left to try. There was: plain PERCENTAGE DISTANCE to the nearer swing, which is neither of the two things tested. Failing to find a rule is not evidence that no rule exists, and the second write-up blurred that line.",
+   "limit": "Still one market, sampled at two anchors. The 1.00% constant is strongly indicated but not confirmed against a different day."
+  }
+ ],
+ "notVerifiable": [
   {
    "metrics": [
     "REGIME_TREND",
@@ -224,7 +224,8 @@
    "unseen": [
     "breakout high",
     "breakdown low"
-   ]
+   ],
+   "note": "Now that the rule is known, these two are targetable: 'breakout high' should need close ABOVE swingHigh, not merely within 1% of it. COIN rendered close EXACTLY equal to its swingHigh at 15m and still read 'near high', so the boundary is strict inequality or something beyond it."
   },
   "_reanchorNote": "All other unseen labels stayed unseen at the 15m anchor as well."
  },

@@ -84,8 +84,34 @@ def test_price_zone_is_NOT_position_between_the_swings():
         "position ordering now separates the labels - PRICE_ZONE may have changed, "
         "or the sample no longer discriminates")
 
-    entry = next(e for e in C["notVerifiable"] if "PRICE_ZONE" in e["metrics"])
-    assert "DOWNGRADED" in entry["correction"]
+    entry = next(e for e in C["coherent"] if "PRICE_ZONE" in e["metrics"])
+    assert "DOWNGRADED AND IS NOW RESTORED" in entry["correctionOfMyCorrection"]
+
+
+def test_price_zone_IS_percentage_distance_to_the_nearer_swing():
+    """The rule position ordering could not find. Within 1.00% of the swing high ->
+    'near high'; else within 1.00% of the low -> 'near low'; else mid-range. High is
+    tested first, which four coins inside 1% of BOTH swings force.
+
+    The test also pins the threshold as a PEAK, not merely a fit - 0.90% and 1.10% are
+    both materially worse, which is what distinguishes a constant from a curve fit."""
+    from scripts.regime_sample import ROWS, ROWS_15M
+
+    def fit(threshold):
+        good = total = 0
+        for rs, zi, hi, lo, ci in ((ROWS, 7, 8, 9, 10), (ROWS_15M, 6, 7, 8, 9)):
+            for r in rs:
+                th = (r[hi] - r[ci]) / r[ci] * 100
+                tl = (r[ci] - r[lo]) / r[ci] * 100
+                want = ("near high" if th < threshold else
+                        "near low" if tl < threshold else "mid-range")
+                total += 1
+                good += want == r[zi]
+        return good, total
+
+    good, total = fit(1.00)
+    assert total == 60 and good == 59, f"{good}/{total}"
+    assert fit(0.90)[0] < good and fit(1.10)[0] < good, "1.00% must be a peak"
 
 
 def test_smart_retail_rule_holds_on_every_non_null_case():
@@ -143,7 +169,7 @@ def test_crowd_percentages_share_a_denominator():
 
 
 @pytest.mark.parametrize("m", sorted({"REGIME_TREND", "REGIME_VOL", "REGIME_MOM",
-                                      "OI_VELOCITY", "CONFIDENCE", "PRICE_ZONE"}))
+                                      "OI_VELOCITY", "CONFIDENCE"}))
 def test_the_unverifiable_ones_stay_marked_unverifiable(m):
     """If one of these is ever upgraded to 'coherent', it must come with evidence -
     not because a later pass forgot the driver was never exposed."""
@@ -197,9 +223,18 @@ def test_regime_vol_is_not_stuck():
     assert C["unobservedLabels"]["REGIME_VOL"]["unseen"] == ["contracting"]
 
 
-def test_price_zone_downgrade_survives_the_reanchor():
-    e = next(x for x in C["notVerifiable"] if "PRICE_ZONE" in x["metrics"])
-    assert "37 inverted pairs" in e["reanchored"]
+def test_position_ordering_still_fails_even_though_the_real_rule_is_known():
+    """Both facts are true and both matter. Position between the swings does NOT
+    explain PRICE_ZONE - 31 inverted pairs at 1h, 37 at 15m. Percentage distance to
+    the nearer swing DOES. Keeping the falsification alongside the rule stops anyone
+    re-deriving the wrong one from a small sample."""
+    from scripts.regime_sample import ROWS, ROWS_15M
+    order = {"near low": 0, "mid-range": 1, "near high": 2}
+    for rs, zi, hi, lo, ci, expected in ((ROWS, 7, 8, 9, 10, 31), (ROWS_15M, 6, 7, 8, 9, 37)):
+        pos = [((r[ci] - r[lo]) / (r[hi] - r[lo]), r[zi]) for r in rs]
+        inv = sum(1 for a in pos for b in pos
+                  if a[0] < b[0] and order[a[1]] > order[b[1]])
+        assert inv == expected, f"{inv} != {expected}"
 
 
 def test_the_ungateable_column_class_is_recorded():
