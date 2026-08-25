@@ -920,12 +920,23 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
       <em>both</em> axes, and the two are enforced independently.
     </p>
     <p>
-      The consequence for reading a report is larger than the consequence for authoring one. A
-      bundle read and a candle metric rendered side by side under one anchor are
-      <b>not on the same grid</b>, and nothing in the table says so. AMZN at a 1h anchor:
-      <code>regMom</code> <b>bullish</b>, while ROC, PPO, MACD, <code>chg4h</code> and
-      <code>chg24h</code> are all negative and RSI14 sits at 37.3. A condition pairing the two
-      families is a conjunction across two horizons, one of which you cannot see or set.
+      <b>What it does not mean.</b> A timeless metric is not pinned to a fixed horizon. Rendered
+      at 5m and 4h seconds apart, <code>REGIME_MOM</code> changes on <b>8 of 10 coins</b> and
+      <code>REGIME_TREND</code> on 9 of 10 &mdash; they follow the report anchor like everything
+      else. What they refuse is a <em>second</em> timeframe declared on the column on top of the
+      one the report already carries.
+    </p>
+    <p class="correct">
+      <b>A claim retracted in place.</b> The first version of this item said a bundle read and a
+      candle metric under one anchor are &ldquo;not on the same grid&rdquo;, and used that to
+      explain why an exhaustive rule search for <code>REGIME_MOM</code> returned noise. Two
+      renders refuted it. The inputs were real &mdash; a real error message, a real inversion
+      (AMZN at 1h reads <code>regMom</code> <b>bullish</b> while ROC, PPO, MACD,
+      <code>chg4h</code> and <code>chg24h</code> are all negative and RSI14 sits at 37.3)
+      &mdash; but the mechanism joining them was invented. The inversion is now
+      <em>unexplained</em>, which is the accurate state of it: a search over every rule those
+      columns can express reached 69% against a 65% mode baseline, so the classifier is not
+      reading them, and what it does read is not exposed.
     </p>
 
 

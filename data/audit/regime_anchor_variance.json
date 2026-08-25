@@ -1,0 +1,35 @@
+{
+  "_what": "Does a timeframe-inert REGIME_* metric vary with the report anchor?",
+  "_why": "I claimed REGIME_MOM's value 'is not computed from the anchor candle grid at all', and used that to explain why the rule search against 1h ROC/PPO/MACD/RSI returned noise. The claim was consistent with the evidence I had (the platform calls it a bundle read; it refuses a column-level timeframe; AMZN showed an inversion) but I had not TESTED it. If the horizon were fixed, the value would not move when the anchor moved.",
+  "date": "2026-08-26",
+  "method": "Same 10 explicit tickers, same four columns, rendered at anchor 5m and anchor 4h in back-to-back calls seconds apart - so the comparison is near-simultaneous and anchor is the only variable. The 1h column below comes from an earlier render (~20 min prior) and is shown for context only; the conclusion rests on the 5m/4h pair.",
+  "observations": [
+    { "coin": "AAPL",  "regMom_5m": "bearish", "regMom_1h": "bearish", "regMom_4h": "bullish",   "regTrend_5m": "ranging",       "regTrend_4h": "ranging" },
+    { "coin": "AMZN",  "regMom_5m": "bearish", "regMom_1h": "bullish", "regMom_4h": "bearish",   "regTrend_5m": "trending down", "regTrend_4h": "ranging" },
+    { "coin": "BTC",   "regMom_5m": "bullish", "regMom_1h": "neutral", "regMom_4h": "bullish",   "regTrend_5m": "ranging",       "regTrend_4h": "trending up" },
+    { "coin": "DOGE",  "regMom_5m": "bullish", "regMom_1h": "bearish", "regMom_4h": "bullish",   "regTrend_5m": "trending down", "regTrend_4h": "trending up" },
+    { "coin": "ETH",   "regMom_5m": "bearish", "regMom_1h": "bearish", "regMom_4h": "diverging", "regTrend_5m": "ranging",       "regTrend_4h": "trending up" },
+    { "coin": "SOL",   "regMom_5m": "bullish", "regMom_1h": "neutral", "regMom_4h": "diverging", "regTrend_5m": "trending down", "regTrend_4h": "trending up" },
+    { "coin": "TRUMP", "regMom_5m": "bullish", "regMom_1h": "bearish", "regMom_4h": "bullish",   "regTrend_5m": "trending down", "regTrend_4h": "trending up" },
+    { "coin": "WIF",   "regMom_5m": "bearish", "regMom_1h": "bearish", "regMom_4h": "bullish",   "regTrend_5m": "trending down", "regTrend_4h": "trending up", "regVol_4h": "expanding" },
+    { "coin": "XRP",   "regMom_5m": "bullish", "regMom_1h": "bearish", "regMom_4h": "bullish",   "regTrend_5m": "ranging",       "regTrend_4h": "trending up" },
+    { "coin": "ZEC",   "regMom_5m": "bearish", "regMom_1h": "bearish", "regMom_4h": "bullish",   "regTrend_5m": "ranging",       "regTrend_4h": "trending up" }
+  ],
+  "result": {
+    "regMom_changed_5m_vs_4h": 8,
+    "regTrend_changed_5m_vs_4h": 9,
+    "of": 10
+  },
+  "conclusion": "REFUTED. REGIME_MOM and REGIME_TREND both vary strongly with the report anchor. 'Timeframe-inert' does NOT mean the value has a fixed horizon - it means the metric already FOLLOWS the report anchor and therefore refuses a second, column-level timeframe reference on top of it. The bundle is keyed by the anchor.",
+  "consequenceForTheRuleSearch": "My grid-mismatch explanation for REGIME_MOM's negative result is wrong and has been withdrawn. The 1h search compared a 1h-anchored label against 1h-anchored drivers - like with like. The negative therefore stands on its own terms, exactly as REGIME_TREND's does: the driver is not exposed at the column layer. The AMZN inversion is genuinely unexplained rather than explained away.",
+  "consequenceForOI_VELOCITY": "Unaffected. OI_VELOCITY vs OI was never a cross-grid comparison and its +22-point margin does not depend on the refuted claim. But the sentence attributing its success to 'same-bundle operands' is also withdrawn - the reason it worked is simply that OI is the operand the metric is defined over, and it is rendered.",
+  "newLabelObserved": {
+    "metric": "REGIME_VOL",
+    "label": "expanding",
+    "coin": "WIF",
+    "anchor": "4h",
+    "significance": "REGIME_VOL was recorded as 'normal in 30 of 30' with 'expanding' and 'contracting' never observed - see tier_c_coherence.json['unobservedLabels'] and cookbook trap 25. It occurs. It was invisible because every prior sample was taken at 15m or 1h, where all 10 of these coins still read 'normal'. The label was not rare; the sampling was single-anchored.",
+    "lesson": "The unobserved-label list is a statement about the SAMPLE, not about the platform. Before calling a label unreachable, vary the anchor as well as the coin."
+  },
+  "methodNote": "The refuted claim was reached by reasoning from a real platform error message plus a real inversion, and it was wrong. Both inputs were facts; the mechanism connecting them was invented. The test that settled it cost two renders."
+}

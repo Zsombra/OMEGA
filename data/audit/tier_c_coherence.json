@@ -294,10 +294,10 @@
       "bestRule": "RSI14 <50 bearish, >50 bullish, else neutral",
       "margin": 0.038,
       "verdict": "NOT identified",
-      "result": "Best candidate 69% against a 65% baseline - a four-point margin on 78 observations, the same noise-sized win REGIME_TREND produced.",
-      "structuralExplanation": "This one has a cause, and it is not 'we did not try hard enough'. REGIME_MOM is timeframe-inert: a BUNDLE READ. Its value is not computed from the anchor candle grid at all, so scoring it against ROC/PPO/MACD/RSI14 - which are candle-grid metrics on 1h bars - compares two different grids. The platform states this itself and refuses to render the metric at any other timeframe (see _timelessTimeframe below).",
-      "corroboration": "The split falls exactly along that line. Where a bundle read is scored against SAME-BUNDLE operands (OI_VELOCITY vs OI, both timeless) the search reaches 86%. Where it is scored against candle-grid operands (REGIME_MOM) it reaches noise. AMZN is the clean illustration: labelled 'bullish' with ROC, PPO, MACD, chg4h and chg24h all negative and RSI14 at 37.3. That is not a near miss, it is an inversion - the label is reading bars these columns never touch.",
-      "whatWouldSettleIt": "A column exposing the regime bundle's own momentum input. None exists; the bundle is readable only through its already-classified outputs."
+      "result": "Best candidate 69% against a 65% baseline - a four-point margin on 78 observations, the same noise-sized win REGIME_TREND produced. The label and the drivers were both read at the 1h anchor, so this is a like-for-like comparison and the negative stands on its own terms: REGIME_MOM's driver is not exposed at the column layer.",
+      "structuralExplanation": "WITHDRAWN 2026-08-26. I wrote that REGIME_MOM is a bundle read whose value 'never touches the anchor candle grid', and used that to explain the negative. Tested and REFUTED: rendered at 5m and 4h seconds apart, REGIME_MOM changes on 8 of 10 coins and REGIME_TREND on 9 of 10. 'Timeframe-inert' means the metric already FOLLOWS the report anchor and so refuses a second column-level timeframe on top of it - not that its horizon is fixed. See data/audit/regime_anchor_variance.json.",
+      "corroboration": "WITHDRAWN with the explanation above - it was the same claim restated. What survives is the raw observation: at a 1h anchor AMZN reads 'bullish' with ROC, PPO, MACD, chg4h and chg24h all negative and RSI14 at 37.3. That inversion is now UNEXPLAINED rather than explained away, which is the honest state of it.",
+      "whatWouldSettleIt": "A column exposing whatever momentum input the regime classifier consumes. None is offered. Note this is now the SAME conclusion as REGIME_TREND's, reached the same way, rather than a special case."
     },
     "OI_VELOCITY": {
       "operands": [
@@ -323,7 +323,7 @@
         "_honesty": "DIAGNOSTIC, NOT THE HEADLINE. 7 rows print all four OI values identically ($4.0M, $1.3M, $1.7B, $2.0B and so on), so their second difference is 0 minus 0 - undefined at display precision rather than wrong. Excluding only those lifts the fit to 86%. The subset was defined by 'the arithmetic is undefined here', not by 'this improves the score', and BOTH numbers are reported so the reader can judge that claim. The 78% full-sample figure stands as the result."
       },
       "residual": "Even on the resolvable subset 10 rows miss. Displayed OI carries one decimal place, so a true second difference smaller than the display quantum is invisible - the residual is consistent with rounding and does not require a different rule. Confirming it needs OI at more precision than any column renders.",
-      "whyThisOneWorked": "OI is itself timeless. Label and operand come from the same bundle, so unlike REGIME_MOM there is no grid mismatch."
+      "whyThisOneWorked": "OI is the quantity the metric is defined over, and it is rendered. An earlier draft attributed the success to label and operand 'sharing a bundle'; that phrasing leaned on the mechanism refuted above and is withdrawn. The result itself does not depend on it."
     },
     "CONFIDENCE": {
       "operands": [
@@ -343,10 +343,10 @@
       "verdict": "NOT identified",
       "result": "Best candidate 72% against a 58% baseline on 36 crypto rows - a 14-point margin, below the 15-point bar this search uses for 'partial' and on the smallest sample of the three. The winner ('smartRetail confirmed -> high, else moderate') is directionally sensible rather than nonsense, so it is recorded as suggestive and nothing more.",
       "ruledOut": "CONFIDENCE is NOT a copy of PERP_SPOT_STRENGTH, despite the contract describing perpSpotStr as using the 'CONFIDENCE idiom'. That phrase names a shared BUCKETING function, not a shared value: 32 of 36 rows read perpSpotStr 'low' while conf splits 15 high / 21 moderate. The identity candidate scored at chance.",
-      "interpretation": "'CONFIDENCE idiom' says CONFIDENCE buckets some continuous convergence strength into high/moderate/low. That underlying strength is not exposed as any column - only its bucketed output is. Same shape as REGIME_MOM: the operand is structurally unavailable, not merely unguessed.",
+      "interpretation": "'CONFIDENCE idiom' says CONFIDENCE buckets some continuous convergence strength into high/moderate/low. That underlying strength is not exposed as any column - only its bucketed output is. Same conclusion as REGIME_MOM: the operand is unavailable at the column layer, not merely unguessed.",
       "sampleCaveat": "36 rows, not 78 - CONFIDENCE is null for all 42 non-crypto tickers (asset-class nulling, already documented). And 'low' was never observed, so a third of the vocabulary is untested here."
     },
-    "_summary": "Three searches, three different answers, and the difference between them is explanatory rather than arbitrary. OI_VELOCITY is a partial identification at +22 points because its operand shares the label's bundle. REGIME_MOM and CONFIDENCE are negatives because their operands do not exist at the column layer - REGIME_MOM demonstrably so (it is a bundle read that the platform refuses to render off-anchor), CONFIDENCE by the contract's own description of a bucketed strength whose input is unexposed. These are measured conclusions with stated search spaces and margins, not admissions of not having tried."
+    "_summary": "Three searches, three answers. OI_VELOCITY is a partial identification at +22 points - the second difference of the OI trajectory, an operand the metric is defined over and which the report renders. REGIME_MOM and CONFIDENCE are negatives because their drivers are not exposed at the column layer; both were searched like-for-like at a single anchor. These are measured conclusions with stated search spaces and margins. A fourth claim - that REGIME_MOM's negative was caused by a grid mismatch - was made here and then refuted by testing it; see regime_anchor_variance.json. It cost two renders to settle and it was the only part of this that was reasoning rather than measurement."
   },
   "_timelessTimeframe": {
     "_what": "A validator defect in OMEGA, found by the REGIME_MOM search when the search needed the metric at the regime timeframe and the platform refused.",
@@ -355,6 +355,17 @@
     "omegaGap": "omega/validate.py enforced the timeless rule only for a SECTION-level timeframe override. The column's own timeframe was unchecked, so omega passed rel:lower, rel:regime and abs:* on all 40 timeless metrics - shapes the platform refuses.",
     "fixed": "omega/validate.py, guarded by tests/test_timeless_timeframe.py",
     "evidence": "data/audit/timeless_column_timeframe.json",
-    "defectClass": "OMEGA, not BattleGrid. The platform enforces this correctly and names the reason."
+    "defectClass": "OMEGA, not BattleGrid. The platform enforces this correctly and names the reason.",
+    "whatItDoesNotMean": "It does NOT mean the value has a fixed horizon. REGIME_MOM changes on 8 of 10 coins between a 5m and a 4h anchor. The metric follows the report anchor; what it refuses is a SECOND timeframe declared on the column. Measured in data/audit/regime_anchor_variance.json after I had asserted the opposite."
+  },
+  "_unobservedLabelsCorrection": {
+    "metric": "REGIME_VOL",
+    "label": "expanding",
+    "wasRecordedAs": "never observed - 'normal' in 30 of 30",
+    "nowObserved": "WIF at a 4h anchor, 2026-08-26",
+    "why": "every prior sample was taken at 15m or 1h. At those anchors all 10 probe coins still read 'normal'; at 4h one did not. The label was not rare - the sampling was single-anchored.",
+    "lesson": "The unobserved-label list describes the SAMPLE, not the platform. Vary the anchor as well as the coin before calling a label unreachable.",
+    "stillUnobserved": "REGIME_VOL 'contracting', PERP_SPOT_CONFIRMS true, PERP_SPOT_FLOW confirmed_bull / confirmed_bear / perp_led_fragile, CONFIDENCE 'low', PRICE_ZONE 'breakout high' / 'breakdown low'.",
+    "evidence": "data/audit/regime_anchor_variance.json"
   }
 }

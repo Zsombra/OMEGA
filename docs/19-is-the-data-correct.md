@@ -355,15 +355,20 @@ with `|previous delta|`: growing is `accelerating`, shrinking `decelerating`, eq
 > 78% figure is the result; both are recorded, because filtering rows until a hypothesis
 > fits is the standard way to manufacture one.
 
-**`REGIME_MOM` is a bundle read, and that is why the search fails.** It is
-timeframe-inert: its value never touches the anchor candle grid, so scoring it against
-`ROC12`/`PPO`/`MACD`/`RSI14` — 1h candle-grid metrics — compares two different grids.
-AMZN is the clean case: labelled `bullish` with ROC, PPO, MACD, `chg4h` and `chg24h` all
-negative and RSI14 at 37.3. That is an inversion, not a near miss.
+**`REGIME_MOM` produces the same negative as `REGIME_TREND`,** and for the same reason:
+the driver is not exposed. AMZN is the sharpest case — labelled `bullish` with ROC, PPO,
+MACD, `chg4h` and `chg24h` all negative and RSI14 at 37.3. That is an inversion, not a
+near miss, and it is **unexplained**.
 
-The split falls exactly along that line. Where a bundle read is scored against a
-**same-bundle** operand (`OI_VELOCITY` against `OI`, both timeframe-inert) the search
-reaches 86%. Where it is scored against candle-grid operands it reaches noise.
+> **A claim I made here and then had to withdraw.** I wrote that `REGIME_MOM` is a bundle
+> read whose value *"never touches the anchor candle grid"*, which would have made the
+> whole search a category error. Then I tested it: rendered at 5m and 4h seconds apart,
+> `REGIME_MOM` changes on **8 of 10 coins** and `REGIME_TREND` on **9 of 10**. It follows
+> the anchor. *Timeframe-inert* means it refuses a **second** timeframe declared on the
+> column, not that its horizon is fixed. So the 1h search compared a 1h label against 1h
+> drivers — like for like — and the negative stands on its own terms rather than being
+> excused by a mechanism I had invented. Two renders settled it; see
+> [`regime_anchor_variance.json`](../data/audit/regime_anchor_variance.json).
 
 **`CONFIDENCE` is not `PERP_SPOT_STRENGTH`,** despite the contract describing
 `perpSpotStr` as using the *"CONFIDENCE idiom"*. That phrase names a shared **bucketing
@@ -376,9 +381,10 @@ merely unguessed.
 ### Not verifiable, and why each is not a matter of effort
 
 - **`REGIME_TREND` / `REGIME_MOM`** — searched exhaustively, above and in
-  [`_ruleSearch`](../data/audit/tier_c_coherence.json). Both are bundle reads whose
-  drivers the column layer does not expose; the negative is now measured, with a stated
-  search space and a margin.
+  [`_ruleSearch`](../data/audit/tier_c_coherence.json). Neither classifier reads the
+  columns rendered beside it: best fits of 55% and 69% against baselines of 53% and 65%.
+  The negative is measured, with a stated search space and a margin, and it is not
+  explained by any horizon mismatch — both follow the report anchor.
 - **`REGIME_VOL`** — relative to each coin's own history (atrPct spanning 0.14%–3.11%
   all read "normal") and that history is not available.
 - **`CONFIDENCE`** — buckets a convergence strength that is not a column. 72% against a

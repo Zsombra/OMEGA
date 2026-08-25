@@ -538,44 +538,50 @@ coins found six columns where part of the vocabulary never appeared:
 
 | metric | seen | never seen |
 |---|---|---|
-| `REGIME_VOL` | normal — **30 of 30** | expanding, contracting |
+| `REGIME_VOL` | normal — 30 of 30 at 15m/1h; **expanding** does occur, seen on WIF at 4h | contracting |
 | `PERP_SPOT_CONFIRMS` | false — 24 of 24 | true |
 | `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
 | `CONFIDENCE` | high, moderate | low |
 | `OI_VELOCITY` | accelerating, decelerating | steady |
 | `PRICE_ZONE` | near low, mid-range, near high | breakout high, breakdown low |
 
-None of this proves a bug — rare labels are rare. But `regVol is expanding` is a gate that
-has never been seen to fire, and combined with trap 11 it reads FALSE forever without ever
-telling you it is inert. A `NOT` around it fires *always*.
+None of this proves a bug — rare labels are rare. But a gate on a label that never occurs
+reads FALSE forever without telling you it is inert (trap 11), and a `NOT` around it fires
+*always*.
 
-**Before gating on a categorical label, sample 25+ coins and confirm the value actually
-occurs.** `PRICE_ZONE` is the cautionary case in the other direction too: its rule is
+> **`REGIME_VOL is expanding` came off this list, and how it did is the lesson.** Every
+> sample behind the 30-of-30 was taken at 15m or 1h. Re-render the same coins at a **4h**
+> anchor and WIF reads `expanding`. The label was never rare — the *sampling* was
+> single-anchored. See
+> [`regime_anchor_variance.json`](../data/audit/regime_anchor_variance.json).
+
+**Before gating on a categorical label, sample 25+ coins — and vary the anchor as well as
+the coin — to confirm the value actually occurs.** `PRICE_ZONE` is the cautionary case in the other direction too: its rule is
 **not** the position between `SWING_HIGH` and `SWING_LOW`, despite looking exactly like
 that on a three-coin sample — see [19](19-is-the-data-correct.md).
 
-### 26. A bundle read and a candle metric in one row are not on one grid
+### 26. A timeframe-inert metric takes the anchor reference and nothing else
 
-40 metrics are `timeframe-inert` — `REGIME_*`, `OI*`, `CROWD_*`, `FUNDING_*`, `CHG_*`,
-`FLOW_ALIGN`, `SMART_RETAIL`, `CONFIDENCE`, `PERP_SPOT_*` and the rest. They are bundle
-reads. They render beside `RSI14` or `MACD` under a single anchor and *look* like
-same-instant, same-horizon readings of the same coin. They are not: the candle metrics
-are computed on the anchor's bars, and the bundle values come from the platform's own
-precomputed bundle at a horizon you cannot see or set.
+40 of the 86 metrics are `timeframe-inert` — `REGIME_*`, `OI*`, `CROWD_*`, `FUNDING_*`,
+`CHG_*`, `FLOW_ALIGN`, `SMART_RETAIL`, `CONFIDENCE`, `PERP_SPOT_*` and the rest. Their
+column `timeframe` must be the literal `{"rel":"anchor"}`. `rel:"lower"`, `rel:"regime"`
+and any `abs` are refused — **including an `abs` equal to the anchor**, so the rule is
+syntactic rather than semantic.
 
-The visible symptom is a row that reads as self-contradictory. AMZN at a 1h anchor:
+They still follow the report anchor: `REGIME_MOM` changes on 8 of 10 coins between a 5m
+and a 4h render taken seconds apart. What they refuse is a *second* timeframe on top of
+the report's.
+
+The trap is a different one, and it survives the above. A `REGIME_*` label can flatly
+contradict the momentum columns rendered beside it at the same anchor. AMZN at 1h:
 `regMom` **bullish**, while ROC, PPO, MACD, `chg4h` and `chg24h` are *all* negative and
-RSI14 sits at 37.3.
+RSI14 sits at 37.3. An exhaustive search over every rule those columns can express got
+69% against a 65% mode baseline — so **the classifier is not reading them**, and what it
+does read is not exposed.
 
-Two consequences:
-
-- **Don't write a condition that assumes agreement between the two families** — e.g.
-  `regMom is bullish AND rsi14 > 55` is not a confirmation pattern, it is a conjunction
-  across two horizons, and one of them is unknown.
-- **You cannot re-anchor a bundle read to line them up.** The column timeframe must be
-  the literal `{"rel":"anchor"}`; `rel:"regime"`, `rel:"lower"` and any `abs` are all
-  refused — including an `abs` equal to the anchor. See
-  [03](03-column-compilation.md).
+**Don't write `regMom is bullish AND rsi14 > 55` and call it a confirmation pattern.**
+The two clauses are not two views of one quantity; the first is a black box, and the
+sample above shows it disagreeing with the second outright.
 
 ## Workflow
 

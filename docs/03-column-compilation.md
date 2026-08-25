@@ -93,10 +93,12 @@ timeless metric cannot sit in a section carrying a `timeframe` override **and** 
 carry a non-anchor timeframe of its own. `omega.validate` enforced only the first until
 2026-08-26 and so accepted three shapes the platform refuses.
 
-The practical consequence for analysis: a bundle read and a candle-grid metric in the
-same row are **not on the same grid**, even though they render side by side under one
-anchor. Comparing them is a category error — the mistake that made the `REGIME_MOM` rule
-search look unsolvable in [19](19-is-the-data-correct.md).
+**What it does not mean.** A timeless metric is *not* pinned to a fixed horizon. Rendered
+at 5m and 4h seconds apart, `REGIME_MOM` changes on 8 of 10 coins and `REGIME_TREND` on
+9 of 10 — they follow the report anchor like everything else. What they refuse is a
+**second** timeframe declared on the column on top of the one the report already carries.
+Measured in [`regime_anchor_variance.json`](../data/audit/regime_anchor_variance.json),
+after the opposite had been asserted in this file.
 
 ## Fan-out
 
