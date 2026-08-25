@@ -101,11 +101,39 @@ def test_the_audit_covers_every_transform_the_contract_declares():
     assert not missing, f"transforms with no audit verdict either way: {sorted(missing)}"
 
 
-def test_value_is_recorded_as_only_partially_verified():
-    """offset=0 was checked; a non-zero offset never was. If someone upgrades this to
-    'exact' without measuring it, the claim stops being true."""
-    v = next(x for x in AUDIT["verified"] if x["transform"] == "value")
-    assert v["result"].startswith("partial")
+def test_value_offset_shifts_the_window_by_exactly_n():
+    """offset=3 must select the window ending 3 observations back - not 2, not 4.
+    Recomputed from the cached candles; only one window fits."""
+    import json as _json
+    from pathlib import Path as _Path
+    d = _json.loads((_Path("data/audit/candles_btc_1h_battlegrid.json")
+                     ).read_text(encoding="utf-8"))
+    closes = [x["c"] for x in d["candles"]] + [d["_reportSnapshot"]["close"]]
+
+    def sma20_ending(back):
+        end = len(closes) - back
+        return sum(closes[end - 20:end]) / 20
+
+    assert abs(sma20_ending(3) - 78215.50) < 0.01
+    for other in (0, 1, 2, 4, 5):
+        assert abs(sma20_ending(other) - 78215.50) > 1.0, (
+            f"offset={other} also fits - the test does not discriminate")
+
+
+def test_a_header_collision_is_recorded_as_a_platform_defect():
+    """Two columns differing only by offset produce the same header, render anyway, and
+    both drop out of conditionColumns. omega predicts the collision; the platform does
+    not refuse it."""
+    from omega.fanout import outputs_for
+    from omega.types import Column, RelTimeframe
+    plain = [o.header for o in outputs_for(
+        Column(metric="SMA20", transformId="value", timeframe=RelTimeframe(rel="anchor")))]
+    shifted = [o.header for o in outputs_for(
+        Column(metric="SMA20", transformId="value",
+               timeframe=RelTimeframe(rel="anchor"), offset=3))]
+    assert plain == shifted, "offset must not disambiguate, or the defect is stale"
+    assert any(x["id"] == "duplicate-header-drops-conditionability"
+               for x in AUDIT["platformDefects"])
 
 
 def test_classify_state_stays_excluded_from_the_buildable_set():

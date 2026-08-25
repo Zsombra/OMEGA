@@ -3,7 +3,6 @@
  "_method": "preview_strategy_report, 1h anchor. Each transform is checked against its OWN trajectory slots in the same table, so no external data is needed and no sampling drift can creep in between the operand and the result. Where bars:'closed' was used, the trajectory slots were additionally diffed against data/audit/candles_btc_1h_battlegrid.json.",
  "_why": "docs/19 verified the METRICS (RSI, ATR, SMA, EMA) against the textbook. It did not touch the TRANSFORMS, which are the layer omega's whole column algebra sits on. Before this audit exactly one of the seventeen - spread - had ever been checked against its stated formula.",
  "_statedFormulas": "data/contract/transforms/_authoring.json",
-
  "verified": [
   {
    "transform": "trajectory",
@@ -50,23 +49,48 @@
   {
    "transform": "value",
    "stated": "output = base[t - offset]",
-   "check": "Consistent with the rendered close on every table. NOT independently verified at a non-zero offset.",
-   "result": "partial - offset=0 only"
+   "check": "SMA20 value offset=3 rendered $78,215.50. Recomputing the 20-close mean from the cached candles, the window ending exactly 3 observations back gives 78215.50 - an exact match, and no neighbouring window comes close (2 back = 78275.85, 4 back = 78114.15). offset=0 was checked separately.",
+   "result": "exact at offset 0 and offset 3"
   }
  ],
-
  "notVerified": [
-  {"transform": "bandTouch", "why": "categorical output; needs a case where price is known to sit on a band"},
-  {"transform": "classifyZone", "why": "categorical; the label vocabulary is already known to be mis-declared - see data/contract/columns/_observed_vocabulary.json"},
-  {"transform": "crossDetect", "why": "categorical; needs a bar where a cross is known to have occurred"},
-  {"transform": "count", "why": "trivial but unchecked"},
-  {"transform": "nearestZoneType", "why": "zone family - STRUCT_ZONES has no external referent (tier C)"},
-  {"transform": "nearestZoneRange", "why": "zone family - tier C"},
-  {"transform": "nearestZoneDist", "why": "zone family - tier C, though the formula mirrors distance which IS verified"},
-  {"transform": "nearestZoneAge", "why": "zone family - tier C"},
-  {"transform": "classifyState", "why": "PLATFORM_ONLY. Refused for custom columns by get_strategy_column_contract AND, confirmed 2026-08-25, by preview_strategy_report - REPORT_COLUMN_PAIR_UNSUPPORTED on ADX x classifyState. Two independent channels agree, so the exclusion from omega's 16 is correct."}
+  {
+   "transform": "bandTouch",
+   "why": "categorical output; needs a case where price is known to sit on a band"
+  },
+  {
+   "transform": "classifyZone",
+   "why": "categorical; the label vocabulary is already known to be mis-declared - see data/contract/columns/_observed_vocabulary.json"
+  },
+  {
+   "transform": "crossDetect",
+   "why": "categorical; needs a bar where a cross is known to have occurred"
+  },
+  {
+   "transform": "count",
+   "why": "trivial but unchecked"
+  },
+  {
+   "transform": "nearestZoneType",
+   "why": "zone family - STRUCT_ZONES has no external referent (tier C)"
+  },
+  {
+   "transform": "nearestZoneRange",
+   "why": "zone family - tier C"
+  },
+  {
+   "transform": "nearestZoneDist",
+   "why": "zone family - tier C, though the formula mirrors distance which IS verified"
+  },
+  {
+   "transform": "nearestZoneAge",
+   "why": "zone family - tier C"
+  },
+  {
+   "transform": "classifyState",
+   "why": "PLATFORM_ONLY. Refused for custom columns by get_strategy_column_contract AND, confirmed 2026-08-25, by preview_strategy_report - REPORT_COLUMN_PAIR_UNSUPPORTED on ADX x classifyState. Two independent channels agree, so the exclusion from omega's 16 is correct."
+  }
  ],
-
  "operationalFindings": [
   {
    "finding": "rank is scoped to the whole active market, not your coin selection",
@@ -77,6 +101,23 @@
    "finding": "rank does NOT repaint intra-bar, unlike every other indicator",
    "evidence": "Header meaning states: 'the standing as of the last close, unchanged until the next one.'",
    "consequence": "A documented exception to cookbook trap 18. Rank columns are stable within the bar; value/trajectory/aggregate columns are not."
+  },
+  {
+   "finding": "an offset >= 1 does not repaint",
+   "evidence": "In the same render, offset=0 drifted from the cached recomputation while offset=3 matched to the cent. An offset of 1 or more lands the window on closed bars, which no longer move.",
+   "consequence": "A second escape from cookbook trap 18, alongside bars:'closed' - and this one keeps the forming bar out of the window while still reading a metric that has no bars parameter of its own."
+  }
+ ],
+ "platformDefects": [
+  {
+   "id": "duplicate-header-drops-conditionability",
+   "severity": "silent",
+   "finding": "Two columns whose headers collide RENDER, but both vanish from conditionColumns.",
+   "repro": "One section, CLOSE trajectory window=6 bars=closed, SMA20 value offset=3, SMA20 value. The table renders 9 data columns and the header row reads '... | close_trend | SMA20 | SMA20 |' with two different values ($78,215.50 and $78,469.20). conditionColumns for that section lists SEVEN outputs - close_t5 through close_trend. NEITHER SMA20 appears.",
+   "why": "offset is not part of the header name, so any two columns differing only by offset collide. The same applies to any other parameter the namer ignores.",
+   "cost": "The agent still SEES both values as table text, so the table looks correct. But a condition referencing 'SMA20' has no column to bind to. Combined with BG-6 - a null read is FALSE, never UNRESOLVED - a gate written against that header fails silently and reads as a real negative.",
+   "control": "SMA20 alone, without the offset twin, appears in conditionColumns normally with lt/lte/gte/gt/between. So the metric is conditionable; the COLLISION is what removes it.",
+   "suggestedFix": "Either disambiguate the header when offset is set (SMA20_off3, as trajectory already does with _t3), or reject the section with REPORT_COLUMN_HEADER_COLLISION. Rendering a column that cannot be referenced is the worst of the three options."
   }
  ]
 }

@@ -408,6 +408,30 @@ The universe size is rendered alongside the rank (`n/78`), so a condition can be
 against the denominator rather than assuming it — but the denominator itself moves as
 coins are listed and delisted.
 
+### 20. A duplicate header renders, but silently loses conditionability
+
+`offset` is **not** part of the header name. Two columns differing only by offset collide:
+
+```
+| coin | ... | close_trend | SMA20 | SMA20 |
+| BTC  | ... | rising      | $78215.50 | $78469.20 |
+```
+
+Both rendered. Both carry different, correct values. And `conditionColumns` for that
+section listed **seven** outputs — `close_t5` through `close_trend`. Neither `SMA20`
+appeared in it.
+
+The table looks right, and the agent reading it as text sees both numbers. But a
+condition referencing `SMA20` has nothing to bind to. Pair that with trap 11 — a null
+read is FALSE, never UNRESOLVED — and the gate fails **silently, as a real negative**.
+
+`SMA20` on its own appears in `conditionColumns` normally, so the metric is fine; the
+collision is what removes it.
+
+**Fix:** never place two columns in one section whose headers would match. `omega.fanout`
+predicts the header, so check before you build — `scripts/family_probe.py` already
+enforces exactly this when it packs batches.
+
 ## Workflow
 
 ```
