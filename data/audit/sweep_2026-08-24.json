@@ -62,8 +62,9 @@
         "date": "2026-08-26",
         "status": "COVERAGE GAP CLOSED",
         "result": "operand-expanded 1759/1759 rendered live (100%), structural 301/301 (100%), 0 header mismatches.",
-        "how": "11 further renders, 1355 columns, 3113 headers. See data/contract/columns/_spread_sweep_2026-08-26.json.",
-        "found": "One undocumented legality rule, at pair 545: a spread chained into a series-building transform needs a candle-backed operand. 357 shapes. data/audit/spread_chain_operand.json."
+        "how": "11 further renders, 1355 columns, 2379 headers. See data/contract/columns/_spread_sweep_2026-08-26.json.",
+        "found": "One undocumented legality rule, at pair 545: a spread chained into a series-building transform needs a candle-backed operand. 357 shapes. data/audit/spread_chain_operand.json.",
+        "_headerCountCorrection": "An earlier draft of this block said 3,113 headers. It is 2,379 - the batch records sum to that. The 3,113 was a stale figure from the pre-fix plan, which still counted the 357 illegal shapes and their fan-out."
       }
     }
   },

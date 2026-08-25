@@ -18,6 +18,7 @@ most one chained successor. That cap is the whole reason this is countable:
 | atoms accepting a chained stage | 52 — 42 × 3 successors, 10 × 4 including `rank` |
 | **structural shapes** | **488** |
 | expanded by spread operand and rank ordering | **1779** |
+| …of which rendered live at least once | **1759 / 1759 — all of them** |
 | documented in the cookbook (doc 06) | 8 |
 
 ```python
