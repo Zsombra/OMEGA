@@ -235,14 +235,90 @@ Record: `data/audit/tier_c_coherence.json`. Guard: `tests/test_tier_c_coherence.
 | flow split | `buy+sell` reconciles to `VOLUME`/`TRADES`; `BUY_PRESSURE` = `BUY_VOLUME/VOLUME` exactly |
 | `SWING_HIGH/LOW` | real bar extremes from the tape |
 | `STRUCT_ZONES` | a real three-bar FVG, exact on both bounds |
-| `PRICE_ZONE` | matches the close's position between the swings, 3 of 3 |
 | `OI_PX_REGIME` | the classic four-quadrant OI-vs-price read, 2 of 2 |
 | `CROWD_*` | percentages in range, and `upBias`/`crowdAcc` share a denominator — SOL's 22.2% and 88.9% are **2/9 and 8/9** |
-| `FLOW_ALIGN` | BTC bearish crowd + selling flow → "aligned bearish"; SOL bearish crowd + buying flow → "divergent" |
+| `FLOW_ALIGN` | sign(**last-bar** CVD delta) vs sign(`upBias − 50`), 4 of 4 |
+| `SMART_RETAIL` | sign(`buyPres − 0.5`) vs sign(`upBias − 50`), **13 of 13** |
 
 `CVD` accumulates in **base-asset units** despite a declared unit class of `signedPrice`.
 That is an observation, not a defect — the unit *tag* drives the spread-clique guard, and
 `SPOT_CVD` shares the class, which is exactly what the perp-spot family needs.
+
+### Resampled — and one verdict went the wrong way
+
+Most of the first pass's "not verifiable" verdicts were **"not verifiable from two or
+three coins"**, which is a different claim. Re-run against 30 coins (regime block) and 25
+(flow block). Three verdicts improved. **One got worse, and it was mine.**
+
+#### `PRICE_ZONE` — downgraded from "coherent"
+
+The first pass called it coherent **3 of 3** on a three-coin render. Thirty coins produce
+**31 inverted pairs** under position ordering:
+
+| | position between swings | label |
+|---|---:|---|
+| XRP | 10.0% | mid-range |
+| ETH | 22.2% | **near low** |
+| AAPL | 49.4% | **near high** |
+| SKHX | 86.4% | mid-range |
+
+ATR-normalised distance is no better — 32 inversions to the high, 40 to the low. **No
+candidate ordering separates the labels.**
+
+That was a small-sample artifact: the exact error this document criticises elsewhere,
+committed in this document. Three points cannot distinguish a rule from a coincidence
+when the labels are ordered and the sample is tiny. A practical consequence: the swings
+`PRICE_ZONE` references **may not be** the `SWING_HIGH`/`SWING_LOW` columns rendered
+beside it.
+
+#### `SMART_RETAIL` — solved, 13 of 13
+
+`sign(buyPres − 0.5)` against `sign(upBias − 50)`. Agreement → `confirmed`; bullish flow
+with bearish crowd → `hidden accumulation`; the reverse → `hidden distribution`. Null when
+either side sits too near neutral — the 12 nulls sit at neutrality distance 0.00–0.20 and
+every non-null at 0.20–0.76.
+
+#### `FLOW_ALIGN` — refined to the actual proxy
+
+Not `BUY_PRESSURE` (that fits only 13 of 25) and not the multi-bar CVD trend. It is the
+**last-bar CVD delta**. PENGU discriminates: its `CVD_trend` reads "falling" across the
+window while its last bar rose **+12.8M**, and `FLOW_ALIGN` reports "divergent" against a
+0% bullish crowd. 4 of 4.
+
+> **A contradiction that turned out to be mine.** AVAX shows `buyPres 0.61` — net buying,
+> so a positive CVD delta — beside a CVD delta of **−623**. Different *bars*: `buyPres` is
+> a plain `value` read and lands on the forming bar, while my CVD trajectory was pinned
+> with `bars: "closed"`. So "different proxy" and "different bar" cannot be separated from
+> this evidence, and neither is claimed.
+
+#### `REGIME_TREND` — the "stuck" concern is closed
+
+18 "trending up", 6 "trending down", 6 "ranging". Three distinct values; the first pass's
+3-of-3 was coincidence. `REGIME_MOM` varies across all four of its labels too.
+
+What survives is stranger. Of 24 directionally-labelled coins the label agrees with the
+sign of the 24h change **7 times — 29%**. "Trending up" coins are 72% negative on the day.
+**Caveat that matters:** these are 30 coins at *one instant in one market*, so they are
+not independent observations — a broadly red day with an up-trending longer horizon
+produces exactly this. No significance is claimed and it needs a repeat on another day.
+
+### Labels never observed
+
+Not evidence of a bug — a label can be rare and correct. But a gate written against one of
+these has never been seen to fire:
+
+| metric | seen | never seen |
+|---|---|---|
+| `REGIME_VOL` | normal (**30/30**) | expanding, contracting |
+| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
+| `PERP_SPOT_CONFIRMS` | false (24/24) | true |
+| `CONFIDENCE` | high, moderate | low |
+| `OI_VELOCITY` | accelerating, decelerating | steady |
+| `PRICE_ZONE` | near low, mid-range, near high | breakout high, breakdown low |
+
+`REGIME_VOL` is the one to watch: 30 of 30 read "normal" while `atrPct` spanned 0.14% to
+3.11%, a **22× range**. Consistent with a per-coin-relative measure on a calm day, and
+equally consistent with a constant. One snapshot cannot separate those.
 
 ### An error of mine, recorded
 

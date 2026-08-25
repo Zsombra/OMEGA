@@ -531,6 +531,29 @@ from month-old evidence with no guard available.
 deterministic gate. If you must gate on one, accept that its freshness is unknowable at
 evaluation time.
 
+### 25. Some categorical labels have never been observed to occur
+
+A `conditionVocabulary` lists what a column *may* emit, not what it *does*. Sampling 25–30
+coins found six columns where part of the vocabulary never appeared:
+
+| metric | seen | never seen |
+|---|---|---|
+| `REGIME_VOL` | normal — **30 of 30** | expanding, contracting |
+| `PERP_SPOT_CONFIRMS` | false — 24 of 24 | true |
+| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
+| `CONFIDENCE` | high, moderate | low |
+| `OI_VELOCITY` | accelerating, decelerating | steady |
+| `PRICE_ZONE` | near low, mid-range, near high | breakout high, breakdown low |
+
+None of this proves a bug — rare labels are rare. But `regVol is expanding` is a gate that
+has never been seen to fire, and combined with trap 11 it reads FALSE forever without ever
+telling you it is inert. A `NOT` around it fires *always*.
+
+**Before gating on a categorical label, sample 25+ coins and confirm the value actually
+occurs.** `PRICE_ZONE` is the cautionary case in the other direction too: its rule is
+**not** the position between `SWING_HIGH` and `SWING_LOW`, despite looking exactly like
+that on a three-coin sample — see [19](19-is-the-data-correct.md).
+
 ## Workflow
 
 ```

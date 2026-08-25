@@ -68,17 +68,54 @@ def test_cvd_is_not_price_scaled():
     assert abs(delta - split * 98.63) > 1000, "price-scaling must NOT also fit"
 
 
-def test_price_zone_matches_position_between_the_swings():
-    cases = [("BTC", 78553, 81299, 78608, "near low"),
-             ("GOLD", 4609.60, 4696.90, 4612.90, "near low"),
-             ("SOL", 95.37, 103.15, 96.72, "mid-range")]
-    for coin, lo, hi, close, label in cases:
-        pos = (close - lo) / (hi - lo)
-        assert 0.0 <= pos <= 1.0
-        if label == "near low":
-            assert pos < 0.10, f"{coin} reads 'near low' at {pos:.1%}"
-        else:
-            assert pos > 0.10, f"{coin} reads 'mid-range' at {pos:.1%}"
+def test_price_zone_is_NOT_position_between_the_swings():
+    """This test asserted the opposite until a 30-coin sample falsified it.
+
+    Three coins fit a position rule and it looked coherent. Thirty coins produce 31
+    inverted pairs: XRP at 10.0% reads 'mid-range' while ETH at 22.2% reads 'near low'.
+    The test now pins the falsification, so the wrong rule cannot be re-adopted by
+    someone who checks three coins again."""
+    from scripts.regime_sample import ROWS
+    order = {"near low": 0, "mid-range": 1, "near high": 2}
+    pos = [((r[10] - r[9]) / (r[8] - r[9]), r[0], r[7]) for r in ROWS]
+    inverted = [(a, b) for a in pos for b in pos
+                if a[0] < b[0] and order[a[2]] > order[b[2]]]
+    assert len(inverted) > 20, (
+        "position ordering now separates the labels - PRICE_ZONE may have changed, "
+        "or the sample no longer discriminates")
+
+    entry = next(e for e in C["notVerifiable"] if "PRICE_ZONE" in e["metrics"])
+    assert "DOWNGRADED" in entry["correction"]
+
+
+def test_smart_retail_rule_holds_on_every_non_null_case():
+    """flow pressure vs crowd bias, 13 of 13. This one went the other way - a verdict
+    upgraded from 'not verifiable' once the sample was big enough to carry cases."""
+    from scripts.flow_sample import ROWS as F
+    hits = total = 0
+    for r in F:
+        if r[4] is None:
+            continue
+        total += 1
+        fb, cb = r[10] > 0.5, r[9] > 50
+        want = "confirmed" if fb == cb else (
+            "hidden accumulation" if fb else "hidden distribution")
+        hits += want == r[4]
+    assert total >= 12 and hits == total, f"{hits}/{total}"
+
+
+def test_flow_align_uses_the_last_bar_cvd_delta_not_the_window_trend():
+    """PENGU is the discriminating case: CVD_trend reads 'falling' across the window
+    while its last bar rose +12.8M, and FLOW_ALIGN reports 'divergent'."""
+    cases = [("AVAX", -97030, -97653, 28.6, "aligned bearish"),
+             ("GRAM", 367281, 406103, 100.0, "aligned bullish"),
+             ("LINK", -16893, -37159, 60.0, "divergent"),
+             ("PENGU", 21868877, 34661366, 0.0, "divergent")]
+    for coin, prev, now, up, expected in cases:
+        fb, cb = (now - prev) > 0, up > 50
+        got = ("aligned bullish" if fb and cb else
+               "aligned bearish" if not fb and not cb else "divergent")
+        assert got == expected, coin
 
 
 def test_oi_px_regime_is_the_classic_quadrant():
@@ -106,7 +143,7 @@ def test_crowd_percentages_share_a_denominator():
 
 
 @pytest.mark.parametrize("m", sorted({"REGIME_TREND", "REGIME_VOL", "REGIME_MOM",
-                                      "OI_VELOCITY", "SMART_RETAIL", "CONFIDENCE"}))
+                                      "OI_VELOCITY", "CONFIDENCE", "PRICE_ZONE"}))
 def test_the_unverifiable_ones_stay_marked_unverifiable(m):
     """If one of these is ever upgraded to 'coherent', it must come with evidence -
     not because a later pass forgot the driver was never exposed."""
