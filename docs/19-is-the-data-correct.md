@@ -309,12 +309,12 @@ these has never been seen to fire:
 
 | metric | seen | never seen |
 |---|---|---|
-| `REGIME_VOL` | normal (**30/30**) | expanding, contracting |
-| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
-| `PERP_SPOT_CONFIRMS` | false (24/24) | true |
 | `CONFIDENCE` | high, moderate | low |
-| `OI_VELOCITY` | accelerating, decelerating | steady |
+| `OI_VELOCITY` | accelerating, decelerating, steady | — *(all observed)* |
+| `PERP_SPOT_CONFIRMS` | false | true |
+| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
 | `PRICE_ZONE` | near low, mid-range, near high | breakout high, breakdown low |
+| `REGIME_VOL` | normal, expanding | contracting |
 
 `REGIME_VOL` is the one to watch: 30 of 30 read "normal" while `atrPct` spanned 0.14% to
 3.11%, a **22× range**. Consistent with a per-coin-relative measure on a calm day, and

@@ -209,11 +209,11 @@
     "OI_VELOCITY": {
       "seen": [
         "accelerating",
-        "decelerating"
-      ],
-      "unseen": [
+        "decelerating",
         "steady"
-      ]
+      ],
+      "unseen": [],
+      "note": "'steady' was listed unseen until 2026-08-26, when the 78-coin 1h sample stored at data/samples/tier_c_drivers_1h.md returned 9 of them. The 25-coin flow sample that produced the original claim had none. The claim was invalidated by a commit to this same repository and nothing caught it - which is why tests/test_doc_audit_agreement.py now exists."
     },
     "PRICE_ZONE": {
       "seen": [
@@ -361,11 +361,11 @@
   "_unobservedLabelsCorrection": {
     "metric": "REGIME_VOL",
     "label": "expanding",
-    "wasRecordedAs": "never observed - 'normal' in 30 of 30",
-    "nowObserved": "WIF at a 4h anchor, 2026-08-26",
-    "why": "every prior sample was taken at 15m or 1h. At those anchors all 10 probe coins still read 'normal'; at 4h one did not. The label was not rare - the sampling was single-anchored.",
-    "lesson": "The unobserved-label list describes the SAMPLE, not the platform. Vary the anchor as well as the coin before calling a label unreachable.",
-    "stillUnobserved": "REGIME_VOL 'contracting', PERP_SPOT_CONFIRMS true, PERP_SPOT_FLOW confirmed_bull / confirmed_bear / perp_led_fragile, CONFIDENCE 'low', PRICE_ZONE 'breakout high' / 'breakdown low'.",
-    "evidence": "data/audit/regime_anchor_variance.json"
+    "_correctedTwice": "This block first claimed the label had been newly discovered on WIF at a 4h anchor and was previously recorded as never observed. That was wrong, and checking git settled it: unobservedLabels already listed expanding under seen at 43008a3, found in the earlier 15m re-anchoring pass, 3 of 30 coins. The WIF sighting was a THIRD confirmation.",
+    "whatWasActuallyWrong": "docs/19 and cookbook trap 25 still printed \"normal 30/30 | expanding, contracting\" while this file had already moved expanding to seen. A documentation lag, not a measurement gap - the audit JSON led and the prose trailed it, and nothing enforced agreement between them.",
+    "realFix": "tests/test_doc_audit_agreement.py now asserts the unobserved-label tables in docs/19 and docs/06 match this file. The stale prose could not have survived that test.",
+    "lessonNotRederived": "The \"vary the anchor as well as the coin\" lesson was ALREADY recorded in the unobservedLabels note before today. I re-derived it and presented it as new. Before writing up a finding, read the audit record on the metric - it is the source of truth and the prose can lag it.",
+    "stillUnobserved": "REGIME_VOL 'contracting'; PERP_SPOT_CONFIRMS true; PERP_SPOT_FLOW confirmed_bull / confirmed_bear / perp_led_fragile; CONFIDENCE 'low'; PRICE_ZONE 'breakout high' / 'breakdown low'",
+    "evidence": "data/audit/regime_anchor_variance.json (the 5m/4h probe itself stands - REGIME_MOM varies with the anchor on 8 of 10 coins; only the novelty claim was wrong)"
   }
 }

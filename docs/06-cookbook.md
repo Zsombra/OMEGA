@@ -538,12 +538,12 @@ coins found six columns where part of the vocabulary never appeared:
 
 | metric | seen | never seen |
 |---|---|---|
-| `REGIME_VOL` | normal — 30 of 30 at 15m/1h; **expanding** does occur, seen on WIF at 4h | contracting |
-| `PERP_SPOT_CONFIRMS` | false — 24 of 24 | true |
-| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
 | `CONFIDENCE` | high, moderate | low |
-| `OI_VELOCITY` | accelerating, decelerating | steady |
+| `OI_VELOCITY` | accelerating, decelerating, steady | — *(all observed)* |
+| `PERP_SPOT_CONFIRMS` | false | true |
+| `PERP_SPOT_FLOW` | neutral, spot_led_accumulation | confirmed_bull, confirmed_bear, perp_led_fragile |
 | `PRICE_ZONE` | near low, mid-range, near high | breakout high, breakdown low |
+| `REGIME_VOL` | normal, expanding | contracting |
 
 None of this proves a bug — rare labels are rare. But a gate on a label that never occurs
 reads FALSE forever without telling you it is inert (trap 11), and a `NOT` around it fires
