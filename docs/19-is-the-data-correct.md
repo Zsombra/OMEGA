@@ -118,6 +118,65 @@ denominators than "the number looks strange", and it generalises: see cookbook t
 Note also that the earlier claim that such a spread "pins near −100%" was incomplete.
 When the denominator is *negative* it passes −100% — this render produced −102.30%.
 
+## How far does the verification generalise?
+
+Not as far as it looks, and the reason is worth stating plainly: **the metrics that can
+be checked are the ones that were always easy to get right.** Anyone can compute an EMA.
+Verifying it tells you little about the parts where a platform actually differentiates
+itself — and those are exactly the parts with no outside referent.
+
+All 86 metrics, by whether anything outside BattleGrid can settle them:
+
+| tier | | count | verified |
+|---|---|---:|---|
+| **A** | a public exchange publishes it directly | 24 | OHLC, funding, OI checked |
+| **B** | published formula over tier-A inputs | 30 | 5 of 30 checked, exact |
+| **C** | no external referent | **32** | 0 — and not verifiable that way |
+
+Mapped onto the scorecard, five modules are fed *only* by tier-C metrics:
+
+| module | signals | fed by |
+|---|---:|---|
+| SUPPORT_RESISTANCE | 4 | `SWING_HIGH` `SWING_LOW` `PRICE_ZONE` |
+| REGIME | 4 | `REGIME_TREND` `REGIME_VOL` `REGIME_MOM` |
+| PRICE_STRUCTURE | 4 | `STRUCT_ZONES` |
+| CVD | 4 | `CVD` `BUY_PRESSURE` `BUY_VOLUME` … |
+| FLOW_DIVERGENCE | 2 | `SPOT_CVD` `PERP_SPOT_*` |
+
+**18 of 84 signals rest entirely on inputs no outside source can check**, and 3 more
+(OPEN_INTEREST, via `OI_VELOCITY` / `OI_PX_REGIME`) can. 63 rest on fully checkable
+inputs.
+
+## Tier C is not a closed door
+
+"No external referent" is not the same as "uncheckable". A tier-C metric can still be
+tested for **coherence against BattleGrid's own tier-A numbers**, and two such tests ran
+on 2026-08-25 across BTC / ETH / SOL:
+
+**`SWING_HIGH` and `SWING_LOW` are real bar extremes.** BTC read `swingHi 80,035` and
+`swingLo 76,862`. Both land *exactly* on candles in the 60-bar window — the 15:00 high
+and the 08:00 low. They are verifiable against the tape, so they leave tier C.
+
+**The CVD volume split reconciles.** `buyVol + sellVol` against `volBase`, and
+`buyPres` against `buyVol / volBase`:
+
+| coin | buy+sell vs volume | buyTr+sellTr vs trades | buyPres check |
+|---|---:|---:|---|
+| BTC | −0.42% | −0.05% | 0.303 vs 0.30 ✓ |
+| ETH | +1.37% | +0.30% | 0.452 vs 0.45 ✓ |
+| SOL | +0.07% | +0.07% | 0.440 vs 0.44 ✓ |
+
+`buyPres` is exactly `buyVol / volBase` on all three. The residuals are small and
+**mixed in sign** — not a systematic bias, which is what a real double-count or a unit
+error would produce. They are consistent with the components being sampled at slightly
+different instants inside the forming bar, the same "own sample time" the platform
+documents for funding and OI.
+
+What that leaves genuinely irreducible is the game state: the nine `CROWD_*` metrics,
+`SMART_RETAIL`, `CAPTAIN_CONF`, `CONFIDENCE`, `FLOW_ALIGN`. These have no referent even
+in principle — they *are* BattleGrid. Their correctness is not a measurable property,
+only their internal consistency over time is.
+
 ## What none of this proves
 
 Stated plainly, because the gap is the point of the document:
