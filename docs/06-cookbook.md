@@ -408,6 +408,13 @@ The universe size is rendered alongside the rank (`n/78`), so a condition can be
 against the denominator rather than assuming it — but the denominator itself moves as
 coins are listed and delisted.
 
+**This holds at every rung, and the platform's own table preamble says otherwise.** For
+`atrPct_ltf_rank_hi` and `atrPct_htf_rank_hi` the preamble claims *"ordinal across THIS
+REPORT'S coins … rank/report-size"*, while `conditionColumns` for the very same header
+says *"across the tracked universe"*. Measured with an explicit two-coin selection, both
+rendered `/78`. The values agree with `conditionColumns`; the preamble is wrong. Trust
+the denominator you can see, not the prose above the table.
+
 ### 20. A duplicate header renders, but silently loses conditionability
 
 `offset` is **not** part of the header name. Two columns differing only by offset collide:

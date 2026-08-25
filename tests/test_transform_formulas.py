@@ -143,3 +143,48 @@ def test_classify_state_stays_excluded_from_the_buildable_set():
     assert "classifyState" not in load().transforms
     entry = next(x for x in AUDIT["notVerified"] if x["transform"] == "classifyState")
     assert "PLATFORM_ONLY" in entry["why"]
+
+
+# --- crossDetect scope, and the rung sweep ----------------------------------
+
+def test_cross_detect_reads_the_last_pair_only():
+    """The discriminating evidence. GOOGL and ZEC both crossed zero one bar before the
+    last pair, and crossDetect returned null on both - so it is
+    crossDirection(base[t-1], base[t]), not 'a cross anywhere in the window'."""
+    googl = (-0.0065, 0.0275, 0.0660)
+    zec = (0.4217, -0.2616, -0.7253)
+    for t2, t1, now in (googl, zec):
+        assert (t2 > 0) != (t1 > 0), "the earlier pair must straddle zero"
+        assert (t1 > 0) == (now > 0), "the last pair must not"
+    v = next(x for x in AUDIT["verified"] if x["transform"] == "crossDetect")
+    assert "LAST PAIR" in v["check"]
+    assert v.get("caveat"), "the unpinned trigger threshold must stay recorded"
+
+
+RUNGS = ("lower", "anchor", "regime")
+
+
+def test_rung_variants_do_not_collide():
+    """Unlike offset (BG-8), the rung infix disambiguates the header - which is why the
+    same metric can be read at all three rungs in one section."""
+    from omega.fanout import outputs_for
+    from omega.types import Column, RelTimeframe
+    for metric, tid, kw in (("RSI14", "value", {}),
+                            ("ADX", "trajectory", {"window": 3}),
+                            ("SMA20", "distance", {}),
+                            ("STRUCT_ZONES", "count", {})):
+        got = [tuple(o.header for o in outputs_for(
+            Column(metric=metric, transformId=tid,
+                   timeframe=RelTimeframe(rel=r), **kw))) for r in RUNGS]
+        assert len(set(got)) == 3, f"{metric} x {tid} collides across rungs: {got}"
+
+
+def test_the_rung_sweep_is_recorded_as_closed():
+    f = next(x for x in AUDIT["operationalFindings"] if "rungs are fully modelled" in x["finding"])
+    assert "30 headers" in f["evidence"]
+
+
+def test_rung_rank_scoping_contradiction_is_recorded():
+    d = next(x for x in AUDIT["platformDefects"]
+             if x["id"] == "ltf-htf-rank-scoping-described-two-ways-in-one-response")
+    assert "78" in d["repro"] and "Report size is 2" in d["repro"]
