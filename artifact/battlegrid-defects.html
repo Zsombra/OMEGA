@@ -372,10 +372,11 @@
     <div class="eyebrow">Defect report &middot; Strategy authoring surface</div>
     <h1>BattleGrid Authoring Defects</h1>
     <p class="standfirst">
-      Seven findings from a full sweep of the strategy authoring surface — every legal column
+      Nine findings from a full sweep of the strategy authoring surface — every legal column
       shape rendered against the live compiler, the whole condition grammar exercised end to
-      end, and all 25 platform sections probed one at a time for signal membership. Each entry
-      below has a reproduction and, where one exists, a verified workaround.
+      end, all 25 platform sections probed one at a time for signal membership, and every
+      transform checked against the formula the contract publishes for it. Each entry below has
+      a reproduction and, where one exists, a verified workaround.
     </p>
     <div class="meta">
       <span><b>Date</b> 2026-08-24 &ndash; 25</span>
@@ -383,6 +384,7 @@
       <span><b>Coverage</b> <span class="num">300/300</span> legal column shapes</span>
       <span><b>Header mismatches</b> <span class="num">0</span></span>
       <span><b>Platform sections</b> <span class="num">25/25</span> probed</span>
+      <span><b>Transforms audited</b> <span class="num">12/17</span> against stated formula</span>
     </div>
   </header>
 
@@ -436,13 +438,25 @@
             <td><span class="chip silent">Silent</span></td>
             <td>Enable the base section</td>
           </tr>
+          <tr>
+            <td class="id">BG-8</td>
+            <td>Colliding headers render, but both drop out of <code>conditionColumns</code></td>
+            <td><span class="chip silent">Silent</span></td>
+            <td>Avoid the collision</td>
+          </tr>
+          <tr>
+            <td class="id">BG-9</td>
+            <td><code>nearestZoneDist</code>'s published formula has the wrong sign</td>
+            <td><span class="chip silent">Silent</span></td>
+            <td>Build from the prose</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section>
-    <h2>One pattern behind five of them</h2>
+    <h2>One pattern behind six of them</h2>
     <p>
       With one exception, every finding here is the same shape: <strong>the declared contract and the
       runtime disagree</strong>. The tool schema says a field is required and the validator refuses it.
@@ -457,9 +471,13 @@
     <p>
       This is not new. Grid-Commander logged the identical class on 2026-08-15 — <code>regimeAutoDerive</code>
       and <code>regimeTimeframe</code> were declared <em>required</em> on the UPDATE plan and rejected by the
-      live validator; dropping them made the write succeed. Six instances in eleven days suggests the
-      contract and the executing code are not generated from one source, and that a conformance check
-      between them would catch this class before a caller does.
+      live validator; dropping them made the write succeed. BG-9 is the same shape once more, and the
+      most mechanical yet: the transform catalogue publishes a formula for <code>nearestZoneDist</code>
+      that the engine does not implement — the sign is inverted. Seven instances in eleven days suggests
+      the contract and the executing code are not generated from one source, and that a conformance
+      check between them would catch this whole class before a caller does. BG-9 in particular is
+      checkable by machine: render the transform, apply the published formula to the operands beside it,
+      compare.
     </p>
   </section>
 
@@ -800,6 +818,103 @@ RSI14_now  38.3
         </p>
       </article>
 
+      <!-- BG-8 -->
+      <article class="defect is-silent">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-8</span><span class="chip silent">Silent</span></div>
+          <h3>Colliding headers render, and both lose conditionability</h3>
+        </div>
+        <p>
+          <code>offset</code> is not part of a column's header name, so any two columns differing only
+          by offset collide. Both still render:
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>coin</th><th>…</th><th>close_trend</th><th>SMA20</th><th>SMA20</th></tr></thead>
+            <tbody><tr><td>BTC</td><td>…</td><td>rising</td><td>$78,215.50</td><td>$78,469.20</td></tr></tbody>
+          </table>
+        </div>
+        <p>
+          Two columns, two different and individually correct values, one name. And
+          <code>conditionColumns</code> for that section returned <strong>seven</strong> outputs —
+          <code>close_t5</code> through <code>close_trend</code>. <strong>Neither <code>SMA20</code>
+          appears in it.</strong>
+        </p>
+        <p>
+          The control rules out the metric: <code>SMA20</code> on its own appears in
+          <code>conditionColumns</code> normally, with <code>lt/lte/gte/gt/between</code>. The collision
+          is what removes it.
+        </p>
+        <p>
+          The cost compounds with BG-6. The table looks correct and an agent reading it as text sees both
+          numbers, but a condition referencing <code>SMA20</code> has nothing to bind to — and a null
+          read is FALSE, never UNRESOLVED. The gate fails silently and reads as a genuine negative.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Never place two columns in one section whose headers would match. The header is predictable
+            from the column spec, so this is checkable before submitting.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> disambiguate the header when <code>offset</code> is set —
+          <code>trajectory</code> already does exactly this with its <code>_t3</code> suffixes — or
+          refuse the section with a typed <code>REPORT_COLUMN_HEADER_COLLISION</code>. Rendering a
+          column that cannot be referenced is the worst of the three available behaviours.
+        </p>
+      </article>
+
+      <!-- BG-9 -->
+      <article class="defect is-silent">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-9</span><span class="chip silent">Silent</span></div>
+          <h3><code>nearestZoneDist</code>'s published formula has the wrong sign</h3>
+        </div>
+        <p>The transform catalogue states:</p>
+        <blockquote>
+          output = ((price &minus; midpoint(nearest zone)) / midpoint(nearest zone)) &times; 100
+        </blockquote>
+        <p>The engine computes <code>((midpoint &minus; price) / price) &times; 100</code>.</p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>coin</th><th>support zone</th><th>midpoint</th><th>close</th><th>stated formula</th><th>rendered</th></tr></thead>
+            <tbody>
+              <tr><td>BTC</td><td>77,859–77,923</td><td>77,891</td><td>78,883</td><td>+1.3%</td><td><strong>&minus;1.2%</strong></td></tr>
+              <tr><td>DOGE</td><td>0.0854–0.0902</td><td>0.0878</td><td>0.0905</td><td>+3.1%</td><td><strong>&minus;2.7%</strong></td></tr>
+              <tr><td>SOL</td><td>92.12–92.93</td><td>92.525</td><td>100.57</td><td>+8.7%</td><td><strong>&minus;7.9%</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Every coin renders negative where the published formula is positive. The denominator differs
+          too, and SOL separates the two candidates: a midpoint denominator predicts &minus;8.7% against
+          a rendered &minus;7.9%, while a price denominator predicts &minus;8.0%. Solving
+          <code>((mid &minus; px)/px)</code> for the price the engine used gives 78,837 / 0.0902 / 100.46
+          against close columns of 78,883 / 0.0905 / 100.57 — within 0.3%, consistent with the zone being
+          read at the regime timeframe while <code>close</code> is the anchor's forming bar.
+        </p>
+        <p>
+          The header prose is <em>correct</em> — &ldquo;signed % from price to the nearest support zone
+          midpoint&rdquo; describes what the engine does. Only the machine-readable formula disagrees,
+          which makes this the worst kind of documentation bug: the two descriptions of the same field
+          contradict each other, and the wrong one is the one a tool would parse.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Build from the prose. Read the value as <strong>negative when price sits above support</strong>,
+            and invert any threshold derived from the published formula.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> correct the catalogue entry to
+          <code>((midpoint &minus; price) / price) &times; 100</code>. Worth checking the other sixteen
+          entries the same way — this one was only caught by rendering the operands beside the result and
+          doing the arithmetic.
+        </p>
+      </article>
+
     </div>
   </section>
 
@@ -816,6 +931,8 @@ RSI14_now  38.3
       <div><b>Legality model</b> The engine correctly refused <code>BB_PCT_B × classifyZone</code> as non-composable, and named the allowed transforms in the error.</div>
       <div><b>Write path</b> All seven axes commit — <code>IDENTITY</code>, <code>TIMEFRAME_PROFILE</code>, <code>REPORT</code>, <code>MARKET_READ</code>, <code>CONDITIONS</code>, <code>SETUP_GATES</code>, <code>LIFECYCLE</code>.</div>
       <div><b>Error quality</b> Validation errors are genuinely good — they name the key, the allowed domain, and the nearest valid value. BG-5 is the exception, not the rule.</div>
+      <div><b>Indicator maths</b> Checked against an independent source, not just for self-consistency. 60 BTC 1h bars diffed against the Hyperliquid public API: open, high and low identical on every bar, worst close gap 0.0126%. SMA20, EMA5, EMA13, RSI14 and ATR all reproduce to four decimal places from the textbook formulas.</div>
+      <div><b>Transform formulas</b> 12 of 17 verified against the published formula, all exact — <code>trajectory</code>, <code>efficiency</code>, <code>maxShare</code>, <code>aggregate</code>, <code>distance</code>, <code>spread</code>, <code>rank</code>, <code>value</code> (including a non-zero offset), <code>classifyZone</code>, <code>bandTouch</code>, <code>nearestZoneType</code>, <code>count</code>. <code>rank</code> is notably clean: <code>hi + lo = universe + 1</code> on every coin tested.</div>
       <div><b>Section membership</b> Regular, not ad hoc. 17 of 25 platform sections feed exactly one module each, with no overlap, and every one delivers its module's <em>full</em> signal set — rung variants included. A section and its metric are interchangeable: <code>includeRsi</code> and one <code>RSI14</code> column produce byte-identical membership.</div>
     </div>
   </section>
@@ -831,7 +948,15 @@ RSI14_now  38.3
       on 2026-08-25: each of the 25 platform sections submitted alone to
       <code>derive_strategy_rule_view</code> and its IN_REPORT set recorded. The four sections in the
       final probe were measured jointly — membership is a union, so an empty union proves each member
-      individually empty.
+      individually empty. Transform formulas were audited by rendering each transform beside its own
+      <code>trajectory</code> slots in the same table, so no external data is needed and no sampling
+      drift can enter between operand and result; where <code>bars: "closed"</code> was used the slots
+      were additionally diffed against cached candles. Asset-class coverage was probed across STOCKS,
+      TRADFI, INDICES and COMMODITIES — those tickers are perpetuals and carry funding and open
+      interest, but every metric accumulated since the daily 00:00-UTC anchor
+      (<code>CVD</code>, <code>SPOT_CVD</code>, <code>OBV</code>, <code>VWAP</code>) renders null on
+      them, which combined with BG-6 makes a mixed-asset coin selection gate those columns silently
+      wrong.
     </p>
     <p>
       One incidental note for the budget model: <code>columnLookback</code> reported exactly
