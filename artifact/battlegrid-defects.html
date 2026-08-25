@@ -372,7 +372,7 @@
     <div class="eyebrow">Defect report &middot; Strategy authoring surface</div>
     <h1>BattleGrid Authoring Defects</h1>
     <p class="standfirst">
-      Eleven findings from a full sweep of the strategy authoring surface — every legal column
+      Twelve findings from a full sweep of the strategy authoring surface — every legal column
       shape rendered against the live compiler, the whole condition grammar exercised end to
       end, all 25 platform sections probed one at a time for signal membership, and every
       transform checked against the formula the contract publishes for it. Each entry below has
@@ -461,6 +461,12 @@
             <td><code>ROC12</code> renders a fraction while labelled <code>(%)</code></td>
             <td><span class="chip blocking">Blocking</span></td>
             <td>Divide your threshold by 100</td>
+          </tr>
+          <tr>
+            <td class="id">BG-12</td>
+            <td>Three columns render a value no condition can reference</td>
+            <td><span class="chip silent">Silent</span></td>
+            <td>None &mdash; the data is unreachable</td>
           </tr>
         </tbody>
       </table>
@@ -1037,6 +1043,60 @@ RSI14_now  38.3
         </p>
       </article>
 
+      <!-- BG-12 -->
+      <article class="defect is-silent">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-12</span><span class="chip silent">Silent</span></div>
+          <h3>Three columns render a value that no condition can reference</h3>
+        </div>
+        <p>
+          These return <code>conditionOperators: []</code> &mdash; not a numeric set, not
+          <code>is</code>/<code>in</code>, nothing:
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>column</th><th>renders</th><th>what it is the natural guard for</th></tr></thead>
+            <tbody>
+              <tr><td><code>SETTLED_AT</code></td><td><code>2026-07-24</code></td><td>the age of the whole <code>CROWD_*</code> block</td></tr>
+              <tr><td><code>nearestZoneRange</code></td><td><code>$77,859.00&ndash;$77,923.00</code></td><td>whether price is <em>inside</em> the zone</td></tr>
+              <tr><td><code>picksSpread_session</code></td><td>distinct coins picked / available</td><td>how concentrated the field is</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          This is one class, not three unrelated bugs, and the cost is the same each time:
+          <strong>the data is shown and cannot be used.</strong> An agent reading the table as
+          text sees all three. The deterministic layer cannot reach any of them.
+        </p>
+        <p>
+          <code>SETTLED_AT</code> is the sharpest case. It is the <em>only</em> column carrying
+          how old the crowd numbers are &mdash; measured at 32 days on 2026-08-25 &mdash; so
+          there is no way to write a gate that refuses stale crowd data. Combined with BG-6, a
+          <code>crowdAcc gte 60</code> condition answers confidently from month-old evidence and
+          nothing in the response says so.
+        </p>
+        <p>
+          <code>nearestZoneRange</code> is the same shape: the zone's bounds are rendered and
+          unreachable, so &ldquo;price is inside the support zone&rdquo; cannot be expressed.
+          Only <code>nearestZoneDist</code> is gateable, and that is a distance to the
+          <em>midpoint</em>.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            None. The values can be read by the agent as narrative context, but no condition can
+            bind to them. Treat anything they would have guarded as ungated.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> give each column operators, or expose a derived scalar
+          carrying the same information. <code>STRUCT_ZONES</code> already does the second thing
+          &mdash; <code>nearestZoneAge</code> is a gateable number derived from a timestamp
+          &mdash; which proves the pattern is available and just was not applied here.
+          <code>SETTLED_AT</code> wants exactly that treatment.
+        </p>
+      </article>
+
     </div>
   </section>
 
@@ -1055,6 +1115,7 @@ RSI14_now  38.3
       <div><b>Error quality</b> Validation errors are genuinely good — they name the key, the allowed domain, and the nearest valid value. BG-5 is the exception, not the rule.</div>
       <div><b>Indicator maths</b> Checked against an independent source, not just for self-consistency. 60 BTC 1h bars diffed against the Hyperliquid public API: open, high and low identical on every bar, worst close gap 0.0126%. SMA20, EMA5, EMA13, RSI14 and ATR all reproduce to four decimal places from the textbook formulas.</div>
       <div><b>Transform formulas</b> <strong>17 of 17</strong> now verified, all exact — <code>trajectory</code>, <code>efficiency</code>, <code>maxShare</code>, <code>aggregate</code>, <code>distance</code>, <code>spread</code>, <code>rank</code>, <code>value</code> (including a non-zero offset), <code>classifyZone</code>, <code>bandTouch</code>, <code>nearestZoneType</code>, <code>count</code>, <code>crossDetect</code>, and the four zone transforms &mdash; the rendered support zone matched a real three-bar fair-value gap on the regime tape <em>to the dollar</em>, and its age counts from that bar's close. All 30 pre-computed indicator metrics reproduce too, including Bollinger, whose period (20) and multiplier (2.0, population sigma) are published nowhere and had to be searched for. The three metrics with competing conventions were pinned too: <code>ADX</code> uses Wilder smoothing, <code>CCI</code> uses mean absolute deviation, <code>%K/%D</code> is slow (14,3,3) &mdash; and in each case the rejected alternative misses by enough to flip a gate. <code>rank</code> is notably clean: <code>hi + lo = universe + 1</code> on every coin tested.</div>
+      <div><b>Platform-native metrics</b> The 32 metrics with no exchange equivalent were coherence-tested against BattleGrid's own numbers. CVD reconciles exactly &mdash; its per-bar delta equals <code>BUY_VOLUME &minus; SELL_VOLUME</code>. <code>SMART_RETAIL</code>'s rule was identified and holds 13 of 13. The structure zone matched a real three-bar fair-value gap to the dollar. This is a self-consistent system, not a black box.</div>
       <div><b>Section membership</b> Regular, not ad hoc. 17 of 25 platform sections feed exactly one module each, with no overlap, and every one delivers its module's <em>full</em> signal set — rung variants included. A section and its metric are interchangeable: <code>includeRsi</code> and one <code>RSI14</code> column produce byte-identical membership.</div>
     </div>
   </section>

@@ -75,18 +75,25 @@ def main() -> int:
             sum(1 for r in ROWS if r[1] == "trending down" and r[6] < 0)
     directional = len(up) + len(dn)
     print(f"  agreement with the 24h sign: {agree}/{directional} = {agree/directional:.0%}")
-    print("  A label independent of 24h direction would sit near 50%. This is INVERTED.")
-    print("  Not proof of a defect - REGIME_TREND's horizon is undocumented and a")
-    print("  multi-day trend can oppose the last 24h - but it is the opposite of what")
-    print("  a naive reading of the label predicts, on 24 directional coins.")
+    print("  At 1h that looks INVERTED - well under the ~50% a direction-independent")
+    print("  label would give. IT DOES NOT REPLICATE:")
+    up15 = [r for r in ROWS_15M if r[1] == "trending up"]
+    dn15 = [r for r in ROWS_15M if r[1] == "trending down"]
+    a15 = sum(1 for r in up15 if r[5] > 0) + sum(1 for r in dn15 if r[5] < 0)
+    n15 = len(up15) + len(dn15)
+    print(f"  the SAME 30 coins at a 15m anchor give {a15}/{n15} = {a15/n15:.0%}, "
+          "essentially random.")
+    print("  So the 1h reading was the market-snapshot artefact the original caveat")
+    print("  warned about. 30 coins at one instant are not 30 independent observations,")
+    print("  and this is what that costs when you forget it.")
 
-    print("\n--- REGIME_VOL ---")
+    print("\n--- REGIME_VOL: the 'is it stuck?' flag, resolved ---")
     ap = sorted(r[5] for r in ROWS)
-    print(f"  every one of {n} coins reads 'normal'.")
-    print(f"  atrPct spans {ap[0]:.2f}% to {ap[-1]:.2f}% - a {ap[-1]/ap[0]:.0f}x range.")
-    print("  Consistent with a per-coin-relative measure where nothing is currently")
-    print("  extreme, and also consistent with a value that never changes. 30 coins at")
-    print("  one instant cannot separate those two. Needs a repeat on another day.")
+    print(f"  at 1h all {n} coins read 'normal', atrPct spanning "
+          f"{ap[0]:.2f}%-{ap[-1]:.2f}% ({ap[-1]/ap[0]:.0f}x).")
+    print(f"  at 15m: {dict(Counter(r[2] for r in ROWS_15M))}")
+    print("  'expanding' APPEARS. REGIME_VOL is not stuck - it is relative to something")
+    print("  the anchor timeframe changes. 'contracting' is unobserved at both anchors.")
 
     print("\n--- PRICE_ZONE: pinning the band ---")
     rows = [(r[0], r[7], (r[10] - r[9]) / (r[8] - r[9])) for r in ROWS]
@@ -104,6 +111,49 @@ def main() -> int:
     print("  Neither 'breakout high' nor 'breakdown low' appears in 30 coins, so those")
     print("  two labels of the five remain unobserved.")
     return 0
+
+
+
+
+# --- the same 30 coins at a 15m anchor -------------------------------------
+# Changing the anchor changes every bar, ATR and swing while holding the coin set
+# fixed. That is the closest thing to an independent re-sample available without
+# waiting a day, and it is what settles the two flags the 1h pass raised.
+ROWS_15M = [
+    ("AAPL", "ranging", "normal", "bullish", 0.27, -0.18, "near low", 313.45, 308.77, 310.17),
+    ("AAVE", "trending down", "normal", "bearish", 0.90, -2.50, "mid-range", 131.14, 127.53, 129.09),
+    ("BRENTOIL", "trending down", "normal", "bearish", 0.44, -2.67, "near high", 88.48, 87.30, 88.21),
+    ("BTC", "ranging", "normal", "bearish", 0.46, 0.35, "near high", 79786.00, 78060.00, 79269.00),
+    ("CL", "trending down", "normal", "bearish", 0.46, -2.91, "near high", 83.05, 81.81, 82.70),
+    ("COIN", "ranging", "expanding", "bullish", 1.06, 3.72, "near high", 186.34, 175.14, 186.34),
+    ("CRCL", "ranging", "expanding", "bullish", 1.41, 3.79, "near high", 91.28, 84.53, 91.01),
+    ("DOGE", "ranging", "normal", "bearish", 0.81, -0.96, "mid-range", 0.0913, 0.0866, 0.0893),
+    ("ENA", "ranging", "normal", "diverging", 1.04, -2.59, "mid-range", 0.1519, 0.1455, 0.1488),
+    ("ETH", "ranging", "normal", "bearish", 0.54, -0.16, "near high", 2486.60, 2437.50, 2477.90),
+    ("FARTCOIN", "ranging", "normal", "bearish", 1.54, 1.08, "near high", 0.1827, 0.1743, 0.1818),
+    ("GOLD", "ranging", "normal", "bearish", 0.19, -1.08, "near high", 4648.90, 4604.50, 4631.70),
+    ("GOOGL", "ranging", "normal", "bearish", 0.24, -0.18, "near low", 350.98, 346.25, 347.40),
+    ("HYPE", "ranging", "normal", "bullish", 0.91, 3.08, "near high", 82.00, 78.83, 81.44),
+    ("META", "trending up", "normal", "bullish", 0.29, 0.84, "near high", 568.74, 562.39, 564.82),
+    ("MSTR", "ranging", "normal", "neutral", 1.04, 3.30, "near high", 126.92, 118.84, 126.75),
+    ("MU", "ranging", "normal", "neutral", 0.70, 2.60, "mid-range", 946.61, 916.82, 927.05),
+    ("NVDA", "trending down", "expanding", "neutral", 0.35, 1.39, "near low", 214.71, 210.14, 211.79),
+    ("PUMP", "trending down", "normal", "bearish", 1.87, -0.74, "mid-range", 0.0049, 0.0045, 0.0047),
+    ("SILVER", "ranging", "normal", "diverging", 0.41, -2.19, "near high", 68.24, 67.44, 68.19),
+    ("SKHX", "trending down", "normal", "bullish", 0.71, 5.01, "near low", 1239.60, 1206.80, 1217.50),
+    ("SMSN", "ranging", "normal", "bullish", 0.58, 3.97, "near low", 188.94, 185.29, 186.87),
+    ("SNDK", "trending down", "normal", "bullish", 1.13, 1.74, "near low", 1565.30, 1486.30, 1500.10),
+    ("SOL", "trending up", "normal", "bearish", 0.86, -0.85, "mid-range", 100.58, 96.16, 98.21),
+    ("SP500", "ranging", "normal", "bullish", 0.09, 0.15, "near high", 7694.20, 7650.40, 7663.70),
+    ("TRUMP", "ranging", "normal", "bearish", 1.28, -2.90, "mid-range", 2.45, 2.27, 2.32),
+    ("TSLA", "trending down", "normal", "neutral", 0.37, 0.85, "near high", 353.48, 349.32, 352.41),
+    ("XRP", "ranging", "normal", "diverging", 0.82, -0.47, "mid-range", 1.50, 1.44, 1.47),
+    ("XYZ100", "trending down", "normal", "bullish", 0.17, 0.53, "near high", 29333.00, 29087.00, 29163.00),
+    ("ZEC", "ranging", "normal", "bearish", 1.24, 0.02, "mid-range", 854.47, 806.12, 830.99),
+]
+# NOTE the 15m rows carry ONE FEWER field than the 1h rows - there is no ADX column -
+# so index positions differ. 1h: (coin,trend,vol,mom,ADX,atr,chg,zone,hi,lo,close).
+# 15m: (coin,trend,vol,mom,atr,chg,zone,hi,lo,close).
 
 
 if __name__ == "__main__":

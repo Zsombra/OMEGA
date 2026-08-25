@@ -97,7 +97,8 @@
    "why": "NOT explained by position between SWING_LOW and SWING_HIGH, and not by ATR-normalised distance to either swing. Across 30 coins the labels produce 31 INVERTED PAIRS under position ordering - e.g. XRP at 10.0% reads 'mid-range' while ETH at 22.2% reads 'near low', and AAPL at 49.4% reads 'near high' while SKHX at 86.4% reads 'mid-range'. ATR distance to the high gives 32 inversions, to the low 40. No candidate ordering separates them.",
    "correction": "THIS WAS DOWNGRADED FROM 'coherent'. The first pass called it coherent 3 of 3 on a three-coin render. That was a small-sample artifact - the exact error this file criticises elsewhere, committed in the same file. Three points cannot distinguish a rule from a coincidence when the labels are ordered and the sample is tiny.",
    "consequence": "The swings PRICE_ZONE references may not be the SWING_HIGH / SWING_LOW columns rendered beside it. Until the rule is identified, do not assume a gate on `zone` means what the same-table swing columns would imply.",
-   "unobserved": "Neither 'breakout high' nor 'breakdown low' appeared in 30 coins."
+   "unobserved": "Neither 'breakout high' nor 'breakdown low' appeared in 30 coins.",
+   "reanchored": "The downgrade holds at 15m: 37 inverted pairs there against 31 at 1h. Not a position rule at either anchor."
   },
   {
    "metrics": [
@@ -107,7 +108,9 @@
    ],
    "why": "The driver and the horizon are not exposed. ADX is a strength measure with no direction, so 'trending up' cannot be derived from it; REGIME_VOL is evidently relative to each coin's own history (BTC 0.88%, GOLD 0.37% and SOL 1.66% atrPct all read 'normal'), and that history is not available.",
    "observation": "What survives is stranger. Of 24 directionally-labelled coins, the label agrees with the sign of the 24h change only 7 times - 29%. 'Trending up' coins are 72% negative on the day; 'trending down' coins are 67% positive. A label independent of 24h direction would sit near 50%; this is INVERTED. IMPORTANT CAVEAT: these are 30 coins at ONE INSTANT in one market, so they are not independent observations - a broadly red day with an up-trending longer horizon produces exactly this pattern. The effective sample is far smaller than 24 and no significance is claimed. It needs a repeat on a different day before anyone treats it as a finding.",
-   "resolved": "THE 'STUCK' CONCERN IS CLOSED. Across 30 coins REGIME_TREND reads 'trending up' 18, 'trending down' 6, 'ranging' 6 - three distinct values, not a constant. The first pass's 3-of-3 'trending up' was coincidence. REGIME_MOM also varies across all four of its labels."
+   "resolved": "THE 'STUCK' CONCERN IS CLOSED. Across 30 coins REGIME_TREND reads 'trending up' 18, 'trending down' 6, 'ranging' 6 - three distinct values, not a constant. The first pass's 3-of-3 'trending up' was coincidence. REGIME_MOM also varies across all four of its labels.",
+   "observationWithdrawn": "THE 'INVERTED DIRECTION' OBSERVATION DOES NOT REPLICATE. At a 1h anchor the label agreed with the 24h sign 7/24 = 29%, which looked strikingly inverted. The same 30 coins at a 15m anchor give 5/11 = 45% - essentially random. So the 1h reading was exactly the market-snapshot artefact the original caveat warned about: 30 coins at one instant are not 30 independent observations. The caveat was right and the observation is withdrawn. What remains true is only that REGIME_TREND's driver and horizon are not exposed.",
+   "alsoResolved": "REGIME_VOL's 'is it stuck?' flag is closed too. At 1h all 30 read 'normal'; at 15m three coins (COIN, CRCL, NVDA) read 'expanding'. It is relative to something the anchor timeframe changes. 'contracting' is still unobserved."
   },
   {
    "metrics": [
@@ -147,6 +150,19 @@
    "cost": "A strategy gating on crowdAcc or upBias is reading month-old data. Nothing in the crowd columns themselves says so; only SETTLED_AT does - and SETTLED_AT returns conditionOperators: [], so it CANNOT be used as a freshness guard in a condition. The one column that would let you refuse stale crowd data is the one column you cannot gate on.",
    "suggestedFix": "Give SETTLED_AT comparison operators, or expose an age-in-hours derivative of it the way STRUCT_ZONES exposes nearestZoneAge.",
    "evidence": "SETTLED_AT read 2026-07-24 on both coins against a 2026-08-25 render - 32 days. The CROWD_* columns describe themselves as 'last 4 settled sessions', so those four ended a month ago. IMPORTANT: the staleness itself is probably account state rather than a platform bug - no sessions have settled on this account recently. What is a platform gap regardless of how stale the data happens to be is that the timestamp exposing it cannot be used in a condition."
+  },
+  {
+   "id": "columns-that-render-a-value-no-condition-can-reference",
+   "severity": "silent",
+   "finding": "Three columns render a value and return conditionOperators: [] - no operator at all, numeric or categorical. They are visible to an agent reading the table as text and unreachable to the deterministic layer.",
+   "instances": [
+    "SETTLED_AT",
+    "STRUCT_ZONES x nearestZoneRange",
+    "picksSpread_session"
+   ],
+   "cost": "Each one is the natural guard for something. SETTLED_AT is the only column carrying the age of the CROWD_* block, so crowd freshness cannot be gated. nearestZoneRange is the only column carrying the zone's actual bounds, so 'price inside the zone' cannot be expressed - only nearestZoneDist, which is a distance to the midpoint. The gap is not that the data is missing; it is that the data is shown and cannot be used.",
+   "note": "This is a class, not three unrelated bugs - and it is worth stating as one because the fix is the same in each case: give the column operators, or expose a derived scalar that carries the same information. STRUCT_ZONES already does the second thing with nearestZoneAge, which proves the pattern is available.",
+   "suggestedFix": "Give SETTLED_AT comparison operators or an age-in-hours derivative; give nearestZoneRange a pair of scalar bounds, or a boolean 'price is inside the nearest zone'."
   }
  ],
  "_resampled": "2026-08-25, second pass. Most of the first pass's 'not verifiable' verdicts were 'not verifiable from two or three coins', which is a different claim. Re-run against 30 coins (regime block) and 25 (flow block). Four verdicts changed - three upward, and one DOWN, because the bigger sample falsified something I had called coherent.",
@@ -154,13 +170,13 @@
   "_what": "Vocabulary values that never appeared in any sample. Not evidence of a bug - a label can be rare and correct - but a gate written against one of these has never been seen to fire, and that is worth knowing before relying on it.",
   "REGIME_VOL": {
    "seen": [
-    "normal"
+    "normal",
+    "expanding"
    ],
    "unseen": [
-    "expanding",
     "contracting"
    ],
-   "note": "30 of 30 coins read 'normal' while atrPct spanned 0.14% to 3.11%, a 22x range. Consistent with a per-coin-relative measure on a calm day, and equally consistent with a constant. One snapshot cannot separate those."
+   "note": "'expanding' appeared only after re-anchoring to 15m - 3 of 30 coins, where 1h gave 30 of 30 'normal'. A label absent from one sample can simply need different conditions, which is why 'unobserved' is not filed as 'broken'."
   },
   "PERP_SPOT_FLOW": {
    "seen": [
@@ -209,6 +225,8 @@
     "breakout high",
     "breakdown low"
    ]
-  }
- }
+  },
+  "_reanchorNote": "All other unseen labels stayed unseen at the 15m anchor as well."
+ },
+ "_reanchored": "2026-08-25, third pass. The second pass left two flags needing 'a repeat on another day'. Waiting was not available, but re-rendering the SAME 30 coins at a 15m anchor changes every bar, ATR and swing while holding the coin set fixed - the closest thing to an independent re-sample on hand. Both flags resolved, and one of them resolved AGAINST the observation I had recorded."
 }

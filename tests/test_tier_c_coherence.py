@@ -163,3 +163,48 @@ def test_the_freshness_gap_is_recorded_as_the_gap_not_the_staleness():
     assert "conditionOperators: []" in f["finding"]
     assert "32 days" in f["evidence"]
     assert "account state" in f["evidence"], "the overclaim guard must stay"
+
+
+# --- the re-anchor pass ------------------------------------------------------
+
+def test_the_inverted_direction_observation_was_withdrawn():
+    """It looked like a finding at 1h (29% agreement) and did not replicate at 15m
+    (45%). The record must show it withdrawn, not quietly deleted - an observation
+    that failed to replicate is itself worth keeping."""
+    e = next(x for x in C["notVerifiable"] if "REGIME_TREND" in x["metrics"])
+    assert "DOES NOT REPLICATE" in e["observationWithdrawn"]
+
+    from scripts.regime_sample import ROWS, ROWS_15M
+    def agree(rows, ci):
+        up = [r for r in rows if r[1] == "trending up"]
+        dn = [r for r in rows if r[1] == "trending down"]
+        return (sum(1 for r in up if r[ci] > 0) + sum(1 for r in dn if r[ci] < 0),
+                len(up) + len(dn))
+    a1, n1 = agree(ROWS, 6)
+    a2, n2 = agree(ROWS_15M, 5)
+    assert a1 / n1 < 0.35, "the 1h reading should still look inverted"
+    assert a2 / n2 > 0.40, "the 15m reading should still look random"
+
+
+def test_regime_vol_is_not_stuck():
+    """30 of 30 'normal' at 1h looked like a constant. Re-anchoring surfaced
+    'expanding'."""
+    from collections import Counter
+    from scripts.regime_sample import ROWS, ROWS_15M
+    assert set(Counter(r[2] for r in ROWS)) == {"normal"}
+    assert "expanding" in Counter(r[2] for r in ROWS_15M)
+    assert "expanding" in C["unobservedLabels"]["REGIME_VOL"]["seen"]
+    assert C["unobservedLabels"]["REGIME_VOL"]["unseen"] == ["contracting"]
+
+
+def test_price_zone_downgrade_survives_the_reanchor():
+    e = next(x for x in C["notVerifiable"] if "PRICE_ZONE" in x["metrics"])
+    assert "37 inverted pairs" in e["reanchored"]
+
+
+def test_the_ungateable_column_class_is_recorded():
+    f = next(x for x in C["findings"]
+             if x["id"] == "columns-that-render-a-value-no-condition-can-reference")
+    assert set(f["instances"]) == {"SETTLED_AT", "STRUCT_ZONES x nearestZoneRange",
+                                   "picksSpread_session"}
+    assert "shown and cannot be used" in f["cost"]
