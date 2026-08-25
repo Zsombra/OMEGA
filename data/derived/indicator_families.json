@@ -83,6 +83,9 @@
      "transformId": "distance",
      "chainedTransformId": "aggregate"
     }
+   ],
+   "cryptoOnly": [
+    "VWAP"
    ]
   },
   {
@@ -125,6 +128,10 @@
       }
      ]
     }
+   ],
+   "cryptoOnly": [
+    "SPOT_CLOSE_CB",
+    "SPOT_CLOSE_BN"
    ]
   },
   {
@@ -203,7 +210,8 @@
      "transformId": "classifyZone"
     }
    ],
-   "note": "ADX_zone and MFI14_zone are display-only - see cookbook trap 13."
+   "note": "ADX_zone and MFI14_zone are display-only - see cookbook trap 13.",
+   "gateability": "label-only"
   },
   {
    "id": "crossover-event",
@@ -215,7 +223,8 @@
      "transformId": "crossDetect"
     }
    ],
-   "note": "A discrete first derivative: the sign change between two consecutive bars."
+   "note": "A discrete first derivative: the sign change between two consecutive bars.",
+   "gateability": "label-only"
   },
   {
    "id": "xs-momentum",
@@ -266,6 +275,9 @@
      "transformId": "distance",
      "chainedTransformId": "rank"
     }
+   ],
+   "cryptoOnly": [
+    "VWAP"
    ]
   },
   {
@@ -303,7 +315,11 @@
      ]
     }
    ],
-   "note": "Unchained only. SPOT_CVD 'resolves from the bundle and has no per-bar value', so it blocks a chain as an operand - and SPOT_CVD as a base offers no chain successors at all. Chain against MACD or ATR instead if you need the trajectory of a CVD relation."
+   "note": "Unchained only. SPOT_CVD 'resolves from the bundle and has no per-bar value', so it blocks a chain as an operand - and SPOT_CVD as a base offers no chain successors at all. Chain against MACD or ATR instead if you need the trajectory of a CVD relation.",
+   "cryptoOnly": [
+    "CVD",
+    "SPOT_CVD"
+   ]
   },
   {
    "id": "effort-vs-result",
@@ -371,6 +387,9 @@
       }
      ]
     }
+   ],
+   "cryptoOnly": [
+    "OBV"
    ]
   },
   {
@@ -389,7 +408,10 @@
      ]
     }
    ],
-   "note": "Single read only - MARK's spread does not chain, so basis momentum is unavailable."
+   "note": "Single read only - MARK's spread does not chain, so basis momentum is unavailable.",
+   "cryptoOnly": [
+    "SPOT_CLOSE_CB"
+   ]
   },
   {
    "id": "carry-vs-momentum",
@@ -957,5 +979,37 @@
    "perp-spot-cvd chained to trajectory - SPOT_CVD has no per-bar value, so it blocks the chain as an operand. Chain removed."
   ],
   "scaleCaveat": "spread is (A-B)/B x 100, so it is only informative when A and B are of comparable magnitude. Several legal same-unit pairs are not: rate_chg24h_spread read -99.91% because funding (~0.0013%) is three orders of magnitude below the 24h change (~1.4%). Same for rate_atrPct_spread (-99.84%), oiChg_PPO_spread (-2115% / +2947%), highDev_lowDev_spread (-343% / -806%) and OBV_volBase_spread (-956%). Arithmetically correct, practically dominated by the denominator. Cookbook trap 17."
- }
+ },
+ "_assetClassCoverage": {
+  "measured": "2026-08-25",
+  "categories": [
+   "STOCKS",
+   "TRADFI",
+   "INDICES",
+   "COMMODITIES"
+  ],
+  "surprise": "Non-crypto tickers on this platform ARE perpetuals. GOOGL, GOLD, SP500 and the rest all carry funding, open interest and a mark price. The prior assumption that they would lack them was wrong.",
+  "rule": "Every metric the platform describes as accumulated since the daily 00:00-UTC anchor renders NULL off-crypto: CVD, SPOT_CVD, OBV, VWAP. So do the venue spot closes (SPOT_CLOSE_CB / _BN) and the perp-spot state metrics. Every PER-BAR metric renders, including BUY_VOLUME, SELL_VOLUME, BUY_TRADES, SELL_TRADES, BUY_PRESSURE, VOLUME, RVOL, SWING_HIGH, REGIME_* and STRUCT_ZONES.",
+  "cost": "These families do not error off-crypto - they render an em-dash, and a null reads FALSE rather than UNRESOLVED (cookbook trap 11). A strategy whose coin selection mixes crypto and non-crypto gates them silently wrong, and the scorecard looks fully populated while it is not.",
+  "affected": [
+   "basis",
+   "obv-divergence",
+   "perp-spot-cvd",
+   "stretch-ranking",
+   "venue-dislocation",
+   "vwap-deviation"
+  ],
+  "correctionMade": "An earlier pass listed order-flow-imbalance as affected, on the guess that BUY_VOLUME and SELL_VOLUME were crypto-only because BUY_PRESSURE had been measured and they had not. Testing them directly showed they render - MU 3.9K/5.4K, SKHX 28.3K/22.5K - and surfaced VWAP and OBV as null instead. The daily-anchor pattern only became visible because the guess was checked."
+ },
+ "_gateability": {
+  "measured": "2026-08-25",
+  "note": "A column can render and still be unreferenceable. nearestZoneRange comes back with conditionOperators: [] - no operator at all. Categorical outputs carry only is/in, so they match a label but cannot be thresholded.",
+  "numericGateable": 44,
+  "labelOnly": [
+   "crossover-event",
+   "oscillator-zone"
+  ],
+  "ungateable": []
+ },
+ "_attributionCaveat": "The `attribution` field on each family is MY mapping of a construction to a paper, not a measurement and not the platform's claim. It says 'this column set implements the shape of that idea', which is a judgement call and is sometimes arguable - a rank of funding is the carry factor in perpetuals, but Koijen et al. did not write about perpetuals. Everything else in this file was measured against the live engine; this field alone was not. Treat it as a reading aid, not evidence."
 }

@@ -51,28 +51,36 @@
    "stated": "output = base[t - offset]",
    "check": "SMA20 value offset=3 rendered $78,215.50. Recomputing the 20-close mean from the cached candles, the window ending exactly 3 observations back gives 78215.50 - an exact match, and no neighbouring window comes close (2 back = 78275.85, 4 back = 78114.15). offset=0 was checked separately.",
    "result": "exact at offset 0 and offset 3"
+  },
+  {
+   "transform": "classifyZone",
+   "stated": "output = oscillatorZone(base)",
+   "check": "RSI14 value beside RSI14 classifyZone. BTC 57.1 -> neutral, DOGE 47.8 -> neutral, SOL 75.5 -> overbought. Consistent with the conventional 30/70 thresholds, and the emitted labels match the DECLARED vocabulary (overbought/oversold/neutral) - so the vocabulary defect recorded for ADX_zone and MFI14_zone is metric-specific, not universal.",
+   "result": "behaviourally exact on three coins; exact threshold not pinned from 3 points"
+  },
+  {
+   "transform": "bandTouch",
+   "stated": "output = bandTouch(base, current price)",
+   "check": "BB_PCT_B beside CLOSE bandTouch. BTC pctB 0.64 -> none, DOGE 0.43 -> none, SOL 1.20 -> upper. Direction confirmed: above the upper band reports 'upper'. The exact trigger threshold is not pinned - no observation sat between 0.64 and 1.20.",
+   "result": "direction verified; threshold not pinned"
+  },
+  {
+   "transform": "nearestZoneType",
+   "stated": "output = type(nearest(base filtered by side))",
+   "check": "side=support returned 'bullish FVG' on all three coins, against a declared vocabulary of ['bullish FVG','bullish order block']. Support side yielding only bullish zone types is semantically correct.",
+   "result": "consistent on three coins"
+  },
+  {
+   "transform": "count",
+   "stated": "output = cardinality(base)",
+   "check": "STRUCT_ZONES count returned 16/15/17 on BTC/DOGE/SOL and 5-22 across commodities. Plausible cardinalities that vary sensibly by coin, but the underlying zone list is never exposed, so the count cannot be checked against it.",
+   "result": "plausible, not independently verifiable"
   }
  ],
  "notVerified": [
   {
-   "transform": "bandTouch",
-   "why": "categorical output; needs a case where price is known to sit on a band"
-  },
-  {
-   "transform": "classifyZone",
-   "why": "categorical; the label vocabulary is already known to be mis-declared - see data/contract/columns/_observed_vocabulary.json"
-  },
-  {
    "transform": "crossDetect",
-   "why": "categorical; needs a bar where a cross is known to have occurred"
-  },
-  {
-   "transform": "count",
-   "why": "trivial but unchecked"
-  },
-  {
-   "transform": "nearestZoneType",
-   "why": "zone family - STRUCT_ZONES has no external referent (tier C)"
+   "why": "Probed 2026-08-25 on MACD across BTC/DOGE/SOL. All three returned NULL - no cross had occurred on any of them. So the null-when-no-event behaviour is confirmed, but the formula is not: verifying it needs a bar where a cross is known to have happened. Note the interaction with BG-6 - MACD_cross is null most of the time, and NOT(MACD_cross is Bullish) therefore returns TRUE from absence of data."
   },
   {
    "transform": "nearestZoneRange",
@@ -80,11 +88,11 @@
   },
   {
    "transform": "nearestZoneDist",
-   "why": "zone family - tier C, though the formula mirrors distance which IS verified"
+   "why": "MEASURED, AND THE STATED FORMULA IS WRONG - see platformDefects. The transform itself works; the documentation of it does not."
   },
   {
    "transform": "nearestZoneAge",
-   "why": "zone family - tier C"
+   "why": "Returned 8h / 68h / 68h. Detection timestamps are never exposed, so there is nothing to check the hours against."
   },
   {
    "transform": "classifyState",
@@ -118,6 +126,14 @@
    "cost": "The agent still SEES both values as table text, so the table looks correct. But a condition referencing 'SMA20' has no column to bind to. Combined with BG-6 - a null read is FALSE, never UNRESOLVED - a gate written against that header fails silently and reads as a real negative.",
    "control": "SMA20 alone, without the offset twin, appears in conditionColumns normally with lt/lte/gte/gt/between. So the metric is conditionable; the COLLISION is what removes it.",
    "suggestedFix": "Either disambiguate the header when offset is set (SMA20_off3, as trajectory already does with _t3), or reject the section with REPORT_COLUMN_HEADER_COLLISION. Rendering a column that cannot be referenced is the worst of the three options."
+  },
+  {
+   "id": "nearest-zone-dist-formula-is-documented-with-the-wrong-sign",
+   "severity": "silent",
+   "finding": "_authoring.json states nearestZoneDist = ((price - midpoint) / midpoint) x 100. The engine computes ((midpoint - price) / price) x 100 - the sign is INVERTED and the denominator is price, not the midpoint.",
+   "repro": "STRUCT_ZONES nearestZoneDist side=support beside CLOSE and nearestZoneRange, on BTC/DOGE/SOL. BTC: support zone 77859-77923, midpoint 77891, close 78883. Stated formula gives +1.3%. Engine rendered -1.2%. All three coins render negative where the stated formula is positive. Solving ((mid - px)/px) for the price the engine used gives 78837 / 0.0902 / 100.46 against close columns of 78883 / 0.0905 / 100.57 - within 0.3%, consistent with the zone being read at the REGIME timeframe while close is the ANCHOR forming bar. The midpoint denominator is ruled out by SOL: it predicts -8.7% against a rendered -7.9%, while the price denominator predicts -8.0%.",
+   "cost": "The header text - 'signed % from price to the nearest support zone midpoint' - matches the ENGINE. The machine-readable formula does not. Anyone building from the formula rather than the prose gets a gate with the sign reversed: 'price is above support' fires when price is below it.",
+   "suggestedFix": "Correct the stated formula to ((midpoint - price) / price) x 100."
   }
  ]
 }

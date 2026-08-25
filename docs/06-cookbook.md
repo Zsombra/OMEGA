@@ -432,6 +432,51 @@ collision is what removes it.
 predicts the header, so check before you build — `scripts/family_probe.py` already
 enforces exactly this when it packs batches.
 
+### 21. Daily-anchored metrics are null off-crypto, and null reads FALSE
+
+Non-crypto tickers on this platform **are perpetuals** — GOOGL, GOLD and SP500 all carry
+funding, open interest and a mark price. What they do not carry is anything the platform
+accumulates *since the daily 00:00-UTC anchor*:
+
+| null off-crypto | renders off-crypto |
+|---|---|
+| `CVD`, `SPOT_CVD`, `OBV`, `VWAP` | `BUY_VOLUME`, `SELL_VOLUME`, `BUY_TRADES`, `SELL_TRADES`, `BUY_PRESSURE` |
+| `SPOT_CLOSE_CB`, `SPOT_CLOSE_BN` | `VOLUME`, `RVOL`, `SWING_HIGH`, `REGIME_*`, `STRUCT_ZONES` |
+| `PERP_SPOT_FLOW`, `_STRENGTH`, `_CONFIRMS` | funding, open interest, every classical indicator |
+
+Measured across STOCKS, TRADFI, INDICES and COMMODITIES. **The rule is the daily anchor,
+not order flow** — the per-bar buy/sell split renders fine; only the cumulative
+accumulators are absent.
+
+Six of the 46 buildable families are affected: `vwap-deviation`, `stretch-ranking`,
+`obv-divergence`, `perp-spot-cvd`, `venue-dislocation`, `basis`.
+
+They do not error. They render `—`, and **a null reads FALSE, never UNRESOLVED**
+(trap 11). So a strategy whose coin selection spans crypto and non-crypto gates those
+families silently wrong, and the scorecard looks fully populated while it is answering
+from absence of data. `NOT` is the sharp edge again: a negated VWAP gate fires on every
+stock in the pool.
+
+**Fix:** either keep the coin selection inside one asset class, or pair any
+daily-anchored column with an `ALL` guard on a per-bar column that is never null.
+
+### 22. The stated formula for `nearestZoneDist` has the wrong sign
+
+`transforms/_authoring.json` says:
+
+```
+output = ((price - midpoint(nearest zone)) / midpoint(nearest zone)) x 100
+```
+
+The engine computes `((midpoint - price) / price) x 100`. **The sign is inverted and the
+denominator is price, not the midpoint.** BTC: support zone 77859–77923, midpoint 77891,
+close 78883. Stated formula → **+1.3%**. Rendered → **−1.2%**. All three probed coins
+render negative where the stated formula is positive.
+
+The header prose — *"signed % from price to the nearest support zone midpoint"* — matches
+the engine. Only the machine-readable formula is wrong. Build from the prose, and read
+the value as **negative when price is above support**.
+
 ## Workflow
 
 ```
