@@ -14,6 +14,11 @@ from .types import Column, CustomSection, PlatformSection, Report, Section
 
 # Transforms that walk a series and therefore honour `bars` / `window`.
 SERIES_TRANSFORMS = {"trajectory", "efficiency", "maxShare", "aggregate"}
+
+# The chain successors `spread` offers that BUILD A SERIES, as opposed to `rank`, which
+# reduces to an ordinal and is restricted separately by rankableSpreadOperands. Chaining
+# into one of these needs a per-bar series on both sides of the spread.
+SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"}
 # Transforms that take no parameters at all.
 NULLARY_TRANSFORMS = {"distance", "bandTouch", "classifyZone", "crossDetect", "count"}
 
@@ -190,6 +195,27 @@ def validate_column(
                         f"({m.metric} x spread x rank) is only resolvable for operands "
                         f"{rankable}, not {operand!r}. Raw price-unit metrics never rank - "
                         f"rank the composition, not the level."))
+        elif tid == "spread" and chained in SERIES_CHAINS:
+            # A series-building chain needs a SERIES, and a spread only has one if BOTH
+            # sides do. A timeless operand is a bundle read with no per-bar value, so the
+            # relation is a single scalar. The contract does not publish this - it is
+            # only discoverable by rendering. Measured 2026-08-26 against SPOT_CVD, MARK
+            # and CHG_24H, across all three of aggregate / trajectory / efficiency, each
+            # against a candle-operand control that passed:
+            #
+            #   [column-grammar] transform 'spread' cannot be chained into 'aggregate':
+            #   'spotCVD' resolves from the bundle and has no per-bar value, so the
+            #   relation is a single scalar with no series to build
+            #
+            # 357 enumerated shapes. See data/audit/spread_chain_operand.json.
+            operand = column.inputs[0].metric if column.inputs else None
+            if operand in c.metrics and c.metric(operand).is_timeless:
+                out.append(Finding(
+                    "error", "REPORT_COLUMN_CHAIN_UNSUPPORTED", f"{path}.inputs[0]",
+                    f"({m.metric} x spread x {chained}) needs a per-bar series on BOTH "
+                    f"sides, and {operand!r} is timeframe-inert - it resolves from the "
+                    f"bundle, so the relation is a single scalar with no series to "
+                    f"build. Use a candle-backed operand, or drop the chain."))
 
     # --- window / offset / bars --------------------------------------------
     lookback = c.budgets["columnLookback"]

@@ -1,0 +1,48 @@
+{
+  "_what": "A legality rule the contract does not publish, found by the live spread sweep rather than by reading anything.",
+  "date": "2026-08-26",
+  "rule": "`spread` chained into a SERIES-BUILDING transform (aggregate, trajectory, efficiency) requires the OPERAND to be candle-backed. A timeframe-inert operand resolves from the bundle and has no per-bar value, so the spread is a single scalar with no series to build. `rank` is not affected - it reduces to an ordinal and is restricted separately by the contract's own rankableSpreadOperands.",
+  "platformMessage": "[column-grammar] transform 'spread' cannot be chained into 'aggregate': 'spotCVD' resolves from the bundle and has no per-bar value, so the relation is a single scalar with no series to build",
+
+  "howItWasFound": "Batch 5 of the spread sweep was refused at section 1, column 18 - ATR x spread(SPOT_CVD) -> aggregate. Every previous batch had passed clean, so the sweep was doing exactly what it was for: 544 pairs had already been confirmed and this was the first refusal.",
+
+  "probes": {
+    "_method": "Each probe put a CANDLE-operand control at index 0 and the candidate at index 1. A validation error aborts the whole render and names the failing index, so a control that is never mentioned is a control that passed - which is how each of these distinguishes 'the operand is the problem' from 'the whole chain is the problem'.",
+    "operandAxis": [
+      { "column": "ADX x spread(RSI14) -> aggregate", "operandMode": "candle", "result": "ACCEPTED (control)" },
+      { "column": "ATR x spread(SPOT_CVD) -> aggregate", "operandMode": "timeless", "result": "REJECTED" },
+      { "column": "CLOSE x spread(MARK) -> aggregate", "operandMode": "timeless", "result": "REJECTED", "note": "MARK is a PRICE read, not a flow metric - so the rule is about the per-bar series, not about CVD specifically" },
+      { "column": "ATR_PCT x spread(CHG_24H) -> aggregate", "operandMode": "timeless", "result": "REJECTED", "note": "a published change, third distinct kind of timeless operand" }
+    ],
+    "chainAxis": [
+      { "column": "ADX x spread(RSI14) -> trajectory", "result": "ACCEPTED (control)" },
+      { "column": "ATR x spread(SPOT_CVD) -> trajectory", "result": "REJECTED" },
+      { "column": "ADX x spread(RSI14) -> efficiency", "result": "ACCEPTED (control)" },
+      { "column": "ATR x spread(SPOT_CVD) -> efficiency", "result": "REJECTED" }
+    ],
+    "_whyBothAxes": "One rejection would not have told me whether the predicate was the operand, the chain, or the pair. Three different timeless operands against one chain, then one operand across all three chains, with a passing control in every render. The rule is now measured on both axes rather than generalised from a single message."
+  },
+
+  "scope": {
+    "enumeratedShapesRefused": 357,
+    "byChain": { "aggregate": 119, "trajectory": 119, "efficiency": 119 },
+    "byOperand": {
+      "LAST": 39, "MARK": 39, "ORACLE": 39, "SPOT_CLOSE_CB": 39, "SPOT_CLOSE_BN": 39,
+      "CHG_5M": 15, "CHG_15M": 15, "CHG_1H": 15, "CHG_4H": 15, "CHG_24H": 15,
+      "HIGH_DEV": 15, "LOW_DEV": 15, "FUNDING_RATE": 15, "FUNDING_ANN": 15,
+      "OI_CHG": 15, "SPOT_CVD": 12
+    },
+    "expandedSpace": { "before": 2136, "after": 1779 },
+    "structuralSpace": { "before": 488, "after": 488, "note": "unchanged - a structural spread shape carries no operand, so the rule cannot bite until an operand is chosen" }
+  },
+
+  "relationToAddendumItem2": "Column Algebra addendum item 2 already recorded that `CVD spread SPOT_CVD` refuses to chain, and correctly stated that the OPERAND needs a stored bar series too. What it did not do was carry that into the shape space: 357 combinations were still enumerated as legal, because the rule was written as prose about one example rather than as a predicate over the operand's timeframeMode. A finding that is documented but not encoded is a finding the tooling does not have.",
+
+  "fixed": {
+    "validator": "omega/validate.py - SERIES_CHAINS plus an operand check in the chain branch",
+    "enumerator": "omega/space.py - the same predicate, so the shape space stops producing them",
+    "tests": "tests/test_spread_chain_operand.py, and the existing enumerate-vs-validate invariant in tests/test_space_validate_agreement.py now covers it automatically"
+  },
+
+  "cumulativeCorrection": "421 of the originally published 2,200 operand-expanded shapes were never legal - 64 from rankableSpreadOperands and 357 from this. 19% of the number. Both were invisible to every offline check because the contract publishes neither rule: the first was published but unread, this one is not published at all."
+}

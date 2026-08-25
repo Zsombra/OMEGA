@@ -17,13 +17,13 @@ most one chained successor. That cap is the whole reason this is countable:
 | **legal atoms** | **322** |
 | atoms accepting a chained stage | 52 — 42 × 3 successors, 10 × 4 including `rank` |
 | **structural shapes** | **488** |
-| expanded by spread operand and rank ordering | **2136** |
+| expanded by spread operand and rank ordering | **1779** |
 | documented in the cookbook (doc 06) | 8 |
 
 ```python
 from omega.space import enumerate_shapes, query
 len(enumerate_shapes())                      # 488
-len(enumerate_shapes(expand_operands=True))  # 2136
+len(enumerate_shapes(expand_operands=True))  # 1779
 ```
 
 ### Three ordering axes, not one

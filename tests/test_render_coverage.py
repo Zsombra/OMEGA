@@ -37,7 +37,8 @@ def test_unexpanded_spread_header_is_a_placeholder(contract):
 def test_expanded_spread_header_names_both_sides(contract):
     expanded = [s for s in enumerate_shapes(expand_operands=True, contract=contract)
                 if s.transform == "spread"]
-    assert len(expanded) == 1743      # 1807 before the rankableSpreadOperands fix
+    assert len(expanded) == 1386      # 1807, then 1743 after rankableSpreadOperands,
+                                      # then 1386 after the series-chain operand rule
     shape = next(s for s in expanded if s.metric == "ADX" and s.operand == "RSI14")
     assert [o.header for o in outputs_for(shape.to_column(), contract)] == ["ADX_RSI14_spread"]
 
@@ -71,7 +72,7 @@ def test_no_plan_file_is_counted_as_a_render():
 
 
 def test_coverage_partitions_the_space(contract):
-    for expand, total in ((False, 301), (True, 2116)):
+    for expand, total in ((False, 301), (True, 1759)):
         cov, unc, byt = coverage(expand, contract)
         assert cov + len(unc) == total
         assert sum(byt.values()) == len(unc)
@@ -87,9 +88,9 @@ def test_spread_is_the_only_remaining_gap(contract):
     """The spread sweep is incremental, so this asserts SHAPE and DIRECTION, not a frozen
     number - a pinned count would fail on every batch and teach us to edit it blindly."""
     cov, unc, byt = coverage(True, contract)
-    assert cov + len(unc) == 2116
+    assert cov + len(unc) == 1759
     assert set(byt) <= {"spread"}, (
         "every rank ordering and distance chain was swept on 2026-08-26; anything else "
         "appearing here is a regression, not sweep progress")
-    assert cov >= 596, "live coverage must not go backwards"
-    assert len(unc) <= 1520, "untested spread pairs must not grow"
+    assert cov >= 948, "live coverage must not go backwards"
+    assert len(unc) <= 811, "untested spread pairs must not grow"

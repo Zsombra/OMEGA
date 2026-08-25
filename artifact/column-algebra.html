@@ -259,7 +259,7 @@
       <span><b>Operators</b> 16</span>
       <span><b>Legal atoms</b> 322</span>
       <span><b>Structural shapes</b> 488</span>
-      <span><b>With operands &amp; orderings</b> 2,136</span>
+      <span><b>With operands &amp; orderings</b> 1,779</span>
       <span><b>Fully parameterised</b> ~70,700</span>
     </div>
   </header>
@@ -507,7 +507,7 @@ distance  (48 shapes) ──┤   aggregate             52
       </p>
     </div>
     <p style="margin-top:1.25rem">
-      Counting the parameter axes against that cap, the 2,136 shapes become roughly
+      Counting the parameter axes against that cap, the 1,779 shapes become roughly
       <strong>70,700 distinct columns</strong>. <code>spread</code> accounts for most of it: 57 metrics,
       up to 17 operands each, four chain options, each with its own window and bars.
     </p>
@@ -761,7 +761,7 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
           <tr><td class="cls">Metric &times; operator pairs</td><td class="n">1,376</td><td>the naive product, mostly illegal</td></tr>
           <tr><td class="cls">Legal atoms</td><td class="n">322</td><td>single-stage columns the engine accepts</td></tr>
           <tr><td class="cls">Structural shapes</td><td class="n">488</td><td>atoms plus 166 two-stage chains</td></tr>
-          <tr><td class="cls">Expanded</td><td class="n">2,136</td><td>with operand choice and rank ordering</td></tr>
+          <tr><td class="cls">Expanded</td><td class="n">1,779</td><td>with operand choice and rank ordering</td></tr>
           <tr><td class="cls">&mdash; carrying an operand</td><td class="n">1,807</td><td>spread against a specific metric</td></tr>
           <tr><td class="cls">&mdash; carrying an ordering</td><td class="n">188</td><td>rank, hi / lo / far / near</td></tr>
           <tr><td class="cls">&mdash; plain</td><td class="n">273</td><td>neither axis applies</td></tr>
@@ -785,7 +785,7 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
       and a percentage is the only form that means the same thing on every coin in the pool.
     </p>
     <p>
-      The productive region is therefore narrower and sharper than 2,136 suggests: <code>spread</code>
+      The productive region is therefore narrower and sharper than 1,779 suggests: <code>spread</code>
       and <code>distance</code>, pointed at a well-chosen reference, then pushed through
       <code>trajectory</code>, <code>aggregate</code>, <code>efficiency</code> or <code>rank</code>.
       That is 166 shapes, and it is where nearly every numeric indicator worth building lives.
@@ -799,12 +799,12 @@ timeframe: { <b>abs</b>: "1m" … "1w" }        ← 13 fixed intervals</pre>
   </section>
 
   <section>
-    <h2>Addendum &mdash; ten things measured after this page was written</h2>
+    <h2>Addendum &mdash; eleven things measured after this page was written</h2>
     <p>
       Everything above still holds. The counts were re-derived against the live enumeration on
-      2026-08-25: <strong>322 legal atoms, 488 structural shapes, 2,136 operand-expanded,
-      ~70,700 parameterised.</strong> The expanded figure was 2,200 until 2026-08-26 &mdash;
-      see item 10. What follows is not a correction to any of
+      2026-08-25: <strong>322 legal atoms, 488 structural shapes, 1,779 operand-expanded,
+      ~70,700 parameterised.</strong> The expanded figure was 2,200 until 2026-08-26, when two
+      unmodelled legality rules removed 421 shapes between them &mdash; see items 10 and 11. What follows is not a correction to any of
       it &mdash; it is what a further round of live probing added.
     </p>
 
@@ -973,15 +973,62 @@ Raw price-unit metrics never rank &mdash; rank the composition, not the level.</
     </p>
 
 
+    <h3>11. A spread only chains if <em>both</em> sides have a per-bar series</h3>
+    <p>
+      Item 2 established that <code>CVD spread SPOT_CVD</code> refuses to chain, because the
+      operand needs a stored bar series too. What that item did not do was carry the rule into
+      the shape space, and the general form is much wider than the one example. Chaining a
+      <code>spread</code> into any <b>series-building</b> successor &mdash;
+      <code>aggregate</code>, <code>trajectory</code>, <code>efficiency</code> &mdash; requires
+      the operand to be candle-backed:
+    </p>
+    <pre><code>[column-grammar] transform 'spread' cannot be chained into 'aggregate':
+'spotCVD' resolves from the bundle and has no per-bar value, so the relation
+is a single scalar with no series to build</code></pre>
+    <p>
+      A timeframe-inert operand is a bundle read. The spread against it is one number, and
+      there is nothing for a series to be built from. <code>rank</code> is unaffected &mdash;
+      it reduces to an ordinal rather than a series, and the contract restricts it separately.
+      <b>357 enumerated shapes.</b> Expanded space <b>2,136 &rarr; 1,779</b>; the structural
+      488 is untouched, because a structural spread carries no operand and the rule cannot
+      bite until one is chosen.
+    </p>
+    <p class="correct">
+      <b>The contract does not publish this rule anywhere.</b> That is what separates it from
+      item 10, and it is the whole argument for rendering rather than reading. Every field the
+      contract exposes on a transform (6) and on a metric (10) is now read by the toolkit;
+      auditing that found nothing further. This rule is invisible to any amount of offline
+      checking, and it was found by sending the 545th pair and being refused &mdash; after 544
+      had passed clean.
+    </p>
+    <p>
+      It was then probed on <em>both</em> axes before being written down, because one rejection
+      cannot tell you whether the culprit is the operand, the chain, or the pair: three
+      different timeless operands &mdash; a flow metric, a price read, a published change
+      &mdash; against one chain, then one operand across all three chains, with a candle-operand
+      control in every render that passed each time.
+    </p>
+    <p>
+      <b>Running total: 421 of the original 2,200 were never legal.</b> 64 from a published
+      rule nobody read, 357 from a rule nobody published.
+    </p>
+
+
     <p class="lede" style="margin-top:1.6rem">
       The through-line: the algebra above is sound, and the gap between <em>legal</em> and
       <em>usable</em> is wider than any contract discloses. Eight shapes that cannot render, a
       chaining rule with a second condition, a parameter that changes values without changing
       names, four metrics that vanish on a third of the universe, 88 shapes that exist at one
       timeframe while the rest exist at three, and two places where the platform describes the
-      same column two contradictory ways in one response, and sixty-four shapes this page
-      counted that were never legal &mdash; none of it is visible until something is rendered
-      and the arithmetic checked by hand.
+      same column two contradictory ways in one response, and four hundred and twenty-one
+      shapes this page counted that were never legal &mdash; none of it is visible until
+      something is rendered and the arithmetic checked by hand.
+    </p>
+    <p style="margin-top:1rem">
+      Which is the point, stated plainly. Every offline check available &mdash; the contract's
+      own fields, the validator, the enumerator, and the agreement between them &mdash; was
+      run first, and the last of them came back clean. The 357 turned up anyway, on the 545th
+      live render.
     </p>
     <p style="margin-top:1rem">
       Item 3 is worth re-reading as a method note. It was measured, it was right about

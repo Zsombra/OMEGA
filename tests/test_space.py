@@ -62,7 +62,7 @@ def test_chain_successors_split_42_and_10():
     assert len(four) == 10
 
 
-def test_expanding_operands_and_orderings_gives_2136():
+def test_expanding_operands_and_orderings_gives_1779():
     """2,200 until 2026-08-26, when 64 illegal shapes came out of the enumeration.
 
     Chaining spread -> rank narrows the legal operand set via the contract's
@@ -70,7 +70,7 @@ def test_expanding_operands_and_orderings_gives_2136():
     operands instead. omega's own validator had always refused those 64 - only
     enumerate_shapes disagreed. See tests/test_space_validate_agreement.py.
     """
-    assert len(enumerate_shapes(expand_operands=True)) == 2136
+    assert len(enumerate_shapes(expand_operands=True)) == 1779
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -152,4 +152,4 @@ def test_query_can_isolate_what_the_platform_never_uses():
 
 def test_query_with_no_filters_is_the_whole_space():
     assert len(query()) == 488
-    assert len(query(expand_operands=True)) == 2136
+    assert len(query(expand_operands=True)) == 1779

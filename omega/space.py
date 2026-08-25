@@ -11,7 +11,7 @@ than sampled:
      166 chained forms   (42 atoms x 3 general successors, 10 x 4 including rank)
      488 structural shapes
 
-Expanding spread operands and rank orderings gives 2136 concrete forms.
+Expanding spread operands and rank orderings gives 1779 concrete forms.
 
 PARAMETERS ARE NOT ENUMERATED, DELIBERATELY
 -------------------------------------------
@@ -31,6 +31,11 @@ from dataclasses import dataclass
 from .contract import Contract, Metric, load
 from .fanout import outputs_for
 from .types import Column, Operand, RelTimeframe
+
+# Chain successors of `spread` that build a SERIES. Chaining into one needs a per-bar
+# series on both sides; `rank` reduces to an ordinal instead and is restricted by the
+# contract's own rankableSpreadOperands. Mirrors omega.validate.SERIES_CHAINS.
+_SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"}
 
 
 @dataclass(frozen=True)
@@ -78,7 +83,7 @@ def enumerate_shapes(expand_operands: bool = False,
     """Every structural shape in the space.
 
     `expand_operands=False` gives the 488 structural shapes. `True` enumerates each
-    spread operand and rank ordering separately, giving 2136.
+    spread operand and rank ordering separately, giving 1779.
 
     THREE ORDERING AXES, NOT ONE
     ----------------------------
@@ -109,6 +114,15 @@ def enumerate_shapes(expand_operands: bool = False,
                             continue
                         for o in (flags.get("chainedRankOrderings") or (None,)):
                             out.append(ColumnShape(name, transform, succ, operand, o))
+                    elif (transform == "spread" and succ in _SERIES_CHAINS
+                          and operand is not None and c.metric(operand).is_timeless):
+                        # A series-building chain needs a per-bar series on BOTH sides.
+                        # A timeless operand is a bundle read: the spread is a single
+                        # scalar with nothing to build a series from. The contract does
+                        # not publish this - it was found by rendering, and it accounted
+                        # for 357 enumerated shapes the platform refuses. See
+                        # data/audit/spread_chain_operand.json.
+                        continue
                     else:
                         out.append(ColumnShape(name, transform, succ, operand, ordering))
     return out

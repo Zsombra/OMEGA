@@ -1,7 +1,7 @@
 # 15 · What the account has actually built
 
 Doc 14 counts what the column space *permits*: 322 legal atoms, 488 structural
-shapes, 2136 once operands and rank orderings expand. It also counts what the
+shapes, 1779 once operands and rank orderings expand. It also counts what the
 platform's own templates use — leaving 349 shapes no template has ever touched.
 
 This doc answers the other half of that question. Of the shapes the design space
