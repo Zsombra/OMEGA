@@ -7,7 +7,7 @@
     "headerMismatches": 0,
     "predictedHeaders": 536,
     "batches": 15,
-    "claim": "omega.fanout.outputs_for predicts the platform's headers exactly for every legal shape - all 16 transforms, chained forms, categorical trajectories, rank orderings, structure counts, and the deep moving averages.",
+    "claim": "omega.fanout.outputs_for predicted the platform headers exactly for every shape it rendered: 300 shapes, 536 headers, 0 mismatches, across all 16 authorable transforms, chained forms, categorical trajectories, rank orderings, structure counts and the deep moving averages.",
     "quarantined": {
       "count": 8,
       "reason": "declared legal by the contract, INTERNAL_ERROR when rendered",
@@ -21,6 +21,24 @@
         "CROWD_UPBIAS x rank",
         "CROWD_UPBIAS_LIVE x rank"
       ]
+    },
+    "coverageCorrection": {
+      "measuredAt": "2026-08-26",
+      "what": "The claim above originally read 'for every legal shape'. It was not. Recomputed by generating each enumerated shape*s predicted headers and checking them against the 537 headers actually rendered in _sweep_seen.json.",
+      "covered": 300,
+      "ofTotal": 488,
+      "coveredPct": "61%",
+      "uncovered": 188,
+      "uncoveredByTransform": {
+        "spread": 175,
+        "rank": 9,
+        "nearestZoneType": 1,
+        "nearestZoneRange": 1,
+        "nearestZoneDist": 1,
+        "nearestZoneAge": 1
+      },
+      "why": "spread fans a structural shape out across operands, and the sweep rendered a sample of those pairs rather than all of them. The uncovered set is therefore concentrated, not scattered.",
+      "riskClass": "Same class as the timeless-column-timeframe defect found on 2026-08-26: omega's validator called a shape legal and the platform refused it. That one was found by accident. A sweep of the remaining 188 would find the rest of the class deliberately."
     }
   },
   "budgetModel": {
