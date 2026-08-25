@@ -217,6 +217,23 @@ def validate_column(
                     f"bundle, so the relation is a single scalar with no series to "
                     f"build. Use a candle-backed operand, or drop the chain."))
 
+    # --- offset that does nothing (BG-13) -----------------------------------
+    # `offset` is accepted, validates, and CONSUMES columnLookback budget - then is
+    # silently ignored by every candle-backed CATEGORICAL metric. Measured 2026-08-26
+    # across 78 coins at a 4h anchor: close, ADX, swingHi, swingLo, STOCH_K, MFI14 and
+    # BB_PCT_B all moved between offset 0 and 8; MA_ALIGN, BB_TOUCH, EMA_CROSS and
+    # PRICE_ZONE were identical on all 78. AMD is the proof - at offset 8 its close sits
+    # at 35% of its own swing range and PRICE_ZONE still answers "near high", which is
+    # the offset-0 answer. The inputs are right there in the same render and the
+    # classifier is not using them. See data/audit/offset_ignored.json.
+    if column.offset and m.timeframe_mode == "candle" and m.vocab:
+        out.append(Finding(
+            "warning", "OFFSET_IGNORED", f"{path}.offset",
+            f"{m.metric} is a candle-backed CATEGORICAL metric: it accepts offset"
+            f"={column.offset}, spends {column.offset} of the columnLookback budget, and "
+            f"returns the value for NOW anyway. Read its numeric inputs at the offset and "
+            f"classify them yourself, or drop the offset."))
+
     # --- window / offset / bars --------------------------------------------
     lookback = c.budgets["columnLookback"]
     if column.window is not None:

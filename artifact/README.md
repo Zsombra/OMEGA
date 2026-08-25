@@ -6,7 +6,7 @@ the throwaway, not the other way round.
 
 | file | published at | favicon |
 |---|---|---|
-| `battlegrid-defects.html` | https://claude.ai/code/artifact/a0ed53c1-f6d3-4abf-9225-c4abf3dfd71a | |
+| `battlegrid-defects.html` | https://claude.ai/code/artifact/a0ed53c1-f6d3-4abf-9225-c4abf3dfd71a | 🐛 |
 | `column-algebra.html` | https://claude.ai/code/artifact/877253ff-b200-4592-9500-c35c21f0f513 | 🧮 |
 | `indicator-census.html` | https://claude.ai/code/artifact/e6be5c58-9e11-4d4b-a43e-3c41ab640163 | |
 | `matrix.html` | built from `matrix.template.html` | |
@@ -19,5 +19,5 @@ across redeploys — readers find the tab by its icon — and it is not readable
 the published page, so an unrecorded one is a guess on the next update. The blanks are
 exactly that: published before this column existed, and not verified since.
 
-`battlegrid-defects.html` is the report for the BattleGrid maintainer: seven findings,
+`battlegrid-defects.html` is the report for the BattleGrid maintainer: thirteen findings,
 each with a reproduction, a workaround where one exists, and a suggested fix.

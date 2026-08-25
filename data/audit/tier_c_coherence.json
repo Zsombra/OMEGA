@@ -396,6 +396,14 @@
       "4h": "mid-range 60, near high 12, near low 6",
       "reading": "The zone label tracks the anchor's own swing window, and at every anchor the whole universe sat inside it. That is the expected shape on a day with no breakouts, and it is also what a broken column would look like. One day cannot separate those."
     },
-    "honesty": "2 of 8 closed. The other 6 were not closed and no amount of re-anchoring will close them - saying so is the result, not a failure to finish."
+    "honesty": "2 of 8 closed. The other 6 were not closed and no amount of re-anchoring will close them - saying so is the result, not a failure to finish.",
+    "_offsetAvenue": {
+      "_correction": "This block originally said the remaining 6 labels 'need market conditions, not effort' and that 'more anchors will not produce them; a different day might'. The conclusion survives. The REASON I gave for it was wrong, and I had not tested the thing that would have settled it.",
+      "whatIMissed": "The platform's own error message, when it refused REGIME_MOM at a non-anchor timeframe, named the one parameter still free: allowedDomain.candidates = ['offset']. offset walks backwards through bars, which reaches PAST market states without waiting for another day. I never tried it.",
+      "whatTheTestShowed": "offset WORKS - close, ADX, swingHi, swingLo, STOCH_K, MFI14 and BB_PCT_B all move between offset 0 and offset 8. History is reachable. But every candle-backed CATEGORICAL metric silently ignores it and answers for bar 0, which is BG-13. So PRICE_ZONE 'breakout high' cannot be found by walking back through bars: the column keeps answering for now.",
+      "soTheAvenueIsClosed": "but for a better reason than the one I gave. Not 'history is unreachable' - history is right there. The CLASSIFIERS refuse to look at it.",
+      "whatWouldStillWork": "Read the numeric inputs at an offset and classify them yourself. close, swingHi and swingLo at offset N are all correct, and PRICE_ZONE's rule is known - percentage distance to the nearer swing, 215/216, see _resampled. That reconstructs the label for a past bar without the platform's help, and it is the only route to the two PRICE_ZONE labels short of a different market.",
+      "evidence": "data/audit/offset_ignored.json"
+    }
   }
 }

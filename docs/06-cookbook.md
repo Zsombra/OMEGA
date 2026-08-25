@@ -590,6 +590,34 @@ does read is not exposed.
 The two clauses are not two views of one quantity; the first is a black box, and the
 sample above shows it disagreeing with the second outright.
 
+### 27. `offset` is silently ignored by every categorical candle metric
+
+`offset` walks a column back N bars. It works — on numbers. On a **categorical**
+candle-backed metric it is accepted, it spends `offset` of your 32-bar `columnLookback`
+budget, and the column answers for **now** anyway. Nothing errors. Nothing warns.
+
+Measured across 78 coins at a 4h anchor, offset 0 vs offset 8:
+
+| honours `offset` | ignores it |
+|---|---|
+| `close`, `ADX`, `swingHi`, `swingLo`, `STOCH_K`, `MFI14`, `pctB` | `MA_ALIGN`, `BB_TOUCH`, `EMA_CROSS`, `PRICE_ZONE` |
+
+`PRICE_ZONE` was identical on **78 of 78**. That alone would prove nothing — a label can
+be stable. What proves it is that its own inputs moved in the same render:
+
+| AMD @ 4h | `close` | `swingLo` | `swingHi` | position | `zone` |
+|---|---:|---:|---:|---:|---|
+| offset 0 | $480.70 | $451.62 | $482.33 | **94.7%** | near high |
+| offset 8 | $460.95 | $451.62 | $477.94 | **35.4%** | near high ← |
+
+At 35% of its range the honest answer is not "near high". It is the offset-0 answer.
+
+**Reconstruct it yourself.** The numeric inputs at an offset are correct, and
+`PRICE_ZONE`'s rule is known — percentage distance to the nearer swing
+([19](19-is-the-data-correct.md)). `omega.validate` now raises `OFFSET_IGNORED` as a
+warning rather than an error, because the column does render; it just answers about a
+different bar than the one you asked for.
+
 ## Workflow
 
 ```

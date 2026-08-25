@@ -372,11 +372,12 @@
     <div class="eyebrow">Defect report &middot; Strategy authoring surface</div>
     <h1>BattleGrid Authoring Defects</h1>
     <p class="standfirst">
-      Twelve findings from a full sweep of the strategy authoring surface — every legal column
-      shape rendered against the live compiler, the whole condition grammar exercised end to
-      end, all 25 platform sections probed one at a time for signal membership, and every
-      transform checked against the formula the contract publishes for it. Each entry below has
-      a reproduction and, where one exists, a verified workaround.
+      Thirteen findings from a full sweep of the strategy authoring surface — <b>every</b> legal
+      column shape now rendered against the live compiler and its headers checked one by one
+      (1,759 of 1,759, zero mismatches), the whole condition grammar exercised end to end, all
+      25 platform sections probed one at a time for signal membership, and every transform
+      checked against the formula the contract publishes for it. Each entry below has a
+      reproduction and, where one exists, a verified workaround.
     </p>
     <div class="meta">
       <span><b>Date</b> 2026-08-24 &ndash; 25</span>
@@ -467,6 +468,12 @@
             <td>Three columns render a value no condition can reference</td>
             <td><span class="chip silent">Silent</span></td>
             <td>None &mdash; the data is unreachable</td>
+          </tr>
+          <tr>
+            <td class="id">BG-13</td>
+            <td><code>offset</code> is ignored by every categorical candle metric</td>
+            <td><span class="chip silent">Silent</span></td>
+            <td>Read the numeric inputs and classify them yourself</td>
           </tr>
         </tbody>
       </table>
@@ -1094,6 +1101,70 @@ RSI14_now  38.3
           &mdash; <code>nearestZoneAge</code> is a gateable number derived from a timestamp
           &mdash; which proves the pattern is available and just was not applied here.
           <code>SETTLED_AT</code> wants exactly that treatment.
+        </p>
+      </article>
+
+      <!-- BG-13 -->
+      <article class="defect is-silent">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-13</span><span class="chip silent">Silent</span></div>
+          <h3><code>offset</code> is accepted, spends budget, and is then ignored</h3>
+        </div>
+        <p>
+          <code>offset</code> walks a column back N bars. It works &mdash; on numbers. On a
+          <b>categorical</b> candle-backed metric it validates, it consumes <code>offset</code>
+          of the 32-bar <code>columnLookback</code> budget, and the column answers for
+          <b>now</b> anyway. Nothing errors and nothing warns.
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>honours <code>offset</code></th><th>ignores it</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>close</code>, <code>ADX</code>, <code>swingHi</code>,
+                    <code>swingLo</code>, <code>STOCH_K</code>, <code>MFI14</code>,
+                    <code>pctB</code></td>
+                <td><code>MA_ALIGN</code>, <code>BB_TOUCH</code>, <code>EMA_CROSS</code>,
+                    <code>PRICE_ZONE</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Measured across <b>78 coins at a 4h anchor</b>, offset 0 against offset 8.
+          <code>PRICE_ZONE</code> was identical on 78 of 78 &mdash; which on its own proves
+          nothing, because a label can simply be stable. What proves it is that the metric's
+          own inputs moved in the <em>same render</em>:
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>AMD @ 4h</th><th class="n">close</th><th class="n">swingLo</th><th class="n">swingHi</th><th class="n">position</th><th>zone</th></tr></thead>
+            <tbody>
+              <tr><td>offset 0</td><td class="n">$480.70</td><td class="n">$451.62</td><td class="n">$482.33</td><td class="n"><b>94.7%</b></td><td>near high</td></tr>
+              <tr><td>offset 8</td><td class="n">$460.95</td><td class="n">$451.62</td><td class="n">$477.94</td><td class="n"><b>35.4%</b></td><td>near high &larr;</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          At 35% of its own swing range the honest answer is not &ldquo;near high&rdquo;. It is
+          the offset-0 answer. EWY repeats it: 23% of range, still &ldquo;near high&rdquo;. So
+          this is not a metric without history &mdash; the history is right there in the
+          adjacent columns, and the classifier is not reading it.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Read the numeric inputs at the offset and classify them yourself. <code>close</code>,
+            <code>swingHi</code> and <code>swingLo</code> at offset N are all correct, and
+            <code>PRICE_ZONE</code>'s rule is known &mdash; percentage distance to the nearer
+            swing. There is no workaround for reading a past <em>classification</em> directly.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> either honour <code>offset</code> in the classifiers,
+          or reject it on these metrics. Silently accepting a parameter, charging budget for it,
+          and ignoring it is the worst of the three options &mdash; a rejection would have taken
+          one render to discover instead of a controlled experiment across 78 coins.
         </p>
       </article>
 
