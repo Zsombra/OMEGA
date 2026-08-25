@@ -33,13 +33,33 @@ because a silently-ignored `window` usually means you meant a different transfor
 | `window` (trajectory) | 4 | 5 headers |
 | `window` (efficiency) | 21 | needs 21 *points* — N moves needs N+1 |
 | `window` (aggregate/maxShare) | 24 | |
-| `offset` | 0 | current resolved value |
+| `offset` | 0 | current resolved value — and **capped at 8 in practice**, see below |
 | `ordering` | `"hi"` | rejected outright if the metric doesn't offer `hi` |
 
 The `bars` default is the dangerous one. On a raw per-bar quantity like `VOLUME` or
 `TRADES`, the forming bar ramps from zero each interval, so `bars:"all"` makes every
 fresh bar look like a collapse in participation. `omega.validate` raises
 `FORMING_BAR_RAMP` when it sees this combination.
+
+## The lookback floor eats 24 of your 32 bars
+
+A single bare `CLOSE × value` column — no window, no offset — reports
+`columnLookback: 24/32`. The contract publishes `value` as taking **only** `offset` and no
+window, so the budget you compute from the published parameters is 24 bars short of the
+one the platform charges:
+
+```
+REPORT_COLUMN_LOOKBACK_EXCEEDED
+  requests a lookback of 40 bars (window + offset) — the cap is 32
+  receivedValue: {"window": 24, "offset": 16, "lookback": 40}
+```
+
+That `window: 24` is not something the metric declares. **Usable `offset` on a `value`
+column is 32 − 24 = 8**, for every metric tested.
+
+> Recorded honestly: three metrics cannot separate "a global constant floor" from "every
+> metric happens to carry 24". The consequence is identical either way; the mechanism is
+> not claimed. See [`lookback_floor.json`](../data/audit/lookback_floor.json).
 
 ## `bars` and `offset` are not interchangeable
 

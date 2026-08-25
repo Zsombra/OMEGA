@@ -47,7 +47,7 @@ strategies from a thesis.
 | [14 · Column Space](docs/14-column-space.md) | every table you could build: 488 shapes, 1779 expanded — all of them rendered live, 0 header mismatches — and the 349 nothing has ever used |
 | [15 · What the account has built](docs/15-what-the-account-has-built.md) | the audit: not one custom column has ever existed on this account |
 | [16 · The write path](docs/16-the-write-path.md) | how to actually write — and the published schema that refuses its own required key |
-| [17 · The full sweep](docs/17-the-full-sweep.md) | 300 of 300 shapes verified live, and the two the platform declares but cannot deliver |
+| [17 · The full sweep](docs/17-the-full-sweep.md) | **1,759 of 1,759** shapes verified live, 0 header mismatches — and the 421 that were never legal |
 | [18 · Indicator census](docs/18-indicator-census.md) | which named indicators this platform can build, which it cannot, and **why not** |
 | [19 · Is the data correct?](docs/19-is-the-data-correct.md) | the tape and the indicator maths, checked against Hyperliquid rather than against BattleGrid |
 

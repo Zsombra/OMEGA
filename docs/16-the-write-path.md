@@ -148,6 +148,54 @@ Rendered live across BTC, ETH, SOL, GOLD and DOGE:
 That last row is the finding. DOGE printed `RSI14_t2 = 38.3` and `RSI14_now = 38.3` with
 `RSI14_trend = falling`. The direction is computed before rounding.
 
+## What omega does not emit
+
+Everything above is about write *mechanics*. This is about *content* — and it is the
+largest single gap in the toolkit.
+
+`omega.generate.emit_plan` stamps every plan `_generatedBy: "omega.generate — LOCAL ONLY,
+not submitted"`. That was deliberate, and it means **no generated plan has ever been
+compiled or applied**. All three proven write axes were driven from hand-built payloads.
+
+Diffing `StrategyPlan.wire()` against the live `compile_strategy_plan` request schema:
+
+| | fields |
+|---|---|
+| omega emits, the API does not accept | `cadence`, `regimeTimeframe`, `signalRules` |
+| the API **requires**, omega omits | `operation`, `intentSummary`, `assumptions`, `coinSelection` |
+| the API accepts, omega never emits | **16 execution parameters** |
+
+`signalRules` is just the wrong name — the API calls it `rules`. `coinSelection` is the
+substantive one: **a generated strategy does not currently say which coins it trades.**
+
+> The rejection of the three extra keys is **schema-derived, not measured** — the request
+> objects declare `additionalProperties: false`. No compile call has been made to confirm
+> it. One would settle it, and `compile_strategy_plan` performs **no write**.
+
+### The execution surface
+
+| group | parameters |
+|---|---|
+| risk | `minAtrPct`, `minRiskRewardRatio`, `minStopLossAtrMultiple`, `maxStopLossAtrMultiple` |
+| trailing | `trailingEnabled`, `trailingTriggerR`, `trailingGivebackPct`, `trailingBufferPct` |
+| break-even | `breakEvenEnabled`, `breakEvenTriggerR` |
+| time decay | `timeDecayEnabled`, `timeDecayIntervalMinutes`, `timeDecayGracePeriodMinutes`, `timeDecayTightenPct`, `timeDecayMaxTightenPct`, `timeDecayStaleThresholdTpProgressPct` |
+
+Five of six probed — `trailingEnabled`, `breakEvenTriggerR`, `minStopLossAtrMultiple`,
+`timeDecayEnabled`, `minRiskRewardRatio` — appear **nowhere** in `omega/` or `docs/`. Only
+`minAtrPct` is mentioned at all.
+
+**omega can author what to look at, and not how to trade it.** A strategy with sound
+entries and a bad stop loses money, and the toolkit has nothing to say about the stop. The
+schema publishes bounds for each (`trailingGivebackPct` 25–55, `breakEvenTriggerR` 0.5–2,
+`minAtrPct` 0.01–50), so the surface is knowable — it simply has not been modelled.
+
+One more axis is untouched: the `rules` array itself. 84 signal IDs, each with an
+allocation 0–3 and a `required` flag. A generated plan carries 84 of them and **not one
+has ever been written.**
+
+See [`write_surface_gap.json`](../data/audit/write_surface_gap.json).
+
 ## CREATE, proven
 
 The last unexercised path closed on 2026-08-24 at 20:16Z. `OMEGA-TEST: From Scratch`

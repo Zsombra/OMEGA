@@ -19,6 +19,12 @@ SERIES_TRANSFORMS = {"trajectory", "efficiency", "maxShare", "aggregate"}
 # reduces to an ordinal and is restricted separately by rankableSpreadOperands. Chaining
 # into one of these needs a per-bar series on both sides of the spread.
 SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"}
+
+# A bare `CLOSE x value` column - no window, no offset - already reports
+# columnLookback 24/32. The contract publishes `value` as taking ONLY `offset` and no
+# window, so this floor is invisible until the platform refuses the column. Measured
+# 2026-08-26 across CLOSE, PRICE_ZONE and REGIME_VOL; see data/audit/lookback_floor.json.
+LOOKBACK_FLOOR = 24
 # Transforms that take no parameters at all.
 NULLARY_TRANSFORMS = {"distance", "bandTouch", "classifyZone", "crossDetect", "count"}
 
@@ -227,8 +233,12 @@ def validate_column(
     # the offset-0 answer. The inputs are right there in the same render and the
     # classifier is not using them. See data/audit/offset_ignored.json.
     if column.offset and m.timeframe_mode == "candle" and m.vocab:
+        # NOT `OFFSET_IGNORED` - that code already means something else in this file
+        # (offset on a transform other than `value`, which the CONTRACT rules out). This
+        # is the platform accepting offset on a legal `value` column and not honouring it.
+        # Two different conditions must not share one code, or filtering by code is a lie.
         out.append(Finding(
-            "warning", "OFFSET_IGNORED", f"{path}.offset",
+            "warning", "OFFSET_NOT_HONOURED", f"{path}.offset",
             f"{m.metric} is a candle-backed CATEGORICAL metric: it accepts offset"
             f"={column.offset}, spends {column.offset} of the columnLookback budget, and "
             f"returns the value for NOW anyway. Read its numeric inputs at the offset and "
@@ -250,10 +260,19 @@ def validate_column(
             out.append(Finding(
                 "warning", "OFFSET_IGNORED", f"{path}.offset",
                 f"`offset` applies to the `value` transform; {tid} ignores it"))
-        elif column.offset > lookback:
+        elif column.offset + LOOKBACK_FLOOR > lookback:
+            # The floor is the trap. omega compared offset against the raw 32 and so
+            # accepted offset 16 and 32, both of which the platform refuses: a bare
+            # CLOSE x value column with no window and no offset already reports
+            # columnLookback 24/32. Measured 2026-08-26, see
+            # data/audit/lookback_floor.json.
             out.append(Finding(
                 "error", "LOOKBACK_EXCEEDED", f"{path}.offset",
-                f"offset={column.offset} exceeds the columnLookback budget of {lookback}"))
+                f"offset={column.offset} plus the {LOOKBACK_FLOOR}-bar lookback floor is "
+                f"{column.offset + LOOKBACK_FLOOR}, over the columnLookback budget of "
+                f"{lookback}. The contract publishes `value` as taking only `offset` and "
+                f"no window, so the floor is invisible until the platform refuses the "
+                f"column. Usable offset is {lookback - LOOKBACK_FLOOR}."))
     if column.bars is not None and tid not in SERIES_TRANSFORMS \
             and column.chainedTransformId not in SERIES_TRANSFORMS:
         out.append(Finding(

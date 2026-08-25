@@ -6,6 +6,13 @@ held and what broke.
 
 Data: `data/audit/sweep_2026-08-24.json`. Harness: `scripts/sweep.py`.
 
+> **Superseded 2026-08-26 — and the number was not the problem.** This page recorded
+> "300 of 300 legal shapes". The 300 was accurate; the **denominator** was not. A second
+> sweep rendered every remaining shape and closed live coverage at **1,759 / 1,759
+> operand-expanded, 301 / 301 structural, zero header mismatches** — and found two
+> legality rules omega had never modelled, which had inflated the space by 421 shapes.
+> See the addendum at the foot of this page.
+
 ## The headline
 
 **300 of 300 legal shapes verified. Zero header mismatches.**
@@ -172,6 +179,71 @@ back, render, reconcile — is closed end to end for columns, conditions and mar
 read. What remains untested is `CREATE` from scratch (quota is 25/25, and every
 CREATE attempt predates the connector change) and agent binding, which is deferred
 by choice.
+
+## Addendum — the sweep completed, 2026-08-26
+
+The 2026-08-24 pass covered 300 shapes. It did not cover all of them, and this page said
+it did. Completing it took 11 more renders and turned up two rules the contract does not
+enforce anywhere omega could see.
+
+| | shapes |
+|---|---:|
+| operand-expanded, as published | 2,200 |
+| minus `rankableSpreadOperands` — a published field nobody read | −64 |
+| minus the series-chain operand rule — **a rule nobody published** | −357 |
+| **legal** | **1,779** |
+| rendered live, every header checked | **1,759 / 1,759** |
+
+**421 of the original 2,200 were never legal — 19%.**
+
+The second rule is the one worth reading twice. Chaining a `spread` into a series-building
+successor (`aggregate`, `trajectory`, `efficiency`) requires a **candle-backed operand**; a
+timeless operand is a bundle read and the spread is a single scalar with no series to build
+from. The contract publishes nothing about it. It surfaced on the **545th pair**, after 544
+had passed clean, and every offline check available had already come back green — omega
+reads all 6 transform-spec fields and all 10 metric fields the contract exposes.
+
+That is the argument for rendering over reading, and it is not one that could be made
+before doing it.
+
+### The caps, measured
+
+Three bind, at different times, and which one binds depends on the batch:
+
+| cap | rate | binds on |
+|---|---|---|
+| `estimatedTokens` 16,000 | ~32 / header | wide unchained batches |
+| `estimatedTokens` 16,000 | ~46 / header | chained batches — longer preamble text |
+| `mcp_result_bytes` 256,000 | ~586 bytes / header | **trajectory batches, first** |
+
+A 480-header trajectory batch returned **281,346 bytes** and was refused while
+`estimatedTokens` sat at ~13k of 16k. Sizing against the token budget alone is wrong.
+
+### `sectionColumns` is per-section
+
+Two sections of 3 columns reports `used: 3, cap: 32` — the **max**, not the sum. A render
+holds up to 32 sections × 32 columns. `omega.validate` already enforced this correctly and
+[04](04-section-report-budget.md) already said "columns per section"; the doubt was mine.
+
+### Ordering aliases
+
+For a metric whose values are all one sign, two of the four rank orderings are the **same
+column under different names**. Measured, not reasoned — BTC `OI_rank_lo` and
+`OI_rank_near` both `78/78`; `lowDev_rank_lo` and `lowDev_rank_far` both `38/78`.
+
+- non-negative metric → `rank_lo` **is** `rank_near`, and `rank_hi` **is** `rank_far`
+- non-positive metric → `rank_lo` **is** `rank_far`, and `rank_hi` **is** `rank_near`
+
+Authoring both spends two of your 32 section slots on one measurement, and the headers
+differ so nothing warns you.
+
+### The lookback floor
+
+A single bare `CLOSE × value` column — no window, no offset — reports
+`columnLookback: 24/32`. The contract publishes `value` as taking **only** `offset`, no
+window at all, so the budget you compute from the contract is 24 bars short of the budget
+charged. **Usable `offset` on a `value` column is 8.** See
+[`lookback_floor.json`](../data/audit/lookback_floor.json).
 
 ## Workarounds
 

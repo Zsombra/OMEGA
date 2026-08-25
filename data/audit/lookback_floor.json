@@ -1,0 +1,24 @@
+{
+  "_what": "columnLookback has a floor of 24 that the contract does not publish, which caps usable `offset` at 8 on a `value` column.",
+  "date": "2026-08-26",
+
+  "_howIAlmostGotThisWrong": "The first two observations were PRICE_ZONE x value and REGIME_VOL x value refusing offset 16 with 'requests a lookback of 40 bars (window + offset) - the cap is 32', receivedValue {\"window\": 24, \"offset\": 16, \"lookback\": 40}. I was about to record that as 'PRICE_ZONE and REGIME_VOL carry an implicit window of 24' - a metric-specific fact. Then I noticed columnLookback.used read 24 in nearly EVERY render of the day, including trivial ones, and tested the floor directly.",
+
+  "theDecidingProbe": {
+    "request": "one section, one column: CLOSE x value, no window, no offset",
+    "budgetUsage": { "sectionColumns": "1/32", "columnLookback": "24/32", "estimatedTokens": "27/16000" },
+    "verdict": "A single bare value column with no window and no offset still consumes 24 of the 32-bar lookback budget. So 24 is a floor, not something PRICE_ZONE carries."
+  },
+
+  "measured": {
+    "metricsObservedAt24": ["CLOSE", "PRICE_ZONE", "REGIME_VOL"],
+    "rendersObservedAt24OrMore": "every render taken on 2026-08-26, regardless of contents",
+    "_honestLimit": "Three metrics cannot separate 'a global constant floor' from 'every metric happens to carry 24'. The practical consequence is identical either way and that is what is stated below; the mechanism is not claimed."
+  },
+
+  "practicalRule": "On a `value` column, usable offset is 32 - 24 = 8. Requesting more returns REPORT_COLUMN_LOOKBACK_EXCEEDED. This held for every metric tested.",
+
+  "whyItMatters": "columnLookback is one of the seven budgets, and the contract publishes `value` as taking ONLY `offset` - no window at all. So the budget an author computes from the contract is 24 bars short of the budget the platform charges. Anyone planning a wide report against the published parameters will hit the cap earlier than their arithmetic predicts.",
+
+  "notFiledAsADefect": "The floor is consistent and the error message is precise and actionable - it names the cap, the measured lookback, and the window/offset split. It is undocumented rather than broken. Recorded here so omega's budget arithmetic can account for it."
+}

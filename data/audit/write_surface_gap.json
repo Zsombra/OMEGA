@@ -1,0 +1,42 @@
+{
+  "_what": "What a BattleGrid strategy actually carries, versus what omega.generate emits. Measured 2026-08-26 by diffing StrategyPlan.wire() against the live compile_strategy_plan request schema.",
+  "_why": "Every verification in this repo compares omega against the READ surface - preview_strategy_report. The WRITE surface is a different schema with different field names and a much larger parameter set. 100% column coverage says nothing about whether the thing you built can be saved.",
+
+  "status": "NOT A DEFECT. omega.generate.emit_plan stamps every plan '_generatedBy: omega.generate - LOCAL ONLY, not submitted'. The last mile was deliberately not built. This records the size of it.",
+
+  "keyMismatch": {
+    "omegaEmitsButTheApiRejects": ["cadence", "regimeTimeframe", "signalRules"],
+    "_note": "signalRules is simply the wrong name - the API calls it `rules`. cadence and regimeTimeframe have no equivalent in the CREATE/UPDATE/RESTORE schemas at all.",
+    "_confidence": "SCHEMA-DERIVED, NOT MEASURED. The request objects declare additionalProperties: false, so unknown keys should be refused. No compile call has been made to confirm it. One compile would settle it - compile performs no write.",
+
+    "apiRequiresButOmegaOmits": ["operation", "intentSummary", "assumptions", "coinSelection"],
+    "_substantive": "coinSelection is the one that matters. A generated strategy currently does not say which coins it trades. The other three are metadata the caller supplies."
+  },
+
+  "executionSurfaceNotModelled": {
+    "count": 16,
+    "parameters": {
+      "risk": ["minAtrPct", "minRiskRewardRatio", "minStopLossAtrMultiple", "maxStopLossAtrMultiple"],
+      "trailing": ["trailingEnabled", "trailingTriggerR", "trailingGivebackPct", "trailingBufferPct"],
+      "breakEven": ["breakEvenEnabled", "breakEvenTriggerR"],
+      "timeDecay": ["timeDecayEnabled", "timeDecayIntervalMinutes", "timeDecayGracePeriodMinutes", "timeDecayTightenPct", "timeDecayMaxTightenPct", "timeDecayStaleThresholdTpProgressPct"]
+    },
+    "boundsThePublishedSchemaCarries": {
+      "trailingGivebackPct": "25-55", "trailingTriggerR": "0-2, multipleOf 0.01",
+      "trailingBufferPct": "0.01-1", "breakEvenTriggerR": "0.5-2",
+      "minAtrPct": "0.01-50", "timeDecayIntervalMinutes": "1-480",
+      "timeDecayGracePeriodMinutes": "1-1440", "timeDecayTightenPct": "0.1-50",
+      "timeDecayMaxTightenPct": "1-100", "timeDecayStaleThresholdTpProgressPct": "0-100"
+    },
+    "grepResult": "5 of the 6 probed - trailingEnabled, breakEvenTriggerR, minStopLossAtrMultiple, timeDecayEnabled, minRiskRewardRatio - appear NOWHERE in omega/ or docs/. Only minAtrPct is mentioned anywhere.",
+    "consequence": "omega can author WHAT TO LOOK AT and not HOW TO TRADE IT. A strategy with sound entries and a bad stop loses money, and the toolkit currently has nothing to say about the stop."
+  },
+
+  "whatIsAlreadyProven": {
+    "writeAxes": "REPORT, MARKET_READ and CONDITIONS have all been written and read back - see data/audit/write_path_2026-08-24.json and sweep_2026-08-24.json['conditionsWrite'].",
+    "butHandBuilt": "All three were written from hand-built payloads. No omega-GENERATED plan has ever been compiled or applied.",
+    "rulesAxis": "The `rules` array - 84 signalIds with allocation 0-3 and a required flag - has never been written at all. A generated plan carries 84 of them."
+  },
+
+  "nextStep": "Rename signalRules -> rules, drop or map cadence/regimeTimeframe, add the four required fields, then run compile_strategy_plan on a generated plan for a real verdict. compile performs NO WRITE, so this is safe and does not touch the agent-binding constraint."
+}
