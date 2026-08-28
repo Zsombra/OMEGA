@@ -51,9 +51,9 @@ Key measured facts (do not re-derive, do not contradict):
 
 **Files:** none modified.
 
-- [ ] **Step 0.1:** Isolated workspace (superpowers:using-git-worktrees): branch at current `origin/main` (`git fetch origin`; expect `8c292db` or a descendant). `python -m pytest -q` → **849 passed** (drift → read the new commits before proceeding).
-- [ ] **Step 0.2:** `ToolSearch` `select:…compile_strategy_plan` (and `…restore_strategy` if not loaded). Diff by script: CREATE keys/bounds vs the pinned sets (pattern: the 2026-08-28 preflights), PLUS the UPDATE arm — its required set vs the Key facts above, its accepted keys vs `API_ACCEPTS ∪ {strategyId, expectedRevision}`. Drift → STOP, update pins in their own commit.
-- [ ] **Step 0.3:** `list_strategies` — quota (expect 24/25 with the free slot the restore will use) and `6a8bca67` ABSENT from the active list. Confirm the kickoff authorizes, in the user's own words: 1 restore, ≤2 compiles, 1 UPDATE apply (per-instance), 1 archive. Any missing → STOP and ask.
+- [x] **Step 0.1:** Isolated workspace (superpowers:using-git-worktrees): branch at current `origin/main` (`git fetch origin`; expect `8c292db` or a descendant). `python -m pytest -q` → **849 passed** (drift → read the new commits before proceeding).
+- [x] **Step 0.2:** `ToolSearch` `select:…compile_strategy_plan` (and `…restore_strategy` if not loaded). Diff by script: CREATE keys/bounds vs the pinned sets (pattern: the 2026-08-28 preflights), PLUS the UPDATE arm — its required set vs the Key facts above, its accepted keys vs `API_ACCEPTS ∪ {strategyId, expectedRevision}`. Drift → STOP, update pins in their own commit.
+- [x] **Step 0.3:** `list_strategies` — quota (expect 24/25 with the free slot the restore will use) and `6a8bca67` ABSENT from the active list. Confirm the kickoff authorizes, in the user's own words: 1 restore, ≤2 compiles, 1 UPDATE apply (per-instance), 1 archive. Any missing → STOP and ask.
 
 ### Task 1: The emitter and the harness mode
 
@@ -64,7 +64,7 @@ Key measured facts (do not re-derive, do not contradict):
 **Interfaces:**
 - Produces: `StrategyPlan.wire_update(strategy_id: str, expected_revision: int) -> dict`; `update_request(strategy_id: str, revision: int) -> dict` and CLI `update <strategyId> <revision>` in the harness; `UPDATE_EXECUTION = {"minRiskRewardRatio": 2.0}`.
 
-- [ ] **Step 1.1: Write the failing tests** — create `tests/test_first_update.py`:
+- [x] **Step 1.1: Write the failing tests** — create `tests/test_first_update.py`:
 
 ```python
 """The generated UPDATE (design 2026-08-29): wire_update is wire() plus exactly three
@@ -116,8 +116,8 @@ def test_update_mode_body_differs_from_small_in_exactly_the_declared_fields():
     assert "execution overrides set: ['minRiskRewardRatio']" in up["assumptions"][2]
 ```
 
-- [ ] **Step 1.2:** `python -m pytest tests/test_first_update.py -q` — expect FAIL (`wire_update` / `update_request` not defined).
-- [ ] **Step 1.3: Implement.** In `omega/generate.py`, after `wire()`:
+- [x] **Step 1.2:** `python -m pytest tests/test_first_update.py -q` — expect FAIL (`wire_update` / `update_request` not defined).
+- [x] **Step 1.3: Implement.** In `omega/generate.py`, after `wire()`:
 
 ```python
     def wire_update(self, strategy_id: str, expected_revision: int) -> dict:
@@ -157,7 +157,7 @@ and in `main()`, before the `record-into` mode:
         return 0
 ```
 
-- [ ] **Step 1.4:** `python -m pytest -q` — all green (849 + 4 = 853). Commit `wire_update: the full body from the Thesis, re-targeted` → push.
+- [x] **Step 1.4:** `python -m pytest -q` — all green (849 + 4 = 853). Commit `wire_update: the full body from the Thesis, re-targeted` → push.
 
 ### Task 2: The live loop — one restore, one compile, one apply, one archive
 
@@ -169,19 +169,19 @@ and in `main()`, before the `record-into` mode:
 - Consumes: `update_request` / CLI `update` from Task 1; `record-into <respfile> <key> <auditfile>` from the harness.
 - Produces: the audit record with `probes: {preState, restore, compile, apply, readBack, archive}`, `verdicts: {restoreRevisionDelta, rrDiffAxis, sectionKeysOnUpdate}`, and the `_what`/`_predictionsStatedBeforeMeasuring`/`_interpretation`/`_honestLimits` blocks the pins assert on.
 
-- [ ] **Step 2.1 (read the archived state):** `get_strategy {strategyId: "6a8bca67-45a3-428e-85ba-71ec2cd2218e", includeInactive: true}`. Save the response to a scratch file, `record-into … preState first_generated_update_2026-XX-XX.json`. Verify by script: `isActive` false, `boundAgentCount` 0, `openPositionCount` 0, name "Trend Continuation", `minRiskRewardRatio` 1.5; capture the CURRENT revision as **R** (expect 2 — if it differs, use the measured value and say so in the record). Bound or active → STOP and surface.
-- [ ] **Step 2.2 (restore):** `restore_strategy {strategyId, expectedRevision: R}` → record under `restore`. Verify: `isActive` true; capture the post-restore revision **R′** (prediction: R+1 — record held/failed). `REPAIR_REQUIRED` → record, STOP, surface (the content compiled viable; that refusal would be a platform finding).
-- [ ] **Step 2.3 (the compile, 1 of ≤2):** `python -m scripts.compile_dry_run update 6a8bca67-45a3-428e-85ba-71ec2cd2218e <R′>` → sanity by script (the five declared fields vs `small`, correct id and revision) → ONE `compile_strategy_plan` with the printed body → record under `compile` (token auto-redacted by `record-into`; keep the raw token ONLY in session for Step 2.5).
-- [ ] **Step 2.4 (scripted diff inspection — pre-committed):** parse `approvedPlan` from the overflow file. **Apply only if ALL hold:**
+- [x] **Step 2.1 (read the archived state):** `get_strategy {strategyId: "6a8bca67-45a3-428e-85ba-71ec2cd2218e", includeInactive: true}`. Save the response to a scratch file, `record-into … preState first_generated_update_2026-XX-XX.json`. Verify by script: `isActive` false, `boundAgentCount` 0, `openPositionCount` 0, name "Trend Continuation", `minRiskRewardRatio` 1.5; capture the CURRENT revision as **R** (expect 2 — if it differs, use the measured value and say so in the record). Bound or active → STOP and surface.
+- [x] **Step 2.2 (restore):** `restore_strategy {strategyId, expectedRevision: R}` → record under `restore`. Verify: `isActive` true; capture the post-restore revision **R′** (prediction: R+1 — record held/failed). `REPAIR_REQUIRED` → record, STOP, surface (the content compiled viable; that refusal would be a platform finding).
+- [x] **Step 2.3 (the compile, 1 of ≤2):** `python -m scripts.compile_dry_run update 6a8bca67-45a3-428e-85ba-71ec2cd2218e <R′>` → sanity by script (the five declared fields vs `small`, correct id and revision) → ONE `compile_strategy_plan` with the printed body → record under `compile` (token auto-redacted by `record-into`; keep the raw token ONLY in session for Step 2.5).
+- [x] **Step 2.4 (scripted diff inspection — pre-committed):** parse `approvedPlan` from the overflow file. **Apply only if ALL hold:**
   - `viability.viable` is true and `operation == "UPDATE"` and `expectedRevision == R′`;
   - exactly one diff axis shows `minRiskRewardRatio` before 1.5 → after 2.0 — record WHICH under `verdicts.rrDiffAxis` (the unmeasured fact this compile settles);
   - `identity`, `timeframeProfile`, `marketRead`, `setupGates` read before==after; the `signalRules` diff list is empty or every entry reads before==after; `lifecycle` reads active→active;
   - `report` before==after (`verdicts.sectionKeysOnUpdate = "PRESERVED"`), **or** a lockstep re-mint: keys changed AND every condition column reference in `conditions.after` names a key present in `report.after` (`= "LOCKSTEP_REMINT"` — proceed, and record the churn as a named finding).
   Anything else — non-viable, an unexpected axis, an inconsistent re-mint — record verbatim, let the token expire, add a dated note to THIS plan, STOP and surface. A refusal is a finding, not a retry loop.
-- [ ] **Step 2.5 (the ONE authorized apply):** within the token's 5 minutes: `apply_strategy_plan {request: {confirm: true, planToken}}`. `INTERNAL_ERROR` → resend identical. Timeout → `get_strategy` on the id first; only recompile (the contingency, say so) if the token is dead and the apply did NOT land. Record the response under `apply` — `appliedImpact.changedAxes`, `committedRevision`, `boundAgentCount`/`propagatedAgentCount` (both must be 0).
-- [ ] **Step 2.6 (read-back):** `get_strategy` on the id → record under `readBack`. Verify by script against `preState`: `minRiskRewardRatio` 1.5→**2.0**; the other 15 execution params byte-equal; `signalRules`, `marketReadText`, name/tagline/description, `minAggregateScore`, `minRequiredCount`, `timeframe/cadence/regimeTimeframe` all equal; `sections`+`conditions` equal (or, under LOCKSTEP_REMINT, internally consistent — every condition reference resolves); revision == the apply's `committedRevision` (capture as **R″**); `isActive` true, `boundAgentCount` 0.
-- [ ] **Step 2.7 (re-archive, the user's standing disposition):** `archive_strategy {strategyId, expectedRevision: R″, confirm: true}` → record under `archive`. Verify: `isActive` false, revision R″+1. `list_strategies` → quota back to 24/25, noted in the record.
-- [ ] **Step 2.8 (finalize + pin):** fill `_what` (the loop, the design decisions it proves), `_predictionsStatedBeforeMeasuring` (restore delta, rr axis, sectionKeys — copied from this plan), `verdicts` (all three), `_interpretation` (honest: what the loop proves — generate → revise → verify works end to end; what it does not — one field, one strategy, conflict handling untouched), `_honestLimits` (single data point per verdict; token redacted; nothing bound). Append the record pins to `tests/test_first_update.py`:
+- [x] **Step 2.5 (the ONE authorized apply):** within the token's 5 minutes: `apply_strategy_plan {request: {confirm: true, planToken}}`. `INTERNAL_ERROR` → resend identical. Timeout → `get_strategy` on the id first; only recompile (the contingency, say so) if the token is dead and the apply did NOT land. Record the response under `apply` — `appliedImpact.changedAxes`, `committedRevision`, `boundAgentCount`/`propagatedAgentCount` (both must be 0).
+- [x] **Step 2.6 (read-back):** `get_strategy` on the id → record under `readBack`. Verify by script against `preState`: `minRiskRewardRatio` 1.5→**2.0**; the other 15 execution params byte-equal; `signalRules`, `marketReadText`, name/tagline/description, `minAggregateScore`, `minRequiredCount`, `timeframe/cadence/regimeTimeframe` all equal; `sections`+`conditions` equal (or, under LOCKSTEP_REMINT, internally consistent — every condition reference resolves); revision == the apply's `committedRevision` (capture as **R″**); `isActive` true, `boundAgentCount` 0.
+- [x] **Step 2.7 (re-archive, the user's standing disposition):** `archive_strategy {strategyId, expectedRevision: R″, confirm: true}` → record under `archive`. Verify: `isActive` false, revision R″+1. `list_strategies` → quota back to 24/25, noted in the record.
+- [x] **Step 2.8 (finalize + pin):** fill `_what` (the loop, the design decisions it proves), `_predictionsStatedBeforeMeasuring` (restore delta, rr axis, sectionKeys — copied from this plan), `verdicts` (all three), `_interpretation` (honest: what the loop proves — generate → revise → verify works end to end; what it does not — one field, one strategy, conflict handling untouched), `_honestLimits` (single data point per verdict; token redacted; nothing bound). Append the record pins to `tests/test_first_update.py`:
 
 ```python
 # --- the live loop, 2026-XX-XX: pinned record ---------------------------------
@@ -227,7 +227,7 @@ def test_the_lifecycle_ends_where_it_started():
     assert tok is not None and set(tok) == {"_redacted", "length", "sha256"}
 ```
 
-- [ ] **Step 2.9:** `python -m pytest -q` — green (853 + 3 = 856). Commit `Apply the first generated UPDATE: <rr axis verdict>, <sectionKeys verdict>` → push. Failed predictions (restore delta, axis, keys) get their honest sentence in the commit message.
+- [x] **Step 2.9:** `python -m pytest -q` — green (853 + 3 = 856). Commit `Apply the first generated UPDATE: <rr axis verdict>, <sectionKeys verdict>` → push. Failed predictions (restore delta, axis, keys) get their honest sentence in the commit message.
 
 ### Task 3: Documentation and finish
 
