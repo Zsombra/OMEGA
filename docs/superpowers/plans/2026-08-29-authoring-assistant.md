@@ -15,6 +15,7 @@
 - **Everything derived, one exception:** every number and vocabulary item comes from the measured maps/constants (`MODULE_RECIPES`, `MODULE_CLAUSES`, `CADENCE_FOR_ANCHOR`, `REGIME_TF_FOR_ANCHOR`, `RANKED_LIMIT_MEASURED_MAX`, `omega.execution`); the ONLY hand-written data is `MODULE_DESCRIPTIONS` (plain-language one-liners, marked as such in the code).
 - Honesty rules carry into generated text: the checklist labels unexecuted/unverified steps as such; the brief includes findings verbatim; no performance language anywhere.
 - Baseline: `main` at `359af3b`, **857 tests passing**. `python -m pytest -q` before every commit; commit messages end with the Claude co-author line.
+- **Executed 2026-08-29**: 857 → **874** (+13 authoring, +4 registry), zero live calls in code, tests and transcript (grep-verified: no MCP/network import in any file this plan added). One deviation from the plan's snippets, driven by its own test: `Finding.__str__` omits the code, so `brief()` renders finding codes explicitly.
 - Windows: Write/Edit tools for committed files, not shell heredocs.
 
 ## Context an executor needs (read these first)
@@ -43,8 +44,8 @@ Key verified facts (do not re-derive, do not contradict):
 
 **Files:** none modified.
 
-- [ ] **Step 0.1:** Isolated workspace (superpowers:using-git-worktrees): branch at current `origin/main` (`git fetch origin`; expect `359af3b` or a descendant). `python -m pytest -q` → **857 passed** (drift → read the new commits first).
-- [ ] **Step 0.2:** Confirm the zero-live-call nature of this plan needs no authorizations; nothing to gate. Proceed.
+- [x] **Step 0.1:** Isolated workspace (superpowers:using-git-worktrees): branch at current `origin/main` (`git fetch origin`; expect `359af3b` or a descendant). `python -m pytest -q` → **857 passed** (drift → read the new commits first).
+- [x] **Step 0.2:** Confirm the zero-live-call nature of this plan needs no authorizations; nothing to gate. Proceed.
 
 ### Task 1: `vocabulary()` — the complete menu
 
@@ -55,7 +56,7 @@ Key verified facts (do not re-derive, do not contradict):
 **Interfaces:**
 - Produces: `vocabulary() -> dict` with keys `modules` (17 entries: `measures`, `directional`, `readings`, `signals`), `anchors`, `universe`, `execution`, `stances`; `MODULE_DESCRIPTIONS: dict`; `_clause_text(clause: dict) -> str`.
 
-- [ ] **Step 1.1: Write the failing tests** — create `tests/test_authoring.py`:
+- [x] **Step 1.1: Write the failing tests** — create `tests/test_authoring.py`:
 
 ```python
 """The authoring surface (design 2026-08-29): the menu, the guardrails, the brief.
@@ -105,8 +106,8 @@ def test_clause_text_renders_every_op():
                          "low": -1, "high": 1}) == "H between -1 and 1"
 ```
 
-- [ ] **Step 1.2:** Run `python -m pytest tests/test_authoring.py -q` — expect FAIL (module missing).
-- [ ] **Step 1.3: Implement** — create `omega/authoring.py`:
+- [x] **Step 1.2:** Run `python -m pytest tests/test_authoring.py -q` — expect FAIL (module missing).
+- [x] **Step 1.3: Implement** — create `omega/authoring.py`:
 
 ```python
 """The authoring surface: what can be said, whether a Thesis says it legally, and
@@ -192,7 +193,7 @@ def vocabulary() -> dict:
 ```
 
 (`Thesis`, `Finding` and `validate_execution` are imported now because Tasks 2–3 use them from this module; if the linter flags them before then, that is expected and resolves in Task 2.)
-- [ ] **Step 1.4:** `python -m pytest -q` — green (857 + 4 = 861). Commit `The authoring vocabulary: every measured menu item, derived` → push.
+- [x] **Step 1.4:** `python -m pytest -q` — green (857 + 4 = 861). Commit `The authoring vocabulary: every measured menu item, derived` → push.
 
 ### Task 2: `validate_thesis` — the guardrails
 
@@ -203,7 +204,7 @@ def vocabulary() -> dict:
 **Interfaces:**
 - Produces: `validate_thesis(thesis: Thesis) -> list[Finding]`, codes `THESIS_UNKNOWN_MODULE`, `THESIS_BAD_WEIGHT`, `THESIS_TOO_FEW_DIRECTIONAL`, `THESIS_BAD_STANCE`, `THESIS_UNMEASURED_ANCHOR`, `THESIS_UNIVERSE_TOO_WIDE`, `THESIS_UNFEEDABLE_REQUIRED`, plus everything `validate_execution` returns.
 
-- [ ] **Step 2.1: Write the failing tests** — append to `tests/test_authoring.py`:
+- [x] **Step 2.1: Write the failing tests** — append to `tests/test_authoring.py`:
 
 ```python
 from dataclasses import replace
@@ -263,8 +264,8 @@ def test_execution_findings_flow_through():
     assert "EXECUTION_OUTSIDE_CATALOG_BOUND" in _codes(t)
 ```
 
-- [ ] **Step 2.2:** Run — expect FAIL (`validate_thesis` not defined).
-- [ ] **Step 2.3: Implement** — append to `omega/authoring.py`:
+- [x] **Step 2.2:** Run — expect FAIL (`validate_thesis` not defined).
+- [x] **Step 2.3: Implement** — append to `omega/authoring.py`:
 
 ```python
 DIRECTIONAL_MODULES = frozenset(m for m, s in MODULE_CLAUSES.items() if "up" in s)
@@ -318,7 +319,7 @@ def validate_thesis(thesis: Thesis) -> list[Finding]:
     return out
 ```
 
-- [ ] **Step 2.4:** `python -m pytest -q` — green (861 + 7 = 868). Commit `validate_thesis: the guardrails the generator lacks` → push.
+- [x] **Step 2.4:** `python -m pytest -q` — green (861 + 7 = 868). Commit `validate_thesis: the guardrails the generator lacks` → push.
 
 ### Task 3: `brief()` — the offline deliverable
 
@@ -329,7 +330,7 @@ def validate_thesis(thesis: Thesis) -> list[Finding]:
 **Interfaces:**
 - Produces: `brief(p: StrategyPlan) -> str` — one honest page: identity line, thesis-finding lines, critique lines, wire vitals.
 
-- [ ] **Step 3.1: Write the failing tests** — append:
+- [x] **Step 3.1: Write the failing tests** — append:
 
 ```python
 def test_the_brief_is_one_honest_page():
@@ -351,8 +352,8 @@ def test_the_brief_carries_findings_verbatim():
     assert "THESIS_UNKNOWN_MODULE" in brief(plan(t))
 ```
 
-- [ ] **Step 3.2:** Run — expect FAIL (`brief` not defined).
-- [ ] **Step 3.3: Implement** — append to `omega/authoring.py`:
+- [x] **Step 3.2:** Run — expect FAIL (`brief` not defined).
+- [x] **Step 3.3: Implement** — append to `omega/authoring.py`:
 
 ```python
 def brief(p) -> str:
@@ -383,7 +384,7 @@ def brief(p) -> str:
     return "\n".join(lines)
 ```
 
-- [ ] **Step 3.4:** `python -m pytest -q` — green (868 + 2 = 870). Commit `brief(): the one-page offline deliverable` → push.
+- [x] **Step 3.4:** `python -m pytest -q` — green (868 + 2 = 870). Commit `brief(): the one-page offline deliverable` → push.
 
 ### Task 4: The registry and the prepare-never-execute checklist
 
@@ -394,7 +395,7 @@ def brief(p) -> str:
 **Interfaces:**
 - Produces: `new_entry(strategy_id, created_date, thesis, audit_record, disposition) -> dict`; `add_revision(entry, date, revision, change, audit_record) -> dict`; `save(entry) -> Path`; `load(strategy_id) -> dict`; `checklist(entry) -> str`; `CREATED_DIR: Path`.
 
-- [ ] **Step 4.1: Write the failing tests** — create `tests/test_registry.py`:
+- [x] **Step 4.1: Write the failing tests** — create `tests/test_registry.py`:
 
 ```python
 """The advisor-ready creation registry and the prepare-never-execute checklist
@@ -451,8 +452,8 @@ def test_the_committed_checklist_matches_the_generator():
     assert committed == checklist(load(SIX_A))
 ```
 
-- [ ] **Step 4.2:** Run — expect FAIL (module missing).
-- [ ] **Step 4.3: Implement** — create `omega/registry.py`:
+- [x] **Step 4.2:** Run — expect FAIL (module missing).
+- [x] **Step 4.3: Implement** — create `omega/registry.py`:
 
 ```python
 """The advisor-ready creation registry and the prepare-never-execute checklist
@@ -526,8 +527,8 @@ def checklist(entry: dict) -> str:
     ])
 ```
 
-- [ ] **Step 4.4: The backfill** — write `data/created/6a8bca67-45a3-428e-85ba-71ec2cd2218e.json` by script (Python, using `new_entry`/`add_revision`/`save` with the facts from the two audit records — read them, do not retype): created 2026-08-28 revision 1 (create+verify), revisions `[{2026-08-28, 2, "archived after verification"}, {2026-08-29, 3, "restored for the revision loop"}, {2026-08-29, 4, "R:R override 1.5 -> 2.0 via wire_update"}, {2026-08-29, 5, "archived after verification"}]`, disposition `archived`, both audit record paths, thesis = the trend-continuation preset asdict with `coin_selection` explicit BTC/ETH/SOL and `execution {"minRiskRewardRatio": 2.0}` (the post-revision truth). Then write the committed checklist beside it: `(CREATED_DIR / f"{SIX_A}.checklist.md").write_text(checklist(load(SIX_A)), encoding="utf-8")`.
-- [ ] **Step 4.5:** `python -m pytest -q` — green (870 + 4 = 874). Commit `The creation registry and its prepare-never-execute checklist` → push.
+- [x] **Step 4.4: The backfill** — write `data/created/6a8bca67-45a3-428e-85ba-71ec2cd2218e.json` by script (Python, using `new_entry`/`add_revision`/`save` with the facts from the two audit records — read them, do not retype): created 2026-08-28 revision 1 (create+verify), revisions `[{2026-08-28, 2, "archived after verification"}, {2026-08-29, 3, "restored for the revision loop"}, {2026-08-29, 4, "R:R override 1.5 -> 2.0 via wire_update"}, {2026-08-29, 5, "archived after verification"}]`, disposition `archived`, both audit record paths, thesis = the trend-continuation preset asdict with `coin_selection` explicit BTC/ETH/SOL and `execution {"minRiskRewardRatio": 2.0}` (the post-revision truth). Then write the committed checklist beside it: `(CREATED_DIR / f"{SIX_A}.checklist.md").write_text(checklist(load(SIX_A)), encoding="utf-8")`.
+- [x] **Step 4.5:** `python -m pytest -q` — green (870 + 4 = 874). Commit `The creation registry and its prepare-never-execute checklist` → push.
 
 ### Task 5: Doc 20 — the authoring procedure
 
@@ -535,7 +536,7 @@ def checklist(entry: dict) -> str:
 - Create: `docs/20-the-authoring-procedure.md`
 - Modify: `README.md` (index line + masthead sentence)
 
-- [ ] **Step 5.1:** Write `docs/20-the-authoring-procedure.md` with exactly these sections (prose to write, grounded in the modules built above — every claim must trace to a measured record or a built function; no performance language anywhere):
+- [x] **Step 5.1:** Write `docs/20-the-authoring-procedure.md` with exactly these sections (prose to write, grounded in the modules built above — every claim must trace to a measured record or a built function; no performance language anywhere):
   1. **What this is** — the assistant = a Claude session following this procedure; the four phase decisions and four design decisions, each named with its date.
   2. **Intake** — the questions to ask the user (what do you believe moves price; which of the 17 modules measure that — show `vocabulary()`; direction with or against the crowd → stance; how fast → anchor from the 4; which coins → universe within measured bounds; any trade-shape overrides → execution).
   3. **The honesty gate** — the refuse-and-offer-nearest policy verbatim: name what the platform cannot measure and why (cite the vocabulary), offer the nearest expressible thesis clearly labeled as different, never silently substitute.
@@ -543,15 +544,15 @@ def checklist(entry: dict) -> str:
   5. **Live steps, each per-authorized** — the exact authorization sentence templates and the proven procedures, by reference: compile dry-run (doc 16 compile discipline; record verbatim, redact tokens), create+verify+auto-archive (the 2026-08-28 loop, `first_generated_apply` record as the template), revise (the 2026-08-29 loop, `wire_update`, pre-apply diff inspection, the sectionKey-churn caveat).
   6. **After every create or revise** — update the registry entry and regenerate its checklist; both are committed files.
   7. **What the assistant never does** — bind, deploy, predict performance; the checklist prepares those steps for the user.
-- [ ] **Step 5.2:** README: add the index row `| [20 · The authoring procedure](docs/20-the-authoring-procedure.md) | how a session turns intent into a strategy — the vocabulary, the guardrails, the honesty gate, and the per-authorized live loops |` and one masthead sentence stating the assistant surface exists as of the execution date.
-- [ ] **Step 5.3:** `python -m pytest -q` — green (874, no new tests). Commit `Doc 20: the authoring procedure` → push.
+- [x] **Step 5.2:** README: add the index row `| [20 · The authoring procedure](docs/20-the-authoring-procedure.md) | how a session turns intent into a strategy — the vocabulary, the guardrails, the honesty gate, and the per-authorized live loops |` and one masthead sentence stating the assistant surface exists as of the execution date.
+- [x] **Step 5.3:** `python -m pytest -q` — green (874, no new tests). Commit `Doc 20: the authoring procedure` → push.
 
 ### Task 6: Finish
 
-- [ ] **Step 6.1:** Full suite; reconcile this plan's baseline note (857 → final) with a dated line; verify by grep that no test or module added in this plan imports the MCP connector or makes network calls.
-- [ ] **Step 6.2:** Integrate: `git fetch origin && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` (STOP on non-FF).
-- [ ] **Step 6.3:** Update memory (`next-session-compile-bridge.md` or successor): the assistant surface is built; what exists (vocabulary/guardrails/brief/registry/checklist/doc 20); the first real authoring conversation is the natural next session; binding/deployment stay user-gated, always.
-- [ ] **Step 6.4:** Final report: what was built, test count, the zero-live-call confirmation, and what the user does next (open a session, state an intent, follow doc 20).
+- [x] **Step 6.1:** Full suite; reconcile this plan's baseline note (857 → final) with a dated line; verify by grep that no test or module added in this plan imports the MCP connector or makes network calls.
+- [x] **Step 6.2:** Integrate: `git fetch origin && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` (STOP on non-FF).
+- [x] **Step 6.3:** Update memory (`next-session-compile-bridge.md` or successor): the assistant surface is built; what exists (vocabulary/guardrails/brief/registry/checklist/doc 20); the first real authoring conversation is the natural next session; binding/deployment stay user-gated, always.
+- [x] **Step 6.4:** Final report: what was built, test count, the zero-live-call confirmation, and what the user does next (open a session, state an intent, follow doc 20).
 
 ## Deliberately absent (lean by the user's instruction)
 
