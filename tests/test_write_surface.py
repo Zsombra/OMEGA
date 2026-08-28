@@ -112,11 +112,14 @@ def test_coin_selection_default_is_class_aware():
     """CVD and FLOW_DIVERGENCE are crypto-only (doc 12 + trap 21); FUNDING and
     OPEN_INTEREST are NOT - synthetic perps carry both everywhere. A thesis touching a
     crypto-only module must not default to a universe where its columns render null,
-    because null reads FALSE (trap 11)."""
+    because null reads FALSE (trap 11). Limit capped to the measured BG-14 boundary,
+    2026-08-28: a limit-30 default could never compile (395,404 > 256,000 measured);
+    the boundary is 4 (cap_boundary_2026-08-28.json). Old limit in git history."""
+    from omega.generate import RANKED_LIMIT_MEASURED_MAX as CAP
     assert plan(PRESETS["mean-reversion"]).wire()["coinSelection"] == {
-        "mode": "ranked", "category": "CRYPTO", "limit": 30}      # weights CVD
+        "mode": "ranked", "category": "CRYPTO", "limit": CAP}     # weights CVD
     assert plan(PRESETS["trend-continuation"]).wire()["coinSelection"] == {
-        "mode": "ranked", "category": "ALL", "limit": 30}         # no crypto-only module
+        "mode": "ranked", "category": "ALL", "limit": CAP}        # no crypto-only module
 
 
 # --- the lookback floor ------------------------------------------------------

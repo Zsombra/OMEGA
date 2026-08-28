@@ -183,6 +183,14 @@ REGIME_TF_FOR_ANCHOR = {"5m": "15m", "15m": "1h", "1h": "4h", "4h": "1d"}
 # FUNDING and OPEN_INTEREST are deliberately NOT here - synthetic perps carry both.
 CRYPTO_ONLY_MODULES = {"CVD", "FLOW_DIVERGENCE"}
 
+# Measured 2026-08-28 (cap_boundary_2026-08-28.json): the largest ranked selection
+# whose compile preview fits BG-14's 256,000-byte cap, FOR THE TREND-CONTINUATION
+# REPORT SHAPE (11 custom columns) - exact adjacent-pair bracket: 4 viable, 5 refused
+# at 258,883 bytes; CRYPTO also viable at 4. Report-relative: a wider report refuses
+# earlier. The compile is the authority; this number only steers defaults and
+# warnings. The byte curve is concave, so this is nowhere near cap/coins-at-30.
+RANKED_LIMIT_MEASURED_MAX = 4
+
 
 @dataclass
 class Thesis:
@@ -210,11 +218,14 @@ class Thesis:
         return list(self.weights) + [m for m in self.context if m not in self.weights]
 
     def resolved_coin_selection(self) -> dict:
-        """Explicit selection wins; otherwise class-aware ranked-30 (see the test)."""
+        """Explicit selection wins; otherwise class-aware ranked, capped to the
+        measured BG-14 boundary - a limit-30 default could never compile (measured
+        2026-08-28; the old limit is preserved in git history)."""
         if self.coin_selection is not None:
             return self.coin_selection
         cat = "CRYPTO" if CRYPTO_ONLY_MODULES & set(self.modules) else "ALL"
-        return {"mode": "ranked", "category": cat, "limit": 30}
+        return {"mode": "ranked", "category": cat,
+                "limit": min(30, RANKED_LIMIT_MEASURED_MAX)}
 
 
 # --- preset theses --------------------------------------------------------
@@ -343,6 +354,14 @@ class StrategyPlan:
             f"trailing {'on' if eff['trailingEnabled'] else 'off'}, break-even "
             f"{'on' if eff['breakEvenEnabled'] else 'off'} at {eff['breakEvenTriggerR']}R, "
             f"time decay {'on' if eff['timeDecayEnabled'] else 'off'}")
+
+        sel = self.thesis.resolved_coin_selection()
+        if sel.get("mode") == "ranked" and sel.get("limit", 0) > RANKED_LIMIT_MEASURED_MAX:
+            out.append(
+                f"coinSelection warning: ranked limit {sel['limit']} exceeds the measured "
+                f"compile-preview boundary {RANKED_LIMIT_MEASURED_MAX} (BG-14) - expect a "
+                f"byte-cap refusal (measured for the trend-continuation report shape; "
+                f"wider reports refuse earlier)")
         return out
 
     # -- output -----------------------------------------------------------

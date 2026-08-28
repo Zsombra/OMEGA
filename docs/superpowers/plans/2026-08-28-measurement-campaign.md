@@ -295,10 +295,10 @@ def test_emit_plan_works_at_every_measured_anchor():
 
 **Prediction (stated now):** preview bytes ≈ linear in coin count. One datapoint exists (395,404 @ ranked/ALL/30 → ~13,180/coin) → predicted boundary **19**. The linearity itself is unmeasured — the search corrects the model with every refusal, because refusal messages carry the measured size.
 
-- [ ] **Step 4.1: Search loop (≤5 calls on ranked/ALL).** Maintain `L_viable` (largest limit that compiled; starts unknown) and `L_refused` (smallest refused; starts 30, from the already-paid BG-14 datapoint — do NOT respend it). First probe: limit **19**. After each call: if refused, parse the measured bytes from the message, refit the linear model on all refusal datapoints, next probe = the refit's predicted boundary (clamped inside the open bracket); if viable, next probe = midpoint of (that limit, L_refused). Every response → `record-into <respfile> ALL-<limit> cap_boundary_2026-XX-XX.json`. STOP when `L_refused == L_viable + 1` (exact boundary) or the 5 calls are spent (record the honest bracket instead — "boundary in [L_viable+1, L_refused]", never a point estimate).
-- [ ] **Step 4.2 (1 call): category transfer check.** `ranked L_viable CRYPTO` → one compile, recorded under key `CRYPTO-<limit>`. Viable → the ALL boundary transfers to CRYPTO at least at `L_viable`; refused → category-dependence is REAL, record the CRYPTO refusal's bytes, and the record's `_honestLimits` must say the boundary is per-category and only ALL was bracketed. (If Step 4.1 found no viable limit at all — possible if even small ranked previews blow the cap — spend this call on `ranked 5 ALL` instead and say so.)
-- [ ] **Step 4.2b (pre-committed escape):** if after all cap calls ZERO ranked limit compiled viable, do NOT invent a `RANKED_LIMIT_MEASURED_MAX` and do NOT change the defaults — record the refusals, add a dated note to THIS plan file ("ranked universes unusable at any measured size for this report shape"), skip Steps 4.4's code changes entirely, and STOP after committing the record: that outcome invalidates part of the full-menu decision and the user must re-decide (Decision 3 revisit).
-- [ ] **Step 4.3:** Fill `_what` / `_interpretation` / `_honestLimits` (report-relative caveat verbatim: "measured FOR the trend-continuation report shape — 11 custom columns; a wider report refuses earlier"). Write the failing tests — `tests/test_cap_boundary.py`:
+- [x] **Step 4.1: Search loop (≤5 calls on ranked/ALL).** Maintain `L_viable` (largest limit that compiled; starts unknown) and `L_refused` (smallest refused; starts 30, from the already-paid BG-14 datapoint — do NOT respend it). First probe: limit **19**. After each call: if refused, parse the measured bytes from the message, refit the linear model on all refusal datapoints, next probe = the refit's predicted boundary (clamped inside the open bracket); if viable, next probe = midpoint of (that limit, L_refused). Every response → `record-into <respfile> ALL-<limit> cap_boundary_2026-XX-XX.json`. STOP when `L_refused == L_viable + 1` (exact boundary) or the 5 calls are spent (record the honest bracket instead — "boundary in [L_viable+1, L_refused]", never a point estimate).
+- [x] **Step 4.2 (1 call): category transfer check.** `ranked L_viable CRYPTO` → one compile, recorded under key `CRYPTO-<limit>`. Viable → the ALL boundary transfers to CRYPTO at least at `L_viable`; refused → category-dependence is REAL, record the CRYPTO refusal's bytes, and the record's `_honestLimits` must say the boundary is per-category and only ALL was bracketed. (If Step 4.1 found no viable limit at all — possible if even small ranked previews blow the cap — spend this call on `ranked 5 ALL` instead and say so.)
+- [x] **Step 4.2b (pre-committed escape):** if after all cap calls ZERO ranked limit compiled viable, do NOT invent a `RANKED_LIMIT_MEASURED_MAX` and do NOT change the defaults — record the refusals, add a dated note to THIS plan file ("ranked universes unusable at any measured size for this report shape"), skip Steps 4.4's code changes entirely, and STOP after committing the record: that outcome invalidates part of the full-menu decision and the user must re-decide (Decision 3 revisit).
+- [x] **Step 4.3:** Fill `_what` / `_interpretation` / `_honestLimits` (report-relative caveat verbatim: "measured FOR the trend-continuation report shape — 11 custom columns; a wider report refuses earlier"). Write the failing tests — `tests/test_cap_boundary.py`:
 
 ```python
 """BG-14's missing number: the largest ranked selection whose compile preview fits
@@ -347,7 +347,7 @@ def test_an_oversized_ranked_selection_draws_a_critique_warning():
 ```
 
 (The record's `boundary` object: `{"largestViableLimit": int, "smallestRefusedLimit": int, "exact": bool}`.)
-- [ ] **Step 4.4: Implement.** In `omega/generate.py`:
+- [x] **Step 4.4: Implement.** In `omega/generate.py`:
 
 ```python
 # Measured 2026-XX-XX (cap_boundary_2026-XX-XX.json): the largest ranked selection
@@ -371,7 +371,7 @@ RANKED_LIMIT_MEASURED_MAX = <the measured largestViableLimit>
 ```
 
 Flip `test_coin_selection_default_is_class_aware` in `tests/test_write_surface.py` IN THIS COMMIT: same class-aware categories, limits now `min(30, RANKED_LIMIT_MEASURED_MAX)`, docstring gains "limit capped to the measured BG-14 boundary, 2026-XX-XX".
-- [ ] **Step 4.5:** Full suite green → commit `Measure the BG-14 boundary: ranked limit <N><, or bracket>` → push.
+- [x] **Step 4.5:** Full suite green → commit `Measure the BG-14 boundary: ranked limit <N><, or bracket>` → push.
 
 ### Task 5: Bounds edges — 2 compiles, both branches pre-committed
 
