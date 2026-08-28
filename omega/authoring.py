@@ -78,3 +78,54 @@ def vocabulary() -> dict:
         "stances": {"ALIGN": "the tape should agree with the direction",
                     "FADE": "the crowd should be leaning the other way"},
     }
+
+
+DIRECTIONAL_MODULES = frozenset(m for m, s in MODULE_CLAUSES.items() if "up" in s)
+
+
+def validate_thesis(thesis: Thesis) -> list[Finding]:
+    """The guardrails plan() lacks. Each check is a verified footgun or a measured
+    bound; nothing here is a style opinion."""
+    out: list[Finding] = []
+    for m in thesis.modules:
+        if m not in MODULE_RECIPES:
+            out.append(Finding("error", "THESIS_UNKNOWN_MODULE", f"weights.{m}",
+                               f"{m} is not one of the {len(MODULE_RECIPES)} modules - "
+                               f"plan() would silently drop it (verified 2026-08-29)"))
+    for m, tier in thesis.weights.items():
+        if not isinstance(tier, int) or not 0 <= tier <= 3:
+            out.append(Finding("error", "THESIS_BAD_WEIGHT", f"weights.{m}",
+                               f"allocation tier must be an int 0-3, got {tier!r}"))
+    directional = [m for m in thesis.weights if m in DIRECTIONAL_MODULES]
+    if len(directional) < 2:
+        out.append(Finding("error", "THESIS_TOO_FEW_DIRECTIONAL", "weights",
+                           f"only {len(directional)} directional module(s) weighted - "
+                           f"below 2, plan() silently emits NO conditions and NO "
+                           f"verdicts (verified 2026-08-29)"))
+    if thesis.stance not in ("ALIGN", "FADE"):
+        out.append(Finding("error", "THESIS_BAD_STANCE", "stance",
+                           f"stance must be ALIGN or FADE, got {thesis.stance!r}"))
+    if thesis.anchor not in CADENCE_FOR_ANCHOR:
+        out.append(Finding("error", "THESIS_UNMEASURED_ANCHOR", "anchor",
+                           f"{thesis.anchor!r} is not authorable - the platform's "
+                           f"complete anchor set is {sorted(CADENCE_FOR_ANCHOR)} "
+                           f"(REPORT_TIMEFRAME_NOT_AUTHORABLE, measured 2026-08-28)"))
+    sel = thesis.resolved_coin_selection()
+    if sel.get("mode") == "explicit" and len(sel.get("tickers", [])) > 50:
+        out.append(Finding("error", "THESIS_UNIVERSE_TOO_WIDE", "coin_selection",
+                           f"{len(sel['tickers'])} tickers - the schema caps explicit "
+                           f"lists at 50"))
+    if sel.get("mode") == "ranked" and sel.get("limit", 0) > RANKED_LIMIT_MEASURED_MAX:
+        out.append(Finding("error", "THESIS_UNIVERSE_TOO_WIDE", "coin_selection",
+                           f"ranked limit {sel['limit']} exceeds the measured BG-14 "
+                           f"boundary {RANKED_LIMIT_MEASURED_MAX} - the compile "
+                           f"preview refuses above it (measured 2026-08-28)"))
+    feedable = {sid for m, tier in thesis.weights.items() if tier > 0
+                for sid in _map()["moduleSignals"].get(m, [])}
+    for sid in thesis.required:
+        if sid not in feedable:
+            out.append(Finding("error", "THESIS_UNFEEDABLE_REQUIRED", f"required.{sid}",
+                               f"{sid} is marked required but no weighted module "
+                               f"feeds it - it could never fire"))
+    out += validate_execution(thesis.execution or {})
+    return out

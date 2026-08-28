@@ -43,3 +43,60 @@ def test_clause_text_renders_every_op():
     assert _clause_text({"kind": "clause", "column": col, "op": "gte", "value": 25}) == "H gte 25"
     assert _clause_text({"kind": "clause", "column": col, "op": "between",
                          "low": -1, "high": 1}) == "H between -1 and 1"
+
+
+from dataclasses import replace
+
+from omega.generate import PRESETS
+from omega.authoring import validate_thesis
+
+
+def _codes(thesis):
+    return {f.code for f in validate_thesis(thesis)}
+
+
+def test_the_presets_pass_clean():
+    for p in PRESETS.values():
+        assert not [f for f in validate_thesis(p) if f.severity == "error"]
+
+
+def test_unknown_module_is_an_error_not_a_silent_drop():
+    t = replace(PRESETS["trend-continuation"],
+                weights={**PRESETS["trend-continuation"].weights, "ELON_TWEETS": 3})
+    assert "THESIS_UNKNOWN_MODULE" in _codes(t)
+
+
+def test_too_few_directional_modules_is_an_error():
+    """plan() silently emits NO conditions below 2 directional modules (verified
+    2026-08-29) - the assistant must refuse before that happens."""
+    t = replace(PRESETS["trend-continuation"],
+                weights={"TREND_STRENGTH": 2, "VOLATILITY": 1, "RSI": 2})
+    assert "THESIS_TOO_FEW_DIRECTIONAL" in _codes(t)
+    t2 = replace(t, weights={"RSI": 2, "MACD": 2})
+    assert "THESIS_TOO_FEW_DIRECTIONAL" not in _codes(t2)
+
+
+def test_bad_weight_stance_and_anchor():
+    base = PRESETS["trend-continuation"]
+    assert "THESIS_BAD_WEIGHT" in _codes(replace(base, weights={"RSI": 5, "MACD": 2}))
+    assert "THESIS_BAD_STANCE" in _codes(replace(base, stance="YOLO"))
+    assert "THESIS_UNMEASURED_ANCHOR" in _codes(replace(base, anchor="1d"))
+
+
+def test_universe_bounds_are_the_measured_ones():
+    base = PRESETS["trend-continuation"]
+    wide = replace(base, coin_selection={"mode": "ranked", "category": "ALL", "limit": 9})
+    assert "THESIS_UNIVERSE_TOO_WIDE" in _codes(wide)
+    fat = replace(base, coin_selection={"mode": "explicit",
+                                        "tickers": [f"T{i}" for i in range(51)]})
+    assert "THESIS_UNIVERSE_TOO_WIDE" in _codes(fat)
+
+
+def test_unfeedable_required_signal_is_an_error():
+    t = replace(PRESETS["trend-continuation"], required=["cvd_bullish"])  # CVD unweighted
+    assert "THESIS_UNFEEDABLE_REQUIRED" in _codes(t)
+
+
+def test_execution_findings_flow_through():
+    t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 9})
+    assert "EXECUTION_OUTSIDE_CATALOG_BOUND" in _codes(t)
