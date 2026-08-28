@@ -427,6 +427,18 @@ class StrategyPlan:
             out.update(self.thesis.execution)   # validated in critique(); keys are API fields
         return out
 
+    def wire_update(self, strategy_id: str, expected_revision: int) -> dict:
+        """The exact compile_strategy_plan UPDATE request body: the full CREATE body
+        re-targeted at an existing strategy (design 2026-08-29 - the Thesis is the
+        single source of truth; the server computes the diff)."""
+        if expected_revision < 1:
+            raise ValueError(f"expectedRevision must be >= 1, got {expected_revision}")
+        out = self.wire()
+        out["operation"] = "UPDATE"
+        out["strategyId"] = strategy_id
+        out["expectedRevision"] = expected_revision
+        return out
+
     def render(self) -> str:
         c, mem, sim = self.cost(), self.membership(), self.simulate()
         weighted = [r for r in self.rules if r.allocation > 0]

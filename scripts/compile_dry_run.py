@@ -35,6 +35,18 @@ def _redact(resp: dict) -> dict:
     return resp
 
 
+# The proof change (design 2026-08-29, user's choice): one execution override, legal
+# on every measured bound, giving Decision 1(a)'s override path its real-write proof.
+UPDATE_EXECUTION = {"minRiskRewardRatio": 2.0}
+
+
+def update_request(strategy_id: str, revision: int) -> dict:
+    thesis = replace(PRESETS[PRESET],
+                     coin_selection={"mode": "explicit", "tickers": SMALL_TICKERS},
+                     execution=dict(UPDATE_EXECUTION))
+    return {"request": plan(thesis).wire_update(strategy_id, revision)}
+
+
 def probe(field: str, value, base: str = "small") -> dict:
     """A known body with exactly ONE top-level field replaced - one variable per
     compile keeps every verdict attributable. base="small": the viable explicit
@@ -83,6 +95,10 @@ def main() -> int:
         return 0
     if len(sys.argv) > 2 and sys.argv[1] == "atr":
         print(json.dumps(probe("minAtrPct", float(sys.argv[2])), separators=(",", ":")))
+        return 0
+    if len(sys.argv) > 3 and sys.argv[1] == "update":
+        print(json.dumps(update_request(sys.argv[2], int(sys.argv[3])),
+                         separators=(",", ":")))
         return 0
     if len(sys.argv) > 4 and sys.argv[1] == "record-into":
         # record-into <respfile> <key> <auditfile>: redact and append one probe
