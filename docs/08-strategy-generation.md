@@ -139,6 +139,11 @@ Because it composes the rest of the toolkit, every plan is:
   complete set, measured 2026-08-28) all carry measured cadence, regime timeframe,
   and identical execution defaults; the model refuses to express anything else
   because nothing else can exist.
+- **revisable** — `wire_update` re-targets the full body at
+  `strategyId`/`expectedRevision`; the Thesis stays the single source of truth and
+  the server computes the diff (proven live 2026-08-29: one override in, nothing
+  else moved — with the measured caveat that full-body UPDATEs re-mint custom
+  section identities in lockstep, see [16](16-the-write-path.md)).
 
 **`coinSelection` defaults class-aware.** Explicit `Thesis.coin_selection` wins;
 otherwise ranked at the measured BG-14 boundary (`RANKED_LIMIT_MEASURED_MAX`,

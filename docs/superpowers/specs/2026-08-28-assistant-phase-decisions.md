@@ -74,6 +74,13 @@ rule is not weakened by it and survives regardless.
 2. **UPDATE for generated plans.** `wire()` emits CREATE only; a conversational
    builder ("make the stop tighter") is an UPDATE at `expectedRevision`. The UPDATE
    emitter is unbuilt and no generated UPDATE has ever been applied.
+   **EXECUTED 2026-08-29** (design `2026-08-29-generated-update-design.md`; 1 of ≤2
+   compiles, 1 apply, 1 restore, 1 archive — all user-authorized): `wire_update`
+   built full-body-from-Thesis; the loop proved on `6a8bca67` with the R:R 2.0
+   override — landed with nothing else moved. Measured on the way: the R:R diff
+   axis is `tradeLevelPolicy`, and full-body UPDATEs **re-mint custom section
+   identities in lockstep** (semantically safe, identity churns). Conflict handling
+   and omitted-field semantics deliberately unmeasured.
 3. **The assistant itself** — the intent → Thesis authoring layer, scoped by these
    four answers: builder contract, auto-archive lifecycle, full measured menu,
    prepare-don't-execute at the capital gate. This gets its own brainstorm → spec →

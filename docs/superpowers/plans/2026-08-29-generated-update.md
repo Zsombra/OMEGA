@@ -15,7 +15,7 @@
 - **Record every live response verbatim into the audit file BEFORE interpreting it** (refusals exactly like successes). **Redact `planToken`** to `{length, sha256}`; the token is used only for the one authorized apply, never committed.
 - **Predictions stated before measuring; no-prior facts declared as such, never guessed.** Failed predictions are findings, corrected in the same commit as the record; contradictions of THIS plan get a dated note here.
 - **Re-verify the live compile schema (CREATE + UPDATE arms) before any compile** (Task 0).
-- Baseline: `main` at `8c292db`, **849 tests passing**. `python -m pytest -q` before every commit; commit messages end with the Claude co-author line.
+- Baseline: `main` at `8c292db`, **849 tests passing**. *(Reconciled at completion, 2026-08-29: final count **857** — 849 baseline + 4 emitter tests + 4 record pins. Write budget actually spent: 1 of ≤2 compiles, 1 apply, 1 restore, 1 archive; contingency unused. The Task 2 commit message misstated the count as 861 — the correction is in the Task 3 commit.)* `python -m pytest -q` before every commit; commit messages end with the Claude co-author line.
 - Windows: Write/Edit tools for committed files, not shell heredocs. Large MCP results overflow to a file — verify by script, never by eye.
 - MCP calls are made by the EXECUTOR (the session): the harness prints exact bodies; the executor pastes ONE body per call and records the response via the harness's `record-into` mode.
 
@@ -234,11 +234,11 @@ def test_the_lifecycle_ends_where_it_started():
 **Files:**
 - Modify: `docs/16-the-write-path.md`, `docs/08-strategy-generation.md`, `docs/superpowers/specs/2026-08-28-assistant-phase-decisions.md`, `README.md`.
 
-- [ ] **Step 3.1:** Doc 16: new short section "A generated strategy can be revised (2026-XX-XX)" — the loop, the measured rr-axis and sectionKey verdicts, the record link; and fix the now-stale sentence that generated plans have only ever been CREATEd. Doc 08: guarantee line "**revisable** — `wire_update` re-targets the full body at `strategyId`/`expectedRevision`; the Thesis stays the single source of truth and the server computes the diff (proven live <date>)".
-- [ ] **Step 3.2:** Spec `2026-08-28-assistant-phase-decisions.md`: roadmap item 2 marked **EXECUTED <date>** with the verdicts, one line each. README masthead sentence + 08/16 index one-liners if their claims changed.
-- [ ] **Step 3.3:** Budget audit by script from the record: compiles ≤2 (count `compile` probes + any contingency), applies == 1, restore == 1, archive == 1; state the counts in the commit message. Reconcile this plan's baseline note (849 → the final count) with a dated line.
-- [ ] **Step 3.4:** Full suite → commit `Document the revision loop` → push → integrate: `git fetch origin && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` (STOP on non-FF).
-- [ ] **Step 3.5:** Update memory (`next-session-compile-bridge.md`): step 2 executed, verdicts, what remains (the assistant itself — brainstorm → spec → plan; binding/deployment user-gated always). Final report: the three verdicts, prediction outcomes, budget spent, any plan corrections.
+- [x] **Step 3.1:** Doc 16: new short section "A generated strategy can be revised (2026-XX-XX)" — the loop, the measured rr-axis and sectionKey verdicts, the record link; and fix the now-stale sentence that generated plans have only ever been CREATEd. Doc 08: guarantee line "**revisable** — `wire_update` re-targets the full body at `strategyId`/`expectedRevision`; the Thesis stays the single source of truth and the server computes the diff (proven live <date>)".
+- [x] **Step 3.2:** Spec `2026-08-28-assistant-phase-decisions.md`: roadmap item 2 marked **EXECUTED <date>** with the verdicts, one line each. README masthead sentence + 08/16 index one-liners if their claims changed.
+- [x] **Step 3.3:** Budget audit by script from the record: compiles ≤2 (count `compile` probes + any contingency), applies == 1, restore == 1, archive == 1; state the counts in the commit message. Reconcile this plan's baseline note (849 → the final count) with a dated line.
+- [x] **Step 3.4:** Full suite → commit `Document the revision loop` → push → integrate: `git fetch origin && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` (STOP on non-FF).
+- [x] **Step 3.5:** Update memory (`next-session-compile-bridge.md`): step 2 executed, verdicts, what remains (the assistant itself — brainstorm → spec → plan; binding/deployment user-gated always). Final report: the three verdicts, prediction outcomes, budget spent, any plan corrections.
 
 ## Deliberately absent (from the approved design)
 

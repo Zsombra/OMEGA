@@ -34,6 +34,13 @@ strategies from a thesis.
 > defaults identical), the BG-14 ranked boundary is **limit 4** (exact bracket —
 > realistic ranked universes cannot compile), and catalog-bound enforcement is
 > asymmetric (R:R both edges, minAtrPct not at all).
+>
+> **And on 2026-08-29 the revision loop closed too:** the first omega-generated
+> UPDATE was applied under a four-write authorization — restore `6a8bca67`, one
+> compile, one apply (`wire_update`, full body from the Thesis, R:R override 1.5 → 2.0,
+> nothing else moved), re-archive. Measured on the way: the R:R diff axis is
+> `tradeLevelPolicy`, and full-body UPDATEs re-mint section identities in lockstep.
+> Both halves of the generated write path — create and revise — are now proven.
 
 ---
 

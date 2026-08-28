@@ -295,6 +295,36 @@ revision 2, `isActive: false`, restorable, quota slot returned (24/25). Full rec
 pinned by `tests/test_first_apply.py`. Binding to an agent and radar/arena deployment
 remain user-gated, always.
 
+### A generated strategy can be revised (2026-08-29)
+
+The UPDATE half closed the next day, under a four-write user authorization (restore,
+≤2 compiles, ONE apply, archive): `wire_update` — the full `wire()` body plus exactly
+`operation`/`strategyId`/`expectedRevision`, the Thesis staying the single source of
+truth — was compiled against the restored `6a8bca67` and applied once. The change was
+one Thesis-level execution override (`minRiskRewardRatio` 2.0), giving Decision 1(a)'s
+override path its first real-write proof: the read-back shows **1.5 → 2.0 and nothing
+else moved** (18 scripted checks). Revisions walked 2 →(restore) 3 →(update) 4
+→(archive) 5; quota ended where it started.
+
+Two UPDATE facts got measured on the way:
+
+- **`minRiskRewardRatio` diffs under the `tradeLevelPolicy` axis** (null on the
+  CREATE, populated here) — the first sighting of the axis that carries the
+  position-management execution params.
+- **A full-body UPDATE re-mints custom `sectionKey`s even when the re-sent report is
+  byte-identical** — `changedAxes` listed `REPORT` and `CONDITIONS` alongside
+  `TRADE_LEVEL_POLICY`, with every condition reference re-resolved to the new keys in
+  lockstep. Semantically safe, but **section identity churns on every full-body
+  revision**; anything caching a `sectionKey` across revisions is holding a stale
+  name. (Whether sending the existing keys back would preserve them is unmeasured —
+  CREATE refuses client keys; UPDATE was not probed with them.)
+
+The pre-committed diff-inspection gate ran between compile and apply and authorized
+proceeding on the lockstep branch. Record:
+[`first_generated_update_2026-08-29.json`](../data/audit/first_generated_update_2026-08-29.json),
+pinned by `tests/test_first_update.py`. Conflict handling (a wrong
+`expectedRevision`) and omitted-field delta semantics remain deliberately unmeasured.
+
 ## CREATE, proven
 
 The last unexercised path closed on 2026-08-24 at 20:16Z. `OMEGA-TEST: From Scratch`
