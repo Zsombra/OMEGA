@@ -55,6 +55,41 @@ def _map() -> dict:
 
 
 @lru_cache(maxsize=1)
+def _scoring_inputs() -> dict:
+    return json.loads(
+        (DERIVED_DIR / "scoring_inputs_measured.json").read_text(encoding="utf-8"))["pairs"]
+
+
+def scoring_gaps(report, rules) -> list:
+    """Warn when an allocated signal's MEASURED scoring input is not rendered.
+    PARTIAL map (12 of 84 measured); an anchor column satisfies only the anchor rung -
+    the 2026-08-28 compile proved rel:anchor does not cover signalHigher/lower."""
+    from .validate import Finding
+
+    def _rel(tf):
+        # Column.timeframe validates from {"rel": "anchor"} dicts; handle both the
+        # dict and the pydantic-model representation without caring which it is.
+        return tf.get("rel") if isinstance(tf, dict) else getattr(tf, "rel", None)
+
+    inputs = _scoring_inputs()
+    anchored = {c.metric for s in report.sections if getattr(s, "columns", None)
+                for c in s.columns if _rel(c.timeframe) == "anchor"}
+    out = []
+    for r in rules:
+        if r.allocation <= 0 or r.signalId not in inputs:
+            continue
+        want = inputs[r.signalId]
+        if want["rung"] == "anchor" and want["metric"] in anchored:
+            continue
+        out.append(Finding(
+            "warning", "SCORING_INPUT_NOT_RENDERED", f"rules.{r.signalId}",
+            f"{r.signalId} scores on {want['metric']} @ {want['rung']}, which the "
+            f"report does not render (measured 2026-08-28; whether a rel:regime/lower "
+            f"column satisfies a non-anchor rung is unmeasured)"))
+    return out
+
+
+@lru_cache(maxsize=1)
 def _platform_map() -> dict:
     return json.loads(
         (DERIVED_DIR / "platform_section_map.json").read_text(encoding="utf-8"))

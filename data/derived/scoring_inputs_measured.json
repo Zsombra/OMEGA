@@ -1,0 +1,18 @@
+{
+  "_what": "signalId -> the scoring input the compile advisory named, MEASURED from the 12 ACTIVE_SIGNAL_DATA_NOT_IN_REPORT entries in compile_dry_run_2026-08-28-small.json. PARTIAL: 12 of 84 signals measured; absence of a signal here means UNMEASURED, not satisfied.",
+  "_rungFact": "a rel:anchor column does NOT satisfy a signalHigher/lower rung - the probe report carried MA_ALIGN and ADX at rel:anchor and the htf/ltf entries still fired. Whether a rel:regime or rel:lower column satisfies them is UNMEASURED.",
+  "pairs": {
+    "htf_ma_aligned_bull": {"metric": "MA_ALIGN", "rung": "signalHigher"},
+    "htf_ma_aligned_bear": {"metric": "MA_ALIGN", "rung": "signalHigher"},
+    "htf_trend_adx_trending": {"metric": "ADX", "rung": "signalHigher"},
+    "htf_trend_adx_ranging": {"metric": "ADX", "rung": "signalHigher"},
+    "ltf_ma_aligned_bull": {"metric": "MA_ALIGN", "rung": "lower"},
+    "ltf_ma_aligned_bear": {"metric": "MA_ALIGN", "rung": "lower"},
+    "ltf_trend_adx_trending": {"metric": "ADX", "rung": "lower"},
+    "ltf_trend_adx_ranging": {"metric": "ADX", "rung": "lower"},
+    "ma_ema_aligned_bull": {"metric": "EMA20", "rung": "anchor"},
+    "ma_ema_aligned_bear": {"metric": "EMA20", "rung": "anchor"},
+    "ma_ema_bull_cross": {"metric": "EMA_CROSS", "rung": "anchor"},
+    "ma_ema_bear_cross": {"metric": "EMA_CROSS", "rung": "anchor"}
+  }
+}

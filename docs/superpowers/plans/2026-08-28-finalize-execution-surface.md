@@ -297,7 +297,7 @@ and add to `write_surface_gap.json` inside `executionSurfaceNotModelled`: `"_res
 **Interfaces:**
 - Produces: `scoring_gaps(report, rules) -> list[Finding]` in `omega/membership.py` — warning code `SCORING_INPUT_NOT_RENDERED`.
 
-- [ ] **Step 6.1:** Write `data/derived/scoring_inputs_measured.json`:
+- [x] **Step 6.1:** Write `data/derived/scoring_inputs_measured.json`:
 
 ```json
 {
@@ -320,7 +320,7 @@ and add to `write_surface_gap.json` inside `executionSurfaceNotModelled`: `"_res
 }
 ```
 
-- [ ] **Step 6.2: Failing tests** — `tests/test_scoring_inputs.py`:
+- [x] **Step 6.2: Failing tests** — `tests/test_scoring_inputs.py`:
 
 ```python
 """Membership (IN_REPORT) is not 'all scoring inputs rendered' - measured 2026-08-28
@@ -363,7 +363,7 @@ def test_an_anchor_column_satisfies_an_anchor_rung():
     assert len(scoring_gaps(bare, rules)) == 1
 ```
 
-- [ ] **Step 6.3: Implement** in `omega/membership.py`:
+- [x] **Step 6.3: Implement** in `omega/membership.py`:
 
 ```python
 SCORING_INPUTS = json.loads(
@@ -402,7 +402,7 @@ def scoring_gaps(report, rules) -> list:
 ```
 
 Adapt the `anchored` comprehension to the real `Column.timeframe` type (it is a pydantic model — check `omega/types.py` and use the actual attribute access; the intent is "columns whose timeframe is rel:anchor").
-- [ ] **Step 6.4:** In `StrategyPlan.critique()` append: `out += [f"scoring {f.severity}: {f}" for f in scoring_gaps(self.report, self.rules)]` (import `scoring_gaps` at the top of `generate.py` from `.membership`). Check whether `tests/test_generated_plans_audit.py` KNOWN lists need the new warnings — if the audit script surfaces critique lines, add the trend-continuation entries to `KNOWN` deliberately, with a comment. Full suite green → commit `Warn on measured scoring-input gaps` → push.
+- [x] **Step 6.4:** In `StrategyPlan.critique()` append: `out += [f"scoring {f.severity}: {f}" for f in scoring_gaps(self.report, self.rules)]` (import `scoring_gaps` at the top of `generate.py` from `.membership`). Check whether `tests/test_generated_plans_audit.py` KNOWN lists need the new warnings — if the audit script surfaces critique lines, add the trend-continuation entries to `KNOWN` deliberately, with a comment. Full suite green → commit `Warn on measured scoring-input gaps` → push.
 
 ### Task 7: Documentation
 

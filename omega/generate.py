@@ -26,7 +26,7 @@ from .conditions import (
 )
 from .contract import DERIVED_DIR, load
 from .fanout import cost_report, outputs_for
-from .membership import _map, analyse, check_allocations, signals_for
+from .membership import _map, analyse, check_allocations, scoring_gaps, signals_for
 from .types import Column, CustomSection, Report, Rule
 from .validate import validate_report
 
@@ -326,6 +326,8 @@ class StrategyPlan:
         if sim and not sim.would_route:
             out.append(f"even at 0.75 across the board the aggregate is "
                        f"{sim.aggregate_score_percent}% - below the {sim.gate_percent}% gate")
+
+        out += [f"scoring {f.severity}: {f}" for f in scoring_gaps(self.report, self.rules)]
 
         from .execution import PLATFORM_EXECUTION_DEFAULTS, validate_execution
         ov = self.thesis.execution or {}
