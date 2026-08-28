@@ -100,3 +100,22 @@ def test_unfeedable_required_signal_is_an_error():
 def test_execution_findings_flow_through():
     t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 9})
     assert "EXECUTION_OUTSIDE_CATALOG_BOUND" in _codes(t)
+
+
+def test_the_brief_is_one_honest_page():
+    from omega.authoring import brief
+    from omega.generate import plan
+    text = brief(plan(PRESETS["trend-continuation"]))
+    assert "Trend Continuation" in text
+    assert "stance ALIGN" in text and "anchor 1h" in text
+    assert "platform defaults" in text            # the execution profile line
+    assert "84 rules" in text and "24 weighted" in text
+    assert "thesis findings: none" in text        # presets pass clean
+
+
+def test_the_brief_carries_findings_verbatim():
+    from omega.authoring import brief
+    from omega.generate import plan
+    t = replace(PRESETS["trend-continuation"],
+                weights={**PRESETS["trend-continuation"].weights, "ELON_TWEETS": 3})
+    assert "THESIS_UNKNOWN_MODULE" in brief(plan(t))

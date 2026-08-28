@@ -129,3 +129,33 @@ def validate_thesis(thesis: Thesis) -> list[Finding]:
                                f"feeds it - it could never fire"))
     out += validate_execution(thesis.execution or {})
     return out
+
+
+def brief(p) -> str:
+    """The offline deliverable (decision 4, 2026-08-29): everything the user needs
+    to judge the thesis, zero live calls. p is a StrategyPlan."""
+    t = p.thesis
+    findings = validate_thesis(t)
+    w = p.wire()
+    lines = [
+        f"{t.name}" + (f" - {t.tagline}" if t.tagline else ""),
+        f"stance {t.stance} | anchor {t.anchor} "
+        f"({CADENCE_FOR_ANCHOR.get(t.anchor, '?')}/"
+        f"{REGIME_TF_FOR_ANCHOR.get(t.anchor, '?')}) | gate {t.gate} | "
+        f"universe {t.resolved_coin_selection()}",
+        "weighted modules: " + (", ".join(
+            f"{m}:{tier}" for m, tier in sorted(t.weights.items()) if tier) or "none"),
+        "",
+        "thesis findings:" + ("" if findings else " none"),
+        # Finding.__str__ omits the code; the brief must carry it (the codes are
+        # the vocabulary doc 20 explains), so render it explicitly.
+        *[f"  [{f.severity}] {f.code} {f.path}: {f.message}" for f in findings],
+        "",
+        "critique:",
+        *[f"  {line}" for line in p.critique()],
+        "",
+        f"wire body: {len(w['sections'])} sections, {len(w['rules'])} rules "
+        f"({sum(1 for r in w['rules'] if r['allocation'] > 0)} weighted), "
+        f"{len(w['conditions'])} conditions",
+    ]
+    return "\n".join(lines)
