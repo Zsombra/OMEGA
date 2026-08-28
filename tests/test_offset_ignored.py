@@ -77,9 +77,25 @@ def test_the_affected_set_is_exactly_the_candle_categoricals(contract):
     assert affected == ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "MA_ALIGN", "PRICE_ZONE"]
     rec = json.loads(AUDIT.read_text(encoding="utf-8"))
     assert rec["scope"]["candleCategoricalMetrics"] == affected
-    assert rec["scope"]["untested"] == ["BAR_FORMING"], (
-        "BAR_FORMING was never rendered at an offset; it must stay listed as untested "
-        "rather than quietly folded into the measured set")
+    assert rec["scope"]["untested"] == [], (
+        "all five were measured by 2026-08-28; a name reappearing here means the "
+        "scope was edited without a probe to back it")
+    assert rec["scope"]["tested"] == affected
+
+
+def test_bar_forming_ignores_offset_like_the_other_four():
+    """Measured 2026-08-28 (1h anchor, BTC/ETH/SOL, offsets 0 vs 8). The offset-8 bar
+    is by construction closed - its settled close prints in the same row - and the flag
+    still answers 'forming', the offset-0 answer. The control makes it arithmetic:
+    close moved on every coin in the same render, so offset WAS honoured next door."""
+    probe = json.loads((AUDIT.parent / "bar_forming_offset_probe_2026-08-28.json")
+                       .read_text(encoding="utf-8"))
+    f0, f8 = probe["extracted"]["f0"], probe["extracted"]["f8"]
+    for coin in ("BTC", "ETH", "SOL"):
+        assert f0[coin]["close"] != f8[coin]["close"], f"{coin}: control must move"
+        assert f0[coin]["bar"] == f8[coin]["bar"] == "forming", (
+            f"{coin}: the offset-8 answer should have been 'closed'; identical "
+            f"'forming' is the bug this record pins")
 
 
 def test_the_proof_is_arithmetic_not_coincidence():

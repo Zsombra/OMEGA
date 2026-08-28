@@ -31,9 +31,9 @@
 
   "scope": {
     "candleCategoricalMetrics": ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "MA_ALIGN", "PRICE_ZONE"],
-    "tested": ["BB_TOUCH", "EMA_CROSS", "MA_ALIGN", "PRICE_ZONE"],
-    "untested": ["BAR_FORMING"],
-    "_honesty": "BAR_FORMING is untested. It is a flag for whether the current bar is still forming, so 'ignores offset' would arguably be correct behaviour for it rather than a defect. It is listed as untested rather than assumed either way."
+    "tested": ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "MA_ALIGN", "PRICE_ZONE"],
+    "untested": [],
+    "_honesty": "BAR_FORMING was the last untested entry until 2026-08-28. Measured then (1h anchor, BTC/ETH/SOL, offsets 0 vs 8, CLOSE as the moving control - see bar_forming_offset_probe_2026-08-28.json): it answers 'forming' at offset 8, where the bar is by construction closed and its settled close prints in the same row. The earlier note here allowed that 'ignores offset' might arguably be correct for this flag; measurement resolved it the other way - a question about a closed past bar should answer 'closed', so the unchanging 'forming' is the same silent-wrong-answer class as the other four. All five candle-categoricals now measured; the OFFSET_NOT_HONOURED warning already covered BAR_FORMING (candle + vocab), so nothing in omega/validate.py moved."
   },
 
   "consequenceForTheUnobservedLabels": "The offset avenue is CLOSED for the label hunt, but for a reason worth knowing rather than the reason I originally gave. I said the labels need different market conditions. That is still true - but not because history is unreachable. History IS reachable (close, ADX and the swings all move under offset); the CLASSIFIERS just refuse to look at it. PRICE_ZONE 'breakout high' cannot be found by walking back through 8 bars because the column will keep answering for bar 0.",

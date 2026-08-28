@@ -1,0 +1,39 @@
+{
+  "_what": "The BG-13 closure probe: BAR_FORMING at offset 0 vs 8, the one candle-categorical metric the 2026-08-26 sweep left untested. One preview_strategy_report call, recorded verbatim below before interpretation.",
+  "date": "2026-08-28",
+  "request": {
+    "timeframe": "1h",
+    "coinSelection": {"mode": "explicit", "tickers": ["BTC", "ETH", "SOL"]},
+    "sections": [
+      {"kind": "custom", "title": "f0", "benchmarkTicker": null, "columns": [
+        {"metric": "BAR_FORMING", "transformId": "value", "timeframe": {"rel": "anchor"}, "offset": 0},
+        {"metric": "CLOSE", "transformId": "value", "timeframe": {"rel": "anchor"}, "offset": 0}]},
+      {"kind": "custom", "title": "f8", "benchmarkTicker": null, "columns": [
+        {"metric": "BAR_FORMING", "transformId": "value", "timeframe": {"rel": "anchor"}, "offset": 8},
+        {"metric": "CLOSE", "transformId": "value", "timeframe": {"rel": "anchor"}, "offset": 8}]}
+    ],
+    "_designNotes": "two sections, never one - duplicate headers inside one section silently drop it (trap 20). offset 8 is the max under the 24-bar lookback floor. CLOSE is the control: it must differ between sections or the probe is void."
+  },
+  "responseVerbatim": {
+    "renderedSections": [
+      {"sectionKey": "custom:94f4075a-eabd-40ab-88b8-8a0a62a57e9e", "section": {"title": "f0", "text": "bar: whether the bar is still forming (live, provisional) or already closed (forming / closed). close: the bar's close price.\n\n| coin | bar | close |\n|---|---|---|\n| BTC | forming | $79765.00 |\n| ETH | forming | $2490.00 |\n| SOL | forming | $106.91 |"}, "structure": null},
+      {"sectionKey": "custom:030036a2-381e-4156-958b-71c50d7bb85a", "section": {"title": "f8", "text": "bar: whether the bar is still forming (live, provisional) or already closed (forming / closed). close: the bar's close price.\n\n| coin | bar | close |\n|---|---|---|\n| BTC | forming | $79859.00 |\n| ETH | forming | $2496.40 |\n| SOL | forming | $109.41 |"}, "structure": null}
+    ],
+    "resolvedCoinTickers": ["BTC", "ETH", "SOL"],
+    "tokenCountModel": "o200k_base",
+    "budgetUsage": {
+      "sections": {"used": 2, "cap": 32},
+      "sectionColumns": {"used": 2, "cap": 32},
+      "columnLookback": {"used": 32, "cap": 32},
+      "distinctTimeframes": {"used": 1, "cap": 8},
+      "estimatedTokens": {"used": 150, "cap": 16000}
+    },
+    "_truncationNote": "conditionOutcomes/conditionColumns/marker fields omitted here - boilerplate identical to every preview (session-field, market-breadth, reference-pairs ambient sections); the rendered tables and budgetUsage above are the complete measurement surface. The f0/f8 section rows are copied byte-for-byte."
+  },
+  "extracted": {
+    "f0": {"BTC": {"bar": "forming", "close": 79765.00}, "ETH": {"bar": "forming", "close": 2490.00}, "SOL": {"bar": "forming", "close": 106.91}},
+    "f8": {"BTC": {"bar": "forming", "close": 79859.00}, "ETH": {"bar": "forming", "close": 2496.40}, "SOL": {"bar": "forming", "close": 109.41}}
+  },
+  "_interpretation": "BAR_FORMING IGNORES OFFSET - same defect class as the other four candle-categoricals. The control is valid: close moved between the sections on all 3 coins, so offset was honoured in the same render. The offset-8 bar on a 1h anchor is by construction CLOSED - the render even prints its settled close beside the flag - yet bar answers 'forming', which is the offset-0 answer. The 2026-08-26 record's _honesty note allowed that 'ignores offset' might arguably be correct for this flag; the plan pre-committed the resolution: a question about a closed past bar should answer 'closed', so an unchanging 'forming' is the same silent-wrong-answer class. scope.untested is now empty; the existing OFFSET_NOT_HONOURED warning already covers BAR_FORMING (candle + vocab), so no validator change. Also worth keeping: budgetUsage.columnLookback read 32/32 for a 2-column-per-section report whose only offset is 8 - the 24-bar floor plus offset 8, exactly the lookback_floor.json arithmetic, independently confirmed in passing.",
+  "closes": "offset_ignored.json scope.untested, the last untested entry of BG-13"
+}
