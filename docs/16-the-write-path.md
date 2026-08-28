@@ -223,6 +223,15 @@ entries and a bad stop loses money, and the toolkit has nothing to say about the
 schema publishes bounds for each (`trailingGivebackPct` 25–55, `breakEvenTriggerR` 0.5–2,
 `minAtrPct` 0.01–50), so the surface is knowable — it simply has not been modelled.
 
+Two ownership facts, measured 2026-08-28
+([`execution_surface_ownership_2026-08-28.json`](../data/audit/execution_surface_ownership_2026-08-28.json)):
+these 16 are **strategy** fields — the agent's `tradingConfig` carries only the capital
+block (USD exposure/drawdown/daily-loss caps, leverage, slippage, sizing presets) and
+none of them. And omitting all 16 does not mean flat-passive: the platform's measured
+defaults (from the viable compile's `postState`) switch trailing, break-even *and* time
+decay **on** — minAtrPct 0.5, R:R 1.5, stop 1–2×ATR, trailing 1R/45%/0.25, break-even
+1.08R, decay 15/60 min, 5%→50%, stale at 25%.
+
 One more axis is untouched: the `rules` array itself. 84 signal IDs, each with an
 allocation 0–3 and a `required` flag. A generated plan carries 84 of them and **not one
 has ever been written.**

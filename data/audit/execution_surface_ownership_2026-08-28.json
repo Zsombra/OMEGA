@@ -1,0 +1,61 @@
+{
+  "_what": "Where the execution surface actually lives, measured across every MCP-visible BattleGrid surface on 2026-08-28. Prompted by the user's recollection that risk/reward is configured at AGENT creation rather than on the strategy. All reads read-only; no write tool was called.",
+  "date": "2026-08-28",
+
+  "verdict": {
+    "the16ExecutionParameters": "STRATEGY-owned. All 16 (minAtrPct, minRiskRewardRatio, min/maxStopLossAtrMultiple, trailing x4, breakEven x2, timeDecay x6) are fields of the strategy object: the compile_strategy_plan CREATE/UPDATE schemas accept them, the viable compile's postState carries them, and a live tuned strategy (TRAJ-03 rev 7) stores real values for every one. None of them appears in the agent create/update schemas, in either of two live agent reads, in the deployment-policy schema, or in the radar-deployment schema.",
+    "whatTheAgentOwns": "Capital and order-execution limits: minAllocationUsd, maxDailyTrades, balanceThresholdUsd, maxLeverage, maxSlippageBps, maxConcurrentExposureUsd, maxCumulativeDrawdownUsd, maxDailyLossUsd, positionSizePresets{small,medium,largePct} - plus read-only strategyTimeframe/regimeTimeframe derived at bind. These ARE risk settings, which is the likely root of the recollection: capital risk is agent-side; trade-shape risk (R:R, stops, trailing, break-even, decay) is strategy-side.",
+    "userRecollectionAssessment": "Half right. 'There are settings you can set up at agent creation' - yes, the capital block above, supplied as tradingConfig on create_intelligence_agent. 'Risk reward is based on the agent creation part' - contradicted for minRiskRewardRatio specifically: on the MCP surface it lives on the strategy (TRAJ-03 carries 1.5; no agent surface accepts or returns it)."
+  },
+
+  "evidence": {
+    "strategyRead_TRAJ03_rev7": {
+      "_source": "get_strategy bd1fc858-7bfe-4f6a-adaf-b0103ca45dbd, verbatim subset",
+      "minAtrPct": 0.8, "minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 2,
+      "minRiskRewardRatio": 1.5,
+      "breakEvenEnabled": true, "breakEvenTriggerR": 1.08,
+      "trailingEnabled": true, "trailingTriggerR": 0, "trailingGivebackPct": 25, "trailingBufferPct": 0.25,
+      "timeDecayEnabled": true, "timeDecayGracePeriodMinutes": 60, "timeDecayIntervalMinutes": 15,
+      "timeDecayTightenPct": 5, "timeDecayMaxTightenPct": 50, "timeDecayStaleThresholdTpProgressPct": 25
+    },
+    "platformDefaults_fromCompilePostState": {
+      "_source": "compile_dry_run_2026-08-28-small.json responseVerbatim.approvedPlan.postState - the viable CREATE compile sent NONE of the 16, so these are the values the platform fills in. ONE data point: one CREATE, 1h anchor; whether defaults vary by timeframe or anything else is unmeasured.",
+      "minAtrPct": 0.5, "minRiskRewardRatio": 1.5, "minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 2,
+      "trailingEnabled": true, "trailingTriggerR": 1, "trailingGivebackPct": 45, "trailingBufferPct": 0.25,
+      "breakEvenEnabled": true, "breakEvenTriggerR": 1.08,
+      "timeDecayEnabled": true, "timeDecayIntervalMinutes": 15, "timeDecayGracePeriodMinutes": 60,
+      "timeDecayTightenPct": 5, "timeDecayMaxTightenPct": 50, "timeDecayStaleThresholdTpProgressPct": 25,
+      "_note": "TRAJ-03 differs from these defaults in exactly three fields: minAtrPct 0.8 vs 0.5, trailingTriggerR 0 vs 1, trailingGivebackPct 25 vs 45 - consistent with three knobs deliberately tuned on an otherwise-default strategy."
+    },
+    "agentReads": {
+      "_source": "get_intelligence_agent on two different live agents, tradingConfig keys verbatim",
+      "Fleet TRAJ-03 (26de36b2)": ["minAllocationUsd", "maxDailyTrades", "balanceThresholdUsd", "maxLeverage", "maxSlippageBps", "maxConcurrentExposureUsd", "maxCumulativeDrawdownUsd", "maxDailyLossUsd", "positionSizePresets", "strategyTimeframe", "regimeTimeframe"],
+      "Fleet MATH-C3 (c67ec8b4)": ["minAllocationUsd", "maxDailyTrades", "balanceThresholdUsd", "maxLeverage", "maxSlippageBps", "maxConcurrentExposureUsd", "maxCumulativeDrawdownUsd", "maxDailyLossUsd", "positionSizePresets", "strategyTimeframe", "regimeTimeframe"],
+      "_note": "identical key sets, different values; no execution parameter and no nested positionManagement in either"
+    },
+    "agentWriteSchemas": "create_intelligence_agent / update_intelligence_agent tradingConfig: additionalProperties false, exactly the nine capital fields above (strategyTimeframe/regimeTimeframe explicitly read-only and rejected on write). No R:R, ATR gate, stop, trailing, break-even, or decay field.",
+    "deploymentPolicySchema": "upsert_deployment_policy: game participation only (agent slot, minConfidence, session/regime conditions); its own description says a slot 'carries no trade permission' and that the schema REJECTS tradingEnabled/minConviction/coinRules.",
+    "radarDeploymentSchema": "upsert_radar_deployment: standing per-coin trade authority - agent slot, minConviction bar, hours/regime conditions, deploymentTimeframe. No execution parameters.",
+    "tradingConfigCatalog_verbatim": {
+      "tradingDefaults": {
+        "defaults": {"defaultMaxDailyTrades": 10, "defaultMaxLeverage": 1, "defaultMaxEntryDeviationAtrMultiple": 1.5, "defaultSmallPct": 1, "defaultMediumPct": 2, "defaultLargePct": 3, "defaultEntrySlippageBps": 300, "defaultTtlMinutes": 15, "defaultMaxConcurrentExposureUsd": 100, "defaultBalanceThresholdUsd": 25, "defaultMaxCumulativeDrawdownUsd": 100, "defaultMaxDailyLossUsd": 50, "defaultStrategyTimeframe": "1h", "defaultAgentRisk": "MODERATE", "defaultAgentOutlook": "REALIST", "defaultAgentConviction": "MEASURED"},
+        "bounds": {"minimumTradingEquityUsd": 10, "minimumLeverage": 1, "minimumAtrPct": 0.1, "maximumAtrPct": 10, "minimumRiskRewardRatio": 0.5, "maximumRiskRewardRatio": 3, "minimumMaxSlippageBps": 1, "maximumMaxSlippageBps": 1000, "minimumAllocationUsd": 10, "maximumMaxDailyTrades": 100, "maximumMaxConcurrentExposureUsd": 250, "agentMinConfidenceFloor": 0.3, "agentMinTradeConvictionFloor": 0.2, "agentMinConfidenceFloorPercent": 30, "agentMinTradeConvictionFloorPercent": 20}
+      }
+    }
+  },
+
+  "discrepanciesObserved": {
+    "_why": "These are the likely source of the confusion - agent-facing surfaces still TALK about risk/ATR while no agent field carries them.",
+    "1_createProseVsSchema": "create_intelligence_agent's tradingConfig description says it includes 'ATR preferences, and nested positionManagement'; the schema (additionalProperties: false) accepts neither, and neither appears in an agent read.",
+    "2_catalogPresetsMissing": "get_trading_config_catalog's description promises 'position-management presets (COLT/BERETTA/LUGER/WALTHER)'; the response contains only tradingDefaults{defaults, bounds} - no presets block.",
+    "3_twoDifferentBoundsForTheSameKnobs": "The agent-facing catalog bounds ATR 0.1-10 and R:R 0.5-3; the strategy compile schema bounds minAtrPct 0.01-50 and leaves minRiskRewardRatio unbounded. Which bound the validator actually enforces on a strategy write is UNMEASURED - settling it needs a compile probe with an out-of-catalog-bounds value, not run today.",
+    "_inference": "LABELLED INFERENCE, not measurement: the catalog's own note - '(Signal presets are retired - the signal-gate/stop-loss/R:R fields are set directly)' - plus this residue reads like these settings migrated from an agent-side preset system to direct strategy fields, with the agent-facing prose/catalog not fully swept."
+  },
+
+  "honestLimits": [
+    "MCP connector surface only. The BattleGrid web UI was not inspected; if its agent-creation wizard displays R:R/stop settings, it may be writing them to the strategy behind the scenes - unverifiable from here.",
+    "Platform defaults measured from ONE CREATE compile at a 1h anchor.",
+    "Two agents read out of 23; their write schemas corroborate the shape, but per-agent variation beyond those schemas cannot be fully excluded.",
+    "No write probe was run to test which ATR/R:R bounds the validator enforces."
+  ]
+}

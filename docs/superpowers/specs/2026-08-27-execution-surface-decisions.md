@@ -19,9 +19,40 @@ They control how a strategy *trades*, not what it *looks at*:
 | break-even | `breakEvenEnabled`, `breakEvenTriggerR` (0.5–2) | |
 | time decay | `timeDecayEnabled`, `Interval` (1–480 min), `GracePeriod` (1–1440 min), `TightenPct` (0.1–50), `MaxTightenPct` (1–100), `StaleThresholdTpProgressPct` (0–100) | |
 
-Omitting them all is legal — the platform applies its own defaults. **What those defaults
-are is unknown and unmeasured.** That is itself a finding: today every generated strategy
-would trade on invisible risk settings.
+Omitting them all is legal — the platform applies its own defaults. ~~What those defaults
+are is unknown and unmeasured.~~ **Update 2026-08-28: measured.** The viable compile of a
+generated plan sent none of the 16 and its `postState` shows what the platform fills in
+(`data/audit/execution_surface_ownership_2026-08-28.json`):
+
+> minAtrPct 0.5 · minRiskRewardRatio 1.5 · stop-loss 1–2×ATR · trailing ON (trigger 1R,
+> giveback 45%, buffer 0.25) · break-even ON at 1.08R · time decay ON (15 min interval,
+> 60 min grace, 5% tighten, 50% max, stale at 25% TP progress)
+
+One data point (one CREATE, 1h anchor). A default-configured strategy is **not** flat-
+passive: trailing, break-even and decay are all on by default.
+
+## Measured 2026-08-28 — where these parameters live (asked by the user)
+
+The user recalled risk/reward being set at **agent creation**. Checked against every
+MCP-visible surface, read-only (`execution_surface_ownership_2026-08-28.json`):
+
+- **All 16 are strategy-owned.** The compile schemas take them, a live tuned strategy
+  (TRAJ-03: R:R 1.5, minAtrPct 0.8, giveback 25) stores them, and no agent surface
+  accepts or returns any of them.
+- **Agent creation owns the capital block**: exposure/drawdown/daily-loss caps in USD,
+  leverage, slippage, position-size presets, min allocation, daily trade cap, balance
+  threshold. These are genuinely risk settings — the likely source of the recollection —
+  but they are *capital* risk, not trade-shape risk.
+- Deployment policies (game slots) and radar deployments (per-coin trade authority)
+  carry neither group.
+- **Residue observed**: the agent-facing catalog still publishes ATR/R:R *bounds*
+  (0.1–10, 0.5–3) that disagree with the strategy schema's own bounds, and the agent
+  create prose mentions "ATR preferences / nested positionManagement" its schema
+  rejects. Its own note says signal presets were retired in favour of setting these
+  fields directly. Which bounds the validator enforces on a strategy write is unmeasured.
+
+Consequence for the decisions below: "emit nothing" (1a) no longer means "invisible risk
+settings" — it means the measured defaults above, which can be stated in the critique.
 
 ## Decision 1 — What should omega do when a thesis says nothing about execution?
 
@@ -38,10 +69,10 @@ would trade on invisible risk settings.
 
 ## Decision 2 — Should the platform's actual defaults be measured first?
 
-A compiled plan's `approvedPlan` echo may reveal what the platform fills in for omitted
-parameters. If Task 3 of the compile-bridge plan shows that, the "unknown defaults"
-problem shrinks to "documented defaults". **Recommendation: read the compile echo before
-deciding 1(a) vs 1(b)** — it may make (a) safe enough to ship.
+**ANSWERED 2026-08-28.** The compile echo did reveal them (see the measured section
+above). The "unknown defaults" problem is now "documented defaults", which makes 1(a)
+materially safer: omega can emit nothing and still *tell the user exactly what the
+strategy will trade on*. Decisions 1, 3 and 4 remain open and remain the user's.
 
 ## Decision 3 — Per-thesis or per-stance execution profiles?
 
