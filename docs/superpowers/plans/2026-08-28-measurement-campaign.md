@@ -15,7 +15,7 @@
 - **Record every live response verbatim into `data/audit/` before interpreting it.** A refusal is a finding, not a failure. **Redact `planToken`** to `{length, sha256}` (pattern: `compile_dry_run_2026-08-28-small.json`). Every token is left to expire.
 - **State every prediction BEFORE measuring; a failed prediction is a finding.** Where omega has no prior (most anchors' cadence), record "no prior — unmeasured", never a guess. Corrections to omega happen in the same commit as the record that proves them; contradictions of THIS plan get a dated note in this file — never silent.
 - **Re-verify the live compile schema before any compile** (Task 0). Cached capability lists are not authoritative after a deployment.
-- Baseline: `main` at `f5e8510`, **828 tests passing**. Run `python -m pytest -q` before every commit; commit messages end with the Claude co-author line.
+- Baseline: `main` at `f5e8510`, **828 tests passing**. *(Reconciled at completion, 2026-08-28: final count **849** — 828 baseline + 3 harness + 8 anchor-sweep + 6 cap-boundary + 4 bounds-edges pins. Compile calls actually spent: **10 of the authorized ≤20** — anchors 4 of 11, cap 4 of 6, bounds 2 of 2, contingency 0.)* Run `python -m pytest -q` before every commit; commit messages end with the Claude co-author line.
 - Windows: write files with Write/Edit tools, not shell heredocs, for anything committed. Large MCP results overflow to a file — verify by script (python/jq), never by eye.
 - MCP compile calls are made by the EXECUTOR (the session), not by scripts: the harness prints exact bodies; the executor pastes ONE body per call and records the response (overflow file → record modes).
 
@@ -436,11 +436,11 @@ def test_the_code_severity_matches_the_measured_verdict():
 
 ### Task 7: Finish
 
-- [ ] **Step 7.1:** Full suite one last time; reconcile the test count in this plan's baseline note with a dated line (828 + Task-by-task additions).
-- [ ] **Step 7.2:** Compile-call audit against the budget: count every `compile_strategy_plan` actually made (grep the audit records), assert ≤20 and per-family caps honoured, state the count in the final commit message.
-- [ ] **Step 7.3:** Integrate to `main`: `git fetch origin && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` — STOP on non-fast-forward, surface to the user.
-- [ ] **Step 7.4:** Update memory (`next-session-compile-bridge.md` or successor): campaign executed, per-family verdicts, what the assistant phase may now rely on, and the roadmap remainder (UPDATE-for-generated-plans, then the assistant brainstorm). Binding/deployment stay user-gated, always.
-- [ ] **Step 7.5:** Final report to the user: the anchor table (cadence/regime/defaults per anchor, refusals named), the boundary (or bracket) with its caveat, both bounds verdicts, prediction outcomes (held/failed/no-prior), budget actually spent, and any plan corrections made along the way.
+- [x] **Step 7.1:** Full suite one last time; reconcile the test count in this plan's baseline note with a dated line (828 + Task-by-task additions).
+- [x] **Step 7.2:** Compile-call audit against the budget: count every `compile_strategy_plan` actually made (grep the audit records), assert ≤20 and per-family caps honoured, state the count in the final commit message.
+- [x] **Step 7.3:** Integrate to `main`: `git fetch origin && git merge-base --is-ancestor origin/main HEAD && git push origin HEAD:main` — STOP on non-fast-forward, surface to the user.
+- [x] **Step 7.4:** Update memory (`next-session-compile-bridge.md` or successor): campaign executed, per-family verdicts, what the assistant phase may now rely on, and the roadmap remainder (UPDATE-for-generated-plans, then the assistant brainstorm). Binding/deployment stay user-gated, always.
+- [x] **Step 7.5:** Final report to the user: the anchor table (cadence/regime/defaults per anchor, refusals named), the boundary (or bracket) with its caveat, both bounds verdicts, prediction outcomes (held/failed/no-prior), budget actually spent, and any plan corrections made along the way.
 
 ## Deliberately absent from this plan
 
