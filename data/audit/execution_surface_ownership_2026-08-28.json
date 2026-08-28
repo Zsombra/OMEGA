@@ -52,6 +52,13 @@
     "_inference": "LABELLED INFERENCE, not measurement: the catalog's own note - '(Signal presets are retired - the signal-gate/stop-loss/R:R fields are set directly)' - plus this residue reads like these settings migrated from an agent-side preset system to direct strategy fields, with the agent-facing prose/catalog not fully swept."
   },
 
+  "addendum_sameDay_tradableUniverse": {
+    "_what": "Read-only follow-up: list_radar_deployments + list_deployment_policies, answering the 'where does a strategy's tradable universe live' open question from the compile record.",
+    "answer": "The autonomous-trading universe is the set of per-coin RADAR deployments, not a strategy field. This account: 20 coins deployed (at the coinCap of 20), each binding one agent at a deploymentTimeframe; 0 arena deployment policies. The compile request's coinSelection scoped only the review.",
+    "liveEvidenceTheRiskGatesActPerTrade": "radar resolvesNow rows carry qualificationBlock values AGGREGATE_BELOW_MIN (most coins) and ATR_VOLATILITY_BELOW_MIN (BTC, HYPE). The names map onto the strategy's minAggregateScore and minAtrPct gates refusing ENTRY QUALIFICATION on a live coin - direct observational support that the 16 execution parameters act at the individual-trade level, not the deployment level. The name-to-field mapping is inference from the reason-code names; the codes themselves are verbatim.",
+    "fleetStateObservedInPassing": "12 of 15 active agents are AGENT_HALTED (since 2026-08-25..27), blocking 13 of the 20 radar coins; 2 coins in position (FARTCOIN, ETH), 5 scanning. Recorded as observed state only - no agent was touched."
+  },
+
   "honestLimits": [
     "MCP connector surface only. The BattleGrid web UI was not inspected; if its agent-creation wizard displays R:R/stop settings, it may be writing them to the strategy behind the scenes - unverifiable from here.",
     "Platform defaults measured from ONE CREATE compile at a 1h anchor.",
