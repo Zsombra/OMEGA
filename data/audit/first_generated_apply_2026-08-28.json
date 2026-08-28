@@ -1,0 +1,1032 @@
+{
+  "_what": "The FIRST omega-generated strategy ever applied. Task 8 of the 2026-08-28 finalize plan, under the user's explicit per-instance authorization: 'I authorize ONE apply_strategy_plan of the compiled trend-continuation CREATE in Task 8 of this plan - this covers that single apply and nothing else.' Quota path: the free 25th slot (user's choice, quota 24/25 re-verified immediately before). Disposition: archive immediately after verification (user's choice).",
+  "sequence": {
+    "1_compile": {
+      "call": "compile_strategy_plan, 3 of the plan's 4-call budget, fresh for the apply token",
+      "request": "python -m scripts.compile_dry_run small - the identical known-viable small trend-continuation CREATE (explicit BTC/ETH/SOL), except the third assumption string now reads the Decision 1(a) wording ('the MEASURED platform defaults apply (see omega/execution.py)') because Task 5 landed between the probes and this compile",
+      "result": {
+        "viable": true,
+        "operation": "CREATE",
+        "proposedRevision": 1,
+        "postStateId": "6a8bca67-45a3-428e-85ba-71ec2cd2218e",
+        "previewedAt": "2026-08-28T13:48:10.205Z",
+        "expiresAt": "2026-08-28T13:53:10.208Z"
+      },
+      "planToken": {
+        "_redacted": "credential-bound 5-minute token, used for the ONE authorized apply within its window",
+        "length": 686,
+        "sha256": "014cdc255d0d02db5ad72a6f2b0f244216de0607020a343c8d00571915cf2d0d"
+      }
+    },
+    "2_apply": {
+      "call": "apply_strategy_plan - the ONE authorized call. Request: {confirm: true, planToken} - no plan key (doc 16 rule). First attempt succeeded; no INTERNAL_ERROR, no timeout, no retry.",
+      "appliedImpactVerbatim": {
+        "operation": "CREATE",
+        "strategyId": "6a8bca67-45a3-428e-85ba-71ec2cd2218e",
+        "previousRevision": null,
+        "committedRevision": 1,
+        "changedAxes": [
+          "IDENTITY",
+          "TIMEFRAME_PROFILE",
+          "REPORT",
+          "MARKET_READ",
+          "CONDITIONS",
+          "SETUP_GATES",
+          "SIGNAL_RULES",
+          "LIFECYCLE"
+        ],
+        "boundAgentCount": 0,
+        "propagatedAgentCount": 0,
+        "openPositionCount": 0
+      }
+    },
+    "3_readBack": {
+      "call": "get_strategy on the new id - recorded verbatim below in roundTrip",
+      "verified": {
+        "revision": 1,
+        "name": "Trend Continuation",
+        "forkedFromStrategyId": null,
+        "customSections": "2, both with server-minted keys (custom:e63d117d..., custom:d53ea7fe...), neither of them omega's local uuid5s",
+        "signalRules": "dense 84, exactly 24 non-zero allocations",
+        "executionParams": "all 16 equal PLATFORM_EXECUTION_DEFAULTS - none were sent",
+        "conditions": 7,
+        "crossCheck": "read-back equals the compile postState on every content field; the only differing keys (ownerUserId, createdAt, updatedAt, revision, boundAgentCount, openPositionCount) are null in the pre-persistence postState and stamped at apply"
+      }
+    },
+    "4_archive": {
+      "call": "archive_strategy {expectedRevision: 1, confirm: true} - the user's chosen disposition, immediately after verification",
+      "result": {
+        "revision": 2,
+        "isActive": false,
+        "boundAgentCount": 0,
+        "openPositionCount": 0,
+        "updatedAt": "2026-08-28T13:50:51.713Z",
+        "note": "lifecycle edit advanced provenance 1 -> 2, config byte-identical; restorable via restore_strategy"
+      }
+    }
+  },
+  "serverObservations": [
+    "The server rewrote the conditions' null sectionKeys to resolved ones at persist: ambient headers got their platform sections (reference-pairs, market-breadth) and the custom-column clauses got the freshly minted custom key. omega sends sectionKey: null on CREATE (a not-yet-existing strategy owns no identities); the persisted form is resolved.",
+    "cadence INTRADAY / regimeTimeframe 4h at the 1h anchor - consistent with the mapping measured on the same day.",
+    "Nothing was bound and nothing deployed: boundAgentCount 0 and propagatedAgentCount 0 at every step."
+  ],
+  "_interpretation": "The full generate -> compile -> apply -> read-back -> archive loop is closed. What omega generated is exactly what the platform persisted: every content field of the read-back equals the compile's approved postState, the 84-rule dense scorecard survived byte-for-byte, and the 16 execution parameters the CREATE deliberately omitted came back as the measured platform defaults - Decision 1(a) behaving as designed on a real write. The strategy existed active for ~2 minutes, bound to nothing, and is archived (not deleted) at revision 2. Binding and deployment remain user-gated, always.",
+  "roundTrip": {
+    "id": "6a8bca67-45a3-428e-85ba-71ec2cd2218e",
+    "ownerUserId": "bb334a1e-2ac2-4956-8dea-7c7cf01097b9",
+    "scope": "PRIVATE",
+    "systemKey": null,
+    "name": "Trend Continuation",
+    "description": "Full MA alignment with trend strength, entered on momentum resumption.",
+    "tagline": "Never fight an aligned stack",
+    "visibility": "UNLISTED",
+    "timeframe": "1h",
+    "cadence": "INTRADAY",
+    "regimeTimeframe": "4h",
+    "marketReadText": "Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.\n\n- {TC_UP} (UP) - Setup confirmed - up.\n- {TC_DOWN} (DOWN) - Setup confirmed - down.\n\nRead these verdicts rather than re-deriving them from the columns.",
+    "sections": [
+      {
+        "kind": "custom",
+        "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+        "title": "Trend Continuation Signals",
+        "timeframe": null,
+        "benchmarkTicker": null,
+        "columns": [
+          {
+            "metric": "MA_ALIGN",
+            "transformId": "value",
+            "timeframe": {
+              "rel": "anchor"
+            }
+          },
+          {
+            "metric": "EMA5",
+            "transformId": "spread",
+            "chainedTransformId": "trajectory",
+            "timeframe": {
+              "rel": "anchor"
+            },
+            "window": 4,
+            "inputs": [
+              {
+                "metric": "EMA13"
+              }
+            ]
+          },
+          {
+            "metric": "SMA200",
+            "transformId": "distance",
+            "timeframe": {
+              "rel": "anchor"
+            }
+          },
+          {
+            "metric": "ADX",
+            "transformId": "trajectory",
+            "timeframe": {
+              "rel": "anchor"
+            },
+            "window": 4,
+            "bars": "closed"
+          },
+          {
+            "metric": "MACD",
+            "transformId": "trajectory",
+            "timeframe": {
+              "rel": "anchor"
+            },
+            "window": 4,
+            "bars": "closed"
+          },
+          {
+            "metric": "MACD",
+            "transformId": "crossDetect",
+            "timeframe": {
+              "rel": "anchor"
+            }
+          },
+          {
+            "metric": "RVOL",
+            "transformId": "trajectory",
+            "timeframe": {
+              "rel": "anchor"
+            },
+            "window": 4,
+            "bars": "closed"
+          },
+          {
+            "metric": "OBV",
+            "transformId": "trajectory",
+            "timeframe": {
+              "rel": "anchor"
+            },
+            "window": 4,
+            "bars": "closed"
+          }
+        ]
+      },
+      {
+        "kind": "custom",
+        "sectionKey": "custom:d53ea7fe-e9ef-4d4c-9bea-ac21b660fb81",
+        "title": "Trend Continuation Context",
+        "timeframe": null,
+        "benchmarkTicker": null,
+        "columns": [
+          {
+            "metric": "REGIME_TREND",
+            "transformId": "trajectory",
+            "timeframe": {
+              "rel": "anchor"
+            },
+            "window": 3
+          },
+          {
+            "metric": "REGIME_VOL",
+            "transformId": "value",
+            "timeframe": {
+              "rel": "anchor"
+            }
+          },
+          {
+            "metric": "REGIME_MOM",
+            "transformId": "value",
+            "timeframe": {
+              "rel": "anchor"
+            }
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "conditionKey": "TC_RISK_ON",
+        "name": "Stablecoin pairs at par",
+        "definition": {
+          "kind": "group",
+          "op": "ALL",
+          "members": [
+            {
+              "kind": "clause",
+              "column": {
+                "sectionKey": "reference-pairs",
+                "header": "usdtUsdDev_market"
+              },
+              "op": "between",
+              "low": -0.5,
+              "high": 0.5
+            },
+            {
+              "kind": "clause",
+              "column": {
+                "sectionKey": "reference-pairs",
+                "header": "usdcUsdtDev_market"
+              },
+              "op": "between",
+              "low": -0.5,
+              "high": 0.5
+            }
+          ]
+        },
+        "verdict": null,
+        "required": false
+      },
+      {
+        "conditionKey": "TC_CTX_UP",
+        "name": "Broad tape up",
+        "definition": {
+          "kind": "clause",
+          "column": {
+            "sectionKey": "market-breadth",
+            "header": "mktBreadth_all"
+          },
+          "op": "gt",
+          "value": 10
+        },
+        "verdict": null,
+        "required": false
+      },
+      {
+        "conditionKey": "TC_CTX_DOWN",
+        "name": "Broad tape down",
+        "definition": {
+          "kind": "clause",
+          "column": {
+            "sectionKey": "market-breadth",
+            "header": "mktBreadth_all"
+          },
+          "op": "lt",
+          "value": -10
+        },
+        "verdict": null,
+        "required": false
+      },
+      {
+        "conditionKey": "TC_CORE_UP",
+        "name": "2 of 3 filters agree - up",
+        "definition": {
+          "kind": "group",
+          "op": "ALL",
+          "members": [
+            {
+              "kind": "group",
+              "op": "N_OF",
+              "n": 2,
+              "members": [
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                    "header": "MAalign"
+                  },
+                  "op": "is",
+                  "label": "bullish"
+                },
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                    "header": "MACD_trend"
+                  },
+                  "op": "is",
+                  "label": "rising"
+                },
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                    "header": "OBV_trend"
+                  },
+                  "op": "is",
+                  "label": "rising"
+                }
+              ]
+            },
+            {
+              "kind": "clause",
+              "column": {
+                "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                "header": "ADX_now"
+              },
+              "op": "gte",
+              "value": 25
+            }
+          ]
+        },
+        "verdict": null,
+        "required": false
+      },
+      {
+        "conditionKey": "TC_CORE_DOWN",
+        "name": "2 of 3 filters agree - down",
+        "definition": {
+          "kind": "group",
+          "op": "ALL",
+          "members": [
+            {
+              "kind": "group",
+              "op": "N_OF",
+              "n": 2,
+              "members": [
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                    "header": "MAalign"
+                  },
+                  "op": "is",
+                  "label": "bearish"
+                },
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                    "header": "MACD_trend"
+                  },
+                  "op": "is",
+                  "label": "falling"
+                },
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                    "header": "OBV_trend"
+                  },
+                  "op": "is",
+                  "label": "falling"
+                }
+              ]
+            },
+            {
+              "kind": "clause",
+              "column": {
+                "sectionKey": "custom:e63d117d-9569-427a-9791-80e4dbe68ae3",
+                "header": "ADX_now"
+              },
+              "op": "gte",
+              "value": 25
+            }
+          ]
+        },
+        "verdict": null,
+        "required": false
+      },
+      {
+        "conditionKey": "TC_UP",
+        "name": "Setup confirmed - up",
+        "definition": {
+          "kind": "group",
+          "op": "ALL",
+          "members": [
+            {
+              "kind": "conditionRef",
+              "conditionKey": "TC_CORE_UP"
+            },
+            {
+              "kind": "conditionRef",
+              "conditionKey": "TC_CTX_UP"
+            },
+            {
+              "kind": "conditionRef",
+              "conditionKey": "TC_RISK_ON"
+            }
+          ]
+        },
+        "verdict": "UP",
+        "required": false
+      },
+      {
+        "conditionKey": "TC_DOWN",
+        "name": "Setup confirmed - down",
+        "definition": {
+          "kind": "group",
+          "op": "ALL",
+          "members": [
+            {
+              "kind": "conditionRef",
+              "conditionKey": "TC_CORE_DOWN"
+            },
+            {
+              "kind": "conditionRef",
+              "conditionKey": "TC_CTX_DOWN"
+            },
+            {
+              "kind": "conditionRef",
+              "conditionKey": "TC_RISK_ON"
+            }
+          ]
+        },
+        "verdict": "DOWN",
+        "required": false
+      }
+    ],
+    "signalRules": [
+      {
+        "signalId": "bollinger_cci_overbought",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 100
+        }
+      },
+      {
+        "signalId": "bollinger_cci_oversold",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": -100
+        }
+      },
+      {
+        "signalId": "bollinger_lower_touch",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "pctBThreshold": 0.05
+        }
+      },
+      {
+        "signalId": "bollinger_squeeze",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "bandwidthPct": 0.04
+        }
+      },
+      {
+        "signalId": "bollinger_upper_touch",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "pctBThreshold": 0.95
+        }
+      },
+      {
+        "signalId": "comparison_btc_decorrelation",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "maxCorrelation": 0.3
+        }
+      },
+      {
+        "signalId": "comparison_sector_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "minPeerFraction": 0.5
+        }
+      },
+      {
+        "signalId": "comparison_sector_momentum",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "minPeerFraction": 0.6
+        }
+      },
+      {
+        "signalId": "cvd_bear_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "cvd_bearish",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "cvd_bull_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "cvd_bullish",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "flow_perp_spot_bear_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "flow_perp_spot_bull_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "funding_extreme_negative",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "thresholdPct": 0.0005
+        }
+      },
+      {
+        "signalId": "funding_extreme_positive",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "thresholdPct": 0.0005
+        }
+      },
+      {
+        "signalId": "funding_rate_flipping",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "htf_ma_aligned_bear",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "htf_ma_aligned_bull",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "htf_rsi_overbought",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 70
+        }
+      },
+      {
+        "signalId": "htf_rsi_oversold",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 30
+        }
+      },
+      {
+        "signalId": "htf_trend_adx_ranging",
+        "allocation": 2,
+        "required": false,
+        "params": {
+          "threshold": 20
+        }
+      },
+      {
+        "signalId": "htf_trend_adx_trending",
+        "allocation": 2,
+        "required": false,
+        "params": {
+          "threshold": 25
+        }
+      },
+      {
+        "signalId": "ltf_ma_aligned_bear",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "ltf_ma_aligned_bull",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "ltf_rsi_overbought",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 70
+        }
+      },
+      {
+        "signalId": "ltf_rsi_oversold",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 30
+        }
+      },
+      {
+        "signalId": "ltf_trend_adx_ranging",
+        "allocation": 2,
+        "required": false,
+        "params": {
+          "threshold": 20
+        }
+      },
+      {
+        "signalId": "ltf_trend_adx_trending",
+        "allocation": 2,
+        "required": false,
+        "params": {
+          "threshold": 25
+        }
+      },
+      {
+        "signalId": "ma_ema_aligned_bear",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "ma_ema_aligned_bull",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "ma_ema_bear_cross",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "ma_ema_bull_cross",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "ma_sma200_above",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "ma_sma200_below",
+        "allocation": 3,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "macd_bear_cross",
+        "allocation": 2,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "macd_bear_divergence",
+        "allocation": 2,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "macd_bull_cross",
+        "allocation": 2,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "macd_bull_divergence",
+        "allocation": 2,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mfi_bear_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mfi_bull_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mfi_overbought",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 80
+        }
+      },
+      {
+        "signalId": "mfi_oversold",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 20
+        }
+      },
+      {
+        "signalId": "mfi_sustained_bearish",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mfi_sustained_bullish",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mtf_aligned_bear",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mtf_aligned_bull",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mtf_pullback_long",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "mtf_pullback_short",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "oi_divergence_bear",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "oi_divergence_bull",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "oi_surge",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "thresholdPct": 0.05
+        }
+      },
+      {
+        "signalId": "regime_alignment",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "regime_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "regime_trend_shift",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "regime_volatility_shift",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "rel_ppo_bear_cross",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "rel_ppo_bull_cross",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "rel_roc_negative",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "rel_roc_positive",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "rsi_bear_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "rsi_bull_divergence",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "rsi_overbought",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 70
+        }
+      },
+      {
+        "signalId": "rsi_oversold",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 30
+        }
+      },
+      {
+        "signalId": "sr_at_resistance",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "proximityPct": 0.005
+        }
+      },
+      {
+        "signalId": "sr_at_support",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "proximityPct": 0.005
+        }
+      },
+      {
+        "signalId": "sr_resistance_break",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "sr_support_break",
+        "allocation": 0,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "stoch_bear_cross",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "zoneThreshold": 70
+        }
+      },
+      {
+        "signalId": "stoch_bull_cross",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "zoneThreshold": 30
+        }
+      },
+      {
+        "signalId": "stoch_overbought",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 80
+        }
+      },
+      {
+        "signalId": "stoch_oversold",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "threshold": 20
+        }
+      },
+      {
+        "signalId": "structure_fvg_approach",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "proximityPct": 1
+        }
+      },
+      {
+        "signalId": "structure_ob_approach",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "proximityPct": 1
+        }
+      },
+      {
+        "signalId": "structure_zone_cluster",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "rangePct": 2
+        }
+      },
+      {
+        "signalId": "structure_zone_confluence",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "alignmentPct": 0.5
+        }
+      },
+      {
+        "signalId": "trend_adx_ranging",
+        "allocation": 2,
+        "required": false,
+        "params": {
+          "threshold": 20
+        }
+      },
+      {
+        "signalId": "trend_adx_trending",
+        "allocation": 2,
+        "required": false,
+        "params": {
+          "threshold": 25
+        }
+      },
+      {
+        "signalId": "volatility_atr_contracting",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "multiplier": 0.7
+        }
+      },
+      {
+        "signalId": "volatility_atr_expanding",
+        "allocation": 0,
+        "required": false,
+        "params": {
+          "multiplier": 1.5
+        }
+      },
+      {
+        "signalId": "volume_dry_up",
+        "allocation": 1,
+        "required": false,
+        "params": {
+          "multiplier": 0.5
+        }
+      },
+      {
+        "signalId": "volume_obv_bear_divergence",
+        "allocation": 1,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "volume_obv_bull_divergence",
+        "allocation": 1,
+        "required": false,
+        "params": {}
+      },
+      {
+        "signalId": "volume_surge",
+        "allocation": 1,
+        "required": false,
+        "params": {
+          "multiplier": 2
+        }
+      }
+    ],
+    "minAggregateScore": 0.6,
+    "minRequiredCount": 0,
+    "minAtrPct": 0.5,
+    "minStopLossAtrMultiple": 1,
+    "maxStopLossAtrMultiple": 2,
+    "minRiskRewardRatio": 1.5,
+    "breakEvenEnabled": true,
+    "breakEvenTriggerR": 1.08,
+    "trailingEnabled": true,
+    "trailingTriggerR": 1,
+    "trailingGivebackPct": 45,
+    "trailingBufferPct": 0.25,
+    "timeDecayEnabled": true,
+    "timeDecayGracePeriodMinutes": 60,
+    "timeDecayIntervalMinutes": 15,
+    "timeDecayTightenPct": 5,
+    "timeDecayMaxTightenPct": 50,
+    "timeDecayStaleThresholdTpProgressPct": 25,
+    "forkedFromStrategyId": null,
+    "revision": 1,
+    "isActive": true,
+    "boundAgentCount": 0,
+    "openPositionCount": 0,
+    "createdAt": "2026-08-28T13:48:33.561Z",
+    "updatedAt": "2026-08-28T13:48:33.561Z"
+  }
+}

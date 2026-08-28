@@ -20,8 +20,13 @@ strategies from a thesis.
 >
 > **The write path itself is now proven**, exercised by hand against the connector on
 > 2026-08-24. A custom table, a full condition set and a from-scratch strategy were all
-> written and read back — see [16 · The write path](docs/16-the-write-path.md). Quota is
-> **25/25**, of which two are OMEGA test objects and one of those is archived.
+> written and read back — see [16 · The write path](docs/16-the-write-path.md).
+>
+> **And on 2026-08-28 the loop closed for GENERATED plans too:** the first
+> omega-generated strategy was compiled, applied under explicit per-instance user
+> authorization, read back byte-identical to the approved plan, and archived
+> immediately (the user's chosen disposition) — id `6a8bca67…`, never bound, never
+> deployed. Quota is back to **24/25**.
 
 ---
 

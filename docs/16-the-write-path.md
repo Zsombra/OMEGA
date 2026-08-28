@@ -204,8 +204,9 @@ scoring inputs are rendered", which is what the compile advisory checks. Omega m
 only the first. Non-blocking, but an agent will score those signals on data its own
 report never shows it.
 
-No generated plan has been **applied**; all three proven write axes remain hand-built
-payloads, and applying a generated one stays a deliberate, user-authorized act.
+~~No generated plan has been **applied**; all three proven write axes remain hand-built
+payloads~~ — resolved later the same day: see [A generated strategy exists](#a-generated-strategy-exists-2026-08-28)
+below. Applying a generated plan remains a deliberate, per-instance user-authorized act.
 
 ### The execution surface
 
@@ -249,11 +250,33 @@ defaults (from the viable compile's `postState`) switch trailing, break-even *an
 decay **on** — minAtrPct 0.5, R:R 1.5, stop 1–2×ATR, trailing 1R/45%/0.25, break-even
 1.08R, decay 15/60 min, 5%→50%, stale at 25%.
 
-One more axis is untouched: the `rules` array itself. 84 signal IDs, each with an
-allocation 0–3 and a `required` flag. A generated plan carries 84 of them and **not one
-has ever been written.**
+~~One more axis is untouched: the `rules` array itself~~ — written on 2026-08-28 by the
+first generated apply (below): all 84 rules, 24 of them weighted, survived the round
+trip byte-for-byte.
 
 See [`write_surface_gap.json`](../data/audit/write_surface_gap.json).
+
+### A generated strategy exists (2026-08-28)
+
+The loop closed today, under the user's explicit per-instance authorization ("ONE
+`apply_strategy_plan` of the compiled trend-continuation CREATE") and the plan's hard
+gate: one fresh compile (viable, as it was that morning), one apply within the token's
+five minutes — `{confirm: true, planToken}`, no `plan` key, first attempt, no retry —
+and a read-back verified by script.
+
+**Strategy `6a8bca67-45a3-428e-85ba-71ec2cd2218e`, "Trend Continuation", revision 1.**
+Every content field of the read-back equals the compile's approved `postState`: 2
+custom sections under server-minted keys, the dense 84-rule scorecard with its 24
+weighted entries, 7 conditions (their `sectionKey: null` column refs rewritten by the
+server to resolved sections at persist), and — the Decision 1(a) proof — all 16
+execution parameters present at exactly the measured platform defaults, none of them
+sent. Bound to nothing at every step (`boundAgentCount` 0, `propagatedAgentCount` 0).
+
+**Disposition, per the user's choice: archived immediately** after verification —
+revision 2, `isActive: false`, restorable, quota slot returned (24/25). Full record:
+[`first_generated_apply_2026-08-28.json`](../data/audit/first_generated_apply_2026-08-28.json),
+pinned by `tests/test_first_apply.py`. Binding to an agent and radar/arena deployment
+remain user-gated, always.
 
 ## CREATE, proven
 
