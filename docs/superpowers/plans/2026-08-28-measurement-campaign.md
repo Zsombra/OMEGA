@@ -382,11 +382,11 @@ Flip `test_coin_selection_default_is_class_aware` in `tests/test_write_surface.p
 
 **Predictions (stated now):** both refused at the input-validation layer naming the catalog edge (consistent with Probe A's upper-edge finding) — R:R 0.3 → "must be >= 0.5", minAtrPct 0.05 → "must be >= 0.1". Either outcome is a finding.
 
-- [ ] **Step 5.1:** `python -m scripts.compile_dry_run rrlow 0.3` → verify one-changed-field by script → ONE compile → `record-into <respfile> rr-0.3 bounds_edges_2026-XX-XX.json`. Then `atr 0.05` → verify → ONE compile → `record-into <respfile> atr-0.05 …`. (0.05 is legal per the published schema's 0.01–50 — that is what makes the probe informative.) Tokens, if any minted, are left to expire.
-- [ ] **Step 5.2: Interpret, per pre-committed branches.**
+- [x] **Step 5.1:** `python -m scripts.compile_dry_run rrlow 0.3` → verify one-changed-field by script → ONE compile → `record-into <respfile> rr-0.3 bounds_edges_2026-XX-XX.json`. Then `atr 0.05` → verify → ONE compile → `record-into <respfile> atr-0.05 …`. (0.05 is legal per the published schema's 0.01–50 — that is what makes the probe informative.) Tokens, if any minted, are left to expire.
+- [x] **Step 5.2: Interpret, per pre-committed branches.**
   - **R:R 0.3 refused naming the edge** → lower edge enforced; `CATALOG_BOUNDS` comment in `omega/execution.py` updated to "both R:R edges measured enforced"; no code change. **R:R 0.3 viable** → asymmetric enforcement: in `validate_execution`, the `minRiskRewardRatio` catalog check becomes error ONLY above the upper edge and a warning below the lower edge, each message citing its measurement date; add a matching case to `tests/test_execution.py::test_override_validation`.
   - **minAtrPct 0.05 refused naming the edge** → catalog enforced for ATR too; comment update only. **minAtrPct 0.05 viable with `postState.minAtrPct == 0.05`** → schema governs ATR: in `validate_execution`, `minAtrPct`'s catalog finding becomes `"warning"` (legal on the write, outside the agent catalog), citing the record; adjust `tests/test_execution.py` accordingly. **Viable but postState ≠ 0.05** → silent clamp: a NEW platform defect (BG-15 candidate) — record both numbers, and Task 6 gains the defects-artifact addendum.
-- [ ] **Step 5.3: Pin** — `tests/test_bounds_edges.py`:
+- [x] **Step 5.3: Pin** — `tests/test_bounds_edges.py`:
 
 ```python
 """The two bounds edges Probe A left unprobed, measured 2026-XX-XX: the R:R lower
@@ -422,7 +422,7 @@ def test_the_code_severity_matches_the_measured_verdict():
 ```
 
 (The record carries `verdicts: {rrLowerEdge, minAtrPct}` filled from the measured branch.)
-- [ ] **Step 5.4:** Full suite green → commit `Bounds edges: R:R lower <verdict>, minAtrPct <verdict>` → push.
+- [x] **Step 5.4:** Full suite green → commit `Bounds edges: R:R lower <verdict>, minAtrPct <verdict>` → push.
 
 ### Task 6: Documentation and the defects artifact
 
