@@ -10,16 +10,28 @@ exactly like a success. The minted token is left to expire.
 """
 from __future__ import annotations
 import json, sys
+from dataclasses import replace
 from pathlib import Path
 from omega.generate import PRESETS, plan
 
 ROOT = Path(__file__).resolve().parents[1]
 PRESET = "trend-continuation"   # audit-clean (see scripts/audit_generated_plans.py)
+# BG-14 workaround probe: the ranked/ALL/30 preview measured 395,404 bytes against the
+# 256,000 cap. Three explicit tickers shrink the preview footprint; whether that is
+# enough is the measurement, not an assumption.
+SMALL_TICKERS = ["BTC", "ETH", "SOL"]
 
-def request() -> dict:
-    return {"request": plan(PRESETS[PRESET]).wire()}
+def request(*, small: bool = False) -> dict:
+    thesis = PRESETS[PRESET]
+    if small:
+        thesis = replace(thesis, coin_selection={"mode": "explicit",
+                                                 "tickers": SMALL_TICKERS})
+    return {"request": plan(thesis).wire()}
 
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "small":
+        print(json.dumps(request(small=True), separators=(",", ":")))
+        return 0
     if len(sys.argv) > 1 and sys.argv[1] == "record":
         raw = Path(sys.argv[2]).read_text(encoding="utf-8")
         resp = json.loads(raw)

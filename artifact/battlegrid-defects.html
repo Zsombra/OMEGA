@@ -1222,11 +1222,14 @@ RSI14_now  38.3
           <code>data/audit/compile_dry_run_2026-08-28.json</code>.
         </p>
         <div class="fix">
-          <div class="fix-label">Workaround</div>
+          <div class="fix-label">Workaround — verified</div>
           <p>
-            Plausibly: shrink the preview footprint &mdash; a smaller ranked <code>limit</code> or
-            a short explicit ticker list. <b>Untested</b>: the session's two-compile budget was
-            spent establishing the rule itself.
+            Shrink the preview footprint. Confirmed later the same day: the <em>identical</em>
+            plan with an explicit three-ticker selection &mdash; the only fields changed were
+            <code>coinSelection</code> and its assumption string &mdash; compiled
+            <code>viable:&nbsp;true</code>. The cap <b>boundary</b> (the largest selection that
+            still compiles) remains unmeasured; success responses do not report the internal
+            preview byte figure.
           </p>
         </div>
         <p>

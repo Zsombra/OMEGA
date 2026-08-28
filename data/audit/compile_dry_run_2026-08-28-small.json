@@ -1,0 +1,5364 @@
+{
+  "_what": "BG-14 workaround probe: the SAME generated CREATE request that was refused at coinSelection ranked/ALL/30 (395,404-byte preview), resubmitted with an explicit 3-ticker selection. Only coinSelection and its assumption string differ from the refused payload. Dry-run: no apply; the minted token was left to expire.",
+  "date": "2026-08-28",
+  "preset": "trend-continuation",
+  "coinSelection": {
+    "mode": "explicit",
+    "tickers": [
+      "BTC",
+      "ETH",
+      "SOL"
+    ]
+  },
+  "requestKeys": [
+    "assumptions",
+    "coinSelection",
+    "conditions",
+    "description",
+    "intentSummary",
+    "marketReadText",
+    "minAggregateScore",
+    "minRequiredCount",
+    "name",
+    "operation",
+    "rules",
+    "sections",
+    "tagline",
+    "timeframe"
+  ],
+  "responseVerbatim": {
+    "approvedPlan": {
+      "operation": "CREATE",
+      "postState": {
+        "id": "44ef1b4d-82c9-4535-b769-e7d97a82631e",
+        "scope": "PRIVATE",
+        "systemKey": null,
+        "name": "Trend Continuation",
+        "description": "Full MA alignment with trend strength, entered on momentum resumption.",
+        "tagline": "Never fight an aligned stack",
+        "visibility": "UNLISTED",
+        "timeframe": "1h",
+        "cadence": "INTRADAY",
+        "regimeTimeframe": "4h",
+        "marketReadText": "Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.\n\n- {TC_UP} (UP) - Setup confirmed - up.\n- {TC_DOWN} (DOWN) - Setup confirmed - down.\n\nRead these verdicts rather than re-deriving them from the columns.",
+        "sections": [
+          {
+            "kind": "custom",
+            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+            "title": "Trend Continuation Signals",
+            "timeframe": null,
+            "benchmarkTicker": null,
+            "columns": [
+              {
+                "metric": "MA_ALIGN",
+                "transformId": "value",
+                "timeframe": {
+                  "rel": "anchor"
+                }
+              },
+              {
+                "metric": "EMA5",
+                "transformId": "spread",
+                "chainedTransformId": "trajectory",
+                "timeframe": {
+                  "rel": "anchor"
+                },
+                "window": 4,
+                "inputs": [
+                  {
+                    "metric": "EMA13"
+                  }
+                ]
+              },
+              {
+                "metric": "SMA200",
+                "transformId": "distance",
+                "timeframe": {
+                  "rel": "anchor"
+                }
+              },
+              {
+                "metric": "ADX",
+                "transformId": "trajectory",
+                "timeframe": {
+                  "rel": "anchor"
+                },
+                "window": 4,
+                "bars": "closed"
+              },
+              {
+                "metric": "MACD",
+                "transformId": "trajectory",
+                "timeframe": {
+                  "rel": "anchor"
+                },
+                "window": 4,
+                "bars": "closed"
+              },
+              {
+                "metric": "MACD",
+                "transformId": "crossDetect",
+                "timeframe": {
+                  "rel": "anchor"
+                }
+              },
+              {
+                "metric": "RVOL",
+                "transformId": "trajectory",
+                "timeframe": {
+                  "rel": "anchor"
+                },
+                "window": 4,
+                "bars": "closed"
+              },
+              {
+                "metric": "OBV",
+                "transformId": "trajectory",
+                "timeframe": {
+                  "rel": "anchor"
+                },
+                "window": 4,
+                "bars": "closed"
+              }
+            ]
+          },
+          {
+            "kind": "custom",
+            "sectionKey": "custom:1a1456da-57d3-45e4-b407-079be1b65cc8",
+            "title": "Trend Continuation Context",
+            "timeframe": null,
+            "benchmarkTicker": null,
+            "columns": [
+              {
+                "metric": "REGIME_TREND",
+                "transformId": "trajectory",
+                "timeframe": {
+                  "rel": "anchor"
+                },
+                "window": 3
+              },
+              {
+                "metric": "REGIME_VOL",
+                "transformId": "value",
+                "timeframe": {
+                  "rel": "anchor"
+                }
+              },
+              {
+                "metric": "REGIME_MOM",
+                "transformId": "value",
+                "timeframe": {
+                  "rel": "anchor"
+                }
+              }
+            ]
+          }
+        ],
+        "conditions": [
+          {
+            "conditionKey": "TC_RISK_ON",
+            "name": "Stablecoin pairs at par",
+            "definition": {
+              "kind": "group",
+              "op": "ALL",
+              "members": [
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "reference-pairs",
+                    "header": "usdtUsdDev_market"
+                  },
+                  "op": "between",
+                  "low": -0.5,
+                  "high": 0.5
+                },
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "reference-pairs",
+                    "header": "usdcUsdtDev_market"
+                  },
+                  "op": "between",
+                  "low": -0.5,
+                  "high": 0.5
+                }
+              ]
+            },
+            "verdict": null,
+            "required": false
+          },
+          {
+            "conditionKey": "TC_CTX_UP",
+            "name": "Broad tape up",
+            "definition": {
+              "kind": "clause",
+              "column": {
+                "sectionKey": "market-breadth",
+                "header": "mktBreadth_all"
+              },
+              "op": "gt",
+              "value": 10
+            },
+            "verdict": null,
+            "required": false
+          },
+          {
+            "conditionKey": "TC_CTX_DOWN",
+            "name": "Broad tape down",
+            "definition": {
+              "kind": "clause",
+              "column": {
+                "sectionKey": "market-breadth",
+                "header": "mktBreadth_all"
+              },
+              "op": "lt",
+              "value": -10
+            },
+            "verdict": null,
+            "required": false
+          },
+          {
+            "conditionKey": "TC_CORE_UP",
+            "name": "2 of 3 filters agree - up",
+            "definition": {
+              "kind": "group",
+              "op": "ALL",
+              "members": [
+                {
+                  "kind": "group",
+                  "op": "N_OF",
+                  "n": 2,
+                  "members": [
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "MAalign"
+                      },
+                      "op": "is",
+                      "label": "bullish"
+                    },
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "MACD_trend"
+                      },
+                      "op": "is",
+                      "label": "rising"
+                    },
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "OBV_trend"
+                      },
+                      "op": "is",
+                      "label": "rising"
+                    }
+                  ]
+                },
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now"
+                  },
+                  "op": "gte",
+                  "value": 25
+                }
+              ]
+            },
+            "verdict": null,
+            "required": false
+          },
+          {
+            "conditionKey": "TC_CORE_DOWN",
+            "name": "2 of 3 filters agree - down",
+            "definition": {
+              "kind": "group",
+              "op": "ALL",
+              "members": [
+                {
+                  "kind": "group",
+                  "op": "N_OF",
+                  "n": 2,
+                  "members": [
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "MAalign"
+                      },
+                      "op": "is",
+                      "label": "bearish"
+                    },
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "MACD_trend"
+                      },
+                      "op": "is",
+                      "label": "falling"
+                    },
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "OBV_trend"
+                      },
+                      "op": "is",
+                      "label": "falling"
+                    }
+                  ]
+                },
+                {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now"
+                  },
+                  "op": "gte",
+                  "value": 25
+                }
+              ]
+            },
+            "verdict": null,
+            "required": false
+          },
+          {
+            "conditionKey": "TC_UP",
+            "name": "Setup confirmed - up",
+            "definition": {
+              "kind": "group",
+              "op": "ALL",
+              "members": [
+                {
+                  "kind": "conditionRef",
+                  "conditionKey": "TC_CORE_UP"
+                },
+                {
+                  "kind": "conditionRef",
+                  "conditionKey": "TC_CTX_UP"
+                },
+                {
+                  "kind": "conditionRef",
+                  "conditionKey": "TC_RISK_ON"
+                }
+              ]
+            },
+            "verdict": "UP",
+            "required": false
+          },
+          {
+            "conditionKey": "TC_DOWN",
+            "name": "Setup confirmed - down",
+            "definition": {
+              "kind": "group",
+              "op": "ALL",
+              "members": [
+                {
+                  "kind": "conditionRef",
+                  "conditionKey": "TC_CORE_DOWN"
+                },
+                {
+                  "kind": "conditionRef",
+                  "conditionKey": "TC_CTX_DOWN"
+                },
+                {
+                  "kind": "conditionRef",
+                  "conditionKey": "TC_RISK_ON"
+                }
+              ]
+            },
+            "verdict": "DOWN",
+            "required": false
+          }
+        ],
+        "signalRules": [
+          {
+            "signalId": "bollinger_cci_overbought",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 100
+            }
+          },
+          {
+            "signalId": "bollinger_cci_oversold",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": -100
+            }
+          },
+          {
+            "signalId": "bollinger_lower_touch",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "pctBThreshold": 0.05
+            }
+          },
+          {
+            "signalId": "bollinger_squeeze",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "bandwidthPct": 0.04
+            }
+          },
+          {
+            "signalId": "bollinger_upper_touch",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "pctBThreshold": 0.95
+            }
+          },
+          {
+            "signalId": "comparison_btc_decorrelation",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "maxCorrelation": 0.3
+            }
+          },
+          {
+            "signalId": "comparison_sector_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "minPeerFraction": 0.5
+            }
+          },
+          {
+            "signalId": "comparison_sector_momentum",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "minPeerFraction": 0.6
+            }
+          },
+          {
+            "signalId": "cvd_bear_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "cvd_bearish",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "cvd_bull_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "cvd_bullish",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "flow_perp_spot_bear_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "flow_perp_spot_bull_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "funding_extreme_negative",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "thresholdPct": 0.0005
+            }
+          },
+          {
+            "signalId": "funding_extreme_positive",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "thresholdPct": 0.0005
+            }
+          },
+          {
+            "signalId": "funding_rate_flipping",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "htf_ma_aligned_bear",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "htf_ma_aligned_bull",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "htf_rsi_overbought",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 70
+            }
+          },
+          {
+            "signalId": "htf_rsi_oversold",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 30
+            }
+          },
+          {
+            "signalId": "htf_trend_adx_ranging",
+            "allocation": 2,
+            "required": false,
+            "params": {
+              "threshold": 20
+            }
+          },
+          {
+            "signalId": "htf_trend_adx_trending",
+            "allocation": 2,
+            "required": false,
+            "params": {
+              "threshold": 25
+            }
+          },
+          {
+            "signalId": "ltf_ma_aligned_bear",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "ltf_ma_aligned_bull",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "ltf_rsi_overbought",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 70
+            }
+          },
+          {
+            "signalId": "ltf_rsi_oversold",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 30
+            }
+          },
+          {
+            "signalId": "ltf_trend_adx_ranging",
+            "allocation": 2,
+            "required": false,
+            "params": {
+              "threshold": 20
+            }
+          },
+          {
+            "signalId": "ltf_trend_adx_trending",
+            "allocation": 2,
+            "required": false,
+            "params": {
+              "threshold": 25
+            }
+          },
+          {
+            "signalId": "ma_ema_aligned_bear",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "ma_ema_aligned_bull",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "ma_ema_bear_cross",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "ma_ema_bull_cross",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "ma_sma200_above",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "ma_sma200_below",
+            "allocation": 3,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "macd_bear_cross",
+            "allocation": 2,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "macd_bear_divergence",
+            "allocation": 2,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "macd_bull_cross",
+            "allocation": 2,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "macd_bull_divergence",
+            "allocation": 2,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mfi_bear_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mfi_bull_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mfi_overbought",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 80
+            }
+          },
+          {
+            "signalId": "mfi_oversold",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 20
+            }
+          },
+          {
+            "signalId": "mfi_sustained_bearish",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mfi_sustained_bullish",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mtf_aligned_bear",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mtf_aligned_bull",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mtf_pullback_long",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "mtf_pullback_short",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "oi_divergence_bear",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "oi_divergence_bull",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "oi_surge",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "thresholdPct": 0.05
+            }
+          },
+          {
+            "signalId": "regime_alignment",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "regime_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "regime_trend_shift",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "regime_volatility_shift",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "rel_ppo_bear_cross",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "rel_ppo_bull_cross",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "rel_roc_negative",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "rel_roc_positive",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "rsi_bear_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "rsi_bull_divergence",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "rsi_overbought",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 70
+            }
+          },
+          {
+            "signalId": "rsi_oversold",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 30
+            }
+          },
+          {
+            "signalId": "sr_at_resistance",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "proximityPct": 0.005
+            }
+          },
+          {
+            "signalId": "sr_at_support",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "proximityPct": 0.005
+            }
+          },
+          {
+            "signalId": "sr_resistance_break",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "sr_support_break",
+            "allocation": 0,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "stoch_bear_cross",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "zoneThreshold": 70
+            }
+          },
+          {
+            "signalId": "stoch_bull_cross",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "zoneThreshold": 30
+            }
+          },
+          {
+            "signalId": "stoch_overbought",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 80
+            }
+          },
+          {
+            "signalId": "stoch_oversold",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "threshold": 20
+            }
+          },
+          {
+            "signalId": "structure_fvg_approach",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "proximityPct": 1
+            }
+          },
+          {
+            "signalId": "structure_ob_approach",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "proximityPct": 1
+            }
+          },
+          {
+            "signalId": "structure_zone_cluster",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "rangePct": 2
+            }
+          },
+          {
+            "signalId": "structure_zone_confluence",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "alignmentPct": 0.5
+            }
+          },
+          {
+            "signalId": "trend_adx_ranging",
+            "allocation": 2,
+            "required": false,
+            "params": {
+              "threshold": 20
+            }
+          },
+          {
+            "signalId": "trend_adx_trending",
+            "allocation": 2,
+            "required": false,
+            "params": {
+              "threshold": 25
+            }
+          },
+          {
+            "signalId": "volatility_atr_contracting",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "multiplier": 0.7
+            }
+          },
+          {
+            "signalId": "volatility_atr_expanding",
+            "allocation": 0,
+            "required": false,
+            "params": {
+              "multiplier": 1.5
+            }
+          },
+          {
+            "signalId": "volume_dry_up",
+            "allocation": 1,
+            "required": false,
+            "params": {
+              "multiplier": 0.5
+            }
+          },
+          {
+            "signalId": "volume_obv_bear_divergence",
+            "allocation": 1,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "volume_obv_bull_divergence",
+            "allocation": 1,
+            "required": false,
+            "params": {}
+          },
+          {
+            "signalId": "volume_surge",
+            "allocation": 1,
+            "required": false,
+            "params": {
+              "multiplier": 2
+            }
+          }
+        ],
+        "minAggregateScore": 0.6,
+        "minRequiredCount": 0,
+        "minAtrPct": 0.5,
+        "minStopLossAtrMultiple": 1,
+        "maxStopLossAtrMultiple": 2,
+        "minRiskRewardRatio": 1.5,
+        "breakEvenEnabled": true,
+        "breakEvenTriggerR": 1.08,
+        "trailingEnabled": true,
+        "trailingTriggerR": 1,
+        "trailingGivebackPct": 45,
+        "trailingBufferPct": 0.25,
+        "timeDecayEnabled": true,
+        "timeDecayGracePeriodMinutes": 60,
+        "timeDecayIntervalMinutes": 15,
+        "timeDecayTightenPct": 5,
+        "timeDecayMaxTightenPct": 50,
+        "timeDecayStaleThresholdTpProgressPct": 25,
+        "forkedFromStrategyId": null,
+        "isActive": true
+      },
+      "proposedRevision": 1,
+      "explicitRuleOverrides": [
+        {
+          "signalId": "htf_ma_aligned_bear",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "htf_ma_aligned_bull",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "htf_trend_adx_ranging",
+          "allocation": 2,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "htf_trend_adx_trending",
+          "allocation": 2,
+          "required": false,
+          "params": {
+            "threshold": 25
+          }
+        },
+        {
+          "signalId": "ltf_ma_aligned_bear",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ltf_ma_aligned_bull",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ltf_trend_adx_ranging",
+          "allocation": 2,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "ltf_trend_adx_trending",
+          "allocation": 2,
+          "required": false,
+          "params": {
+            "threshold": 25
+          }
+        },
+        {
+          "signalId": "ma_ema_aligned_bear",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_ema_aligned_bull",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_ema_bear_cross",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_ema_bull_cross",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_sma200_above",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_sma200_below",
+          "allocation": 3,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bear_cross",
+          "allocation": 2,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bear_divergence",
+          "allocation": 2,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bull_cross",
+          "allocation": 2,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bull_divergence",
+          "allocation": 2,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "trend_adx_ranging",
+          "allocation": 2,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "trend_adx_trending",
+          "allocation": 2,
+          "required": false,
+          "params": {
+            "threshold": 25
+          }
+        },
+        {
+          "signalId": "volume_dry_up",
+          "allocation": 1,
+          "required": false,
+          "params": {
+            "multiplier": 0.5
+          }
+        },
+        {
+          "signalId": "volume_obv_bear_divergence",
+          "allocation": 1,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "volume_obv_bull_divergence",
+          "allocation": 1,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "volume_surge",
+          "allocation": 1,
+          "required": false,
+          "params": {
+            "multiplier": 2
+          }
+        }
+      ],
+      "viability": {
+        "viable": true,
+        "minRequiredCount": 0,
+        "enabledRequiredCount": 0,
+        "evaluableRequiredCount": 0,
+        "requiredSignalAssessments": [],
+        "unavailableRequiredSignals": []
+      },
+      "mismatches": [
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "htf_ma_aligned_bear",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "MA_ALIGN",
+              "rung": "signalHigher"
+            }
+          ],
+          "message": "Active signal 'htf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ signalHigher."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "htf_ma_aligned_bull",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "MA_ALIGN",
+              "rung": "signalHigher"
+            }
+          ],
+          "message": "Active signal 'htf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ signalHigher."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "htf_trend_adx_ranging",
+          "module": "TREND_STRENGTH",
+          "data": [
+            {
+              "metric": "ADX",
+              "rung": "signalHigher"
+            }
+          ],
+          "message": "Active signal 'htf_trend_adx_ranging' scores on data the report does not show: ADX @ signalHigher."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "htf_trend_adx_trending",
+          "module": "TREND_STRENGTH",
+          "data": [
+            {
+              "metric": "ADX",
+              "rung": "signalHigher"
+            }
+          ],
+          "message": "Active signal 'htf_trend_adx_trending' scores on data the report does not show: ADX @ signalHigher."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ltf_ma_aligned_bear",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "MA_ALIGN",
+              "rung": "lower"
+            }
+          ],
+          "message": "Active signal 'ltf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ lower."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ltf_ma_aligned_bull",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "MA_ALIGN",
+              "rung": "lower"
+            }
+          ],
+          "message": "Active signal 'ltf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ lower."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ltf_trend_adx_ranging",
+          "module": "TREND_STRENGTH",
+          "data": [
+            {
+              "metric": "ADX",
+              "rung": "lower"
+            }
+          ],
+          "message": "Active signal 'ltf_trend_adx_ranging' scores on data the report does not show: ADX @ lower."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ltf_trend_adx_trending",
+          "module": "TREND_STRENGTH",
+          "data": [
+            {
+              "metric": "ADX",
+              "rung": "lower"
+            }
+          ],
+          "message": "Active signal 'ltf_trend_adx_trending' scores on data the report does not show: ADX @ lower."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ma_ema_aligned_bear",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "EMA20",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Active signal 'ma_ema_aligned_bear' scores on data the report does not show: EMA20 @ anchor."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ma_ema_aligned_bull",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "EMA20",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Active signal 'ma_ema_aligned_bull' scores on data the report does not show: EMA20 @ anchor."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ma_ema_bear_cross",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "EMA_CROSS",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Active signal 'ma_ema_bear_cross' scores on data the report does not show: EMA_CROSS @ anchor."
+        },
+        {
+          "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+          "signalId": "ma_ema_bull_cross",
+          "module": "MOVING_AVERAGES",
+          "data": [
+            {
+              "metric": "EMA_CROSS",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Active signal 'ma_ema_bull_cross' scores on data the report does not show: EMA_CROSS @ anchor."
+        },
+        {
+          "code": "REPORT_DATA_SIGNAL_OFF",
+          "signalId": "regime_alignment",
+          "module": "REGIME",
+          "data": [
+            {
+              "metric": "REGIME_TREND",
+              "rung": "anchor"
+            },
+            {
+              "metric": "REGIME_VOL",
+              "rung": "anchor"
+            },
+            {
+              "metric": "REGIME_MOM",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Signal 'regime_alignment' is Off while the report shows the data it scores on: REGIME_TREND @ anchor, REGIME_VOL @ anchor, REGIME_MOM @ anchor."
+        },
+        {
+          "code": "REPORT_DATA_SIGNAL_OFF",
+          "signalId": "regime_divergence",
+          "module": "REGIME",
+          "data": [
+            {
+              "metric": "REGIME_TREND",
+              "rung": "anchor"
+            },
+            {
+              "metric": "REGIME_MOM",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Signal 'regime_divergence' is Off while the report shows the data it scores on: REGIME_TREND @ anchor, REGIME_MOM @ anchor."
+        },
+        {
+          "code": "REPORT_DATA_SIGNAL_OFF",
+          "signalId": "regime_trend_shift",
+          "module": "REGIME",
+          "data": [
+            {
+              "metric": "REGIME_TREND",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Signal 'regime_trend_shift' is Off while the report shows the data it scores on: REGIME_TREND @ anchor."
+        },
+        {
+          "code": "REPORT_DATA_SIGNAL_OFF",
+          "signalId": "regime_volatility_shift",
+          "module": "REGIME",
+          "data": [
+            {
+              "metric": "REGIME_VOL",
+              "rung": "anchor"
+            }
+          ],
+          "message": "Signal 'regime_volatility_shift' is Off while the report shows the data it scores on: REGIME_VOL @ anchor."
+        }
+      ],
+      "diff": {
+        "changedAxes": [
+          "IDENTITY",
+          "TIMEFRAME_PROFILE",
+          "REPORT",
+          "MARKET_READ",
+          "CONDITIONS",
+          "SETUP_GATES",
+          "SIGNAL_RULES",
+          "LIFECYCLE"
+        ],
+        "identity": {
+          "before": {
+            "name": "",
+            "description": "",
+            "tagline": ""
+          },
+          "after": {
+            "name": "Trend Continuation",
+            "description": "Full MA alignment with trend strength, entered on momentum resumption.",
+            "tagline": "Never fight an aligned stack"
+          }
+        },
+        "timeframeProfile": {
+          "before": {
+            "timeframe": "1h",
+            "cadence": "INTRADAY",
+            "regimeTimeframe": "4h"
+          },
+          "after": {
+            "timeframe": "1h",
+            "cadence": "INTRADAY",
+            "regimeTimeframe": "4h"
+          }
+        },
+        "report": {
+          "before": {
+            "sections": []
+          },
+          "after": {
+            "sections": [
+              {
+                "kind": "custom",
+                "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                "title": "Trend Continuation Signals",
+                "timeframe": null,
+                "benchmarkTicker": null,
+                "columns": [
+                  {
+                    "metric": "MA_ALIGN",
+                    "transformId": "value",
+                    "timeframe": {
+                      "rel": "anchor"
+                    }
+                  },
+                  {
+                    "metric": "EMA5",
+                    "transformId": "spread",
+                    "chainedTransformId": "trajectory",
+                    "timeframe": {
+                      "rel": "anchor"
+                    },
+                    "window": 4,
+                    "inputs": [
+                      {
+                        "metric": "EMA13"
+                      }
+                    ]
+                  },
+                  {
+                    "metric": "SMA200",
+                    "transformId": "distance",
+                    "timeframe": {
+                      "rel": "anchor"
+                    }
+                  },
+                  {
+                    "metric": "ADX",
+                    "transformId": "trajectory",
+                    "timeframe": {
+                      "rel": "anchor"
+                    },
+                    "window": 4,
+                    "bars": "closed"
+                  },
+                  {
+                    "metric": "MACD",
+                    "transformId": "trajectory",
+                    "timeframe": {
+                      "rel": "anchor"
+                    },
+                    "window": 4,
+                    "bars": "closed"
+                  },
+                  {
+                    "metric": "MACD",
+                    "transformId": "crossDetect",
+                    "timeframe": {
+                      "rel": "anchor"
+                    }
+                  },
+                  {
+                    "metric": "RVOL",
+                    "transformId": "trajectory",
+                    "timeframe": {
+                      "rel": "anchor"
+                    },
+                    "window": 4,
+                    "bars": "closed"
+                  },
+                  {
+                    "metric": "OBV",
+                    "transformId": "trajectory",
+                    "timeframe": {
+                      "rel": "anchor"
+                    },
+                    "window": 4,
+                    "bars": "closed"
+                  }
+                ]
+              },
+              {
+                "kind": "custom",
+                "sectionKey": "custom:1a1456da-57d3-45e4-b407-079be1b65cc8",
+                "title": "Trend Continuation Context",
+                "timeframe": null,
+                "benchmarkTicker": null,
+                "columns": [
+                  {
+                    "metric": "REGIME_TREND",
+                    "transformId": "trajectory",
+                    "timeframe": {
+                      "rel": "anchor"
+                    },
+                    "window": 3
+                  },
+                  {
+                    "metric": "REGIME_VOL",
+                    "transformId": "value",
+                    "timeframe": {
+                      "rel": "anchor"
+                    }
+                  },
+                  {
+                    "metric": "REGIME_MOM",
+                    "transformId": "value",
+                    "timeframe": {
+                      "rel": "anchor"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "marketRead": {
+          "before": {
+            "marketReadText": ""
+          },
+          "after": {
+            "marketReadText": "Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.\n\n- {TC_UP} (UP) - Setup confirmed - up.\n- {TC_DOWN} (DOWN) - Setup confirmed - down.\n\nRead these verdicts rather than re-deriving them from the columns."
+          }
+        },
+        "conditions": {
+          "before": {
+            "conditions": []
+          },
+          "after": {
+            "conditions": [
+              {
+                "conditionKey": "TC_RISK_ON",
+                "name": "Stablecoin pairs at par",
+                "definition": {
+                  "kind": "group",
+                  "op": "ALL",
+                  "members": [
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "reference-pairs",
+                        "header": "usdtUsdDev_market"
+                      },
+                      "op": "between",
+                      "low": -0.5,
+                      "high": 0.5
+                    },
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "reference-pairs",
+                        "header": "usdcUsdtDev_market"
+                      },
+                      "op": "between",
+                      "low": -0.5,
+                      "high": 0.5
+                    }
+                  ]
+                },
+                "verdict": null,
+                "required": false
+              },
+              {
+                "conditionKey": "TC_CTX_UP",
+                "name": "Broad tape up",
+                "definition": {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all"
+                  },
+                  "op": "gt",
+                  "value": 10
+                },
+                "verdict": null,
+                "required": false
+              },
+              {
+                "conditionKey": "TC_CTX_DOWN",
+                "name": "Broad tape down",
+                "definition": {
+                  "kind": "clause",
+                  "column": {
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all"
+                  },
+                  "op": "lt",
+                  "value": -10
+                },
+                "verdict": null,
+                "required": false
+              },
+              {
+                "conditionKey": "TC_CORE_UP",
+                "name": "2 of 3 filters agree - up",
+                "definition": {
+                  "kind": "group",
+                  "op": "ALL",
+                  "members": [
+                    {
+                      "kind": "group",
+                      "op": "N_OF",
+                      "n": 2,
+                      "members": [
+                        {
+                          "kind": "clause",
+                          "column": {
+                            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                            "header": "MAalign"
+                          },
+                          "op": "is",
+                          "label": "bullish"
+                        },
+                        {
+                          "kind": "clause",
+                          "column": {
+                            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                            "header": "MACD_trend"
+                          },
+                          "op": "is",
+                          "label": "rising"
+                        },
+                        {
+                          "kind": "clause",
+                          "column": {
+                            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                            "header": "OBV_trend"
+                          },
+                          "op": "is",
+                          "label": "rising"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "ADX_now"
+                      },
+                      "op": "gte",
+                      "value": 25
+                    }
+                  ]
+                },
+                "verdict": null,
+                "required": false
+              },
+              {
+                "conditionKey": "TC_CORE_DOWN",
+                "name": "2 of 3 filters agree - down",
+                "definition": {
+                  "kind": "group",
+                  "op": "ALL",
+                  "members": [
+                    {
+                      "kind": "group",
+                      "op": "N_OF",
+                      "n": 2,
+                      "members": [
+                        {
+                          "kind": "clause",
+                          "column": {
+                            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                            "header": "MAalign"
+                          },
+                          "op": "is",
+                          "label": "bearish"
+                        },
+                        {
+                          "kind": "clause",
+                          "column": {
+                            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                            "header": "MACD_trend"
+                          },
+                          "op": "is",
+                          "label": "falling"
+                        },
+                        {
+                          "kind": "clause",
+                          "column": {
+                            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                            "header": "OBV_trend"
+                          },
+                          "op": "is",
+                          "label": "falling"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "clause",
+                      "column": {
+                        "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                        "header": "ADX_now"
+                      },
+                      "op": "gte",
+                      "value": 25
+                    }
+                  ]
+                },
+                "verdict": null,
+                "required": false
+              },
+              {
+                "conditionKey": "TC_UP",
+                "name": "Setup confirmed - up",
+                "definition": {
+                  "kind": "group",
+                  "op": "ALL",
+                  "members": [
+                    {
+                      "kind": "conditionRef",
+                      "conditionKey": "TC_CORE_UP"
+                    },
+                    {
+                      "kind": "conditionRef",
+                      "conditionKey": "TC_CTX_UP"
+                    },
+                    {
+                      "kind": "conditionRef",
+                      "conditionKey": "TC_RISK_ON"
+                    }
+                  ]
+                },
+                "verdict": "UP",
+                "required": false
+              },
+              {
+                "conditionKey": "TC_DOWN",
+                "name": "Setup confirmed - down",
+                "definition": {
+                  "kind": "group",
+                  "op": "ALL",
+                  "members": [
+                    {
+                      "kind": "conditionRef",
+                      "conditionKey": "TC_CORE_DOWN"
+                    },
+                    {
+                      "kind": "conditionRef",
+                      "conditionKey": "TC_CTX_DOWN"
+                    },
+                    {
+                      "kind": "conditionRef",
+                      "conditionKey": "TC_RISK_ON"
+                    }
+                  ]
+                },
+                "verdict": "DOWN",
+                "required": false
+              }
+            ]
+          }
+        },
+        "setupGates": {
+          "before": {
+            "minAggregateScore": 0.5,
+            "minRequiredCount": 0,
+            "minAtrPct": 0.5
+          },
+          "after": {
+            "minAggregateScore": 0.6,
+            "minRequiredCount": 0,
+            "minAtrPct": 0.5
+          }
+        },
+        "tradeLevelPolicy": null,
+        "positionManagement": null,
+        "signalRules": [
+          {
+            "signalId": "htf_ma_aligned_bear",
+            "before": {
+              "signalId": "htf_ma_aligned_bear",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "htf_ma_aligned_bear",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "htf_ma_aligned_bull",
+            "before": {
+              "signalId": "htf_ma_aligned_bull",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "htf_ma_aligned_bull",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "htf_trend_adx_ranging",
+            "before": {
+              "signalId": "htf_trend_adx_ranging",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "threshold": 20
+              }
+            },
+            "after": {
+              "signalId": "htf_trend_adx_ranging",
+              "allocation": 2,
+              "required": false,
+              "params": {
+                "threshold": 20
+              }
+            }
+          },
+          {
+            "signalId": "htf_trend_adx_trending",
+            "before": {
+              "signalId": "htf_trend_adx_trending",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "threshold": 25
+              }
+            },
+            "after": {
+              "signalId": "htf_trend_adx_trending",
+              "allocation": 2,
+              "required": false,
+              "params": {
+                "threshold": 25
+              }
+            }
+          },
+          {
+            "signalId": "ltf_ma_aligned_bear",
+            "before": {
+              "signalId": "ltf_ma_aligned_bear",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ltf_ma_aligned_bear",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "ltf_ma_aligned_bull",
+            "before": {
+              "signalId": "ltf_ma_aligned_bull",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ltf_ma_aligned_bull",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "ltf_trend_adx_ranging",
+            "before": {
+              "signalId": "ltf_trend_adx_ranging",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "threshold": 20
+              }
+            },
+            "after": {
+              "signalId": "ltf_trend_adx_ranging",
+              "allocation": 2,
+              "required": false,
+              "params": {
+                "threshold": 20
+              }
+            }
+          },
+          {
+            "signalId": "ltf_trend_adx_trending",
+            "before": {
+              "signalId": "ltf_trend_adx_trending",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "threshold": 25
+              }
+            },
+            "after": {
+              "signalId": "ltf_trend_adx_trending",
+              "allocation": 2,
+              "required": false,
+              "params": {
+                "threshold": 25
+              }
+            }
+          },
+          {
+            "signalId": "ma_ema_aligned_bear",
+            "before": {
+              "signalId": "ma_ema_aligned_bear",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ma_ema_aligned_bear",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "ma_ema_aligned_bull",
+            "before": {
+              "signalId": "ma_ema_aligned_bull",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ma_ema_aligned_bull",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "ma_ema_bear_cross",
+            "before": {
+              "signalId": "ma_ema_bear_cross",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ma_ema_bear_cross",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "ma_ema_bull_cross",
+            "before": {
+              "signalId": "ma_ema_bull_cross",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ma_ema_bull_cross",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "ma_sma200_above",
+            "before": {
+              "signalId": "ma_sma200_above",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ma_sma200_above",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "ma_sma200_below",
+            "before": {
+              "signalId": "ma_sma200_below",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "ma_sma200_below",
+              "allocation": 3,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "macd_bear_cross",
+            "before": {
+              "signalId": "macd_bear_cross",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "macd_bear_cross",
+              "allocation": 2,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "macd_bear_divergence",
+            "before": {
+              "signalId": "macd_bear_divergence",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "macd_bear_divergence",
+              "allocation": 2,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "macd_bull_cross",
+            "before": {
+              "signalId": "macd_bull_cross",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "macd_bull_cross",
+              "allocation": 2,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "macd_bull_divergence",
+            "before": {
+              "signalId": "macd_bull_divergence",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "macd_bull_divergence",
+              "allocation": 2,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "trend_adx_ranging",
+            "before": {
+              "signalId": "trend_adx_ranging",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "threshold": 20
+              }
+            },
+            "after": {
+              "signalId": "trend_adx_ranging",
+              "allocation": 2,
+              "required": false,
+              "params": {
+                "threshold": 20
+              }
+            }
+          },
+          {
+            "signalId": "trend_adx_trending",
+            "before": {
+              "signalId": "trend_adx_trending",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "threshold": 25
+              }
+            },
+            "after": {
+              "signalId": "trend_adx_trending",
+              "allocation": 2,
+              "required": false,
+              "params": {
+                "threshold": 25
+              }
+            }
+          },
+          {
+            "signalId": "volume_dry_up",
+            "before": {
+              "signalId": "volume_dry_up",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "multiplier": 0.5
+              }
+            },
+            "after": {
+              "signalId": "volume_dry_up",
+              "allocation": 1,
+              "required": false,
+              "params": {
+                "multiplier": 0.5
+              }
+            }
+          },
+          {
+            "signalId": "volume_obv_bear_divergence",
+            "before": {
+              "signalId": "volume_obv_bear_divergence",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "volume_obv_bear_divergence",
+              "allocation": 1,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "volume_obv_bull_divergence",
+            "before": {
+              "signalId": "volume_obv_bull_divergence",
+              "allocation": 0,
+              "required": false,
+              "params": {}
+            },
+            "after": {
+              "signalId": "volume_obv_bull_divergence",
+              "allocation": 1,
+              "required": false,
+              "params": {}
+            }
+          },
+          {
+            "signalId": "volume_surge",
+            "before": {
+              "signalId": "volume_surge",
+              "allocation": 0,
+              "required": false,
+              "params": {
+                "multiplier": 2
+              }
+            },
+            "after": {
+              "signalId": "volume_surge",
+              "allocation": 1,
+              "required": false,
+              "params": {
+                "multiplier": 2
+              }
+            }
+          }
+        ],
+        "lifecycle": {
+          "before": {
+            "isActive": false
+          },
+          "after": {
+            "isActive": true
+          }
+        }
+      },
+      "authoringCatalogDigest": "a2adb3ee46d57492a138a86b27279891e988026bf88ca48ce64f3b8f091a8029",
+      "expiresAt": "2026-08-28T04:08:59.706Z",
+      "creationSeed": [
+        {
+          "signalId": "bollinger_cci_overbought",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 100
+          }
+        },
+        {
+          "signalId": "bollinger_cci_oversold",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": -100
+          }
+        },
+        {
+          "signalId": "bollinger_lower_touch",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "pctBThreshold": 0.05
+          }
+        },
+        {
+          "signalId": "bollinger_squeeze",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "bandwidthPct": 0.04
+          }
+        },
+        {
+          "signalId": "bollinger_upper_touch",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "pctBThreshold": 0.95
+          }
+        },
+        {
+          "signalId": "comparison_btc_decorrelation",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "maxCorrelation": 0.3
+          }
+        },
+        {
+          "signalId": "comparison_sector_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "minPeerFraction": 0.5
+          }
+        },
+        {
+          "signalId": "comparison_sector_momentum",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "minPeerFraction": 0.6
+          }
+        },
+        {
+          "signalId": "cvd_bear_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "cvd_bearish",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "cvd_bull_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "cvd_bullish",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "flow_perp_spot_bear_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "flow_perp_spot_bull_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "funding_extreme_negative",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "thresholdPct": 0.0005
+          }
+        },
+        {
+          "signalId": "funding_extreme_positive",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "thresholdPct": 0.0005
+          }
+        },
+        {
+          "signalId": "funding_rate_flipping",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "htf_ma_aligned_bear",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "htf_ma_aligned_bull",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "htf_rsi_overbought",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 70
+          }
+        },
+        {
+          "signalId": "htf_rsi_oversold",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 30
+          }
+        },
+        {
+          "signalId": "htf_trend_adx_ranging",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "htf_trend_adx_trending",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 25
+          }
+        },
+        {
+          "signalId": "ltf_ma_aligned_bear",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ltf_ma_aligned_bull",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ltf_rsi_overbought",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 70
+          }
+        },
+        {
+          "signalId": "ltf_rsi_oversold",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 30
+          }
+        },
+        {
+          "signalId": "ltf_trend_adx_ranging",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "ltf_trend_adx_trending",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 25
+          }
+        },
+        {
+          "signalId": "ma_ema_aligned_bear",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_ema_aligned_bull",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_ema_bear_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_ema_bull_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_sma200_above",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "ma_sma200_below",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bear_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bear_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bull_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "macd_bull_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mfi_bear_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mfi_bull_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mfi_overbought",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 80
+          }
+        },
+        {
+          "signalId": "mfi_oversold",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "mfi_sustained_bearish",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mfi_sustained_bullish",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mtf_aligned_bear",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mtf_aligned_bull",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mtf_pullback_long",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "mtf_pullback_short",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "oi_divergence_bear",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "oi_divergence_bull",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "oi_surge",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "thresholdPct": 0.05
+          }
+        },
+        {
+          "signalId": "regime_alignment",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "regime_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "regime_trend_shift",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "regime_volatility_shift",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "rel_ppo_bear_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "rel_ppo_bull_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "rel_roc_negative",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "rel_roc_positive",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "rsi_bear_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "rsi_bull_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "rsi_overbought",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 70
+          }
+        },
+        {
+          "signalId": "rsi_oversold",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 30
+          }
+        },
+        {
+          "signalId": "sr_at_resistance",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "proximityPct": 0.005
+          }
+        },
+        {
+          "signalId": "sr_at_support",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "proximityPct": 0.005
+          }
+        },
+        {
+          "signalId": "sr_resistance_break",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "sr_support_break",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "stoch_bear_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "zoneThreshold": 70
+          }
+        },
+        {
+          "signalId": "stoch_bull_cross",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "zoneThreshold": 30
+          }
+        },
+        {
+          "signalId": "stoch_overbought",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 80
+          }
+        },
+        {
+          "signalId": "stoch_oversold",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "structure_fvg_approach",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "proximityPct": 1
+          }
+        },
+        {
+          "signalId": "structure_ob_approach",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "proximityPct": 1
+          }
+        },
+        {
+          "signalId": "structure_zone_cluster",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "rangePct": 2
+          }
+        },
+        {
+          "signalId": "structure_zone_confluence",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "alignmentPct": 0.5
+          }
+        },
+        {
+          "signalId": "trend_adx_ranging",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 20
+          }
+        },
+        {
+          "signalId": "trend_adx_trending",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "threshold": 25
+          }
+        },
+        {
+          "signalId": "volatility_atr_contracting",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "multiplier": 0.7
+          }
+        },
+        {
+          "signalId": "volatility_atr_expanding",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "multiplier": 1.5
+          }
+        },
+        {
+          "signalId": "volume_dry_up",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "multiplier": 0.5
+          }
+        },
+        {
+          "signalId": "volume_obv_bear_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "volume_obv_bull_divergence",
+          "allocation": 0,
+          "required": false,
+          "params": {}
+        },
+        {
+          "signalId": "volume_surge",
+          "allocation": 0,
+          "required": false,
+          "params": {
+            "multiplier": 2
+          }
+        }
+      ],
+      "expectedRevision": null,
+      "bindingImpact": null
+    },
+    "reviewContext": {
+      "intentSummary": "Trend Continuation: Full MA alignment with trend strength, entered on momentum resumption. Stance ALIGN, gate 0.6. Generated by omega.generate; compile dry-run only.",
+      "assumptions": [
+        "coinSelection {'mode': 'explicit', 'tickers': ['BTC', 'ETH', 'SOL']} (explicit thesis override)",
+        "signal params are the platform defaults captured in the signal map",
+        "no execution parameters set (stops, trailing, break-even, time decay) - the execution surface is not yet modelled; platform defaults apply",
+        "dry-run: compiled for viability only, never applied"
+      ],
+      "serverAssumptions": [
+        "Rendered market values are a point-in-time preview and are not mutation authority.",
+        "Open-position count is timestamped awareness and does not block configuration changes.",
+        "Final active-strategy quota and name admission are rechecked atomically at apply.",
+        "The Market Regime module is in this report, but all 4 of its signals are Off — it is shown to the model and scores nothing."
+      ],
+      "coinSelection": {
+        "mode": "explicit",
+        "tickers": [
+          "BTC",
+          "ETH",
+          "SOL"
+        ]
+      },
+      "resolvedCoinTickers": [
+        "BTC",
+        "ETH",
+        "SOL"
+      ],
+      "columns": [
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 0,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "MA_ALIGN",
+              "transformId": "value",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "offset": 0
+            },
+            "effectiveParameters": {
+              "window": null,
+              "offset": 0,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": null,
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "MAalign",
+                "outputType": {
+                  "kind": "classification",
+                  "vocab": [
+                    "bullish",
+                    "bearish",
+                    "mixed"
+                  ]
+                },
+                "nullable": true,
+                "meaning": "MAalign: latest value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "bullish",
+                  "bearish",
+                  "mixed"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "MA_ALIGN"
+            ],
+            "calculationSummary": "Select one value at the requested offset.",
+            "formula": "output = MAalign[t - 0]",
+            "glossary": {
+              "MAalign": "MAalign: latest value."
+            },
+            "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 1,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "EMA5",
+              "transformId": "spread",
+              "chainedTransformId": "trajectory",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "window": 4,
+              "inputs": [
+                {
+                  "metric": "EMA13"
+                }
+              ]
+            },
+            "effectiveParameters": {
+              "window": 4,
+              "offset": null,
+              "side": null,
+              "inputs": [
+                {
+                  "metric": "EMA13"
+                }
+              ],
+              "aggregate": null,
+              "bars": "all",
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "EMA5_EMA13_spread_t3",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "percent",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "EMA5_EMA13_spread_t2",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "percent",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "EMA5_EMA13_spread_t1",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "percent",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "EMA5_EMA13_spread_now",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "percent",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "EMA5_EMA13_spread_trend",
+                "outputType": {
+                  "kind": "direction"
+                },
+                "nullable": true,
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "EMA5",
+              "EMA13"
+            ],
+            "calculationSummary": "Measure the signed percentage gap between the base and one operand metric. Render the recent build-up plus its rising, falling, or flat direction.",
+            "formula": "output = (EMA5 - EMA13) / EMA13 × 100; slots = last 4 non-null EMA5 values; trend = compare(first, last)",
+            "glossary": {
+              "EMA5_EMA13_spread_t3": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. 4-period trajectory (t3 → … → now); EMA5_EMA13_spread_trend = direction over the window.",
+              "EMA5_EMA13_spread_t2": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. 4-period trajectory (t3 → … → now); EMA5_EMA13_spread_trend = direction over the window.",
+              "EMA5_EMA13_spread_t1": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. 4-period trajectory (t3 → … → now); EMA5_EMA13_spread_trend = direction over the window.",
+              "EMA5_EMA13_spread_now": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. 4-period trajectory (t3 → … → now); EMA5_EMA13_spread_trend = direction over the window.",
+              "EMA5_EMA13_spread_trend": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. 4-period trajectory (t3 → … → now); EMA5_EMA13_spread_trend = direction over the window."
+            },
+            "nullBehavior": "Returns null when either operand is null or the second operand is zero. Missing observations produce null slots; an empty series has null now and trend.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 2,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "SMA200",
+              "transformId": "distance",
+              "timeframe": {
+                "rel": "anchor"
+              }
+            },
+            "effectiveParameters": {
+              "window": null,
+              "offset": null,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": null,
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "dist_SMA200",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "percent",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "dist_SMA200: % from current price to SMA200.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              }
+            ],
+            "operandOrder": [
+              "SMA200"
+            ],
+            "calculationSummary": "Measure signed percentage distance from current price to a price-level metric.",
+            "formula": "output = ((price - SMA200) / SMA200) × 100",
+            "glossary": {
+              "dist_SMA200": "dist_SMA200: % from current price to SMA200."
+            },
+            "nullBehavior": "Returns null when price or the base level is null, or when the base level is zero.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 3,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "ADX",
+              "transformId": "trajectory",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "window": 4
+            },
+            "effectiveParameters": {
+              "window": 4,
+              "offset": null,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": "closed",
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "ADX_t3",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "oscillator",
+                  "precision": 1,
+                  "range": {
+                    "min": 0,
+                    "max": 100
+                  }
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "ADX_t2",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "oscillator",
+                  "precision": 1,
+                  "range": {
+                    "min": 0,
+                    "max": 100
+                  }
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "ADX_t1",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "oscillator",
+                  "precision": 1,
+                  "range": {
+                    "min": 0,
+                    "max": 100
+                  }
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "ADX_now",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "oscillator",
+                  "precision": 1,
+                  "range": {
+                    "min": 0,
+                    "max": 100
+                  }
+                },
+                "nullable": true,
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "ADX_trend",
+                "outputType": {
+                  "kind": "direction"
+                },
+                "nullable": true,
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "ADX"
+            ],
+            "calculationSummary": "Render the recent build-up plus its rising, falling, or flat direction.",
+            "formula": "slots = last 4 non-null ADX values; trend = compare(first, last)",
+            "glossary": {
+              "ADX_t3": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); ADX_trend = direction over the window.",
+              "ADX_t2": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); ADX_trend = direction over the window.",
+              "ADX_t1": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); ADX_trend = direction over the window.",
+              "ADX_now": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); ADX_trend = direction over the window.",
+              "ADX_trend": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); ADX_trend = direction over the window."
+            },
+            "nullBehavior": "Missing observations produce null slots; an empty series has null now and trend.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 4,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "MACD",
+              "transformId": "trajectory",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "window": 4
+            },
+            "effectiveParameters": {
+              "window": 4,
+              "offset": null,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": "closed",
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "MACD_t3",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "signedPrice",
+                  "precision": 4
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "MACD_t2",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "signedPrice",
+                  "precision": 4
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "MACD_t1",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "signedPrice",
+                  "precision": 4
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "MACD_now",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "signedPrice",
+                  "precision": 4
+                },
+                "nullable": true,
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "MACD_trend",
+                "outputType": {
+                  "kind": "direction"
+                },
+                "nullable": true,
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "MACD"
+            ],
+            "calculationSummary": "Render the recent build-up plus its rising, falling, or flat direction.",
+            "formula": "slots = last 4 non-null MACD values; trend = compare(first, last)",
+            "glossary": {
+              "MACD_t3": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); MACD_trend = direction over the window.",
+              "MACD_t2": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); MACD_trend = direction over the window.",
+              "MACD_t1": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); MACD_trend = direction over the window.",
+              "MACD_now": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); MACD_trend = direction over the window.",
+              "MACD_trend": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); MACD_trend = direction over the window."
+            },
+            "nullBehavior": "Missing observations produce null slots; an empty series has null now and trend.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 5,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "MACD",
+              "transformId": "crossDetect",
+              "timeframe": {
+                "rel": "anchor"
+              }
+            },
+            "effectiveParameters": {
+              "window": null,
+              "offset": null,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": null,
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "MACD_cross",
+                "outputType": {
+                  "kind": "event",
+                  "vocab": [
+                    "Bullish",
+                    "Bearish"
+                  ]
+                },
+                "nullable": true,
+                "meaning": "MACD_cross: crossover event (Bullish / Bearish).",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "Bullish",
+                  "Bearish"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "MACD"
+            ],
+            "calculationSummary": "Detect a bullish or bearish crossing in the canonical source series.",
+            "formula": "output = crossDirection(MACD[t - 1], MACD[t])",
+            "glossary": {
+              "MACD_cross": "MACD_cross: crossover event (Bullish / Bearish)."
+            },
+            "nullBehavior": "Returns null when the two observations required for crossing are unavailable.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 6,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "RVOL",
+              "transformId": "trajectory",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "window": 4
+            },
+            "effectiveParameters": {
+              "window": 4,
+              "offset": null,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": "closed",
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "RVOL_t3",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "ratio",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "RVOL_t2",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "ratio",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "RVOL_t1",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "ratio",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "RVOL_now",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "ratio",
+                  "precision": 2
+                },
+                "nullable": true,
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "RVOL_trend",
+                "outputType": {
+                  "kind": "direction"
+                },
+                "nullable": true,
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "RVOL"
+            ],
+            "calculationSummary": "Render the recent build-up plus its rising, falling, or flat direction.",
+            "formula": "slots = last 4 non-null RVOL values; trend = compare(first, last)",
+            "glossary": {
+              "RVOL_t3": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); RVOL_trend = direction over the window.",
+              "RVOL_t2": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); RVOL_trend = direction over the window.",
+              "RVOL_t1": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); RVOL_trend = direction over the window.",
+              "RVOL_now": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); RVOL_trend = direction over the window.",
+              "RVOL_trend": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); RVOL_trend = direction over the window."
+            },
+            "nullBehavior": "Missing observations produce null slots; an empty series has null now and trend.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+          "columnIndex": 7,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "OBV",
+              "transformId": "trajectory",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "window": 4
+            },
+            "effectiveParameters": {
+              "window": 4,
+              "offset": null,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": "closed",
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "OBV_t3",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "largeCount",
+                  "precision": 1
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "OBV_t2",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "largeCount",
+                  "precision": 1
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "OBV_t1",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "largeCount",
+                  "precision": 1
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "OBV_now",
+                "outputType": {
+                  "kind": "numeric",
+                  "unit": "largeCount",
+                  "precision": 1
+                },
+                "nullable": true,
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": []
+              },
+              {
+                "header": "OBV_trend",
+                "outputType": {
+                  "kind": "direction"
+                },
+                "nullable": true,
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "OBV"
+            ],
+            "calculationSummary": "Render the recent build-up plus its rising, falling, or flat direction.",
+            "formula": "slots = last 4 non-null OBV values; trend = compare(first, last)",
+            "glossary": {
+              "OBV_t3": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); OBV_trend = direction over the window.",
+              "OBV_t2": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); OBV_trend = direction over the window.",
+              "OBV_t1": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); OBV_trend = direction over the window.",
+              "OBV_now": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); OBV_trend = direction over the window.",
+              "OBV_trend": "4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); OBV_trend = direction over the window."
+            },
+            "nullBehavior": "Missing observations produce null slots; an empty series has null now and trend.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": "1h",
+              "timeframeMode": "candle",
+              "requiresSectionTimeframe": true,
+              "sectionTimeframeOverrideAllowed": true
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:1a1456da-57d3-45e4-b407-079be1b65cc8",
+          "columnIndex": 0,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "REGIME_TREND",
+              "transformId": "trajectory",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "window": 3
+            },
+            "effectiveParameters": {
+              "window": 3,
+              "offset": null,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": "all",
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "regTrend_t2",
+                "outputType": {
+                  "kind": "classification",
+                  "vocab": [
+                    "trending up",
+                    "trending down",
+                    "ranging"
+                  ]
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "trending up",
+                  "trending down",
+                  "ranging"
+                ]
+              },
+              {
+                "header": "regTrend_t1",
+                "outputType": {
+                  "kind": "classification",
+                  "vocab": [
+                    "trending up",
+                    "trending down",
+                    "ranging"
+                  ]
+                },
+                "nullable": true,
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "trending up",
+                  "trending down",
+                  "ranging"
+                ]
+              },
+              {
+                "header": "regTrend_now",
+                "outputType": {
+                  "kind": "classification",
+                  "vocab": [
+                    "trending up",
+                    "trending down",
+                    "ranging"
+                  ]
+                },
+                "nullable": true,
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "trending up",
+                  "trending down",
+                  "ranging"
+                ]
+              },
+              {
+                "header": "regTrend_trend",
+                "outputType": {
+                  "kind": "direction"
+                },
+                "nullable": true,
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "REGIME_TREND"
+            ],
+            "calculationSummary": "Render the recent build-up plus its rising, falling, or flat direction.",
+            "formula": "slots = last 3 non-null regTrend values; trend = compare(first, last)",
+            "glossary": {
+              "regTrend_t2": "3-period trajectory (t2 → … → now); regTrend_trend = direction over the window.",
+              "regTrend_t1": "3-period trajectory (t2 → … → now); regTrend_trend = direction over the window.",
+              "regTrend_now": "3-period trajectory (t2 → … → now); regTrend_trend = direction over the window.",
+              "regTrend_trend": "3-period trajectory (t2 → … → now); regTrend_trend = direction over the window."
+            },
+            "nullBehavior": "Missing observations produce null slots; an empty series has null now and trend.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": null,
+              "timeframeMode": "timeless",
+              "requiresSectionTimeframe": false,
+              "sectionTimeframeOverrideAllowed": false
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:1a1456da-57d3-45e4-b407-079be1b65cc8",
+          "columnIndex": 1,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "REGIME_VOL",
+              "transformId": "value",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "offset": 0
+            },
+            "effectiveParameters": {
+              "window": null,
+              "offset": 0,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": null,
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "regVol",
+                "outputType": {
+                  "kind": "classification",
+                  "vocab": [
+                    "expanding",
+                    "contracting",
+                    "normal"
+                  ]
+                },
+                "nullable": true,
+                "meaning": "regVol: latest value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "expanding",
+                  "contracting",
+                  "normal"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "REGIME_VOL"
+            ],
+            "calculationSummary": "Select one value at the requested offset.",
+            "formula": "output = regVol[t - 0]",
+            "glossary": {
+              "regVol": "regVol: latest value."
+            },
+            "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": null,
+              "timeframeMode": "timeless",
+              "requiresSectionTimeframe": false,
+              "sectionTimeframeOverrideAllowed": false
+            },
+            "nullSentinel": "—"
+          }
+        },
+        {
+          "sectionKey": "custom:1a1456da-57d3-45e4-b407-079be1b65cc8",
+          "columnIndex": 2,
+          "contract": {
+            "normalizedColumn": {
+              "metric": "REGIME_MOM",
+              "transformId": "value",
+              "timeframe": {
+                "rel": "anchor"
+              },
+              "offset": 0
+            },
+            "effectiveParameters": {
+              "window": null,
+              "offset": 0,
+              "side": null,
+              "inputs": [],
+              "aggregate": null,
+              "bars": null,
+              "ordering": null
+            },
+            "outputs": [
+              {
+                "header": "regMom",
+                "outputType": {
+                  "kind": "classification",
+                  "vocab": [
+                    "bullish",
+                    "bearish",
+                    "neutral",
+                    "diverging"
+                  ]
+                },
+                "nullable": true,
+                "meaning": "regMom: latest value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "bullish",
+                  "bearish",
+                  "neutral",
+                  "diverging"
+                ]
+              }
+            ],
+            "operandOrder": [
+              "REGIME_MOM"
+            ],
+            "calculationSummary": "Select one value at the requested offset.",
+            "formula": "output = regMom[t - 0]",
+            "glossary": {
+              "regMom": "regMom: latest value."
+            },
+            "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+            "timeframe": {
+              "requested": {
+                "rel": "anchor"
+              },
+              "resolved": null,
+              "timeframeMode": "timeless",
+              "requiresSectionTimeframe": false,
+              "sectionTimeframeOverrideAllowed": false
+            },
+            "nullSentinel": "—"
+          }
+        }
+      ],
+      "reportPreview": {
+        "renderedSections": [
+          {
+            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+            "section": {
+              "title": "Trend Continuation Signals",
+              "text": "MAalign: price stacked against EMA20 / SMA20 / SMA50 (bullish / bearish / mixed). EMA5: 5-period exponential moving average. EMA5_EMA13_spread: % gap EMA5 vs EMA13. 4-period trajectory (t3 → … → now); EMA5_EMA13_spread_trend = direction over the window. SMA200: 200-period simple moving average. dist_SMA200: % from current price to SMA200. ADX: 14-period average directional index (trend strength, 0–100). 4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); ADX_trend = direction over the window. MACD: MACD histogram — the 12/26 line minus its 9-period signal. 4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); MACD_trend = direction over the window. MACD_cross: crossover event (Bullish / Bearish). RVOL: relative volume — the bar’s volume divided by its 20-period average, as a multiple (1.0 = at baseline, 2.0 = twice baseline). 4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); RVOL_trend = direction over the window. OBV: on-balance volume — the running signed volume sum since the daily 00:00-UTC anchor, in base-asset units. 4-period trajectory (t3 → … → now); closed bars only (the forming bar is excluded); OBV_trend = direction over the window.\n\n| coin | MAalign | EMA5_EMA13_spread_t3 | EMA5_EMA13_spread_t2 | EMA5_EMA13_spread_t1 | EMA5_EMA13_spread_now | EMA5_EMA13_spread_trend | dist_SMA200 | ADX_t3 | ADX_t2 | ADX_t1 | ADX_now | ADX_trend | MACD_t3 | MACD_t2 | MACD_t1 | MACD_now | MACD_trend | MACD_cross | RVOL_t3 | RVOL_t2 | RVOL_t1 | RVOL_now | RVOL_trend | OBV_t3 | OBV_t2 | OBV_t1 | OBV_now | OBV_trend |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| BTC | mixed | 0.29 | 0.14 | 0.02 | -0.04 | falling | +3.28% | 25.8 | 27.6 | 27.4 | 27.2 | rising | 22.9480 | 20.5801 | -22.0318 | -57.3981 | falling | — | 0.65 | 2.19 | 1.15 | 0.43 | falling | 16.3K | -5165 | -7954 | -9013 | falling |\n| ETH | mixed | 0.09 | -0.07 | -0.18 | -0.23 | falling | +2.25% | 12.8 | 13.0 | 12.3 | 11.7 | falling | -1.1977 | -1.1776 | -2.4694 | -3.3486 | falling | — | 0.21 | 0.85 | 1.61 | 0.18 | falling | 148.7K | -22900 | -68695 | -73750 | falling |\n| SOL | mixed | 0.77 | 0.29 | 0.06 | -0.06 | falling | +11.82% | 53.0 | 52.3 | 50.2 | 47.9 | falling | 0.0138 | -0.1372 | -0.3316 | -0.4377 | falling | — | 0.25 | 0.57 | 0.79 | 0.51 | rising | 3.5M | -281204 | -672509 | -416765 | falling |"
+            },
+            "structure": null
+          },
+          {
+            "sectionKey": "custom:1a1456da-57d3-45e4-b407-079be1b65cc8",
+            "section": {
+              "title": "Trend Continuation Context",
+              "text": "regTrend: the platform-classified trend regime (trending up / trending down / ranging). 3-period trajectory (t2 → … → now); regTrend_trend = direction over the window. regVol: the platform-classified volatility regime (expanding / contracting / normal). regMom: the platform-classified momentum regime (bullish / bearish / neutral / diverging).\n\n| coin | regTrend_t2 | regTrend_t1 | regTrend_now | regTrend_trend | regVol | regMom |\n|---|---|---|---|---|---|---|\n| BTC | trending up | trending up | trending up | flat | normal | neutral |\n| ETH | trending up | trending up | trending up | flat | normal | bearish |\n| SOL | trending up | trending up | trending up | flat | normal | bullish |"
+            },
+            "structure": null
+          }
+        ],
+        "resolvedCoinTickers": [
+          "BTC",
+          "ETH",
+          "SOL"
+        ],
+        "tokenCountModel": "o200k_base",
+        "budgetUsage": {
+          "sections": {
+            "used": 2,
+            "cap": 32
+          },
+          "sectionColumns": {
+            "used": 8,
+            "cap": 32
+          },
+          "columnLookback": {
+            "used": 24,
+            "cap": 32
+          },
+          "distinctTimeframes": {
+            "used": 1,
+            "cap": 8
+          },
+          "estimatedTokens": {
+            "used": 1113,
+            "cap": 16000
+          }
+        },
+        "conditionOutcomes": [
+          {
+            "ticker": "BTC",
+            "outcomes": [
+              {
+                "conditionKey": "TC_RISK_ON",
+                "name": "Stablecoin pairs at par",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "reference-pairs",
+                    "header": "usdtUsdDev_market",
+                    "op": "between",
+                    "operand": "+0.01%",
+                    "literal": "-0.5 … 0.5",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "reference-pairs",
+                    "header": "usdcUsdtDev_market",
+                    "op": "between",
+                    "operand": "—",
+                    "literal": "-0.5 … 0.5",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CTX_UP",
+                "name": "Broad tape up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all",
+                    "op": "gt",
+                    "operand": "-2.6% of 78",
+                    "literal": "10",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CTX_DOWN",
+                "name": "Broad tape down",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all",
+                    "op": "lt",
+                    "operand": "-2.6% of 78",
+                    "literal": "-10",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CORE_UP",
+                "name": "2 of 3 filters agree - up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MAalign",
+                    "op": "is",
+                    "operand": "mixed",
+                    "literal": "bullish",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MACD_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "rising",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "OBV_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "rising",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now",
+                    "op": "gte",
+                    "operand": "27.2",
+                    "literal": "25",
+                    "outcome": "TRUE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_CORE_DOWN",
+                "name": "2 of 3 filters agree - down",
+                "outcome": "TRUE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MAalign",
+                    "op": "is",
+                    "operand": "mixed",
+                    "literal": "bearish",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MACD_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "falling",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "OBV_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "falling",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now",
+                    "op": "gte",
+                    "operand": "27.2",
+                    "literal": "25",
+                    "outcome": "TRUE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_UP",
+                "name": "Setup confirmed - up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CORE_UP",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CTX_UP",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_RISK_ON",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_DOWN",
+                "name": "Setup confirmed - down",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CORE_DOWN",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CTX_DOWN",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_RISK_ON",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              }
+            ],
+            "verdict": "NEITHER",
+            "decidedBy": null
+          },
+          {
+            "ticker": "ETH",
+            "outcomes": [
+              {
+                "conditionKey": "TC_RISK_ON",
+                "name": "Stablecoin pairs at par",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "reference-pairs",
+                    "header": "usdtUsdDev_market",
+                    "op": "between",
+                    "operand": "+0.01%",
+                    "literal": "-0.5 … 0.5",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "reference-pairs",
+                    "header": "usdcUsdtDev_market",
+                    "op": "between",
+                    "operand": "—",
+                    "literal": "-0.5 … 0.5",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CTX_UP",
+                "name": "Broad tape up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all",
+                    "op": "gt",
+                    "operand": "-2.6% of 78",
+                    "literal": "10",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CTX_DOWN",
+                "name": "Broad tape down",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all",
+                    "op": "lt",
+                    "operand": "-2.6% of 78",
+                    "literal": "-10",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CORE_UP",
+                "name": "2 of 3 filters agree - up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MAalign",
+                    "op": "is",
+                    "operand": "mixed",
+                    "literal": "bullish",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MACD_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "rising",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "OBV_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "rising",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now",
+                    "op": "gte",
+                    "operand": "11.7",
+                    "literal": "25",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_CORE_DOWN",
+                "name": "2 of 3 filters agree - down",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MAalign",
+                    "op": "is",
+                    "operand": "mixed",
+                    "literal": "bearish",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MACD_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "falling",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "OBV_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "falling",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now",
+                    "op": "gte",
+                    "operand": "11.7",
+                    "literal": "25",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_UP",
+                "name": "Setup confirmed - up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CORE_UP",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CTX_UP",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_RISK_ON",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_DOWN",
+                "name": "Setup confirmed - down",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CORE_DOWN",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CTX_DOWN",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_RISK_ON",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              }
+            ],
+            "verdict": "NEITHER",
+            "decidedBy": null
+          },
+          {
+            "ticker": "SOL",
+            "outcomes": [
+              {
+                "conditionKey": "TC_RISK_ON",
+                "name": "Stablecoin pairs at par",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "reference-pairs",
+                    "header": "usdtUsdDev_market",
+                    "op": "between",
+                    "operand": "+0.01%",
+                    "literal": "-0.5 … 0.5",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "reference-pairs",
+                    "header": "usdcUsdtDev_market",
+                    "op": "between",
+                    "operand": "—",
+                    "literal": "-0.5 … 0.5",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CTX_UP",
+                "name": "Broad tape up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all",
+                    "op": "gt",
+                    "operand": "-2.6% of 78",
+                    "literal": "10",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CTX_DOWN",
+                "name": "Broad tape down",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "market-breadth",
+                    "header": "mktBreadth_all",
+                    "op": "lt",
+                    "operand": "-2.6% of 78",
+                    "literal": "-10",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": false
+              },
+              {
+                "conditionKey": "TC_CORE_UP",
+                "name": "2 of 3 filters agree - up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MAalign",
+                    "op": "is",
+                    "operand": "mixed",
+                    "literal": "bullish",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MACD_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "rising",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "OBV_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "rising",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now",
+                    "op": "gte",
+                    "operand": "47.9",
+                    "literal": "25",
+                    "outcome": "TRUE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_CORE_DOWN",
+                "name": "2 of 3 filters agree - down",
+                "outcome": "TRUE",
+                "evidence": [
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MAalign",
+                    "op": "is",
+                    "operand": "mixed",
+                    "literal": "bearish",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "MACD_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "falling",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "OBV_trend",
+                    "op": "is",
+                    "operand": "falling",
+                    "literal": "falling",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "clause",
+                    "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+                    "header": "ADX_now",
+                    "op": "gte",
+                    "operand": "47.9",
+                    "literal": "25",
+                    "outcome": "TRUE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_UP",
+                "name": "Setup confirmed - up",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CORE_UP",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CTX_UP",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_RISK_ON",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              },
+              {
+                "conditionKey": "TC_DOWN",
+                "name": "Setup confirmed - down",
+                "outcome": "FALSE",
+                "evidence": [
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CORE_DOWN",
+                    "outcome": "TRUE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_CTX_DOWN",
+                    "outcome": "FALSE"
+                  },
+                  {
+                    "kind": "conditionRef",
+                    "conditionKey": "TC_RISK_ON",
+                    "outcome": "FALSE"
+                  }
+                ],
+                "counts": null,
+                "provisional": true
+              }
+            ],
+            "verdict": "NEITHER",
+            "decidedBy": null
+          }
+        ],
+        "conditionColumns": [
+          {
+            "sectionKey": "custom:de48d27d-caa9-4c3b-b371-aeff14e6b164",
+            "title": "Trend Continuation Signals",
+            "benchmarkTicker": null,
+            "outputs": [
+              {
+                "header": "MAalign",
+                "meaning": "MAalign: latest value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "bullish",
+                  "bearish",
+                  "mixed"
+                ],
+                "markerToken": "MAalign"
+              },
+              {
+                "header": "EMA5_EMA13_spread_t3",
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "EMA5_EMA13_spread_t3"
+              },
+              {
+                "header": "EMA5_EMA13_spread_t2",
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "EMA5_EMA13_spread_t2"
+              },
+              {
+                "header": "EMA5_EMA13_spread_t1",
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "EMA5_EMA13_spread_t1"
+              },
+              {
+                "header": "EMA5_EMA13_spread_now",
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "EMA5_EMA13_spread_now"
+              },
+              {
+                "header": "EMA5_EMA13_spread_trend",
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ],
+                "markerToken": "EMA5_EMA13_spread_trend"
+              },
+              {
+                "header": "dist_SMA200",
+                "meaning": "dist_SMA200: % from current price to SMA200.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "dist_SMA200"
+              },
+              {
+                "header": "ADX_t3",
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "ADX_t3"
+              },
+              {
+                "header": "ADX_t2",
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "ADX_t2"
+              },
+              {
+                "header": "ADX_t1",
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "ADX_t1"
+              },
+              {
+                "header": "ADX_now",
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "ADX_now"
+              },
+              {
+                "header": "ADX_trend",
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ],
+                "markerToken": "ADX_trend"
+              },
+              {
+                "header": "MACD_t3",
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "MACD_t3"
+              },
+              {
+                "header": "MACD_t2",
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "MACD_t2"
+              },
+              {
+                "header": "MACD_t1",
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "MACD_t1"
+              },
+              {
+                "header": "MACD_now",
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "MACD_now"
+              },
+              {
+                "header": "MACD_trend",
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ],
+                "markerToken": "MACD_trend"
+              },
+              {
+                "header": "MACD_cross",
+                "meaning": "MACD_cross: crossover event (Bullish / Bearish).",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "Bullish",
+                  "Bearish"
+                ],
+                "markerToken": "MACD_cross"
+              },
+              {
+                "header": "RVOL_t3",
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "RVOL_t3"
+              },
+              {
+                "header": "RVOL_t2",
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "RVOL_t2"
+              },
+              {
+                "header": "RVOL_t1",
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "RVOL_t1"
+              },
+              {
+                "header": "RVOL_now",
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "RVOL_now"
+              },
+              {
+                "header": "RVOL_trend",
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ],
+                "markerToken": "RVOL_trend"
+              },
+              {
+                "header": "OBV_t3",
+                "meaning": "Trajectory value 3 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "OBV_t3"
+              },
+              {
+                "header": "OBV_t2",
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "OBV_t2"
+              },
+              {
+                "header": "OBV_t1",
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "OBV_t1"
+              },
+              {
+                "header": "OBV_now",
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "OBV_now"
+              },
+              {
+                "header": "OBV_trend",
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ],
+                "markerToken": "OBV_trend"
+              }
+            ]
+          },
+          {
+            "sectionKey": "custom:1a1456da-57d3-45e4-b407-079be1b65cc8",
+            "title": "Trend Continuation Context",
+            "benchmarkTicker": null,
+            "outputs": [
+              {
+                "header": "regTrend_t2",
+                "meaning": "Trajectory value 2 observations before now.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "trending up",
+                  "trending down",
+                  "ranging"
+                ],
+                "markerToken": "regTrend_t2"
+              },
+              {
+                "header": "regTrend_t1",
+                "meaning": "Trajectory value 1 observations before now.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "trending up",
+                  "trending down",
+                  "ranging"
+                ],
+                "markerToken": "regTrend_t1"
+              },
+              {
+                "header": "regTrend_now",
+                "meaning": "Current trajectory value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "trending up",
+                  "trending down",
+                  "ranging"
+                ],
+                "markerToken": "regTrend_now"
+              },
+              {
+                "header": "regTrend_trend",
+                "meaning": "Trajectory direction: rising | falling | flat.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "rising",
+                  "falling",
+                  "flat"
+                ],
+                "markerToken": "regTrend_trend"
+              },
+              {
+                "header": "regVol",
+                "meaning": "regVol: latest value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "expanding",
+                  "contracting",
+                  "normal"
+                ],
+                "markerToken": "regVol"
+              },
+              {
+                "header": "regMom",
+                "meaning": "regMom: latest value.",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "bullish",
+                  "bearish",
+                  "neutral",
+                  "diverging"
+                ],
+                "markerToken": "regMom"
+              }
+            ]
+          },
+          {
+            "sectionKey": "session-field",
+            "title": "Session Field",
+            "benchmarkTicker": null,
+            "outputs": [
+              {
+                "header": "fieldPlayers_session",
+                "meaning": "players in this session",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "fieldPlayers_session"
+              },
+              {
+                "header": "fieldUpBias_session",
+                "meaning": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "fieldUpBias_session"
+              },
+              {
+                "header": "fieldBiasDir_session",
+                "meaning": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+                "conditionOperators": [
+                  "is",
+                  "in"
+                ],
+                "conditionVocabulary": [
+                  "UP",
+                  "DOWN"
+                ],
+                "markerToken": "fieldBiasDir_session"
+              },
+              {
+                "header": "captConc_session",
+                "meaning": "share of captain picks landing on the single most-captained coin (%)",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "captConc_session"
+              },
+              {
+                "header": "picksSpread_session",
+                "meaning": "distinct coins picked, over distinct coins available",
+                "conditionOperators": [],
+                "conditionVocabulary": [],
+                "markerToken": "picksSpread_session"
+              }
+            ]
+          },
+          {
+            "sectionKey": "market-breadth",
+            "title": "Market Breadth",
+            "benchmarkTicker": null,
+            "outputs": [
+              {
+                "header": "mktUp_all",
+                "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "mktUp_all"
+              },
+              {
+                "header": "mktDown_all",
+                "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "mktDown_all"
+              },
+              {
+                "header": "mktBreadth_all",
+                "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "mktBreadth_all"
+              },
+              {
+                "header": "mktAvgChg_all",
+                "meaning": "mean close-change across the scope (%), signed",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "mktAvgChg_all"
+              }
+            ]
+          },
+          {
+            "sectionKey": "reference-pairs",
+            "title": "Reference Pairs",
+            "benchmarkTicker": null,
+            "outputs": [
+              {
+                "header": "usdtUsdDev_market",
+                "meaning": "USDT/USD deviation from par (%), signed, from Coinbase’s USDT-USD spot tape quoted in USD; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "usdtUsdDev_market"
+              },
+              {
+                "header": "usdcUsdtDev_market",
+                "meaning": "USDC/USDT deviation from par (%), signed, from Binance’s USDCUSDT spot tape quoted in USDT; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+                "conditionOperators": [
+                  "lt",
+                  "lte",
+                  "gte",
+                  "gt",
+                  "between"
+                ],
+                "conditionVocabulary": [],
+                "markerToken": "usdcUsdtDev_market"
+              }
+            ]
+          }
+        ],
+        "conditionVerdictTally": {
+          "UP": 0,
+          "DOWN": 0,
+          "NEITHER": 3,
+          "UNRESOLVED": 0
+        },
+        "markerConditions": [
+          {
+            "conditionKey": "TC_RISK_ON",
+            "markerToken": "TC_RISK_ON",
+            "unreferenceableReason": null
+          },
+          {
+            "conditionKey": "TC_CTX_UP",
+            "markerToken": "TC_CTX_UP",
+            "unreferenceableReason": null
+          },
+          {
+            "conditionKey": "TC_CTX_DOWN",
+            "markerToken": "TC_CTX_DOWN",
+            "unreferenceableReason": null
+          },
+          {
+            "conditionKey": "TC_CORE_UP",
+            "markerToken": "TC_CORE_UP",
+            "unreferenceableReason": null
+          },
+          {
+            "conditionKey": "TC_CORE_DOWN",
+            "markerToken": "TC_CORE_DOWN",
+            "unreferenceableReason": null
+          },
+          {
+            "conditionKey": "TC_UP",
+            "markerToken": "TC_UP",
+            "unreferenceableReason": null
+          },
+          {
+            "conditionKey": "TC_DOWN",
+            "markerToken": "TC_DOWN",
+            "unreferenceableReason": null
+          }
+        ],
+        "marketReadPreview": {
+          "gridText": "Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.\n\n- TC_UP (UP) - Setup confirmed - up.\n- TC_DOWN (DOWN) - Setup confirmed - down.\n\nRead these verdicts rather than re-deriving them from the columns.",
+          "tradeText": null,
+          "lensTicker": null
+        },
+        "marketReadMarkers": [
+          {
+            "token": "TC_UP",
+            "index": 94,
+            "end": 101,
+            "status": "condition",
+            "resolvedName": "TC_UP",
+            "resolvedValue": null,
+            "qualifiedForms": []
+          },
+          {
+            "token": "TC_DOWN",
+            "index": 133,
+            "end": 142,
+            "status": "condition",
+            "resolvedName": "TC_DOWN",
+            "resolvedValue": null,
+            "qualifiedForms": []
+          }
+        ],
+        "conditionsTableText": "| coin | TC_RISK_ON | TC_CTX_UP | TC_CTX_DOWN | TC_CORE_UP | TC_CORE_DOWN | TC_UP | TC_DOWN | Verdict |\n|---|---|---|---|---|---|---|---|---|\n| BTC | FALSE | FALSE | FALSE | FALSE | TRUE | FALSE | FALSE | Neither |\n| ETH | FALSE | FALSE | FALSE | FALSE | FALSE | FALSE | FALSE | Neither |\n| SOL | FALSE | FALSE | FALSE | FALSE | TRUE | FALSE | FALSE | Neither |\n\nConditions are deterministic reads of your report columns, resolved server-side at prompt-build time. They are advisory: they may make you more selective, never less — they do not gate, score, or qualify anything. TRUE / FALSE / UNRESOLVED are three distinct states; UNRESOLVED means an input was missing, not that the read was false. A value marked (provisional) came from the live forming bar and can still change before that bar closes.",
+        "tradeConditionsBlockText": null
+      },
+      "previewedAt": "2026-08-28T04:03:59.703Z",
+      "openPositions": {
+        "count": 0,
+        "observedAt": "2026-08-28T04:03:59.703Z"
+      },
+      "provisionalAdmission": {
+        "activePrivateCount": 24,
+        "activePrivateLimit": 25,
+        "quotaAvailable": true,
+        "nameAvailable": true
+      },
+      "confirmationSummary": "CREATE strategy 'Trend Continuation' as revision 1; changed axes: IDENTITY, TIMEFRAME_PROFILE, REPORT, MARKET_READ, CONDITIONS, SETUP_GATES, SIGNAL_RULES, LIFECYCLE; 0 bound agent(s) and 0 open position(s) observed."
+    },
+    "planToken": {
+      "_redacted": "credential-bound 5-minute token, left to expire; never applied",
+      "length": 686,
+      "sha256": "1e7aabdbac3c6201eba4e6c4366c9a04467d50edfd0ec40edadc69c0c4292fd3"
+    }
+  },
+  "_redactions": "planToken only - replaced by {length, sha256}; response otherwise verbatim",
+  "_interpretation": "VIABLE - the first omega-GENERATED plan ever to compile viable (viable: true, operation CREATE, proposedRevision 1, quota and name both admissible at review time, rechecked-at-apply per serverAssumptions). BG-14's workaround is CONFIRMED at this size: the only fields changed from the refused ranked/ALL/30 payload were coinSelection and its assumption string, and the compile passed the byte gate (whole response 86,089 chars vs the 256,000 cap; success responses do not report the internal preview byte figure, so the cap BOUNDARY - the largest selection that still compiles - remains unmeasured, one refusal + one pass cannot locate it). The token was left to expire (expiresAt 5 minutes after previewedAt); apply_strategy_plan was never called; nothing was created.",
+  "_alsoMeasured": {
+    "serverMintsSectionKeys": "postState sections carry custom:de48d27d-... and custom:1a1456da-... - server-minted, not omega's deterministic uuid5 keys, confirming the attempt-1 rule from the constructive side",
+    "cadenceIsServerDerived": "we sent NO cadence/regimeTimeframe (the CREATE schema has no such fields) and postState carries cadence INTRADAY, regimeTimeframe 4h - exactly omega's CADENCE_FOR_ANCHOR/REGIME_TF_FOR_ANCHOR mapping for a 1h anchor. One data point: the mapping is confirmed at 1h only",
+    "readBackNameIsSignalRules": "postState uses signalRules (84 entries) where the write API says rules - the rename is a write-surface-only convention",
+    "explicitRuleOverrides24": "exactly the 24 non-zero allocations omega sent; creationSeed still lists all 84 defaults",
+    "postStateCoinSelectionAbsent": "the persisted strategy shape carries no coinSelection - the selection we sent scoped the review (resolvedCoinTickers BTC/ETH/SOL) but does not appear in postState. OPEN QUESTION: where a strategy's tradable universe actually lives (agent/deployment level?); do not claim omega round-trips coinSelection until measured",
+    "mismatches": "16 total, all non-blocking, two classes. (a) ACTIVE_SIGNAL_DATA_NOT_IN_REPORT x12: signals omega allocated (htf_ma_*, ltf_ma_*, htf/ltf_trend_adx_*, ma_ema_aligned_*, ma_ema_*_cross) score on data the report does not render (MA_ALIGN @ signalHigher/lower, ADX @ rungs, EMA20 @ anchor, EMA_CROSS @ anchor). Membership (IN_REPORT, verified exactly for squeeze-breakout on 2026-08-25) is therefore NOT the same relation as 'all scoring inputs rendered' - omega's membership model captures the first, the compile advisory checks the second. (b) REPORT_DATA_SIGNAL_OFF x4: the four regime_* signals are Off while their data renders - exactly omega's context-module-weighted-0 design; the server's own assumption text describes it as intended ('shown to the model and scores nothing')",
+    "budgetUsage": {
+      "sections": "2/32",
+      "sectionColumns": "8/32",
+      "columnLookback": "24/32",
+      "distinctTimeframes": "1/8",
+      "estimatedTokens": "1113/16000"
+    }
+  },
+  "verdict": "viable"
+}

@@ -325,9 +325,11 @@ class StrategyPlan:
     def _assumptions(self) -> list[str]:
         """The API's required `assumptions` array: each string <=500 chars, list <=20."""
         sel = self.thesis.resolved_coin_selection()
+        how = ("explicit thesis override" if self.thesis.coin_selection is not None else
+               "default - class-aware: CRYPTO when the thesis weights a crypto-only "
+               "module (CVD, FLOW_DIVERGENCE), else ALL")
         return [
-            f"coinSelection {sel} - default is class-aware: CRYPTO when the thesis "
-            f"weights a crypto-only module (CVD, FLOW_DIVERGENCE), else ALL",
+            f"coinSelection {sel} ({how})",
             "signal params are the platform defaults captured in the signal map",
             "no execution parameters set (stops, trailing, break-even, time decay) - "
             "the execution surface is not yet modelled; platform defaults apply",

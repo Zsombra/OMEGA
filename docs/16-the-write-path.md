@@ -170,15 +170,40 @@ either time. What the two compiles actually measured
   own report render across `coinSelection` ranked/ALL/30 measured 395,404 bytes. The
   advertised "bounded live report review" refuses rather than bounds. `coinSelection`
   is thereby an *authoring budget input*: preview cost scales with `limit × report
-  width`, and no published schema says so. Untested workaround: shrink the selection.
+  width`, and no published schema says so. Workaround **confirmed** later the same day:
+  the identical plan at an explicit 3-ticker selection compiled clean. The cap
+  *boundary* — the largest selection that still compiles — remains unmeasured; success
+  responses do not report the internal preview byte figure.
 
 `coinSelection`, previously the substantive omission, now defaults class-aware:
 **CRYPTO** when the thesis weights a crypto-only module (`CVD`, `FLOW_DIVERGENCE` —
 null off-crypto, and null reads FALSE), else **ALL**, ranked limit 30.
 
-So: a generated plan has now been *compiled at* — and no generated plan has ever
-compiled **viable** or been applied. All three proven write axes remain hand-built
-payloads. The next compile needs a materially smaller preview footprint.
+And then, later on 2026-08-28 with one more user-authorized call: **the first generated
+plan compiled `viable: true`** — the identical CREATE body at an explicit BTC/ETH/SOL
+selection, `proposedRevision: 1`, quota and name admissible, 16 non-blocking advisories,
+token left to expire, nothing applied
+([`compile_dry_run_2026-08-28-small.json`](../data/audit/compile_dry_run_2026-08-28-small.json)).
+The compile also settled three smaller things constructively:
+
+- the server **mints** the custom `sectionKey`s (`postState` carries fresh ones, not
+  omega's deterministic uuid5s);
+- `cadence`/`regimeTimeframe` are **server-derived from the anchor** — we sent neither,
+  `postState` carries `INTRADAY`/`4h`, exactly omega's mapping (confirmed at 1h only) —
+  which is *why* the CREATE schema has no such fields;
+- the persisted shape answers **`signalRules`** where the write API takes `rules`, and
+  carries **no `coinSelection` at all** — the selection scoped the review, and where a
+  strategy's tradable universe actually lives is an open question, not assumed.
+
+The 12 `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT` advisories are worth one more sentence:
+platform *membership* (IN_REPORT — what `omega.membership` models, verified
+signal-for-signal on 2026-08-25) is a different relation from "all of a signal's
+scoring inputs are rendered", which is what the compile advisory checks. Omega models
+only the first. Non-blocking, but an agent will score those signals on data its own
+report never shows it.
+
+No generated plan has been **applied**; all three proven write axes remain hand-built
+payloads, and applying a generated one stays a deliberate, user-authorized act.
 
 ### The execution surface
 

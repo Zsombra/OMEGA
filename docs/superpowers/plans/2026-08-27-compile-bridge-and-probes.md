@@ -269,6 +269,16 @@ The execution surface (16 parameters) is **out of scope** — it needs the user'
   all of BTC/ETH/SOL while CLOSE moved. `scope.untested` now empty; no validator change.
 - **Task 6:** docs 08/16, README index lines, `artifact/README.md` updated; defects page
   republished to the same URL (🐛) with BG-14 and the BG-13 closure — fourteen findings.
+- **Addendum, 2026-08-28 (user-authorized, beyond the plan's two-compile cap):** one
+  further compile of the identical plan at an explicit BTC/ETH/SOL selection — the only
+  fields changed from the refused payload were `coinSelection` and its assumption
+  string — returned **`viable: true`**: the first generated plan ever to compile
+  viable. BG-14's workaround confirmed at that size (cap boundary still unmeasured);
+  server-minted sectionKeys, server-derived cadence/regimeTimeframe (matching omega's
+  1h mapping), read-back `signalRules`, absent postState `coinSelection`, and the
+  16 non-blocking advisories all recorded in
+  `data/audit/compile_dry_run_2026-08-28-small.json` (planToken redacted to
+  length+sha256). Token left to expire; nothing applied.
 
 ## Self-review checklist (run before calling the plan done)
 

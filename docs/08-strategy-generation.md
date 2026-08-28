@@ -122,10 +122,11 @@ Because it composes the rest of the toolkit, every plan is:
 - **in budget** — checked against all seven budgets
 - **gate-consistent** — if every weighted signal scored 0.75 and it still wouldn't route,
   the critique says so
-- **submit-shaped** — `wire()` is the exact `compile_strategy_plan` CREATE request body.
-  Compiled live on 2026-08-28: **refused**, but not for shape — no `unrecognized_keys`,
-  no missing-required. The refusal was the preview byte cap (BG-14, see
-  [16](16-the-write-path.md)); viability is still unproven.
+- **submit-shaped and compile-viable** — `wire()` is the exact `compile_strategy_plan`
+  CREATE request body. Compiled live on 2026-08-28: first refused at ranked/ALL/30 by
+  the preview byte cap (BG-14, see [16](16-the-write-path.md)), then **`viable: true`**
+  the same day at an explicit 3-ticker selection — the first generated plan ever to
+  compile viable. 16 non-blocking advisories; never applied.
 
 **`coinSelection` defaults class-aware.** Explicit `Thesis.coin_selection` wins;
 otherwise ranked limit 30 with category **CRYPTO** when the thesis weights a crypto-only
