@@ -1,0 +1,60 @@
+{
+  "id": "6a8bca67-45a3-428e-85ba-71ec2cd2218e",
+  "createdDate": "2026-08-28",
+  "thesis": {
+    "name": "Trend Continuation",
+    "tagline": "Never fight an aligned stack",
+    "description": "Full MA alignment with trend strength, entered on momentum resumption.",
+    "anchor": "1h",
+    "gate": 0.6,
+    "weights": {
+      "MOVING_AVERAGES": 3,
+      "TREND_STRENGTH": 2,
+      "MACD": 2,
+      "VOLUME": 1
+    },
+    "stance": "ALIGN",
+    "required": [],
+    "context": [
+      "REGIME"
+    ],
+    "coin_selection": {
+      "mode": "explicit",
+      "tickers": [
+        "BTC",
+        "ETH",
+        "SOL"
+      ]
+    },
+    "execution": {
+      "minRiskRewardRatio": 2.0
+    }
+  },
+  "revisions": [
+    {
+      "date": "2026-08-28",
+      "revision": 2,
+      "change": "archived after verification"
+    },
+    {
+      "date": "2026-08-29",
+      "revision": 3,
+      "change": "restored for the revision loop"
+    },
+    {
+      "date": "2026-08-29",
+      "revision": 4,
+      "change": "R:R override 1.5 -> 2.0 via wire_update"
+    },
+    {
+      "date": "2026-08-29",
+      "revision": 5,
+      "change": "archived after verification"
+    }
+  ],
+  "disposition": "archived",
+  "auditRecords": [
+    "data/audit/first_generated_apply_2026-08-28.json",
+    "data/audit/first_generated_update_2026-08-29.json"
+  ]
+}
