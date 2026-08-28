@@ -1178,7 +1178,7 @@ RSI14_now  38.3
       shape. Everything below was exercised against the live compiler and passed.
     </p>
     <div class="works">
-      <div><b>Header contract</b> 300 of 300 legal column shapes produced exactly the headers their contract predicted. 536 headers, zero mismatches.</div>
+      <div><b>Header contract</b> Every legal column shape has now been rendered against the live compiler &mdash; <strong>1,759 of 1,759</strong> operand-expanded (301/301 structural) &mdash; and every rendered header matched its predicted name exactly. Zero mismatches across the 2026-08-24 and 2026-08-26 sweeps. The denominator is honest: 421 shapes the contract implied were removed as never-legal, not excused.</div>
       <div><b>Condition grammar</b> All 7 clause operators, all 4 group operators, <code>conditionRef</code>, a group referencing groups, <code>required</code>, and verdict resolution.</div>
       <div><b>Provisional flag</b> Correct throughout — <code>true</code> on every condition reading a custom column, <code>false</code> on the one reading an ambient header.</div>
       <div><b>Legality model</b> The engine correctly refused <code>BB_PCT_B × classifyZone</code> as non-composable, and named the allowed transforms in the error.</div>

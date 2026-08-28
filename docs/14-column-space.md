@@ -43,6 +43,12 @@ space by 78.
 > The contract stated the rule and `validate_column` enforced it; only `enumerate_shapes`
 > disagreed, and nothing compared the two. `tests/test_space_validate_agreement.py` now
 > asserts that every enumerated shape validates.
+>
+> **Corrected again, same day: 2136 → 1779.** The live sweep found a second rule — one the
+> contract publishes *nowhere*: a `spread` chained into a series-building transform needs a
+> candle-backed operand (357 shapes). See the addendum in [17](17-the-full-sweep.md) and
+> `data/audit/spread_chain_operand.json`. All 1,779 have since been rendered live, 0 header
+> mismatches.
 
 ## Parameters are not enumerated
 

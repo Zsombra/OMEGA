@@ -1,7 +1,7 @@
 # 19 · Is the data correct?
 
 Everything else in this repo verifies **consistency** — that `omega` predicts what
-BattleGrid does. 300 of 300 column shapes, 46 of 46 indicator families, 25 of 25
+BattleGrid does. 1,759 of 1,759 column shapes, 46 of 46 indicator families, 25 of 25
 platform sections. None of it would notice if the platform's RSI were secretly a
 12-period, or if its prices were synthetic.
 
