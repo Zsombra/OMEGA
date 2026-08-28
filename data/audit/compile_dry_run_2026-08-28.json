@@ -1,0 +1,31 @@
+{
+  "_what": "First compile of an omega-GENERATED plan. Dry-run: no apply.",
+  "preset": "trend-continuation",
+  "requestKeys": [
+    "assumptions",
+    "coinSelection",
+    "conditions",
+    "description",
+    "intentSummary",
+    "marketReadText",
+    "minAggregateScore",
+    "minRequiredCount",
+    "name",
+    "operation",
+    "rules",
+    "sections",
+    "tagline",
+    "timeframe"
+  ],
+  "responseVerbatim": {
+    "code": "VALIDATION_ERROR",
+    "message": "Strategy report preview mcp_result_bytes limit exceeded: 395404 > 256000."
+  },
+  "attempts": {
+    "_note": "Two compile calls total - the plan's hard cap - each on a materially different payload. Attempt 1 verbatim is in compile_dry_run_2026-08-28-refusal.json; this file's responseVerbatim is attempt 2.",
+    "1": "wire() as of commit cb7cfb0, custom sections carrying omega's deterministic custom:<uuid5> sectionKeys -> REPORT_CUSTOM_SECTION_NOT_OWNED at sections[0].sectionKey, allowedDomain enum []. OMEGA GAP, fixed: a CREATE cannot claim section identities; the server mints them. wire() now strips sectionKey from custom sections (guard test test_create_sections_carry_no_client_section_key).",
+    "2": "identical payload minus the two sectionKeys (12,210 bytes serialized) -> the byte-cap refusal above. The request passed schema validation and reached the live report review stage, so the sectionKey fix is CONFIRMED effective."
+  },
+  "_interpretation": "REFUSED, not viable - and neither refusal was the schema-derived keyMismatch this dry-run set out to test. The reshaped CREATE body itself was accepted both times (no unrecognized_keys, no missing-required); the key-mismatch claim is settled as far as a refused compile can settle it. Refusal 2 is a rule nobody published: the tool description attaches the 256,000-byte cap to THE SERIALIZED PLAN ('a plan over the cap is refused'), our plan is 12,210 bytes, and the cap was enforced against the compile's internal report preview rendered across the full coinSelection (ranked ALL limit 30) instead - 395,404 bytes. The advertised 'bounded live report review' does not bound itself; it refuses the compile. Platform-side doc/behaviour mismatch -> BG-14. One data point cannot separate per-coin scaling from fixed overhead, so no validator rule is derivable honestly; the plausible workaround (smaller coinSelection.limit or explicit tickers to shrink the preview) is UNTESTED - the two-compile budget was spent. Next action: one compile with a materially smaller preview footprint (e.g. explicit 3-5 tickers), budget permitting in a future session.",
+  "verdict": "refused"
+}

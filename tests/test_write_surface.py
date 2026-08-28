@@ -95,6 +95,19 @@ def test_wire_respects_api_bounds(preset):
     assert w["coinSelection"]["mode"] in ("ranked", "explicit")
 
 
+@pytest.mark.parametrize("preset", sorted(PRESETS))
+def test_create_sections_carry_no_client_section_key(preset):
+    """Measured 2026-08-28, first live compile of a generated plan: CREATE refuses ANY
+    client-supplied custom sectionKey - REPORT_CUSTOM_SECTION_NOT_OWNED, allowedDomain
+    enum []. A strategy that does not exist yet owns no section identities; the server
+    mints them (doc 16 already said so for the apply arm). omega's deterministic
+    custom:<uuid5> keys stay on the local Report for identity; they must never reach a
+    CREATE body. See data/audit/compile_dry_run_2026-08-28-refusal.json."""
+    for s in plan(PRESETS[preset]).wire()["sections"]:
+        if s["kind"] == "custom":
+            assert "sectionKey" not in s, "CREATE must not claim a section identity"
+
+
 def test_coin_selection_default_is_class_aware():
     """CVD and FLOW_DIVERGENCE are crypto-only (doc 12 + trap 21); FUNDING and
     OPEN_INTEREST are NOT - synthetic perps carry both everywhere. A thesis touching a

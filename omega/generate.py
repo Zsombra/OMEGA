@@ -341,6 +341,14 @@ class StrategyPlan:
         defaults = m["defaultParams"]
         allocated = {r.signalId: r for r in self.rules}
         all_signals = sorted({s for v in m["moduleSignals"].values() for s in v})
+        # Measured 2026-08-28: CREATE refuses ANY client-supplied custom sectionKey
+        # (REPORT_CUSTOM_SECTION_NOT_OWNED, allowedDomain enum []) - the server mints
+        # them. Our deterministic keys stay on the local Report; platform sections keep
+        # theirs, which IS the section's identity.
+        sections = [
+            {k: v for k, v in s.items() if not (s.get("kind") == "custom" and k == "sectionKey")}
+            for s in self.report.wire()
+        ]
         return {
             "operation": "CREATE",
             "intentSummary": (f"{self.thesis.name}: {self.thesis.description} "
@@ -352,7 +360,7 @@ class StrategyPlan:
             "tagline": self.thesis.tagline,
             "description": self.thesis.description,
             "timeframe": self.thesis.anchor,
-            "sections": self.report.wire(),
+            "sections": sections,
             "conditions": self.conditions,
             "marketReadText": self.market_read_text,
             "rules": [

@@ -1,0 +1,40 @@
+{
+  "_what": "First compile of an omega-GENERATED plan. Dry-run: no apply.",
+  "preset": "trend-continuation",
+  "requestKeys": [
+    "assumptions",
+    "coinSelection",
+    "conditions",
+    "description",
+    "intentSummary",
+    "marketReadText",
+    "minAggregateScore",
+    "minRequiredCount",
+    "name",
+    "operation",
+    "rules",
+    "sections",
+    "tagline",
+    "timeframe"
+  ],
+  "responseVerbatim": {
+    "code": "VALIDATION_ERROR",
+    "message": "Custom section 'custom:18c11ae8-bb26-5025-a01c-957043d42445' does not belong to this strategy.",
+    "details": {
+      "authoringCode": "REPORT_CUSTOM_SECTION_NOT_OWNED",
+      "path": [
+        "sections",
+        0,
+        "sectionKey"
+      ],
+      "receivedValue": "custom:18c11ae8-bb26-5025-a01c-957043d42445",
+      "allowedDomain": {
+        "kind": "enum",
+        "values": []
+      }
+    }
+  },
+  "_what2": "ATTEMPT 1 of 2. The payload was wire() as of commit cb7cfb0, whose custom sections still carried omega's deterministic custom:<uuid5> sectionKeys.",
+  "_interpretation": "REFUSED - OMEGA GAP, not a platform defect. On CREATE the server accepts NO client-supplied custom sectionKey (allowedDomain enum is empty): a strategy that does not exist yet owns no section identities, the server mints them. Doc 16 already said 'omit it; the server mints one' for the compile arm; wire() was claiming identities anyway. The schema permits the key syntactically (optional, pattern-matched) and the runtime refuses every value - a schema/validator looseness, but the typed error is precise and coherent. Fixed same day: wire() strips sectionKey from custom sections (the deterministic keys stay on the local Report for identity); guard test test_create_sections_carry_no_client_section_key pins it. Attempt 2 (compile_dry_run_2026-08-28.json) got PAST this stage, confirming the fix.",
+  "verdict": "refused"
+}
