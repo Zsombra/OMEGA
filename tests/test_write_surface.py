@@ -8,6 +8,10 @@ charges, can tell you.
 Neither is a defect in omega. emit_plan stamps every plan "LOCAL ONLY, not submitted" -
 the last mile was deliberately not built. These tests pin the size of it so the gap is a
 measured number rather than a vague intention.
+
+2026-08-28: the keyMismatch half of the gap CLOSED - wire() now emits the exact CREATE
+request body (schema re-verified live the same day). The execution-surface half (16
+parameters) stays pinned open below, awaiting the user's design decisions.
 """
 from __future__ import annotations
 
@@ -46,14 +50,13 @@ def contract():
 
 
 @pytest.mark.parametrize("preset", sorted(PRESETS))
-def test_the_emit_compile_gap_is_the_recorded_one(preset):
-    """Pinned so the gap shrinks deliberately rather than drifting."""
+def test_wire_is_a_complete_create_request(preset):
+    """CLOSED 2026-08-28 (was: 3 rejected keys, 4 missing required ones). wire() now
+    emits the exact CREATE body. The old pinned-gap form of this test is preserved in
+    git history at a233ec0."""
     emitted = set(plan(PRESETS[preset]).wire())
-    # Sets, not sorted lists: the record lists these in logical order (operation first)
-    # and order carries no meaning here. Comparing sorted lists would fail on a
-    # cosmetic difference and teach us to edit the record instead of reading it.
-    assert emitted - API_ACCEPTS == set(GAP["keyMismatch"]["omegaEmitsButTheApiRejects"])
-    assert API_REQUIRES - emitted == set(GAP["keyMismatch"]["apiRequiresButOmegaOmits"])
+    assert emitted - API_ACCEPTS == set(), "wire() emits keys the API refuses"
+    assert API_REQUIRES - emitted == set(), "wire() omits keys the API requires"
 
 
 def test_plans_are_still_stamped_local_only():
@@ -75,17 +78,32 @@ def test_the_execution_surface_is_still_unmodelled():
     assert execution < API_ACCEPTS, "every one must be a field the API actually takes"
 
 
-def test_rules_is_the_name_not_signalRules():
-    """The single cheapest fix in the gap, and worth naming explicitly."""
-    emitted = set(plan(PRESETS["trend-continuation"]).wire())
-    assert "signalRules" in emitted and "rules" not in emitted
-    assert "rules" in API_ACCEPTS and "signalRules" not in API_ACCEPTS
+def test_rules_is_now_the_name():
+    w = plan(PRESETS["trend-continuation"]).wire()
+    assert "rules" in w and "signalRules" not in w
+    assert len(w["rules"]) == 84
 
 
-def test_generated_plans_carry_84_rules():
-    p = plan(PRESETS["trend-continuation"])
-    assert len(p.wire()["signalRules"]) == 84, (
-        "84 is the API's maxItems for `rules`; not one has ever been written")
+@pytest.mark.parametrize("preset", sorted(PRESETS))
+def test_wire_respects_api_bounds(preset):
+    w = plan(PRESETS[preset]).wire()
+    assert w["operation"] == "CREATE"
+    assert len(w["name"]) <= 50
+    assert 1 <= len(w["intentSummary"]) <= 2000
+    assert 1 <= len(w["assumptions"]) <= 20
+    assert all(1 <= len(a) <= 500 for a in w["assumptions"])
+    assert w["coinSelection"]["mode"] in ("ranked", "explicit")
+
+
+def test_coin_selection_default_is_class_aware():
+    """CVD and FLOW_DIVERGENCE are crypto-only (doc 12 + trap 21); FUNDING and
+    OPEN_INTEREST are NOT - synthetic perps carry both everywhere. A thesis touching a
+    crypto-only module must not default to a universe where its columns render null,
+    because null reads FALSE (trap 11)."""
+    assert plan(PRESETS["mean-reversion"]).wire()["coinSelection"] == {
+        "mode": "ranked", "category": "CRYPTO", "limit": 30}      # weights CVD
+    assert plan(PRESETS["trend-continuation"]).wire()["coinSelection"] == {
+        "mode": "ranked", "category": "ALL", "limit": 30}         # no crypto-only module
 
 
 # --- the lookback floor ------------------------------------------------------

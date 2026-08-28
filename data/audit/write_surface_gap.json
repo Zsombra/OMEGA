@@ -10,7 +10,12 @@
     "_confidence": "SCHEMA-DERIVED, NOT MEASURED. The request objects declare additionalProperties: false, so unknown keys should be refused. No compile call has been made to confirm it. One compile would settle it - compile performs no write.",
 
     "apiRequiresButOmegaOmits": ["operation", "intentSummary", "assumptions", "coinSelection"],
-    "_substantive": "coinSelection is the one that matters. A generated strategy currently does not say which coins it trades. The other three are metadata the caller supplies."
+    "_substantive": "coinSelection is the one that matters. A generated strategy currently does not say which coins it trades. The other three are metadata the caller supplies.",
+
+    "_resolved": {
+      "date": "2026-08-28",
+      "how": "wire() reshaped to the CREATE request; signalRules renamed to rules; cadence/regimeTimeframe moved to emit_plan metadata (_-prefixed, never submitted); operation/intentSummary/assumptions/coinSelection now emitted. coinSelection defaults class-aware: CRYPTO when the thesis weights a crypto-only module (CVD, FLOW_DIVERGENCE), else ALL. Schema re-verified live the same day; the lists above are kept as history."
+    }
   },
 
   "executionSurfaceNotModelled": {

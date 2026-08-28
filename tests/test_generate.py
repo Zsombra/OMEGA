@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -86,12 +87,10 @@ def test_squeeze_breakout_matches_the_live_connector():
 
 def test_wire_payload_has_the_dense_84_entry_scorecard():
     payload = plan(PRESETS["mean-reversion"]).wire()
-    rules = payload["signalRules"]
+    rules = payload["rules"]
     assert len(rules) == 84
     assert len({r["signalId"] for r in rules}) == 84
     assert payload["minAggregateScore"] == PRESETS["mean-reversion"].gate
-    assert payload["cadence"] == "INTRADAY"
-    assert payload["regimeTimeframe"] == "4h"
     # unallocated signals must be present at zero, matching real strategies
     zeros = [r for r in rules if r["allocation"] == 0]
     assert zeros and all(r["required"] is False for r in zeros)
@@ -99,10 +98,23 @@ def test_wire_payload_has_the_dense_84_entry_scorecard():
 
 def test_wire_params_match_recorded_defaults():
     payload = plan(PRESETS["mean-reversion"]).wire()
-    by_id = {r["signalId"]: r for r in payload["signalRules"]}
+    by_id = {r["signalId"]: r for r in payload["rules"]}
     assert by_id["rsi_oversold"]["params"] == {"threshold": 30}
     assert by_id["bollinger_lower_touch"]["params"] == {"pctBThreshold": 0.05}
     assert by_id["macd_bull_cross"]["params"] == {}
+
+
+def test_emit_plan_keeps_cadence_as_local_metadata(tmp_path):
+    """cadence/regimeTimeframe have no CREATE-request field (measured 2026-08-26,
+    re-verified 2026-08-28), so wire() no longer carries them - but the anchor-derived
+    values are still worth keeping. They ride on the emitted file as _-prefixed keys,
+    which never go to the API."""
+    from omega.generate import emit_plan
+    path = emit_plan(plan(PRESETS["mean-reversion"]), "t", out_dir=tmp_path)
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    assert payload["_cadence"] == "INTRADAY"
+    assert payload["_regimeTimeframe"] == "4h"
+    assert "cadence" not in payload and "regimeTimeframe" not in payload
 
 
 def test_backwards_planning_reaches_requested_signals():
