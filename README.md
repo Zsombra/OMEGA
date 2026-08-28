@@ -27,6 +27,13 @@ strategies from a thesis.
 > authorization, read back byte-identical to the approved plan, and archived
 > immediately (the user's chosen disposition) — id `6a8bca67…`, never bound, never
 > deployed. Quota is back to **24/25**.
+>
+> **The same day's measurement campaign closed the write surface's last unmeasured
+> edges** (10 compiles, zero applies): the authorable anchors are exactly
+> **5m/15m/1h/4h** (the 13-value schema enum overstates; all four fully measured,
+> defaults identical), the BG-14 ranked boundary is **limit 4** (exact bracket —
+> realistic ranked universes cannot compile), and catalog-bound enforcement is
+> asymmetric (R:R both edges, minAtrPct not at all).
 
 ---
 

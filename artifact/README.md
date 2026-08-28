@@ -22,4 +22,6 @@ exactly that: published before this column existed, and not verified since.
 `battlegrid-defects.html` is the report for the BattleGrid maintainer: fourteen findings,
 each with a reproduction, a workaround where one exists, and a suggested fix. BG-14 and
 the BAR_FORMING closure of BG-13 landed 2026-08-28; the page was republished to the same
-URL with the same 🐛 favicon that day.
+URL with the same 🐛 favicon that day. Later the same day the measurement campaign added
+BG-14's measured boundary (ranked limit 4, exact bracket, concave byte curve) to the
+article and triage row, and the page was republished again — same URL, same favicon.

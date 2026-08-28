@@ -58,6 +58,19 @@ rule is not weakened by it and survives regardless.
 
 1. **The measurement campaign** Decision 3 requires (anchors sweep + BG-14 cap
    boundary + bounds edges) — one plan, compile-only.
+   **EXECUTED 2026-08-28** (10 of the authorized ≤20 compiles; zero applies):
+   - *Anchors:* the platform's authorable set is exactly **5m/15m/1h/4h** — the
+     13-value schema enum is not the authorable surface (typed refusal named the
+     full set, so 4 compiles replaced the planned 11). All four measured:
+     cadence, regime timeframe (the 5m regime guess died — 15m, not 1h), and
+     execution defaults identical everywhere. "Full menu" of anchors = four; the
+     surface is complete, not truncated.
+   - *BG-14 boundary:* ranked limit **4**, exact bracket (4 viable / 5 refused at
+     258,883 bytes), CRYPTO transfers; the byte curve is concave, so realistic
+     ranked universes cannot compile — breadth needs explicit lists (≤50, own cap
+     edge unmeasured) or a platform fix. Ranked defaults capped to 4.
+   - *Bounds edges:* asymmetric — R:R enforced both edges (errors); minAtrPct not
+     enforced, 0.05 persisted un-clamped (warnings). No silent clamp, no BG-15.
 2. **UPDATE for generated plans.** `wire()` emits CREATE only; a conversational
    builder ("make the stop tighter") is an UPDATE at `expectedRevision`. The UPDATE
    emitter is unbuilt and no generated UPDATE has ever been applied.

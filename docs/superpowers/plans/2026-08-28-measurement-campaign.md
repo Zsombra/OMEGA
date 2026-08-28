@@ -429,10 +429,10 @@ def test_the_code_severity_matches_the_measured_verdict():
 **Files:**
 - Modify: `docs/16-the-write-path.md`, `docs/08-strategy-generation.md`, `README.md`, `docs/superpowers/specs/2026-08-28-assistant-phase-decisions.md`; `artifact/battlegrid-defects.html` + `artifact/README.md` (BG-14 boundary addendum always; BG-15 article ONLY if Task 5 measured a silent clamp).
 
-- [ ] **Step 6.1:** Doc 16: in the BG-14/compile section, add the measured boundary sentence (number or bracket, the report-relative caveat verbatim); in the anchors/cadence material, replace "confirmed at 1h only" with the sweep's coverage (a small anchor→cadence/regime table sourced from the record). Doc 08: the "compile-viable" guarantee line gains "ranked defaults capped to the measured BG-14 boundary"; the execution-transparent line gains the bounds-edge verdicts if the severities changed.
-- [ ] **Step 6.2:** Spec `2026-08-28-assistant-phase-decisions.md`: mark the measurement-campaign item **EXECUTED <date>** with one line per family verdict. README masthead: one sentence — the full-menu surface is measured (anchors count, boundary, bounds) — and index one-liners for 08/16 if their claims changed.
-- [ ] **Step 6.3:** Defects artifact: update the BG-14 article with the measured boundary (and the per-category note from Step 4.2); add BG-15 (summary row + article, masthead count bump) ONLY if the silent-clamp branch fired. Republish to `https://claude.ai/code/artifact/a0ed53c1-f6d3-4abf-9225-c4abf3dfd71a` with favicon 🐛; note the republish in `artifact/README.md`.
-- [ ] **Step 6.4:** Full suite → commit `Document the measured full-menu surface` → push.
+- [x] **Step 6.1:** Doc 16: in the BG-14/compile section, add the measured boundary sentence (number or bracket, the report-relative caveat verbatim); in the anchors/cadence material, replace "confirmed at 1h only" with the sweep's coverage (a small anchor→cadence/regime table sourced from the record). Doc 08: the "compile-viable" guarantee line gains "ranked defaults capped to the measured BG-14 boundary"; the execution-transparent line gains the bounds-edge verdicts if the severities changed.
+- [x] **Step 6.2:** Spec `2026-08-28-assistant-phase-decisions.md`: mark the measurement-campaign item **EXECUTED <date>** with one line per family verdict. README masthead: one sentence — the full-menu surface is measured (anchors count, boundary, bounds) — and index one-liners for 08/16 if their claims changed.
+- [x] **Step 6.3:** Defects artifact: update the BG-14 article with the measured boundary (and the per-category note from Step 4.2); add BG-15 (summary row + article, masthead count bump) ONLY if the silent-clamp branch fired. Republish to `https://claude.ai/code/artifact/a0ed53c1-f6d3-4abf-9225-c4abf3dfd71a` with favicon 🐛; note the republish in `artifact/README.md`.
+- [x] **Step 6.4:** Full suite → commit `Document the measured full-menu surface` → push.
 
 ### Task 7: Finish
 

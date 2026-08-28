@@ -131,11 +131,19 @@ Because it composes the rest of the toolkit, every plan is:
   trade-management profile; presets emit no execution parameters, so the MEASURED
   platform defaults apply and are said out loud rather than run on silently
   (Decision 1a, 2026-08-28; `omega/execution.py`). Explicit `Thesis.execution`
-  overrides are validated against the measured bounds — including the agent-catalog
-  bounds the write validator was measured to enforce.
+  overrides are validated against the measured bounds — with the measured *asymmetry*:
+  R:R's catalog bound is enforced on both edges (violations are errors), while
+  minAtrPct's is not (0.05 persisted un-clamped; outside-catalog values warn only) —
+  see [`bounds_edges_2026-08-28.json`](../data/audit/bounds_edges_2026-08-28.json).
+- **anchor-complete** — the four authorable anchors (5m/15m/1h/4h — the platform's
+  complete set, measured 2026-08-28) all carry measured cadence, regime timeframe,
+  and identical execution defaults; the model refuses to express anything else
+  because nothing else can exist.
 
 **`coinSelection` defaults class-aware.** Explicit `Thesis.coin_selection` wins;
-otherwise ranked limit 30 with category **CRYPTO** when the thesis weights a crypto-only
+otherwise ranked at the measured BG-14 boundary (`RANKED_LIMIT_MEASURED_MAX`,
+currently **4** — the limit-30 default it replaced could never compile) with category
+**CRYPTO** when the thesis weights a crypto-only
 module (`CVD`, `FLOW_DIVERGENCE`), else **ALL**. The rationale is trap 11 × trap 21:
 crypto-only columns render null off-crypto and null reads FALSE, so a CVD-weighted
 thesis defaulted onto stocks would silently never fire. `FUNDING` and `OPEN_INTEREST`

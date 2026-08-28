@@ -172,12 +172,22 @@ either time. What the two compiles actually measured
   is thereby an *authoring budget input*: preview cost scales with `limit × report
   width`, and no published schema says so. Workaround **confirmed** later the same day:
   the identical plan at an explicit 3-ticker selection compiled clean. The cap
-  *boundary* — the largest selection that still compiles — remains unmeasured; success
-  responses do not report the internal preview byte figure.
+  ~~*boundary* — the largest selection that still compiles — remains unmeasured~~ —
+  **measured later on 2026-08-28** by the measurement campaign
+  ([`cap_boundary_2026-08-28.json`](../data/audit/cap_boundary_2026-08-28.json)):
+  the boundary is **ranked limit 4**, an exact adjacent-pair bracket — `ALL/4` viable
+  (BTC, ETH, SOL, HYPE), `ALL/5` refused at 258,883 bytes, `CRYPTO/4` also viable.
+  The byte curve is **concave** (5 → 258,883; 19 → 368,235; 30 → 395,404), so the
+  first handful of coins spends most of the budget and no realistic ranked universe
+  fits. Report-relative: measured for the trend-continuation report's 11 columns; a
+  wider report refuses earlier. Realistic breadth needs explicit lists (≤50 per
+  schema; their own cap edge unmeasured) or a platform-side fix.
 
 `coinSelection`, previously the substantive omission, now defaults class-aware:
 **CRYPTO** when the thesis weights a crypto-only module (`CVD`, `FLOW_DIVERGENCE` —
-null off-crypto, and null reads FALSE), else **ALL**, ranked limit 30.
+null off-crypto, and null reads FALSE), else **ALL**, ranked — capped since
+2026-08-28 to the measured BG-14 boundary (`RANKED_LIMIT_MEASURED_MAX`, currently 4;
+the limit-30 default it replaced could never compile).
 
 And then, later on 2026-08-28 with one more user-authorized call: **the first generated
 plan compiled `viable: true`** — the identical CREATE body at an explicit BTC/ETH/SOL
@@ -192,7 +202,14 @@ The compile also settled three smaller things constructively:
   `postState` carries `INTRADAY`/`4h`, exactly omega's mapping (confirmed at 1h only;
   the 2026-08-28 4h probe later proved the cadence half of omega's mapping **wrong** at
   4h — the server derives `SWING`, not `INTRADAY` — and the mapping was corrected) —
-  which is *why* the CREATE schema has no such fields;
+  which is *why* the CREATE schema has no such fields. The same day's anchor sweep
+  ([`anchor_sweep_2026-08-28.json`](../data/audit/anchor_sweep_2026-08-28.json))
+  finished the axis: the schema's 13-value `timeframe` enum is NOT the authorable
+  surface — the server refuses everything outside **`5m / 15m / 1h / 4h`**
+  (`REPORT_TIMEFRAME_NOT_AUTHORABLE`, allowedDomain naming all four), and every value
+  is now measured: 5m → SCALPER/15m (the map's guessed `1h` regime died here),
+  15m → SCALPER/1h, 1h → INTRADAY/4h, 4h → SWING/1d, with the 16 execution defaults
+  identical at all four;
 - the persisted shape answers **`signalRules`** where the write API takes `rules`, and
   carries **no `coinSelection` at all** — the selection scoped the review, and where a
   strategy's tradable universe actually lives is an open question, not assumed.

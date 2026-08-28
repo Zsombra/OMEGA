@@ -477,9 +477,9 @@
           </tr>
           <tr>
             <td class="id">BG-14</td>
-            <td>The 256,000-byte cap documented for the plan is enforced against the compile's own preview</td>
+            <td>The 256,000-byte cap documented for the plan is enforced against the compile's own preview &mdash; measured boundary: ranked limit <b>4</b></td>
             <td><span class="chip blocking">Blocking</span></td>
-            <td>Shrink <code>coinSelection</code> (untested)</td>
+            <td>Explicit ticker lists; ranked only &le;4 (measured)</td>
           </tr>
         </tbody>
       </table>
@@ -1227,9 +1227,21 @@ RSI14_now  38.3
             Shrink the preview footprint. Confirmed later the same day: the <em>identical</em>
             plan with an explicit three-ticker selection &mdash; the only fields changed were
             <code>coinSelection</code> and its assumption string &mdash; compiled
-            <code>viable:&nbsp;true</code>. The cap <b>boundary</b> (the largest selection that
-            still compiles) remains unmeasured; success responses do not report the internal
-            preview byte figure.
+            <code>viable:&nbsp;true</code>.
+          </p>
+        </div>
+        <div class="fix">
+          <div class="fix-label">Boundary — measured 2026-08-28</div>
+          <p>
+            The largest ranked selection that still compiles, for this same report shape, is
+            <b>limit&nbsp;4</b> &mdash; an exact adjacent-pair bracket: <code>ranked/ALL/4</code>
+            compiled viable (resolving to BTC, ETH, SOL, HYPE) while <code>ranked/ALL/5</code>
+            refused at <b>258,883</b> bytes; <code>ranked/CRYPTO/4</code> also compiled. The byte
+            curve is <b>concave</b>, not linear &mdash; 5 coins &rarr; 258,883; 19 &rarr; 368,235;
+            30 &rarr; 395,404 &mdash; so the first handful of coins spends most of the budget and
+            <b>no realistic ranked universe can compile at all</b>. Boundary is report-relative
+            (eleven custom columns here); a wider report refuses earlier. Record:
+            <code>data/audit/cap_boundary_2026-08-28.json</code>.
           </p>
         </div>
         <p>
