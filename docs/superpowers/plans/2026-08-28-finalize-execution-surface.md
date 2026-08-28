@@ -409,10 +409,10 @@ Adapt the `anchored` comprehension to the real `Column.timeframe` type (it is a 
 **Files:**
 - Modify: `docs/16-the-write-path.md`, `docs/08-strategy-generation.md`, `README.md`, `docs/superpowers/specs/2026-08-27-execution-surface-decisions.md`; `artifact/battlegrid-defects.html` + republish ONLY if Task 3 produced the silent-clamp defect.
 
-- [ ] **Step 7.1:** Doc 16: in the execution-surface section, replace the "it simply has not been modelled" close with the Decision 1(a) outcome (modelled <date>: defaults stated, overrides validated, bounds enforcement per Task 3's verdict). Doc 08: extend the guarantees list — "**execution-transparent** — every plan's critique states the effective trade-management profile; presets emit no execution parameters (Decision 1a, <date>)".
-- [ ] **Step 7.2:** Spec: confirm Decisions 1/3/4 all read ANSWERED/moot with dates. README index lines for 08/16 if their one-liners changed.
-- [ ] **Step 7.3:** If (and only if) Task 3 measured a silent clamp: add BG-15 to the defects artifact (summary row + article, same structure as BG-14), bump the masthead count, republish to `https://claude.ai/code/artifact/a0ed53c1-f6d3-4abf-9225-c4abf3dfd71a` with favicon 🐛, and note it in `artifact/README.md`.
-- [ ] **Step 7.4:** Full suite → commit `Document the execution-surface closure` → push.
+- [x] **Step 7.1:** Doc 16: in the execution-surface section, replace the "it simply has not been modelled" close with the Decision 1(a) outcome (modelled <date>: defaults stated, overrides validated, bounds enforcement per Task 3's verdict). Doc 08: extend the guarantees list — "**execution-transparent** — every plan's critique states the effective trade-management profile; presets emit no execution parameters (Decision 1a, <date>)".
+- [x] **Step 7.2:** Spec: confirm Decisions 1/3/4 all read ANSWERED/moot with dates. README index lines for 08/16 if their one-liners changed.
+- [x] **Step 7.3:** If (and only if) Task 3 measured a silent clamp: add BG-15 to the defects artifact (summary row + article, same structure as BG-14), bump the masthead count, republish to `https://claude.ai/code/artifact/a0ed53c1-f6d3-4abf-9225-c4abf3dfd71a` with favicon 🐛, and note it in `artifact/README.md`.
+- [x] **Step 7.4:** Full suite → commit `Document the execution-surface closure` → push.
 
 ### Task 8: Apply ONE generated strategy (HARD GATE)
 

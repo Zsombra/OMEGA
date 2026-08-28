@@ -189,7 +189,9 @@ The compile also settled three smaller things constructively:
 - the server **mints** the custom `sectionKey`s (`postState` carries fresh ones, not
   omega's deterministic uuid5s);
 - `cadence`/`regimeTimeframe` are **server-derived from the anchor** — we sent neither,
-  `postState` carries `INTRADAY`/`4h`, exactly omega's mapping (confirmed at 1h only) —
+  `postState` carries `INTRADAY`/`4h`, exactly omega's mapping (confirmed at 1h only;
+  the 2026-08-28 4h probe later proved the cadence half of omega's mapping **wrong** at
+  4h — the server derives `SWING`, not `INTRADAY` — and the mapping was corrected) —
   which is *why* the CREATE schema has no such fields;
 - the persisted shape answers **`signalRules`** where the write API takes `rules`, and
   carries **no `coinSelection` at all** — the selection scoped the review, and where a
@@ -218,10 +220,25 @@ Five of six probed — `trailingEnabled`, `breakEvenTriggerR`, `minStopLossAtrMu
 `timeDecayEnabled`, `minRiskRewardRatio` — appear **nowhere** in `omega/` or `docs/`. Only
 `minAtrPct` is mentioned at all.
 
-**omega can author what to look at, and not how to trade it.** A strategy with sound
-entries and a bad stop loses money, and the toolkit has nothing to say about the stop. The
+**omega could author what to look at, and not how to trade it.** A strategy with sound
+entries and a bad stop loses money, and the toolkit had nothing to say about the stop. The
 schema publishes bounds for each (`trailingGivebackPct` 25–55, `breakEvenTriggerR` 0.5–2,
-`minAtrPct` 0.01–50), so the surface is knowable — it simply has not been modelled.
+`minAtrPct` 0.01–50), so the surface was knowable — and on 2026-08-28 it was modelled.
+
+**Modelled 2026-08-28 (Decision 1a).** [`omega/execution.py`](../omega/execution.py)
+now carries the surface: presets emit **none** of the 16, every plan's critique states
+the measured effective profile, and explicit `Thesis.execution` overrides merge into
+`wire()` last, validated against the measured bounds. Bounds enforcement was measured
+the same day
+([`bounds_probe_2026-08-28.json`](../data/audit/bounds_probe_2026-08-28.json)):
+`minRiskRewardRatio` 5.0 — legal per the published compile schema, which leaves the
+field unbounded — was refused at the write validator's input layer with
+`"must be <= 3"`, the agent catalog's upper edge. The catalog bounds are **enforced
+below the declared schema**, so `validate_execution` treats violating them as errors.
+The defaults are anchor-independent as far as measured — identical at 1h and 4h
+([`defaults_4h_probe_2026-08-28.json`](../data/audit/defaults_4h_probe_2026-08-28.json));
+the same probe caught omega's 4h cadence mapping predicting `INTRADAY` where the
+server derives `SWING`, corrected the same day.
 
 Two ownership facts, measured 2026-08-28
 ([`execution_surface_ownership_2026-08-28.json`](../data/audit/execution_surface_ownership_2026-08-28.json)):

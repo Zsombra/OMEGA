@@ -127,6 +127,12 @@ Because it composes the rest of the toolkit, every plan is:
   the preview byte cap (BG-14, see [16](16-the-write-path.md)), then **`viable: true`**
   the same day at an explicit 3-ticker selection — the first generated plan ever to
   compile viable. 16 non-blocking advisories; never applied.
+- **execution-transparent** — every plan's critique states the effective
+  trade-management profile; presets emit no execution parameters, so the MEASURED
+  platform defaults apply and are said out loud rather than run on silently
+  (Decision 1a, 2026-08-28; `omega/execution.py`). Explicit `Thesis.execution`
+  overrides are validated against the measured bounds — including the agent-catalog
+  bounds the write validator was measured to enforce.
 
 **`coinSelection` defaults class-aware.** Explicit `Thesis.coin_selection` wins;
 otherwise ranked limit 30 with category **CRYPTO** when the thesis weights a crypto-only
