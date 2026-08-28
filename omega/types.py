@@ -10,6 +10,11 @@ from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 ABS_TIMEFRAMES = Literal["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "8h", "12h", "1d", "3d", "1w"]
+# MEASURED complete, 2026-08-28: the strategy-write schema's timeframe enum carries 13
+# values, but the server refuses every anchor outside these four with
+# REPORT_TIMEFRAME_NOT_AUTHORABLE, allowedDomain ['5m','15m','1h','4h']
+# (anchor_sweep_2026-08-28.json). Column abs timeframes above are a separate,
+# read-surface axis and keep all 13.
 ANCHOR_TIMEFRAMES = Literal["5m", "15m", "1h", "4h"]
 REL = Literal["anchor", "lower", "regime"]
 ORDERING = Literal["hi", "lo", "far", "near"]

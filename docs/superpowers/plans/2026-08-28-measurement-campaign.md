@@ -49,9 +49,9 @@ Key measured facts (do not re-derive, do not contradict):
 
 **Files:** none modified.
 
-- [ ] **Step 0.1:** Ensure an isolated workspace (superpowers:using-git-worktrees): fresh worktree/branch cut from current `origin/main` (`git fetch origin` first; expect `f5e8510` or a descendant). `python -m pytest -q` → **828 passed** (reconcile any drift before proceeding — it means main moved; read the new commits).
-- [ ] **Step 0.2:** `ToolSearch` `select:mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__compile_strategy_plan`. Diff by script (pattern: the 2026-08-28 preflight): the CREATE branch's key set vs `API_ACCEPTS`/`API_REQUIRES` in `tests/test_write_surface.py`, the numeric bounds vs `SCHEMA_BOUNDS` in `omega/execution.py`, and the `timeframe` enum vs the 13 values in Key facts. Any drift → STOP, update the pinned sets in their own commit first.
-- [ ] **Step 0.3:** `list_strategies` — note quota verbatim in the Task 2 commit message if ≠ 24/25. Confirm the kickoff prompt authorizes the ≤20-compile budget in the user's own words; absent → STOP and ask.
+- [x] **Step 0.1:** Ensure an isolated workspace (superpowers:using-git-worktrees): fresh worktree/branch cut from current `origin/main` (`git fetch origin` first; expect `f5e8510` or a descendant). `python -m pytest -q` → **828 passed** (reconcile any drift before proceeding — it means main moved; read the new commits).
+- [x] **Step 0.2:** `ToolSearch` `select:mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__compile_strategy_plan`. Diff by script (pattern: the 2026-08-28 preflight): the CREATE branch's key set vs `API_ACCEPTS`/`API_REQUIRES` in `tests/test_write_surface.py`, the numeric bounds vs `SCHEMA_BOUNDS` in `omega/execution.py`, and the `timeframe` enum vs the 13 values in Key facts. Any drift → STOP, update the pinned sets in their own commit first.
+- [x] **Step 0.3:** `list_strategies` — note quota verbatim in the Task 2 commit message if ≠ 24/25. Confirm the kickoff prompt authorizes the ≤20-compile budget in the user's own words; absent → STOP and ask.
 
 ### Task 1: Probe harness — one-changed-field by construction
 
@@ -62,7 +62,7 @@ Key measured facts (do not re-derive, do not contradict):
 **Interfaces:**
 - Produces: `probe(field: str, value, base: str = "small") -> dict` — the known body (`base="small"`: explicit BTC/ETH/SOL viable body; `base="full"`: the ranked/ALL/30 body) with exactly one top-level field replaced. `_redact(resp: dict) -> dict` — in-place planToken redaction, shared by all record modes. CLI modes `tf <anchor>`, `ranked <limit> [category]`, `rrlow <value>`, `atr <value>`, `record-into <respfile> <key> <auditfile>`.
 
-- [ ] **Step 1.1: Write the failing tests** — append to `tests/test_compile_dry_run.py`:
+- [x] **Step 1.1: Write the failing tests** — append to `tests/test_compile_dry_run.py`:
 
 ```python
 # --- the 2026-08-28 measurement-campaign harness --------------------------------
@@ -94,8 +94,8 @@ def test_redact_replaces_the_token_with_length_and_sha256():
     assert resp["other"] == 1
 ```
 
-- [ ] **Step 1.2:** Run `python -m pytest tests/test_compile_dry_run.py -q` — expect FAIL (`probe`/`_redact` not defined).
-- [ ] **Step 1.3: Implement.** In `scripts/compile_dry_run.py`: extract the existing record-mode redaction into `_redact`, add `probe`, add the modes. The existing `request`, `small`/`bounds`/`tf4h`/`record` modes stay byte-identical (pinned tests reference them).
+- [x] **Step 1.2:** Run `python -m pytest tests/test_compile_dry_run.py -q` — expect FAIL (`probe`/`_redact` not defined).
+- [x] **Step 1.3: Implement.** In `scripts/compile_dry_run.py`: extract the existing record-mode redaction into `_redact`, add `probe`, add the modes. The existing `request`, `small`/`bounds`/`tf4h`/`record` modes stay byte-identical (pinned tests reference them).
 
 ```python
 # The compile CREATE timeframe enum, re-verified live in this campaign's preflight.
@@ -155,7 +155,7 @@ In `main()`, replace the record-mode inline redaction with `_redact(resp)` and a
         return 0
 ```
 
-- [ ] **Step 1.4:** `python -m pytest -q` — all green (existing 828 + 3 new = 831). Commit `Probe harness: one-changed-field probes, shared redaction` → push.
+- [x] **Step 1.4:** `python -m pytest -q` — all green (existing 828 + 3 new = 831). Commit `Probe harness: one-changed-field probes, shared redaction` → push.
 
 ### Task 2: Anchor sweep — 11 compiles, verbatim, no model changes yet
 
@@ -168,9 +168,24 @@ In `main()`, replace the record-mode inline redaction with `_redact(resp)` and a
 
 **Predictions (stated now, before any call):** every viable anchor's 16 defaults equal `PLATFORM_EXECUTION_DEFAULTS`; 15m cadence SCALPER (live-strategy prior), 5m cadence SCALPER and 5m/15m regimeTimeframe "1h" (omega-map prior only); **all other anchors: no prior — whatever comes back is the first measurement.** Any anchor may be refused outright; a refusal is a finding that the anchor is not creatable, and it is excluded from Task 3's widening.
 
-- [ ] **Step 2.1:** For each anchor in `1m 3m 5m 15m 30m 2h 8h 12h 1d 3d 1w` (exactly 11 — 1h and 4h are measured; do NOT respend them): `python -m scripts.compile_dry_run tf <anchor>` → sanity-check by script that only `timeframe` differs from the small body → ONE `compile_strategy_plan` call with the printed body → save the response (overflow file, or paste an inline error verbatim into a scratch file) → `python -m scripts.compile_dry_run record-into <respfile> <anchor> anchor_sweep_2026-XX-XX.json`. Record refusals exactly like successes. 11 calls total, no retries without the contingency justification.
-- [ ] **Step 2.2:** Fill the record's `_what` (what was probed, from which base body, predictions restated) and build `extract` by script from `probes`: viable flag, `postState.cadence`, `postState.regimeTimeframe`, and `defaultsIdentical` = (the 16 postState values == `PLATFORM_EXECUTION_DEFAULTS`); `null`s for refused anchors. Fill `_interpretation` honestly — including which predictions held and which had no prior.
-- [ ] **Step 2.3: Pin it** — `tests/test_anchor_sweep.py`:
+> **Correction, 2026-08-28 (measured during execution):** the sweep's premise — 11
+> individually unmeasured anchors — was contradicted by the FIRST probe. `1m` drew a
+> typed refusal `REPORT_TIMEFRAME_NOT_AUTHORABLE` whose `allowedDomain` enum named the
+> complete authorable set: **`["5m","15m","1h","4h"]`** — the 13-value schema enum is
+> not the authorable surface (below-schema enforcement, the same pattern as the R:R
+> bound). The family therefore collapsed to **4 compiles**: 1m (the revealing refusal),
+> 1d (one generalization check — identical refusal, so the enum is anchor-generic),
+> and 5m + 15m, the two authorable-but-unmeasured anchors (both viable). The 7
+> remaining planned anchors are recorded as **attributed** to the enum, not probed —
+> re-spending 7 compiles to re-collect a twice-stated enum would violate the budget
+> discipline this plan inherits. Consequences: Task 3's "widening" becomes a
+> confirmation (`ANCHOR_TIMEFRAMES` was exactly right and is now measured) plus one
+> map correction — the 5m regime prediction FAILED (map said `1h`, server derives
+> `15m`). Family budget spent: 4 of 11 authorized; the surplus is NOT reallocated.
+
+- [x] **Step 2.1:** For each anchor in `1m 3m 5m 15m 30m 2h 8h 12h 1d 3d 1w` (exactly 11 — 1h and 4h are measured; do NOT respend them): `python -m scripts.compile_dry_run tf <anchor>` → sanity-check by script that only `timeframe` differs from the small body → ONE `compile_strategy_plan` call with the printed body → save the response (overflow file, or paste an inline error verbatim into a scratch file) → `python -m scripts.compile_dry_run record-into <respfile> <anchor> anchor_sweep_2026-XX-XX.json`. Record refusals exactly like successes. 11 calls total, no retries without the contingency justification.
+- [x] **Step 2.2:** Fill the record's `_what` (what was probed, from which base body, predictions restated) and build `extract` by script from `probes`: viable flag, `postState.cadence`, `postState.regimeTimeframe`, and `defaultsIdentical` = (the 16 postState values == `PLATFORM_EXECUTION_DEFAULTS`); `null`s for refused anchors. Fill `_interpretation` honestly — including which predictions held and which had no prior.
+- [x] **Step 2.3: Pin it** — `tests/test_anchor_sweep.py`:
 
 ```python
 """The 2026-XX-XX anchor sweep: 11 unmeasured platform timeframes, one compile each,
@@ -217,7 +232,7 @@ def test_every_viable_probe_has_a_redacted_token():
             assert set(tok) == {"_redacted", "length", "sha256"}
 ```
 
-- [ ] **Step 2.4:** `python -m pytest -q` — green. Commit `Anchor sweep: <n> viable, <m> refused, defaults <identical|VARY - see record>` → push. If ANY viable anchor's defaults are NOT identical, also add a dated note to THIS plan file naming the anchor and the differing values (Task 3 Step 3.4 consumes it).
+- [x] **Step 2.4:** `python -m pytest -q` — green. Commit `Anchor sweep: <n> viable, <m> refused, defaults <identical|VARY - see record>` → push. If ANY viable anchor's defaults are NOT identical, also add a dated note to THIS plan file naming the anchor and the differing values (Task 3 Step 3.4 consumes it).
 
 ### Task 3: Widen the anchor model to exactly what measured
 
@@ -229,7 +244,7 @@ def test_every_viable_probe_has_a_redacted_token():
 - Consumes: `SWEEP["extract"]` from Task 2.
 - Produces: `ANCHOR_TIMEFRAMES` = the measured-creatable set; both maps defined for exactly that set with measured values.
 
-- [ ] **Step 3.1: Write the failing tests** — append to `tests/test_anchor_sweep.py`:
+- [x] **Step 3.1: Write the failing tests** — append to `tests/test_anchor_sweep.py`:
 
 ```python
 def test_the_anchor_literal_is_exactly_the_measured_creatable_set():
@@ -263,10 +278,10 @@ def test_emit_plan_works_at_every_measured_anchor():
 ```
 
 (Adapt the `emit_plan` call to its real signature — it writes a file; use a tmp_path fixture as `out_dir` if it requires a real directory. The intent is: no KeyError at any measured anchor.)
-- [ ] **Step 3.2:** Run them — expect FAIL (Literal too narrow, maps incomplete).
-- [ ] **Step 3.3: Implement:** widen `ANCHOR_TIMEFRAMES` to the measured-creatable set (in the enum's canonical order), extend both maps with the sweep's measured values, and rewrite the provenance comment to cite `anchor_sweep_2026-XX-XX.json` per anchor (keeping the note that 4h once falsified a guessed cadence). Refused anchors stay OUT of the Literal, with a comment naming them and the record.
-- [ ] **Step 3.4 (branch, only if a viable anchor's defaults differed):** reshape `PLATFORM_EXECUTION_DEFAULTS` to `{anchor: {...16...}}` keyed by measured anchors ONLY (the previous plan's pre-committed contingency shape), update `omega/execution.py` consumers (`EXECUTION_PARAMS` derives from the 1h entry; `critique`'s effective-profile lookup takes the thesis anchor), and adjust `tests/test_execution.py` lookups. If defaults were identical everywhere (the prediction), this step is a no-op — say so in the commit message.
-- [ ] **Step 3.5:** Full suite — if any pre-existing test pinned the 4-anchor Literal, flip it in this commit with a CLOSED-dated docstring (grep `ANCHOR_TIMEFRAMES` and `"5m", "15m", "1h", "4h"` across `tests/`). Commit `Widen the anchor model to the measured set` → push.
+- [x] **Step 3.2:** Run them — expect FAIL (Literal too narrow, maps incomplete).
+- [x] **Step 3.3: Implement:** widen `ANCHOR_TIMEFRAMES` to the measured-creatable set (in the enum's canonical order), extend both maps with the sweep's measured values, and rewrite the provenance comment to cite `anchor_sweep_2026-XX-XX.json` per anchor (keeping the note that 4h once falsified a guessed cadence). Refused anchors stay OUT of the Literal, with a comment naming them and the record.
+- [x] **Step 3.4 (branch, only if a viable anchor's defaults differed):** reshape `PLATFORM_EXECUTION_DEFAULTS` to `{anchor: {...16...}}` keyed by measured anchors ONLY (the previous plan's pre-committed contingency shape), update `omega/execution.py` consumers (`EXECUTION_PARAMS` derives from the 1h entry; `critique`'s effective-profile lookup takes the thesis anchor), and adjust `tests/test_execution.py` lookups. If defaults were identical everywhere (the prediction), this step is a no-op — say so in the commit message.
+- [x] **Step 3.5:** Full suite — if any pre-existing test pinned the 4-anchor Literal, flip it in this commit with a CLOSED-dated docstring (grep `ANCHOR_TIMEFRAMES` and `"5m", "15m", "1h", "4h"` across `tests/`). Commit `Widen the anchor model to the measured set` → push.
 
 ### Task 4: The BG-14 cap boundary — ≤6 compiles, model-guided search
 

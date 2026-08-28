@@ -167,12 +167,15 @@ MODULE_CLAUSES: dict[str, dict] = {
 # token cost for one piece of evidence - and, if weighted, counting it twice.
 CORRELATED_OSCILLATORS = {"RSI", "STOCHASTIC", "MFI", "BOLLINGER"}
 
-# Server-derived cadence per anchor. Measured against the server: 1h -> INTRADAY (the
-# 2026-08-28 viable compile) and 4h -> SWING (defaults_4h_probe_2026-08-28.json - the
-# probe predicted INTRADAY and was wrong; corrected same day). 15m -> SCALPER matches
-# every live 15m strategy; 5m is unmeasured against the server.
+# Server-derived cadence and regime timeframe per anchor - every value MEASURED
+# against the server as of 2026-08-28 (anchor_sweep_2026-08-28.json + the 1h/4h
+# probes), and these four anchors are the platform's COMPLETE authorable set: the 1m
+# and 1d sweep probes were refused with REPORT_TIMEFRAME_NOT_AUTHORABLE, allowedDomain
+# enum ['5m','15m','1h','4h'] - below the published schema's 13-value enum. Two
+# guessed values died to measurement here: 4h cadence (guessed INTRADAY, measured
+# SWING) and 5m regime (guessed 1h, measured 15m).
 CADENCE_FOR_ANCHOR = {"5m": "SCALPER", "15m": "SCALPER", "1h": "INTRADAY", "4h": "SWING"}
-REGIME_TF_FOR_ANCHOR = {"5m": "1h", "15m": "1h", "1h": "4h", "4h": "1d"}
+REGIME_TF_FOR_ANCHOR = {"5m": "15m", "15m": "1h", "1h": "4h", "4h": "1d"}
 
 # Modules whose columns are null outside crypto. FLOW_DIVERGENCE measured directly
 # (doc 12: "Perp/spot flow data unavailable" on GOOGL/GOLD); CVD via trap 21 (its
