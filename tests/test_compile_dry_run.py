@@ -197,3 +197,32 @@ def test_the_cadence_prediction_outcome_is_pinned():
     assert TF4H["predictionStatedBeforeMeasuring"]["cadence"].startswith("INTRADAY")
     assert ps["cadence"] == CADENCE_FOR_ANCHOR["4h"] == "SWING"
     assert ps["regimeTimeframe"] == REGIME_TF_FOR_ANCHOR["4h"] == "1d"
+
+
+# --- the 2026-08-28 measurement-campaign harness --------------------------------
+
+def test_probe_changes_exactly_one_field_from_the_small_body():
+    from scripts.compile_dry_run import probe
+    base = request(small=True)["request"]
+    p = probe("timeframe", "2h")["request"]
+    assert {k for k in set(base) | set(p) if base.get(k) != p.get(k)} == {"timeframe"}
+    assert p["timeframe"] == "2h"
+
+
+def test_probe_full_base_is_the_ranked_body():
+    from scripts.compile_dry_run import probe
+    base = request()["request"]
+    sel = {"mode": "ranked", "category": "ALL", "limit": 19}
+    p = probe("coinSelection", sel, base="full")["request"]
+    assert {k for k in set(base) | set(p) if base.get(k) != p.get(k)} == {"coinSelection"}
+    assert p["coinSelection"] == sel
+
+
+def test_redact_replaces_the_token_with_length_and_sha256():
+    import hashlib
+    from scripts.compile_dry_run import _redact
+    resp = {"planToken": "tok123", "other": 1}
+    _redact(resp)
+    assert resp["planToken"]["length"] == 6
+    assert resp["planToken"]["sha256"] == hashlib.sha256(b"tok123").hexdigest()
+    assert resp["other"] == 1
