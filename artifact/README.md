@@ -19,5 +19,7 @@ across redeploys — readers find the tab by its icon — and it is not readable
 the published page, so an unrecorded one is a guess on the next update. The blanks are
 exactly that: published before this column existed, and not verified since.
 
-`battlegrid-defects.html` is the report for the BattleGrid maintainer: thirteen findings,
-each with a reproduction, a workaround where one exists, and a suggested fix.
+`battlegrid-defects.html` is the report for the BattleGrid maintainer: fourteen findings,
+each with a reproduction, a workaround where one exists, and a suggested fix. BG-14 and
+the BAR_FORMING closure of BG-13 landed 2026-08-28; the page was republished to the same
+URL with the same 🐛 favicon that day.

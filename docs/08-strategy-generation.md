@@ -22,6 +22,7 @@ Read back from two live strategies (`EL_ALAMEIN`, `MATH-C3`), a strategy is:
   "sections": [ ... ],
   "conditions": [ ... ],        // the 16-condition DSL
   "signalRules": [ ... ],       // DENSE - all 84, unused ones at allocation 0
+                                // (read-back name; the WRITE API calls this array `rules`)
   "minAggregateScore": 0.65,    // THE GATE
   "minRequiredCount": 0,
   // risk block: minAtrPct, stop-loss ATR multiples, R:R, break-even, trailing, time-decay
@@ -121,6 +122,17 @@ Because it composes the rest of the toolkit, every plan is:
 - **in budget** — checked against all seven budgets
 - **gate-consistent** — if every weighted signal scored 0.75 and it still wouldn't route,
   the critique says so
+- **submit-shaped** — `wire()` is the exact `compile_strategy_plan` CREATE request body.
+  Compiled live on 2026-08-28: **refused**, but not for shape — no `unrecognized_keys`,
+  no missing-required. The refusal was the preview byte cap (BG-14, see
+  [16](16-the-write-path.md)); viability is still unproven.
+
+**`coinSelection` defaults class-aware.** Explicit `Thesis.coin_selection` wins;
+otherwise ranked limit 30 with category **CRYPTO** when the thesis weights a crypto-only
+module (`CVD`, `FLOW_DIVERGENCE`), else **ALL**. The rationale is trap 11 × trap 21:
+crypto-only columns render null off-crypto and null reads FALSE, so a CVD-weighted
+thesis defaulted onto stocks would silently never fire. `FUNDING` and `OPEN_INTEREST`
+are deliberately *not* crypto-only — synthetic perps carry both everywhere.
 
 None of that answers whether the plan is *worth* accepting.
 

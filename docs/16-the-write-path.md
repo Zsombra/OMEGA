@@ -148,29 +148,37 @@ Rendered live across BTC, ETH, SOL, GOLD and DOGE:
 That last row is the finding. DOGE printed `RSI14_t2 = 38.3` and `RSI14_now = 38.3` with
 `RSI14_trend = falling`. The direction is computed before rounding.
 
-## What omega does not emit
+## What omega emits now — and what it still does not
 
-Everything above is about write *mechanics*. This is about *content* — and it is the
-largest single gap in the toolkit.
+Everything above is about write *mechanics*. This is about *content*.
 
-`omega.generate.emit_plan` stamps every plan `_generatedBy: "omega.generate — LOCAL ONLY,
-not submitted"`. That was deliberate, and it means **no generated plan has ever been
-compiled or applied**. All three proven write axes were driven from hand-built payloads.
+The key mismatch this section used to table is **closed and measured**. On 2026-08-28
+`StrategyPlan.wire()` was reshaped to the exact CREATE request body — `signalRules`
+renamed `rules`, `cadence`/`regimeTimeframe` dropped to `_`-prefixed emit metadata,
+`operation`/`intentSummary`/`assumptions`/`coinSelection` added — and a generated plan
+was compiled live for the first time. Twice, both **refused**, neither for the old
+key mismatch: the reshaped body drew no `unrecognized_keys` and no missing-required
+either time. What the two compiles actually measured
+([`compile_dry_run_2026-08-28*.json`](../data/audit/compile_dry_run_2026-08-28.json)):
 
-Diffing `StrategyPlan.wire()` against the live `compile_strategy_plan` request schema:
+- **A CREATE cannot claim section identities.** Custom `sectionKey` on the compile arm
+  is refused outright — `REPORT_CUSTOM_SECTION_NOT_OWNED`, `allowedDomain` an *empty*
+  enum. The "omit it; the server mints one" rule above is now enforced-measured, not
+  just observed. Omega gap, fixed the same day: `wire()` strips the keys.
+- **The 256,000-byte cap bites the preview, not the plan** (BG-14). The tool doc pins
+  the cap to *the serialized plan*; a 12,210-byte plan was refused because the compile's
+  own report render across `coinSelection` ranked/ALL/30 measured 395,404 bytes. The
+  advertised "bounded live report review" refuses rather than bounds. `coinSelection`
+  is thereby an *authoring budget input*: preview cost scales with `limit × report
+  width`, and no published schema says so. Untested workaround: shrink the selection.
 
-| | fields |
-|---|---|
-| omega emits, the API does not accept | `cadence`, `regimeTimeframe`, `signalRules` |
-| the API **requires**, omega omits | `operation`, `intentSummary`, `assumptions`, `coinSelection` |
-| the API accepts, omega never emits | **16 execution parameters** |
+`coinSelection`, previously the substantive omission, now defaults class-aware:
+**CRYPTO** when the thesis weights a crypto-only module (`CVD`, `FLOW_DIVERGENCE` —
+null off-crypto, and null reads FALSE), else **ALL**, ranked limit 30.
 
-`signalRules` is just the wrong name — the API calls it `rules`. `coinSelection` is the
-substantive one: **a generated strategy does not currently say which coins it trades.**
-
-> The rejection of the three extra keys is **schema-derived, not measured** — the request
-> objects declare `additionalProperties: false`. No compile call has been made to confirm
-> it. One would settle it, and `compile_strategy_plan` performs **no write**.
+So: a generated plan has now been *compiled at* — and no generated plan has ever
+compiled **viable** or been applied. All three proven write axes remain hand-built
+payloads. The next compile needs a materially smaller preview footprint.
 
 ### The execution surface
 

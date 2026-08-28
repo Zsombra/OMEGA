@@ -372,7 +372,7 @@
     <div class="eyebrow">Defect report &middot; Strategy authoring surface</div>
     <h1>BattleGrid Authoring Defects</h1>
     <p class="standfirst">
-      Thirteen findings from a full sweep of the strategy authoring surface — <b>every</b> legal
+      Fourteen findings from a full sweep of the strategy authoring surface — <b>every</b> legal
       column shape now rendered against the live compiler and its headers checked one by one
       (1,759 of 1,759, zero mismatches), the whole condition grammar exercised end to end, all
       25 platform sections probed one at a time for signal membership, and every transform
@@ -380,7 +380,7 @@
       reproduction and, where one exists, a verified workaround.
     </p>
     <div class="meta">
-      <span><b>Date</b> 2026-08-24 &ndash; 25</span>
+      <span><b>Date</b> 2026-08-24 &ndash; 28</span>
       <span><b>Account</b> ANBUJEFF</span>
       <span><b>Coverage</b> <span class="num">300/300</span> legal column shapes</span>
       <span><b>Header mismatches</b> <span class="num">0</span></span>
@@ -475,6 +475,12 @@
             <td><span class="chip silent">Silent</span></td>
             <td>Read the numeric inputs and classify them yourself</td>
           </tr>
+          <tr>
+            <td class="id">BG-14</td>
+            <td>The 256,000-byte cap documented for the plan is enforced against the compile's own preview</td>
+            <td><span class="chip blocking">Blocking</span></td>
+            <td>Shrink <code>coinSelection</code> (untested)</td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -491,7 +497,9 @@
     <p>
       The two findings added on 2026-08-25 are the same shape again. The condition engine's own
       boilerplate names three outcomes and the engine delivers two (BG-6). A section named for the
-      higher timeframe delivers no higher-timeframe signal (BG-7).
+      higher timeframe delivers no higher-timeframe signal (BG-7). BG-14, added 2026-08-28, repeats
+      it once more: the compile tool's description pins its 256,000-byte cap to <em>the serialized
+      plan</em>, and the runtime enforces it against the compile's own preview render.
     </p>
     <p>
       This is not new. Grid-Commander logged the identical class on 2026-08-15 — <code>regimeAutoDerive</code>
@@ -1125,7 +1133,7 @@ RSI14_now  38.3
                     <code>swingLo</code>, <code>STOCH_K</code>, <code>MFI14</code>,
                     <code>pctB</code></td>
                 <td><code>MA_ALIGN</code>, <code>BB_TOUCH</code>, <code>EMA_CROSS</code>,
-                    <code>PRICE_ZONE</code></td>
+                    <code>PRICE_ZONE</code>, <code>BAR_FORMING</code></td>
               </tr>
             </tbody>
           </table>
@@ -1165,6 +1173,66 @@ RSI14_now  38.3
           or reject it on these metrics. Silently accepting a parameter, charging budget for it,
           and ignoring it is the worst of the three options &mdash; a rejection would have taken
           one render to discover instead of a controlled experiment across 78 coins.
+        </p>
+        <p>
+          <em>Closure, 2026-08-28:</em> <code>BAR_FORMING</code>, the one candle-categorical left
+          untested above, was measured at a 1h anchor on BTC/ETH/SOL, offset 0 against offset 8,
+          with <code>close</code> as the moving control. The control moved on all three coins; the
+          flag answered <b>&ldquo;forming&rdquo; in both sections</b> &mdash; including for a bar
+          eight hours in the past, which is closed by construction and whose settled close prints
+          in the same row. All five candle-categoricals now measured; every one ignores
+          <code>offset</code>.
+        </p>
+      </article>
+
+      <!-- BG-14 -->
+      <article class="defect is-blocking">
+        <div class="defect-head">
+          <div class="defect-id"><span>BG-14</span><span class="chip blocking">Blocking</span></div>
+          <h3>The plan's documented byte cap is enforced against the compile's own preview</h3>
+        </div>
+        <p>
+          <code>compile_strategy_plan</code>'s description says: <em>&ldquo;The serialized plan is
+          capped at 256,000 UTF-8 bytes; a plan over the cap is refused with a typed error naming
+          the cap and the measured size.&rdquo;</em> A <b>12,210-byte</b> CREATE plan &mdash; twenty
+          times under that cap &mdash; was refused with:
+        </p>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>response</th></tr></thead>
+            <tbody>
+              <tr><td><code>VALIDATION_ERROR: Strategy report preview mcp_result_bytes limit
+              exceeded: 395404 &gt; 256000.</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The 395,404 bytes are not the plan's &mdash; they are the compile's <b>own live report
+          review</b>, rendered across the request's <code>coinSelection</code> (ranked, ALL,
+          limit 30: two custom sections, eleven columns, seven conditions, thirty coins). The
+          description calls that review <em>&ldquo;bounded&rdquo;</em>; when its render exceeds the
+          budget it does not bound itself, it refuses the whole compile. The practical consequence
+          is unpublished anywhere: <b><code>coinSelection</code> is an authoring budget input</b>
+          &mdash; preview cost scales with <code>limit &times; report width</code>, and a plan that
+          is legal, in budget, and far under the documented cap can still be uncompilable.
+        </p>
+        <p>
+          Reproduction: one CREATE compile of an <code>omega.generate</code> plan
+          (trend-continuation preset), 2026-08-28 &mdash; the request and verbatim response are in
+          <code>data/audit/compile_dry_run_2026-08-28.json</code>.
+        </p>
+        <div class="fix">
+          <div class="fix-label">Workaround</div>
+          <p>
+            Plausibly: shrink the preview footprint &mdash; a smaller ranked <code>limit</code> or
+            a short explicit ticker list. <b>Untested</b>: the session's two-compile budget was
+            spent establishing the rule itself.
+          </p>
+        </div>
+        <p>
+          <strong>Suggested fix:</strong> bound the bounded review &mdash; truncate or sample the
+          preview instead of refusing the compile &mdash; or document the real enforcement point
+          and its scaling so authors can budget for it.
         </p>
       </article>
 

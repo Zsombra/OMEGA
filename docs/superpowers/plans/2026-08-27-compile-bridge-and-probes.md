@@ -247,6 +247,29 @@ The execution surface (16 parameters) is **out of scope** — it needs the user'
 - [ ] **Step 6.4:** Artifacts — the three watches died (connection loss), so republish **must pass the `url` parameter** or it forks a new page (URLs + favicons are in `artifact/README.md`: defects `a0ed53c1-...` 🐛, column-algebra `877253ff-...` 🧮). Republish the defects page only if BG-14 or a BAR_FORMING scope change landed; record any favicon/URL rows touched in `artifact/README.md`.
 - [ ] **Step 6.5:** Full suite, commit `Document the compile bridge outcome`, push.
 
+## Execution log — 2026-08-28 (all tasks run; corrections dated, not silent)
+
+- **Task 0:** zero drift. The live CREATE schema matched `API_ACCEPTS` (30 keys),
+  `API_REQUIRES` (7), the 84-entry signalId enum, and every bound this plan pinned.
+- **Task 1:** done as written, except the grep found the old-key consumer to be
+  `tests/test_generate.py`, not `tests/test_generated_plans_audit.py` as guessed above —
+  updated in the same commit. Suite 782 → 788.
+- **Task 3:** two compiles, the plan's cap, **both refused** — neither for the key
+  mismatch this plan closed. (1) `REPORT_CUSTOM_SECTION_NOT_OWNED`: CREATE accepts no
+  client `sectionKey` (allowedDomain enum []) — omega gap, fixed in `wire()` same day.
+  (2) `mcp_result_bytes 395404 > 256000`: the plan-cap is enforced against the compile's
+  own preview across coinSelection ranked/ALL/30 — platform doc/behaviour mismatch,
+  filed as **BG-14**. Deviation from step 3.3's letter: neither rule was encoded in
+  `omega/validate.py` — rule 1 lives in `wire()` by construction plus a guard test
+  (better home than a column validator), and rule 2 is not honestly encodable from one
+  data point (cannot separate per-coin scaling from fixed overhead); it is pinned in
+  `tests/test_compile_dry_run.py` and recorded in the audit files instead. Viability
+  remains unproven; next compile needs a materially smaller preview footprint.
+- **Task 5:** BAR_FORMING **ignores offset** (branch 1): "forming" at offsets 0 and 8 on
+  all of BTC/ETH/SOL while CLOSE moved. `scope.untested` now empty; no validator change.
+- **Task 6:** docs 08/16, README index lines, `artifact/README.md` updated; defects page
+  republished to the same URL (🐛) with BG-14 and the BG-13 closure — fourteen findings.
+
 ## Self-review checklist (run before calling the plan done)
 
 - Every live response recorded verbatim in `data/audit/` before interpretation?
