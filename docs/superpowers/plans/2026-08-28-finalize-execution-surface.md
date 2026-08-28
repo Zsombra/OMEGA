@@ -108,9 +108,17 @@ In `main()`, add modes `small`, `bounds` (prints `request(small=True, rr=5.0)`),
 - Create: `data/audit/defaults_4h_probe_2026-XX-XX.json`
 - Test: `tests/test_compile_dry_run.py` (append)
 
-- [ ] **Step 4.1:** `python -m scripts.compile_dry_run tf4h`; verify by script: `timeframe == "4h"`, explicit 3 tickers, no `minRiskRewardRatio` override. **Prediction stated before measuring:** postState `cadence == "INTRADAY"`, `regimeTimeframe == "1d"` (omega's `CADENCE_FOR_ANCHOR`/`REGIME_TF_FOR_ANCHOR` at 4h) — the probe tests omega's mapping at a second anchor.
-- [ ] **Step 4.2:** ONE compile. Record verbatim (redacting token). Extract the 16 postState values + cadence/regimeTimeframe by script; diff against the 1h defaults in `execution_surface_ownership_2026-08-28.json`.
-- [ ] **Step 4.3:** Pin: defaults identical at both anchors (then `PLATFORM_EXECUTION_DEFAULTS` in Task 5 is anchor-independent, say "measured at 1h and 4h") OR they differ (then Task 5's constant becomes `{anchor: {...}}` keyed by measured anchors ONLY, with unmeasured anchors explicitly unknown). Also pin the cadence/regimeTimeframe prediction outcome. Suite green → commit `Defaults probe at 4h: <identical|differs>` → push.
+- [x] **Step 4.1:** `python -m scripts.compile_dry_run tf4h`; verify by script: `timeframe == "4h"`, explicit 3 tickers, no `minRiskRewardRatio` override. **Prediction stated before measuring:** postState `cadence == "INTRADAY"`, `regimeTimeframe == "1d"` (omega's `CADENCE_FOR_ANCHOR`/`REGIME_TF_FOR_ANCHOR` at 4h) — the probe tests omega's mapping at a second anchor.
+- [x] **Step 4.2:** ONE compile. Record verbatim (redacting token). Extract the 16 postState values + cadence/regimeTimeframe by script; diff against the 1h defaults in `execution_surface_ownership_2026-08-28.json`.
+- [x] **Step 4.3:** Pin: defaults identical at both anchors (then `PLATFORM_EXECUTION_DEFAULTS` in Task 5 is anchor-independent, say "measured at 1h and 4h") OR they differ (then Task 5's constant becomes `{anchor: {...}}` keyed by measured anchors ONLY, with unmeasured anchors explicitly unknown). Also pin the cadence/regimeTimeframe prediction outcome. Suite green → commit `Defaults probe at 4h: <identical|differs>` → push.
+
+> **Correction, 2026-08-28 (measured during execution):** Step 4.1's cadence
+> prediction was WRONG — the server derives `SWING` for a 4h anchor, not `INTRADAY`.
+> The `regimeTimeframe` prediction (`1d`) held. `CADENCE_FOR_ANCHOR["4h"]` was
+> corrected to the measured value in the Task 4 commit and the outcome pinned. The
+> 16 defaults themselves measured IDENTICAL at both anchors, so Task 5's constant
+> stays flat (anchor-independent as measured); where the INTRADAY/SWING boundary
+> lies between 1h and 4h is unmeasured.
 
 **Deliberately absent from this plan:** the BG-14 cap-boundary probe (largest `coinSelection`
 that still compiles). The small-selection workaround suffices for every task here; do not

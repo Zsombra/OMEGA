@@ -162,3 +162,38 @@ def test_the_catalog_upper_edge_is_what_refused_us():
     err = BOUNDS["responseVerbatim"]["errorText"]
     assert "minRiskRewardRatio (5) must be <= 3" in err and "-32602" in err
     assert "no compile record" in BOUNDS["responseVerbatim"]["transport"]
+
+
+# --- Probe B (2026-08-28 finalize plan, Task 4): defaults at a 4h anchor ------
+
+TF4H = json.loads(
+    (ROOT / "data/audit/defaults_4h_probe_2026-08-28.json").read_text(encoding="utf-8"))
+
+
+def test_the_4h_compile_is_viable_and_recorded():
+    assert TF4H["measured"]["viable"] is True
+    assert TF4H["verdict"].startswith("IDENTICAL")
+    assert TF4H["responseVerbatim"]["approvedPlan"]["postState"]["timeframe"] == "4h"
+    tok = TF4H["responseVerbatim"]["planToken"]
+    assert set(tok) == {"_redacted", "length", "sha256"}, "token must never be committed"
+
+
+def test_the_defaults_are_anchor_independent_as_measured():
+    """All 16 execution defaults at 4h equal the 1h measurement. 'Anchor-independent'
+    means exactly that: identical at the two anchors measured, nothing more."""
+    params = TF4H["measured"]["executionDefaultsAt4h"]
+    ps4h = TF4H["responseVerbatim"]["approvedPlan"]["postState"]
+    ps1h = SMALL["responseVerbatim"]["approvedPlan"]["postState"]
+    assert len(params) == 16
+    assert {k: ps4h[k] for k in params} == {k: ps1h[k] for k in params}
+
+
+def test_the_cadence_prediction_outcome_is_pinned():
+    """Stated before measuring: cadence INTRADAY (omega's then-current mapping) and
+    regimeTimeframe 1d. Measured: SWING and 1d - the cadence prediction FAILED and
+    CADENCE_FOR_ANCHOR['4h'] was corrected to the measured value in the same commit
+    as the record; the regime prediction held."""
+    ps = TF4H["responseVerbatim"]["approvedPlan"]["postState"]
+    assert TF4H["predictionStatedBeforeMeasuring"]["cadence"].startswith("INTRADAY")
+    assert ps["cadence"] == CADENCE_FOR_ANCHOR["4h"] == "SWING"
+    assert ps["regimeTimeframe"] == REGIME_TF_FOR_ANCHOR["4h"] == "1d"

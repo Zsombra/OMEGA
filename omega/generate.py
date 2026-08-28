@@ -167,7 +167,11 @@ MODULE_CLAUSES: dict[str, dict] = {
 # token cost for one piece of evidence - and, if weighted, counting it twice.
 CORRELATED_OSCILLATORS = {"RSI", "STOCHASTIC", "MFI", "BOLLINGER"}
 
-CADENCE_FOR_ANCHOR = {"5m": "SCALPER", "15m": "SCALPER", "1h": "INTRADAY", "4h": "INTRADAY"}
+# Server-derived cadence per anchor. Measured against the server: 1h -> INTRADAY (the
+# 2026-08-28 viable compile) and 4h -> SWING (defaults_4h_probe_2026-08-28.json - the
+# probe predicted INTRADAY and was wrong; corrected same day). 15m -> SCALPER matches
+# every live 15m strategy; 5m is unmeasured against the server.
+CADENCE_FOR_ANCHOR = {"5m": "SCALPER", "15m": "SCALPER", "1h": "INTRADAY", "4h": "SWING"}
 REGIME_TF_FOR_ANCHOR = {"5m": "1h", "15m": "1h", "1h": "4h", "4h": "1d"}
 
 # Modules whose columns are null outside crypto. FLOW_DIVERGENCE measured directly
