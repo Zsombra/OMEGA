@@ -9,7 +9,7 @@ HARD RULES: compile once; never call apply_strategy_plan; a refusal is recorded
 exactly like a success. The minted token is left to expire.
 """
 from __future__ import annotations
-import json, sys
+import hashlib, json, sys
 from dataclasses import replace
 from pathlib import Path
 from omega.generate import PRESETS, plan
@@ -21,20 +21,39 @@ PRESET = "trend-continuation"   # audit-clean (see scripts/audit_generated_plans
 # enough is the measurement, not an assumption.
 SMALL_TICKERS = ["BTC", "ETH", "SOL"]
 
-def request(*, small: bool = False) -> dict:
+def request(*, small: bool = False, rr: float | None = None,
+            anchor: str | None = None) -> dict:
     thesis = PRESETS[PRESET]
-    if small:
+    if small or rr is not None or anchor is not None:
         thesis = replace(thesis, coin_selection={"mode": "explicit",
                                                  "tickers": SMALL_TICKERS})
-    return {"request": plan(thesis).wire()}
+    if anchor is not None:
+        thesis = replace(thesis, anchor=anchor)
+    req = plan(thesis).wire()
+    if rr is not None:
+        # Probe: catalog says R:R 0.5-3, schema says unbounded. One changed field.
+        req["minRiskRewardRatio"] = rr
+    return {"request": req}
 
 def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1] == "small":
         print(json.dumps(request(small=True), separators=(",", ":")))
         return 0
+    if len(sys.argv) > 1 and sys.argv[1] == "bounds":
+        print(json.dumps(request(small=True, rr=5.0), separators=(",", ":")))
+        return 0
+    if len(sys.argv) > 1 and sys.argv[1] == "tf4h":
+        print(json.dumps(request(small=True, anchor="4h"), separators=(",", ":")))
+        return 0
     if len(sys.argv) > 1 and sys.argv[1] == "record":
         raw = Path(sys.argv[2]).read_text(encoding="utf-8")
         resp = json.loads(raw)
+        if isinstance(resp.get("planToken"), str):
+            t = resp["planToken"]
+            resp["planToken"] = {"_redacted": "credential-bound 5-minute token, left to "
+                                              "expire; never applied",
+                                 "length": len(t),
+                                 "sha256": hashlib.sha256(t.encode()).hexdigest()}
         out = ROOT / "data/audit" / f"compile_dry_run_{sys.argv[3]}.json"
         out.write_text(json.dumps({
             "_what": "First compile of an omega-GENERATED plan. Dry-run: no apply.",

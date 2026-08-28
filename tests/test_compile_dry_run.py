@@ -138,3 +138,27 @@ def test_the_read_back_name_is_still_signalRules():
     ps = SMALL["responseVerbatim"]["approvedPlan"]["postState"]
     assert "signalRules" in ps and "rules" not in ps
     assert len(ps["signalRules"]) == 84
+
+
+# --- Probe A (2026-08-28 finalize plan, Task 3): which R:R bound is enforced --
+
+BOUNDS = json.loads(
+    (ROOT / "data/audit/bounds_probe_2026-08-28.json").read_text(encoding="utf-8"))
+
+
+def test_the_bounds_probe_is_recorded_and_interpreted():
+    assert BOUNDS["verdict"].startswith("CATALOG BOUND ENFORCED")
+    assert "FILL IN" not in BOUNDS["verdict"]
+    assert BOUNDS["request"]["delta"] == {"minRiskRewardRatio": 5.0}
+
+
+def test_the_catalog_upper_edge_is_what_refused_us():
+    """One changed field (minRiskRewardRatio 5.0) against the known-viable small
+    CREATE. Refused at the connector's input-validation layer with a message naming
+    the agent catalog's upper edge (must be <= 3) - the published CREATE schema
+    leaves the field unbounded, so enforcement lives BELOW the declared schema. No
+    compile record or token was minted. Only the upper edge was probed; the lower
+    edge (0.5) and minAtrPct's catalog-vs-schema conflict stay unmeasured."""
+    err = BOUNDS["responseVerbatim"]["errorText"]
+    assert "minRiskRewardRatio (5) must be <= 3" in err and "-32602" in err
+    assert "no compile record" in BOUNDS["responseVerbatim"]["transport"]

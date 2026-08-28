@@ -63,8 +63,8 @@ Key measured facts (do not re-derive, do not contradict):
 
 **Files:** none modified.
 
-- [ ] **Step 2.1:** `ToolSearch` `select:mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__compile_strategy_plan`. Diff the CREATE branch against `API_ACCEPTS`/`API_REQUIRES` in `tests/test_write_surface.py` and the 16-param bounds in the plan's Key facts. Drift → STOP, update the pinned sets in their own commit first (pattern: Task 0 of the 2026-08-27 plan).
-- [ ] **Step 2.2:** `list_strategies` — note quota (expect 24/25; any change goes in the Task 3 commit message). `get_account_state` optional.
+- [x] **Step 2.1:** `ToolSearch` `select:mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__compile_strategy_plan`. Diff the CREATE branch against `API_ACCEPTS`/`API_REQUIRES` in `tests/test_write_surface.py` and the 16-param bounds in the plan's Key facts. Drift → STOP, update the pinned sets in their own commit first (pattern: Task 0 of the 2026-08-27 plan).
+- [x] **Step 2.2:** `list_strategies` — note quota (expect 24/25; any change goes in the Task 3 commit message). `get_account_state` optional.
 
 ### Task 3: Probe A — which R:R bound is enforced (1 compile)
 
@@ -76,7 +76,7 @@ Key measured facts (do not re-derive, do not contradict):
 **Interfaces:**
 - Produces: `request(small=True, rr=5.0)` — the small viable payload with exactly one field changed: `minRiskRewardRatio: 5.0` (outside catalog 0.5–3, unbounded in schema). One variable, so the result is attributable.
 
-- [ ] **Step 3.1:** Extend the harness. In `scripts/compile_dry_run.py` replace the `request` function and add redaction to record mode:
+- [x] **Step 3.1:** Extend the harness. In `scripts/compile_dry_run.py` replace the `request` function and add redaction to record mode:
 
 ```python
 def request(*, small: bool = False, rr: float | None = None,
@@ -95,12 +95,12 @@ def request(*, small: bool = False, rr: float | None = None,
 ```
 
 In `main()`, add modes `small`, `bounds` (prints `request(small=True, rr=5.0)`), `tf4h` (prints `request(small=True, anchor="4h")`); in record mode, before writing, redact: `if isinstance(resp.get("planToken"), str): t = resp["planToken"]; resp["planToken"] = {"_redacted": "credential-bound 5-minute token, left to expire; never applied", "length": len(t), "sha256": hashlib.sha256(t.encode()).hexdigest()}` (add `import hashlib`).
-- [ ] **Step 3.2:** `python -m pytest -q` — the existing suite must stay green (810; `request()` default unchanged). `python -m scripts.compile_dry_run bounds` → sanity-check by script: only `minRiskRewardRatio` differs from the recorded small request.
-- [ ] **Step 3.3:** ONE `compile_strategy_plan` call with the printed body. Record verbatim (overflow → record mode). Branches pre-committed:
+- [x] **Step 3.2:** `python -m pytest -q` — the existing suite must stay green (810; `request()` default unchanged). `python -m scripts.compile_dry_run bounds` → sanity-check by script: only `minRiskRewardRatio` differs from the recorded small request.
+- [x] **Step 3.3:** ONE `compile_strategy_plan` call with the printed body. Record verbatim (overflow → record mode). Branches pre-committed:
   - **typed refusal naming a bound** → that bound is enforced on strategy writes; record `allowedDomain` exactly; `CATALOG_BOUNDS` become errors in Task 5.
   - **viable and `postState.minRiskRewardRatio == 5.0`** → schema governs; catalog bounds are agent-side residue; they become advisory warnings in Task 5.
   - **viable but postState value ≠ 5.0** → silent clamp: new platform defect (BG-15 candidate — defects artifact addendum in Task 7), record both numbers.
-- [ ] **Step 3.4:** Append a pinning test to `tests/test_compile_dry_run.py` (record exists, verdict filled — not "FILL IN", and the measured branch's key fact asserted). Suite green → commit `Bounds probe: <verdict>` → push.
+- [x] **Step 3.4:** Append a pinning test to `tests/test_compile_dry_run.py` (record exists, verdict filled — not "FILL IN", and the measured branch's key fact asserted). Suite green → commit `Bounds probe: <verdict>` → push.
 
 ### Task 4: Probe B — defaults at a 4h anchor (1 compile)
 

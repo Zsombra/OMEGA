@@ -1,0 +1,18 @@
+{
+  "_what": "Probe A (Task 3 of the 2026-08-28 finalize plan): which R:R bound is enforced on a strategy write. The agent-facing catalog publishes minRiskRewardRatio 0.5-3; the compile CREATE JSON schema (re-verified live the same day, execution-day preflight) leaves it unbounded. ONE compile_strategy_plan call with the known-viable small trend-continuation CREATE and exactly one changed field.",
+  "request": {
+    "base": "the recorded viable small request (compile_dry_run_2026-08-28-small.json), regenerated via `python -m scripts.compile_dry_run bounds`",
+    "delta": { "minRiskRewardRatio": 5.0 },
+    "sanityCheck": "scripted diff before the call: the only key differing from request(small=True) is minRiskRewardRatio"
+  },
+  "responseVerbatim": {
+    "transport": "MCP protocol error -32602 (Invalid arguments), returned by the connector's input-validation layer; no compile record, review, or planToken was minted",
+    "errorText": "MCP error -32602: Input validation error: Invalid arguments for tool compile_strategy_plan: [\n  {\n    \"code\": \"custom\",\n    \"message\": \"minRiskRewardRatio (5) must be <= 3\",\n    \"path\": [\n      \"request\",\n      \"minRiskRewardRatio\"\n    ]\n  }\n]"
+  },
+  "verdict": "CATALOG BOUND ENFORCED. minRiskRewardRatio=5.0 is refused before compile with a typed message naming the bound: 'must be <= 3' - the agent catalog's upper edge (0.5-3), not the published schema's unboundedness. Enforcement lives BELOW the declared JSON schema, as a custom validation refinement the schema does not advertise. Per the plan's pre-committed branch, CATALOG_BOUNDS are errors in omega/execution.py.",
+  "_honestLimits": [
+    "Only the UPPER edge of the R:R catalog bound was probed (5.0 vs <= 3). The lower edge (0.5) is unmeasured, and minAtrPct's catalog-vs-schema conflict (0.1-10 vs 0.01-50) was not probed at all - one variable per compile.",
+    "The refusal names no allowedDomain field; the bound is stated in message text only. The '(5)' in the message is our 5.0 after JSON serialization.",
+    "Refused at input validation, so this call minted no token and parked no plan; it still counts against the plan's 4-call compile budget (1 of 4 spent)."
+  ]
+}
