@@ -56,6 +56,12 @@ settings" — it means the measured defaults above, which can be stated in the c
 
 ## Decision 1 — What should omega do when a thesis says nothing about execution?
 
+**ANSWERED 2026-08-28 — (a).** The user's kickoff words: "(a) — emit no execution
+parameters; state the measured platform defaults in the critique." To be modelled per
+the 2026-08-28 finalize-execution-surface plan (Task 5): presets emit none of the 16,
+the critique states the measured effective profile, and explicit per-thesis overrides
+remain possible and validated.
+
 - **(a) Emit nothing; surface a critique line.** Honest, zero invented numbers; strategy
   runs on unknown platform defaults. *Recommended as the starting point* — it matches the
   repo's extract-never-infer rule.
@@ -76,11 +82,20 @@ strategy will trade on*. Decisions 1, 3 and 4 remain open and remain the user's.
 
 ## Decision 3 — Per-thesis or per-stance execution profiles?
 
+**Moot under 1(a) — 2026-08-28.** Decision 1 was answered (a), so omega invents no
+numbers and no per-stance profile question arises. This reopens only if Decision 1 is
+ever revisited.
+
 If (b) or (c): do FADE theses (mean-reversion) share stop/trailing numbers with ALIGN
 theses (trend-continuation)? A reversion trade and a breakout trade have opposite
 relationships to giveback. Someone with a trading opinion must answer; the toolkit cannot.
 
 ## Decision 4 (separate, small) — the `flow-divergence` preset
+
+**ANSWERED 2026-08-28 — leave as designed.** The user's kickoff words: "leave as
+designed; keep the finding pinned." The label stays in the preset, and the pinned
+finding in `tests/test_generated_plans_audit.py` stays as the record of the silent
+2-of-3 behaviour.
 
 `SA_CORE_DOWN` counts `PERP_SPOT_FLOW is 'perp_led_fragile'` among its 2-of-4 members,
 and that label has never been observed (78 coins × 4 anchors), so the gate is silently

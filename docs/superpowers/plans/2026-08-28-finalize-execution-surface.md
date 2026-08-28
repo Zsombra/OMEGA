@@ -46,18 +46,18 @@ Key measured facts (do not re-derive, do not contradict):
 
 **Files:** none modified — git only.
 
-- [ ] **Step 0.1:** `git fetch origin`, then confirm the merge is a fast-forward: `git merge-base --is-ancestor origin/main claude/compile-bridge-probes-plan-2140a5 && echo FF-OK`. If it prints nothing, origin/main moved since `a136cff` — STOP and surface to the user; do not force anything.
-- [ ] **Step 0.2:** `git push origin claude/compile-bridge-probes-plan-2140a5:main` (worktree-safe fast-forward of remote main; no local `main` checkout needed).
-- [ ] **Step 0.3:** If this session's worktree was cut from the *old* main: `git fetch origin && git merge origin/main` to bring the finished work into the session branch. Verify: `python -m pytest -q` → **810 passed** (plus this plan file present).
+- [x] **Step 0.1:** `git fetch origin`, then confirm the merge is a fast-forward: `git merge-base --is-ancestor origin/main claude/compile-bridge-probes-plan-2140a5 && echo FF-OK`. If it prints nothing, origin/main moved since `a136cff` — STOP and surface to the user; do not force anything.
+- [x] **Step 0.2:** `git push origin claude/compile-bridge-probes-plan-2140a5:main` (worktree-safe fast-forward of remote main; no local `main` checkout needed).
+- [x] **Step 0.3:** If this session's worktree was cut from the *old* main: `git fetch origin && git merge origin/main` to bring the finished work into the session branch. Verify: `python -m pytest -q` → **810 passed** (plus this plan file present).
 
 ### Task 1: Record the user's decisions (gate)
 
 **Files:**
 - Modify: `docs/superpowers/specs/2026-08-27-execution-surface-decisions.md`
 
-- [ ] **Step 1.1:** Read the kickoff prompt's decision block. Required answers: **Decision 1** (execution emission policy), **Decision 4** (flow-divergence label), **quota path** for Task 8 (free 25th slot vs archive an OMEGA-TEST first), **post-apply disposition** (keep vs archive the created strategy), and the **apply authorization sentence**. Any missing → STOP, ask the user, end turn if unanswered.
-- [ ] **Step 1.2:** In the spec, mark Decision 1 and Decision 4 **ANSWERED <date>** with the user's exact words quoted, same style as the Decision 2 entry. Decision 3: mark "moot under 1(a)" if 1(a) was chosen, else STOP (plan revision needed).
-- [ ] **Step 1.3:** If Decision 1 ≠ (a) or Decision 4 ≠ leave-as-is: add a dated note to THIS plan file stating the divergence, and stop for plan revision. Otherwise commit: `Record the execution-surface decisions` → push.
+- [x] **Step 1.1:** Read the kickoff prompt's decision block. Required answers: **Decision 1** (execution emission policy), **Decision 4** (flow-divergence label), **quota path** for Task 8 (free 25th slot vs archive an OMEGA-TEST first), **post-apply disposition** (keep vs archive the created strategy), and the **apply authorization sentence**. Any missing → STOP, ask the user, end turn if unanswered.
+- [x] **Step 1.2:** In the spec, mark Decision 1 and Decision 4 **ANSWERED <date>** with the user's exact words quoted, same style as the Decision 2 entry. Decision 3: mark "moot under 1(a)" if 1(a) was chosen, else STOP (plan revision needed).
+- [x] **Step 1.3:** If Decision 1 ≠ (a) or Decision 4 ≠ leave-as-is: add a dated note to THIS plan file stating the divergence, and stop for plan revision. Otherwise commit: `Record the execution-surface decisions` → push.
 
 ### Task 2: Execution-day preflight
 
