@@ -16,7 +16,7 @@
 - **Record every live response verbatim into `data/audit/` before interpreting it.** A refusal is a finding, not a failure. **Redact `planToken`** in committed records to `{length, sha256}` (pattern: `compile_dry_run_2026-08-28-small.json`).
 - **Decisions belong to the user.** Tasks 5 and 6 are written for Decision 1 = (a) and Decision 4 = leave-as-is. If the kickoff prompt answers differently, STOP after Task 1 and revise this plan with a dated note — do not improvise the other branch.
 - **Re-verify the live compile schema before any compile** (Task 2). Cached capability lists are not authoritative after a deployment.
-- Baseline: branch `claude/compile-bridge-probes-plan-2140a5` at `767cf36`, **810 tests passing**. Run `python -m pytest -q` before every commit; commit messages end with the Claude co-author line.
+- Baseline: branch `claude/compile-bridge-probes-plan-2140a5` at `767cf36`, **810 tests passing**. *(Reconciled at completion, 2026-08-28: final count **828** — 810 baseline + 2 bounds-probe pins + 3 defaults-probe pins + 5 execution + 3 scoring-inputs + 5 first-apply pins; one pinned test flipped in place in Task 5.)* Run `python -m pytest -q` before every commit; commit messages end with the Claude co-author line.
 - Windows: write files with Write/Edit tools, not bash heredocs. Large MCP results overflow to a file — verify by script (jq/python), never by eye.
 - If any measurement contradicts something this plan asserts, correct the plan file itself with a dated note — never silently.
 
@@ -430,10 +430,10 @@ Adapt the `anchored` comprehension to the real `Column.timeframe` type (it is a 
 
 ### Task 9: Finish
 
-- [ ] **Step 9.1:** Full suite one last time; reconcile the test count in this plan's baseline note if it moved.
-- [ ] **Step 9.2:** Integrate to `main` (same fast-forward-push pattern as Task 0; STOP on non-FF).
-- [ ] **Step 9.3:** Update the memory file `next-session-compile-bridge.md` (or successor): plan executed, decisions recorded, probes' verdicts, apply outcome + strategy id + disposition, and what remains user-gated (binding, deployment — always).
-- [ ] **Step 9.4:** Final report to the user: verdicts of both probes, the apply outcome, and any plan corrections made along the way.
+- [x] **Step 9.1:** Full suite one last time; reconcile the test count in this plan's baseline note if it moved.
+- [x] **Step 9.2:** Integrate to `main` (same fast-forward-push pattern as Task 0; STOP on non-FF).
+- [x] **Step 9.3:** Update the memory file `next-session-compile-bridge.md` (or successor): plan executed, decisions recorded, probes' verdicts, apply outcome + strategy id + disposition, and what remains user-gated (binding, deployment — always).
+- [x] **Step 9.4:** Final report to the user: verdicts of both probes, the apply outcome, and any plan corrections made along the way.
 
 ## Self-review checklist (run before calling the plan done)
 
