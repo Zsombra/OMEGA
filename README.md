@@ -41,6 +41,11 @@ strategies from a thesis.
 > nothing else moved), re-archive. Measured on the way: the R:R diff axis is
 > `tradeLevelPolicy`, and full-body UPDATEs re-mint section identities in lockstep.
 > Both halves of the generated write path — create and revise — are now proven.
+>
+> **As of 2026-08-29 the authoring-assistant surface exists:** the measured
+> vocabulary, the Thesis guardrails, the one-page offline brief, the creation
+> registry with its prepare-never-execute checklist, and the conversation
+> procedure itself — [20 · The authoring procedure](docs/20-the-authoring-procedure.md).
 
 ---
 
@@ -69,6 +74,7 @@ strategies from a thesis.
 | [17 · The full sweep](docs/17-the-full-sweep.md) | **1,759 of 1,759** shapes verified live, 0 header mismatches — and the 421 that were never legal |
 | [18 · Indicator census](docs/18-indicator-census.md) | which named indicators this platform can build, which it cannot, and **why not** |
 | [19 · Is the data correct?](docs/19-is-the-data-correct.md) | the tape and the indicator maths, checked against Hyperliquid rather than against BattleGrid |
+| [20 · The authoring procedure](docs/20-the-authoring-procedure.md) | how a session turns intent into a strategy — the vocabulary, the guardrails, the honesty gate, and the per-authorized live loops |
 
 ## What the extraction found
 
