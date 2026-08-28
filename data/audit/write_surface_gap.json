@@ -34,7 +34,11 @@
       "timeDecayMaxTightenPct": "1-100", "timeDecayStaleThresholdTpProgressPct": "0-100"
     },
     "grepResult": "5 of the 6 probed - trailingEnabled, breakEvenTriggerR, minStopLossAtrMultiple, timeDecayEnabled, minRiskRewardRatio - appear NOWHERE in omega/ or docs/. Only minAtrPct is mentioned anywhere.",
-    "consequence": "omega can author WHAT TO LOOK AT and not HOW TO TRADE IT. A strategy with sound entries and a bad stop loses money, and the toolkit currently has nothing to say about the stop."
+    "consequence": "omega can author WHAT TO LOOK AT and not HOW TO TRADE IT. A strategy with sound entries and a bad stop loses money, and the toolkit currently has nothing to say about the stop.",
+    "_resolved": {
+      "date": "2026-08-28",
+      "how": "Decision 1(a): presets emit nothing; measured platform defaults stated in the critique; explicit Thesis.execution overrides validated against measured bounds (omega/execution.py)"
+    }
   },
 
   "whatIsAlreadyProven": {

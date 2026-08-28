@@ -133,7 +133,7 @@ measure the boundary opportunistically — it spends compile budget this plan ne
 **Interfaces:**
 - Produces: `PLATFORM_EXECUTION_DEFAULTS: dict`, `EXECUTION_PARAMS: frozenset`, `SCHEMA_BOUNDS: dict`, `CATALOG_BOUNDS: dict`, `validate_execution(overrides: dict) -> list[Finding]`; `Thesis.execution: dict | None = None`; `wire()` merges overrides last.
 
-- [ ] **Step 5.1: Write the failing tests** — `tests/test_execution.py`:
+- [x] **Step 5.1: Write the failing tests** — `tests/test_execution.py`:
 
 ```python
 """Decision 1(a), recorded <date>: omega emits NO execution parameters by default and
@@ -181,8 +181,8 @@ def test_critique_states_the_effective_profile():
     assert "platform defaults" in text and "R:R 1.5" in text
 ```
 
-- [ ] **Step 5.2:** Run `python -m pytest tests/test_execution.py -q` — expect FAIL (module missing).
-- [ ] **Step 5.3: Implement `omega/execution.py`:**
+- [x] **Step 5.2:** Run `python -m pytest tests/test_execution.py -q` — expect FAIL (module missing).
+- [x] **Step 5.3: Implement `omega/execution.py`:**
 
 ```python
 """The execution surface: measured platform defaults and override validation.
@@ -248,7 +248,7 @@ def validate_execution(overrides: dict) -> list[Finding]:
 ```
 
 (If Task 4 measured per-anchor defaults, shape the constant `{anchor: {...}}` for measured anchors only and adjust the tests' lookups accordingly — unmeasured anchors stay absent, not guessed.)
-- [ ] **Step 5.4:** In `omega/generate.py`: add `execution: dict | None = None` to `Thesis`; in `wire()`, build the dict into a variable `out` and before `return out` add:
+- [x] **Step 5.4:** In `omega/generate.py`: add `execution: dict | None = None` to `Thesis`; in `wire()`, build the dict into a variable `out` and before `return out` add:
 
 ```python
         if self.thesis.execution:
@@ -271,7 +271,7 @@ In `_assumptions()`, make the third entry conditional: `"no execution parameters
             f"time decay {'on' if eff['timeDecayEnabled'] else 'off'}")
 ```
 
-- [ ] **Step 5.5:** Flip the pinned test in `tests/test_write_surface.py` **in this same commit**: replace `test_the_execution_surface_is_still_unmodelled` with
+- [x] **Step 5.5:** Flip the pinned test in `tests/test_write_surface.py` **in this same commit**: replace `test_the_execution_surface_is_still_unmodelled` with
 
 ```python
 def test_presets_still_emit_no_execution_parameters():
@@ -286,7 +286,7 @@ def test_presets_still_emit_no_execution_parameters():
 ```
 
 and add to `write_surface_gap.json` inside `executionSurfaceNotModelled`: `"_resolved": {"date": "<date>", "how": "Decision 1(a): presets emit nothing; measured platform defaults stated in the critique; explicit Thesis.execution overrides validated against measured bounds (omega/execution.py)"}` — keep everything else in place as history.
-- [ ] **Step 5.6:** `python -m pytest -q` — all green (~816). Commit `Model the execution surface: measured defaults, explicit overrides` → push.
+- [x] **Step 5.6:** `python -m pytest -q` — all green (~816). Commit `Model the execution surface: measured defaults, explicit overrides` → push.
 
 ### Task 6: Partial scoring-inputs warnings (the 12 measured pairs)
 

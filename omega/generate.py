@@ -198,6 +198,9 @@ class Thesis:
     context: list[str] = field(default_factory=list)    # modules included but weighted 0
     # API coinSelection object; None means "derive one from the modules"
     coin_selection: dict | None = None
+    # Explicit execution-parameter overrides (API field names); None/empty means emit
+    # nothing and run on the MEASURED platform defaults (Decision 1a, 2026-08-28).
+    execution: dict | None = None
 
     @property
     def modules(self) -> list[str]:
@@ -323,6 +326,18 @@ class StrategyPlan:
         if sim and not sim.would_route:
             out.append(f"even at 0.75 across the board the aggregate is "
                        f"{sim.aggregate_score_percent}% - below the {sim.gate_percent}% gate")
+
+        from .execution import PLATFORM_EXECUTION_DEFAULTS, validate_execution
+        ov = self.thesis.execution or {}
+        out += [f"execution {f.severity}: {f}" for f in validate_execution(ov)]
+        eff = {**PLATFORM_EXECUTION_DEFAULTS, **ov}
+        out.append(
+            f"execution: {'platform defaults' if not ov else f'{len(ov)} override(s)'}"
+            f" - R:R {eff['minRiskRewardRatio']}, ATR gate {eff['minAtrPct']}%, stop "
+            f"{eff['minStopLossAtrMultiple']}-{eff['maxStopLossAtrMultiple']}xATR, "
+            f"trailing {'on' if eff['trailingEnabled'] else 'off'}, break-even "
+            f"{'on' if eff['breakEvenEnabled'] else 'off'} at {eff['breakEvenTriggerR']}R, "
+            f"time decay {'on' if eff['timeDecayEnabled'] else 'off'}")
         return out
 
     # -- output -----------------------------------------------------------
@@ -332,11 +347,14 @@ class StrategyPlan:
         how = ("explicit thesis override" if self.thesis.coin_selection is not None else
                "default - class-aware: CRYPTO when the thesis weights a crypto-only "
                "module (CVD, FLOW_DIVERGENCE), else ALL")
+        execution = (f"execution overrides set: {sorted(self.thesis.execution)}"
+                     if self.thesis.execution else
+                     "no execution parameters set - the MEASURED platform defaults "
+                     "apply (see omega/execution.py)")
         return [
             f"coinSelection {sel} ({how})",
             "signal params are the platform defaults captured in the signal map",
-            "no execution parameters set (stops, trailing, break-even, time decay) - "
-            "the execution surface is not yet modelled; platform defaults apply",
+            execution,
             "dry-run: compiled for viability only, never applied",
         ]
 
@@ -355,7 +373,7 @@ class StrategyPlan:
             {k: v for k, v in s.items() if not (s.get("kind") == "custom" and k == "sectionKey")}
             for s in self.report.wire()
         ]
-        return {
+        out = {
             "operation": "CREATE",
             "intentSummary": (f"{self.thesis.name}: {self.thesis.description} "
                               f"Stance {self.thesis.stance}, gate {self.thesis.gate}. "
@@ -381,6 +399,9 @@ class StrategyPlan:
             "minAggregateScore": self.thesis.gate,
             "minRequiredCount": sum(1 for r in self.rules if r.required),
         }
+        if self.thesis.execution:
+            out.update(self.thesis.execution)   # validated in critique(); keys are API fields
+        return out
 
     def render(self) -> str:
         c, mem, sim = self.cost(), self.membership(), self.simulate()

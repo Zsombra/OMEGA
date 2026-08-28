@@ -67,15 +67,15 @@ def test_plans_are_still_stamped_local_only():
     assert "LOCAL ONLY, not submitted" in inspect.getsource(generate.emit_plan)
 
 
-def test_the_execution_surface_is_still_unmodelled():
-    """16 parameters. When omega starts emitting them this fails, which is the point -
-    the count in the audit record must move at the same time as the code."""
+def test_presets_still_emit_no_execution_parameters():
+    """CLOSED 2026-08-28 (was: the 16-parameter gap). Decision 1(a): presets emit none and
+    the critique states the measured defaults; overrides are explicit per-thesis. The
+    old pinned form is preserved in git history."""
+    from omega.execution import EXECUTION_PARAMS
     emitted = set(plan(PRESETS["trend-continuation"]).wire())
-    groups = GAP["executionSurfaceNotModelled"]["parameters"]
-    execution = {p for g in groups.values() for p in g}
-    assert len(execution) == GAP["executionSurfaceNotModelled"]["count"] == 16
-    assert not (execution & emitted), "omega now emits execution parameters; update the record"
-    assert execution < API_ACCEPTS, "every one must be a field the API actually takes"
+    assert not (EXECUTION_PARAMS & emitted)
+    assert EXECUTION_PARAMS < API_ACCEPTS
+    assert "_resolved" in GAP["executionSurfaceNotModelled"]
 
 
 def test_rules_is_now_the_name():
