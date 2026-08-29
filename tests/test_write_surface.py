@@ -29,7 +29,9 @@ ROOT = Path(__file__).resolve().parents[1]
 GAP = json.loads((ROOT / "data/audit/write_surface_gap.json").read_text(encoding="utf-8"))
 FLOOR = json.loads((ROOT / "data/audit/lookback_floor.json").read_text(encoding="utf-8"))
 
-# Read from the live compile_strategy_plan CREATE schema on 2026-08-26.
+# Read from the live compile_strategy_plan CREATE schema on 2026-08-26; re-read
+# 2026-08-30 after the condition-clock deployment: `entry` is now published and
+# REQUIRED on CREATE (optional on UPDATE/RESTORE).
 API_ACCEPTS = {
     "operation", "intentSummary", "assumptions", "coinSelection", "name", "timeframe",
     "sections", "conditions", "description", "tagline", "marketReadText", "rules",
@@ -38,10 +40,10 @@ API_ACCEPTS = {
     "trailingTriggerR", "trailingGivebackPct", "trailingBufferPct", "breakEvenEnabled",
     "breakEvenTriggerR", "timeDecayEnabled", "timeDecayIntervalMinutes",
     "timeDecayGracePeriodMinutes", "timeDecayTightenPct", "timeDecayMaxTightenPct",
-    "timeDecayStaleThresholdTpProgressPct",
+    "timeDecayStaleThresholdTpProgressPct", "entry",
 }
 API_REQUIRES = {"operation", "intentSummary", "assumptions", "coinSelection", "name",
-                "timeframe", "sections"}
+                "timeframe", "sections", "entry"}
 
 
 @pytest.fixture(scope="module")

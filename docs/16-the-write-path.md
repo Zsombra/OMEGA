@@ -353,3 +353,33 @@ The compile also revealed the seeding behaviour: `creationSeed` returned **84**
 signal rules, and the 10 `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT` mismatches are simply
 that default seed activating signals whose data a deliberately narrow 6-column report
 does not carry. Non-blocking — viability stayed true.
+
+## Drift instance #3: required-but-unpublished, then the schema caught up (2026-08-29 → 30)
+
+The third instance inverted the first two. On 2026-08-29 the runtime input
+validator began REQUIRING `sections[].notes`, `conditions[].clock` and
+`conditions[].closes` — none of which the published schema declared (schema read
+fresh the same session, before the call). The mirror form of the standing drift:
+**required-but-unpublished** instead of published-but-unrecognized. Verbatim
+record: [`compile_dry_run_2026-08-29-deep-tail-fade.json`](../data/audit/compile_dry_run_2026-08-29-deep-tail-fade.json).
+
+Re-measured 2026-08-30 (the migration session): the published schema had caught
+up and moved past —
+
+- `clock`/`closes` published and required on every condition; `closes` bounded
+  `1..5`.
+- `notes` published and required on custom sections as `string (1..400) | null`
+  — null explicitly legal at the schema level, settling absent-vs-null there
+  (the 2026-08-29 refusal was for an ABSENT notes).
+- a whole new **`entry` axis** published and REQUIRED on CREATE
+  (`{trigger: 'AT_SIGNAL' | 'ON_CANDLE_CLOSE', confirmTf, closes: 1..5,
+  bandAtrMultiple > 0}`), optional on UPDATE/RESTORE. It had appeared in the
+  persisted shape a day earlier with migration defaults and no revision bump.
+
+The standing-rules addendum this instance earns:
+
+- On a **missing-required refusal for a field the published schema does not
+  declare** — you are mid-deployment. Re-read the schema at runtime, read an
+  existing record back for the platform's own migration defaults, and mirror
+  those defaults rather than inventing semantics. The next session's schema may
+  already declare what refused you today.

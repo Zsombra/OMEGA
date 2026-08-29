@@ -395,3 +395,108 @@ def test_every_disjoint_header_carries_a_numeric_replacement():
     for header, m in observed_vocabulary().items():
         if m.get("observedInDeclared") == 0:
             assert m.get("numericReplacement"), f"{header} refuses with no way out"
+
+
+# --- the condition clock (deployed 2026-08-29; schema published 2026-08-30) ---
+# Every condition must carry clock ('LIVE' | 'CLOSE') and closes (int 1..5) - the
+# compile refuses their absence (compile_dry_run_2026-08-29-deep-tail-fade.json).
+# CLOSE restricts reads to the coin's own candle series at offset 0
+# (CONDITION_CLOCK_OPERAND_ILLEGAL); LIVE is the platform's migration default.
+
+def test_condition_emits_the_clock_fields_with_migration_defaults():
+    c = condition("CHK", "n", num("mktBreadth_all", "gt", 10))
+    assert c["clock"] == "LIVE" and c["closes"] == 1
+
+
+@pytest.mark.parametrize("kwargs", [
+    {"clock": "closed"}, {"clock": "live"}, {"closes": 0}, {"closes": 6},
+    {"closes": 1.5}, {"closes": True},
+])
+def test_condition_refuses_a_bad_clock_or_closes(kwargs):
+    with pytest.raises(ValueError):
+        condition("CHK", "n", num("mktBreadth_all", "gt", 10), **kwargs)
+
+
+def test_a_condition_without_clock_or_closes_is_an_error():
+    """A hand-built dict that skips condition() must still carry both fields -
+    the live input validator refused their absence on 2026-08-29."""
+    bare = {"conditionKey": "CHK", "name": "n",
+            "definition": num("mktBreadth_all", "gt", 10),
+            "verdict": None, "required": False}
+    paths = {f.path for f in validate_conditions(RSI_REPORT, [bare])
+             if f.severity == "error"}
+    assert ".clock" in paths and ".closes" in paths
+
+
+def test_close_may_not_read_an_ambient_header():
+    """Mirror of the measured refusal: DF_RISK_ON clocked CLOSE reading
+    reference-pairs.usdtUsdDev_market drew CONDITION_CLOCK_OPERAND_ILLEGAL -
+    'a closed bar frame cannot move it'."""
+    from omega.conditions import stables_at_par
+    cond = condition("CHK", "n", stables_at_par(), clock="CLOSE")
+    errs = [f for f in validate_conditions(RSI_REPORT, [cond])
+            if f.severity == "error"]
+    assert errs
+    assert all("CLOSE" in f.message for f in errs)
+
+
+def test_close_may_read_a_custom_candle_header_at_offset_zero():
+    cond = condition("CHK", "n", num("RSI14_now", "gt", 50), clock="CLOSE")
+    assert not [f for f in validate_conditions(RSI_REPORT, [cond])
+                if f.severity == "error"]
+
+
+def test_close_may_not_read_an_offset_column():
+    """The measured rule says 'at offset 0' - a shifted read is not eligible."""
+    rep = _report({"metric": "RSI14", "transformId": "value",
+                   "timeframe": {"rel": "anchor"}, "offset": 4})
+    cond = condition("CHK", "n", num("RSI14", "gt", 50), clock="CLOSE")
+    errs = [f for f in validate_conditions(rep, [cond]) if f.severity == "error"]
+    assert any("CLOSE" in f.message for f in errs)
+
+
+def test_close_may_not_read_an_inert_custom_header():
+    """FUNDING_RATE is timeframe-inert - not the coin's candle series - so its
+    header is illegal under CLOSE even from a custom section."""
+    rep = _report({"metric": "FUNDING_RATE", "transformId": "value",
+                   "timeframe": {"rel": "anchor"}})
+    cond = condition("CHK", "n", num("rate", "gt", 0), clock="CLOSE")
+    errs = [f for f in validate_conditions(rep, [cond]) if f.severity == "error"]
+    assert any("CLOSE" in f.message for f in errs)
+
+
+def test_close_referencing_a_live_condition_is_an_error():
+    """The refusal's prescription: 'move that clause into its own LIVE condition
+    and reference it from a LIVE condition'."""
+    live = condition("AMB", "n", num("mktBreadth_all", "gt", 10), clock="LIVE")
+    close = condition("CHK", "n", all_of(num("RSI14_now", "gt", 50), ref("AMB")),
+                      clock="CLOSE")
+    findings = validate_conditions(RSI_REPORT, [live, close])
+    assert any("LIVE condition 'AMB'" in f.message for f in findings)
+
+
+def test_live_referencing_a_close_condition_is_legal():
+    close = condition("CORE", "n", num("RSI14_now", "gt", 50), clock="CLOSE")
+    live = condition("TOP", "n", ref("CORE"), clock="LIVE", verdict="UP")
+    assert not [f for f in validate_conditions(RSI_REPORT, [close, live])
+                if f.severity == "error"]
+
+
+# Clock policy over the presets: ambient reads and composite verdicts LIVE, CORE
+# checklists CLOSE only when every contributing module is candle-backed. Pinned
+# per preset so a recipe edit that flips a module's eligibility fails loudly.
+CORE_CLOCK = {"trend-continuation": "CLOSE",     # MA/MACD/VOLUME + ADX: all candle
+              "structure-reversal": "CLOSE",     # structure/SR/RSI/CVD: all candle
+              "mean-reversion": "LIVE",          # FUNDING is inert
+              "squeeze-breakout": "LIVE",        # OPEN_INTEREST is inert
+              "flow-divergence": "LIVE"}         # FLOW_DIVERGENCE is inert
+
+
+@pytest.mark.parametrize("name", PRESET_IDS)
+def test_preset_clock_policy(name):
+    for c in plan(PRESETS[name]).conditions:
+        key, expected = c["conditionKey"], "LIVE"
+        if "_CORE_" in key:
+            expected = CORE_CLOCK[name]
+        assert c["clock"] == expected, f"{key}: {c['clock']} != {expected}"
+        assert c["closes"] == 1, f"{key}: closes >1 is unmeasured"

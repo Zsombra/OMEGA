@@ -284,3 +284,41 @@ obvious path and the one an author would assume.
 This matters for design. `crowdAccLive` is null whenever no concurrent sessions are
 running, which is most of the time. A condition on it reads FALSE, and FALSE is
 indistinguishable from "the crowd was measured and was wrong."
+
+## The condition clock (deployed 2026-08-29, schema published 2026-08-30)
+
+Every condition now carries two more required fields — the compile refuses their
+absence:
+
+- **`clock`**: `'LIVE' | 'CLOSE'`. What frame the condition's reads resolve
+  against. `LIVE` reads the current forming state; `CLOSE` reads the last closed
+  bar. LIVE is the permissive clock and the platform's own migration default —
+  every pre-existing condition was migrated to `clock: "LIVE"` without a revision
+  bump (read back from `6a8bca67` on 2026-08-29 and again 2026-08-30).
+- **`closes`**: integer 1..5 (schema bounds). Semantics for values above 1 are
+  **unmeasured**; omega emits 1 everywhere.
+
+`CLOSE` is the restricted clock, with one measured rule
+(`CONDITION_CLOCK_OPERAND_ILLEGAL`, 2026-08-29):
+
+> a CLOSE-clocked condition may only read headers resolved from the coin's own
+> candle series, at offset 0
+
+An ambient header (`reference-pairs.*`, `market-breadth.*`, `session-field.*`)
+never comes from the coin's candles — "a closed bar frame cannot move it, so it
+would read the same number on every close." The refusal's prescription: put the
+clause in its own LIVE condition and reference it **from a LIVE condition**.
+Timeframe-inert metrics (`FUNDING_RATE`, `OI`, `REGIME_*`, ...) fail the same
+test even from a custom section.
+
+**omega's clock policy** (`generate._build_conditions`, decision 2026-08-29):
+ambient conditions and the composite verdicts run LIVE; the CORE checklists run
+CLOSE only when every contributing module reads the coin's own candle series
+(stable reads, matching the closed-bar research); a checklist touching any inert
+module stays LIVE. The offline guardrail in `conditions.validate_conditions`
+mirrors the rule: a CLOSE condition reading anything but a custom-candle-section
+header at offset 0 is an error, as is a CLOSE condition referencing a LIVE one.
+
+This dovetails with the `provisional` flags above: ambient conditions came back
+`provisional: false` precisely because ambient data is not read off a live
+forming bar. The clock axis makes that distinction author-controlled.

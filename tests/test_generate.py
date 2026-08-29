@@ -147,3 +147,35 @@ def test_generator_output_is_ascii_safe():
     for name in PRESET_IDS:
         text = plan(PRESETS[name]).render()
         text.encode("cp1252")
+
+
+# --- the condition-clock migration surface (schema published 2026-08-30) ------
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_custom_sections_carry_provenance_notes(name):
+    """sections[].notes is REQUIRED by the compile schema (string 1-400 or null).
+    Plan decision 2026-08-29: emit a provenance string; null acceptance is
+    unmeasured."""
+    for s in plan(PRESETS[name]).wire()["sections"]:
+        if s["kind"] == "custom":
+            assert isinstance(s["notes"], str) and 1 <= len(s["notes"]) <= 400
+            assert "omega.generate" in s["notes"]
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_wire_emits_the_platform_migration_entry(name):
+    """entry is REQUIRED on CREATE since 2026-08-30. Values mirror the platform's
+    own migration of existing records (6a8bca67 read-back: AT_SIGNAL, confirmTf =
+    the anchor timeframe, closes 1, bandAtrMultiple 1) - semantics unmeasured, so
+    nothing else may be emitted."""
+    p = plan(PRESETS[name])
+    assert p.wire()["entry"] == {"trigger": "AT_SIGNAL",
+                                 "confirmTf": p.thesis.anchor,
+                                 "closes": 1, "bandAtrMultiple": 1}
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_wire_conditions_all_carry_clock_and_closes(name):
+    for c in plan(PRESETS[name]).wire()["conditions"]:
+        assert c["clock"] in ("LIVE", "CLOSE")
+        assert c["closes"] == 1

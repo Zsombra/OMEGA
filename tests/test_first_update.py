@@ -13,13 +13,17 @@ API_UPDATE_REQUIRES = {"operation", "intentSummary", "assumptions", "coinSelecti
                        "strategyId", "expectedRevision"}
 
 
-def test_wire_update_is_wire_plus_exactly_three_fields():
+def test_wire_update_is_wire_plus_three_fields_minus_entry():
+    """`entry` is required on CREATE but optional on UPDATE (schema re-read
+    2026-08-30), and its semantics are unmeasured - wire_update omits it so an
+    existing strategy's entry axis is never touched."""
     p = plan(PRESETS["trend-continuation"])
     w, u = p.wire(), p.wire_update(NIL_ID, 3)
     assert u["operation"] == "UPDATE"
     assert u["strategyId"] == NIL_ID and u["expectedRevision"] == 3
+    assert "entry" not in u
     assert {k for k in set(w) | set(u) if w.get(k) != u.get(k)} == {
-        "operation", "strategyId", "expectedRevision"}
+        "operation", "strategyId", "expectedRevision", "entry"}
 
 
 def test_wire_update_refuses_a_nonpositive_revision():
@@ -42,7 +46,7 @@ def test_update_mode_body_differs_from_small_in_exactly_the_declared_fields():
     up = update_request(NIL_ID, 3)["request"]
     assert {k for k in set(small) | set(up) if small.get(k) != up.get(k)} == {
         "operation", "strategyId", "expectedRevision", "minRiskRewardRatio",
-        "assumptions"}
+        "assumptions", "entry"}      # entry: CREATE-only since 2026-08-30
     assert up["minRiskRewardRatio"] == 2.0
     assert "execution overrides set: ['minRiskRewardRatio']" in up["assumptions"][2]
 

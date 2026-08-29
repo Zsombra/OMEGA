@@ -1,0 +1,32 @@
+{
+  "_what": "Condition-clock migration plan, Step 0 re-discovery (read-only). Fresh schema read + strategy read-back + vocabulary spot-checks before any code was written.",
+  "when": "2026-08-30, migration-executing session, before any omega change",
+  "schema_reread": {
+    "how": "ToolSearch schema fetch of compile_strategy_plan from the live connection (no call made)",
+    "clock": "conditions[].clock now PUBLISHED and required per condition: enum ['LIVE','CLOSE']",
+    "closes": "conditions[].closes now PUBLISHED and required per condition: integer, minimum 1, maximum 5 - bounds newly declared; >1 behavior still unmeasured",
+    "notes": "sections[].notes now PUBLISHED and required on custom sections: string minLength 1 maxLength 400 (no control/format chars) OR null - null explicitly legal at the schema level; the 2026-08-29 refusal was for an ABSENT notes",
+    "entry": {
+      "published": true,
+      "requiredOnCreate": true,
+      "optionalOnUpdateRestore": true,
+      "shape": "{trigger: 'AT_SIGNAL'|'ON_CANDLE_CLOSE', confirmTf: <timeframe enum>, closes: 1..5, bandAtrMultiple: number > 0}",
+      "consequence": "the plan's original 'wire() must not emit entry' is impossible for CREATE; plan amended to mirror the platform migration default"
+    },
+    "verdict": "drift instance #3 (required-but-unpublished) RESOLVED - the published schema caught up with its runtime validator and moved past the 2026-08-29 record"
+  },
+  "strategy_readback": {
+    "call": "get_strategy(6a8bca67-45a3-428e-85ba-71ec2cd2218e, includeInactive: true)",
+    "result": "identical in shape to the 2026-08-29 mid-drift read: all 7 conditions clock='LIVE' closes=1; both custom sections notes=null; entry={trigger:'AT_SIGNAL', confirmTf:'1h', closes:1, bandAtrMultiple:1}; revision 5; updatedAt 2026-08-28T19:23:06.780Z unchanged",
+    "key_diff": "mechanical top-level key diff vs the stored pre-update preState (first_generated_update_2026-08-29.json): 'entry' is the ONLY new axis; all 40 prior keys unchanged"
+  },
+  "vocabulary_spot_checks": {
+    "calls": "list_strategy_vocabulary('price'); get_strategy_signal_definition('bollinger_lower_touch', '1h')",
+    "new_surface_not_previously_recorded": {
+      "priceBasis": "signal definitions now carry priceBasis (observed 'LIVE' on bollinger_lower_touch) - nowhere in the repo before this session",
+      "conditionFrameReads": "vocabulary budgets now list conditionFrameReads: 256 alongside the known strategyConditions: 16 and conditionClauses: 16"
+    },
+    "no_change": "bars ('closed'|'all') already known and modelled; templates and budgets otherwise as recorded"
+  },
+  "_interpretation": "The platform surface stabilized where the 2026-08-29 session caught it mid-drift, and the schema now tells the truth about clock/closes/notes. The one plan-breaking finding: entry is REQUIRED on CREATE, so omega must emit it - the honest value is the platform's own migration default (AT_SIGNAL / anchor timeframe / 1 / 1) read back from 6a8bca67, per extract-never-infer. closes>1, entry semantics, and notes:null acceptance remain open questions for the Step 3 compile to settle. priceBasis and conditionFrameReads are recorded here as new read-surface vocabulary; no code consequence yet."
+}

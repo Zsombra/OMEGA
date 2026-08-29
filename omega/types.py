@@ -69,12 +69,17 @@ class CustomSection(BaseModel):
     columns: list[Column] = Field(min_length=1, max_length=64)
     timeframe: ABS_TIMEFRAMES | None = None
     sectionKey: str | None = None
+    # Required by the compile schema since the 2026-08-29 condition-clock deployment
+    # (published 2026-08-30): string 1-400 chars or null. The generator always fills
+    # a provenance string; null is schema-legal but its acceptance is unmeasured.
+    notes: str | None = Field(default=None, min_length=1, max_length=400)
 
     def wire(self) -> dict:
         d = self.model_dump(exclude_none=True)
         d["columns"] = [c.wire() for c in self.columns]
-        # benchmarkTicker is required by the schema even when null
+        # benchmarkTicker and notes are required by the schema even when null
         d.setdefault("benchmarkTicker", None)
+        d.setdefault("notes", None)
         return d
 
 

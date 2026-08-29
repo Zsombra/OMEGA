@@ -31,6 +31,13 @@ CONDITION_KEY = re.compile(r"^[A-Z][A-Z0-9_]{1,39}$")
 GROUP_OPS = ("ALL", "ANY", "NOT", "N_OF")
 NUMERIC_OPS = ("lt", "lte", "gte", "gt")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
+# The condition-clock axis (deployed 2026-08-29, published in the schema 2026-08-30).
+# LIVE is the permissive clock - the platform migrated every existing condition to
+# LIVE/1. CLOSE restricts reads to the coin's own candle series at offset 0
+# (CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29). closes is a schema-bounded
+# integer 1..5; >1 semantics are unmeasured, so authoring stays at 1.
+CLOCKS = ("LIVE", "CLOSE")
+CLOSES_MIN, CLOSES_MAX = 1, 5
 
 
 OBSERVED_VOCAB = DERIVED_DIR.parent / "contract" / "columns" / "_observed_vocabulary.json"
@@ -79,6 +86,10 @@ def ambient_headers() -> dict[str, dict]:
                 "ops": o["ops"],
                 "vocab": o.get("vocab", []),
                 "meaning": o["meaning"],
+                # ambient values do not come from the coin's own candle series, so
+                # a CLOSE-clocked condition may never read them
+                # (CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29)
+                "candle": False,
             }
     return out
 
@@ -139,9 +150,18 @@ def n_of(n: int, *members: dict) -> dict:
 
 
 def condition(key: str, name: str, definition: dict, *,
-              verdict: str | None = None, required: bool = False) -> dict:
+              verdict: str | None = None, required: bool = False,
+              clock: str = "LIVE", closes: int = 1) -> dict:
+    """One wire-shaped condition. clock/closes are REQUIRED by the compile schema
+    since 2026-08-29; the defaults mirror the platform's own migration of existing
+    records (clock=LIVE, closes=1, read back from 6a8bca67 on 2026-08-30)."""
+    if clock not in CLOCKS:
+        raise ValueError(f"clock {clock!r} is not one of {CLOCKS}")
+    if not isinstance(closes, int) or isinstance(closes, bool) \
+            or not CLOSES_MIN <= closes <= CLOSES_MAX:
+        raise ValueError(f"closes must be an int {CLOSES_MIN}..{CLOSES_MAX}, got {closes!r}")
     return {"conditionKey": key, "name": name, "definition": definition,
-            "verdict": verdict, "required": required}
+            "verdict": verdict, "required": required, "clock": clock, "closes": closes}
 
 
 # --- ambient clause library -----------------------------------------------
@@ -217,24 +237,33 @@ def report_headers(report: Report) -> dict[str, dict]:
             for spec in tmpl["columns"]:
                 try:
                     for o in outputs_for(Column.model_validate(spec), c):
+                        # conservative: the measured CLOSE rule names "headers
+                        # resolved from the coin's own candle series"; only
+                        # custom-candle-section headers are treated as eligible
+                        # offline, platform-section headers are not
                         out[o.header] = {"sectionKey": section.sectionKey,
                                          "ops": o.condition_operators,
-                                         "vocab": list(o.vocabulary), "meaning": ""}
+                                         "vocab": list(o.vocabulary), "meaning": "",
+                                         "candle": False}
                 except Exception:
                     continue
         elif isinstance(section, CustomSection):
             for column in section.columns:
                 if column.metric not in c.metrics:
                     continue
+                candle = (not c.metric(column.metric).is_timeless
+                          and (column.offset or 0) == 0)
                 for o in outputs_for(column, c):
                     out[o.header] = {"sectionKey": section.sectionKey,
                                      "ops": o.condition_operators,
-                                     "vocab": list(o.vocabulary), "meaning": ""}
+                                     "vocab": list(o.vocabulary), "meaning": "",
+                                     "candle": candle}
     return out
 
 
 def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
-          out: list[ConditionFinding], depth: int = 0) -> int:
+          out: list[ConditionFinding], depth: int = 0, clock: str = "LIVE",
+          clock_by_key: dict[str, str] | None = None) -> int:
     """Validate one definition node. Returns the number of clauses beneath it."""
     kind = defn.get("kind")
 
@@ -245,6 +274,12 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
         elif target not in known_keys:
             out.append(ConditionFinding("error", key, path,
                                         f"references unknown condition {target!r}"))
+        elif clock == "CLOSE" and (clock_by_key or {}).get(target) == "LIVE":
+            out.append(ConditionFinding(
+                "error", key, path,
+                f"CLOSE-clocked condition references LIVE condition {target!r} - a "
+                f"condition referencing a LIVE condition must itself be LIVE (mirror "
+                f"of CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29)"))
         return 0
 
     if kind == "group":
@@ -268,7 +303,8 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
                                             f"N_OF n={n} equals member count; ALL says this more plainly"))
         total = 0
         for i, member in enumerate(members):
-            total += _walk(member, key, f"{path}.members[{i}]", headers, known_keys, out, depth + 1)
+            total += _walk(member, key, f"{path}.members[{i}]", headers, known_keys,
+                           out, depth + 1, clock, clock_by_key)
         return total
 
     if kind != "clause":
@@ -284,6 +320,14 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"header {header!r} is not produced by any column in this report "
             f"(nor ambient). Add a column that emits it, or fix the name."))
         return 1
+
+    if clock == "CLOSE" and not spec.get("candle", False):
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"CLOSE-clocked condition reads {header!r}, which is not a custom-"
+            f"candle-section header at offset 0 - a closed bar frame cannot move "
+            f"it. Put the clause in a LIVE condition instead "
+            f"(CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29)."))
 
     declared = (defn.get("column") or {}).get("sectionKey")
     if declared is not None and spec["sectionKey"] is not None and declared != spec["sectionKey"]:
@@ -365,6 +409,8 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
             "error", cycle[0], ".definition",
             f"conditionRef cycle: {' -> '.join(cycle)} -> {cycle[0]}"))
 
+    clock_by_key = {x.get("conditionKey", ""): x.get("clock") for x in conditions}
+
     clause_cap = c.budgets["conditionClauses"]
     for cond in conditions:
         key = cond.get("conditionKey", "")
@@ -377,7 +423,23 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
         if cond.get("verdict") not in VERDICTS:
             out.append(ConditionFinding("error", key, ".verdict",
                                         f"must be one of {VERDICTS}"))
-        clauses = _walk(cond.get("definition") or {}, key, ".definition", headers, known, out)
+        # clock/closes are REQUIRED by the compile schema (published 2026-08-30)
+        clock = cond.get("clock")
+        if clock not in CLOCKS:
+            out.append(ConditionFinding(
+                "error", key, ".clock",
+                f"must be one of {CLOCKS} (required by the compile schema since "
+                f"2026-08-29), got {clock!r}"))
+            clock = "LIVE"      # keep walking; clause-level clock findings suppressed
+        closes = cond.get("closes")
+        if not isinstance(closes, int) or isinstance(closes, bool) \
+                or not CLOSES_MIN <= closes <= CLOSES_MAX:
+            out.append(ConditionFinding(
+                "error", key, ".closes",
+                f"must be an int {CLOSES_MIN}..{CLOSES_MAX} (required by the compile "
+                f"schema since 2026-08-29), got {closes!r}"))
+        clauses = _walk(cond.get("definition") or {}, key, ".definition", headers,
+                        known, out, 0, clock, clock_by_key)
         if clauses > clause_cap:
             out.append(ConditionFinding("error", key, ".definition",
                                         f"{clauses} clauses exceeds the budget of {clause_cap}"))

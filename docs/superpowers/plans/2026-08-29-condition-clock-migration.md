@@ -29,44 +29,96 @@ Full verbatim records: `data/audit/compile_dry_run_2026-08-29-deep-tail-fade.jso
 
 ## Step 0 · Re-discover (read-only, no authorization needed)
 
-- [ ] Re-read the `compile_strategy_plan` schema from the live connection. Diff
+- [x] Re-read the `compile_strategy_plan` schema from the live connection. Diff
       against this plan's "known" list — if `notes`/`clock`/`closes` are now
       published, or `entry` appeared, update this plan before coding.
-- [ ] `get_strategy(6a8bca67, includeInactive: true)` again. Confirm clock/closes/
+- [x] `get_strategy(6a8bca67, includeInactive: true)` again. Confirm clock/closes/
       notes/entry read the same; note any new axes. If the shape moved again,
       record first, plan second.
-- [ ] `list_strategy_vocabulary()` / `get_strategy_signal_definition` spot-checks
+- [x] `list_strategy_vocabulary()` / `get_strategy_signal_definition` spot-checks
       for new condition or entry documentation.
+
+### Step 0 verdict (measured 2026-08-30, executing session)
+
+The published schema **caught up and moved past** the 2026-08-29 record — drift
+instance #3 (required-but-unpublished) has resolved:
+
+- `conditions[].clock` (`'LIVE' | 'CLOSE'`) and `conditions[].closes` are now
+  **published and required** on every condition. `closes` is declared
+  `integer, 1..5` — bounds now known; >1 behavior still unmeasured.
+- `sections[].notes` is now **published and required** on custom sections as
+  `string (1..400, no control chars) | null` — **null is explicitly legal per
+  schema**, settling the absent-vs-null open question at the schema level
+  (behavioral confirmation still pends the compile).
+- `entry` is now **published and REQUIRED on CREATE**
+  (`{trigger: 'AT_SIGNAL' | 'ON_CANDLE_CLOSE', confirmTf, closes: 1..5,
+  bandAtrMultiple > 0}`); optional on UPDATE/RESTORE. The original Step 1 rule
+  "`wire()` must not emit `entry`" is therefore impossible for CREATE.
+  **Amended decision:** emit `entry` on CREATE mirroring the platform's own
+  migration default as read from `6a8bca67` — `{trigger: "AT_SIGNAL",
+  confirmTf: <anchor timeframe>, closes: 1, bandAtrMultiple: 1}` — extract,
+  never infer; semantics remain unmeasured, so we copy exactly what the
+  platform assigned to existing records and nothing else.
+- `get_strategy(6a8bca67)` re-read is **byte-identical in shape** to the
+  2026-08-29 mid-drift read: all 7 conditions `clock: LIVE, closes: 1`, both
+  sections `notes: null`, `entry` default as above, revision still 5,
+  `updatedAt` unchanged. Mechanical key-diff against the stored pre-update
+  read (`first_generated_update_2026-08-29.json` preState): `entry` is the
+  only new top-level axis.
+- Spot-checks surfaced two previously unrecorded fields (nowhere in the
+  repo): `priceBasis: "LIVE"` on signal definitions (seen on
+  `bollinger_lower_touch`), and vocabulary budget `conditionFrameReads: 256`
+  (alongside known `strategyConditions: 16`, `conditionClauses: 16`).
+  Read-only documentation surface; recorded here, no code consequence yet.
 
 ## Step 1 · Omega code (offline; tests green before any live call)
 
-- [ ] `omega/types.py`: `CustomSection.notes: str | None` — emit a string on
+- [x] `omega/types.py`: `CustomSection.notes: str | None` — emit a string on
       wire-out (provenance text) until null-acceptance is measured.
-- [ ] `omega/conditions.py`: `condition()` gains `clock` and `closes`; wire shape
+- [x] `omega/conditions.py`: `condition()` gains `clock` and `closes`; wire shape
       carries both on every condition.
-- [ ] `omega/generate.py` `_build_conditions`: clock policy —
+- [x] `omega/generate.py` `_build_conditions`: clock policy —
       ambient conditions (`RISK_ON`, `CTX_UP`, `CTX_DOWN`) and the composite
       verdict conditions **LIVE**; candle-only `CORE_UP`/`CORE_DOWN` **CLOSE**
       (stable reads, matches the closed-bar research; the platform migration
       default of LIVE-everywhere is also legal — decision recorded here, revisit
       if the compile refuses composites-referencing-mixed-clocks). `closes: 1`
-      everywhere (>1 unmeasured).
-- [ ] `omega/validate.py` (or conditions validation): new offline guardrail
-      mirroring `CONDITION_CLOCK_OPERAND_ILLEGAL` — a CLOSE condition whose
-      clause columns are not all custom-candle-section headers at offset 0 is an
-      error; a condition referencing a LIVE condition must itself be LIVE.
-- [ ] `wire()` must **not** emit `entry` (unmeasured axis).
-- [ ] Tests: new cases for the emitted fields + the clock-legality rule; update
-      pinned wire-shape tests; full suite green (874 + new).
-- [ ] Docs: doc 09 (conditions — clock/closes), doc 16 (drift instance #3,
-      required-but-unpublished form), doc 18/20 untouched unless Step 0 moved.
+      everywhere (>1 unmeasured). Implemented as: CORE gets CLOSE iff every
+      contributing directional/filter module is candle-backed (`_candle_module`);
+      a checklist touching an inert module (FUNDING, OPEN_INTEREST, REGIME,
+      FLOW_DIVERGENCE) stays LIVE — the "candle-only" qualifier is load-bearing.
+- [x] Conditions validation (`omega/conditions.py`, where the header machinery
+      lives): offline guardrail mirroring `CONDITION_CLOCK_OPERAND_ILLEGAL` — a
+      CLOSE condition whose clause columns are not all custom-candle-section
+      headers at offset 0 is an error; a CLOSE condition referencing a LIVE
+      condition is an error; missing/invalid `clock`/`closes` are errors.
+- [x] `wire()` emits `entry` on CREATE (schema now requires it — see Step 0
+      verdict) mirroring the platform migration default:
+      `{trigger: "AT_SIGNAL", confirmTf: <anchor timeframe>, closes: 1,
+      bandAtrMultiple: 1}`. No other values until semantics are measured.
+      `wire_update()` deletes `entry` — optional on UPDATE, semantics
+      unmeasured, never touch an existing strategy's entry axis.
+- [x] Tests: new cases for the emitted fields + the clock-legality rule; update
+      pinned wire-shape tests; full suite green — **908 passed** (874 baseline
+      re-verified green before any change, then 9 pinned wire-shape tests
+      updated with dated notes, audit records untouched, plus the new coverage).
+- [x] Docs: doc 09 (conditions — clock/closes section), doc 16 (drift instance
+      #3, required-but-unpublished form, resolved 2026-08-30), doc 18/20
+      untouched (checked: no stale entry/clock claims). Step 0 record:
+      `data/audit/step0_rediscovery_2026-08-30.json`.
 
 ## Step 2 · Regenerate and re-validate Deep-Tail Fade (offline)
 
-- [ ] Rebuild from `data/research/2026-08-29-deep-tail-fade/deep_tail_fade_thesis.json`
+- [x] Rebuild from `data/research/2026-08-29-deep-tail-fade/deep_tail_fade_thesis.json`
       via the patched generator; `validate_thesis` + `brief()` — zero errors.
-- [ ] Diff the new body against `compile_body_deep_tail_fade_v2.json` — the only
-      deltas should be the clock policy and native field emission.
+      (`regenerate_v3.py` in the corpus dir; emits
+      `compile_body_deep_tail_fade_v3.json` + `deep_tail_fade_brief_v3.txt`.)
+- [x] Diff the new body against `compile_body_deep_tail_fade_v2.json` — the only
+      deltas should be the clock policy and native field emission. **Measured
+      2026-08-30, exactly three delta classes and nothing else:** clock CLOSE→LIVE
+      on the three ambient conditions and both verdicts (the CORE pair stays
+      CLOSE, matching v2); `entry` added (required on CREATE); `notes` provenance
+      text (generator-composed vs v2's hand-written amendment).
 
 ## Step 3 · The compile (live; per-instance authorization REQUIRED)
 

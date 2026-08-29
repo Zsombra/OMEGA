@@ -49,8 +49,10 @@ def test_the_record_exists_and_is_interpreted():
 
 def test_request_keys_match_current_wire_output():
     """If wire() gains or loses a top-level key, the recorded measurement no longer
-    describes the current generator - this failing is the reminder to re-measure."""
-    assert RECORD["requestKeys"] == sorted(request()["request"].keys())
+    describes the current generator - this failing is the reminder to re-measure.
+    Re-measured 2026-08-30: the condition-clock deployment made `entry` REQUIRED on
+    CREATE, so wire() gained exactly that key; the 2026-08-28 record stays frozen."""
+    assert sorted(RECORD["requestKeys"] + ["entry"]) == sorted(request()["request"].keys())
     assert RECORD["preset"] == PRESET
 
 
@@ -89,7 +91,8 @@ def test_the_small_selection_compile_is_viable():
 
 
 def test_small_request_keys_match_current_wire():
-    assert SMALL["requestKeys"] == sorted(request(small=True)["request"].keys())
+    # +entry: required on CREATE since the condition-clock deployment (2026-08-30)
+    assert sorted(SMALL["requestKeys"] + ["entry"]) == sorted(request(small=True)["request"].keys())
     assert SMALL["coinSelection"] == {"mode": "explicit", "tickers": SMALL_TICKERS}
     assert SMALL["responseVerbatim"]["reviewContext"]["resolvedCoinTickers"] == SMALL_TICKERS
 
