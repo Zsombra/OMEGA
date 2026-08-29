@@ -1,0 +1,28 @@
+{
+  "name": "Deep-Tail Fade",
+  "tagline": "Fade only the extreme stretch",
+  "description": "1h contrarian reversion on majors. Research-derived (2026-08-29, 13-coin candle study): stretch reversion at 1h concentrates in the deep tail (>90th pct stretch: 61.5% hit, +13 bps/bar) and is strongest on majors; volume-weighted references added nothing over plain means, so the native Bollinger machinery carries the thesis. Wins are small and losses are big when stretches continue - selectivity is the whole game.",
+  "anchor": "1h",
+  "stance": "FADE",
+  "gate": 0.65,
+  "weights": {
+    "BOLLINGER": 3,
+    "RSI": 2
+  },
+  "context": [
+    "MFI",
+    "REGIME",
+    "CVD",
+    "FUNDING"
+  ],
+  "required": [],
+  "coin_selection": {
+    "mode": "explicit",
+    "tickers": [
+      "BTC",
+      "ETH",
+      "SOL"
+    ]
+  },
+  "execution": null
+}
