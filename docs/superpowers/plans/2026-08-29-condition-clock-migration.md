@@ -130,8 +130,11 @@ instance #3 (required-but-unpublished) has resolved:
       (v3 body submitted unmodified; error response only, no compile record or
       token minted — nothing to redact, nothing outstanding.)
 - [x] If refused: the refusal is the finding; update this plan, stop.
-- [ ] ~~If viable~~ — not reached. `postState` checks and the open questions
-      (`notes: null`, `closes > 1`, `entry` handling) remain open.
+      (The v3 attempt — see verdict below. The user then chose option A and
+      granted a second verbatim authorization for the v4 attempt.)
+- [x] If viable: check `postState` — done for the v4 compile; see "Step 3
+      viable-branch checks" below. Open questions settled where measured;
+      `notes: null` and `closes > 1` remain explicitly unmeasured.
 
 ### Step 3 verdict (2026-08-30): refused by BG-14, NOT by the clock surface
 
@@ -171,10 +174,41 @@ thesis record and needs its own ONE-compile authorization; not executed now):
 - [x] Zero `validate_thesis` findings, zero plan errors. Diff v3 → v4 is
       exactly `coinSelection.tickers` (3 → 2) and the auto-generated
       `assumptions[0]` line — nothing else.
-- [ ] The compile of v4: awaits its own verbatim ONE-compile authorization
-      (the width decision is not the call authorization). Whether 2 tickers
-      fits under the cap is NOT predicted — the byte curve is concave with
-      fixed overhead; only the compile measures it.
+- [x] The compile of v4: second verbatim ONE-compile authorization received
+      2026-08-30; v4 submitted unmodified — **VIABLE: true, proposedRevision 1.**
+      The first Deep-Tail Fade compile ever viable, and the first viable compile
+      through the migrated condition-clock surface. planToken recorded as
+      length 686 + sha256 and left to expire (2026-08-30T00:14:24.599Z);
+      nothing applied. Full verbatim record (token redacted):
+      `compile_viable_option_a_2026-08-30` in the dry-run audit file.
+
+### Step 3 viable-branch checks (2026-08-30) — all pass
+
+- postState cadence **INTRADAY** / regimeTimeframe **4h** at the 1h anchor —
+  omega's mapping confirmed, second datapoint at this anchor.
+- Server **minted** sectionKeys (`custom:8dabc8c9…`, `custom:975131d6…`);
+  omega's local uuid5 keys never sent, never echoed — CREATE ownership rule
+  reconfirmed.
+- **13 weighted rules** round-tripped exactly (5 BOLLINGER@3, 8 RSI-family@2)
+  in the dense 84; gate 0.65, minRequiredCount 0.
+- All 16 **execution defaults** equal omega's measured table exactly —
+  including `minRiskRewardRatio: 1.5` (a same-session false drift alarm was
+  checked and dismissed: `6a8bca67` carries 2.0 only because the 2026-08-29
+  UPDATE probe explicitly overrode it).
+- **clock/closes**: echoed verbatim — CORE pair CLOSE, five LIVE, closes 1.
+  The mixed-clock DAG (LIVE verdicts referencing CLOSE cores) is **legal**;
+  the revisit-clause for that case is moot.
+- **notes**: both provenance strings persisted; NEW finding — notes count
+  against the `reportNoteChars` budget (172/3200 used).
+- **entry**: echoed verbatim; `diff.entry` null and ENTRY absent from
+  `changedAxes` — sending exactly the migration default registers as no
+  change.
+- Mismatches: 24 advisories in the two known classes only
+  (`REPORT_DATA_SIGNAL_OFF` ×17 = the visible-but-unweighted context modules;
+  `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT` ×7).
+
+**Still unmeasured** (no claim made): `notes: null` acceptance (strings were
+sent), `closes > 1`, non-default `entry` values and their runtime semantics.
 
 ## Step 4 · Beyond the compile (each its own user authorization)
 

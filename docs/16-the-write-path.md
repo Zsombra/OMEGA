@@ -383,3 +383,26 @@ The standing-rules addendum this instance earns:
   existing record back for the platform's own migration defaults, and mirror
   those defaults rather than inventing semantics. The next session's schema may
   already declare what refused you today.
+
+### The loop closed viable on the new surface (2026-08-30)
+
+Later the same session, the migrated generator's Deep-Tail Fade CREATE compiled
+**viable** (v4 body, BTC/ETH after a BG-14 byte-cap refusal at 3 tickers;
+record: `compile_viable_option_a_2026-08-30` in the dry-run audit file; token
+left to expire, nothing applied). What that measured, on the axes this section
+left open:
+
+- **Provenance-string `notes` are accepted and persist verbatim** — and they
+  count against the `reportNoteChars` budget (172/3200 used). `notes: null`
+  remains unmeasured: strings were sent.
+- **The mixed-clock condition DAG is legal**: CLOSE-clocked candle-only cores
+  referenced from LIVE-clocked verdict composites drew no refusal, and
+  postState echoed every `clock`/`closes` exactly as sent.
+- **`entry` round-trips**: the mirrored migration default came back verbatim,
+  with `diff.entry` null and ENTRY absent from `changedAxes` — sending exactly
+  the default registers as no change. Non-default values and runtime semantics
+  stay unmeasured, and `wire_update()` still never touches the axis.
+- `closes > 1`: unmeasured — 1 was sent everywhere.
+- Execution defaults: all 16 postState values equal the measured table,
+  `minRiskRewardRatio: 1.5` included (`6a8bca67`'s 2.0 is the 2026-08-29
+  UPDATE probe's explicit override, not a default).
