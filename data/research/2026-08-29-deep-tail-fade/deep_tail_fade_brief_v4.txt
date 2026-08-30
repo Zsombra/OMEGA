@@ -1,0 +1,13 @@
+Deep-Tail Fade - Fade only the extreme stretch
+stance FADE | anchor 1h (INTRADAY/4h) | gate 0.65 | universe {'mode': 'explicit', 'tickers': ['BTC', 'ETH']}
+weighted modules: BOLLINGER:3, RSI:2
+
+thesis findings: none
+
+critique:
+  condition warning: [warning] DF_CORE_UP.definition: N_OF n=2 equals member count; ALL says this more plainly
+  condition warning: [warning] DF_CORE_DOWN.definition: N_OF n=2 equals member count; ALL says this more plainly
+  token headroom: ~15001 of 16000
+  execution: platform defaults - R:R 1.5, ATR gate 0.5%, stop 1-2xATR, trailing on, break-even on at 1.08R, time decay on
+
+wire body: 2 sections, 84 rules (13 weighted), 7 conditions

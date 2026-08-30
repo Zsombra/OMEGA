@@ -156,10 +156,25 @@ thesis record and needs its own ONE-compile authorization; not executed now):
 
 - (a) Drop to 2 tickers (BTC/ETH) — keeps every context column, costs SOL
       coverage; ~1/3 preview reduction, far more than the needed 3%.
+      **CHOSEN by the user, 2026-08-30 ("let's try option A first").**
 - (b) Trim context columns (e.g. `FUNDING_LABEL`, `REGIME_MOM` — the agent
       still sees funding level/aggregate and regime trend/vol) — keeps the
-      3-major universe the research targeted.
+      3-major universe the research targeted. Fallback if (a) refuses.
 - (c) Both, if (a) or (b) alone still refuses — only a compile can measure.
+
+### Option A prepared (2026-08-30, offline)
+
+- [x] `regenerate_v4_option_a.py`: same preserved thesis, only the ticker list
+      overridden to BTC/ETH (research record untouched, per the
+      `request(small=True)` precedent). Emits `compile_body_deep_tail_fade_v4.json`
+      + `deep_tail_fade_brief_v4.txt`.
+- [x] Zero `validate_thesis` findings, zero plan errors. Diff v3 → v4 is
+      exactly `coinSelection.tickers` (3 → 2) and the auto-generated
+      `assumptions[0]` line — nothing else.
+- [ ] The compile of v4: awaits its own verbatim ONE-compile authorization
+      (the width decision is not the call authorization). Whether 2 tickers
+      fits under the cap is NOT predicted — the byte curve is concave with
+      fixed overhead; only the compile measures it.
 
 ## Step 4 · Beyond the compile (each its own user authorization)
 
