@@ -67,3 +67,39 @@ The compile dry-run (user-authorized, ONE call) was refused by fresh platform
 drift — the condition-clock feature. Findings and the migration path:
 [`data/audit/compile_dry_run_2026-08-29-deep-tail-fade.json`](../../../data/audit/compile_dry_run_2026-08-29-deep-tail-fade.json)
 and [the migration plan](../plans/2026-08-29-condition-clock-migration.md).
+
+## Out-of-sample addendum · re-pull 1, 2026-08-30
+
+First run of [the re-pull protocol](../plans/2026-08-29-out-of-sample-repull-protocol.md)
+(one day early — the ≤4-day window says pull when you can). Data:
+[`repulls/2026-08-30/`](../../../data/research/2026-08-29-deep-tail-fade/repulls/2026-08-30/),
+battery: [`repulls/analyze_repull.py`](../../../data/research/2026-08-29-deep-tail-fade/repulls/analyze_repull.py).
+
+- **Pull integrity:** 13-coin 1h set + BTC/ETH/SOL 4h, 100 bars each, verified
+  against the base corpus — 0 gaps, 0 dupes, **0 OHLCV mismatches** on 78–94
+  overlapping bars per series. New out-of-sample: **20–22 1h bars per coin**
+  (~1 day), 6 4h bars per major.
+- **THE cell (new-only, >90th-pct stretch, VWAP4; thresholds calibrated on the
+  base window, events strictly after it): n=9, hit 66.7% ±30.8pp, edge
+  +36.7 bps/bar.** Direction consistent with the thesis; the pre-registered
+  failure reading (hit ≤55% or edge ≤0, *sustained*) is not triggered. But
+  n=9 with a ±31pp interval is nearly uninformative — this is "no
+  contradiction," not "survival." One window decides nothing.
+- **The majors produced zero events.** Every one of the 9 deep-tail events (and
+  all 18 >75th events) is on alts; BTC/ETH/SOL were too quiet to stretch in
+  this window. The compiled strategy's explicit universe (BTC/ETH after the
+  BG-14 width reduction) therefore has **no out-of-sample evidence yet** — the
+  pooled cell above is evidence for the effect, not for that universe.
+- **Combined corpus** (base + repull, thresholds over the full window):
+  >90th cell 59.4% ±8.0pp, +8.1 bps (n=143) — vs the in-sample 61.5% ±8.8,
+  +13.2 (n=117). Same direction, slightly diluted; sweep shapes unchanged
+  (monotone in threshold; W=4 still not special — W=8: 61.2%/+15.8 at >75th).
+- **Funding confound: unresolved.** New hours' sign mix — BTC 0/20 negative,
+  ETH 0/20, SOL 1/20. Still an essentially all-positive-funding regime; the
+  FUNDING leg stays context, its apparent alignment still confounded with side.
+  (Note: the `fetch_funding.py` the protocol references was never preserved;
+  the fetch was reconstructed from the recorded shape + the public API, and
+  the repull saves the raw rows verbatim in `funding_raw.json`.)
+- **Next pull due ≤ 2026-09-03** (100-bar window scrolls off ~4d4h after this
+  one). The verdict on the deep-tail premise accrues across pulls; nothing is
+  claimed from this one alone.

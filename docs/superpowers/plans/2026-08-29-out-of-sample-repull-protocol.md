@@ -48,3 +48,11 @@ Every 3–4 days. First run due **2026-09-01/02**. Scheduling this as an
 autonomous job is NOT reliable — the BattleGrid connector needs interactive
 authentication and a headless run may wake without it; run it inside a normal
 session on the user's ask.
+
+## Run log
+
+- **Run 1, 2026-08-30** (a day early; the window scrolls, early is safe):
+  `repulls/2026-08-30/` + addendum in the research spec. THE cell: n=9,
+  66.7% ±30.8, +36.7 bps — no contradiction, n tiny, majors had zero events.
+  Battery script for future runs: `repulls/analyze_repull.py` (run it, then
+  write the dated addendum). Next pull due ≤ **2026-09-03**.

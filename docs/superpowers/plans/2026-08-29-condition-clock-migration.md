@@ -214,10 +214,15 @@ sent), `closes > 1`, non-default `entry` values and their runtime semantics.
 
 - [ ] Create + verify + auto-archive per P2 (doc 20 §5 template), then registry
       `new_entry` + checklist per doc 20 §6, commit both.
-- [ ] Out-of-sample research re-pull (read-only, cheap): same 12+10 candle pulls
+- [x] Out-of-sample research re-pull (read-only, cheap): same 12+10 candle pulls
       on a later date; rerun `test_c_wide.py` against the new window; record
       whether the >90th-pct 1h reversion cell survives. The funding-side
       confound resolves only in a window with mixed funding signs.
+      **Run 1 executed 2026-08-30** per the re-pull protocol: THE cell n=9,
+      66.7% ±30.8pp, +36.7 bps — direction consistent, n far below inference,
+      zero major-coin events (no evidence yet for the BTC/ETH universe);
+      funding still not mixed-sign (1/60 negative hours). Addendum in the
+      research spec; next pull due ≤ 2026-09-03.
 - [ ] Binding/deployment: **never** — user-only, always (P4).
 
 ## Session hand-off state (2026-08-29, session 1d58af07)
