@@ -122,15 +122,44 @@ instance #3 (required-but-unpublished) has resolved:
 
 ## Step 3 · The compile (live; per-instance authorization REQUIRED)
 
-- [ ] Obtain, verbatim from the user in that session: *"I authorize ONE
+- [x] Obtain, verbatim from the user in that session: *"I authorize ONE
       compile_strategy_plan call for Deep-Tail Fade in this session — compile
-      only, nothing applied."*
-- [ ] ONE compile. Record verbatim into `data/audit/` (extend the existing
+      only, nothing applied."* (Received verbatim, 2026-08-30.)
+- [x] ONE compile. Record verbatim into `data/audit/` (extend the existing
       dry-run file; planToken as length+sha256 only; token left to expire).
-- [ ] If refused: the refusal is the finding; update this plan, stop.
-- [ ] If viable: check `postState` — cadence INTRADAY/4h, minted sectionKeys,
-      13 weighted rules, execution defaults, and what the server did with
-      `clock`/`closes`/`notes`/`entry`. Settle the open questions in doc 16.
+      (v3 body submitted unmodified; error response only, no compile record or
+      token minted — nothing to redact, nothing outstanding.)
+- [x] If refused: the refusal is the finding; update this plan, stop.
+- [ ] ~~If viable~~ — not reached. `postState` checks and the open questions
+      (`notes: null`, `closes > 1`, `entry` handling) remain open.
+
+### Step 3 verdict (2026-08-30): refused by BG-14, NOT by the clock surface
+
+`VALIDATION_ERROR: Strategy report preview mcp_result_bytes limit exceeded:
+262935 > 256000.` Full record: the `compile_refusal_preview_byte_cap_2026-08-30`
+probe in `data/audit/compile_dry_run_2026-08-29-deep-tail-fade.json`.
+
+**The migration itself passed.** The 2026-08-29 v2 refusal
+(`CONDITION_CLOCK_OPERAND_ILLEGAL`, same report shape and tickers) proves the
+clock-operand rule runs before the preview is built; v3 reaching the preview
+stage means `clock`/`closes`/`notes`/`entry` and the LIVE/CLOSE policy drew no
+refusal from input validation or the clock compiler rule.
+
+**The new blocker is report width vs the preview cap.** The explicit-3-tickers
+assumption was calibrated on the 11-custom-column trend-continuation shape
+(2026-08-28); Deep-Tail Fade carries 15 custom columns and overflows by 2.7%
+even at 3 tickers. (Report-width effect vs platform-side preview growth since
+2026-08-29 cannot be separated from here — v2 never reached the preview stage.)
+
+**Decision space for the next authorized attempt** (each option changes the
+thesis record and needs its own ONE-compile authorization; not executed now):
+
+- (a) Drop to 2 tickers (BTC/ETH) — keeps every context column, costs SOL
+      coverage; ~1/3 preview reduction, far more than the needed 3%.
+- (b) Trim context columns (e.g. `FUNDING_LABEL`, `REGIME_MOM` — the agent
+      still sees funding level/aggregate and regime trend/vol) — keeps the
+      3-major universe the research targeted.
+- (c) Both, if (a) or (b) alone still refuses — only a compile can measure.
 
 ## Step 4 · Beyond the compile (each its own user authorization)
 
