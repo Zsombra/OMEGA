@@ -384,6 +384,23 @@ The standing-rules addendum this instance earns:
   those defaults rather than inventing semantics. The next session's schema may
   already declare what refused you today.
 
+### Drift instance #4: the entry axis grew mid-session (2026-08-30)
+
+Hours after the viable v4 compile, the identical body was refused at the
+connector input layer: `entry` now REQUIRES `levelSource`
+(`SWING_HIGH | SWING_LOW | BOLLINGER_UPPER | BOLLINGER_LOWER`),
+`levelOffsetAtrMultiple` (number) and `validForBars` (number) — while the
+published schema, re-read immediately after, still declares only the four
+original fields. Required-but-unpublished again, deployed between two calls in
+the same session. The standing rule held exactly: `get_strategy(6a8bca67)`
+showed the platform had silently re-migrated existing records (no revision
+bump, again) with `levelSource: "SWING_HIGH"`, `levelOffsetAtrMultiple: 0`,
+`validForBars: 4` — mirrored verbatim (SWING_HIGH sits on a both-directions
+strategy; not interpreted), and the 7-field form compiled viable and applied.
+An input-layer `-32602` mints no compile record and no token, so an amended
+resubmission is the same authorized call (2026-08-29 precedent). Record:
+[`deep_tail_fade_create_2026-08-30.json`](../data/audit/deep_tail_fade_create_2026-08-30.json).
+
 ### The loop closed viable on the new surface (2026-08-30)
 
 Later the same session, the migrated generator's Deep-Tail Fade CREATE compiled

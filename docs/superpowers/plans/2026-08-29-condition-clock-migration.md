@@ -212,8 +212,18 @@ sent), `closes > 1`, non-default `entry` values and their runtime semantics.
 
 ## Step 4 · Beyond the compile (each its own user authorization)
 
-- [ ] Create + verify + auto-archive per P2 (doc 20 §5 template), then registry
+- [x] Create + verify + auto-archive per P2 (doc 20 §5 template), then registry
       `new_entry` + checklist per doc 20 §6, commit both.
+      **Executed 2026-08-30** under three verbatim user authorizations (fresh
+      compile / ONE apply / archive-immediately). En route: **drift instance
+      #4** — the v4 body that compiled viable hours earlier bounced at the
+      input layer because `entry` grew three required-but-unpublished fields;
+      mirrored from `6a8bca67`'s silent re-migration (`SWING_HIGH`/0/4) as v5,
+      which compiled **viable** and applied first-try. Strategy
+      `b9438519-8223-4ef1-a3c3-6f4592bb823d` rev 1 verified ALL-PASS by
+      scripted diff, archived to rev 2, quota returned, never bound. Records:
+      `data/audit/deep_tail_fade_create_2026-08-30.json`, registry + checklist
+      in `data/created/`. `wire()`'s entry mirror updated to the 7-field form.
 - [x] Out-of-sample research re-pull (read-only, cheap): same 12+10 candle pulls
       on a later date; rerun `test_c_wide.py` against the new window; record
       whether the >90th-pct 1h reversion cell survives. The funding-side

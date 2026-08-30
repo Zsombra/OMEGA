@@ -166,12 +166,17 @@ def test_custom_sections_carry_provenance_notes(name):
 def test_wire_emits_the_platform_migration_entry(name):
     """entry is REQUIRED on CREATE since 2026-08-30. Values mirror the platform's
     own migration of existing records (6a8bca67 read-back: AT_SIGNAL, confirmTf =
-    the anchor timeframe, closes 1, bandAtrMultiple 1) - semantics unmeasured, so
-    nothing else may be emitted."""
+    the anchor timeframe, closes 1, bandAtrMultiple 1; drift instance #4 later
+    the same day added levelSource/levelOffsetAtrMultiple/validForBars, mirrored
+    from the same record's silent re-migration) - semantics unmeasured, so
+    nothing else may be emitted. The 7-field form compiled viable and
+    round-tripped verbatim (b9438519, deep_tail_fade_create_2026-08-30.json)."""
     p = plan(PRESETS[name])
     assert p.wire()["entry"] == {"trigger": "AT_SIGNAL",
                                  "confirmTf": p.thesis.anchor,
-                                 "closes": 1, "bandAtrMultiple": 1}
+                                 "closes": 1, "bandAtrMultiple": 1,
+                                 "levelSource": "SWING_HIGH",
+                                 "levelOffsetAtrMultiple": 0, "validForBars": 4}
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))

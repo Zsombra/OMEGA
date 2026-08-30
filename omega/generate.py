@@ -426,8 +426,15 @@ class StrategyPlan:
             # mirror the platform's own migration of existing records, read back
             # from 6a8bca67 (confirmTf = the anchor timeframe); semantics are
             # unmeasured, so nothing else is emitted (plan Step 0 amendment).
+            # Drift instance #4, same day: the runtime validator grew three MORE
+            # required fields the published schema does not declare; migration
+            # defaults re-read from 6a8bca67 (levelSource SWING_HIGH even on a
+            # both-directions strategy - mirrored, not interpreted). The 7-field
+            # form compiled viable and round-tripped verbatim (b9438519).
             "entry": {"trigger": "AT_SIGNAL", "confirmTf": self.thesis.anchor,
-                      "closes": 1, "bandAtrMultiple": 1},
+                      "closes": 1, "bandAtrMultiple": 1,
+                      "levelSource": "SWING_HIGH", "levelOffsetAtrMultiple": 0,
+                      "validForBars": 4},
         }
         if self.thesis.execution:
             out.update(self.thesis.execution)   # validated in critique(); keys are API fields

@@ -1,0 +1,48 @@
+{
+  "id": "b9438519-8223-4ef1-a3c3-6f4592bb823d",
+  "createdDate": "2026-08-30",
+  "thesis": {
+    "name": "Deep-Tail Fade",
+    "tagline": "Fade only the extreme stretch",
+    "description": "1h contrarian reversion on majors. Research-derived (2026-08-29, 13-coin candle study): stretch reversion at 1h concentrates in the deep tail (>90th pct stretch: 61.5% hit, +13 bps/bar) and is strongest on majors; volume-weighted references added nothing over plain means, so the native Bollinger machinery carries the thesis. Wins are small and losses are big when stretches continue - selectivity is the whole game.",
+    "anchor": "1h",
+    "stance": "FADE",
+    "gate": 0.65,
+    "weights": {
+      "BOLLINGER": 3,
+      "RSI": 2
+    },
+    "context": [
+      "MFI",
+      "REGIME",
+      "CVD",
+      "FUNDING"
+    ],
+    "required": [],
+    "coin_selection": {
+      "mode": "explicit",
+      "tickers": [
+        "BTC",
+        "ETH"
+      ]
+    },
+    "execution": null,
+    "_universe_note": "Option A (user-chosen 2026-08-30): BTC/ETH, reduced from the research's BTC/ETH/SOL after the BG-14 preview byte-cap refusal at 3 tickers"
+  },
+  "revisions": [
+    {
+      "date": "2026-08-30",
+      "revision": 1,
+      "change": "CREATE applied from compile_body_deep_tail_fade_v5.json (v4 + mirrored 7-field entry) - viable, verified ALL PASS"
+    },
+    {
+      "date": "2026-08-30",
+      "revision": 2,
+      "change": "archived per user disposition - content intact, quota slot returned"
+    }
+  ],
+  "disposition": "archived immediately after verification (P2; restorable)",
+  "auditRecords": [
+    "data/audit/deep_tail_fade_create_2026-08-30.json"
+  ]
+}

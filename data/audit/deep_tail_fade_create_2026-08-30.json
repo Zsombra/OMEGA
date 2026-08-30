@@ -1,0 +1,73 @@
+{
+  "_what": "The SECOND omega-generated strategy ever applied, and the first on the condition-clock + entry surface. Step 4 item 1 of the migration plan (P2: create + verify + auto-archive), under three explicit user authorizations received verbatim in-session: the fresh compile, the ONE apply, and the archive-immediately disposition.",
+  "when": "2026-08-30, condition-clock-migration session, after re-pull 1 (commit 4a006db)",
+  "sequence": {
+    "0_drift_instance_4": {
+      "_what": "The v5 amendment exists because the platform drifted AGAIN mid-session: the v4 body that compiled VIABLE hours earlier (compile_viable_option_a_2026-08-30) was refused at the connector input layer - entry gained three REQUIRED fields the published schema still does not declare (re-read via ToolSearch immediately after: entry still declares only trigger/confirmTf/closes/bandAtrMultiple).",
+      "refusalVerbatim": {
+        "code": "MCP error -32602",
+        "missing_required": {
+          "entry.levelSource": "'SWING_HIGH' | 'SWING_LOW' | 'BOLLINGER_UPPER' | 'BOLLINGER_LOWER'",
+          "entry.levelOffsetAtrMultiple": "number",
+          "entry.validForBars": "number"
+        }
+      },
+      "mirror_read": "get_strategy(6a8bca67, includeInactive) - the platform migrated existing records again with NO revision bump (still revision 5): entry now carries levelSource='SWING_HIGH', levelOffsetAtrMultiple=0, validForBars=4. Copied exactly; note the platform assigned the directional-looking SWING_HIGH to a strategy trading BOTH directions - not interpreted, just mirrored.",
+      "accounting": "the -32602 bounce minted no compile record and no token (2026-08-29 precedent), so the ONE-compile authorization was not spent by it; the amended v5 submission is the authorized call"
+    },
+    "1_compile": {
+      "request": "compile_body_deep_tail_fade_v5.json (= v4 + the three mirrored entry fields), sha256 0d1af9ed35f4a48fea0c335cab9975fc7b465ec2e8cb2f7116bb89d54c3c959a, submitted verbatim",
+      "result": {
+        "viable": true,
+        "operation": "CREATE",
+        "proposedRevision": 1,
+        "postStateId": "b9438519-8223-4ef1-a3c3-6f4592bb823d",
+        "expiresAt": "2026-08-30T04:44:39.568Z"
+      },
+      "provisionalAdmission": {
+        "activePrivateCount": 18,
+        "activePrivateLimit": 25,
+        "quotaAvailable": true,
+        "nameAvailable": true,
+        "_note": "18/25, not the 24/25 seen at the earlier viable compile - the count moved between compiles without any action from this session; observed, not explained"
+      },
+      "planToken": {
+        "_redacted": true,
+        "length": 686,
+        "sha256": "acf10ee2811f766e16608fe994802db714899ebaa347c55206bed85bb4bb0c53"
+      }
+    },
+    "2_apply": {
+      "call": "apply_strategy_plan {confirm: true, planToken} - no plan key (doc 16 rule). First attempt succeeded within the token window; no retry.",
+      "appliedImpactVerbatim": {
+        "operation": "CREATE",
+        "strategyId": "b9438519-8223-4ef1-a3c3-6f4592bb823d",
+        "previousRevision": null,
+        "committedRevision": 1,
+        "changedAxes": [
+          "IDENTITY",
+          "TIMEFRAME_PROFILE",
+          "REPORT",
+          "MARKET_READ",
+          "CONDITIONS",
+          "SETUP_GATES",
+          "SIGNAL_RULES",
+          "LIFECYCLE"
+        ],
+        "boundAgentCount": 0,
+        "propagatedAgentCount": 0,
+        "openPositionCount": 0
+      }
+    },
+    "3_verify": {
+      "how": "independent get_strategy read-back diffed by script against the compile's approved postState",
+      "result": "ALL 16 checks PASS: id, cadence INTRADAY/4h, server-minted sectionKeys (custom:8daee387..., custom:a0b63dc7...), notes provenance strings persisted, all section columns, all 7 conditions' clock/closes/verdict (CORE pair CLOSE, five LIVE, closes 1), the 7-field entry echoed exactly, the 13 weighted rules in the dense 84, gate 0.65 / minRequiredCount 0, all execution params at measured defaults (R:R 1.5), lifecycle (revision 1, active, bound 0, positions 0)",
+      "server_rewrites_observed": "null sectionKey column refs rewritten to resolved sections (reference-pairs, session-field, custom:...) at persist - same behavior as the 2026-08-28 first apply"
+    },
+    "4_archive": {
+      "call": "archive_strategy(strategyId, expectedRevision: 1, confirm: true) - the user's disposition: archive immediately after verification",
+      "result": "revision 2, isActive false, content byte-identical to revision 1 on every content axis, boundAgentCount 0, updatedAt 2026-08-30T04:41:44.382Z; quota slot returned"
+    }
+  },
+  "_interpretation": "The P2 loop closed viable-first-try on the migrated surface: clock policy, notes strings, and the 7-field mirrored entry all persisted verbatim and survived archive. Drift instance #4 (entry: three required-but-unpublished fields, silent storage migration, published schema still behind) is the session's new platform fact - omega's wire() entry mirror must grow the three fields. Never bound, never deployed; restore/bind/deploy are named in the checklist for the USER only."
+}
