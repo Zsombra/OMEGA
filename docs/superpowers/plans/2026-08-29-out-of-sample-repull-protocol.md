@@ -103,8 +103,9 @@ session on the user's ask.
   all 16 series; the 4h series show a clean start ≈ 2026-08-22T08:00Z). Recorded
   verbatim in `data/audit/candle_restatement_2026-09-02.json`; transcription ruled
   out. The canonical `analyze_repull.py` stopped on `COLLISION DISAGREES` by design
-  and was not modified — numbers from `analyze_repull_sensitivity.py` (identical
-  math + explicit collision policy; THE cell identical under both). THE cell,
+  and was not modified — numbers from a same-day sensitivity copy (identical
+  math + explicit collision policy; THE cell identical under both) since folded
+  into the canonical script and removed. THE cell,
   cumulative new-only: n=58, 58.6% ±12.7, +1.8 bps — not triggered; this window
   alone: n=49, 57.1% ±13.9, **−4.6 bps** — edge failed for the window, not yet
   "sustained". Majors n=7 at the cell (uninformative); majors at >75th 35% / −13
