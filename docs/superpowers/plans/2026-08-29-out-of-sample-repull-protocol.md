@@ -22,16 +22,26 @@ re-pull" is sufficient; no write-path authorization is involved.
       `data/research/2026-08-29-deep-tail-fade/fetch_funding.py` shape) —
       also note the **sign mix**: the FUNDING-leg confound resolves only in a
       window containing negative-funding hours.
-- [ ] Save under `data/research/2026-08-29-deep-tail-fade/repulls/<YYYY-MM-DD>/`
-      in the same `candles.json` format (dedupe by timestamp; the base corpus
-      script shows the shape). Commit the data — it is irreplaceable.
+- [ ] Save each response's `candles` array VERBATIM to
+      `data/research/2026-08-29-deep-tail-fade/repulls/<YYYY-MM-DD>/raw/<TICKER>_<tf>.json`
+      (16 files; a subagent keeps the payloads out of the main context — retry a
+      failed call once, record the error verbatim, never fabricate rows).
+- [ ] `python …/repulls/verify_repull.py <YYYY-MM-DD>` — checks against EVERY prior
+      source; fails on gaps, dupes, zero overlap, or a price restated by >1%;
+      RECORDS (does not fail) volume/tick revisions to
+      `data/audit/candle_restatement_<date>.json`. See the 2026-09-02 amendment.
+- [ ] `python …/repulls/assemble_repull.py <YYYY-MM-DD>` — writes `candles.json`
+      and `funding_raw.json` (continues from the latest funding row anywhere in
+      the record). Commit the data — it is irreplaceable.
 
 ## The analysis (per run, offline)
 
 - [ ] Rebuild the combined per-coin 1h series (base corpus + all repulls,
       deduped by timestamp; gaps are recorded, not interpolated).
-- [ ] Rerun the `test_c_wide.py` battery on the combined corpus AND on the
-      new-window-only slice:
+- [ ] `python …/repulls/analyze_repull.py` (identical math to `test_c_wide.py`;
+      `POLICY=latest` by default, see the amendment) on the combined corpus AND
+      on the new-only slice (cumulative across repulls; `WINDOW=last` gives the
+      single-window cut as a supplementary number, never as THE number):
       reversion hit/edge at >50/75/90th pct stretch, VWAP4-vs-SMA4 ablation,
       W∈{3,4,6,8} sweep.
 - [ ] Record a dated addendum in
@@ -41,6 +51,37 @@ re-pull" is sufficient; no write-path authorization is involved.
       to keep us honest: sustained out-of-sample hit ≤ 55% or edge ≤ 0 at the
       deep tail = the thesis's premise failed and the registry entry should say
       so; do not move the goalposts to a different cell that happens to work.
+
+## Amendment 2026-09-02 · the platform restates served bars
+
+Re-pull 2 found that `get_coin_candles` returns different values for bars it had
+already served: on 2026-09-02 every series differed from the 08-29/08-30 record
+(253 bars, 270 fields — volume revised upward on 235, never down; prices by one to
+a few ticks on 35, max 0.23%; the 4h series show a clean start ≈ 2026-08-22T08:00Z).
+Transcription was ruled out three ways; verbatim record in
+`data/audit/candle_restatement_2026-09-02.json`. The cause is unknown and is not
+inferred here.
+
+Two rules written above therefore had to change, and this is a **post-hoc
+amendment** — made after seeing the data, and recorded as such:
+
+1. **Integrity.** "0 OHLCV mismatches" is no longer attainable. `verify_repull.py`
+   fails on gaps, duplicates, zero overlap, or any price field restated by more
+   than **1%** (chosen 2026-09-02 as well above the observed 0.23% tick noise);
+   every other difference is recorded verbatim to `data/audit/` and reported, not
+   failed. A recorded revision is still a finding to mention in the addendum.
+2. **Collisions in the battery.** `analyze_repull.py` no longer refuses to merge
+   disagreeing sources; it resolves them explicitly with `POLICY=latest` (the
+   platform's current view) by default, `POLICY=first` reproducing every earlier
+   run's pool, and `POLICY=strict` restoring the original refusal. It aborts under
+   every policy if a close differs by more than 1%.
+
+**Why this is not moving the goalposts:** the amendment changes how sources are
+merged, not the cell, the thresholds, the window, the coin set, or the
+pre-registered reading. It was adopted only after THE cell had been computed under
+both policies and found identical (n=58, 58.6% ±12.7pp, +1.8 bps). If a future
+restatement ever makes the two policies disagree at the cell, report both and say
+so; do not pick the one that reads better.
 
 ## Cadence
 
