@@ -58,7 +58,7 @@ session on the user's ask.
   write the dated addendum). Next pull due ≤ **2026-09-03**.
 - **Run 2, 2026-09-02** (deadline −1): `repulls/2026-09-02/` + addendum in the
   research spec. Integrity: 0 gaps, 0 dupes — but **the platform restated
-  previously served bars** (volume up on 377 fields, small price changes on 48,
+  previously served bars** (volume up on 235 fields, small price changes on 35,
   all 16 series; the 4h series show a clean start ≈ 2026-08-22T08:00Z). Recorded
   verbatim in `data/audit/candle_restatement_2026-09-02.json`; transcription ruled
   out. The canonical `analyze_repull.py` stopped on `COLLISION DISAGREES` by design

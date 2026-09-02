@@ -120,14 +120,14 @@ under both policies.
   0 gaps, 0 dupes; 27–28 (1h) / 82 (4h) bars overlap the prior record. New
   out-of-sample: **72–73 1h bars per coin** (~3 days), 18 4h bars per major.
 - **FINDING — the platform restated previously served bars.** Every series differs
-  from what the same endpoint served on 08-29/08-30: 253 bars, 425 fields —
-  **volume on 377** (every one revised *upward*, none down), open 28, close 13,
-  high 5, low 2, all price changes one to a few ticks (max 0.23%). The 4h series
+  from what the same endpoint served on 08-29/08-30: 253 bars, 270 fields —
+  **volume on 235** (every one revised *upward*, none down), open 21, close 8,
+  high 4, low 2, all price changes one to a few ticks (max 0.23%). The 4h series
   show a clean start ≈ **2026-08-22T08:00Z**: 36–37 bars before it match exactly,
   42–46 of the 45–46 after it differ. Base (08-29) and re-pull 1 (08-30) had agreed
   on those same bars, so the served history changed between 08-30 and 09-02.
   Transcription is ruled out three ways (direct re-calls, exact 1h→4h aggregation on
-  72 bars, OHLC matching on ~99% of fields). Full verbatim old/new record:
+  72 bars, OHLC matching on ~98.5% of fields). Full verbatim old/new record:
   [`data/audit/candle_restatement_2026-09-02.json`](../../../data/audit/candle_restatement_2026-09-02.json).
   The cause is **unknown**; "late trades folded in" fits the shape but is inferred,
   not measured. `analyze_repull.py` stopped with

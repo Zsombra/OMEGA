@@ -17,14 +17,14 @@
    "_note": "every volume revision is an increase - consistent with trades being added to bars, not with re-pricing"
   },
   "structure": "The three 4h series (which reach back to 2026-08-16) show a clean start: 36-37 bars before 2026-08-22T08:00Z (SOL: 12:00Z) match EXACTLY on all five fields, and 42-46 of the 45-46 bars from there on differ. The 1h overlap (from 2026-08-28T21:00Z) lies entirely inside the affected range, so 3-24 of 27-28 bars per coin differ.",
-  "magnitude": "Volume: mostly <1% relative, max 34.7% (one MET bar), 14.5% (LDO), 8.5% (PEPE), 5.8% (CAKE), 4.7% (BTC 4h). Prices: 48 fields total, all tiny - max 0.23% (MELANIA open), BTC 1h close 78146->78145 (one tick).",
+  "magnitude": "Volume: mostly <1% relative, max 34.7% (one MET bar), 14.5% (LDO), 8.5% (PEPE), 5.8% (CAKE), 4.7% (BTC 4h). Prices: 35 fields total (open 21, close 8, high 4, low 2), all tiny - max 0.23% (MELANIA open), BTC 1h close 78146->78145 (one tick).",
   "timing_inference": "Base (08-29) and re-pull 1 (08-30) matched exactly on their overlap, including bars inside the now-affected range. So the served history changed AFTER 2026-08-30T00:xxZ and BEFORE 2026-09-02T01:36Z. Whether it was one discrete event (a backfill/re-aggregation from ~08-22) or a slow trickle that happened to be zero across 08-29->08-30 is NOT distinguishable from two pulls; a discrete event is the simpler reading. The CAUSE is unknown and not inferred."
  },
  "transcription_ruled_out": {
   "why_it_matters": "the 16 raw files were written by a subagent re-typing the tool responses; a transcription slip would look like a restatement",
   "check_1_direct_recalls": "get_coin_candles re-called from the main session for BTC 1h, BTC 4h and AIXBT 1h (~01:40Z); 45 values read directly off those responses (22 BTC 1h volumes + the 08-29T21:00 close, 15 BTC 4h volumes, 8 AIXBT bars incl. the restated opens) were compared programmatically to the saved files: 0 disagreements",
   "check_2_1h_to_4h_aggregation": "for BTC/ETH/SOL, every 4h bar fully covered by the pull's own 1h bars (24 per coin, 72 total) equals the exact aggregate of those 1h bars (open of first, close of last, max high, min low, summed volume to 1e-4): 0 inconsistent. Independently transcribed files that sum exactly are not mis-typed.",
-  "check_3_selectivity": "OHLC fields matched the prior corpus on ~99% of overlap fields while volume differed on most; a transcription failure would not select the volume field",
+  "check_3_selectivity": "OHLC fields matched the prior corpus on ~98.5% of overlap fields (2,365 of 2,400) while volume differed on most; a transcription failure would not select the volume field",
   "verdict": "the saved files faithfully hold what the platform served on 2026-09-02; the platform's served history changed"
  },
  "canonical_battery_response": {
@@ -3072,5 +3072,6 @@
    }
   }
  ],
- "_interpretation": "Measured: the platform's candle history is not immutable; served values for closed bars from ~2026-08-22 onward were revised between 2026-08-30 and 2026-09-02, upward in volume on 377 fields and by one to a few ticks in price on 48 fields. Inferred (not measured): the pattern fits late trade data being folded into existing bars in one pass. Unknown: the cause, whether it recurs, and whether older bars will be revised again. Consequence for the research: THE cell is unaffected by which version is used; the honesty consequence is that 'verified against the prior corpus' can no longer mean 'byte-identical'."
+ "_interpretation": "Measured: the platform's candle history is not immutable; served values for closed bars from ~2026-08-22 onward were revised between 2026-08-30 and 2026-09-02, upward in volume on 235 fields and by one to a few ticks in price on 35 fields. Inferred (not measured): the pattern fits late trade data being folded into existing bars in one pass. Unknown: the cause, whether it recurs, and whether older bars will be revised again. Consequence for the research: THE cell is unaffected by which version is used; the honesty consequence is that 'verified against the prior corpus' can no longer mean 'byte-identical'.",
+ "_erratum": "The first commit of this record (cbe9ce8) and its message quoted 425 fields / volume 377 / open 28 / close 13 / high 5 / low 2. Those came from a diagnostic that compared each bar against BOTH prior sources and counted a bar twice when it sat in both. The programmatic counts in summary.fields_changed_total (270 fields: volume 235, open 21, close 8, high 4, low 2) are the correct ones; bar count (253), structure, magnitudes and THE cell were never affected."
 }
