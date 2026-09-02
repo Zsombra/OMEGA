@@ -103,3 +103,77 @@ battery: [`repulls/analyze_repull.py`](../../../data/research/2026-08-29-deep-ta
 - **Next pull due ≤ 2026-09-03** (100-bar window scrolls off ~4d4h after this
   one). The verdict on the deep-tail premise accrues across pulls; nothing is
   claimed from this one alone.
+
+## Out-of-sample addendum · re-pull 2, 2026-09-02
+
+Second run of [the re-pull protocol](../plans/2026-08-29-out-of-sample-repull-protocol.md),
+one day inside the ≤ 2026-09-03 deadline. Data:
+[`repulls/2026-09-02/`](../../../data/research/2026-08-29-deep-tail-fade/repulls/2026-09-02/).
+Battery: the canonical
+[`repulls/analyze_repull.py`](../../../data/research/2026-08-29-deep-tail-fade/repulls/analyze_repull.py)
+**refused to run on this corpus** (see the finding below); every number here comes from
+[`repulls/analyze_repull_sensitivity.py`](../../../data/research/2026-08-29-deep-tail-fade/repulls/analyze_repull_sensitivity.py),
+a copy with identical math plus an explicit collision policy — and THE cell is the same
+under both policies.
+
+- **Pull integrity:** 13-coin 1h set + BTC/ETH/SOL 4h, 16/16 series, 100 bars each,
+  0 gaps, 0 dupes; 27–28 (1h) / 82 (4h) bars overlap the prior record. New
+  out-of-sample: **72–73 1h bars per coin** (~3 days), 18 4h bars per major.
+- **FINDING — the platform restated previously served bars.** Every series differs
+  from what the same endpoint served on 08-29/08-30: 253 bars, 425 fields —
+  **volume on 377** (every one revised *upward*, none down), open 28, close 13,
+  high 5, low 2, all price changes one to a few ticks (max 0.23%). The 4h series
+  show a clean start ≈ **2026-08-22T08:00Z**: 36–37 bars before it match exactly,
+  42–46 of the 45–46 after it differ. Base (08-29) and re-pull 1 (08-30) had agreed
+  on those same bars, so the served history changed between 08-30 and 09-02.
+  Transcription is ruled out three ways (direct re-calls, exact 1h→4h aggregation on
+  72 bars, OHLC matching on ~99% of fields). Full verbatim old/new record:
+  [`data/audit/candle_restatement_2026-09-02.json`](../../../data/audit/candle_restatement_2026-09-02.json).
+  The cause is **unknown**; "late trades folded in" fits the shape but is inferred,
+  not measured. `analyze_repull.py` stopped with
+  `COLLISION DISAGREES: AIXBT_1h 2026-08-28T23:00:00.000Z (0.020327, 107406.0) vs (0.020327, 108026.0)`
+  exactly as designed and was **not modified**; choosing its collision policy is a
+  protocol change left to the user.
+- **THE cell (cumulative new-only, >90th-pct stretch, VWAP4, thresholds calibrated on
+  the base window, events strictly after it — i.e. *all* out-of-sample bars from both
+  runs): n=58, hit 58.6% ±12.7pp, edge +1.8 bps/bar.** Identical whether collisions
+  resolve first-seen or latest. The pre-registered failure reading (hit ≤55% or
+  edge ≤0, *sustained*) is **not triggered** — but the edge is within noise of zero
+  and the hit interval spans 46–71%.
+- **This window alone** (events after re-pull 1's last bar, same base-calibrated
+  thresholds; a supplementary cut, not THE number): n=49, hit 57.1% ±13.9pp,
+  **edge −4.6 bps/bar**. On the edge criterion this window reads as a failure;
+  one window is not "sustained". Run 1's +36.7 bps on n=9 is what keeps the
+  cumulative edge above zero. Direction of travel across the two runs: down.
+- **Per-coin split at the cell.** CAKE alone is 20 of the 58 events (10/20, 50%);
+  MET 6/7, MOODENG 3/3, TRUMP 3/4, PEPE 3/6, AIXBT 2/5, MELANIA 2/4, LDO 1/2;
+  HYPE and POPCAT 0 events. **Majors: n=7** (BTC 2/3, ETH 1/2, SOL 1/2),
+  57.1% ±36.7pp, +4.5 bps — uninformative; **BTC+ETH, the created strategy's
+  universe: n=5**, 60.0% ±42.9pp. The pooled cell is still alt evidence.
+- **The majors at the moderate stretch (>75th) went the wrong way:** n=40, hit
+  **35.0% ±14.8pp, edge −13.0 bps/bar** (BTC 3/11, ETH 6/17, SOL 5/12). Not THE
+  cell, and the interval is wide, but it is the first out-of-sample number on the
+  strategy's own universe with any weight, and it is adverse.
+- **Combined corpus** (base + both repulls): >90th 57.4% ±6.3pp, +4.0 bps (n=237),
+  vs in-sample 61.5% ±8.8, +13.2 (n=117) and run-1 combined 59.4% ±8.0, +8.1
+  (n=143) — monotone dilution across pulls. Sweep shapes unchanged; W=4 still not
+  special (W=8: 56.1% / +5.5 at >75th).
+- **Funding sign mix (73 new hours per coin):** BTC 0/73 negative and ETH 0/73 — both
+  pinned at exactly 0.0000125 every hour; **SOL 14/73 negative** (min −0.0000187),
+  the first negative-funding hours in the record. The FUNDING-leg confound is still
+  unresolved for BTC/ETH; SOL now offers a mixed window, not analysed here
+  (`funding_cvd_test.py` was not re-run — outside this task).
+- **Analysis thresholds ≠ the strategy's gates.** Percentile-calibrated stretch here;
+  fixed `%B < 0.05` / `RSI14 < 35` plus Bollinger signals in the compiled strategy.
+  The fixed-gate firing rate remains unmeasured; "n events here" says nothing about
+  whether the strategy would have fired.
+- **Still not established:** whether the deep-tail premise survives (cumulative
+  reading not triggered, single-window edge negative, n=58 too small to separate
+  +1.8 from 0); anything about BTC/ETH at the cell (n=5); the cause and recurrence of
+  the platform restatement; whether older bars get revised again; the collision
+  policy the canonical battery should adopt; `notes: null`, `closes > 1` and
+  non-default `entry` semantics (untouched, as before).
+- **Next pull due ≤ 2026-09-05** (hard limit ≈ 2026-09-06T04:00Z — the 100-bar window
+  must still reach back to 2026-09-02T00:00Z to overlap). Expect the integrity check
+  to flag volume mismatches again; whether that stays a stop-and-record finding or
+  becomes a tolerance is the user's protocol decision.

@@ -56,3 +56,18 @@ session on the user's ask.
   66.7% ±30.8, +36.7 bps — no contradiction, n tiny, majors had zero events.
   Battery script for future runs: `repulls/analyze_repull.py` (run it, then
   write the dated addendum). Next pull due ≤ **2026-09-03**.
+- **Run 2, 2026-09-02** (deadline −1): `repulls/2026-09-02/` + addendum in the
+  research spec. Integrity: 0 gaps, 0 dupes — but **the platform restated
+  previously served bars** (volume up on 377 fields, small price changes on 48,
+  all 16 series; the 4h series show a clean start ≈ 2026-08-22T08:00Z). Recorded
+  verbatim in `data/audit/candle_restatement_2026-09-02.json`; transcription ruled
+  out. The canonical `analyze_repull.py` stopped on `COLLISION DISAGREES` by design
+  and was not modified — numbers from `analyze_repull_sensitivity.py` (identical
+  math + explicit collision policy; THE cell identical under both). THE cell,
+  cumulative new-only: n=58, 58.6% ±12.7, +1.8 bps — not triggered; this window
+  alone: n=49, 57.1% ±13.9, **−4.6 bps** — edge failed for the window, not yet
+  "sustained". Majors n=7 at the cell (uninformative); majors at >75th 35% / −13
+  bps (n=40). Funding: SOL 14/73 hours negative (first ever), BTC/ETH 0/73.
+  **Open protocol decisions (user):** collision policy for the canonical script;
+  whether the integrity check should tolerate volume revisions. Next pull due
+  ≤ **2026-09-05** (hard limit ≈ 2026-09-06T04:00Z).

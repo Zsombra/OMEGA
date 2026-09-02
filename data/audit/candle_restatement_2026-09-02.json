@@ -1,0 +1,3076 @@
+{
+ "_what": "FINDING: the BattleGrid candle endpoint (get_coin_candles) RESTATED bars it had already served. Out-of-sample re-pull 2 (2026-09-02) was diffed, per the protocol, against every prior source (base corpus pulled 2026-08-29; re-pull 1 pulled 2026-08-30 - those two agreed with each other on 78-94 overlapping bars per series at the time). Every one of the 16 series now differs on previously served bars. This record holds every differing field verbatim (old = as served on 08-29/08-30 and stored in the repo; new = as served 2026-09-02 ~01:36Z and stored in repulls/2026-09-02/raw/).",
+ "when": "2026-09-02, handoff-plan session, Task 1 Step 3 (integrity check) - read-only; no platform write involved",
+ "summary": {
+  "series_affected": "16 of 16",
+  "bars_changed_total": 253,
+  "fields_changed_total": {
+   "open": 21,
+   "volume": 235,
+   "high": 4,
+   "close": 8,
+   "low": 2
+  },
+  "volume_direction": {
+   "revised_upward": 235,
+   "revised_downward": 0,
+   "_note": "every volume revision is an increase - consistent with trades being added to bars, not with re-pricing"
+  },
+  "structure": "The three 4h series (which reach back to 2026-08-16) show a clean start: 36-37 bars before 2026-08-22T08:00Z (SOL: 12:00Z) match EXACTLY on all five fields, and 42-46 of the 45-46 bars from there on differ. The 1h overlap (from 2026-08-28T21:00Z) lies entirely inside the affected range, so 3-24 of 27-28 bars per coin differ.",
+  "magnitude": "Volume: mostly <1% relative, max 34.7% (one MET bar), 14.5% (LDO), 8.5% (PEPE), 5.8% (CAKE), 4.7% (BTC 4h). Prices: 48 fields total, all tiny - max 0.23% (MELANIA open), BTC 1h close 78146->78145 (one tick).",
+  "timing_inference": "Base (08-29) and re-pull 1 (08-30) matched exactly on their overlap, including bars inside the now-affected range. So the served history changed AFTER 2026-08-30T00:xxZ and BEFORE 2026-09-02T01:36Z. Whether it was one discrete event (a backfill/re-aggregation from ~08-22) or a slow trickle that happened to be zero across 08-29->08-30 is NOT distinguishable from two pulls; a discrete event is the simpler reading. The CAUSE is unknown and not inferred."
+ },
+ "transcription_ruled_out": {
+  "why_it_matters": "the 16 raw files were written by a subagent re-typing the tool responses; a transcription slip would look like a restatement",
+  "check_1_direct_recalls": "get_coin_candles re-called from the main session for BTC 1h, BTC 4h and AIXBT 1h (~01:40Z); 45 values read directly off those responses (22 BTC 1h volumes + the 08-29T21:00 close, 15 BTC 4h volumes, 8 AIXBT bars incl. the restated opens) were compared programmatically to the saved files: 0 disagreements",
+  "check_2_1h_to_4h_aggregation": "for BTC/ETH/SOL, every 4h bar fully covered by the pull's own 1h bars (24 per coin, 72 total) equals the exact aggregate of those 1h bars (open of first, close of last, max high, min low, summed volume to 1e-4): 0 inconsistent. Independently transcribed files that sum exactly are not mis-typed.",
+  "check_3_selectivity": "OHLC fields matched the prior corpus on ~99% of overlap fields while volume differed on most; a transcription failure would not select the volume field",
+  "verdict": "the saved files faithfully hold what the platform served on 2026-09-02; the platform's served history changed"
+ },
+ "canonical_battery_response": {
+  "command": "python data/research/2026-08-29-deep-tail-fade/repulls/analyze_repull.py",
+  "stdout_verbatim": "COLLISION DISAGREES: AIXBT_1h 2026-08-28T23:00:00.000Z (0.020327, 107406.0) vs (0.020327, 108026.0)",
+  "exit_code": 1,
+  "_note": "by design - the script asserts that two sources never disagree on (close, volume) for the same timestamp. It was NOT modified. Numbers for the addendum come from repulls/analyze_repull_sensitivity.py, a copy that differs only in (a) an explicit collision POLICY (first-seen | latest) and (b) an optional run-1 event cutoff; THE pre-registered cell is identical under both policies (235 collisions resolved either way)."
+ },
+ "protocol_consequences_NOT_acted_on": [
+  "the integrity check's 'any non-zero MISMATCH is a finding' rule is now known to fire on ordinary volume revisions; whether to compare OHLC strictly and volume with a tolerance, or to keep flagging and recording, is a protocol change for the user to decide",
+  "the canonical analyze_repull.py refuses the merged corpus; choosing a collision policy for it is a code change to a 'reuse unchanged' file - the user's call",
+  "prior-run numbers computed on first-seen values (run 1: n=9, 66.7%, +36.7) remain reproducible only under the first-seen policy; the raw files preserve both versions of every bar"
+ ],
+ "per_series": {
+  "AIXBT_1h": {
+   "overlap_bars": 28,
+   "bars_changed": 6,
+   "first_changed_bar": "2026-08-28T21:00:00.000Z",
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {
+    "open": 5,
+    "volume": 2,
+    "high": 1
+   },
+   "new_bars_not_previously_held": 72
+  },
+  "BTC_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 23,
+   "first_changed_bar": "2026-08-28T21:00:00.000Z",
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {
+    "volume": 23,
+    "close": 1
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "BTC_4h": {
+   "overlap_bars": 82,
+   "bars_changed": 46,
+   "first_changed_bar": "2026-08-22T08:00:00.000Z",
+   "bars_matched_before_first_change": 36,
+   "fields_changed": {
+    "volume": 46,
+    "close": 1
+   },
+   "new_bars_not_previously_held": 18
+  },
+  "CAKE_1h": {
+   "overlap_bars": 28,
+   "bars_changed": 4,
+   "first_changed_bar": "2026-08-29T10:00:00.000Z",
+   "bars_matched_before_first_change": 13,
+   "fields_changed": {
+    "volume": 2,
+    "open": 2,
+    "low": 1
+   },
+   "new_bars_not_previously_held": 72
+  },
+  "ETH_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 10,
+   "first_changed_bar": "2026-08-28T22:00:00.000Z",
+   "bars_matched_before_first_change": 1,
+   "fields_changed": {
+    "volume": 10,
+    "close": 1
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "ETH_4h": {
+   "overlap_bars": 82,
+   "bars_changed": 45,
+   "first_changed_bar": "2026-08-22T08:00:00.000Z",
+   "bars_matched_before_first_change": 36,
+   "fields_changed": {
+    "volume": 45,
+    "high": 1,
+    "close": 2
+   },
+   "new_bars_not_previously_held": 18
+  },
+  "HYPE_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 24,
+   "first_changed_bar": "2026-08-28T21:00:00.000Z",
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {
+    "volume": 24,
+    "close": 1
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "LDO_1h": {
+   "overlap_bars": 28,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-08-28T22:00:00.000Z",
+   "bars_matched_before_first_change": 1,
+   "fields_changed": {
+    "volume": 3
+   },
+   "new_bars_not_previously_held": 72
+  },
+  "MELANIA_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 7,
+   "first_changed_bar": "2026-08-29T09:00:00.000Z",
+   "bars_matched_before_first_change": 12,
+   "fields_changed": {
+    "open": 4,
+    "low": 1,
+    "high": 1,
+    "volume": 4
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "MET_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 9,
+   "first_changed_bar": "2026-08-28T21:00:00.000Z",
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {
+    "volume": 7,
+    "open": 3
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "MOODENG_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 6,
+   "first_changed_bar": "2026-08-28T22:00:00.000Z",
+   "bars_matched_before_first_change": 1,
+   "fields_changed": {
+    "volume": 3,
+    "open": 3,
+    "high": 1
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "PEPE_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-08-28T21:00:00.000Z",
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {
+    "volume": 2,
+    "open": 1
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "POPCAT_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 4,
+   "first_changed_bar": "2026-08-28T23:00:00.000Z",
+   "bars_matched_before_first_change": 2,
+   "fields_changed": {
+    "open": 3,
+    "volume": 1
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "SOL_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 10,
+   "first_changed_bar": "2026-08-28T22:00:00.000Z",
+   "bars_matched_before_first_change": 1,
+   "fields_changed": {
+    "volume": 10
+   },
+   "new_bars_not_previously_held": 73
+  },
+  "SOL_4h": {
+   "overlap_bars": 82,
+   "bars_changed": 42,
+   "first_changed_bar": "2026-08-22T12:00:00.000Z",
+   "bars_matched_before_first_change": 37,
+   "fields_changed": {
+    "volume": 42,
+    "close": 2
+   },
+   "new_bars_not_previously_held": 18
+  },
+  "TRUMP_1h": {
+   "overlap_bars": 27,
+   "bars_changed": 11,
+   "first_changed_bar": "2026-08-28T22:00:00.000Z",
+   "bars_matched_before_first_change": 1,
+   "fields_changed": {
+    "volume": 11
+   },
+   "new_bars_not_previously_held": 73
+  }
+ },
+ "differences_verbatim": [
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-08-28T21:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.02009,
+     "new": 0.020114
+    }
+   }
+  },
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-08-28T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.020327,
+     "new": 0.020315
+    },
+    "volume": {
+     "old": 107406,
+     "new": 108026
+    }
+   }
+  },
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-08-29T02:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.020309,
+     "new": 0.020286
+    }
+   }
+  },
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-08-29T05:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 121693,
+     "new": 123093
+    }
+   }
+  },
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-08-29T06:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.020262,
+     "new": 0.020241
+    },
+    "high": {
+     "old": 0.020262,
+     "new": 0.020242
+    }
+   }
+  },
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-08-29T10:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.020038,
+     "new": 0.020054
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-28T21:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 824.02159,
+     "new": 824.24774
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-28T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1444.28914,
+     "new": 1447.31464
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-28T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 904.45918,
+     "new": 904.86425
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 887.69297,
+     "new": 890.9506
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T01:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 230.23142,
+     "new": 230.2761
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T02:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 655.50947,
+     "new": 655.51848
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T03:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 426.48425,
+     "new": 426.60281
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 199.90476,
+     "new": 199.92893
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T05:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 287.21322,
+     "new": 287.32243
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T06:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 525.53682,
+     "new": 526.66067
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T07:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 642.03489,
+     "new": 650.30824
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 388.00532,
+     "new": 388.06589
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T09:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 289.4416,
+     "new": 289.81518
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T10:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 175.08456,
+     "new": 175.14233
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T11:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 122.02178,
+     "new": 122.09081
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 306.70331,
+     "new": 306.99937
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T13:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 214.80509,
+     "new": 214.86497
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T14:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1146.72179,
+     "new": 1148.26495
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T15:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 816.36338,
+     "new": 816.3655
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T17:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1006.93763,
+     "new": 1008.95507
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T19:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 682.30311,
+     "new": 682.31224
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 337.72838,
+     "new": 337.80233
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-08-29T21:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 78146,
+     "new": 78145
+    },
+    "volume": {
+     "old": 386.85404,
+     "new": 386.85919
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-22T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 8316.03829,
+     "new": 8322.31574
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-22T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 3785.2417,
+     "new": 3961.08775
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-22T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 3417.937,
+     "new": 3419.68803
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-22T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 3795.2454,
+     "new": 3797.4874
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-23T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2575.73662,
+     "new": 2575.7511
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-23T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 9436.83147,
+     "new": 9438.3357
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-23T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4688.0375,
+     "new": 4689.45696
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-23T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 6619.50923,
+     "new": 6619.97545
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-23T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2467.43808,
+     "new": 2471.66326
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-23T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 6797.53716,
+     "new": 6810.88788
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-24T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 6094.95824,
+     "new": 6101.85624
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-24T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4178.08894,
+     "new": 4181.86613
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-24T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 8651.1353,
+     "new": 8667.1177
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-24T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 79110,
+     "new": 79120
+    },
+    "volume": {
+     "old": 26350.49018,
+     "new": 26451.69454
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-24T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 13343.71654,
+     "new": 13354.54079
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-24T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4519.65111,
+     "new": 4520.55727
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-25T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 17330.69687,
+     "new": 17351.33915
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-25T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 9508.8995,
+     "new": 9511.58506
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-25T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 9566.38983,
+     "new": 9572.05003
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-25T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 13463.20645,
+     "new": 13467.93709
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-25T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 7558.08307,
+     "new": 7561.87237
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-25T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 11882.7327,
+     "new": 11893.8444
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-26T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 5012.87914,
+     "new": 5016.73084
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-26T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 5178.6641,
+     "new": 5185.44841
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-26T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 6244.61095,
+     "new": 6245.90853
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-26T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 13079.84506,
+     "new": 13086.65802
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-26T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 5892.47678,
+     "new": 5896.48775
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-26T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 7066.87886,
+     "new": 7068.44417
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-27T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 3231.39108,
+     "new": 3231.56493
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-27T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4048.26456,
+     "new": 4048.33158
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-27T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 14215.62448,
+     "new": 14220.46161
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-27T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 12488.6506,
+     "new": 12503.15981
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-27T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 7837.12015,
+     "new": 7867.05474
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-27T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4298.3468,
+     "new": 4298.43603
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-28T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 10426.25165,
+     "new": 10450.73155
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-28T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4106.95626,
+     "new": 4106.96765
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-28T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 5765.79362,
+     "new": 5767.199
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-28T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 16565.47093,
+     "new": 16602.58891
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-28T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 16677.32428,
+     "new": 16701.17746
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-28T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4135.10386,
+     "new": 4138.92777
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-29T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2199.91811,
+     "new": 2203.34799
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-29T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1654.68969,
+     "new": 1664.22027
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 974.55326,
+     "new": 975.11421
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-29T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2484.59357,
+     "new": 2486.49479
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4451.29906,
+     "new": 4453.32563
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-08-29T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1279.84317,
+     "new": 1279.92227
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-08-29T10:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 4655.8,
+     "new": 4779.4
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-08-29T14:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 1.7104,
+     "new": 1.7111
+    },
+    "low": {
+     "old": 1.7104,
+     "new": 1.7111
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1547.6,
+     "new": 1636.8
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-08-29T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 1.7217,
+     "new": 1.7216
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-28T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 9175.2964,
+     "new": 9179.9871
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 6970.222,
+     "new": 6978.4053
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1228.8475,
+     "new": 1228.8849
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T10:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 987.7938,
+     "new": 990.4938
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T14:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 13844.026,
+     "new": 13869.2172
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T18:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 6565.2063,
+     "new": 6566.102
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T19:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 13648.1347,
+     "new": 13650.4007
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 2451.8,
+     "new": 2451.7
+    },
+    "volume": {
+     "old": 2616.096,
+     "new": 2616.3324
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1152.9642,
+     "new": 1154.6465
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-08-29T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 7212.7585,
+     "new": 7221.7106
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-22T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 82435.0698,
+     "new": 82445.8874
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-22T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "high": {
+     "old": 2436.7,
+     "new": 2439
+    },
+    "volume": {
+     "old": 53539.9604,
+     "new": 54560.6198
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-22T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 55774.4783,
+     "new": 55789.2867
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-22T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 85345.2146,
+     "new": 85365.1185
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-23T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 64971.7584,
+     "new": 65027.2881
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-23T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 127775.2636,
+     "new": 127824.8395
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-23T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 75694.0796,
+     "new": 75747.7207
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-23T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 169314.3036,
+     "new": 169373.4493
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-23T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 75307.0944,
+     "new": 76167.7901
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-23T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 129917.3298,
+     "new": 133257.8171
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-24T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 95769.7875,
+     "new": 95807.9118
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-24T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 57873.1316,
+     "new": 57873.4565
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-24T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 103987.4893,
+     "new": 104185.1417
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-24T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 2486.8,
+     "new": 2486.7
+    },
+    "volume": {
+     "old": 315795.713,
+     "new": 316624.0593
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-24T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 2469.7,
+     "new": 2471
+    },
+    "volume": {
+     "old": 173833.1499,
+     "new": 174247.789
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-24T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 40570.0058,
+     "new": 40584.6122
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-25T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 196027.0694,
+     "new": 196028.5035
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-25T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 98535.7892,
+     "new": 98539.653
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-25T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 76418.9897,
+     "new": 76502.1651
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-25T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 171167.003,
+     "new": 171269.5658
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-25T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 74338.0909,
+     "new": 74846.4454
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-25T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 118773.4701,
+     "new": 118796.8006
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-26T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 51602.2149,
+     "new": 51615.4503
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-26T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 48290.905,
+     "new": 48467.7601
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-26T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 68245.5911,
+     "new": 68262.8933
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-26T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 113203.3247,
+     "new": 113227.5756
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-26T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 83746.201,
+     "new": 83793.4995
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-26T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 137318.9217,
+     "new": 137810.2774
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-27T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 82905.6181,
+     "new": 82907.4574
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-27T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 82875.9039,
+     "new": 82887.0242
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-27T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 174468.1562,
+     "new": 175098.8067
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-27T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 133205.5014,
+     "new": 133559.0985
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-27T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 126234.7264,
+     "new": 126299.6857
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-27T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 41850.2603,
+     "new": 41871.3933
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-28T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 79517.9086,
+     "new": 79630.0469
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-28T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 62750.7928,
+     "new": 62756.958
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-28T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 43540.2828,
+     "new": 43540.7005
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-28T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 162794.8802,
+     "new": 163131.3377
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-28T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 170040.7181,
+     "new": 170128.8006
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-28T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 27524.4828,
+     "new": 27529.2485
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-29T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 17425.864,
+     "new": 17434.0473
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 7517.0952,
+     "new": 7519.8326
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-29T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 24257.8334,
+     "new": 24283.0246
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 48637.1054,
+     "new": 48640.2671
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-08-29T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 16634.8353,
+     "new": 16645.7061
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-28T21:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 199124.95,
+     "new": 199161.41
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-28T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 271925.42,
+     "new": 272403.82
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-28T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 127336.26,
+     "new": 127342.36
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 218893.26,
+     "new": 219043.96
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T01:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 110674.81,
+     "new": 110696.93
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T03:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 399666.67,
+     "new": 399687.76
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 197947.15,
+     "new": 198475.86
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T05:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 78725.08,
+     "new": 78912.73
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T06:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 328936.06,
+     "new": 328939.99
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 114296.7,
+     "new": 114306.91
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T09:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 162556.77,
+     "new": 162563.03
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T10:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 115733.04,
+     "new": 115734.93
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 79083.91,
+     "new": 79088.21
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T13:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 105304.46,
+     "new": 105744.87
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T14:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 324345.81,
+     "new": 324435.96
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T15:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 283520.5,
+     "new": 283699.6
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 329629.93,
+     "new": 329705.98
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T17:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 142360.2,
+     "new": 142366.19
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T18:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 144371.59,
+     "new": 144372.78
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T19:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 119438.93,
+     "new": 119462.26
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 82.779,
+     "new": 82.782
+    },
+    "volume": {
+     "old": 95160.8,
+     "new": 95334.34
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T21:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 108429.72,
+     "new": 108456.54
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 134469.57,
+     "new": 134477.11
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-08-29T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 106740.93,
+     "new": 106752.19
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-08-28T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 129754.1,
+     "new": 148537.8
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-08-29T13:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 33327,
+     "new": 33371.4
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-08-29T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 9965.7,
+     "new": 10185.7
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-08-29T09:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.11298,
+     "new": 0.11283
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-08-29T14:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.11285,
+     "new": 0.11296
+    },
+    "low": {
+     "old": 0.11285,
+     "new": 0.11296
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-08-29T15:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.11471,
+     "new": 0.11445
+    },
+    "high": {
+     "old": 0.11471,
+     "new": 0.11445
+    },
+    "volume": {
+     "old": 116715.9,
+     "new": 117101.3
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 41046.6,
+     "new": 42148.7
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-08-29T17:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 101738.6,
+     "new": 102126.9
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-08-29T18:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.11286,
+     "new": 0.11274
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-08-29T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 34577.9,
+     "new": 35152.7
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-28T21:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 241121,
+     "new": 242797
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T01:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.20877,
+     "new": 0.20867
+    },
+    "volume": {
+     "old": 21114,
+     "new": 21661
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T06:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.21143,
+     "new": 0.21116
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 13958,
+     "new": 16639
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T11:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 284060,
+     "new": 284127
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 58303,
+     "new": 58426
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T17:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.20257,
+     "new": 0.20291
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 172852,
+     "new": 232884
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-08-29T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 17845,
+     "new": 22214
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-08-28T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 53402,
+     "new": 53966
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-08-29T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 60882,
+     "new": 62455
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-08-29T01:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.042383,
+     "new": 0.042335
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-08-29T05:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.042568,
+     "new": 0.042601
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-08-29T15:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.042032,
+     "new": 0.04203
+    },
+    "high": {
+     "old": 0.042032,
+     "new": 0.04203
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 93112,
+     "new": 93560
+    }
+   }
+  },
+  {
+   "series": "PEPE_1h",
+   "timestamp": "2026-08-28T21:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 24533622,
+     "new": 24543622
+    }
+   }
+  },
+  {
+   "series": "PEPE_1h",
+   "timestamp": "2026-08-29T19:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.003655,
+     "new": 0.003656
+    }
+   }
+  },
+  {
+   "series": "PEPE_1h",
+   "timestamp": "2026-08-29T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 7558528,
+     "new": 8196978
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-08-28T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.053728,
+     "new": 0.053745
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-08-29T03:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.05393,
+     "new": 0.053916
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 151865,
+     "new": 152249
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-08-29T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "open": {
+     "old": 0.05423,
+     "new": 0.054229
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-28T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 143438.49,
+     "new": 143439.41
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-28T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 65441.77,
+     "new": 65443.4
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 122009.9,
+     "new": 122010.35
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 31416.91,
+     "new": 31422.01
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T13:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 35504.46,
+     "new": 35505.18
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 58996.35,
+     "new": 58997.82
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T17:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 78908.29,
+     "new": 79207.43
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T19:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 235767.69,
+     "new": 235779.53
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 76516.21,
+     "new": 76516.42
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-08-29T23:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 89490.22,
+     "new": 89494
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-22T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 320333.61,
+     "new": 329143.74
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-22T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 382417.51,
+     "new": 382542.71
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-22T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 383736.32,
+     "new": 383911.66
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-23T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1203774.06,
+     "new": 1203925.34
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-23T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 763867.91,
+     "new": 767847.96
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-23T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 533617.81,
+     "new": 535300.36
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-23T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 326362.88,
+     "new": 332577.93
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-23T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 95.49,
+     "new": 95.501
+    },
+    "volume": {
+     "old": 480447.68,
+     "new": 485868.15
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-24T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1038314.98,
+     "new": 1039087.49
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-24T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 679280.48,
+     "new": 679567.47
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-24T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 804137.38,
+     "new": 804147.77
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-24T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1356494.57,
+     "new": 1357814.98
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-24T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1186097.58,
+     "new": 1186629.23
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-24T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 894925.15,
+     "new": 894956.45
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-25T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2335767.48,
+     "new": 2340943.65
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-25T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 797513.09,
+     "new": 798070.4
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-25T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1073967.82,
+     "new": 1074369.35
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-25T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1474341.18,
+     "new": 1474668.26
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-25T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 630614.58,
+     "new": 630651.06
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-25T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 833769.14,
+     "new": 833946.97
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-26T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 302541.19,
+     "new": 302543.34
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-26T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 322921.79,
+     "new": 322922.37
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-26T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 840391.91,
+     "new": 840734.49
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-26T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 393954.89,
+     "new": 394132.98
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-26T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1365269.33,
+     "new": 1368560.56
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-27T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1278742.98,
+     "new": 1278997.73
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-27T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1290387.84,
+     "new": 1290388.86
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-27T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1990790.36,
+     "new": 1991247.4
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-27T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2775201.73,
+     "new": 2777184.09
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-27T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "close": {
+     "old": 109.41,
+     "new": 109.34
+    },
+    "volume": {
+     "old": 2606472.25,
+     "new": 2610483.87
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-27T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1585515.6,
+     "new": 1589463.33
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-28T00:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1055390.75,
+     "new": 1061906.99
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-28T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 395902.2,
+     "new": 395904.87
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-28T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1248967.3,
+     "new": 1249894.06
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-28T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 3214346.85,
+     "new": 3218881.12
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-28T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2502913.18,
+     "new": 2510532.52
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-28T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 576949.51,
+     "new": 576952.06
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-29T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 230717.45,
+     "new": 230717.9
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-29T08:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 131649.24,
+     "new": 131654.34
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-29T12:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 307869.05,
+     "new": 307869.77
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 413377.26,
+     "new": 413689.71
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-08-29T20:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 269391.33,
+     "new": 269395.32
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-28T22:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 445492,
+     "new": 445592
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T02:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 799891.7,
+     "new": 799907.6
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T03:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1100614.5,
+     "new": 1122453.2
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T04:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1911430.5,
+     "new": 1911444.3
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T06:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 2983985.9,
+     "new": 2984001.6
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T07:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1045916.4,
+     "new": 1046638.1
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T15:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 1223569.4,
+     "new": 1223582.3
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T16:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 366896.3,
+     "new": 367101.3
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T17:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 121575.8,
+     "new": 121971.9
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T18:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 305159.8,
+     "new": 308304.4
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-08-29T19:00:00.000Z",
+   "previously_served_by": "repull_2026-08-30",
+   "fields": {
+    "volume": {
+     "old": 157721.5,
+     "new": 157726.2
+    }
+   }
+  }
+ ],
+ "_interpretation": "Measured: the platform's candle history is not immutable; served values for closed bars from ~2026-08-22 onward were revised between 2026-08-30 and 2026-09-02, upward in volume on 377 fields and by one to a few ticks in price on 48 fields. Inferred (not measured): the pattern fits late trade data being folded into existing bars in one pass. Unknown: the cause, whether it recurs, and whether older bars will be revised again. Consequence for the research: THE cell is unaffected by which version is used; the honesty consequence is that 'verified against the prior corpus' can no longer mean 'byte-identical'."
+}
