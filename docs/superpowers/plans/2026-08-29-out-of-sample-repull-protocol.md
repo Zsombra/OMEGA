@@ -109,6 +109,8 @@ session on the user's ask.
   alone: n=49, 57.1% ±13.9, **−4.6 bps** — edge failed for the window, not yet
   "sustained". Majors n=7 at the cell (uninformative); majors at >75th 35% / −13
   bps (n=40). Funding: SOL 14/73 hours negative (first ever), BTC/ETH 0/73.
-  **Open protocol decisions (user):** collision policy for the canonical script;
-  whether the integrity check should tolerate volume revisions. Next pull due
+  Both open decisions were resolved later the same day, on the user's instruction to
+  follow the best recommendation — see the amendment above (`POLICY=latest` default;
+  `verify_repull.py` records revisions, fails only on >1% price restatement; the
+  copy-pasted steps became `verify_repull.py` / `assemble_repull.py`). Next pull due
   ≤ **2026-09-05** (hard limit ≈ 2026-09-06T04:00Z).

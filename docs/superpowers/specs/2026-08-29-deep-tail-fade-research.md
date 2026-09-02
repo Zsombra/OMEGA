@@ -111,10 +111,11 @@ one day inside the ≤ 2026-09-03 deadline. Data:
 [`repulls/2026-09-02/`](../../../data/research/2026-08-29-deep-tail-fade/repulls/2026-09-02/).
 Battery: the canonical
 [`repulls/analyze_repull.py`](../../../data/research/2026-08-29-deep-tail-fade/repulls/analyze_repull.py)
-**refused to run on this corpus** (see the finding below); every number here comes from
-[`repulls/analyze_repull_sensitivity.py`](../../../data/research/2026-08-29-deep-tail-fade/repulls/analyze_repull_sensitivity.py),
-a copy with identical math plus an explicit collision policy — and THE cell is the same
-under both policies.
+**refused to run on this corpus** as first committed (see the finding below); every number
+here was first computed by a same-day sensitivity copy with identical math plus an explicit
+collision policy, then reproduced by the canonical script once that policy was folded into
+it later the same day (`POLICY=latest|first|strict`; `strict` reproduces the refusal) — and
+THE cell is the same under both policies.
 
 - **Pull integrity:** 13-coin 1h set + BTC/ETH/SOL 4h, 16/16 series, 100 bars each,
   0 gaps, 0 dupes; 27–28 (1h) / 82 (4h) bars overlap the prior record. New
@@ -132,8 +133,8 @@ under both policies.
   The cause is **unknown**; "late trades folded in" fits the shape but is inferred,
   not measured. `analyze_repull.py` stopped with
   `COLLISION DISAGREES: AIXBT_1h 2026-08-28T23:00:00.000Z (0.020327, 107406.0) vs (0.020327, 108026.0)`
-  exactly as designed and was **not modified**; choosing its collision policy is a
-  protocol change left to the user.
+  exactly as designed; the collision policy was folded in later the same day on the user's
+  instruction to follow the best recommendation — see the protocol's 2026-09-02 amendment.
 - **THE cell (cumulative new-only, >90th-pct stretch, VWAP4, thresholds calibrated on
   the base window, events strictly after it — i.e. *all* out-of-sample bars from both
   runs): n=58, hit 58.6% ±12.7pp, edge +1.8 bps/bar.** Identical whether collisions
@@ -174,6 +175,6 @@ under both policies.
   policy the canonical battery should adopt; `notes: null`, `closes > 1` and
   non-default `entry` semantics (untouched, as before).
 - **Next pull due ≤ 2026-09-05** (hard limit ≈ 2026-09-06T04:00Z — the 100-bar window
-  must still reach back to 2026-09-02T00:00Z to overlap). Expect the integrity check
-  to flag volume mismatches again; whether that stays a stop-and-record finding or
-  becomes a tolerance is the user's protocol decision.
+  must still reach back to 2026-09-02T00:00Z to overlap). Expect volume revisions on
+  the overlap again: `verify_repull.py` now records them verbatim to `data/audit/` and
+  fails only on gaps, duplicates, zero overlap, or a price restated by more than 1%.
