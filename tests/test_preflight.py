@@ -55,3 +55,93 @@ def test_deref_follows_local_refs_relative_to_parameters():
 def test_deref_refuses_non_local_refs():
     with pytest.raises(P.UnsupportedSchema):
         P.deref({"$ref": "https://example.invalid/schema#/x"}, MINI["parameters"])
+
+
+def _create_arm():
+    arms, root = P.resolve_arms(MINI)
+    return arms["CREATE"], root
+
+
+def _good_body():
+    return {
+        "operation": "CREATE", "name": "walker", "timeframe": "1h",
+        "sections": [{"kind": "platform", "sectionKey": "includeRsi"},
+                     {"kind": "custom", "title": "t", "benchmarkTicker": None, "notes": "n",
+                      "columns": [{"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "anchor"}, "window": 4}]}],
+        "conditions": [{"conditionKey": "A_ONE", "name": "n", "definition": {"kind": "clause"},
+                        "verdict": None, "required": False, "exit": False, "clock": "LIVE", "closes": 1}],
+        "rules": [{"signalId": "rsi_oversold", "allocation": 2, "required": False, "params": {}}],
+        "entry": {"trigger": "AT_SIGNAL", "confirmTf": "1h", "closes": 1, "bandAtrMultiple": 1,
+                  "levelSource": "SWING_HIGH", "levelOffsetAtrMultiple": 0, "validForBars": 4},
+    }
+
+
+def _fails(findings):
+    return [(f.cls, f.path) for f in findings if f.verdict == "FAIL"]
+
+
+def test_walker_passes_a_conforming_body():
+    arm, root = _create_arm()
+    assert _fails(P.diff_schema(_good_body(), arm, root)) == []
+
+
+def test_walker_flags_missing_required_at_nested_paths():
+    arm, root = _create_arm()
+    body = _good_body()
+    del body["conditions"][0]["exit"]           # drift #5's exact shape
+    del body["entry"]["validForBars"]           # drift #4's exact shape
+    fails = _fails(P.diff_schema(body, arm, root))
+    assert ("MISSING_REQUIRED", "conditions[0].exit") in fails
+    assert ("MISSING_REQUIRED", "entry.validForBars") in fails
+
+
+def test_walker_flags_undeclared_keys_and_says_it_is_schema_derived():
+    arm, root = _create_arm()
+    body = _good_body(); body["plan"] = {}      # the 2026-08-24 write-path key
+    [f] = [f for f in P.diff_schema(body, arm, root) if f.cls == "UNDECLARED"]
+    assert f.path == "plan" and "not measured" in f.detail
+
+
+def test_walker_flags_enum_const_and_bounds():
+    arm, root = _create_arm()
+    body = _good_body()
+    body["entry"]["trigger"] = "ON_RETEST"      # not in the miniature's enum
+    body["entry"]["validForBars"] = 25          # > maximum 24
+    body["entry"]["bandAtrMultiple"] = 0        # exclusiveMinimum 0
+    body["sections"][1]["columns"][0]["window"] = 0
+    body["name"] = ""                           # minLength 1
+    fails = _fails(P.diff_schema(body, arm, root))
+    assert ("ENUM", "entry.trigger") in fails
+    assert ("BOUNDS", "entry.validForBars") in fails
+    assert ("BOUNDS", "entry.bandAtrMultiple") in fails
+    assert ("BOUNDS", "sections[1].columns[0].window") in fails
+    assert ("BOUNDS", "name") in fails
+
+
+def test_walker_type_mismatch_is_a_bounds_finding():
+    arm, root = _create_arm()
+    body = _good_body(); body["conditions"][0]["closes"] = "1"
+    assert ("BOUNDS", "conditions[0].closes") in _fails(P.diff_schema(body, arm, root))
+
+
+def test_walker_anyof_by_kind_const_and_by_type():
+    arm, root = _create_arm()
+    body = _good_body()
+    body["sections"][1]["notes"] = None         # null branch of notes
+    body["sections"][1]["columns"][0]["timeframe"] = {"abs": "4h"}   # second branch, via $ref
+    assert _fails(P.diff_schema(body, arm, root)) == []
+    body["sections"][1]["columns"][0]["timeframe"] = {"abs": "1d"}   # not in the ref'd enum
+    assert ("ENUM", "sections[1].columns[0].timeframe.abs") in _fails(P.diff_schema(body, arm, root))
+
+
+def test_walker_reports_unmatched_anyof_as_unsupported_not_silence():
+    arm, root = _create_arm()
+    body = _good_body(); body["sections"].append({"kind": "mystery"})
+    [f] = [f for f in P.diff_schema(body, arm, root) if f.cls == "UNSUPPORTED"]
+    assert f.path == "sections[2]" and f.verdict == "WARN"
+
+
+def test_walker_reports_pattern_unchecked_once_per_path_as_info():
+    arm, root = _create_arm()
+    infos = [f for f in P.diff_schema(_good_body(), arm, root) if f.cls == "INFO"]
+    assert any(f.path == "conditions[0].conditionKey" and "pattern" in f.detail for f in infos)

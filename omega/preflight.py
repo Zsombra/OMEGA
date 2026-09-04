@@ -75,3 +75,116 @@ def resolve_arms(definition: dict) -> tuple[dict[str, dict], dict]:
             raise UnsupportedSchema("request arm without an operation const")
         arms[op] = arm
     return arms, root
+
+
+def _join(path: str, key: str) -> str:
+    return f"{path}.{key}" if path else key
+
+
+_NUM = (int, float)
+
+
+def _is_num(v: object) -> bool:
+    return isinstance(v, _NUM) and not isinstance(v, bool)
+
+
+def _type_ok(t: str | None, v: object) -> bool:
+    if t is None:
+        return True
+    return {"object": isinstance(v, dict), "array": isinstance(v, list),
+            "string": isinstance(v, str), "boolean": isinstance(v, bool),
+            "null": v is None, "number": _is_num(v),
+            "integer": isinstance(v, int) and not isinstance(v, bool)}.get(t, True)
+
+
+def _pick_branch(value: object, branches: list, root: dict) -> dict | None:
+    cands = [deref(b, root) for b in branches]
+    if isinstance(value, dict):
+        for b in cands:
+            props = b.get("properties", {})
+            for disc in ("operation", "kind", "mode"):
+                if disc in props:
+                    d = deref(props[disc], root)
+                    if "const" in d and value.get(disc) == d["const"]:
+                        return b
+        for b in cands:                                   # no discriminator: required-keys fit
+            if b.get("type", "object") == "object" and all(k in value for k in b.get("required", [])) \
+                    and not any(disc in b.get("properties", {}) and "const" in deref(b["properties"][disc], root)
+                                for disc in ("operation", "kind", "mode")):
+                return b
+        return None
+    for b in cands:
+        if "enum" in b and value in b["enum"]:
+            return b
+        if "const" in b and value == b["const"]:
+            return b
+        if "type" in b and _type_ok(b["type"], value) and "enum" not in b and "const" not in b:
+            return b
+    return None
+
+
+def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]) -> None:
+    schema = deref(schema, root)
+    if "anyOf" in schema:
+        branch = _pick_branch(value, schema["anyOf"], root)
+        if branch is None:
+            out.append(Finding("UNSUPPORTED", path, "no anyOf branch matches the value", "WARN"))
+            return
+        schema = branch
+    if "const" in schema and value != schema["const"]:
+        out.append(Finding("ENUM", path, f"{value!r} is not the declared const {schema['const']!r}", "FAIL"))
+        return
+    if "enum" in schema and value not in schema["enum"]:
+        out.append(Finding("ENUM", path, f"{value!r} not in the declared enum ({len(schema['enum'])} values)", "FAIL"))
+        return
+    t = schema.get("type")
+    if isinstance(t, str) and not _type_ok(t, value):
+        out.append(Finding("BOUNDS", path, f"expected type {t}, got {type(value).__name__}", "FAIL"))
+        return
+    if isinstance(value, dict):
+        props = schema.get("properties", {})
+        for k in schema.get("required", []):
+            if k not in value:
+                out.append(Finding("MISSING_REQUIRED", _join(path, k), "required by the published schema", "FAIL"))
+        for k, v in value.items():
+            if k in props:
+                _walk(v, props[k], root, _join(path, k), out)
+            elif schema.get("additionalProperties") is False:
+                out.append(Finding("UNDECLARED", _join(path, k),
+                                   "not declared by the published schema (additionalProperties:false is "
+                                   "schema-derived, not measured - write_surface_gap.json)", "FAIL"))
+            elif isinstance(schema.get("additionalProperties"), dict):
+                _walk(v, schema["additionalProperties"], root, _join(path, k), out)
+    elif isinstance(value, list):
+        if "maxItems" in schema and len(value) > schema["maxItems"]:
+            out.append(Finding("BOUNDS", path, f"{len(value)} items > maxItems {schema['maxItems']}", "FAIL"))
+        if "minItems" in schema and len(value) < schema["minItems"]:
+            out.append(Finding("BOUNDS", path, f"{len(value)} items < minItems {schema['minItems']}", "FAIL"))
+        if "items" in schema:
+            for i, v in enumerate(value):
+                _walk(v, schema["items"], root, f"{path}[{i}]", out)
+    elif _is_num(value):
+        v = value
+        if "minimum" in schema and v < schema["minimum"]:
+            out.append(Finding("BOUNDS", path, f"{v} < minimum {schema['minimum']}", "FAIL"))
+        if "maximum" in schema and v > schema["maximum"]:
+            out.append(Finding("BOUNDS", path, f"{v} > maximum {schema['maximum']}", "FAIL"))
+        if "exclusiveMinimum" in schema and v <= schema["exclusiveMinimum"]:
+            out.append(Finding("BOUNDS", path, f"{v} <= exclusiveMinimum {schema['exclusiveMinimum']}", "FAIL"))
+        if "exclusiveMaximum" in schema and v >= schema["exclusiveMaximum"]:
+            out.append(Finding("BOUNDS", path, f"{v} >= exclusiveMaximum {schema['exclusiveMaximum']}", "FAIL"))
+    elif isinstance(value, str):
+        if "minLength" in schema and len(value) < schema["minLength"]:
+            out.append(Finding("BOUNDS", path, f"length {len(value)} < minLength {schema['minLength']}", "FAIL"))
+        if "maxLength" in schema and len(value) > schema["maxLength"]:
+            out.append(Finding("BOUNDS", path, f"length {len(value)} > maxLength {schema['maxLength']}", "FAIL"))
+        if "pattern" in schema:
+            out.append(Finding("INFO", path, f"pattern-unchecked: {schema['pattern']!r} (no regex engine "
+                                             "for \\p classes; validated by the platform, not here)", "INFO"))
+
+
+def diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]:
+    """Walk `body` against one operation arm of the published definition."""
+    out: list[Finding] = []
+    _walk(body, arm, root, "", out)
+    return out
