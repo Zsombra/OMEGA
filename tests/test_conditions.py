@@ -422,10 +422,46 @@ def test_a_condition_without_clock_or_closes_is_an_error():
     the live input validator refused their absence on 2026-08-29."""
     bare = {"conditionKey": "CHK", "name": "n",
             "definition": num("mktBreadth_all", "gt", 10),
-            "verdict": None, "required": False}
+            "verdict": None, "required": False, "exit": False}
     paths = {f.path for f in validate_conditions(RSI_REPORT, [bare])
              if f.severity == "error"}
     assert ".clock" in paths and ".closes" in paths
+
+
+# --- drift instance #5: conditions[].exit (schema published by 2026-09-04) ---
+# Caught OFFLINE before any compile was spent (drift5_exit_rediscovery_2026-09-04.json):
+# the published compile schema lists `exit` (boolean) among the REQUIRED keys of every
+# condition, and both existing records (b9438519, 6a8bca67) read back exit=false on
+# every condition with no revision bump. The mirror is exit=False; what exit=true does
+# is unmeasured, so authoring never sets it.
+
+def test_condition_emits_exit_with_the_migration_default():
+    c = condition("CHK", "n", num("mktBreadth_all", "gt", 10))
+    assert c["exit"] is False
+    # key order mirrors the platform's read-back shape exactly
+    assert list(c) == ["conditionKey", "name", "definition", "verdict", "required",
+                       "exit", "clock", "closes"]
+
+
+@pytest.mark.parametrize("bad", [0, 1, "false", None, "no"])
+def test_condition_refuses_a_non_boolean_exit(bad):
+    with pytest.raises(ValueError):
+        condition("CHK", "n", num("mktBreadth_all", "gt", 10), exit=bad)
+
+
+def test_a_condition_without_exit_is_an_error():
+    """A hand-built dict that skips condition() must carry exit - the published
+    schema requires it (2026-09-04), the same way clock/closes are required."""
+    bare = {"conditionKey": "CHK", "name": "n",
+            "definition": num("mktBreadth_all", "gt", 10),
+            "verdict": None, "required": False, "clock": "LIVE", "closes": 1}
+    paths = {f.path for f in validate_conditions(RSI_REPORT, [bare])
+             if f.severity == "error"}
+    assert ".exit" in paths
+    bad = dict(bare, exit="false")
+    paths = {f.path for f in validate_conditions(RSI_REPORT, [bad])
+             if f.severity == "error"}
+    assert ".exit" in paths
 
 
 def test_close_may_not_read_an_ambient_header():

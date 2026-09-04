@@ -31,7 +31,10 @@ FLOOR = json.loads((ROOT / "data/audit/lookback_floor.json").read_text(encoding=
 
 # Read from the live compile_strategy_plan CREATE schema on 2026-08-26; re-read
 # 2026-08-30 after the condition-clock deployment: `entry` is now published and
-# REQUIRED on CREATE (optional on UPDATE/RESTORE).
+# REQUIRED on CREATE (optional on UPDATE/RESTORE). Re-read 2026-09-04 (drift #5):
+# an optional top-level `decisionInvalidationExitEnabled` appeared alongside the
+# now-required conditions[].exit; omega accepts that the API accepts it and
+# deliberately does not emit it (semantics unmeasured).
 API_ACCEPTS = {
     "operation", "intentSummary", "assumptions", "coinSelection", "name", "timeframe",
     "sections", "conditions", "description", "tagline", "marketReadText", "rules",
@@ -40,7 +43,7 @@ API_ACCEPTS = {
     "trailingTriggerR", "trailingGivebackPct", "trailingBufferPct", "breakEvenEnabled",
     "breakEvenTriggerR", "timeDecayEnabled", "timeDecayIntervalMinutes",
     "timeDecayGracePeriodMinutes", "timeDecayTightenPct", "timeDecayMaxTightenPct",
-    "timeDecayStaleThresholdTpProgressPct", "entry",
+    "timeDecayStaleThresholdTpProgressPct", "entry", "decisionInvalidationExitEnabled",
 }
 API_REQUIRES = {"operation", "intentSummary", "assumptions", "coinSelection", "name",
                 "timeframe", "sections", "entry"}

@@ -184,3 +184,21 @@ def test_wire_conditions_all_carry_clock_and_closes(name):
     for c in plan(PRESETS[name]).wire()["conditions"]:
         assert c["clock"] in ("LIVE", "CLOSE")
         assert c["closes"] == 1
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_wire_conditions_all_carry_exit_false(name):
+    """Drift instance #5 (2026-09-04, caught offline): conditions[].exit is REQUIRED
+    by the published compile schema; both existing records read back exit=false on
+    every condition (drift5_exit_rediscovery_2026-09-04.json). Mirrored, not
+    interpreted: exit=true semantics are unmeasured."""
+    for c in plan(PRESETS[name]).wire()["conditions"]:
+        assert c["exit"] is False
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_wire_does_not_emit_decisionInvalidationExitEnabled(name):
+    """The same schema declares an OPTIONAL top-level decisionInvalidationExitEnabled;
+    existing records read back true, but what a CREATE that omits it receives is
+    unmeasured, so emitting a value would be inference. Left out on purpose."""
+    assert "decisionInvalidationExitEnabled" not in plan(PRESETS[name]).wire()

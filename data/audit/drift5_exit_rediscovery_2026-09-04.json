@@ -1,0 +1,63 @@
+{
+ "_what": "Drift instance #5, caught OFFLINE before any compile was spent: the published compile_strategy_plan schema now REQUIRES conditions[].exit (boolean) and declares an optional top-level decisionInvalidationExitEnabled (boolean); omega.generate.StrategyPlan.wire() emits neither. Read-only rediscovery per the extract-never-infer rule: one ToolSearch schema fetch (a definition load, not a call) and two get_strategy read-backs (read-only). No write, compile, apply, bind or deploy was made.",
+ "when": "2026-09-04T03:30-03:40Z, handoff-plan session (Task 4 brainstorm), main session; the subagent-free part of the drift-preflight design work",
+ "schema_fetch": {
+  "how": "ToolSearch select:mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__compile_strategy_plan (2026-09-04 ~03:0xZ) - the tool definition as served by the connector; nothing was invoked",
+  "conditions_items_required_verbatim": ["conditionKey", "name", "definition", "verdict", "required", "exit", "clock", "closes"],
+  "conditions_exit_declared_as": {"type": "boolean"},
+  "top_level_new_optional": {"decisionInvalidationExitEnabled": {"type": "boolean"}},
+  "entry_required_verbatim": ["trigger", "confirmTf", "closes", "bandAtrMultiple", "levelSource", "levelOffsetAtrMultiple", "validForBars"],
+  "entry_trigger_enum_verbatim": ["AT_SIGNAL", "ON_CANDLE_CLOSE", "STOP_THROUGH_LEVEL", "ON_RETEST"],
+  "entry_bounds": {"levelOffsetAtrMultiple": {"minimum": 0, "maximum": 2}, "validForBars": {"minimum": 1, "maximum": 24, "type": "integer"}, "bandAtrMultiple": {"exclusiveMinimum": 0}, "closes": {"minimum": 1, "maximum": 5}},
+  "create_required_verbatim": ["operation", "intentSummary", "assumptions", "coinSelection", "name", "timeframe", "sections", "entry"],
+  "update_and_restore_required_verbatim": ["operation", "intentSummary", "assumptions", "coinSelection", "strategyId", "expectedRevision"],
+  "vs_2026-08-30_record": "On 2026-08-30 (step0_rediscovery_2026-08-30.json, deep_tail_fade_create_2026-08-30.json) the published entry declared only trigger/confirmTf/closes/bandAtrMultiple and conditions did not declare exit; the runtime validator already required the three extra entry fields (drift #4). Today the published schema declares all seven entry fields (caught up with #4) AND adds: conditions[].exit REQUIRED, decisionInvalidationExitEnabled optional, and two new trigger enum values (STOP_THROUGH_LEVEL, ON_RETEST) that appear in no repo record before today.",
+  "_note_on_fidelity": "these lists were read by the main session directly off the ToolSearch result and typed here; the full ~20 KB schema text was not transcribed verbatim (see the Task 4 design for how a preflight should capture it)"
+ },
+ "readbacks": {
+  "how": "get_strategy(strategyId, includeInactive: true) x2, main session, 2026-09-04 ~03:35Z; read-only per the 2026-08-30 Step 0 precedent",
+  "b9438519-8223-4ef1-a3c3-6f4592bb823d": {
+   "name": "Deep-Tail Fade",
+   "revision": 2,
+   "isActive": false,
+   "createdAt": "2026-08-30T04:40:05.509Z",
+   "updatedAt": "2026-08-30T04:41:44.382Z",
+   "boundAgentCount": 0,
+   "openPositionCount": 0,
+   "conditions_count": 7,
+   "conditions_exit_values_in_order": {"DF_RISK_ON": false, "DF_CTX_UP": false, "DF_CTX_DOWN": false, "DF_CORE_UP": false, "DF_CORE_DOWN": false, "DF_UP": false, "DF_DOWN": false},
+   "conditions_key_order_verbatim": ["conditionKey", "name", "definition", "verdict", "required", "exit", "clock", "closes"],
+   "conditions_clock_closes_unchanged": "DF_CORE_UP and DF_CORE_DOWN clock=CLOSE, all others LIVE; closes=1 everywhere - exactly as created on 2026-08-30",
+   "decisionInvalidationExitEnabled": true,
+   "entry_verbatim": {"trigger": "AT_SIGNAL", "confirmTf": "1h", "closes": 1, "bandAtrMultiple": 1, "levelSource": "SWING_HIGH", "levelOffsetAtrMultiple": 0, "validForBars": 4},
+   "other_top_level_scalars_verbatim": {"minAggregateScore": 0.65, "minRequiredCount": 0, "minAtrPct": 0.5, "minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 2, "minRiskRewardRatio": 1.5, "breakEvenEnabled": true, "breakEvenTriggerR": 1.08, "trailingEnabled": true, "trailingTriggerR": 1, "trailingGivebackPct": 45, "trailingBufferPct": 0.25, "timeDecayEnabled": true, "timeDecayGracePeriodMinutes": 60, "timeDecayIntervalMinutes": 15, "timeDecayTightenPct": 5, "timeDecayMaxTightenPct": 50, "timeDecayStaleThresholdTpProgressPct": 25, "forkedFromStrategyId": null, "visibility": "UNLISTED", "cadence": "INTRADAY", "regimeTimeframe": "4h", "scope": "PRIVATE"},
+   "signalRules": "84 entries, shape {signalId, allocation, required, params} unchanged; omitted here",
+   "sections": "2 custom sections, notes strings present, columns unchanged; omitted here"
+  },
+  "6a8bca67-45a3-428e-85ba-71ec2cd2218e": {
+   "name": "Trend Continuation",
+   "revision": 5,
+   "isActive": false,
+   "createdAt": "2026-08-28T13:48:33.561Z",
+   "updatedAt": "2026-08-28T19:23:06.780Z",
+   "conditions_count": 7,
+   "conditions_exit_values_in_order": {"TC_RISK_ON": false, "TC_CTX_UP": false, "TC_CTX_DOWN": false, "TC_CORE_UP": false, "TC_CORE_DOWN": false, "TC_UP": false, "TC_DOWN": false},
+   "conditions_clock_closes": "all LIVE, closes=1 - unchanged from the 2026-08-30 read",
+   "decisionInvalidationExitEnabled": true,
+   "entry_verbatim": {"trigger": "AT_SIGNAL", "confirmTf": "1h", "closes": 1, "bandAtrMultiple": 1, "levelSource": "SWING_HIGH", "levelOffsetAtrMultiple": 0, "validForBars": 4},
+   "sections_notes": "both custom sections still notes: null (the null-notes record from 2026-08-29/30 - still never SENT as null by omega, only read back)"
+  },
+  "silent_migration_again": "Neither record's revision or updatedAt moved, yet both now carry exit=false on every condition and decisionInvalidationExitEnabled=true - the same no-revision-bump migration seen for clock/closes (#3) and the three entry fields (#4). Whether this is a storage migration or read-time defaulting is, as before, indistinguishable from a read."
+ },
+ "omega_side": {
+  "wire_emits_exit": false,
+  "wire_emits_decisionInvalidationExitEnabled": false,
+  "evidence": "omega/generate.py wire(): conditions are passed through as self.conditions (built elsewhere - see omega/conditions.py); the rules block at ~line 418 emits {signalId, allocation, required, params}; the entry block at ~lines 434-437 emits the seven mirrored fields; grep for 'exit' and 'decisionInvalidation' across omega/ and tests/ returns nothing",
+  "consequence_if_validator_enforces_schema": "the next CREATE (or any UPDATE that sends conditions) is refused missing-required conditions[].exit before any record is minted - a -32602-class bounce, per the 2026-08-29/30 precedent",
+  "measured_vs_unmeasured": {
+   "measured": ["published schema requires conditions[].exit", "both existing records read back exit=false on every condition", "both read back decisionInvalidationExitEnabled=true", "revision/updatedAt unchanged"],
+   "NOT_measured": ["whether the runtime validator enforces exit as required (only a compile settles it; not spent)", "what exit=true does", "what decisionInvalidationExitEnabled does, and what a CREATE that omits it gets", "whether STOP_THROUGH_LEVEL / ON_RETEST triggers are accepted at runtime"]
+  }
+ },
+ "_interpretation": "This is the first drift instance the repo caught before a refusal, and it was caught by exactly the two read-only steps Task 4 proposes: a schema fetch (which alone reveals the new required field) plus a record read-back (which alone reveals the migration default to mirror). The honest mirror, per extract-never-infer, is exit=false on every emitted condition; decisionInvalidationExitEnabled is optional in the schema and its CREATE-time default is unmeasured, so emitting it would be inference - it is left out and recorded as open. Nothing here authorizes a compile."
+}

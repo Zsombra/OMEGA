@@ -151,17 +151,26 @@ def n_of(n: int, *members: dict) -> dict:
 
 def condition(key: str, name: str, definition: dict, *,
               verdict: str | None = None, required: bool = False,
-              clock: str = "LIVE", closes: int = 1) -> dict:
+              exit: bool = False, clock: str = "LIVE", closes: int = 1) -> dict:
     """One wire-shaped condition. clock/closes are REQUIRED by the compile schema
     since 2026-08-29; the defaults mirror the platform's own migration of existing
-    records (clock=LIVE, closes=1, read back from 6a8bca67 on 2026-08-30)."""
+    records (clock=LIVE, closes=1, read back from 6a8bca67 on 2026-08-30).
+    exit is REQUIRED since the schema re-read of 2026-09-04 (drift instance #5,
+    caught offline): both existing records read back exit=false on every condition
+    with no revision bump (drift5_exit_rediscovery_2026-09-04.json). Mirrored, not
+    interpreted - what exit=true does is unmeasured, so authoring never sets it.
+    Key order mirrors the platform's read-back shape."""
+    if not isinstance(exit, bool):
+        raise ValueError(f"exit must be a bool (required by the compile schema since "
+                         f"2026-09-04), got {exit!r}")
     if clock not in CLOCKS:
         raise ValueError(f"clock {clock!r} is not one of {CLOCKS}")
     if not isinstance(closes, int) or isinstance(closes, bool) \
             or not CLOSES_MIN <= closes <= CLOSES_MAX:
         raise ValueError(f"closes must be an int {CLOSES_MIN}..{CLOSES_MAX}, got {closes!r}")
     return {"conditionKey": key, "name": name, "definition": definition,
-            "verdict": verdict, "required": required, "clock": clock, "closes": closes}
+            "verdict": verdict, "required": required, "exit": exit,
+            "clock": clock, "closes": closes}
 
 
 # --- ambient clause library -----------------------------------------------
@@ -423,6 +432,13 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
         if cond.get("verdict") not in VERDICTS:
             out.append(ConditionFinding("error", key, ".verdict",
                                         f"must be one of {VERDICTS}"))
+        # exit is REQUIRED by the compile schema (re-read 2026-09-04, drift #5);
+        # the platform's migration default is false on every existing condition
+        if not isinstance(cond.get("exit"), bool):
+            out.append(ConditionFinding(
+                "error", key, ".exit",
+                f"must be a bool (required by the compile schema since 2026-09-04; "
+                f"platform migration default false), got {cond.get('exit')!r}"))
         # clock/closes are REQUIRED by the compile schema (published 2026-08-30)
         clock = cond.get("clock")
         if clock not in CLOCKS:
