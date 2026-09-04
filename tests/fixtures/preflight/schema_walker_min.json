@@ -1,0 +1,96 @@
+{
+  "name": "compile_strategy_plan",
+  "description": "walker fixture - a hand-built miniature of the real definition; never a regression oracle",
+  "parameters": {
+    "additionalProperties": false,
+    "type": "object",
+    "required": ["request"],
+    "properties": {
+      "request": {
+        "anyOf": [
+          {
+            "additionalProperties": false,
+            "type": "object",
+            "required": ["operation", "name", "timeframe", "sections", "entry"],
+            "properties": {
+              "operation": {"const": "CREATE", "type": "string"},
+              "name": {"type": "string", "minLength": 1, "maxLength": 50},
+              "timeframe": {"enum": ["1h", "4h"], "type": "string"},
+              "minAtrPct": {"type": "number", "minimum": 0.01, "maximum": 50},
+              "decisionInvalidationExitEnabled": {"type": "boolean"},
+              "sections": {
+                "type": "array", "maxItems": 3,
+                "items": {"anyOf": [
+                  {"additionalProperties": false, "type": "object",
+                   "required": ["kind", "sectionKey"],
+                   "properties": {"kind": {"const": "platform", "type": "string"},
+                                  "sectionKey": {"enum": ["includeRsi", "includeMacd"], "type": "string"}}},
+                  {"additionalProperties": false, "type": "object",
+                   "required": ["kind", "title", "benchmarkTicker", "notes", "columns"],
+                   "properties": {"kind": {"const": "custom", "type": "string"},
+                                  "title": {"type": "string", "minLength": 1, "maxLength": 60},
+                                  "benchmarkTicker": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+                                  "notes": {"anyOf": [{"type": "string", "minLength": 1, "maxLength": 400}, {"type": "null"}]},
+                                  "sectionKey": {"type": "string", "pattern": "^custom:[0-9a-fA-F-]{36}$"},
+                                  "columns": {"type": "array", "minItems": 1, "items": {
+                                    "additionalProperties": false, "type": "object",
+                                    "required": ["metric", "transformId", "timeframe"],
+                                    "properties": {"metric": {"enum": ["RSI14", "CLOSE"], "type": "string"},
+                                                   "transformId": {"type": "string"},
+                                                   "window": {"type": "integer", "minimum": 1, "maximum": 64},
+                                                   "timeframe": {"anyOf": [
+                                                     {"additionalProperties": false, "type": "object", "required": ["rel"],
+                                                      "properties": {"rel": {"enum": ["anchor", "lower", "regime"], "type": "string"}}},
+                                                     {"additionalProperties": false, "type": "object", "required": ["abs"],
+                                                      "properties": {"abs": {"$ref": "#/properties/request/anyOf/0/properties/timeframe"}}}]}}}}}}
+                ]}
+              },
+              "conditions": {
+                "type": "array", "maxItems": 64,
+                "items": {"additionalProperties": false, "type": "object",
+                          "required": ["conditionKey", "name", "definition", "verdict", "required", "exit", "clock", "closes"],
+                          "properties": {"conditionKey": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,39}$"},
+                                         "name": {"type": "string", "minLength": 1, "maxLength": 80},
+                                         "definition": {"type": "object"},
+                                         "verdict": {"anyOf": [{"enum": ["UP", "DOWN", "NEITHER"], "type": "string"}, {"type": "null"}]},
+                                         "required": {"type": "boolean"},
+                                         "exit": {"type": "boolean"},
+                                         "clock": {"enum": ["LIVE", "CLOSE"], "type": "string"},
+                                         "closes": {"type": "integer", "minimum": 1, "maximum": 5}}}
+              },
+              "rules": {"type": "array", "items": {"additionalProperties": false, "type": "object",
+                        "required": ["signalId", "allocation", "required"],
+                        "properties": {"signalId": {"enum": ["rsi_oversold", "rsi_overbought"], "type": "string"},
+                                       "allocation": {"type": "integer", "minimum": 0, "maximum": 3},
+                                       "required": {"type": "boolean"},
+                                       "params": {"type": "object"}}}},
+              "entry": {"additionalProperties": false, "type": "object",
+                        "required": ["trigger", "confirmTf", "closes", "bandAtrMultiple", "levelSource", "levelOffsetAtrMultiple", "validForBars"],
+                        "properties": {"trigger": {"enum": ["AT_SIGNAL", "ON_CANDLE_CLOSE"], "type": "string"},
+                                       "confirmTf": {"$ref": "#/properties/request/anyOf/0/properties/timeframe"},
+                                       "closes": {"type": "integer", "minimum": 1, "maximum": 5},
+                                       "bandAtrMultiple": {"type": "number", "exclusiveMinimum": 0},
+                                       "levelSource": {"enum": ["SWING_HIGH", "SWING_LOW"], "type": "string"},
+                                       "levelOffsetAtrMultiple": {"type": "number", "minimum": 0, "maximum": 2},
+                                       "validForBars": {"type": "integer", "minimum": 1, "maximum": 24}}}
+            }
+          },
+          {
+            "additionalProperties": false,
+            "type": "object",
+            "required": ["operation", "strategyId", "expectedRevision"],
+            "properties": {
+              "operation": {"const": "UPDATE", "type": "string"},
+              "strategyId": {"type": "string"},
+              "expectedRevision": {"type": "integer", "minimum": 1},
+              "name": {"$ref": "#/properties/request/anyOf/0/properties/name"},
+              "timeframe": {"$ref": "#/properties/request/anyOf/0/properties/timeframe"},
+              "entry": {"$ref": "#/properties/request/anyOf/0/properties/entry"},
+              "conditions": {"$ref": "#/properties/request/anyOf/0/properties/conditions"}
+            }
+          }
+        ]
+      }
+    }
+  }
+}
