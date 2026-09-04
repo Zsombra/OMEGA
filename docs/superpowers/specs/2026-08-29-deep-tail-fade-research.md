@@ -178,3 +178,75 @@ THE cell is the same under both policies.
   must still reach back to 2026-09-02T00:00Z to overlap). Expect volume revisions on
   the overlap again: `verify_repull.py` now records them verbatim to `data/audit/` and
   fails only on gaps, duplicates, zero overlap, or a price restated by more than 1%.
+
+## Out-of-sample addendum · re-pull 3, 2026-09-04
+
+Third run of [the re-pull protocol](../plans/2026-08-29-out-of-sample-repull-protocol.md),
+one day inside the ≤ 2026-09-05 deadline, under the 2026-09-02 amendment. Data:
+[`repulls/2026-09-04/`](../../../data/research/2026-08-29-deep-tail-fade/repulls/2026-09-04/).
+The 16 calls were made by the main session in one pass, 08:33–08:40Z, after two subagent
+attempts were killed by usage limits mid-run; their partial snapshots (8 series at
+09-03T22:42Z, 7 at 09-04T03:35Z) are preserved in
+[`data/audit/partial_pulls_repull3/`](../../../data/audit/partial_pulls_repull3/) and
+used below.
+
+- **Pull integrity** (`verify_repull.py`): 16/16 series, 100 bars each, 0 gaps, 0 dupes,
+  45 (1h) / 86 (4h) bars overlapping the prior record, no price restated by more than 1%.
+  New out-of-sample: **55 1h bars per coin** (~2.3 days), 14 4h bars per major.
+  Transcription guard: every 4h bar equals the aggregate of its four 1h bars on
+  open/high/low/close; volume agrees on 24 of 25 per major (see the incomplete-bar
+  finding for the 25th).
+- **Restated vs the prior record:** 34 bars, 53 fields (volume 32, all upward; low 14,
+  open 4, high 3; max price change 0.31%, LDO). Every one sits in the last ~5 hours
+  before re-pull 2's pull time (first changed bar 2026-09-01T20:00Z; run 2 pulled at
+  09-02T01:36Z). No older bar changed. Record:
+  [`data/audit/candle_restatement_2026-09-04.json`](../../../data/audit/candle_restatement_2026-09-04.json).
+- **FINDING — recently closed bars are served incomplete.** The 05:00Z bar of 09-04
+  (3.5 hours old at pull time) carried 11–56% of its series' median volume on every one
+  of the 13 coins, and the next bar's open gapped from its close by up to −2.45%
+  (AIXBT). The 4h bar covering it carried more volume than its four 1h parts add up to
+  (BTC: 274 more, on a 1h bar of 125). Three snapshots of the same bars (22:42Z, 03:35Z,
+  08:33Z) show revisions concentrated in bars **≤ 6 hours old at snapshot time
+  (18 of 40 revised later)** and none in bars older than a day (0 of 1,040). Two
+  distinct behaviours are therefore measured: this hours-scale fill-in of young bars,
+  and the run-2 bulk rewrite of days-old bars between 08-30 and 09-02. The cause of
+  either is not known. Consequence stated, not acted on: the last ~6 bars of any pull
+  are provisional, and the battery treats them like any other bar.
+- **THE cell (cumulative new-only, >90th-pct stretch, VWAP4, thresholds calibrated on
+  the base window; all out-of-sample bars from three runs): n=105, hit 55.2% ±9.5pp,
+  edge +3.0 bps/bar.** Identical under `POLICY=latest` and `first`. The pre-registered
+  failure reading (hit ≤55% or edge ≤0, *sustained*) is **not triggered** — the hit
+  rate sits 0.2 points above the line and the edge is positive. The trajectory across
+  runs is 66.7% (n=9) → 58.6% (n=58) → 55.2% (n=105).
+- **This window alone** (`WINDOW=last`, same base-calibrated thresholds): n=47,
+  hit **51.1% ±14.3pp**, edge +4.5 bps. Per window: run 1 66.7% / +36.7 (n=9), run 2
+  57.1% / −4.6 (n=49), run 3 51.1% / +4.5 (n=47). Each of the last two windows failed
+  one of the two criteria on its own — run 2 the edge, run 3 the hit rate — while the
+  cumulative reading has not crossed. Under the rule as written the premise has not
+  failed; it is one more window like these from doing so. Nothing else is claimed.
+- **Per-coin split at the cell:** CAKE 19/38 (36% of all events, 50% hit), MET 7/9,
+  PEPE 6/10, AIXBT 5/9, TRUMP 5/6, LDO 3/9, MOODENG 3/6, MELANIA 2/4; HYPE and POPCAT 0.
+  **Majors n=14** (BTC 4/6, ETH 2/4, SOL 2/4): 57.1% ±25.9pp, +1.3 bps. **BTC+ETH, the
+  created strategy's universe: n=10**, 60.0% ±30.4pp, **−1.5 bps**. The pooled cell
+  remains alt evidence; the strategy's own universe has ten events and a negative edge.
+- **Majors at the moderate stretch (>75th), new-only:** n=72, hit **44.4% ±11.5pp,
+  edge −11.5 bps/bar** (BTC 10/23, ETH 13/30, SOL 9/19) — the adverse reading from run 2
+  (35%, n=40) persists with nearly twice the sample.
+- **Combined corpus** (base + three repulls): >90th 56.7% ±5.5pp, +6.1 bps (n=312), vs
+  in-sample 61.5% ±8.8, +13.2 (n=117); run-1 combined 59.4 / +8.1 (n=143); run-2
+  57.4 / +4.0 (n=237). Monotone dilution continues. W=4 still not special (W=8:
+  55.5% / +5.8 at >75th).
+- **Funding sign mix (55 new hours per coin):** BTC **1/55 negative** (the first
+  negative BTC hour in the record, −0.0000021), ETH 0/55, SOL 8/55. The FUNDING-leg
+  confound is unresolved; `funding_cvd_test.py` not re-run.
+- **Analysis thresholds ≠ the strategy's gates.** Unchanged caveat; the fixed-gate
+  firing rate is still unmeasured.
+- **Still not established:** whether the premise survives (cumulative reading at the
+  line, two single windows each failing one criterion); anything about BTC/ETH at the
+  cell beyond n=10 with a negative edge; the cause of either restatement behaviour;
+  whether bars younger than ~6 hours at pull time should be held back from the
+  battery (a protocol question for the user, not acted on); `notes: null`,
+  `closes > 1`, non-default `entry` and the new trigger values (untouched).
+- **Next pull due ≤ 2026-09-07** (hard limit ≈ 2026-09-08T11:00Z — the 100-bar window
+  must still reach back to 2026-09-04T07:00Z). Expect volume revisions on the youngest
+  ~6 bars of this pull; `verify_repull.py` records them.

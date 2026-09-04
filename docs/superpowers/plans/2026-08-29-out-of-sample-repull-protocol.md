@@ -115,3 +115,17 @@ session on the user's ask.
   `verify_repull.py` records revisions, fails only on >1% price restatement; the
   copy-pasted steps became `verify_repull.py` / `assemble_repull.py`). Next pull due
   ≤ **2026-09-05** (hard limit ≈ 2026-09-06T04:00Z).
+- **Run 3, 2026-09-04** (deadline −1; main session pulled all 16 in one pass at
+  08:33–08:40Z after two subagents died on usage limits — their partial snapshots are
+  in `data/audit/partial_pulls_repull3/`): `repulls/2026-09-04/` + addendum. Integrity:
+  0 gaps/dupes, 45/86 bars overlap, no price >1%; 34 bars restated, all within ~5h of
+  run 2's pull time (`data/audit/candle_restatement_2026-09-04.json`). **New finding:**
+  bars ≤6h old at pull time are served incomplete (the 09-04T05:00Z bar had 11–56% of
+  median volume on every coin; 18/40 young bars revised across three snapshots, 0/1040
+  older ones). THE cell, cumulative: n=105, 55.2% ±9.5, +3.0 bps — **not triggered,
+  0.2pp above the line**; this window alone n=47, 51.1%, +4.5 bps (hit criterion
+  failed for the window). Trajectory 66.7 → 58.6 → 55.2. Majors n=14 at the cell;
+  BTC+ETH n=10, −1.5 bps; majors at >75th 44.4% / −11.5 bps (n=72). Funding: BTC 1/55
+  negative (first ever), ETH 0/55, SOL 8/55. Open protocol question (user): whether to
+  hold back bars younger than ~6h from the battery. Next pull due ≤ **2026-09-07**
+  (hard limit ≈ 2026-09-08T11:00Z).

@@ -1,0 +1,84 @@
+{
+ "_what": "PARTIAL pulls made by two re-pull-3 subagents that were each killed by a usage limit before finishing (8 series at 2026-09-03T22:42-22:56Z; 7 series at 2026-09-04T03:35-03:46Z). Every file is the verbatim candles array as served at that time. Kept OUTSIDE repulls/ so analyze_repull.py never merges them. Their use: diffed against the full 2026-09-04 pull (~08:33Z, main session) on shared bars, they measure whether the platform revises bars within hours (three snapshots ~5h apart) - see the re-pull 3 addendum.",
+ "snapshots": {
+  "raw_2026-09-03T2242Z": {
+   "BTC_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   },
+   "ETH_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   },
+   "MELANIA_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   },
+   "MET_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   },
+   "PEPE_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   },
+   "POPCAT_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   },
+   "SOL_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   },
+   "TRUMP_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T18:00:00.000Z",
+    "last": "2026-09-03T21:00:00.000Z"
+   }
+  },
+  "raw_2026-09-04T0335Z": {
+   "BTC_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T23:00:00.000Z",
+    "last": "2026-09-04T02:00:00.000Z"
+   },
+   "ETH_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T23:00:00.000Z",
+    "last": "2026-09-04T02:00:00.000Z"
+   },
+   "MELANIA_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T23:00:00.000Z",
+    "last": "2026-09-04T02:00:00.000Z"
+   },
+   "MET_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T23:00:00.000Z",
+    "last": "2026-09-04T02:00:00.000Z"
+   },
+   "PEPE_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T23:00:00.000Z",
+    "last": "2026-09-04T02:00:00.000Z"
+   },
+   "POPCAT_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T23:00:00.000Z",
+    "last": "2026-09-04T02:00:00.000Z"
+   },
+   "SOL_1h.json": {
+    "rows": 100,
+    "first": "2026-08-30T23:00:00.000Z",
+    "last": "2026-09-04T02:00:00.000Z"
+   }
+  }
+ }
+}
