@@ -4,6 +4,7 @@ walker fixture only - never a regression oracle for wire()."""
 from __future__ import annotations
 
 import ast
+import copy
 import inspect
 import json
 from pathlib import Path
@@ -145,3 +146,30 @@ def test_walker_reports_pattern_unchecked_once_per_path_as_info():
     arm, root = _create_arm()
     infos = [f for f in P.diff_schema(_good_body(), arm, root) if f.cls == "INFO"]
     assert any(f.path == "conditions[0].conditionKey" and "pattern" in f.detail for f in infos)
+
+
+def test_walker_reports_unknown_keywords_as_unsupported_and_keeps_walking():
+    mini = copy.deepcopy(MINI)
+    create_props = mini["parameters"]["properties"]["request"]["anyOf"][0]["properties"]
+    create_props["entry"]["allOf"] = []          # a construct outside the modelled subset
+    arms, root = P.resolve_arms(mini)
+    body = _good_body()
+    del body["entry"]["validForBars"]            # drift #4's exact shape - walking must continue
+    findings = P.diff_schema(body, arms["CREATE"], root)
+    unsupported = [f for f in findings if f.cls == "UNSUPPORTED"]
+    assert any(f.path == "entry" and "allOf" in f.detail and f.verdict == "WARN" for f in unsupported)
+    assert ("MISSING_REQUIRED", "entry.validForBars") in _fails(findings)
+
+
+def test_walker_reports_list_type_and_tuple_items_as_unsupported_not_crash():
+    mini = copy.deepcopy(MINI)
+    create_props = mini["parameters"]["properties"]["request"]["anyOf"][0]["properties"]
+    create_props["name"]["type"] = ["string", "null"]          # type as a list
+    create_props["conditions"]["items"] = [{"type": "string"}]  # tuple-form items
+    arms, root = P.resolve_arms(mini)
+    body = _good_body()
+    findings = P.diff_schema(body, arms["CREATE"], root)       # must not raise
+    unsupported = {(f.path, f.verdict) for f in findings if f.cls == "UNSUPPORTED"}
+    assert ("name", "WARN") in unsupported
+    assert ("conditions", "WARN") in unsupported
+    assert not any(f.path.startswith("conditions[") for f in findings)

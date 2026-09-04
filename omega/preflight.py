@@ -83,6 +83,18 @@ def _join(path: str, key: str) -> str:
 
 _NUM = (int, float)
 
+_KNOWN_TYPES = ("object", "array", "string", "boolean", "null", "number", "integer")
+
+# Keywords the walker models directly, plus keywords that are annotative/harmless
+# (description, title, default, examples, $comment) and never worth a finding.
+# Anything outside this set is reported as UNSUPPORTED per the Global Constraint.
+_MODELED_KEYWORDS = frozenset({
+    "type", "properties", "required", "additionalProperties", "enum", "const",
+    "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
+    "minLength", "maxLength", "minItems", "maxItems", "items", "anyOf", "$ref",
+    "pattern", "description", "title", "default", "examples", "$comment",
+})
+
 
 def _is_num(v: object) -> bool:
     return isinstance(v, _NUM) and not isinstance(v, bool)
@@ -125,6 +137,10 @@ def _pick_branch(value: object, branches: list, root: dict) -> dict | None:
 
 def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]) -> None:
     schema = deref(schema, root)
+    unknown = set(schema) - _MODELED_KEYWORDS
+    if unknown:
+        out.append(Finding("UNSUPPORTED", path,
+                            f"schema keyword(s) not modelled by the walker: {sorted(unknown)}", "WARN"))
     if "anyOf" in schema:
         branch = _pick_branch(value, schema["anyOf"], root)
         if branch is None:
@@ -138,7 +154,11 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
         out.append(Finding("ENUM", path, f"{value!r} not in the declared enum ({len(schema['enum'])} values)", "FAIL"))
         return
     t = schema.get("type")
-    if isinstance(t, str) and not _type_ok(t, value):
+    if isinstance(t, list):
+        out.append(Finding("UNSUPPORTED", path, "type as a list", "WARN"))
+    elif isinstance(t, str) and t not in _KNOWN_TYPES:
+        out.append(Finding("UNSUPPORTED", path, f"unknown type name {t!r}", "WARN"))
+    elif isinstance(t, str) and not _type_ok(t, value):
         out.append(Finding("BOUNDS", path, f"expected type {t}, got {type(value).__name__}", "FAIL"))
         return
     if isinstance(value, dict):
@@ -161,8 +181,13 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
         if "minItems" in schema and len(value) < schema["minItems"]:
             out.append(Finding("BOUNDS", path, f"{len(value)} items < minItems {schema['minItems']}", "FAIL"))
         if "items" in schema:
-            for i, v in enumerate(value):
-                _walk(v, schema["items"], root, f"{path}[{i}]", out)
+            items_schema = schema["items"]
+            if isinstance(items_schema, list):
+                out.append(Finding("UNSUPPORTED", path,
+                                   "tuple-form items (a list) not modelled by the walker", "WARN"))
+            else:
+                for i, v in enumerate(value):
+                    _walk(v, items_schema, root, f"{path}[{i}]", out)
     elif _is_num(value):
         v = value
         if "minimum" in schema and v < schema["minimum"]:
