@@ -91,7 +91,10 @@ the method in the capture's `how` field.
     the body lacks entirely. Required top-level keys are already `MISSING_REQUIRED`.
     Two structural deltas are named, each with its measured reason, and nothing else is
     allowlisted: the record calls `rules` `signalRules` (2026-08-29 read-back), and the
-    platform mints `sectionKey` on custom sections (`custom:<uuid>`, never sent).
+    platform mints `sectionKey` on custom sections (`custom:<uuid>`, never sent). A record
+    key whose value is null on every element is `INFO` (the platform's not-set default,
+    e.g. the optional section-level `timeframe`); a null carries nothing to mirror, and no
+    drift instance to date was null-valued.
   - `ENUM` — body value not in the arm's enum. FAIL.
   - `BOUNDS` — body number outside the arm's minimum/maximum/exclusiveMinimum. FAIL.
   - `MIRROR` — a value omega hardcodes as a platform mirror (`entry.*`,

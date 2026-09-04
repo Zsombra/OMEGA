@@ -213,3 +213,116 @@ def diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]:
     out: list[Finding] = []
     _walk(body, arm, root, "", out)
     return out
+
+
+# Two structural deltas between a wire body and a read-back, each measured, and nothing
+# else is allowlisted: the record names `rules` `signalRules` (2026-08-29 read-back), and
+# the platform mints `sectionKey` on custom sections (custom:<uuid>, never sent).
+RECORD_ALIASES: dict[str, str] = {"rules": "signalRules"}
+KNOWN_DELTAS: dict[str, str] = {
+    "sections[].sectionKey": "server-minted on CREATE (custom:<uuid>), never sent - measured 2026-08-28",
+}
+# Request-shaped nested objects: a record key the body lacks here is a FAIL whether or not
+# the schema declares it - drift #3 and #4 were exactly undeclared-but-present-in-the-record.
+NESTED_REQUEST_OBJECTS = ("entry",)
+NESTED_REQUEST_ARRAYS = ("conditions", "sections", "rules")
+
+# A record key/element field whose value is null on every record element carries nothing to
+# mirror - the platform's not-set default (e.g. the optional section-level `timeframe`,
+# omega/validate.py section_timeframe). INFO, not FAIL; no drift instance to date (#3/#4/#5)
+# was null-valued.
+_NULL_INFO_DETAIL = "platform null default on the record; nothing to mirror"
+
+
+def record_request_view(record: dict) -> dict:
+    """get_strategy wraps the record as {"strategy": {...}}; captures may hold either."""
+    inner = record.get("strategy")
+    return inner if isinstance(inner, dict) else record
+
+
+def _intersection_keys(elems: list) -> set[str]:
+    dicts = [e for e in elems if isinstance(e, dict)]
+    if not dicts:
+        return set()
+    keys = set(dicts[0])
+    for d in dicts[1:]:
+        keys &= set(d)
+    return keys
+
+
+def _missing_in_elements(body_elems: list, rec_elems: list, path: str, out: list[Finding],
+                         kinds: tuple[str, ...] | None = None) -> None:
+    """One finding per record key absent from body elements, aggregated as
+    '<path>[*].<key>' with a 'missing in k/n' count. `kinds` restricts the comparison to
+    elements sharing a `kind` (custom sections vs custom sections). A record key whose
+    value is None on every record element is INFO (nothing to mirror), not FAIL."""
+    if kinds:
+        body_elems = [e for e in body_elems if isinstance(e, dict) and e.get("kind") in kinds]
+        rec_elems = [e for e in rec_elems if isinstance(e, dict) and e.get("kind") in kinds]
+    exemplar = _intersection_keys(rec_elems)
+    body_dicts = [e for e in body_elems if isinstance(e, dict)]
+    rec_dicts = [e for e in rec_elems if isinstance(e, dict)]
+    if not exemplar or not body_dicts:
+        return
+    for key in sorted(exemplar):
+        delta_key = f"{path}[].{key}"
+        if delta_key in KNOWN_DELTAS:
+            continue
+        missing = sum(1 for e in body_dicts if key not in e)
+        if missing:
+            agg_path = f"{path}[*].{key}"
+            if rec_dicts and all(e.get(key) is None for e in rec_dicts):
+                out.append(Finding("INFO", agg_path, _NULL_INFO_DETAIL, "INFO"))
+            else:
+                out.append(Finding("MISSING_VS_RECORD", agg_path,
+                                   f"present on every record element, missing in {missing}/{len(body_dicts)} "
+                                   f"body elements", "FAIL"))
+        # one level down: columns inside sections, params inside rules are objects whose
+        # key sets vary by design; columns are compared by intersection too
+        if key == "columns":
+            rec_cols = [c for e in rec_elems if isinstance(e, dict) for c in e.get("columns", [])]
+            body_cols = [c for e in body_dicts for c in e.get("columns", [])]
+            _missing_in_elements(body_cols, rec_cols, f"{path}[].columns", out)
+
+
+def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding]:
+    """Compare a wire body against a verbatim read-back of an existing record."""
+    rec = record_request_view(record)
+    arm = deref(arm, root)
+    props = arm.get("properties", {})
+    required = set(arm.get("required", []))
+    out: list[Finding] = []
+    body_key_of = {v: k for k, v in RECORD_ALIASES.items()}
+    for rk, rv in rec.items():
+        bk = body_key_of.get(rk, rk)
+        if bk in body:
+            continue
+        if isinstance(rv, dict) and bk in NESTED_REQUEST_OBJECTS:
+            out.append(Finding("MISSING_VS_RECORD", bk, "the record carries this object; the body omits it "
+                               "entirely (a human decides whether to mirror it)", "WARN"))
+        elif bk in required:
+            continue                       # already MISSING_REQUIRED from diff_schema
+        elif bk in props:
+            out.append(Finding("INFO", bk, "declared optional; the record carries a value the body omits "
+                               "(platform default or deliberate omission)", "INFO"))
+        else:
+            out.append(Finding("INFO", bk, "server-derived key on the record, not part of the request", "INFO"))
+    for name in NESTED_REQUEST_OBJECTS:
+        if isinstance(body.get(name), dict) and isinstance(rec.get(name), dict):
+            for key in sorted(set(rec[name]) - set(body[name])):
+                if rec[name][key] is None:
+                    out.append(Finding("INFO", _join(name, key), _NULL_INFO_DETAIL, "INFO"))
+                else:
+                    out.append(Finding("MISSING_VS_RECORD", _join(name, key),
+                                       "the record carries this field; the body omits it", "FAIL"))
+    for name in NESTED_REQUEST_ARRAYS:
+        rec_name = RECORD_ALIASES.get(name, name)
+        b, r = body.get(name), rec.get(rec_name)
+        if not (isinstance(b, list) and isinstance(r, list)):
+            continue
+        if name == "sections":
+            _missing_in_elements(b, r, name, out, kinds=("custom",))
+            _missing_in_elements(b, r, name, out, kinds=("platform",))
+        else:
+            _missing_in_elements(b, r, name, out)
+    return out

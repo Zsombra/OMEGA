@@ -17,6 +17,12 @@ ROOT = Path(__file__).resolve().parents[1]
 FIX = ROOT / "tests" / "fixtures" / "preflight"
 MINI = json.loads((FIX / "schema_walker_min.json").read_text(encoding="utf-8"))
 
+RESEARCH = ROOT / "data" / "research" / "2026-08-29-deep-tail-fade"
+V4 = json.loads((RESEARCH / "compile_body_deep_tail_fade_v4.json").read_text(encoding="utf-8"))
+V5 = json.loads((RESEARCH / "compile_body_deep_tail_fade_v5.json").read_text(encoding="utf-8"))
+PRESTATE = json.loads((ROOT / "data/audit/first_generated_update_2026-08-29.json").read_text(encoding="utf-8"))["probes"]["preState"]["strategy"]
+DRIFT5 = json.loads((ROOT / "data/audit/drift5_exit_rediscovery_2026-09-04.json").read_text(encoding="utf-8"))
+
 
 def test_module_imports_no_network_client():
     """The house rule (omega/probe.py:3), enforced against the import graph."""
@@ -173,3 +179,108 @@ def test_walker_reports_list_type_and_tuple_items_as_unsupported_not_crash():
     assert ("name", "WARN") in unsupported
     assert ("conditions", "WARN") in unsupported
     assert not any(f.path.startswith("conditions[") for f in findings)
+
+
+def _body(doc):
+    return doc.get("request", doc)
+
+
+def _migrated_record():
+    """The 2026-08-29 genuine read-back, migrated the way drift #3/#4/#5 records read
+    back on 2026-09-04 (drift5_exit_rediscovery_2026-09-04.json): every condition gains
+    exit=false, clock=LIVE, closes=1 in the platform's key order; entry gains the seven
+    mirrored fields - the v5 body's entry is the mirrored one (trigger AT_SIGNAL,
+    confirmTf 1h, closes 1, bandAtrMultiple 1, levelSource SWING_HIGH,
+    levelOffsetAtrMultiple 0, validForBars 4), matching DRIFT5's own read-back of the
+    sibling strategy; decisionInvalidationExitEnabled=true. BUILT from records, labelled
+    as such - the first live run replaces it with a verbatim capture."""
+    rec = json.loads(json.dumps(PRESTATE))
+    rec["conditions"] = [
+        {"conditionKey": c["conditionKey"], "name": c["name"], "definition": c["definition"],
+         "verdict": c["verdict"], "required": c["required"], "exit": False, "clock": "LIVE", "closes": 1}
+        for c in rec["conditions"]]
+    rec["entry"] = dict(_body(V5)["entry"])
+    rec["decisionInvalidationExitEnabled"] = True
+    return rec
+
+
+def test_replay_drift4_three_entry_fields_missing_vs_record():
+    arm, root = _create_arm()
+    fails = _fails(P.diff_record(_body(V4), _migrated_record(), arm, root))
+    assert {("MISSING_VS_RECORD", "entry.levelSource"), ("MISSING_VS_RECORD", "entry.levelOffsetAtrMultiple"),
+            ("MISSING_VS_RECORD", "entry.validForBars")} <= set(fails)
+
+
+def test_replay_drift5_exit_missing_on_every_condition_vs_record():
+    arm, root = _create_arm()
+    fails = _fails(P.diff_record(_body(V5), _migrated_record(), arm, root))
+    assert ("MISSING_VS_RECORD", "conditions[*].exit") in fails
+    [f] = [f for f in P.diff_record(_body(V5), _migrated_record(), arm, root) if f.path == "conditions[*].exit"]
+    assert "7/7" in f.detail
+
+
+def test_record_diff_is_quiet_when_the_body_carries_everything_the_record_does():
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    for c in body["conditions"]:
+        c["exit"] = False
+    assert _fails(P.diff_record(body, _migrated_record(), arm, root)) == []
+
+
+def test_record_diff_top_level_optional_and_server_keys_are_info_not_fail():
+    """The 16 platform-defaulted execution parameters (measured 2026-08-27) and the
+    optional decisionInvalidationExitEnabled are INFO; id/revision/createdAt are INFO."""
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    for c in body["conditions"]:
+        c["exit"] = False
+    finds = P.diff_record(body, _migrated_record(), arm, root)
+    assert all(f.verdict != "FAIL" for f in finds)
+    infos = {f.path for f in finds if f.verdict == "INFO"}
+    assert {"minAtrPct", "decisionInvalidationExitEnabled", "id", "revision"} <= infos
+
+
+def test_record_diff_uses_intersection_for_arrays_and_knows_the_two_deltas():
+    """signalRules<->rules alias and the server-minted custom sectionKey never fire;
+    a column key present on only SOME record columns never fires."""
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    for c in body["conditions"]:
+        c["exit"] = False
+    rec = _migrated_record()
+    rec["sections"][0]["sectionKey"] = "custom:00000000-0000-4000-8000-000000000000"
+    rec["sections"][0]["columns"][0]["window"] = 4      # only on one record column
+    paths = {f.path for f in P.diff_record(body, rec, arm, root) if f.verdict == "FAIL"}
+    assert not any(p.endswith("sectionKey") for p in paths)
+    assert not any("columns" in p for p in paths)
+    assert not any("signalRules" in p or p.startswith("rules") for p in paths)
+
+
+def test_record_diff_top_level_object_the_body_lacks_is_a_warn():
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    del body["entry"]
+    for c in body["conditions"]:
+        c["exit"] = False
+    [f] = [f for f in P.diff_record(body, _migrated_record(), arm, root) if f.path == "entry"]
+    assert f.cls == "MISSING_VS_RECORD" and f.verdict == "WARN"
+
+
+def test_record_diff_null_valued_record_key_is_info_not_fail():
+    """The real 2026-08-29 record's custom sections carry timeframe: null (the platform's
+    not-set default for the optional section-level override, omega/validate.py
+    section_timeframe); the body never sends it. A null carries nothing to mirror: INFO,
+    not FAIL - no drift instance to date was null-valued."""
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    for c in body["conditions"]:
+        c["exit"] = False
+    finds = P.diff_record(body, _migrated_record(), arm, root)
+    infos = [f for f in finds if f.path == "sections[*].timeframe"]
+    assert infos and all(f.verdict == "INFO" for f in infos)
+    assert not any(f.path == "sections[*].timeframe" and f.verdict == "FAIL" for f in finds)
+
+
+def test_record_request_view_unwraps_the_get_strategy_envelope():
+    assert P.record_request_view({"strategy": {"id": "x"}}) == {"id": "x"}
+    assert P.record_request_view({"id": "x"}) == {"id": "x"}
