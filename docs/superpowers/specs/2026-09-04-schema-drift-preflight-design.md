@@ -78,9 +78,20 @@ the method in the capture's `how` field.
   - `UNDECLARED` — body key the arm does not declare. FAIL. The finding text says that
     `additionalProperties: false` is schema-derived and not measured (`write_surface_gap.json`).
   - `MISSING_REQUIRED` — arm-required key the body omits. FAIL.
-  - `MISSING_VS_RECORD` — key present in the read-back record *and declared by the arm*
-    that the body omits. FAIL. Record keys the arm does not declare are `INFO` (server-
-    derived: `id`, `revision`, `cadence`, …); this rule replaces any hand-kept allowlist.
+  - `MISSING_VS_RECORD` — a key the read-back record carries that the body omits,
+    inside a request-shaped nested object (`entry`, each `conditions[]` element, each
+    custom `sections[]` element, each `rules[]`/`signalRules[]` element, each column).
+    FAIL, whether or not the arm declares the key — instances #3 and #4 were exactly
+    undeclared-but-present-in-the-record. For arrays the exemplar is the *intersection*
+    of keys across the record's elements (so an optional `window` on some columns is not
+    flagged). At the top level the rule is weaker on purpose: a record key the body
+    omits is `INFO` if the arm declares it as optional (the 16 platform-defaulted
+    execution parameters measured 2026-08-27; `decisionInvalidationExitEnabled`) or does
+    not declare it at all (`id`, `revision`, `cadence`, …), and `WARN` if it is an object
+    the body lacks entirely. Required top-level keys are already `MISSING_REQUIRED`.
+    Two structural deltas are named, each with its measured reason, and nothing else is
+    allowlisted: the record calls `rules` `signalRules` (2026-08-29 read-back), and the
+    platform mints `sectionKey` on custom sections (`custom:<uuid>`, never sent).
   - `ENUM` — body value not in the arm's enum. FAIL.
   - `BOUNDS` — body number outside the arm's minimum/maximum/exclusiveMinimum. FAIL.
   - `MIRROR` — a value omega hardcodes as a platform mirror (`entry.*`,
