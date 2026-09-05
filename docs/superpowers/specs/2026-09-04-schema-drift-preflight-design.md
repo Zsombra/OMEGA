@@ -138,8 +138,8 @@ Gate line printed on PASS and quoted verbatim by the plan checkbox:
 
 Built by `gate_line(receipt, receipt_path)` and stored on the receipt itself as
 `gateLine` (`build_receipt(..., receipt_path=...)` computes it at write time from the
-resolved output path), so the checkbox text can be copied straight out of the JSON
-without re-running `gate`.
+resolved output path, and only when the verdict is PASS; a FAIL receipt stores `null`), so
+the checkbox text can be copied straight out of the JSON without re-running `gate`.
 
 ## Session procedure (per compile)
 
