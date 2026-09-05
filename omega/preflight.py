@@ -15,6 +15,9 @@ Anything else is reported as UNSUPPORTED, never silently skipped.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass
 
 CLASSES = ("UNDECLARED", "MISSING_REQUIRED", "MISSING_VS_RECORD", "ENUM", "BOUNDS",
@@ -478,3 +481,59 @@ def fingerprint_readback(record: dict, strategy_id: str) -> list[Finding]:
     if not isinstance(conds, list) or not conds:
         out.append(Finding("TRANSCRIPTION_SUSPECT", "conditions", "expected a non-empty conditions list", "FAIL"))
     return out
+
+
+GATE_LINE_PREFIX = "PREFLIGHT PASS"
+_ISO = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def body_sha256(body: dict) -> str:
+    canon = json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(canon.encode("utf-8")).hexdigest()
+
+
+def verdict(findings: list[Finding]) -> str:
+    return "FAIL" if any(f.verdict == "FAIL" for f in findings) else "PASS"
+
+
+def _parse_iso(s: str) -> datetime:
+    return datetime.strptime(s, _ISO).replace(tzinfo=timezone.utc)
+
+
+def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: dict, readback_meta: dict,
+                  findings: list[Finding], now: datetime, expires_minutes: int = 60,
+                  unmeasured: list[str] | None = None) -> dict:
+    oldest = min(_parse_iso(schema_meta["capturedAt"]), _parse_iso(readback_meta["capturedAt"]))
+    return {
+        "_what": "Schema-drift preflight receipt: the wire body diffed against a fresh compile "
+                 "definition capture and a fresh read-back. A PASS is a precondition of the compile "
+                 "authorization, not the authorization. Nothing here was interpreted.",
+        "when": now.strftime(_ISO),
+        "body": {"path": body_path, "sha256": body_sha256(body), "operation": operation},
+        "captures": {"schema": dict(schema_meta), "readback": dict(readback_meta)},
+        "findings": [f.__dict__ for f in findings],
+        "verdict": verdict(findings),
+        "expiresAt": (oldest + timedelta(minutes=expires_minutes)).strftime(_ISO),
+        "disclaimer": DISCLAIMER,
+        "unmeasured": list(unmeasured or []),
+        "voided": None,
+    }
+
+
+def gate_line(receipt: dict, receipt_path: str = "<receipt>") -> str:
+    rb = receipt["captures"]["readback"]
+    return (f"{GATE_LINE_PREFIX} · {receipt_path} · body {receipt['body']['sha256'][:8]} · "
+            f"schema {receipt['captures']['schema']['capturedAt']} · ref {rb['strategyId']} rev {rb['revision']} · "
+            f"expires {receipt['expiresAt']}")
+
+
+def gate_check(receipt: dict, body: dict, now: datetime) -> tuple[bool, str]:
+    if receipt.get("voided"):
+        return False, f"receipt voided: {receipt['voided']}"
+    if receipt.get("verdict") != "PASS":
+        return False, f"receipt verdict is {receipt.get('verdict')!r}"
+    if receipt["body"]["sha256"] != body_sha256(body):
+        return False, "body sha256 does not match the receipt (the body changed after the preflight)"
+    if now >= _parse_iso(receipt["expiresAt"]):
+        return False, f"receipt expired at {receipt['expiresAt']}; re-run the preflight"
+    return True, "PASS"

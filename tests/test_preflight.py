@@ -7,6 +7,7 @@ import ast
 import copy
 import inspect
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -352,3 +353,48 @@ def test_fingerprint_readback_checks_id_rules_and_conditions():
     assert wrong and wrong[0].cls == "TRANSCRIPTION_SUSPECT"
     short = json.loads(json.dumps(rec)); short["strategy"]["signalRules"] = short["strategy"]["signalRules"][:83]
     assert any("signalRules" in f.path for f in P.fingerprint_readback(short, rec["strategy"]["id"]))
+
+
+NOW = datetime(2026, 9, 4, 9, 0, tzinfo=timezone.utc)
+SCHEMA_META = {"path": "data/contract/compile_strategy_plan/schema_20260904T085500Z.json",
+               "capturedAt": "2026-09-04T08:55:00Z", "fingerprint": "ok"}
+READBACK_META = {"path": "data/contract/get_strategy/b9438519_20260904T085800Z.json",
+                 "capturedAt": "2026-09-04T08:58:00Z", "strategyId": "b9438519-8223-4ef1-a3c3-6f4592bb823d",
+                 "revision": 2, "fingerprint": "ok"}
+
+
+def test_body_sha256_is_canonical():
+    a = P.body_sha256({"b": 1, "a": [1, 2]}); b = P.body_sha256({"a": [1, 2], "b": 1})
+    assert a == b and len(a) == 64
+
+
+def test_verdict_fails_only_on_fail_class_findings():
+    assert P.verdict([]) == "PASS"
+    assert P.verdict([P.Finding("MIRROR", "entry.closes", "d", "WARN"), P.Finding("INFO", "id", "d", "INFO")]) == "PASS"
+    assert P.verdict([P.Finding("ENUM", "entry.trigger", "d", "FAIL")]) == "FAIL"
+
+
+def test_receipt_carries_sha_expiry_disclaimer_and_findings():
+    body = _good_body()
+    r = P.build_receipt(body=body, body_path="x.json", operation="CREATE", schema_meta=SCHEMA_META,
+                        readback_meta=READBACK_META, findings=[], now=NOW, unmeasured=["runtime enforcement of exit"])
+    assert r["verdict"] == "PASS" and r["body"]["sha256"] == P.body_sha256(body)
+    assert r["expiresAt"] == "2026-09-04T09:55:00Z"          # 60 min from the OLDER capture
+    assert r["disclaimer"] == P.DISCLAIMER and r["voided"] is None
+    assert r["unmeasured"] == ["runtime enforcement of exit"]
+    assert P.gate_line(r).startswith("PREFLIGHT PASS") and "b9438519" in P.gate_line(r) and "rev 2" in P.gate_line(r)
+
+
+def test_gate_check_passes_then_fails_on_expiry_sha_mismatch_fail_and_void():
+    body = _good_body()
+    r = P.build_receipt(body=body, body_path="x.json", operation="CREATE", schema_meta=SCHEMA_META,
+                        readback_meta=READBACK_META, findings=[], now=NOW)
+    assert P.gate_check(r, body, NOW) == (True, "PASS")
+    assert P.gate_check(r, body, NOW + timedelta(hours=2))[0] is False
+    other = dict(body, name="edited")
+    ok, why = P.gate_check(r, other, NOW); assert not ok and "sha" in why
+    failed = P.build_receipt(body=body, body_path="x.json", operation="CREATE", schema_meta=SCHEMA_META,
+                             readback_meta=READBACK_META, findings=[P.Finding("ENUM", "p", "d", "FAIL")], now=NOW)
+    assert P.gate_check(failed, body, NOW)[0] is False
+    voided = dict(r, voided={"at": "2026-09-04T09:10:00Z", "reason": "refused", "refusalRecord": "x.json"})
+    ok, why = P.gate_check(voided, body, NOW); assert not ok and "void" in why
