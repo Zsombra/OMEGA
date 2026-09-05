@@ -56,6 +56,11 @@ PRICE_TOL = 0.01
 # open + one bar, which UNDERSTATES age by up to ~1h (run 3 pulled 33-40 min after its last
 # close). Supplementary view only - it never replaces the SETTLED=0 reading.
 SETTLED = float(os.environ.get("SETTLED", "0"))
+# Amendment 2026-09-05 (adopted before any run-4 cell number was computed): the PRICE_TOL
+# abort does not apply to a bar that was younger than YOUNG_H when the EARLIER source served
+# it - such bars are served incomplete (measured 2026-09-04/05, prices up to 2.2% off) and
+# their later, settled values are taken under POLICY=latest. Settled bars still abort.
+YOUNG_H = 6.0
 if POLICY not in ("latest", "first", "strict"):
     raise SystemExit(f"POLICY must be latest|first|strict, got {POLICY!r}")
 if WINDOW not in ("cumulative", "last"):
@@ -74,7 +79,30 @@ src_pulled = []      # per source: exact pull end time (ISO Z) if the run record
 sources = [os.path.join(CORPUS, "candles.json")] + sorted(
     glob.glob(os.path.join(HERE, "*", "candles.json")))
 collisions = 0
+young_over_tol = 0
 max_dclose = max_dvol = 0.0
+from datetime import datetime, timedelta
+
+
+def _iso(t):
+    fmt = "%Y-%m-%dT%H:%M:%S.%fZ" if "." in t else "%Y-%m-%dT%H:%M:%SZ"
+    return datetime.strptime(t, fmt)
+
+
+def _tf_hours(tf):
+    n, unit = int(tf[:-1]), tf[-1]
+    return n * {"m": 1 / 60, "h": 1, "d": 24}[unit]
+
+
+def _age_when_served(key, t, si):
+    """Hours between a bar's close and the moment source `si` pulled it (exact pulledAt.end
+    when recorded, else the last-served-bar proxy, which understates by up to ~1 bar)."""
+    tf = key.rsplit("_", 1)[1]
+    served_at = (_iso(src_pulled[si]) if src_pulled[si]
+                 else _iso(src_last[si][key]) + timedelta(hours=_tf_hours(tf)))
+    return (served_at - (_iso(t) + timedelta(hours=_tf_hours(tf)))).total_seconds() / 3600
+
+
 for si, src in enumerate(sources):
     src_last.append({})
     _doc = json.load(open(src, encoding="utf-8"))
@@ -95,9 +123,14 @@ for si, src in enumerate(sources):
                 if POLICY == "strict":
                     raise SystemExit(f"COLLISION DISAGREES: {key} {t} {old} vs {val}")
                 if dc > PRICE_TOL:
-                    raise SystemExit(
-                        f"PRICE RESTATEMENT > {PRICE_TOL:.0%}: {key} {t} close {old[0]} vs "
-                        f"{val[0]} - record it in data/audit/ before quoting any number")
+                    age_h = _age_when_served(key, t, src_of[key][t])
+                    if age_h < YOUNG_H:
+                        young_over_tol += 1
+                    else:
+                        raise SystemExit(
+                            f"PRICE RESTATEMENT > {PRICE_TOL:.0%}: {key} {t} close {old[0]} vs "
+                            f"{val[0]} (bar was {age_h:.1f}h old when served) - record it in "
+                            f"data/audit/ before quoting any number")
                 if POLICY == "first":
                     continue          # first-seen source wins
             if t in bucket and POLICY == "first":
@@ -105,19 +138,9 @@ for si, src in enumerate(sources):
             bucket[t] = val           # latest wins (or first write)
             src_of.setdefault(key, {})[t] = si
 print(f"sources={len(sources)}  POLICY={POLICY}  WINDOW={WINDOW}  collisions={collisions}"
-      f"  max|dclose|={max_dclose:.2e}  max|dvolume|={max_dvol:.2e}")
+      f"  max|dclose|={max_dclose:.2e}  max|dvolume|={max_dvol:.2e}"
+      f"  young-bar closes over {PRICE_TOL:.0%} (taken latest, not aborted)={young_over_tol}")
 
-from datetime import datetime, timedelta
-
-
-def _iso(t):
-    fmt = "%Y-%m-%dT%H:%M:%S.%fZ" if "." in t else "%Y-%m-%dT%H:%M:%SZ"
-    return datetime.strptime(t, fmt)
-
-
-def _tf_hours(tf):
-    n, unit = int(tf[:-1]), tf[-1]
-    return n * {"m": 1 / 60, "h": 1, "d": 24}[unit]
 dropped_young = 0
 series = {}
 for key, bucket in merged.items():

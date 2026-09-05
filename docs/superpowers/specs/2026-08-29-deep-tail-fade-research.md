@@ -250,3 +250,74 @@ used below.
 - **Next pull due ≤ 2026-09-07** (hard limit ≈ 2026-09-08T11:00Z — the 100-bar window
   must still reach back to 2026-09-04T07:00Z). Expect volume revisions on the youngest
   ~6 bars of this pull; `verify_repull.py` records them.
+
+
+## Addendum 2026-09-05 · out-of-sample re-pull 4 (run 4) — not triggered under reading (D); the edge has turned
+
+Pulled by the main session 2026-09-05T22:23:38–22:54:23Z (`repulls/2026-09-05/raw/_pulled_at.json`,
+the first run with an exact pull time), two days early at the user's choice after the
+trade-off was put to them (about 38 new bars per coin instead of about 72). Verbatim raw
+files: `repulls/2026-09-05/raw/`. Pool: base + runs 1–3. Batches of 4/4/5/3 calls.
+
+- **Integrity** (`verify_repull.py`, amended — see the protocol's 2026-09-05 amendment):
+  16/16 series, 100 bars, 0 gaps, 0 dupes, 62/100 bars overlap (1h) and 91/100 (4h), 38
+  new 1h bars per coin, 9 new 4h bars. **33 bars / 76 fields restated**, every one of them
+  served by run 3 when it was ≤ 2.7 h old (2026-09-04T04:00–07:00Z bars; run 3 pulled
+  08:33–08:40Z). **Three price fields moved by more than 1%** — AIXBT low 2.21% and
+  close 1.95%, CAKE low 1.23%, all on the 09-04T05:00Z bar, the bar run 3 received at
+  3–88% of its final volume. No bar older than 2.7 h at run-3 time changed by more than
+  tick noise. So the young-bar fill-in measured on 09-04 also moves **prices**, not only
+  volume. Record: `data/audit/candle_restatement_2026-09-05.json`.
+- **THE cell, cumulative new-only >90th, base-calibrated (SETTLED=0, POLICY=latest):**
+  **n=141, hit 57.4% ±8.2pp, edge −0.7 bps/bar** (81/141). The cumulative **edge is ≤ 0
+  for the first time**; the hit rate rose from 55.2% to 57.4%. `POLICY=first` gives
+  56.7% / −1.2 (80/141) — the two policies now differ by one hit and half a basis point
+  at the cell; both are reported per the 2026-09-02 amendment, neither changes any verdict
+  below.
+- **This window alone (WINDOW=last, run 4's window, the reading that decides under (D)):**
+  **n=36, hit 61.1% ±15.9pp (22/36), edge −13.5 bps/bar.** Hit criterion **passed**; edge
+  criterion **failed**. Majors n=3 (BTC 2/2, ETH 1/1, SOL 0/0): 3/3, +34.9; alts n=33:
+  57.6%, −17.9. CAKE 7/17 is nearly half the window.
+- **Verdict under the chosen reading (D), recorded 2026-09-05T03:31Z before this data
+  existed:** run 4 triggers iff its window hit ≤ 55%. **61.1% > 55% → NOT triggered.**
+  Run 3's window failed on hit; run 4's failed on edge — a different criterion, so the hit
+  chain resets and an **edge chain starts at run 4: run 5 triggers iff its window edge
+  ≤ 0.** For the record, the other readings the protocol listed: (A) not triggered
+  (cumulative has failed once, on edge, not twice); **(B) TRIGGERED** (cumulative edge
+  −0.7 ≤ 0); **(C) TRIGGERED** (runs 3 and 4 consecutive windows failing on either
+  criterion, and runs 2–3 already did). The binding reading is (D); the others are stated
+  so that nobody has to reconstruct them later.
+- **Supplementary settled view (SETTLED=6, exact pull time for run 4, proxy for runs
+  1–3):** cumulative n=135, 57.0% ±8.4, **−5.5 bps**; window n=30, 60.0% ±17.5,
+  **−37.6 bps**. The six young-bar events dropped from the window (36 → 30) carry a summed
+  edge of about +640 bps — the whole of the window's positive tail sits on bars that the
+  platform is measured to restate. The settled view is the harsher one; it is
+  supplementary and cannot trigger, but a reader who wants the number least exposed to
+  the young-bar effect should look at it.
+- **Run 3's recorded window, recomputed with the corrected 05:00Z bar** (supplementary,
+  the recorded 51.1% stands as the run-3 reading): n=47, **53.2%** (25/47), +5.9 bps. One
+  event flipped miss → hit; the window still fails on hit, so the chain state written into
+  reading (D) was not an artefact of the incomplete bar.
+- **Per-coin split at the cell (cumulative):** CAKE 26/54 (38% of all events, 48% hit),
+  AIXBT 10/16, MET 8/11, PEPE 8/12, LDO 5/12, MOODENG 5/8, TRUMP 5/6, ETH 3/5, BTC 6/8,
+  SOL 2/4, MELANIA 2/4, HYPE 1/1, POPCAT 0. **Majors n=17:** 64.7% ±22.7, +7.2 bps.
+  **BTC+ETH, the created strategy's universe: n=13**, 69.2% ±25.1, **+6.9 bps** — the
+  first positive edge on that universe, on thirteen events. The pooled cell is still alt
+  evidence; the universe evidence is thirteen events.
+- **Moderate stretch (>75th), new-only, all coins:** n=399, 52.9% ±4.9, **−3.3 bps** —
+  the largest sample in the study, and negative.
+- **Funding sign mix (37 new hours per coin):** BTC 1/37 negative, ETH 0/37, SOL 3/37.
+  Unchanged: the FUNDING-leg confound is unresolved.
+- **What was changed before computing, and why it is not goalpost-moving:** the
+  integrity gate and the merge abort were amended to exempt bars that were younger than
+  6 h when their earlier source served them (see the protocol). Adopted after verification
+  and before any run-4 cell number was computed; runs 1–3 are byte-identical under it
+  (n=105, 55.2%, +3.0). It changes what counts as a data fault, not the cell, thresholds,
+  window, coin set or the reading.
+- **Honest summary.** The hit rate is holding at 57–61%; the edge is not. Cumulative edge
+  −0.7 (settled −5.5), this window −13.5 (settled −37.6), moderate stretch −3.3 on 399
+  events. That is the thesis's own stated risk — small wins, large losses when stretches
+  continue — showing up in the number that decides. Under the reading you chose the
+  premise has not failed; it fails if run 5's window edge is ≤ 0.
+- **Next pull due ≤ 2026-09-08** (three days), hard limit ≈ 2026-09-10T00:00Z for the
+  100-bar window to reach back to 2026-09-05T21:00Z. Write `raw/_pulled_at.json`.

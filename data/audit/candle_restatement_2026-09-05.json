@@ -1,0 +1,892 @@
+{
+ "_what": "Re-pull 2026-09-05: every field on which the candle endpoint now disagrees with what it served earlier (old = the latest prior source that held the bar; new = this pull). Written by verify_repull.py; nothing here was interpreted.",
+ "when": "2026-09-05",
+ "comparison_pool_sources": [
+  "candles.json",
+  "repulls/2026-08-30/candles.json",
+  "repulls/2026-09-02/candles.json",
+  "repulls/2026-09-04/candles.json"
+ ],
+ "summary": {
+  "bars_changed": 33,
+  "fields_changed": {
+   "high": 4,
+   "low": 13,
+   "close": 13,
+   "volume": 32,
+   "open": 14
+  },
+  "volume_direction": {
+   "up": 32,
+   "down": 0
+  },
+  "price_tolerance": 0.01,
+  "price_tolerance_breached": [],
+  "young_bar_price_restatements_over_tolerance": 3,
+  "young_bar_rule": "bars < 6h old when their earlier source served them are reported, not failed (amendment 2026-09-05)"
+ },
+ "per_series": {
+  "AIXBT_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "high": 1,
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0038374147942438616,
+    "high": 0.00019685039370064277,
+    "low": 0.02210817212791159,
+    "close": 0.019455252918288084,
+    "volume": 4.092378752886836
+   }
+  },
+  "BTC_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "high": 1,
+    "low": 1,
+    "close": 1,
+    "volume": 3,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0007169699367088608,
+    "high": 0.0006662225183211193,
+    "low": 0.0013223589895694301,
+    "close": 0.0012214230195057554,
+    "volume": 3.1485887932727334
+   }
+  },
+  "BTC_4h": {
+   "overlap_bars": 91,
+   "new_bars": 9,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 1,
+   "first_changed_bar": "2026-09-04T04:00:00.000Z",
+   "bars_matched_before_first_change": 90,
+   "fields_changed": {
+    "volume": 1
+   },
+   "max_relative_change": {
+    "volume": 0.07007766597662674
+   }
+  },
+  "CAKE_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 2
+   },
+   "max_relative_change": {
+    "open": 0.0011657374556512765,
+    "low": 0.012279125486672744,
+    "close": 0.008984725965858049,
+    "volume": 30.402809942874793
+   }
+  },
+  "ETH_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "high": 1,
+    "low": 1,
+    "close": 1,
+    "volume": 3,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0007578174856413892,
+    "high": 0.00023847376788549643,
+    "low": 0.0008778580264154736,
+    "close": 0.002702702702702775,
+    "volume": 2.2243555260983126
+   }
+  },
+  "ETH_4h": {
+   "overlap_bars": 91,
+   "new_bars": 9,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 1,
+   "first_changed_bar": "2026-09-04T04:00:00.000Z",
+   "bars_matched_before_first_change": 90,
+   "fields_changed": {
+    "volume": 1
+   },
+   "max_relative_change": {
+    "volume": 0.029261852693235668
+   }
+  },
+  "HYPE_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 1,
+    "high": 1
+   },
+   "max_relative_change": {
+    "open": 0.003959796419878218,
+    "high": 0.0007077962011068637,
+    "low": 0.00661959399823486,
+    "close": 0.0012422504469779567,
+    "volume": 2.8535299161685725
+   }
+  },
+  "LDO_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.00015542430836183943,
+    "low": 0.007034967928822678,
+    "close": 0.0018350995089171462,
+    "volume": 0.9832849348007029
+   }
+  },
+  "MELANIA_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0015499635302699077,
+    "low": 0.009714026327734921,
+    "close": 0.0050821308648696896,
+    "volume": 1.2319779462439695
+   }
+  },
+  "MET_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 2,
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0011772534165940536,
+    "low": 0.0020977232028652924,
+    "close": 0.0018902625932359723,
+    "volume": 5.687350549976088
+   }
+  },
+  "MOODENG_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0006912214871136627,
+    "low": 0.009826504606939781,
+    "close": 0.007467985602703159,
+    "volume": 1.0352450546206082
+   }
+  },
+  "PEPE_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0005503577325260957,
+    "low": 0.007949561403508875,
+    "close": 0.003012873185428693,
+    "volume": 1.9426595388461496
+   }
+  },
+  "POPCAT_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0019271131463461909,
+    "low": 0.004203438831405945,
+    "close": 0.001445114183035114,
+    "volume": 1.5603209739900388
+   }
+  },
+  "SOL_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "low": 1,
+    "close": 1,
+    "volume": 3,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0008675534991323424,
+    "low": 0.0003865854837150096,
+    "close": 0.0014492753623188955,
+    "volume": 0.6176950743181809
+   }
+  },
+  "SOL_4h": {
+   "overlap_bars": 91,
+   "new_bars": 9,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 1,
+   "first_changed_bar": "2026-09-04T04:00:00.000Z",
+   "bars_matched_before_first_change": 90,
+   "fields_changed": {
+    "volume": 1
+   },
+   "max_relative_change": {
+    "volume": 0.015552173376712646
+   }
+  },
+  "TRUMP_1h": {
+   "overlap_bars": 62,
+   "new_bars": 38,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-04T05:00:00.000Z",
+   "bars_matched_before_first_change": 59,
+   "fields_changed": {
+    "close": 1,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0018219566967500312,
+    "close": 0.0029673590504451534,
+    "volume": 0.13843729303073246
+   }
+  }
+ },
+ "differences_verbatim": [
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "high": {
+     "old": 0.02032,
+     "new": 0.020324
+    },
+    "low": {
+     "old": 0.020264,
+     "new": 0.019816
+    },
+    "close": {
+     "old": 0.020303,
+     "new": 0.019908
+    },
+    "volume": {
+     "old": 31176,
+     "new": 158760
+    }
+   }
+  },
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.019805,
+     "new": 0.019881
+    },
+    "volume": {
+     "old": 285076,
+     "new": 298458
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "high": {
+     "old": 81054,
+     "new": 81108
+    },
+    "low": {
+     "old": 80916,
+     "new": 80809
+    },
+    "close": {
+     "old": 81053,
+     "new": 80954
+    },
+    "volume": {
+     "old": 124.71277,
+     "new": 517.382
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 80896,
+     "new": 80954
+    },
+    "volume": {
+     "old": 1057.09923,
+     "new": 1149.07632
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-04T07:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "volume": {
+     "old": 752.00946,
+     "new": 752.70842
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-09-04T04:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "volume": {
+     "old": 3009.19283,
+     "new": 3220.07004
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 2.0034,
+     "new": 1.9788
+    },
+    "close": {
+     "old": 2.0034,
+     "new": 1.9854
+    },
+    "volume": {
+     "old": 1943.1,
+     "new": 61018.8
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 1.9788,
+     "new": 1.9807
+    },
+    "volume": {
+     "old": 7138.4,
+     "new": 22767
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-04T07:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 1.973,
+     "new": 1.9753
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "high": {
+     "old": 2516,
+     "new": 2516.6
+    },
+    "low": {
+     "old": 2506.1,
+     "new": 2503.9
+    },
+    "close": {
+     "old": 2516,
+     "new": 2509.2
+    },
+    "volume": {
+     "old": 2940.9104,
+     "new": 9482.5407
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 2507.2,
+     "new": 2509.1
+    },
+    "volume": {
+     "old": 14990.829,
+     "new": 15388.6839
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-04T07:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "volume": {
+     "old": 14528.8743,
+     "new": 14718.5326
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-09-04T04:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "volume": {
+     "old": 48300.4106,
+     "new": 49713.7701
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 86.108,
+     "new": 85.538
+    },
+    "close": {
+     "old": 86.134,
+     "new": 86.241
+    },
+    "volume": {
+     "old": 52210.73,
+     "new": 201195.61
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 85.863,
+     "new": 86.203
+    },
+    "high": {
+     "old": 86.183,
+     "new": 86.244
+    },
+    "volume": {
+     "old": 107826.23,
+     "new": 130984.14
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.38664,
+     "new": 0.38392
+    },
+    "close": {
+     "old": 0.3869,
+     "new": 0.38619
+    },
+    "volume": {
+     "old": 54065,
+     "new": 107226.3
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.38604,
+     "new": 0.38598
+    },
+    "volume": {
+     "old": 416014.4,
+     "new": 420329.8
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.11015,
+     "new": 0.10908
+    },
+    "close": {
+     "old": 0.11019,
+     "new": 0.10963
+    },
+    "volume": {
+     "old": 42079,
+     "new": 93919.4
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.10968,
+     "new": 0.10951
+    },
+    "volume": {
+     "old": 31475.9,
+     "new": 35908.7
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.19545,
+     "new": 0.19504
+    },
+    "close": {
+     "old": 0.19574,
+     "new": 0.19537
+    },
+    "volume": {
+     "old": 10920,
+     "new": 16694
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.19537,
+     "new": 0.19514
+    },
+    "low": {
+     "old": 0.19429,
+     "new": 0.1939
+    },
+    "volume": {
+     "old": 8364,
+     "new": 55933
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.040808,
+     "new": 0.040407
+    },
+    "close": {
+     "old": 0.040841,
+     "new": 0.040536
+    },
+    "volume": {
+     "old": 27096,
+     "new": 55147
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.040508,
+     "new": 0.04048
+    },
+    "volume": {
+     "old": 37050,
+     "new": 40545
+    }
+   }
+  },
+  {
+   "series": "PEPE_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.003648,
+     "new": 0.003619
+    },
+    "close": {
+     "old": 0.003651,
+     "new": 0.00364
+    },
+    "volume": {
+     "old": 21672637,
+     "new": 63775192
+    }
+   }
+  },
+  {
+   "series": "PEPE_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.003634,
+     "new": 0.003636
+    },
+    "volume": {
+     "old": 20594661,
+     "new": 22743290
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.052576,
+     "new": 0.052355
+    },
+    "close": {
+     "old": 0.052591,
+     "new": 0.052515
+    },
+    "volume": {
+     "old": 25298,
+     "new": 64771
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.05241,
+     "new": 0.052511
+    },
+    "volume": {
+     "old": 112029,
+     "new": 116354
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "low": {
+     "old": 103.47,
+     "new": 103.43
+    },
+    "close": {
+     "old": 103.5,
+     "new": 103.65
+    },
+    "volume": {
+     "old": 16618.41,
+     "new": 26883.52
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 103.74,
+     "new": 103.65
+    },
+    "volume": {
+     "old": 30781.16,
+     "new": 32282.45
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-04T07:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "volume": {
+     "old": 65092.85,
+     "new": 65097.67
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-09-04T04:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "volume": {
+     "old": 147216.08,
+     "new": 149505.61
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-09-04T05:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "close": {
+     "old": 2.359,
+     "new": 2.366
+    },
+    "volume": {
+     "old": 104635.1,
+     "new": 119120.5
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-09-04T06:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-04/candles.json",
+   "fields": {
+    "open": {
+     "old": 2.3601,
+     "new": 2.3644
+    },
+    "volume": {
+     "old": 141261.7,
+     "new": 142023.1
+    }
+   }
+  }
+ ],
+ "_note_on_first_write": "The first write of this record (same differences_verbatim) was made by the pre-amendment verifier and listed the three >1% price fields as tolerance breaches: AIXBT_1h 2026-09-04T05:00 low 2.21% and close 1.95%, CAKE_1h 2026-09-04T05:00 low 1.23%. All three sit on a bar that was 2.7h old when repulls/2026-09-04 served it (pull ended 08:40Z); under the 2026-09-05 young-bar amendment they are reported, not failed. No settled bar was restated by more than tick noise."
+}

@@ -42,6 +42,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CORPUS)))   # repo root
 FIELDS = ("open", "high", "low", "close", "volume")
 PRICE_FIELDS = ("open", "high", "low", "close")
 PRICE_TOL = 0.01
+# Amendment 2026-09-05 (adopted before any run-4 cell number was computed): a bar that was
+# younger than YOUNG_H at the time its earlier source served it is EXPECTED to be restated
+# (measured 2026-09-04: bars <=6h old are served incomplete; measured 2026-09-05: that
+# includes prices, up to 2.2%). Such a bar is recorded and reported, never failed. The
+# earlier source's pull time is its "pulledAt.end" when recorded (from run 4 on), else the
+# proxy last-served-bar close, which understates age by up to ~1h. Settled bars keep the
+# PRICE_TOL failure.
+YOUNG_H = 6.0
 
 
 def main(date):
@@ -54,22 +62,30 @@ def main(date):
     # Windows (glob mixes separators) or the exclusion silently fails and the file is
     # compared against itself.
     prev = {}      # key -> ts -> (source_name, row); later sources override earlier ones
+    src_served_at = {}   # key -> ts -> when the source that last served this bar pulled it
     used = []
     for src in [os.path.join(CORPUS, "candles.json")] + sorted(glob.glob(os.path.join(HERE, "*", "candles.json"))):
         if os.path.normpath(os.path.dirname(src)) == os.path.normpath(rp):
             continue
         name = os.path.relpath(src, CORPUS).replace("\\", "/")
         used.append(name)
-        for key, rows in json.load(open(src, encoding="utf-8"))["series"].items():
+        doc = json.load(open(src, encoding="utf-8"))
+        pulled_end = (doc.get("pulledAt") or {}).get("end")
+        for key, rows in doc["series"].items():
             prev.setdefault(key, {}).update({r["timestamp"]: (name, r) for r in rows})
+            served_at = (datetime.fromisoformat(pulled_end.replace("Z", "+00:00")) if pulled_end
+                         else datetime.fromisoformat(max(r["timestamp"] for r in rows).replace("Z", "+00:00"))
+                         + timedelta(hours={"1h": 1, "4h": 4}.get(key.rsplit("_", 1)[1], 1)))
+            src_served_at.setdefault(key, {}).update({r["timestamp"]: served_at for r in rows})
     print("comparison pool sources:", used)
 
     problems, diffs, per_series = [], [], {}
     tot_fields = Counter()
     vol_up = vol_dn = 0
+    young_restated = 0
     for fn in sorted(os.listdir(raw_dir)):
-        if not fn.endswith(".json"):
-            continue
+        if not fn.endswith(".json") or fn.startswith("_"):
+            continue      # _pulled_at.json is the pull-time marker, not a series
         key = fn[:-5]
         sym, tf = key.rsplit("_", 1)
         rows = json.load(open(os.path.join(raw_dir, fn), encoding="utf-8"))
@@ -102,7 +118,15 @@ def main(date):
                     else:
                         vol_dn += 1
                 elif rel > PRICE_TOL:
-                    problems.append(f"{fn}: PRICE RESTATEMENT {f} {old[f]} -> {r[f]} at {r['timestamp']} ({rel:.2%} > {PRICE_TOL:.0%})")
+                    bar_close = (datetime.fromisoformat(r["timestamp"].replace("Z", "+00:00"))
+                                 + timedelta(hours={"1h": 1, "4h": 4}.get(tf, 1)))
+                    age_h = (src_served_at[key][r["timestamp"]] - bar_close).total_seconds() / 3600
+                    if age_h < YOUNG_H:
+                        young_restated += 1
+                        print(f"    young-bar restatement (reported, not failed): {fn} {f} {old[f]} -> {r[f]} "
+                              f"at {r['timestamp']} ({rel:.2%}; bar was {age_h:.1f}h old when {name} served it)")
+                    else:
+                        problems.append(f"{fn}: PRICE RESTATEMENT {f} {old[f]} -> {r[f]} at {r['timestamp']} ({rel:.2%} > {PRICE_TOL:.0%}; bar was {age_h:.1f}h old when {name} served it)")
             diffs.append({"series": key, "timestamp": r["timestamp"], "previously_served_by": name, "fields": d})
         matched_before = sum(1 for r in overlap if first and r["timestamp"] < first)
         price_n = sum(fc[f] for f in PRICE_FIELDS)
@@ -131,7 +155,9 @@ def main(date):
             "comparison_pool_sources": used,
             "summary": {"bars_changed": len(diffs), "fields_changed": dict(tot_fields),
                         "volume_direction": {"up": vol_up, "down": vol_dn}, "price_tolerance": PRICE_TOL,
-                        "price_tolerance_breached": [p for p in problems if "PRICE RESTATEMENT" in p]},
+                        "price_tolerance_breached": [p for p in problems if "PRICE RESTATEMENT" in p],
+                        "young_bar_price_restatements_over_tolerance": young_restated,
+                        "young_bar_rule": f"bars < {YOUNG_H:g}h old when their earlier source served them are reported, not failed (amendment 2026-09-05)"},
             "per_series": per_series,
             "differences_verbatim": diffs,
         }

@@ -109,6 +109,31 @@ Window-only (`WINDOW=last`): 51.1% +4.5 (n=47) vs 53.7% +6.2 (n=41). The hold-ba
 moves the cumulative cell by 1.4pp on six events, inside the interval; neither view
 changes the verdict. So the young-bar effect is real but, so far, small at the cell.
 
+## Amendment 2026-09-05 · young bars are exempt from the 1% price gate (post-hoc, adopted before any run-4 cell number)
+
+Run 4 (pulled 2026-09-05T22:23–22:54Z) restated 33 bars from run 3, every one of them
+≤ 2.7 h old when run 3 served it, and three price fields on the 2026-09-04T05:00Z bar
+moved by more than the 1% tolerance (AIXBT low 2.21%, close 1.95%; CAKE low 1.23%).
+That bar was the one run 3 received at 3–88% of its final volume. So the young-bar
+fill-in measured on 09-04 moves prices too, and the 1% gate — written on 09-02 for
+days-old bars nudged by tick noise — blocked the battery on the wrong phenomenon.
+
+**Rule.** `verify_repull.py` and `analyze_repull.py` exempt a bar from the 1% price
+failure/abort when it was younger than **6 h** at the moment its earlier source pulled
+it (exact `pulledAt.end` when the source recorded one, from run 4 on; otherwise the
+last-served-bar proxy, which understates age by up to ~1 h). Such bars are reported,
+counted, and take their latest values under `POLICY=latest`. A bar that was **settled**
+(≥ 6 h old) when served and still moves by more than 1% keeps failing verification and
+aborting the battery — that would be a different phenomenon and nothing here excuses
+it. `verify_repull.py` also skips the `_pulled_at.json` marker.
+
+**Why this is not moving the goalposts:** adopted after verification and before any
+run-4 cell number was computed; runs 1–3 are byte-identical under it (n=105, 55.2%,
++3.0); it changes what counts as a data fault, not the cell, the thresholds, the window,
+the coin set or the reading. The restatement record for run 4 was first written by the
+unamended verifier (listing the three breaches) and then replaced by the amended run's
+record with a note saying so.
+
 ## Run 4 decision boundary and the meaning of "sustained" (pre-registered 2026-09-05, before any run-4 data)
 
 **Exact cumulative state after run 3** (from the battery, not the rounded log): n=105,
@@ -201,3 +226,19 @@ session on the user's ask.
   negative (first ever), ETH 0/55, SOL 8/55. Open protocol question (user): whether to
   hold back bars younger than ~6h from the battery. Next pull due ≤ **2026-09-07**
   (hard limit ≈ 2026-09-08T11:00Z).
+- **Run 4, 2026-09-05** (two days early at the user's choice, after the window-size
+  trade-off was put to them; main session, 16 calls 22:23:38–22:54:23Z, the first run
+  with `raw/_pulled_at.json`): `repulls/2026-09-05/` + addendum. Integrity: 0 gaps/dupes,
+  62/100 overlap, 38 new 1h bars; 33 bars restated, all ≤ 2.7 h old at run 3's pull;
+  **three price fields > 1%** on the 09-04T05:00Z bar → the young-bar amendment above,
+  adopted before computing. THE cell cumulative: **n=141, 57.4% ±8.2, −0.7 bps** —
+  cumulative edge ≤ 0 for the first time (POLICY=first 56.7% / −1.2, reported per the
+  09-02 rule). **This window: n=36, 61.1% ±15.9, −13.5 bps** — hit passed, edge failed.
+  **Under reading (D): NOT triggered** (61.1% > 55%); the hit chain resets and an edge
+  chain starts — **run 5 triggers iff its window edge ≤ 0.** Readings (B) and (C) would
+  read as triggered; (A) not. SETTLED=6: cumulative 57.0% / −5.5 (n=135), window 60.0% /
+  −37.6 (n=30) — the window's positive tail sits entirely on unsettled bars. Run 3's
+  window with the corrected 05:00Z bar: 53.2% (25/47), still failing on hit. Majors n=17
+  64.7% / +7.2; BTC+ETH n=13 69.2% / +6.9; >75th all coins n=399 52.9% / −3.3. Funding:
+  BTC 1/37 negative, ETH 0/37, SOL 3/37. Next pull due ≤ **2026-09-08** (hard limit
+  ≈ 2026-09-10T00:00Z).

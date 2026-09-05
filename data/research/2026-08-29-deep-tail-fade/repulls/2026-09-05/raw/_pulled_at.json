@@ -1,0 +1,1 @@
+{"start": "2026-09-05T22:23:38Z", "end": "2026-09-05T22:54:23Z", "_what": "UTC clock before the first and after the last of the 16 get_coin_candles calls (run 4, main session, batches of 4/4/5/3); the Write step for the last raw file finished just before end"}
