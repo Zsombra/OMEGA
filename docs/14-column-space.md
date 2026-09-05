@@ -1,5 +1,7 @@
 # 14 · Column Space
 
+> **Stale since 2026-09-05.** The platform now serves 135 metrics (49 added, none removed), wider transform attachment and two report-level sections this document does not know about. Measured record: [21 · Platform drift](21-platform-drift-2026-09-05.md). The numbers below describe the 2026-08-24 extraction.
+
 Every table you could build, counted — and what the platform itself has never touched.
 
 Docs 01–03 describe the pieces: 86 metrics, 16 transforms, and the rules that decide which

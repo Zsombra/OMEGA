@@ -1,0 +1,364 @@
+{
+ "_what": "Measured drift between the 2026-08-24 extraction (data/contract/_manifest.json) and the live platform on 2026-09-05T23Z, from read-only calls only. Every list and count here is derived by scratchpad script write_drift.py from the capture files named under `evidence`; the README provenance labels quote the installed vendor package.",
+ "measuredAt": "2026-09-05T23:1x-23:29Z (UTC; see each capture's capturedAt)",
+ "evidence": {
+  "vocabulary_live": "data/contract/vocabulary/20260905T2318Z/{price,momentum,trend,volatility,volumeFlow,derivatives,structure,regime,crowd,derived}.json",
+  "categories_live": "data/contract/vocabulary/20260905T2318Z/categories.json",
+  "hints_live_same_tool_as_august": "get_metric_construction_hints(CLOSE) and (MARK) on 2026-09-05: CLOSE lists 7 transforms (aggregate now top-level; in data/contract/metrics/_batch01.json it was a chain successor only) and 43 spreadOperands (was 17); MARK lists 4 transforms (bandTouch added) and 43 spreadOperands (was 17). Neither response is stored as a file; both are in the session transcript only.",
+  "compile_schema_live": "data/contract/compile_strategy_plan/schema_20260905T011443Z.json (CREATE arm: 146 indexed paths; metric enum 135; sectionKey enum 25; signalId enum 84; timeframe enum 13). preflight fingerprint vs repo pins (84 signals / 25 templates / 13 timeframes): 0 findings.",
+  "vendor_package": ".agents/skills/battlegrid (package @battlegrid/mcp-server 31.2.13; skills/EXPORT.json says contractVersion 53.0.0, which is the exporter's stamp, NOT a handshake read from this session's connector; the contract version this session's connector announces was not observed)",
+  "previews": [
+   "data/contract/columns/basis_mark_bnClose_spread_preview_2026-09-05.json",
+   "data/contract/columns/basis_beside_reference_pairs_preview_2026-09-05.json"
+  ]
+ },
+ "metrics": {
+  "august": 86,
+  "live": 135,
+  "added": 49,
+  "removed": [],
+  "added_by_provenance": {
+   "46.1.0 add-indicator-catalog-coverage (29 keys, README 'Widened enum')": [
+    "KC_UPPER",
+    "KC_MID",
+    "KC_LOWER",
+    "ST_LINE",
+    "ST_DIR",
+    "HMA20",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "PSAR",
+    "ICHI_CONV",
+    "ICHI_BASE",
+    "ICHI_SPAN_A",
+    "ICHI_SPAN_B",
+    "ICHI_LAG",
+    "WILLR14",
+    "STOCH_RSI14",
+    "PIVOT_P",
+    "PIVOT_R1",
+    "PIVOT_R2",
+    "PIVOT_R3",
+    "PIVOT_S1",
+    "PIVOT_S2",
+    "PIVOT_S3",
+    "BB_UPPER",
+    "BB_LOWER",
+    "DI_PLUS",
+    "DI_MINUS"
+   ],
+   "47.1.0 (13 regime keys, README lines 587-590)": [
+    "REGIME_CONVICTION",
+    "REGIME_CRASH_LATCH",
+    "REGIME_CRASH_MARGIN",
+    "REGIME_DI_SPREAD",
+    "REGIME_MOM_BEAR_VOTES",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_RUN_BARS",
+    "REGIME_STATE",
+    "REGIME_TREND_GATE",
+    "REGIME_TREND_MARGIN",
+    "REGIME_TREND_SOURCE",
+    "REGIME_VOL_ATR_RATIO",
+    "REGIME_VOL_BBW_RATIO"
+   ],
+   "no README entry found (grep of the installed package README, 0 hits each)": [
+    "EMA21",
+    "EMA50",
+    "EMA9",
+    "KC_SQUEEZE",
+    "PDH",
+    "PDL",
+    "RSI2"
+   ]
+  },
+  "category_counts_august": {
+   "price": 10,
+   "momentum": 15,
+   "trend": 9,
+   "volatility": 6,
+   "volumeFlow": 13,
+   "derivatives": 7,
+   "structure": 7,
+   "regime": 3,
+   "crowd": 9,
+   "derived": 7
+  },
+  "category_counts_live": {
+   "price": 10,
+   "momentum": 22,
+   "trend": 21,
+   "volatility": 7,
+   "volumeFlow": 13,
+   "derivatives": 7,
+   "structure": 23,
+   "regime": 16,
+   "crowd": 9,
+   "derived": 7
+  }
+ },
+ "transforms": {
+  "authorable_ids_august": [
+   "value",
+   "trajectory",
+   "distance",
+   "spread",
+   "efficiency",
+   "bandTouch",
+   "classifyZone",
+   "maxShare",
+   "rank",
+   "crossDetect",
+   "count",
+   "nearestZoneType",
+   "nearestZoneRange",
+   "nearestZoneDist",
+   "nearestZoneAge",
+   "aggregate"
+  ],
+  "authorable_ids_live": [
+   "value",
+   "trajectory",
+   "distance",
+   "spread",
+   "aggregate",
+   "efficiency",
+   "bandTouch",
+   "classifyZone",
+   "maxShare",
+   "rank",
+   "crossDetect",
+   "count",
+   "nearestZoneType",
+   "nearestZoneRange",
+   "nearestZoneDist",
+   "nearestZoneAge"
+  ],
+  "id_set_changed": false,
+  "top_level_transform_additions_on_existing_metrics": {
+   "ADX": [
+    "aggregate"
+   ],
+   "ATR": [
+    "aggregate"
+   ],
+   "ATR_PCT": [
+    "aggregate"
+   ],
+   "BB_PCT_B": [
+    "aggregate"
+   ],
+   "BB_WIDTH": [
+    "aggregate"
+   ],
+   "BB_WIDTH_PCT": [
+    "aggregate"
+   ],
+   "BUY_PRESSURE": [
+    "aggregate"
+   ],
+   "BUY_TRADES": [
+    "aggregate"
+   ],
+   "BUY_VOLUME": [
+    "aggregate"
+   ],
+   "CCI20": [
+    "aggregate",
+    "classifyZone"
+   ],
+   "CLOSE": [
+    "aggregate"
+   ],
+   "CLOSE_CHANGE": [
+    "aggregate"
+   ],
+   "CVD": [
+    "aggregate"
+   ],
+   "EMA13": [
+    "aggregate"
+   ],
+   "EMA20": [
+    "aggregate"
+   ],
+   "EMA5": [
+    "aggregate"
+   ],
+   "HIGH": [
+    "aggregate"
+   ],
+   "LAST": [
+    "bandTouch"
+   ],
+   "LOW": [
+    "aggregate"
+   ],
+   "MACD": [
+    "aggregate"
+   ],
+   "MARK": [
+    "bandTouch"
+   ],
+   "MFI14": [
+    "aggregate"
+   ],
+   "OBV": [
+    "aggregate"
+   ],
+   "OPEN": [
+    "aggregate"
+   ],
+   "ORACLE": [
+    "bandTouch"
+   ],
+   "PPO": [
+    "aggregate",
+    "crossDetect"
+   ],
+   "ROC12": [
+    "aggregate"
+   ],
+   "RSI14": [
+    "aggregate"
+   ],
+   "RSI7": [
+    "aggregate"
+   ],
+   "RVOL": [
+    "aggregate",
+    "spread"
+   ],
+   "SELL_TRADES": [
+    "aggregate"
+   ],
+   "SELL_VOLUME": [
+    "aggregate"
+   ],
+   "SMA20": [
+    "aggregate"
+   ],
+   "SMA200": [
+    "aggregate"
+   ],
+   "SMA50": [
+    "aggregate"
+   ],
+   "SPOT_CLOSE_BN": [
+    "bandTouch"
+   ],
+   "SPOT_CLOSE_CB": [
+    "bandTouch"
+   ],
+   "STOCH_D": [
+    "aggregate",
+    "classifyZone"
+   ],
+   "STOCH_K": [
+    "aggregate"
+   ],
+   "SWING_HIGH": [
+    "aggregate"
+   ],
+   "SWING_LOW": [
+    "aggregate"
+   ],
+   "TRADES": [
+    "aggregate"
+   ],
+   "VOLUME": [
+    "aggregate"
+   ],
+   "VOL_SMA20": [
+    "aggregate"
+   ],
+   "VWAP": [
+    "aggregate"
+   ]
+  },
+  "note": "Additions only; no existing metric lost a transform. aggregate became a top-level transform on 40 metrics where August listed it only as a chain successor of distance/spread; bandTouch was added to the five timeless price metrics; classifyZone to CCI20 and STOCH_D; crossDetect to PPO; spread to RVOL. Confirmed on CLOSE and MARK with the same tool August used (get_metric_construction_hints), so this is platform growth, not a listing difference between tools.",
+  "listing_order_changed": true
+ },
+ "budgets": {
+  "august": {
+   "sections": 32,
+   "sectionColumns": 32,
+   "columnLookback": 32,
+   "distinctTimeframes": 8,
+   "strategyConditions": 16,
+   "conditionClauses": 16,
+   "estimatedTokens": 16000
+  },
+  "live": {
+   "sections": 32,
+   "sectionColumns": 32,
+   "columnLookback": 32,
+   "distinctTimeframes": 8,
+   "strategyConditions": 16,
+   "conditionClauses": 16,
+   "conditionFrameReads": 256,
+   "estimatedTokens": 32000,
+   "reportNoteChars": 3200
+  }
+ },
+ "templates": {
+  "platform_sectionKeys_live": [
+   "includePriceAction",
+   "includeSubTimeframe",
+   "includeRsi",
+   "includeMacd",
+   "includeVolume",
+   "includeVolatility",
+   "includeBollingerBands",
+   "includeMovingAverages",
+   "includeStochastic",
+   "includeFundingRates",
+   "includeOpenInterest",
+   "includeRelativeStrength",
+   "includeSupportResistance",
+   "includeTrendStrength",
+   "includeMfi",
+   "includeCvd",
+   "includeHigherTimeframe",
+   "includeMtfConfluence",
+   "includeRegimeContext",
+   "includeCrowdIntelligence",
+   "includeCvdCrowdConvergence",
+   "includeStructureZones",
+   "includePerpSpotFlow",
+   "includeMarketBreadth",
+   "includeReferencePairs"
+  ],
+  "platform_count_live": 25,
+  "platform_count_august": 25,
+  "empty_column_platform_sections_live": [
+   "includeMarketBreadth",
+   "includeReferencePairs"
+  ],
+  "custom_templates_live": [
+   "momentum-composite",
+   "volatility-trend"
+  ],
+  "custom_templates_august": "none recorded (the August template capture holds kind=platform entries only)",
+  "report_level_sections": "includeMarketBreadth (99 condition headers, 11 families x 9 scopes) and includeReferencePairs (usdtUsdDev_market, usdcUsdtDev_market) render one value per report with no coin dimension; market-breadth condition columns were listed by preview_strategy_report even when the section was not requested (second preview, 2026-09-05)."
+ },
+ "tools": {
+  "live_count": 113,
+  "strategy_studio_tools_not_mentioned_anywhere_in_repo": [
+   "get_strategy_section_template",
+   "list_strategy_signals",
+   "update_strategy_signal_rule (WRITE)",
+   "fork_strategy (WRITE)"
+  ],
+  "recommendations_feature": "No live tool name contains suggest or recommend. The vendor package's own test (src/__tests__/strategy-authoring-proxy.test.ts, RETIRED_TOOLS) lists get_rule_suggestions and apply_rule_suggestions as retired operations that must never appear in discovery, alongside create_strategy, update_strategy and repair_strategy.",
+  "whether_tools_are_new_since_august": "not determinable from the repo: August recorded only the tools it used, not the full discovery list"
+ },
+ "not_re_extracted": [
+  "per-metric construction hints for the 49 added metrics (data/contract/metrics/ still holds 86 files)",
+  "the composability matrix and the counts in docs 00/01/03/14/18 and README (86 metrics, 322 legal cells, 46 buildable families)",
+  "the platform template column lists beyond the vocabulary listing",
+  "the contract version actually announced by this session's connector"
+ ]
+}

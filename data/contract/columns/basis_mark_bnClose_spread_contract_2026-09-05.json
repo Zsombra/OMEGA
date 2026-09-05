@@ -1,0 +1,87 @@
+{
+ "capturedAt": "2026-09-05T23:14:32Z",
+ "how": "get_strategy_column_contract (read-only; compiles the column without reading market values); transcribed by the session verbatim",
+ "request": {
+  "column": {
+   "metric": "MARK",
+   "transformId": "spread",
+   "timeframe": {
+    "rel": "anchor"
+   },
+   "inputs": [
+    {
+     "metric": "SPOT_CLOSE_BN"
+    }
+   ]
+  },
+  "anchorTimeframe": "1h"
+ },
+ "response": {
+  "contract": {
+   "normalizedColumn": {
+    "metric": "MARK",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "SPOT_CLOSE_BN"
+     }
+    ]
+   },
+   "effectiveParameters": {
+    "window": null,
+    "offset": null,
+    "side": null,
+    "inputs": [
+     {
+      "metric": "SPOT_CLOSE_BN"
+     }
+    ],
+    "aggregate": null,
+    "bars": null,
+    "ordering": null
+   },
+   "outputs": [
+    {
+     "header": "mark_bnClose_spread",
+     "outputType": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+     },
+     "nullable": true,
+     "meaning": "mark_bnClose_spread: % gap mark vs bnClose.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": []
+    }
+   ],
+   "operandOrder": [
+    "MARK",
+    "SPOT_CLOSE_BN"
+   ],
+   "calculationSummary": "Measure the signed percentage gap between the base and one operand metric.",
+   "formula": "output = (mark - bnClose) / bnClose × 100",
+   "glossary": {
+    "mark_bnClose_spread": "mark_bnClose_spread: % gap mark vs bnClose."
+   },
+   "nullBehavior": "Returns null when either operand is null or the second operand is zero.",
+   "timeframe": {
+    "requested": {
+     "rel": "anchor"
+    },
+    "resolved": null,
+    "timeframeMode": "timeless",
+    "requiresAnchorTimeframe": false
+   },
+   "nullSentinel": "—"
+  }
+ }
+}

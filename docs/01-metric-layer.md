@@ -1,5 +1,7 @@
 # 01 · The Metric Layer
 
+> **Stale since 2026-09-05.** The platform now serves 135 metrics (49 added, none removed), wider transform attachment and two report-level sections this document does not know about. Measured record: [21 · Platform drift](21-platform-drift-2026-09-05.md). The numbers below describe the 2026-08-24 extraction.
+
 *Generated from `data/contract/metrics/` — do not hand-edit.*
 
 86 metrics across 10 families. A metric is a **named quantity the platform already

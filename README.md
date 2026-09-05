@@ -81,6 +81,7 @@ strategies from a thesis.
 | | |
 |---|---|
 | Metrics | **86** across 10 families |
+| *Drift (2026-09-05)* | *135 live, 49 added, none removed; see [21 · Platform drift](docs/21-platform-drift-2026-09-05.md)* |
 | Authorable transforms | **16** |
 | Composability matrix | **322 / 1,376 cells legal — 23.4% density** |
 | Platform-privileged pairs | **4** (used by preset sections, denied to authors) |

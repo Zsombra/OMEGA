@@ -1,0 +1,369 @@
+{
+ "capturedAt": "<=2026-09-05T23:28:51Z (clock read by the writing command; the call completed a few minutes earlier)",
+ "how": "preview_strategy_report (read-only; renders without saving or mutating strategy state); transcribed by the session. renderedSections, budgetUsage, resolvedCoinTickers, conditionVerdictTally and the conditionColumns for the custom, reference-pairs and session-field sections are re-emitted from the response; the market-breadth conditionColumns block (99 outputs) is reduced to its header list.",
+ "_what": "Second basis preview of the day: the perp-mark vs Binance-spot and vs Coinbase-spot basis columns rendered live beside the platform's Reference Pairs section (stablecoin peg deviations), which the vendor's section description calls the quote-honesty reading a cross-venue premium rule reads beside the premium. Note that market-breadth condition columns were listed although includeMarketBreadth was NOT requested.",
+ "request": {
+  "timeframe": "1h",
+  "coinSelection": {
+   "mode": "explicit",
+   "tickers": [
+    "BTC",
+    "ETH"
+   ]
+  },
+  "sections": [
+   {
+    "kind": "custom",
+    "title": "Basis check",
+    "benchmarkTicker": null,
+    "notes": "OMEGA read-only preview 2026-09-05: perp mark vs Binance spot basis, beside the reference-pair peg read",
+    "columns": [
+     {
+      "metric": "MARK",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "SPOT_CLOSE_BN"
+       }
+      ]
+     },
+     {
+      "metric": "MARK",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "SPOT_CLOSE_CB"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "kind": "platform",
+    "sectionKey": "includeReferencePairs"
+   }
+  ]
+ },
+ "response_verbatim_parts": {
+  "renderedSections": [
+   {
+    "sectionKey": "custom:737e4bdc-2b70-86c9-81c2-456c9823b039",
+    "section": {
+     "title": "Basis check",
+     "text": "OMEGA read-only preview 2026-09-05: perp mark vs Binance spot basis, beside the reference-pair peg read mark: the perpetual mark price, read live at report build time — not a bar close. mark_bnClose_spread: % gap mark vs bnClose. mark_cbClose_spread: % gap mark vs cbClose.\n\n| coin | mark_bnClose_spread | mark_cbClose_spread |\n|---|---|---|\n| BTC | -0.07% | -0.07% |\n| ETH | -0.06% | -0.07% |"
+    },
+    "structure": null,
+    "authoredNote": "OMEGA read-only preview 2026-09-05: perp mark vs Binance spot basis, beside the reference-pair peg read"
+   },
+   {
+    "sectionKey": "includeReferencePairs",
+    "section": {
+     "title": "Reference Pairs",
+     "text": "usdtUsdDev_market +0.01% · usdcUsdtDev_market -0.02%\n\nusdtUsdDev_market: USDT/USD deviation from par (%), signed, from Coinbase’s USDT-USD spot tape quoted in USD; read as of its latest stored minute close and absent when that close is older than 15 minutes. usdcUsdtDev_market: USDC/USDT deviation from par (%), signed, from Binance’s USDCUSDT spot tape quoted in USDT; read as of its latest stored minute close and absent when that close is older than 15 minutes."
+    },
+    "structure": null,
+    "authoredNote": null
+   }
+  ],
+  "resolvedCoinTickers": [
+   "BTC",
+   "ETH"
+  ],
+  "tokenCountModel": "o200k_base",
+  "budgetUsage": {
+   "sections": {
+    "used": 2,
+    "cap": 32
+   },
+   "sectionColumns": {
+    "used": 2,
+    "cap": 32
+   },
+   "columnLookback": {
+    "used": 24,
+    "cap": 32
+   },
+   "distinctTimeframes": {
+    "used": 3,
+    "cap": 8
+   },
+   "estimatedTokens": {
+    "used": 248,
+    "cap": 32000
+   },
+   "reportNoteChars": {
+    "used": 103,
+    "cap": 3200
+   }
+  },
+  "conditionOutcomes": [],
+  "conditionColumns_custom": {
+   "sectionKey": "custom:737e4bdc-2b70-86c9-81c2-456c9823b039",
+   "title": "Basis check",
+   "benchmarkTicker": null,
+   "outputs": [
+    {
+     "header": "mark_bnClose_spread",
+     "meaning": "mark_bnClose_spread: % gap mark vs bnClose.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "mark_bnClose_spread",
+     "closeClockReadable": false
+    },
+    {
+     "header": "mark_cbClose_spread",
+     "meaning": "mark_cbClose_spread: % gap mark vs cbClose.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "mark_cbClose_spread",
+     "closeClockReadable": false
+    }
+   ]
+  },
+  "conditionColumns_session_field": {
+   "sectionKey": "session-field",
+   "title": "Session Field",
+   "benchmarkTicker": null,
+   "outputs": [
+    {
+     "header": "fieldPlayers_session",
+     "meaning": "players in this session",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "fieldPlayers_session",
+     "closeClockReadable": false
+    },
+    {
+     "header": "fieldUpBias_session",
+     "meaning": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "fieldUpBias_session",
+     "closeClockReadable": false
+    },
+    {
+     "header": "fieldBiasDir_session",
+     "meaning": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+     "conditionOperators": [
+      "is",
+      "in"
+     ],
+     "conditionVocabulary": [
+      "UP",
+      "DOWN"
+     ],
+     "markerToken": "fieldBiasDir_session",
+     "closeClockReadable": false
+    },
+    {
+     "header": "captConc_session",
+     "meaning": "share of captain picks landing on the single most-captained coin (%)",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "captConc_session",
+     "closeClockReadable": false
+    },
+    {
+     "header": "picksSpread_session",
+     "meaning": "distinct coins picked, over distinct coins available",
+     "conditionOperators": [],
+     "conditionVocabulary": [],
+     "markerToken": "picksSpread_session",
+     "closeClockReadable": false
+    }
+   ]
+  },
+  "conditionColumns_reference_pairs": {
+   "sectionKey": "reference-pairs",
+   "title": "Reference Pairs",
+   "benchmarkTicker": null,
+   "outputs": [
+    {
+     "header": "usdtUsdDev_market",
+     "meaning": "USDT/USD deviation from par (%), signed, from Coinbase’s USDT-USD spot tape quoted in USD; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "usdtUsdDev_market",
+     "closeClockReadable": false
+    },
+    {
+     "header": "usdcUsdtDev_market",
+     "meaning": "USDC/USDT deviation from par (%), signed, from Binance’s USDCUSDT spot tape quoted in USDT; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "usdcUsdtDev_market",
+     "closeClockReadable": false
+    }
+   ]
+  },
+  "conditionVerdictTally": {
+   "UP": 0,
+   "DOWN": 0,
+   "NEITHER": 0,
+   "UNRESOLVED": 0
+  },
+  "markerConditions": [],
+  "marketReadPreview": null,
+  "marketReadMarkers": [],
+  "conditionsTableText": null,
+  "tradeConditionsBlockText": null
+ },
+ "response_summarised_parts": {
+  "conditionColumns_market_breadth": {
+   "sectionKey": "market-breadth",
+   "title": "Market Breadth",
+   "benchmarkTicker": null,
+   "outputCount": 99,
+   "headers": [
+    "mktUp_all",
+    "mktUp_crypto",
+    "mktUp_l1",
+    "mktUp_memes",
+    "mktUp_defi",
+    "mktUp_tradfi",
+    "mktUp_stocks",
+    "mktUp_indices",
+    "mktUp_commodities",
+    "mktDown_all",
+    "mktDown_crypto",
+    "mktDown_l1",
+    "mktDown_memes",
+    "mktDown_defi",
+    "mktDown_tradfi",
+    "mktDown_stocks",
+    "mktDown_indices",
+    "mktDown_commodities",
+    "mktBreadth_all",
+    "mktBreadth_crypto",
+    "mktBreadth_l1",
+    "mktBreadth_memes",
+    "mktBreadth_defi",
+    "mktBreadth_tradfi",
+    "mktBreadth_stocks",
+    "mktBreadth_indices",
+    "mktBreadth_commodities",
+    "mktAvgChg_all",
+    "mktAvgChg_crypto",
+    "mktAvgChg_l1",
+    "mktAvgChg_memes",
+    "mktAvgChg_defi",
+    "mktAvgChg_tradfi",
+    "mktAvgChg_stocks",
+    "mktAvgChg_indices",
+    "mktAvgChg_commodities",
+    "mktDispersion_all",
+    "mktDispersion_crypto",
+    "mktDispersion_l1",
+    "mktDispersion_memes",
+    "mktDispersion_defi",
+    "mktDispersion_tradfi",
+    "mktDispersion_stocks",
+    "mktDispersion_indices",
+    "mktDispersion_commodities",
+    "mktPpoUp_all",
+    "mktPpoUp_crypto",
+    "mktPpoUp_l1",
+    "mktPpoUp_memes",
+    "mktPpoUp_defi",
+    "mktPpoUp_tradfi",
+    "mktPpoUp_stocks",
+    "mktPpoUp_indices",
+    "mktPpoUp_commodities",
+    "mktPpoDown_all",
+    "mktPpoDown_crypto",
+    "mktPpoDown_l1",
+    "mktPpoDown_memes",
+    "mktPpoDown_defi",
+    "mktPpoDown_tradfi",
+    "mktPpoDown_stocks",
+    "mktPpoDown_indices",
+    "mktPpoDown_commodities",
+    "mktPpoNet_all",
+    "mktPpoNet_crypto",
+    "mktPpoNet_l1",
+    "mktPpoNet_memes",
+    "mktPpoNet_defi",
+    "mktPpoNet_tradfi",
+    "mktPpoNet_stocks",
+    "mktPpoNet_indices",
+    "mktPpoNet_commodities",
+    "mktAvgPpo_all",
+    "mktAvgPpo_crypto",
+    "mktAvgPpo_l1",
+    "mktAvgPpo_memes",
+    "mktAvgPpo_defi",
+    "mktAvgPpo_tradfi",
+    "mktAvgPpo_stocks",
+    "mktAvgPpo_indices",
+    "mktAvgPpo_commodities",
+    "mktVolNet_all",
+    "mktVolNet_crypto",
+    "mktVolNet_l1",
+    "mktVolNet_memes",
+    "mktVolNet_defi",
+    "mktVolNet_tradfi",
+    "mktVolNet_stocks",
+    "mktVolNet_indices",
+    "mktVolNet_commodities",
+    "mktStretch_all",
+    "mktStretch_crypto",
+    "mktStretch_l1",
+    "mktStretch_memes",
+    "mktStretch_defi",
+    "mktStretch_tradfi",
+    "mktStretch_stocks",
+    "mktStretch_indices",
+    "mktStretch_commodities"
+   ],
+   "note": "all 99 carry conditionOperators [lt,lte,gte,gt,between], empty conditionVocabulary, markerToken == header, closeClockReadable false; listed by the platform although includeMarketBreadth was not in the request; the header list was reconstructed as 11 families x 9 scopes in the order the response printed them"
+  }
+ }
+}

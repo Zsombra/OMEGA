@@ -1,0 +1,176 @@
+{
+ "capturedAt": "2026-09-05T23:13:40Z",
+ "how": "preview_strategy_report (read-only: 'without saving or mutating strategy state'); the renderedSections, resolvedCoinTickers, budgetUsage, conditionVerdictTally and the custom section's conditionColumns entry are VERBATIM; the three platform sections the preview appends unasked (session-field, market-breadth, reference-pairs) are recorded by header list only, with their counts - a PARTIAL record, and labelled as such",
+ "request": {
+  "timeframe": "1h",
+  "coinSelection": {
+   "mode": "explicit",
+   "tickers": [
+    "BTC",
+    "ETH"
+   ]
+  },
+  "sections": [
+   {
+    "kind": "custom",
+    "title": "Basis check",
+    "benchmarkTicker": null,
+    "notes": "OMEGA read-only preview 2026-09-05: perp mark vs Binance spot basis",
+    "columns": [
+     {
+      "metric": "MARK",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "SPOT_CLOSE_BN"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "response_verbatim_parts": {
+  "renderedSections": [
+   {
+    "sectionKey": "custom:980dc396-5c0d-8df1-8da4-7d842a78d9b3",
+    "section": {
+     "title": "Basis check",
+     "text": "OMEGA read-only preview 2026-09-05: perp mark vs Binance spot basis mark: the perpetual mark price, read live at report build time — not a bar close. mark_bnClose_spread: % gap mark vs bnClose.\n\n| coin | mark_bnClose_spread |\n|---|---|\n| BTC | -0.04% |\n| ETH | -0.01% |"
+    },
+    "structure": null,
+    "authoredNote": "OMEGA read-only preview 2026-09-05: perp mark vs Binance spot basis"
+   }
+  ],
+  "resolvedCoinTickers": [
+   "BTC",
+   "ETH"
+  ],
+  "tokenCountModel": "o200k_base",
+  "budgetUsage": {
+   "sections": {
+    "used": 1,
+    "cap": 32
+   },
+   "sectionColumns": {
+    "used": 1,
+    "cap": 32
+   },
+   "columnLookback": {
+    "used": 24,
+    "cap": 32
+   },
+   "distinctTimeframes": {
+    "used": 1,
+    "cap": 8
+   },
+   "estimatedTokens": {
+    "used": 83,
+    "cap": 32000
+   },
+   "reportNoteChars": {
+    "used": 67,
+    "cap": 3200
+   }
+  },
+  "conditionOutcomes": [],
+  "conditionColumns_custom": {
+   "sectionKey": "custom:980dc396-5c0d-8df1-8da4-7d842a78d9b3",
+   "title": "Basis check",
+   "benchmarkTicker": null,
+   "outputs": [
+    {
+     "header": "mark_bnClose_spread",
+     "meaning": "mark_bnClose_spread: % gap mark vs bnClose.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "mark_bnClose_spread",
+     "closeClockReadable": false
+    }
+   ]
+  },
+  "conditionVerdictTally": {
+   "UP": 0,
+   "DOWN": 0,
+   "NEITHER": 0,
+   "UNRESOLVED": 0
+  },
+  "markerConditions": [],
+  "marketReadPreview": null,
+  "marketReadMarkers": [],
+  "conditionsTableText": null,
+  "tradeConditionsBlockText": null
+ },
+ "response_summarised_parts": {
+  "top_level_keys_in_order": [
+   "renderedSections",
+   "resolvedCoinTickers",
+   "tokenCountModel",
+   "budgetUsage",
+   "conditionOutcomes",
+   "conditionColumns",
+   "conditionVerdictTally",
+   "markerConditions",
+   "marketReadPreview",
+   "marketReadMarkers",
+   "conditionsTableText",
+   "tradeConditionsBlockText"
+  ],
+  "appended_platform_sections_by_header": {
+   "session-field": [
+    "fieldPlayers_session",
+    "fieldUpBias_session",
+    "fieldBiasDir_session",
+    "captConc_session",
+    "picksSpread_session"
+   ],
+   "market-breadth": {
+    "families": [
+     "mktUp",
+     "mktDown",
+     "mktBreadth",
+     "mktAvgChg",
+     "mktDispersion",
+     "mktPpoUp",
+     "mktPpoDown",
+     "mktPpoNet",
+     "mktAvgPpo",
+     "mktVolNet",
+     "mktStretch"
+    ],
+    "scopes": [
+     "all",
+     "crypto",
+     "l1",
+     "memes",
+     "defi",
+     "tradfi",
+     "stocks",
+     "indices",
+     "commodities"
+    ],
+    "headers": 99
+   },
+   "reference-pairs": [
+    "usdtUsdDev_market",
+    "usdcUsdtDev_market"
+   ]
+  },
+  "new_versus_2026-08-24_renders_capture": [
+   "resolvedCoinTickers",
+   "tradeConditionsBlockText",
+   "budgetUsage.reportNoteChars",
+   "market-breadth section (99 headers) appended to every preview"
+  ]
+ },
+ "_what": "First observed render of the perp-mark vs Binance-spot basis column. Header verified by the column-contract compiler AND by a live render in the same minute."
+}
