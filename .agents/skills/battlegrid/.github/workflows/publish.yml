@@ -1,0 +1,205 @@
+name: Publish @battlegrid/mcp-server
+
+# A version change on main IS the release. Publication used to be triggered by a tag, which meant a
+# version bump with no tag published nothing and reported nothing — how 5.1.0 came to be declared in
+# this repository and absent from the registry, caught by no check at all. The tag is now created
+# after a successful publish, recording what shipped rather than authorizing it.
+#
+# Deliberately NOT filtered with `paths: ['package.json']`. GitHub skips a path-filtered workflow
+# when the push diff exceeds 3,000 files and the matching file is not among the first 3,000 returned,
+# so a version bump inside a very large merge would silently fail to release — the exact class of
+# silence this workflow exists to remove. Running on every push to main and deciding in-job costs one
+# registry query on non-release pushes.
+on:
+  push:
+    branches:
+      - main
+  # Re-runnable by hand when a run failed for a reason outside the diff — an unreachable endpoint
+  # during a deploy, or a registry error.
+  workflow_dispatch: {}
+
+# Serialize releases. Two version-bump merges landing close together would otherwise run their
+# publish jobs concurrently, and `npm publish` moves `dist-tags.latest` unconditionally — so if an
+# older merge's slower run finished last, `latest` would move BACKWARD and installs would get the
+# stale package. Never cancel in progress: a cancelled run could stop between publish and tag.
+concurrency:
+  group: publish-mcp-server
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create and push the release tag after publishing
+      id-token: write # OIDC provenance
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # tags, so the reconcile step can tell a missing tag from an existing one
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+
+      # Decide what this run is. Every later step is gated on `release`; nothing relies on a step
+      # exiting 0 to stop the job, because in GitHub Actions exit 0 marks a step SUCCESSFUL and the
+      # job continues.
+      #
+      # Three outcomes:
+      #   release=true            — this version is not on the registry; publish it
+      #   reconcile_tag=true      — already published but its tag is missing; create the tag only
+      #   neither                 — already published; nothing to publish
+      #
+      # The last outcome covers two situations this job used to report identically, both as a green
+      # run with one line in a log nobody reads:
+      #
+      #   LEGITIMATE  the push changed nothing that ships (docs for maintainers, a test, a fixture,
+      #               this workflow). Publishing nothing is correct.
+      #   STRANDED    the push changed tarball content at a version already on the registry. The
+      #               change does NOT reach npm and never will under this number. Cost #45 and #48
+      #               a release each; both looked like successful runs.
+      #
+      # Telling them apart needs the DIFF, not just the version, so the gate now reads it. `stranded`
+      # is decided here and enforced in the last step, so a run that also needs its tag reconciled
+      # still does that work before failing.
+      - name: Decide whether this is a release
+        id: gate
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          RELEASE_TAG="mcp-server@$PKG_VERSION"
+          echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+          # What this push changed that reaches the tarball. `scripts/shipped-paths.mjs` is the one
+          # definition of that, shared with the pre-PR reach check in CLAUDE.md so the two cannot
+          # disagree. Skipped when there is no diff to read: workflow_dispatch carries no `before`
+          # (and is explicitly for re-running a failure outside the diff), and a `before` commit
+          # that is not in this clone cannot be compared against.
+          BEFORE="${{ github.event.before }}"
+          SHIPPED=""
+          DIFF_READ=false
+          if [ -n "$BEFORE" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            DIFF_READ=true
+            SHIPPED="$(git diff --name-only "$BEFORE" "${{ github.sha }}" \
+              | grep -E "$(node scripts/shipped-paths.mjs)" || true)"
+          fi
+
+          if npm view "@battlegrid/mcp-server@$PKG_VERSION" version --registry=https://registry.npmjs.org/ >/dev/null 2>&1; then
+            if [ -n "$SHIPPED" ]; then
+              echo "stranded=true" >> "$GITHUB_OUTPUT"
+              {
+                echo "### Stranded release — nothing published"
+                echo
+                echo "\`$PKG_VERSION\` is already on the registry, and this push changed files that ship:"
+                echo
+                echo "$SHIPPED" | sed 's/^/- \`/;s/$/\`/'
+                echo
+                echo "Those changes will never reach npm under this number. Bump the version and merge again."
+              } >> "$GITHUB_STEP_SUMMARY"
+            elif [ "$DIFF_READ" = true ]; then
+              echo "stranded=false" >> "$GITHUB_OUTPUT"
+              echo "No-op: \`$PKG_VERSION\` is already published and this push changed nothing that ships." \
+                >> "$GITHUB_STEP_SUMMARY"
+            else
+              # No diff to read (workflow_dispatch, or a `before` this clone does not have). Say so
+              # rather than reporting a clean no-op that was never actually checked.
+              echo "stranded=false" >> "$GITHUB_OUTPUT"
+              echo "No-op: \`$PKG_VERSION\` is already published. No push diff available, so shipped-file changes were NOT checked." \
+                >> "$GITHUB_STEP_SUMMARY"
+            fi
+            if [ -n "$(git tag --list "$RELEASE_TAG")" ]; then
+              echo "$PKG_VERSION is already published and tagged — nothing to publish."
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              echo "reconcile_tag=false" >> "$GITHUB_OUTPUT"
+            else
+              # A published version with no tag means a previous run died between publish and tag.
+              # npm versions cannot be republished, so the only correct repair is to create the
+              # missing tag — never to treat this as a finished release and move on silently.
+              echo "::warning::$PKG_VERSION is published but $RELEASE_TAG is missing — reconciling the tag."
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              echo "reconcile_tag=true" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "$PKG_VERSION is not on the registry — releasing."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "reconcile_tag=false" >> "$GITHUB_OUTPUT"
+            echo "stranded=false" >> "$GITHUB_OUTPUT"
+            echo "Releasing \`$PKG_VERSION\`." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Enforce one immutable release identity. All three values that express this package's version
+      # must agree: package.json and BOTH lockfile version fields. Checking a subset admits the
+      # divergence the check exists to prevent — the lockfile's self-referencing entry was previously
+      # unchecked.
+      #
+      # PACKAGE_VERSION in src/index.ts is checked here too, but it now means something narrower than
+      # it used to: the proxy's OWN build identity, sent upstream as the client identity. It is no
+      # longer the number a local client reads as the contract — that one is relayed from the
+      # upstream handshake at runtime and is not knowable at publish time.
+      - name: Verify version integrity (package.json == lock == lock.self == src PACKAGE_VERSION)
+        if: steps.gate.outputs.release == 'true'
+        run: |
+          PKG_VERSION="${{ steps.gate.outputs.version }}"
+          LOCK_VERSION="$(node -p "require('./package-lock.json').version")"
+          LOCK_SELF_VERSION="$(node -p "require('./package-lock.json').packages[''].version")"
+          SRC_VERSION="$(node -p "require('fs').readFileSync('src/index.ts','utf8').match(/PACKAGE_VERSION = '([^']+)'/)[1]")"
+          echo "package.json=$PKG_VERSION package-lock.json=$LOCK_VERSION package-lock.json[packages.'']=$LOCK_SELF_VERSION src=$SRC_VERSION"
+          if [ "$PKG_VERSION" != "$LOCK_VERSION" ] || [ "$PKG_VERSION" != "$LOCK_SELF_VERSION" ] || [ "$PKG_VERSION" != "$SRC_VERSION" ]; then
+            echo "::error::Version mismatch — package.json, both package-lock.json version fields, and src PACKAGE_VERSION must all match before publish."
+            exit 1
+          fi
+          echo "Version integrity OK: $PKG_VERSION"
+
+      # NO DEPLOY GATE. There used to be one here: the package announced `battlegrid@<its own
+      # version>` downstream, so publishing ahead of the server's deploy told clients a contract the
+      # server did not answer to, and a step asserted the deployed contract line before allowing the
+      # release. As of 12.0.0 the proxy relays the contract version from the upstream handshake on
+      # every connection, so a published package makes no claim about the server at all — there is no
+      # ordering left to enforce, and nothing a pre-publish check could usefully compare. Releasing
+      # before, during, or after a server deploy is now equally correct.
+
+      - name: Test
+        if: steps.gate.outputs.release == 'true'
+        run: npm test
+
+      - name: Build
+        if: steps.gate.outputs.release == 'true'
+        run: npm run build
+
+      - name: Pack (dry run)
+        if: steps.gate.outputs.release == 'true'
+        run: npm pack --dry-run
+
+      - name: Publish
+        if: steps.gate.outputs.release == 'true'
+        run: npm publish --access public --provenance
+
+      # The tag is an OUTPUT of a successful publish, not its prerequisite. It also runs on the
+      # reconcile path, where a previous run published but died before tagging — npm versions cannot
+      # be republished, so creating the missing tag is the only repair available.
+      - name: Tag the released version
+        if: steps.gate.outputs.release == 'true' || steps.gate.outputs.reconcile_tag == 'true'
+        run: |
+          RELEASE_TAG="${{ steps.gate.outputs.tag }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$RELEASE_TAG" -m "Publish @battlegrid/mcp-server ${{ steps.gate.outputs.version }}"
+          git push origin "$RELEASE_TAG"
+          echo "Tagged $RELEASE_TAG at $(git rev-parse HEAD)"
+
+      # LAST, deliberately. A stranded push may also be missing its tag, and that repair is still
+      # worth doing — so this fails the run after the reconcile step above rather than short-
+      # circuiting the job from the gate.
+      #
+      # It fails rather than warning because a warning on a green run is the same silence in a
+      # different colour: this workflow's whole premise is that nobody reads a run that says it
+      # succeeded. A red X on `main` is what actually gets repaired, and the repair is the one
+      # taken by hand three times now — bump the version, merge again.
+      - name: Fail a stranded release
+        if: steps.gate.outputs.stranded == 'true'
+        run: |
+          echo "::error::${{ steps.gate.outputs.version }} is already published and this push changed files that ship. Nothing reached npm. Bump the version and merge again."
+          exit 1

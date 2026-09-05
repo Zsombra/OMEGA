@@ -9,3 +9,8 @@ out/
 
 # artifact build intermediate
 scratch_matrix.json
+
+# Harness registration symlink created by `npx skills add playbattlegrid/battlegrid-mcp`;
+# it holds a machine-local absolute path and core.symlinks is off on Windows (git would
+# copy the package). The package itself lives in .agents/skills/battlegrid; re-run the installer.
+.claude/skills/battlegrid

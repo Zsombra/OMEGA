@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "battlegrid": {
+      "source": "playbattlegrid/battlegrid-mcp",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "f99db30ae5fa6d140e1a34148383751dc053ce4b6711679c25dcee69c018f6a4"
+    }
+  }
+}
