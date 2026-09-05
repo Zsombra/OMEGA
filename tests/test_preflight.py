@@ -398,3 +398,26 @@ def test_gate_check_passes_then_fails_on_expiry_sha_mismatch_fail_and_void():
     assert P.gate_check(failed, body, NOW)[0] is False
     voided = dict(r, voided={"at": "2026-09-04T09:10:00Z", "reason": "refused", "refusalRecord": "x.json"})
     ok, why = P.gate_check(voided, body, NOW); assert not ok and "void" in why
+
+
+def test_gate_check_refuses_naive_now_and_malformed_receipt_without_raising():
+    body = _good_body()
+    r = P.build_receipt(body=body, body_path="x.json", operation="CREATE", schema_meta=SCHEMA_META,
+                        readback_meta=READBACK_META, findings=[], now=NOW)
+
+    # Test naive now (no tzinfo)
+    naive_now = datetime(2026, 9, 4, 9, 0)
+    ok, why = P.gate_check(r, body, naive_now)
+    assert not ok and "timezone" in why
+
+    # Test missing expiresAt
+    malformed_no_expiry = dict(r)
+    del malformed_no_expiry["expiresAt"]
+    ok, why = P.gate_check(malformed_no_expiry, body, NOW)
+    assert not ok and "malformed" in why
+
+    # Test missing body
+    malformed_no_body = dict(r)
+    del malformed_no_body["body"]
+    ok, why = P.gate_check(malformed_no_body, body, NOW)
+    assert not ok and "malformed" in why

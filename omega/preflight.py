@@ -532,8 +532,18 @@ def gate_check(receipt: dict, body: dict, now: datetime) -> tuple[bool, str]:
         return False, f"receipt voided: {receipt['voided']}"
     if receipt.get("verdict") != "PASS":
         return False, f"receipt verdict is {receipt.get('verdict')!r}"
-    if receipt["body"]["sha256"] != body_sha256(body):
+    try:
+        receipt_sha = receipt["body"]["sha256"]
+    except (KeyError, TypeError) as exc:
+        return False, f"receipt malformed: {exc!r}"
+    if receipt_sha != body_sha256(body):
         return False, "body sha256 does not match the receipt (the body changed after the preflight)"
-    if now >= _parse_iso(receipt["expiresAt"]):
+    if now.tzinfo is None or now.utcoffset() is None:
+        return False, "now must be timezone-aware UTC; refusing to compare against expiresAt"
+    try:
+        expires_at = _parse_iso(receipt["expiresAt"])
+    except (KeyError, TypeError, ValueError) as exc:
+        return False, f"receipt malformed: {exc!r}"
+    if now >= expires_at:
         return False, f"receipt expired at {receipt['expiresAt']}; re-run the preflight"
     return True, "PASS"
