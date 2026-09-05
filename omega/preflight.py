@@ -133,23 +133,35 @@ def _pick_branch(value: object, branches: list, root: dict) -> dict | None:
             return b
         if "const" in b and value == b["const"]:
             return b
-        if "type" in b and _type_ok(b["type"], value) and "enum" not in b and "const" not in b:
+        t = b.get("type")
+        if isinstance(t, str) and t in _KNOWN_TYPES and _type_ok(t, value) and "enum" not in b and "const" not in b:
             return b
     return None
 
 
-def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]) -> None:
-    schema = deref(schema, root)
+def _check_unknown_keywords(schema: dict, path: str, out: list[Finding]) -> None:
+    """Keywords the walker does not model, per the Global Constraint (never a silent
+    skip). Called once on the anyOf-holder schema and again on whichever branch
+    `_pick_branch` selects - a keyword scoped to one arm of an anyOf is otherwise never
+    examined."""
     unknown = set(schema) - _MODELED_KEYWORDS
     if unknown:
         out.append(Finding("UNSUPPORTED", path,
                             f"schema keyword(s) not modelled by the walker: {sorted(unknown)}", "WARN"))
+
+
+def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]) -> None:
+    schema = deref(schema, root)
+    _check_unknown_keywords(schema, path, out)
     if "anyOf" in schema:
         branch = _pick_branch(value, schema["anyOf"], root)
         if branch is None:
-            out.append(Finding("UNSUPPORTED", path, "no anyOf branch matches the value", "WARN"))
+            # RULING: an unmatched anyOf branch leaves the subtree unvalidated - FAIL, not
+            # WARN, unlike the WARN-and-keep-walking UNSUPPORTED cases below.
+            out.append(Finding("UNSUPPORTED", path, "no anyOf branch matches the value", "FAIL"))
             return
         schema = branch
+        _check_unknown_keywords(schema, path, out)
     if "const" in schema and value != schema["const"]:
         out.append(Finding("ENUM", path, f"{value!r} is not the declared const {schema['const']!r}", "FAIL"))
         return
@@ -223,6 +235,10 @@ def diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]:
 # the platform mints `sectionKey` on custom sections (custom:<uuid>, never sent).
 RECORD_ALIASES: dict[str, str] = {"rules": "signalRules"}
 KNOWN_DELTAS: dict[str, str] = {
+    # measured for CUSTOM sections only (custom:<uuid>, minted on CREATE, never sent -
+    # measured 2026-08-28). Platform sections are compared under a distinct "[platform]"
+    # label in _missing_in_elements below, so this entry cannot suppress a real
+    # platform-side sectionKey drift.
     "sections[].sectionKey": "server-minted on CREATE (custom:<uuid>), never sent - measured 2026-08-28",
 }
 # Request-shaped nested objects: a record key the body lacks here is a FAIL whether or not
@@ -254,11 +270,15 @@ def _intersection_keys(elems: list) -> set[str]:
 
 
 def _missing_in_elements(body_elems: list, rec_elems: list, path: str, out: list[Finding],
-                         kinds: tuple[str, ...] | None = None) -> None:
+                         kinds: tuple[str, ...] | None = None, label: str | None = None) -> None:
     """One finding per record key absent from body elements, aggregated as
     '<path>[*].<key>' with a 'missing in k/n' count. `kinds` restricts the comparison to
-    elements sharing a `kind` (custom sections vs custom sections). A record key whose
-    value is None on every record element is INFO (nothing to mirror), not FAIL."""
+    elements sharing a `kind` (custom sections vs platform sections). `label` disambiguates
+    the KNOWN_DELTAS lookup key (and the reported path) for a same-`path` call made under a
+    different `kinds` filter - e.g. platform sections vs custom sections - so an allowlist
+    entry measured for one kind cannot silently suppress the same-named key drifting on the
+    other. A record key whose value is None on every record element is INFO (nothing to
+    mirror), not FAIL."""
     if kinds:
         body_elems = [e for e in body_elems if isinstance(e, dict) and e.get("kind") in kinds]
         rec_elems = [e for e in rec_elems if isinstance(e, dict) and e.get("kind") in kinds]
@@ -267,13 +287,14 @@ def _missing_in_elements(body_elems: list, rec_elems: list, path: str, out: list
     rec_dicts = [e for e in rec_elems if isinstance(e, dict)]
     if not exemplar or not body_dicts:
         return
+    prefix = f"{path}[{label}]" if label else path
     for key in sorted(exemplar):
-        delta_key = f"{path}[].{key}"
+        delta_key = f"{prefix}[].{key}"
         if delta_key in KNOWN_DELTAS:
             continue
         missing = sum(1 for e in body_dicts if key not in e)
         if missing:
-            agg_path = f"{path}[*].{key}"
+            agg_path = f"{prefix}[*].{key}"
             if rec_dicts and all(e.get(key) is None for e in rec_dicts):
                 out.append(Finding("INFO", agg_path, _NULL_INFO_DETAIL, "INFO"))
             else:
@@ -285,7 +306,7 @@ def _missing_in_elements(body_elems: list, rec_elems: list, path: str, out: list
         if key == "columns":
             rec_cols = [c for e in rec_elems if isinstance(e, dict) for c in e.get("columns", [])]
             body_cols = [c for e in body_dicts for c in e.get("columns", [])]
-            _missing_in_elements(body_cols, rec_cols, f"{path}[].columns", out)
+            _missing_in_elements(body_cols, rec_cols, f"{prefix}.columns", out)
 
 
 def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding]:
@@ -300,7 +321,11 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
         bk = body_key_of.get(rk, rk)
         if bk in body:
             continue
-        if isinstance(rv, dict) and bk in NESTED_REQUEST_OBJECTS:
+        if isinstance(rv, dict):
+            # any dict-valued record key the body lacks entirely is a WARN, not just the
+            # ones named in NESTED_REQUEST_OBJECTS - the arm may not even declare it, and
+            # "server-derived, not part of the request" is an assertion the code cannot
+            # make about an object it has never modelled
             out.append(Finding("MISSING_VS_RECORD", bk, "the record carries this object; the body omits it "
                                "entirely (a human decides whether to mirror it)", "WARN"))
         elif bk in required:
@@ -325,7 +350,7 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
             continue
         if name == "sections":
             _missing_in_elements(b, r, name, out, kinds=("custom",))
-            _missing_in_elements(b, r, name, out, kinds=("platform",))
+            _missing_in_elements(b, r, name, out, kinds=("platform",), label="platform")
         else:
             _missing_in_elements(b, r, name, out)
     return out
@@ -355,7 +380,9 @@ def mirror_findings(body: dict, record: dict) -> list[Finding]:
         if not seen:
             continue
         for i, c in enumerate(body.get("conditions", [])):
-            if isinstance(c, dict) and k in c and c[k] not in seen:
+            # compare by value, not set membership: c[k] may be a list/dict and thus
+            # unhashable, which `c[k] not in seen` (a set) would raise TypeError on
+            if isinstance(c, dict) and k in c and not any(c[k] == s for s in seen):
                 out.append(Finding("MIRROR", f"conditions[{i}].{k}",
                                    f"body {c[k]!r}; the record's conditions carry {sorted(map(repr, seen))}", "WARN"))
     return out
@@ -461,7 +488,10 @@ def fingerprint_schema(arm: dict, root: dict, *, signal_ids: set[str], template_
         elif set(got) != set(want) or len(got) != len(set(got)):
             out.append(Finding("TRANSCRIPTION_SUSPECT", path,
                                f"enum has {len(got)} values, repo data has {len(want)}; "
-                               f"missing {sorted(set(want) - set(got))[:5]} extra {sorted(set(got) - set(want))[:5]}", "FAIL"))
+                               f"missing {sorted(set(want) - set(got))[:5]} extra {sorted(set(got) - set(want))[:5]}; "
+                               "either mistranscribed, or the platform's set grew/shrank since the repo data "
+                               "was captured - verify with a second read-back before refreshing data/derived "
+                               "or data/contract", "FAIL"))
     if not deref(arm, root).get("required"):
         out.append(Finding("TRANSCRIPTION_SUSPECT", "", "arm has no required list", "FAIL"))
     return out
@@ -476,7 +506,10 @@ def fingerprint_readback(record: dict, strategy_id: str) -> list[Finding]:
     if not isinstance(rules, list) or len(rules) != 84:
         out.append(Finding("TRANSCRIPTION_SUSPECT", "signalRules",
                            f"expected 84 signalRules (every read-back since 2026-08-28), got "
-                           f"{len(rules) if isinstance(rules, list) else type(rules).__name__}", "FAIL"))
+                           f"{len(rules) if isinstance(rules, list) else type(rules).__name__}; "
+                           "either mistranscribed, or the platform's set grew/shrank since the repo data "
+                           "was captured - verify with a second read-back before refreshing data/derived "
+                           "or data/contract", "FAIL"))
     conds = rec.get("conditions")
     if not isinstance(conds, list) or not conds:
         out.append(Finding("TRANSCRIPTION_SUSPECT", "conditions", "expected a non-empty conditions list", "FAIL"))
@@ -496,15 +529,33 @@ def verdict(findings: list[Finding]) -> str:
     return "FAIL" if any(f.verdict == "FAIL" for f in findings) else "PASS"
 
 
-def _parse_iso(s: str) -> datetime:
-    return datetime.strptime(s, _ISO).replace(tzinfo=timezone.utc)
+def parse_iso(s: str) -> datetime:
+    """Parse `YYYY-MM-DDTHH:MM:SS[.ffffff]Z` or the same with a `+HH:MM`/`+00:00` offset,
+    returning an aware UTC datetime. Platform timestamps carry milliseconds
+    (2026-08-28T13:48:33.561Z); the original strict `%Y-%m-%dT%H:%M:%SZ` format rejected
+    both that and the `+00:00` spelling."""
+    if not isinstance(s, str):
+        raise ValueError(f"not a string: {s!r}")
+    txt = s.strip()
+    if txt.endswith("Z") or txt.endswith("z"):
+        txt = txt[:-1] + "+00:00"
+    try:
+        dt = datetime.fromisoformat(txt)
+    except ValueError as exc:
+        raise ValueError(f"unparsable ISO-8601 timestamp: {s!r}") from exc
+    if dt.tzinfo is None:
+        raise ValueError(f"timestamp has no timezone/Z suffix: {s!r}")
+    return dt.astimezone(timezone.utc)
+
+
+_parse_iso = parse_iso  # kept for existing internal callers
 
 
 def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: dict, readback_meta: dict,
                   findings: list[Finding], now: datetime, expires_minutes: int = 60,
-                  unmeasured: list[str] | None = None) -> dict:
+                  unmeasured: list[str] | None = None, receipt_path: str = "<receipt>") -> dict:
     oldest = min(_parse_iso(schema_meta["capturedAt"]), _parse_iso(readback_meta["capturedAt"]))
-    return {
+    receipt = {
         "_what": "Schema-drift preflight receipt: the wire body diffed against a fresh compile "
                  "definition capture and a fresh read-back. A PASS is a precondition of the compile "
                  "authorization, not the authorization. Nothing here was interpreted.",
@@ -518,6 +569,8 @@ def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: di
         "unmeasured": list(unmeasured or []),
         "voided": None,
     }
+    receipt["gateLine"] = gate_line(receipt, receipt_path)
+    return receipt
 
 
 def gate_line(receipt: dict, receipt_path: str = "<receipt>") -> str:

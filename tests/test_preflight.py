@@ -143,10 +143,43 @@ def test_walker_anyof_by_kind_const_and_by_type():
 
 
 def test_walker_reports_unmatched_anyof_as_unsupported_not_silence():
+    """RULING: an unmatched anyOf branch leaves the subtree unvalidated, so it is FAIL, not
+    WARN - unlike the WARN-and-keep-walking UNSUPPORTED cases (unknown keyword, list type,
+    tuple items, unknown type name), where the walk continues over the rest of the value."""
     arm, root = _create_arm()
     body = _good_body(); body["sections"].append({"kind": "mystery"})
     [f] = [f for f in P.diff_schema(body, arm, root) if f.cls == "UNSUPPORTED"]
-    assert f.path == "sections[2]" and f.verdict == "WARN"
+    assert f.path == "sections[2]" and f.verdict == "FAIL"
+
+
+def test_walker_checks_unknown_keywords_inside_the_selected_anyof_branch_and_keeps_walking():
+    """The unmodelled-keyword check must run again on the BRANCH `_pick_branch` selects,
+    not only on the anyOf-holder schema before selection - otherwise a keyword the walker
+    does not model (allOf, dependentRequired, ...) placed inside one arm of an anyOf is
+    never examined. Verified: allOf inside the custom-section branch used to produce zero
+    findings for it while the branch's own required-field check still ran (proving the
+    keyword itself was skipped, not the branch)."""
+    mini = copy.deepcopy(MINI)
+    custom_branch = mini["parameters"]["properties"]["request"]["anyOf"][0]["properties"]["sections"]["items"]["anyOf"][1]
+    custom_branch["allOf"] = []          # a construct outside the modelled subset, scoped to this branch only
+    arms, root = P.resolve_arms(mini)
+    body = _good_body()
+    del body["sections"][1]["title"]     # required inside the same branch - proves walking continues
+    findings = P.diff_schema(body, arms["CREATE"], root)
+    unsupported = [f for f in findings if f.cls == "UNSUPPORTED" and f.path == "sections[1]"]
+    assert unsupported and unsupported[0].verdict == "WARN" and "allOf" in unsupported[0].detail
+    assert ("MISSING_REQUIRED", "sections[1].title") in _fails(findings)
+
+
+def test_pick_branch_ignores_a_branch_with_an_unknown_type_name():
+    """`_pick_branch`'s type-only matching used `_type_ok(b["type"], value)` with no
+    `_KNOWN_TYPES` guard, so an unknown type name (a typo, or a JSON Schema draft keyword
+    the walker does not model) matched every value and could steal the match from a real
+    candidate later in the list. `_walk` already guards this for the top-level `type`
+    keyword; `_pick_branch` must guard it too."""
+    root: dict = {}
+    branches = [{"type": "frobnicate"}, {"type": "number"}]
+    assert P._pick_branch(5, branches, root) == branches[1]
 
 
 def test_walker_reports_pattern_unchecked_once_per_path_as_info():
@@ -190,19 +223,29 @@ def _migrated_record():
     """The 2026-08-29 genuine read-back, migrated the way drift #3/#4/#5 records read
     back on 2026-09-04 (drift5_exit_rediscovery_2026-09-04.json): every condition gains
     exit=false, clock=LIVE, closes=1 in the platform's key order; entry gains the seven
-    mirrored fields - the v5 body's entry is the mirrored one (trigger AT_SIGNAL,
-    confirmTf 1h, closes 1, bandAtrMultiple 1, levelSource SWING_HIGH,
-    levelOffsetAtrMultiple 0, validForBars 4), matching DRIFT5's own read-back of the
-    sibling strategy; decisionInvalidationExitEnabled=true. BUILT from records, labelled
-    as such - the first live run replaces it with a verbatim capture."""
+    mirrored fields, pulled from DRIFT5's OWN read-back of the sibling strategy
+    (6a8bca67-45a3-428e-85ba-71ec2cd2218e's entry_verbatim) rather than from the v5 body -
+    the two are verified equal by test_drift5_readback_entry_equals_the_mirrored_body_entry
+    below, so the provenance is measured, not assumed; decisionInvalidationExitEnabled=true.
+    BUILT from records, labelled as such - the first live run replaces it with a verbatim
+    capture."""
     rec = json.loads(json.dumps(PRESTATE))
     rec["conditions"] = [
         {"conditionKey": c["conditionKey"], "name": c["name"], "definition": c["definition"],
          "verdict": c["verdict"], "required": c["required"], "exit": False, "clock": "LIVE", "closes": 1}
         for c in rec["conditions"]]
-    rec["entry"] = dict(_body(V5)["entry"])
+    rec["entry"] = dict(DRIFT5["readbacks"]["6a8bca67-45a3-428e-85ba-71ec2cd2218e"]["entry_verbatim"])
     rec["decisionInvalidationExitEnabled"] = True
     return rec
+
+
+def test_drift5_readback_entry_equals_the_mirrored_body_entry():
+    """Measures the provenance claim in _migrated_record's docstring: DRIFT5's own
+    read-back of 6a8bca67's entry is the same seven values as v5's body entry, so building
+    the fixture from the read-back (rather than from the body, which is what omega itself
+    emits and would make the replay tests circular) changes nothing about what the tests
+    assert."""
+    assert DRIFT5["readbacks"]["6a8bca67-45a3-428e-85ba-71ec2cd2218e"]["entry_verbatim"] == _body(V5)["entry"]
 
 
 def test_replay_drift4_three_entry_fields_missing_vs_record():
@@ -218,6 +261,26 @@ def test_replay_drift5_exit_missing_on_every_condition_vs_record():
     assert ("MISSING_VS_RECORD", "conditions[*].exit") in fails
     [f] = [f for f in P.diff_record(_body(V5), _migrated_record(), arm, root) if f.path == "conditions[*].exit"]
     assert "7/7" in f.detail
+
+
+def test_replay_drift3_clock_and_closes_missing_vs_record():
+    """Drift #3 (2026-08-29/30): conditions[].clock and conditions[].closes required by the
+    runtime validator before the schema declared them, caught by a record read-back that
+    already carried the migrated values."""
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    for c in body["conditions"]:
+        c["exit"] = False
+        del c["clock"]
+        del c["closes"]
+    findings = P.diff_record(body, _migrated_record(), arm, root)
+    fails = _fails(findings)
+    assert ("MISSING_VS_RECORD", "conditions[*].clock") in fails
+    assert ("MISSING_VS_RECORD", "conditions[*].closes") in fails
+    [fc] = [f for f in findings if f.path == "conditions[*].clock"]
+    assert "7/7" in fc.detail
+    [fk] = [f for f in findings if f.path == "conditions[*].closes"]
+    assert "7/7" in fk.detail
 
 
 def test_record_diff_is_quiet_when_the_body_carries_everything_the_record_does():
@@ -257,6 +320,21 @@ def test_record_diff_uses_intersection_for_arrays_and_knows_the_two_deltas():
     assert not any("signalRules" in p or p.startswith("rules") for p in paths)
 
 
+def test_record_diff_platform_section_missing_sectionkey_is_not_suppressed_by_the_custom_delta():
+    """RULING: KNOWN_DELTAS' one entry ("server-minted on CREATE, custom:<uuid>, never
+    sent") is measured for CUSTOM sections only. Before this fix, `_missing_in_elements`
+    computed the same delta key ("sections[].sectionKey") for the platform-kind comparison
+    too, so a real platform-side sectionKey drift would have been silently swallowed by an
+    allowlist entry whose measured reason does not apply to it. Platform sections must be
+    compared under a distinct label so their own sectionKey delta (or any other) still
+    fires."""
+    arm, root = _create_arm()
+    body = {"sections": [{"kind": "platform"}]}          # sectionKey omitted
+    rec = {"sections": [{"kind": "platform", "sectionKey": "includeRsi"}]}
+    fails = {(f.cls, f.path) for f in P.diff_record(body, rec, arm, root) if f.verdict == "FAIL"}
+    assert ("MISSING_VS_RECORD", "sections[platform][*].sectionKey") in fails
+
+
 def test_record_diff_top_level_object_the_body_lacks_is_a_warn():
     arm, root = _create_arm()
     body = _body(json.loads(json.dumps(V5)))
@@ -264,6 +342,22 @@ def test_record_diff_top_level_object_the_body_lacks_is_a_warn():
     for c in body["conditions"]:
         c["exit"] = False
     [f] = [f for f in P.diff_record(body, _migrated_record(), arm, root) if f.path == "entry"]
+    assert f.cls == "MISSING_VS_RECORD" and f.verdict == "WARN"
+
+
+def test_record_diff_any_extra_top_level_object_the_body_lacks_is_a_warn():
+    """The WARN branch used to be gated on name (`bk in NESTED_REQUEST_OBJECTS`, i.e.
+    "entry" only), so a brand-new top-level object on the record - one the arm doesn't
+    even declare - fell through to the server-derived INFO branch, an assertion the code
+    cannot make about an object it has never seen. Any dict-valued record key the body
+    omits entirely is a WARN, regardless of name."""
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    for c in body["conditions"]:
+        c["exit"] = False
+    rec = _migrated_record()
+    rec["riskProfile"] = {"x": 1}
+    [f] = [f for f in P.diff_record(body, rec, arm, root) if f.path == "riskProfile"]
     assert f.cls == "MISSING_VS_RECORD" and f.verdict == "WARN"
 
 
@@ -305,6 +399,16 @@ def test_mirror_warns_never_fails_on_a_differing_mirror_value():
     finds = P.mirror_findings(body, rec)
     assert {(f.cls, f.path, f.verdict) for f in finds} == {
         ("MIRROR", "entry.validForBars", "WARN"), ("MIRROR", "conditions[0].clock", "WARN")}
+
+
+def test_mirror_findings_handles_a_list_valued_body_condition_field_without_raising():
+    """`c[k] not in seen` raises TypeError when `c[k]` is a list/dict (unhashable) -
+    a body condition can legally carry a list-valued field. Must compare by value, not by
+    set membership, and still report the mismatch."""
+    rec = _migrated_record()
+    body = {"entry": dict(MIRROR_ENTRY), "conditions": [{"clock": "LIVE", "closes": [1, 2], "exit": False}]}
+    finds = P.mirror_findings(body, rec)          # must not raise
+    assert ("MIRROR", "conditions[0].closes", "WARN") in {(f.cls, f.path, f.verdict) for f in finds}
 
 
 def test_schema_index_and_changelog_see_enum_growth_and_new_optional_keys():
@@ -355,12 +459,40 @@ def test_fingerprint_readback_checks_id_rules_and_conditions():
     assert any("signalRules" in f.path for f in P.fingerprint_readback(short, rec["strategy"]["id"]))
 
 
+def test_fingerprint_mismatch_detail_names_the_two_possible_causes():
+    """A count mismatch (schema enum or record signalRules) is ambiguous between a
+    transcription error and a real platform-side change since the repo data was last
+    refreshed; the detail must name both and point at the resolution (a second read-back
+    before touching data/derived or data/contract)."""
+    arm, root = _create_arm()
+    bad = P.fingerprint_schema(arm, root, signal_ids={"rsi_oversold", "rsi_overbought", "macd_bull_cross"},
+                               template_keys={"includeRsi", "includeMacd"}, timeframes=["1h", "4h"])
+    assert "verify with a second read-back" in bad[0].detail
+    rec = {"strategy": _migrated_record()}
+    short = json.loads(json.dumps(rec)); short["strategy"]["signalRules"] = short["strategy"]["signalRules"][:83]
+    [f] = [f for f in P.fingerprint_readback(short, rec["strategy"]["id"]) if f.path == "signalRules"]
+    assert "verify with a second read-back" in f.detail
+
+
 NOW = datetime(2026, 9, 4, 9, 0, tzinfo=timezone.utc)
 SCHEMA_META = {"path": "data/contract/compile_strategy_plan/schema_20260904T085500Z.json",
                "capturedAt": "2026-09-04T08:55:00Z", "fingerprint": "ok"}
 READBACK_META = {"path": "data/contract/get_strategy/b9438519_20260904T085800Z.json",
                  "capturedAt": "2026-09-04T08:58:00Z", "strategyId": "b9438519-8223-4ef1-a3c3-6f4592bb823d",
                  "revision": 2, "fingerprint": "ok"}
+
+
+def test_parse_iso_accepts_fractional_seconds_and_offset_and_rejects_garbage():
+    """Strict `%Y-%m-%dT%H:%M:%SZ` rejects the millisecond-bearing timestamps the platform
+    actually returns (e.g. 6a8bca67's createdAt, 2026-08-28T13:48:33.561Z) and the
+    +00:00-offset spelling. `parse_iso` is the public replacement; `_parse_iso` stays as an
+    alias for existing internal callers."""
+    assert P.parse_iso("2026-08-28T13:48:33.561Z") == datetime(2026, 8, 28, 13, 48, 33, 561000, tzinfo=timezone.utc)
+    assert P.parse_iso("2026-08-28T13:48:33+00:00") == datetime(2026, 8, 28, 13, 48, 33, tzinfo=timezone.utc)
+    assert P.parse_iso("2026-08-28T13:48:33Z") == datetime(2026, 8, 28, 13, 48, 33, tzinfo=timezone.utc)
+    with pytest.raises(ValueError):
+        P.parse_iso("not-a-timestamp")
+    assert P._parse_iso is P.parse_iso
 
 
 def test_body_sha256_is_canonical():
@@ -383,6 +515,19 @@ def test_receipt_carries_sha_expiry_disclaimer_and_findings():
     assert r["disclaimer"] == P.DISCLAIMER and r["voided"] is None
     assert r["unmeasured"] == ["runtime enforcement of exit"]
     assert P.gate_line(r).startswith("PREFLIGHT PASS") and "b9438519" in P.gate_line(r) and "rev 2" in P.gate_line(r)
+
+
+def test_build_receipt_precomputes_the_gate_line_for_the_resolved_receipt_path():
+    """The gate line the CLI prints on PASS must also be readable straight out of the
+    written receipt JSON (so the checkbox text can be copied from the file, not only from
+    a terminal that already scrolled away)."""
+    body = _good_body()
+    r = P.build_receipt(body=body, body_path="x.json", operation="CREATE", schema_meta=SCHEMA_META,
+                        readback_meta=READBACK_META, findings=[], now=NOW,
+                        receipt_path="data/audit/compile_preflight_2026-09-04.json")
+    assert r["gateLine"].startswith("PREFLIGHT PASS")
+    assert "data/audit/compile_preflight_2026-09-04.json" in r["gateLine"]
+    assert r["gateLine"] == P.gate_line(r, "data/audit/compile_preflight_2026-09-04.json")
 
 
 def test_gate_check_passes_then_fails_on_expiry_sha_mismatch_fail_and_void():
@@ -420,4 +565,10 @@ def test_gate_check_refuses_naive_now_and_malformed_receipt_without_raising():
     malformed_no_body = dict(r)
     del malformed_no_body["body"]
     ok, why = P.gate_check(malformed_no_body, body, NOW)
+    assert not ok and "malformed" in why
+
+    # Test unparsable expiresAt - parse_iso's tolerant parsing must still raise ValueError
+    # on genuine garbage, and gate_check must keep failing closed on it, not crash
+    malformed_bad_expiry = dict(r, expiresAt="not-a-timestamp")
+    ok, why = P.gate_check(malformed_bad_expiry, body, NOW)
     assert not ok and "malformed" in why

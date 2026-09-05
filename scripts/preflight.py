@@ -4,9 +4,12 @@
       Print the numbered, read-only session procedure for THIS body: which definition to
       load, which record to read back, exactly where to save each verbatim capture.
   run <body.json> --schema <capture> --readback <capture> [--previous-schema <capture>]
-      [--expires-minutes 60] [--out data/audit/compile_preflight_<date>.json] [--now <ISO Z>]
+      [--expires-minutes 60] [--out data/audit/compile_preflight_<date>[-<slug>].json]
+      [--slug <slug>] [--force] [--now <ISO Z>]
       Diff the body against both captures; write the receipt; print the gate line.
-      Exit 0 on PASS, 1 on FAIL.
+      Refuses to overwrite an existing receipt at the resolved path unless --force is
+      given (a FAIL run must not be silently destroyed by a later PASS run on the same
+      day). Exit 0 on PASS, 1 on FAIL.
   gate <receipt> --body <body.json> [--now <ISO Z>]
       Exit 0 only if the receipt is PASS, the body sha matches, it has not expired and
       it is not voided.
@@ -61,7 +64,7 @@ def _load_capture(path: str) -> tuple[dict, dict]:
 
 
 def _now(arg: str | None) -> datetime:
-    return P._parse_iso(arg) if arg else datetime.now(timezone.utc).replace(microsecond=0)
+    return P.parse_iso(arg) if arg else datetime.now(timezone.utc).replace(microsecond=0)
 
 
 def cmd_recipe(a) -> int:
@@ -74,7 +77,7 @@ def cmd_recipe(a) -> int:
      ToolSearch  select:{TOOL}   max_results 1
    Save the returned definition VERBATIM to
      {CAPTURE_SCHEMA_DIR.relative_to(ROOT).as_posix()}/schema_{stamp}.json
-   as {{"capturedAt": "<ISO Z>", "how": "ToolSearch select:<tool>", "request": null, "response": <the definition>}}.
+   as {{"capturedAt": "<YYYY-MM-DDTHH:MM:SSZ, fractional seconds accepted>", "how": "ToolSearch select:<tool>", "request": null, "response": <the definition>}}.
    The definition is ~21 KB. If one Write fails or truncates, write it in <= 6 KB chunks and
    concatenate, and say so in "how". Never edit, reorder or repair the text.
 
@@ -82,7 +85,7 @@ def cmd_recipe(a) -> int:
      get_strategy  {{"strategyId": "{a.reference}", "includeInactive": true}}
    Save the response VERBATIM to
      {CAPTURE_READBACK_DIR.relative_to(ROOT).as_posix()}/{a.reference}_{stamp}.json
-   as {{"capturedAt": "<ISO Z>", "how": "get_strategy", "request": {{...the call...}}, "response": <the response>}}.
+   as {{"capturedAt": "<YYYY-MM-DDTHH:MM:SSZ, fractional seconds accepted>", "how": "get_strategy", "request": {{...the call...}}, "response": <the response>}}.
 
 3. Run the diff:
      python scripts/preflight.py run {a.body} --schema <step 1 file> --readback <step 2 file>
@@ -125,17 +128,26 @@ def cmd_run(a) -> int:
             if operation in prev_arms:
                 findings += P.changelog(P.schema_index(prev_arms[operation], prev_root), P.schema_index(arm, root))
     rec = P.record_request_view(record)
+    if a.out:
+        out = Path(a.out)
+    else:
+        slug = f"-{a.slug}" if getattr(a, "slug", None) else ""
+        out = AUDIT_DIR / f"compile_preflight_{now.strftime('%Y-%m-%d')}{slug}.json"
+    if out.exists() and not getattr(a, "force", False):
+        raise SystemExit(f"{out} already exists; refusing to silently overwrite a previous "
+                         "receipt (a FAIL followed by a PASS on the same day would destroy the "
+                         "FAIL evidence) - pass --force to overwrite, or --slug/--out to pick a "
+                         "different name")
     receipt = P.build_receipt(
         body=body, body_path=a.body, operation=operation,
         schema_meta={"path": a.schema, "capturedAt": schema_doc["capturedAt"],
                      "fingerprint": "ok" if not schema_fp else "suspect"},
         readback_meta={"path": a.readback, "capturedAt": readback_doc["capturedAt"], "strategyId": strategy_id,
                        "revision": rec.get("revision"), "fingerprint": "ok" if not readback_fp else "suspect"},
-        findings=findings, now=now, expires_minutes=a.expires_minutes,
+        findings=findings, now=now, expires_minutes=a.expires_minutes, receipt_path=str(out),
         unmeasured=["the runtime validator (only a compile observes it)",
                     "whether additionalProperties:false is enforced (schema-derived, not measured)",
                     "semantics of any field first seen in this capture"])
-    out = Path(a.out) if a.out else AUDIT_DIR / f"compile_preflight_{now.strftime('%Y-%m-%d')}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(receipt, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
     for f in findings:
@@ -152,7 +164,11 @@ def cmd_run(a) -> int:
 def cmd_gate(a) -> int:
     receipt = json.loads(Path(a.receipt).read_text(encoding="utf-8"))
     ok, why = P.gate_check(receipt, _load_body(a.body), _now(a.now))
-    print(P.gate_line(receipt, a.receipt) if ok else f"PREFLIGHT GATE REFUSED: {why}")
+    if ok:
+        print(P.gate_line(receipt, a.receipt))
+        print(f"note: {P.DISCLAIMER}")
+    else:
+        print(f"PREFLIGHT GATE REFUSED: {why}")
     return 0 if ok else 1
 
 
@@ -167,6 +183,7 @@ def main(argv: list[str] | None = None) -> int:
     u = sub.add_parser("run"); u.add_argument("body"); u.add_argument("--schema", required=True)
     u.add_argument("--readback", required=True); u.add_argument("--previous-schema")
     u.add_argument("--expires-minutes", type=int, default=60); u.add_argument("--out"); u.add_argument("--now")
+    u.add_argument("--slug"); u.add_argument("--force", action="store_true")
     u.set_defaults(fn=cmd_run)
     g = sub.add_parser("gate"); g.add_argument("receipt"); g.add_argument("--body", required=True); g.add_argument("--now")
     g.set_defaults(fn=cmd_gate)

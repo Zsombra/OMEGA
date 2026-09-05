@@ -52,6 +52,7 @@ def test_recipe_prints_numbered_steps_with_the_capture_paths(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "ToolSearch" in out and "get_strategy" in out and "data/contract/compile_strategy_plan/" in out
     assert "includeInactive" in out and "6 KB" in out and "never" in out.lower()
+    assert "YYYY-MM-DDTHH:MM:SSZ" in out and "fractional seconds" in out.lower()
 
 
 def test_run_fails_the_v5_body_on_missing_exit_and_gate_refuses(tmp_path, capsys):
@@ -163,3 +164,65 @@ def test_run_falls_back_to_the_record_id_and_records_meta_fingerprints(tmp_path,
     receipt2 = json.loads(out2.read_text(encoding="utf-8"))
     assert receipt2["captures"]["schema"]["fingerprint"] == "suspect"
     assert receipt2["captures"]["readback"]["fingerprint"] == "ok"
+
+
+def _fixed_body(tmp_path, name="body.json"):
+    fixed = json.loads(json.dumps(V5))
+    for c in fixed["conditions"]:
+        c["exit"] = False
+    body = tmp_path / name
+    body.write_text(json.dumps(fixed), encoding="utf-8")
+    return body
+
+
+def test_run_refuses_to_overwrite_an_existing_receipt_without_force(tmp_path, capsys):
+    """A same-day default receipt path (or any repeated --out) used to be silently
+    overwritten, so a FAIL run followed by a PASS run on the same day destroyed the FAIL
+    evidence. `run` must refuse a pre-existing receipt path unless --force is given."""
+    sp, rp = _captures(tmp_path)
+    body = _fixed_body(tmp_path)
+    out = tmp_path / "receipt.json"
+    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                   "--now", "2026-09-04T09:00:00Z"])
+    assert rc == 0 and out.exists()
+    first_contents = out.read_text(encoding="utf-8")
+
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                  "--now", "2026-09-04T09:05:00Z"])
+    assert str(out) in str(excinfo.value) or "force" in str(excinfo.value).lower()
+    assert out.read_text(encoding="utf-8") == first_contents        # untouched by the refusal
+
+    rc2 = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                    "--now", "2026-09-04T09:05:00Z", "--force"])
+    assert rc2 == 0
+
+
+def test_run_default_receipt_path_appends_the_slug(tmp_path, monkeypatch):
+    sp, rp = _captures(tmp_path)
+    body = _fixed_body(tmp_path)
+    monkeypatch.setattr(cli, "AUDIT_DIR", tmp_path)
+    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp),
+                   "--now", "2026-09-04T09:00:00Z", "--slug", "test-slug"])
+    assert rc == 0
+    assert (tmp_path / "compile_preflight_2026-09-04-test-slug.json").exists()
+
+
+def test_run_writes_a_gate_line_into_the_receipt_and_gate_prints_the_disclaimer_note_on_pass(tmp_path, capsys):
+    """(1) The receipt's gateLine must reflect the actual --out path (so it can be copied
+    straight from the JSON). (2) `gate` on a PASS must print the same 'note: <DISCLAIMER>'
+    line `run` already prints on PASS - the house rule is verbatim on every PASS, not just
+    the first one."""
+    sp, rp = _captures(tmp_path)
+    body = _fixed_body(tmp_path)
+    out = tmp_path / "receipt.json"
+    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                   "--now", "2026-09-04T09:00:00Z"])
+    assert rc == 0
+    receipt = json.loads(out.read_text(encoding="utf-8"))
+    assert receipt["gateLine"].startswith("PREFLIGHT PASS") and str(out) in receipt["gateLine"]
+
+    capsys.readouterr()
+    rc2 = cli.main(["gate", str(out), "--body", str(body), "--now", "2026-09-04T09:05:00Z"])
+    printed = capsys.readouterr().out
+    assert rc2 == 0 and "runtime validator" in printed
