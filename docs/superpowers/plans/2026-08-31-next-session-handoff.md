@@ -302,7 +302,7 @@ measured cell and its limitations, e.g.
 
 **Files:** none tracked by git.
 
-- [ ] **Step 1: Remove it if it is still there and still empty**
+- [x] **Step 1: Remove it if it is still there and still empty** (2026-09-05: the directory no longer exists; nothing to do)
 
 It was left behind because it was a live shell's working directory during the merge. A
 **new** session will not hold that lock.

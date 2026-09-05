@@ -27,7 +27,13 @@ COINS = ("BTC", "ETH", "SOL")
 def assemble_candles(rp, date):
     raw_dir = os.path.join(rp, "raw")
     series = {fn[:-5]: json.load(open(os.path.join(raw_dir, fn), encoding="utf-8"))
-              for fn in sorted(os.listdir(raw_dir)) if fn.endswith(".json")}
+              for fn in sorted(os.listdir(raw_dir))
+              if fn.endswith(".json") and not fn.startswith("_")}
+    # Optional, from run 4 on: raw/_pulled_at.json {"start": "<ISO Z>", "end": "<ISO Z>"} written
+    # by the session around the 16 calls. analyze_repull.py SETTLED uses "end" as the exact
+    # pull time when present; earlier runs fall back to the last-served-bar proxy.
+    marker = os.path.join(raw_dir, "_pulled_at.json")
+    pulled_at = json.load(open(marker, encoding="utf-8")) if os.path.exists(marker) else None
     if len(series) != 16:
         print(f"WARNING: {len(series)} series, expected 16 (13 x 1h + 3 x 4h) - a delisted ticker "
               f"must be recorded in the addendum, never substituted")
@@ -39,6 +45,7 @@ def assemble_candles(rp, date):
                         "BTC/ETH/SOL 4h. Checked against every prior source by verify_repull.py "
                         "(the platform revises served bars - see data/audit/candle_restatement_*.json). "
                         "IRREPLACEABLE once the window scrolls.",
+               "pulledAt": pulled_at,
                "series": series},
               open(out, "w", encoding="utf-8"), separators=(",", ":"), ensure_ascii=False)
     print("candles.json:", os.path.getsize(out), "bytes,", len(series), "series")

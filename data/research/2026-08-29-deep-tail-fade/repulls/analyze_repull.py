@@ -70,12 +70,15 @@ def load_series(path):
 merged = {}          # key -> {timestamp: (close, volume)}
 src_of = {}          # key -> {timestamp: index of the source whose value won}
 src_last = []        # per source: key -> latest timestamp it served
+src_pulled = []      # per source: exact pull end time (ISO Z) if the run recorded one, else None
 sources = [os.path.join(CORPUS, "candles.json")] + sorted(
     glob.glob(os.path.join(HERE, "*", "candles.json")))
 collisions = 0
 max_dclose = max_dvol = 0.0
 for si, src in enumerate(sources):
     src_last.append({})
+    _doc = json.load(open(src, encoding="utf-8"))
+    src_pulled.append((_doc.get("pulledAt") or {}).get("end"))
     for key, rows in load_series(src).items():
         bucket = merged.setdefault(key, {})
         src_last[si][key] = max(r["timestamp"] for r in rows)
@@ -108,7 +111,8 @@ from datetime import datetime, timedelta
 
 
 def _iso(t):
-    return datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%fZ")
+    fmt = "%Y-%m-%dT%H:%M:%S.%fZ" if "." in t else "%Y-%m-%dT%H:%M:%SZ"
+    return datetime.strptime(t, fmt)
 
 
 def _tf_hours(tf):
@@ -121,7 +125,9 @@ for key, bucket in merged.items():
     rows = []
     for t, (c, v) in sorted(bucket.items()):
         if SETTLED > 0:
-            served_at = _iso(src_last[src_of[key][t]][key]) + timedelta(hours=_tf_hours(tf))
+            si = src_of[key][t]
+            served_at = (_iso(src_pulled[si]) if src_pulled[si]
+                         else _iso(src_last[si][key]) + timedelta(hours=_tf_hours(tf)))
             age_h = (served_at - (_iso(t) + timedelta(hours=_tf_hours(tf)))).total_seconds() / 3600
             if age_h < SETTLED:
                 dropped_young += 1
@@ -129,8 +135,10 @@ for key, bucket in merged.items():
         rows.append((t, c, v))
     series[(sym, tf)] = rows
 if SETTLED > 0:
+    exact = sum(1 for x in src_pulled if x)
     print(f"SETTLED={SETTLED:g}h: dropped {dropped_young} bars served younger than {SETTLED:g}h "
-          f"(age proxy = source's last close; understates by up to ~1h)")
+          f"({exact}/{len(sources)} sources carry an exact pull time; the rest use the "
+          f"last-served-bar proxy, which understates age by up to ~1h)")
 
 base = load_series(os.path.join(CORPUS, "candles.json"))
 base_max = {}        # per (sym, tf): last base-corpus timestamp - the THRESHOLD cutoff, always

@@ -22,6 +22,7 @@ re-pull" is sufficient; no write-path authorization is involved.
       `data/research/2026-08-29-deep-tail-fade/fetch_funding.py` shape) —
       also note the **sign mix**: the FUNDING-leg confound resolves only in a
       window containing negative-funding hours.
+- [ ] Write `raw/_pulled_at.json` as `{"start": "<date -u before the first call>", "end": "<date -u after the last call>"}` (from run 4 on; exact bar age for the SETTLED view).
 - [ ] Save each response's `candles` array VERBATIM to
       `data/research/2026-08-29-deep-tail-fade/repulls/<YYYY-MM-DD>/raw/<TICKER>_<tf>.json`
       (16 files; a subagent keeps the payloads out of the main context — retry a

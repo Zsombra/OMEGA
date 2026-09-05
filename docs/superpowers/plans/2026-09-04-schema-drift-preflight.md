@@ -1,5 +1,7 @@
 # Schema-Drift Preflight Implementation Plan
 
+> **Status 2026-09-05:** all 8 tasks executed and merged (main 3a19fc6); the review record is in the SDD ledger, deviations from this text are named in the commit messages.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Before any authorized `compile_strategy_plan` call is spent, detect offline that the platform's expectations have drifted from what `omega.generate.StrategyPlan.wire()` emits, and make the compile authorization depend on a dated, sha-bound receipt.
@@ -54,7 +56,7 @@ Real records used as fixtures (read-only, already committed):
 **Interfaces:**
 - Produces: `Finding(cls: str, path: str, detail: str, verdict: str)` frozen dataclass; `deref(node: dict, root: dict) -> dict`; `resolve_arms(definition: dict) -> tuple[dict[str, dict], dict]` returning `({"CREATE": arm, "UPDATE": arm, "RESTORE": arm}, root)` where `root` is `definition["parameters"]` (the object every local `$ref` is relative to); `class UnsupportedSchema(ValueError)`.
 
-- [ ] **Step 1: Write the walker fixture**
+- [x] **Step 1: Write the walker fixture**
 
 The real definition nests `request.anyOf[CREATE, UPDATE, RESTORE]` under `parameters.properties`, discriminates arms by `properties.operation.const`, and uses local `$ref`s of the form `#/properties/request/anyOf/0/properties/timeframe` relative to `parameters`. Mirror exactly that structure, small:
 
@@ -157,7 +159,7 @@ The real definition nests `request.anyOf[CREATE, UPDATE, RESTORE]` under `parame
 }
 ```
 
-- [ ] **Step 2: Write the failing tests**
+- [x] **Step 2: Write the failing tests**
 
 ```python
 # tests/test_preflight.py
@@ -220,12 +222,12 @@ def test_deref_refuses_non_local_refs():
         P.deref({"$ref": "https://example.invalid/schema#/x"}, MINI["parameters"])
 ```
 
-- [ ] **Step 3: Run the tests to verify they fail**
+- [x] **Step 3: Run the tests to verify they fail**
 
 Run: `python -m pytest tests/test_preflight.py -v`
 Expected: FAIL with `ModuleNotFoundError: No module named 'omega.preflight'`.
 
-- [ ] **Step 4: Write the minimal implementation**
+- [x] **Step 4: Write the minimal implementation**
 
 ```python
 # omega/preflight.py
@@ -308,12 +310,12 @@ def resolve_arms(definition: dict) -> tuple[dict[str, dict], dict]:
     return arms, root
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
 Expected: 5 passed.
 
-- [ ] **Step 6: Run the full suite and commit**
+- [x] **Step 6: Run the full suite and commit**
 
 Run: `python -m pytest -q` — expected `930 passed`.
 
@@ -334,7 +336,7 @@ git commit -m "preflight: Finding, local \$ref resolution, arm selection (design
 - Consumes: `deref`, `resolve_arms`, `Finding` from Task 1.
 - Produces: `diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]` with classes `UNDECLARED`, `MISSING_REQUIRED`, `ENUM`, `BOUNDS`, `UNSUPPORTED`, `INFO` (one `pattern-unchecked` INFO per pattern-bearing path); and `_join(path: str, key: str) -> str` (path syntax: `a.b[3].c`).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # append to tests/test_preflight.py
@@ -429,12 +431,12 @@ def test_walker_reports_pattern_unchecked_once_per_path_as_info():
     assert any(f.path == "conditions[0].conditionKey" and "pattern" in f.detail for f in infos)
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `python -m pytest tests/test_preflight.py -v -k walker`
 Expected: FAIL with `AttributeError: module 'omega.preflight' has no attribute 'diff_schema'`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 ```python
 # append to omega/preflight.py
@@ -552,12 +554,12 @@ def diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]:
     return out
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
 Expected: 13 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run: `python -m pytest -q` — expected `938 passed`.
 
@@ -578,7 +580,7 @@ git commit -m "preflight: schema walker - UNDECLARED / MISSING_REQUIRED / ENUM /
 - Consumes: `Finding`, `_join`.
 - Produces: `diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding]`; constants `RECORD_ALIASES = {"rules": "signalRules"}` and `KNOWN_DELTAS = {"sections[].sectionKey": "..."}`; helper `record_request_view(record: dict) -> dict` (the record's top-level `strategy` object if wrapped, else the record itself).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # append to tests/test_preflight.py
@@ -677,12 +679,12 @@ def test_record_request_view_unwraps_the_get_strategy_envelope():
     assert P.record_request_view({"id": "x"}) == {"id": "x"}
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `python -m pytest tests/test_preflight.py -v -k "record or replay"`
 Expected: FAIL with `AttributeError: ... 'diff_record'`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 ```python
 # append to omega/preflight.py
@@ -785,12 +787,12 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
     return out
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
 Expected: 20 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add omega/preflight.py tests/test_preflight.py
@@ -808,7 +810,7 @@ git commit -m "preflight: record diff replays drift #4 and #5 from real records 
 **Interfaces:**
 - Produces: `mirror_findings(body: dict, record: dict) -> list[Finding]` (WARN only; entry fields except `confirmTf`; conditions' `clock`/`closes`/`exit` against the set of record values); `schema_index(arm: dict, root: dict) -> dict[str, dict]` mapping a path to `{"enum": [...] | None, "required": [...], "properties": [...], "bounds": {...}}`; `changelog(previous: dict[str, dict], current: dict[str, dict]) -> list[Finding]` (INFO only); `fingerprint_schema(arm: dict, root: dict, *, signal_ids: set[str], template_keys: set[str], timeframes: list[str]) -> list[Finding]`; `fingerprint_readback(record: dict, strategy_id: str) -> list[Finding]` (both `TRANSCRIPTION_SUSPECT`, FAIL).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # append to tests/test_preflight.py
@@ -880,12 +882,12 @@ def test_fingerprint_readback_checks_id_rules_and_conditions():
     assert any("signalRules" in f.path for f in P.fingerprint_readback(short, rec["strategy"]["id"]))
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `python -m pytest tests/test_preflight.py -v -k "mirror or changelog or fingerprint or index"`
 Expected: FAIL with `AttributeError`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 ```python
 # append to omega/preflight.py
@@ -1042,12 +1044,12 @@ def fingerprint_readback(record: dict, strategy_id: str) -> list[Finding]:
     return out
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
 Expected: 26 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add omega/preflight.py tests/test_preflight.py
@@ -1065,7 +1067,7 @@ git commit -m "preflight: mirrors (WARN), changelog (INFO), transcription finger
 **Interfaces:**
 - Produces: `body_sha256(body: dict) -> str` (sha256 of `json.dumps(body, sort_keys=True, separators=(",", ":"), ensure_ascii=False)`); `verdict(findings: list[Finding]) -> str` (`"PASS"`|`"FAIL"`); `build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: dict, readback_meta: dict, findings: list[Finding], now: datetime, expires_minutes: int = 60, unmeasured: list[str] | None = None) -> dict`; `gate_check(receipt: dict, body: dict, now: datetime) -> tuple[bool, str]`; `GATE_LINE_PREFIX = "PREFLIGHT PASS"`; `gate_line(receipt: dict) -> str`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # append to tests/test_preflight.py
@@ -1116,12 +1118,12 @@ def test_gate_check_passes_then_fails_on_expiry_sha_mismatch_fail_and_void():
     ok, why = P.gate_check(voided, body, NOW); assert not ok and "void" in why
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `python -m pytest tests/test_preflight.py -v -k "sha or verdict or receipt or gate"`
 Expected: FAIL with `AttributeError`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 ```python
 # append to omega/preflight.py
@@ -1187,12 +1189,12 @@ def gate_check(receipt: dict, body: dict, now: datetime) -> tuple[bool, str]:
 
 Move the three `import` lines to the top of the module with the existing imports (keep the module's imports stdlib-only).
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `python -m pytest tests/test_preflight.py -v`
 Expected: 30 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run: `python -m pytest -q` — expected `955 passed`.
 
@@ -1213,7 +1215,7 @@ git commit -m "preflight: verdict, sha-bound expiring receipt, gate check (task 
 - Consumes: everything in `omega.preflight`.
 - Produces: `python scripts/preflight.py recipe <body.json> --reference <strategyId>`; `python scripts/preflight.py run <body.json> --schema <capture> --readback <capture> [--previous-schema <capture>] [--expires-minutes 60] [--out <receipt path>] [--now <ISO Z>]`; `python scripts/preflight.py gate <receipt> --body <body.json> [--now <ISO Z>]`. Exit 0 on PASS, 1 otherwise. `main(argv: list[str]) -> int` for tests.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```python
 # tests/test_preflight_cli.py
@@ -1311,12 +1313,12 @@ def test_run_refuses_a_transcription_suspect_schema(tmp_path, capsys):
     assert any(f["cls"] == "TRANSCRIPTION_SUSPECT" for f in receipt["findings"])
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `python -m pytest tests/test_preflight_cli.py -v`
 Expected: FAIL with `FileNotFoundError` for `scripts/preflight.py`.
 
-- [ ] **Step 3: Write the CLI**
+- [x] **Step 3: Write the CLI**
 
 ```python
 # scripts/preflight.py
@@ -1495,12 +1497,12 @@ if __name__ == "__main__":
     raise SystemExit(main())
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `python -m pytest tests/test_preflight_cli.py -v`
 Expected: 4 passed. If `test_run_passes_once_exit_is_mirrored...` fails on a walker finding from the v5 body (a real column shape the miniature does not model), extend the miniature's `columns.items.properties` with the missing key rather than loosening the walker, and re-run.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run: `python -m pytest -q` — expected `959 passed`.
 
@@ -1517,7 +1519,7 @@ git commit -m "preflight: CLI recipe/run/gate, end-to-end in tmp_path (task 6)"
 - Modify: `docs/20-the-authoring-procedure.md` (§5, before the "Compile dry-run" bullet at ~line 109)
 - Modify: `docs/superpowers/specs/2026-09-04-schema-drift-preflight-design.md` (status line)
 
-- [ ] **Step 1: Read §5 of docs/20** (`sed -n 100,132p docs/20-the-authoring-procedure.md`) and insert this paragraph immediately after the sentence ending "read them before running one." and before the "Compile dry-run" bullet:
+- [x] **Step 1: Read §5 of docs/20** (`sed -n 100,132p docs/20-the-authoring-procedure.md`) and insert this paragraph immediately after the sentence ending "read them before running one." and before the "Compile dry-run" bullet:
 
 ```markdown
 **Precondition for every compile (2026-09-04):** a same-session schema-drift preflight
@@ -1532,10 +1534,10 @@ the runtime validator is not observed. A refusal after a PASS voids the receipt
 read-back becomes the next baseline.
 ```
 
-- [ ] **Step 2: Update the spec's status line** to:
+- [x] **Step 2: Update the spec's status line** to:
 `**Status:** implemented 2026-09-xx (tasks 1–7 of docs/superpowers/plans/2026-09-04-schema-drift-preflight.md); first live run pending the user's ask (task 8).`
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add docs/20-the-authoring-procedure.md docs/superpowers/specs/2026-09-04-schema-drift-preflight-design.md
@@ -1554,10 +1556,10 @@ git commit -m "docs: the preflight receipt is a precondition of compile authoriz
 
 **Do not start this task without the user's explicit ask:** *"run the preflight for `<body>` against `b9438519-8223-4ef1-a3c3-6f4592bb823d`"*. Read-only calls need no write-path authorization, but the design says the ask names the read.
 
-- [ ] **Step 1:** `python scripts/compile_dry_run.py > "<scratchpad>/body.json"` — the no-argument mode prints the current `wire()` CREATE body (the same builder the 08-30 compile used) as compact JSON. Use the session scratchpad, never `/tmp`.
-- [ ] **Step 2:** `python scripts/preflight.py recipe "<scratchpad>/body.json" --reference b9438519-8223-4ef1-a3c3-6f4592bb823d` and follow its steps 1–2 in the session, saving both captures verbatim. Record in each capture's `how` whether one Write sufficed or chunks were needed — this is the unverified assumption the spec names.
-- [ ] **Step 3:** `python scripts/preflight.py run "<scratchpad>/body.json" --schema <capture> --readback <capture>`. Expected: fingerprints pass (84 / 25 / 13; id, 84 signalRules), and the diff is a PASS with `CHANGELOG` absent (no previous capture yet) and `INFO` lines for the 16 execution defaults and `decisionInvalidationExitEnabled`. If it FAILs, that is a real drift instance #6: record it under `data/audit/` per the drift-instance convention and stop.
-- [ ] **Step 4:** Add to `tests/test_write_surface.py`, pinned to the NAMED file, never a glob:
+- [x] **Step 1:** `python scripts/compile_dry_run.py > "<scratchpad>/body.json"` — the no-argument mode prints the current `wire()` CREATE body (the same builder the 08-30 compile used) as compact JSON. Use the session scratchpad, never `/tmp`.
+- [x] **Step 2:** `python scripts/preflight.py recipe "<scratchpad>/body.json" --reference b9438519-8223-4ef1-a3c3-6f4592bb823d` and follow its steps 1–2 in the session, saving both captures verbatim. Record in each capture's `how` whether one Write sufficed or chunks were needed — this is the unverified assumption the spec names.
+- [x] **Step 3:** `python scripts/preflight.py run "<scratchpad>/body.json" --schema <capture> --readback <capture>`. Expected: fingerprints pass (84 / 25 / 13; id, 84 signalRules), and the diff is a PASS with `CHANGELOG` absent (no previous capture yet) and `INFO` lines for the 16 execution defaults and `decisionInvalidationExitEnabled`. If it FAILs, that is a real drift instance #6: record it under `data/audit/` per the drift-instance convention and stop.
+- [x] **Step 4:** Add to `tests/test_write_surface.py`, pinned to the NAMED file, never a glob:
 
 ```python
 SCHEMA_CAPTURE_2026_09_XX = ROOT / "data/contract/compile_strategy_plan/schema_<stamp>.json"
@@ -1574,7 +1576,7 @@ def test_api_pins_agree_with_the_named_schema_capture():
     assert set(create["required"]) == API_REQUIRES
 ```
 
-- [ ] **Step 5:** Run `python -m pytest -q` (expected `960 passed`), commit the two captures, the receipt and the test:
+- [x] **Step 5:** Run `python -m pytest -q` (expected `960 passed`), commit the two captures, the receipt and the test:
 
 ```bash
 git add data/contract/compile_strategy_plan data/contract/get_strategy data/audit/compile_preflight_*.json tests/test_write_surface.py
