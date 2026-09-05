@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,6 +34,7 @@ CAPTURE_SCHEMA_DIR = ROOT / "data" / "contract" / "compile_strategy_plan"
 CAPTURE_READBACK_DIR = ROOT / "data" / "contract" / "get_strategy"
 AUDIT_DIR = ROOT / "data" / "audit"
 TOOL = "mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__compile_strategy_plan"
+_SLUG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$")
 
 
 def repo_signal_ids() -> set[str]:
@@ -104,6 +106,8 @@ def cmd_recipe(a) -> int:
 
 
 def cmd_run(a) -> int:
+    if getattr(a, "slug", None) and not _SLUG_RE.match(a.slug):
+        raise SystemExit(f"--slug {a.slug!r}: use letters, digits, '-' or '_' (max 40)")
     body = _load_body(a.body)
     schema_doc, definition = _load_capture(a.schema)
     readback_doc, record = _load_capture(a.readback)

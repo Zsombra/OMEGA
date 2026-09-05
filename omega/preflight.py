@@ -236,10 +236,11 @@ def diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]:
 RECORD_ALIASES: dict[str, str] = {"rules": "signalRules"}
 KNOWN_DELTAS: dict[str, str] = {
     # measured for CUSTOM sections only (custom:<uuid>, minted on CREATE, never sent -
-    # measured 2026-08-28). Platform sections are compared under a distinct "[platform]"
-    # label in _missing_in_elements below, so this entry cannot suppress a real
-    # platform-side sectionKey drift.
-    "sections[].sectionKey": "server-minted on CREATE (custom:<uuid>), never sent - measured 2026-08-28",
+    # measured 2026-08-28). The key is kind-aware ("[custom]", not the bare "[]" array
+    # marker) because _missing_in_elements compares platform sections under their own
+    # "[platform]" label - a bare "sections[].sectionKey" key would have matched both
+    # kinds' delta lookup and silently suppressed a real platform-side sectionKey drift.
+    "sections[custom].sectionKey": "server-minted on CREATE (custom:<uuid>), never sent - measured 2026-08-28",
 }
 # Request-shaped nested objects: a record key the body lacks here is a FAIL whether or not
 # the schema declares it - drift #3 and #4 were exactly undeclared-but-present-in-the-record.
@@ -289,7 +290,10 @@ def _missing_in_elements(body_elems: list, rec_elems: list, path: str, out: list
         return
     prefix = f"{path}[{label}]" if label else path
     for key in sorted(exemplar):
-        delta_key = f"{prefix}[].{key}"
+        # the label already names the kind ("sections[custom]"), so the KNOWN_DELTAS
+        # lookup key drops the generic "[]" array marker in that case - only the
+        # unlabeled form (conditions, rules, ...) still uses "[]" as the marker.
+        delta_key = f"{prefix}.{key}" if label else f"{prefix}[].{key}"
         if delta_key in KNOWN_DELTAS:
             continue
         missing = sum(1 for e in body_dicts if key not in e)
@@ -306,7 +310,7 @@ def _missing_in_elements(body_elems: list, rec_elems: list, path: str, out: list
         if key == "columns":
             rec_cols = [c for e in rec_elems if isinstance(e, dict) for c in e.get("columns", [])]
             body_cols = [c for e in body_dicts for c in e.get("columns", [])]
-            _missing_in_elements(body_cols, rec_cols, f"{prefix}.columns", out)
+            _missing_in_elements(body_cols, rec_cols, f"{prefix}[].columns", out)
 
 
 def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding]:
@@ -349,7 +353,7 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
         if not (isinstance(b, list) and isinstance(r, list)):
             continue
         if name == "sections":
-            _missing_in_elements(b, r, name, out, kinds=("custom",))
+            _missing_in_elements(b, r, name, out, kinds=("custom",), label="custom")
             _missing_in_elements(b, r, name, out, kinds=("platform",), label="platform")
         else:
             _missing_in_elements(b, r, name, out)
@@ -569,7 +573,7 @@ def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: di
         "unmeasured": list(unmeasured or []),
         "voided": None,
     }
-    receipt["gateLine"] = gate_line(receipt, receipt_path)
+    receipt["gateLine"] = gate_line(receipt, receipt_path) if receipt["verdict"] == "PASS" else None
     return receipt
 
 

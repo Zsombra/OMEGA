@@ -131,6 +131,23 @@ def test_run_refuses_a_capture_missing_how_or_request(tmp_path):
     assert rc == 0
 
 
+def test_run_fail_receipt_has_no_gate_line_on_disk(tmp_path, capsys):
+    """The receipt JSON written for a FAIL run must carry gateLine: null and must not spell
+    out the string 'PREFLIGHT PASS' anywhere in the file - a FAIL run used to precompute and
+    store a PASS-worded gate line anyway."""
+    sp, rp = _captures(tmp_path)
+    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
+    out = tmp_path / "receipt.json"
+    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                   "--now", "2026-09-04T09:00:00Z"])
+    assert rc == 1
+    raw = out.read_text(encoding="utf-8")
+    receipt = json.loads(raw)
+    assert receipt["verdict"] == "FAIL"
+    assert receipt["gateLine"] is None
+    assert "PREFLIGHT PASS" not in raw
+
+
 def test_run_falls_back_to_the_record_id_and_records_meta_fingerprints(tmp_path, capsys):
     sp, rp = _captures(tmp_path)
     doc = json.loads(rp.read_text(encoding="utf-8"))
@@ -206,6 +223,24 @@ def test_run_default_receipt_path_appends_the_slug(tmp_path, monkeypatch):
                    "--now", "2026-09-04T09:00:00Z", "--slug", "test-slug"])
     assert rc == 0
     assert (tmp_path / "compile_preflight_2026-09-04-test-slug.json").exists()
+
+
+def test_run_rejects_a_path_escaping_slug_before_touching_any_file(tmp_path, monkeypatch):
+    """--slug is spliced straight into the default receipt filename
+    (compile_preflight_<date>-<slug>.json); an unvalidated value like '../../escaped' could
+    write outside data/audit/. It must be rejected before any file - including the
+    receipt - is written."""
+    sp, rp = _captures(tmp_path)
+    body = _fixed_body(tmp_path)
+    audit_dir = tmp_path / "audit"
+    monkeypatch.setattr(cli, "AUDIT_DIR", audit_dir)
+    escaped = audit_dir / "compile_preflight_2026-09-04-../../escaped.json"
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp),
+                  "--now", "2026-09-04T09:00:00Z", "--slug", "../../escaped"])
+    assert "--slug" in str(excinfo.value)
+    assert not escaped.exists()
+    assert not audit_dir.exists()
 
 
 def test_run_writes_a_gate_line_into_the_receipt_and_gate_prints_the_disclaimer_note_on_pass(tmp_path, capsys):

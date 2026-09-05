@@ -320,6 +320,26 @@ def test_record_diff_uses_intersection_for_arrays_and_knows_the_two_deltas():
     assert not any("signalRules" in p or p.startswith("rules") for p in paths)
 
 
+def test_record_diff_column_recursion_keeps_the_array_marker_on_the_path():
+    """`_missing_in_elements`'s recursion into columns must keep the "[]" array marker on
+    the recursed path (sections[custom][].columns[*].window) - it had regressed to
+    "sections[custom].columns[*].window", silently dropping the marker that denotes
+    'one entry per section'. Built from a real record (PRESTATE, deep-copied) whose custom
+    sections' columns all gain `window` here; the body (V5) genuinely lacks it on some
+    columns of its own custom sections."""
+    arm, root = _create_arm()
+    body = _body(json.loads(json.dumps(V5)))
+    for c in body["conditions"]:
+        c["exit"] = False
+    rec = json.loads(json.dumps(PRESTATE))
+    for section in rec["sections"]:
+        for col in section.get("columns", []):
+            col["window"] = 4
+    fails = [f for f in P.diff_record(body, rec, arm, root) if f.cls == "MISSING_VS_RECORD"]
+    matches = [f for f in fails if "[].columns[*].window" in f.path]
+    assert matches
+
+
 def test_record_diff_platform_section_missing_sectionkey_is_not_suppressed_by_the_custom_delta():
     """RULING: KNOWN_DELTAS' one entry ("server-minted on CREATE, custom:<uuid>, never
     sent") is measured for CUSTOM sections only. Before this fix, `_missing_in_elements`
@@ -371,9 +391,9 @@ def test_record_diff_null_valued_record_key_is_info_not_fail():
     for c in body["conditions"]:
         c["exit"] = False
     finds = P.diff_record(body, _migrated_record(), arm, root)
-    infos = [f for f in finds if f.path == "sections[*].timeframe"]
+    infos = [f for f in finds if f.path == "sections[custom][*].timeframe"]
     assert infos and all(f.verdict == "INFO" for f in infos)
-    assert not any(f.path == "sections[*].timeframe" and f.verdict == "FAIL" for f in finds)
+    assert not any(f.path == "sections[custom][*].timeframe" and f.verdict == "FAIL" for f in finds)
 
 
 def test_record_request_view_unwraps_the_get_strategy_envelope():
@@ -528,6 +548,18 @@ def test_build_receipt_precomputes_the_gate_line_for_the_resolved_receipt_path()
     assert r["gateLine"].startswith("PREFLIGHT PASS")
     assert "data/audit/compile_preflight_2026-09-04.json" in r["gateLine"]
     assert r["gateLine"] == P.gate_line(r, "data/audit/compile_preflight_2026-09-04.json")
+
+
+def test_build_receipt_omits_the_gate_line_on_a_fail_receipt():
+    """A FAIL receipt used to carry a gateLine reading 'PREFLIGHT PASS ...' anyway, since
+    build_receipt called gate_line() unconditionally - a FAIL receipt must never spell out
+    a PASS line for anyone to copy into an authorization checkbox."""
+    body = _good_body()
+    r = P.build_receipt(body=body, body_path="x.json", operation="CREATE", schema_meta=SCHEMA_META,
+                        readback_meta=READBACK_META, findings=[P.Finding("ENUM", "p", "d", "FAIL")], now=NOW,
+                        receipt_path="data/audit/compile_preflight_2026-09-04.json")
+    assert r["verdict"] == "FAIL"
+    assert r["gateLine"] is None
 
 
 def test_gate_check_passes_then_fails_on_expiry_sha_mismatch_fail_and_void():
