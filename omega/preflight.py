@@ -326,3 +326,155 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
         else:
             _missing_in_elements(b, r, name, out)
     return out
+
+
+# Values omega hardcodes as platform mirrors. confirmTf is excluded: it is the thesis
+# anchor by design (Step 0 amendment, 2026-08-30). sections[].notes is excluded: omega sends a
+# provenance string on purpose while null acceptance is unmeasured.
+MIRROR_ENTRY_FIELDS = ("trigger", "closes", "bandAtrMultiple", "levelSource",
+                       "levelOffsetAtrMultiple", "validForBars")
+MIRROR_CONDITION_FIELDS = ("clock", "closes", "exit")
+
+
+def mirror_findings(body: dict, record: dict) -> list[Finding]:
+    """WARN when a hardcoded mirror differs from what the reference record carries."""
+    rec = record_request_view(record)
+    out: list[Finding] = []
+    be, re_ = body.get("entry"), rec.get("entry")
+    if isinstance(be, dict) and isinstance(re_, dict):
+        for k in MIRROR_ENTRY_FIELDS:
+            if k in be and k in re_ and be[k] != re_[k]:
+                out.append(Finding("MIRROR", _join("entry", k),
+                                   f"body {be[k]!r} vs record {re_[k]!r} - the user decides whether to re-mirror", "WARN"))
+    rconds = [c for c in rec.get("conditions", []) if isinstance(c, dict)]
+    for k in MIRROR_CONDITION_FIELDS:
+        seen = {c[k] if not isinstance(c.get(k), (list, dict)) else None for c in rconds if k in c}
+        if not seen:
+            continue
+        for i, c in enumerate(body.get("conditions", [])):
+            if isinstance(c, dict) and k in c and c[k] not in seen:
+                out.append(Finding("MIRROR", f"conditions[{i}].{k}",
+                                   f"body {c[k]!r}; the record's conditions carry {sorted(map(repr, seen))}", "WARN"))
+    return out
+
+
+_BOUND_KEYS = ("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
+               "minLength", "maxLength", "minItems", "maxItems")
+
+
+def schema_index(arm: dict, root: dict) -> dict[str, dict]:
+    """Flatten an arm to {path: {enum, required, properties, bounds}} for changelog diffs.
+    Recursion is cut on a schema node already on the current path."""
+    out: dict[str, dict] = {}
+
+    def visit(node: dict, path: str, stack: tuple[int, ...]) -> None:
+        node = deref(node, root)
+        entry = out.setdefault(path, {"enum": None, "required": [], "properties": [], "bounds": {}})
+        if id(node) in stack:
+            return
+        stack = stack + (id(node),)
+        if "anyOf" in node:
+            for i, b in enumerate(node["anyOf"]):
+                visit(b, f"{path}|{i}" if path else f"|{i}", stack)
+            return
+        if "enum" in node:
+            entry["enum"] = list(node["enum"])
+        if "const" in node:
+            entry["enum"] = [node["const"]]
+        entry["required"] = sorted(set(entry["required"]) | set(node.get("required", [])))
+        entry["properties"] = sorted(set(entry["properties"]) | set(node.get("properties", {})))
+        for k in _BOUND_KEYS:
+            if k in node:
+                entry["bounds"][k] = node[k]
+        for k, sub in node.get("properties", {}).items():
+            visit(sub, _join(path, k), stack)
+        if "items" in node:
+            visit(node["items"], f"{path}[]", stack)
+
+    visit(arm, "", ())
+    return out
+
+
+def changelog(previous: dict[str, dict], current: dict[str, dict]) -> list[Finding]:
+    """INFO-only differences between two schema indexes (enum growth, new/removed keys,
+    required-list and bound changes)."""
+    out: list[Finding] = []
+    for path in sorted(set(previous) | set(current)):
+        p, c = previous.get(path), current.get(path)
+        if p is None:
+            out.append(Finding("CHANGELOG", path, "new in the current schema", "INFO")); continue
+        if c is None:
+            out.append(Finding("CHANGELOG", path, "removed from the current schema", "INFO")); continue
+        if (p["enum"] or []) != (c["enum"] or []):
+            added = [v for v in (c["enum"] or []) if v not in (p["enum"] or [])]
+            removed = [v for v in (p["enum"] or []) if v not in (c["enum"] or [])]
+            out.append(Finding("CHANGELOG", path, f"enum added {added} removed {removed}", "INFO"))
+        if p["required"] != c["required"]:
+            out.append(Finding("CHANGELOG", path, f"required {p['required']} -> {c['required']}", "INFO"))
+        if p["properties"] != c["properties"]:
+            out.append(Finding("CHANGELOG", path,
+                               f"properties added {sorted(set(c['properties']) - set(p['properties']))} "
+                               f"removed {sorted(set(p['properties']) - set(c['properties']))}", "INFO"))
+        if p["bounds"] != c["bounds"]:
+            out.append(Finding("CHANGELOG", path, f"bounds {p['bounds']} -> {c['bounds']}", "INFO"))
+    return out
+
+
+def _enum_at(arm: dict, root: dict, *keys: str) -> list | None:
+    node = deref(arm, root)
+    for k in keys:
+        node = deref(node, root)
+        if k == "[]":
+            node = node.get("items", {})
+        elif k.startswith("anyOf:"):
+            want = k.split(":", 1)[1]
+            for b in node.get("anyOf", []):
+                b = deref(b, root)
+                kind = deref(b.get("properties", {}).get("kind", {}), root)
+                if kind.get("const") == want:
+                    node = b
+                    break
+            else:
+                return None
+        else:
+            node = node.get("properties", {}).get(k, {})
+    node = deref(node, root)
+    return node.get("enum")
+
+
+def fingerprint_schema(arm: dict, root: dict, *, signal_ids: set[str], template_keys: set[str],
+                       timeframes: list[str]) -> list[Finding]:
+    """Fidelity of an agent-transcribed schema capture against data the repo holds
+    independently (union of moduleSignals, platform templates, absoluteTimeframes)."""
+    out: list[Finding] = []
+    checks = (
+        ("rules[].signalId", _enum_at(arm, root, "rules", "[]", "signalId"), signal_ids),
+        ("sections[].platform.sectionKey", _enum_at(arm, root, "sections", "[]", "anyOf:platform", "sectionKey"), template_keys),
+        ("timeframe", _enum_at(arm, root, "timeframe"), set(timeframes)),
+    )
+    for path, got, want in checks:
+        if got is None:
+            out.append(Finding("TRANSCRIPTION_SUSPECT", path, "enum not found in the capture", "FAIL"))
+        elif set(got) != set(want) or len(got) != len(set(got)):
+            out.append(Finding("TRANSCRIPTION_SUSPECT", path,
+                               f"enum has {len(got)} values, repo data has {len(want)}; "
+                               f"missing {sorted(set(want) - set(got))[:5]} extra {sorted(set(got) - set(want))[:5]}", "FAIL"))
+    if not deref(arm, root).get("required"):
+        out.append(Finding("TRANSCRIPTION_SUSPECT", "", "arm has no required list", "FAIL"))
+    return out
+
+
+def fingerprint_readback(record: dict, strategy_id: str) -> list[Finding]:
+    rec = record_request_view(record)
+    out: list[Finding] = []
+    if rec.get("id") != strategy_id:
+        out.append(Finding("TRANSCRIPTION_SUSPECT", "id", f"record id {rec.get('id')!r} != requested {strategy_id!r}", "FAIL"))
+    rules = rec.get("signalRules")
+    if not isinstance(rules, list) or len(rules) != 84:
+        out.append(Finding("TRANSCRIPTION_SUSPECT", "signalRules",
+                           f"expected 84 signalRules (every read-back since 2026-08-28), got "
+                           f"{len(rules) if isinstance(rules, list) else type(rules).__name__}", "FAIL"))
+    conds = rec.get("conditions")
+    if not isinstance(conds, list) or not conds:
+        out.append(Finding("TRANSCRIPTION_SUSPECT", "conditions", "expected a non-empty conditions list", "FAIL"))
+    return out

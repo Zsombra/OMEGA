@@ -284,3 +284,71 @@ def test_record_diff_null_valued_record_key_is_info_not_fail():
 def test_record_request_view_unwraps_the_get_strategy_envelope():
     assert P.record_request_view({"strategy": {"id": "x"}}) == {"id": "x"}
     assert P.record_request_view({"id": "x"}) == {"id": "x"}
+
+
+MIRROR_ENTRY = {"trigger": "AT_SIGNAL", "confirmTf": "1h", "closes": 1, "bandAtrMultiple": 1,
+                "levelSource": "SWING_HIGH", "levelOffsetAtrMultiple": 0, "validForBars": 4}
+
+
+def test_mirror_is_quiet_when_values_match_and_ignores_confirmTf():
+    rec = _migrated_record()
+    body = {"entry": dict(MIRROR_ENTRY, confirmTf="4h"),
+            "conditions": [{"clock": "LIVE", "closes": 1, "exit": False}]}
+    assert P.mirror_findings(body, rec) == []
+
+
+def test_mirror_warns_never_fails_on_a_differing_mirror_value():
+    rec = _migrated_record()
+    body = {"entry": dict(MIRROR_ENTRY, validForBars=6),
+            "conditions": [{"clock": "CLOSE", "closes": 1, "exit": False}]}
+    finds = P.mirror_findings(body, rec)
+    assert {(f.cls, f.path, f.verdict) for f in finds} == {
+        ("MIRROR", "entry.validForBars", "WARN"), ("MIRROR", "conditions[0].clock", "WARN")}
+
+
+def test_schema_index_and_changelog_see_enum_growth_and_new_optional_keys():
+    arm, root = _create_arm()
+    cur = json.loads(json.dumps(MINI))
+    cur_arms, cur_root = P.resolve_arms(cur)
+    cur_arm = cur_arms["CREATE"]
+    cur_arm["properties"]["entry"]["properties"]["trigger"]["enum"] += ["STOP_THROUGH_LEVEL", "ON_RETEST"]
+    cur_arm["properties"]["newOptional"] = {"type": "boolean"}
+    cur_arm["properties"]["entry"]["properties"]["validForBars"]["maximum"] = 48
+    prev_idx, cur_idx = P.schema_index(arm, root), P.schema_index(cur_arm, cur_root)
+    log = P.changelog(prev_idx, cur_idx)
+    assert all(f.cls == "CHANGELOG" and f.verdict == "INFO" for f in log)
+    details = " | ".join(f"{f.path}: {f.detail}" for f in log)
+    assert "entry.trigger" in details and "STOP_THROUGH_LEVEL" in details
+    assert "newOptional" in details
+    assert "validForBars" in details and "48" in details
+
+
+def test_schema_index_terminates_on_a_recursive_definition():
+    arm, root = _create_arm()
+    arm = json.loads(json.dumps(arm))
+    arm["properties"]["conditions"]["items"]["properties"]["definition"] = {
+        "anyOf": [{"type": "object", "properties": {"members": {"type": "array", "items": {
+            "$ref": "#/properties/request/anyOf/0/properties/conditions/items/properties/definition"}}}}]}
+    root2 = json.loads(json.dumps(root)); root2["properties"]["request"]["anyOf"][0] = arm
+    idx = P.schema_index(arm, root2)
+    assert "conditions[].definition" in idx
+
+
+def test_fingerprint_schema_flags_a_truncated_enum_as_transcription_suspect():
+    arm, root = _create_arm()
+    ok = P.fingerprint_schema(arm, root, signal_ids={"rsi_oversold", "rsi_overbought"},
+                              template_keys={"includeRsi", "includeMacd"}, timeframes=["1h", "4h"])
+    assert ok == []
+    bad = P.fingerprint_schema(arm, root, signal_ids={"rsi_oversold", "rsi_overbought", "macd_bull_cross"},
+                               template_keys={"includeRsi", "includeMacd"}, timeframes=["1h", "4h"])
+    assert [f.cls for f in bad] == ["TRANSCRIPTION_SUSPECT"] and bad[0].verdict == "FAIL"
+    assert "rules[].signalId" in bad[0].path
+
+
+def test_fingerprint_readback_checks_id_rules_and_conditions():
+    rec = {"strategy": _migrated_record()}
+    assert P.fingerprint_readback(rec, "6a8bca67-45a3-428e-85ba-71ec2cd2218e") == []
+    wrong = P.fingerprint_readback(rec, "00000000-0000-4000-8000-000000000000")
+    assert wrong and wrong[0].cls == "TRANSCRIPTION_SUSPECT"
+    short = json.loads(json.dumps(rec)); short["strategy"]["signalRules"] = short["strategy"]["signalRules"][:83]
+    assert any("signalRules" in f.path for f in P.fingerprint_readback(short, rec["strategy"]["id"]))
