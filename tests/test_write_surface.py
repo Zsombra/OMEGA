@@ -152,3 +152,20 @@ def test_the_floor_record_does_not_overclaim():
     record must keep saying so rather than asserting a mechanism it did not measure."""
     assert len(FLOOR["measured"]["metricsObservedAt24"]) == 3
     assert "cannot separate" in FLOOR["measured"]["_honestLimit"]
+
+
+# --- pins vs the NAMED schema capture of the first live preflight run (2026-09-05) ---------
+
+SCHEMA_CAPTURE_2026_09_05 = ROOT / "data/contract/compile_strategy_plan/schema_20260905T011443Z.json"
+
+
+def test_api_pins_agree_with_the_named_schema_capture():
+    """A green suite proves pin-vs-capture agreement for THIS dated capture, not platform
+    agreement. The preflight's gate never reads a committed capture (design 2026-09-04,
+    'nothing stored in the repo is ever the truth for a verdict')."""
+    from omega import preflight as P
+    definition = json.loads(SCHEMA_CAPTURE_2026_09_05.read_text(encoding="utf-8"))["response"]
+    arms, root = P.resolve_arms(definition)
+    create = P.deref(arms["CREATE"], root)
+    assert set(create["properties"]) == API_ACCEPTS
+    assert set(create["required"]) == API_REQUIRES

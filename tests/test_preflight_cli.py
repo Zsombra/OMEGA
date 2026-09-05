@@ -261,3 +261,23 @@ def test_run_writes_a_gate_line_into_the_receipt_and_gate_prints_the_disclaimer_
     rc2 = cli.main(["gate", str(out), "--body", str(body), "--now", "2026-09-04T09:05:00Z"])
     printed = capsys.readouterr().out
     assert rc2 == 0 and "runtime validator" in printed
+
+
+def test_receipt_gate_line_records_a_repo_relative_path_under_the_repo(tmp_path, monkeypatch):
+    """A committed receipt must not embed the machine's absolute path (2026-09-05 live run)."""
+    sp, rp = _captures(tmp_path)
+    fixed = json.loads(json.dumps(V5))
+    for c in fixed["conditions"]:
+        c["exit"] = False
+    body = tmp_path / "body.json"; body.write_text(json.dumps(fixed), encoding="utf-8")
+    inside = ROOT / "data" / "audit" / "_tmp_test_receipt_do_not_commit.json"
+    try:
+        rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(inside),
+                       "--now", "2026-09-04T09:00:00Z"])
+        assert rc == 0
+        receipt = json.loads(inside.read_text(encoding="utf-8"))
+        assert "data/audit/_tmp_test_receipt_do_not_commit.json" in receipt["gateLine"]
+        assert str(ROOT) not in receipt["gateLine"]
+    finally:
+        if inside.exists():
+            inside.unlink()

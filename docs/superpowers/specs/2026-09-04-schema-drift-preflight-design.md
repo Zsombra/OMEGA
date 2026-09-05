@@ -1,6 +1,6 @@
 # 2026-09-04 · Schema-drift preflight — design
 
-**Status:** implemented 2026-09-05 (tasks 1–7 of docs/superpowers/plans/2026-09-04-schema-drift-preflight.md); first live run pending the user's ask (task 8).
+**Status:** implemented 2026-09-05 (tasks 1–7 of docs/superpowers/plans/2026-09-04-schema-drift-preflight.md); first live run done 2026-09-05T01:14-01:17Z under "follow your best recommendation": one Write persisted the 21,137-byte definition (the chunking fallback was not needed); fingerprints 84/25/13 and id/84/7 clean; verdict PASS with 42 INFO findings and no WARN (`data/audit/compile_preflight_2026-09-05-trend-continuation.json`). The docs/20 precondition now rests on one measured run; the runtime validator remains unobserved.
 
 ## Problem (measured, not speculative)
 

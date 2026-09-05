@@ -105,6 +105,15 @@ def cmd_recipe(a) -> int:
     return 0
 
 
+def _repo_relative(path: Path) -> str:
+    """Receipts are committed; a machine-absolute path in the gate line would make them
+    machine-specific. Under the repo root the path is recorded repo-relative (posix)."""
+    try:
+        return path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        return str(path)
+
+
 def cmd_run(a) -> int:
     if getattr(a, "slug", None) and not _SLUG_RE.match(a.slug):
         raise SystemExit(f"--slug {a.slug!r}: use letters, digits, '-' or '_' (max 40)")
@@ -148,7 +157,7 @@ def cmd_run(a) -> int:
                      "fingerprint": "ok" if not schema_fp else "suspect"},
         readback_meta={"path": a.readback, "capturedAt": readback_doc["capturedAt"], "strategyId": strategy_id,
                        "revision": rec.get("revision"), "fingerprint": "ok" if not readback_fp else "suspect"},
-        findings=findings, now=now, expires_minutes=a.expires_minutes, receipt_path=str(out),
+        findings=findings, now=now, expires_minutes=a.expires_minutes, receipt_path=_repo_relative(out),
         unmeasured=["the runtime validator (only a compile observes it)",
                     "whether additionalProperties:false is enforced (schema-derived, not measured)",
                     "semantics of any field first seen in this capture"])
@@ -158,7 +167,7 @@ def cmd_run(a) -> int:
         print(f"  [{f.verdict:4}] {f.cls:20} {f.path or '<root>'}: {f.detail}")
     print(f"receipt: {out}")
     if receipt["verdict"] == "PASS":
-        print(P.gate_line(receipt, str(out)))
+        print(P.gate_line(receipt, _repo_relative(out)))
         print(f"note: {P.DISCLAIMER}")
         return 0
     print("PREFLIGHT FAIL - stop; mirror from a record, never invent (see the recipe, step 4)")
