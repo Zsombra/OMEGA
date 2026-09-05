@@ -108,6 +108,52 @@ Window-only (`WINDOW=last`): 51.1% +4.5 (n=47) vs 53.7% +6.2 (n=41). The hold-ba
 moves the cumulative cell by 1.4pp on six events, inside the interval; neither view
 changes the verdict. So the young-bar effect is real but, so far, small at the cell.
 
+## Run 4 decision boundary and the meaning of "sustained" (pre-registered 2026-09-05, before any run-4 data)
+
+**Exact cumulative state after run 3** (from the battery, not the rounded log): n=105,
+hits=58 (55.24%), summed edge +314.2 bps. Run 4 on 2026-09-07 should add roughly 45–60
+cell events (run 2: 49 on 73 new bars; run 3: 47 on 55).
+
+**Arithmetic, fixed now.** With k new cell events in run 4, the cumulative hit falls to
+≤55% iff the window hits ≤ ⌊0.55·(105+k) − 58⌋, and the cumulative edge falls to ≤0 iff the
+window's mean edge ≤ −314.2/k bps/bar:
+
+| k | window hits that cross ≤55% | window mean edge that crosses ≤0 |
+|---|---|---|
+| 40 | ≤21 (52.5%) | ≤ −7.9 |
+| 45 | ≤24 (53.3%) | ≤ −7.0 |
+| 50 | ≤27 (54.0%) | ≤ −6.3 |
+| 55 | ≤30 (54.5%) | ≤ −5.7 |
+| 60 | ≤32 (53.3%) | ≤ −5.2 |
+
+**The gap in the rule, stated honestly.** The pre-registered reading is "hit ≤55% or
+edge ≤0, *sustained*", and "sustained" was never given a number. The run logs so far
+carry an implicit reading: run 2's window failed on edge and was called "one window is
+not sustained"; run 3's window failed on hit and was called "not sustained under the
+rule as written; one more such window would be". Four readings are consistent with the
+words, and they do not agree on where things stand:
+
+- **(A) cumulative cell fails at two consecutive runs.** Never failed yet; run 4 alone
+  cannot trigger; earliest trigger is run 5. Most lenient to the thesis.
+- **(B) cumulative cell fails once** (the cumulative already spans several windows).
+  Run 4 triggers iff the table above is crossed.
+- **(C) two consecutive windows fail on either criterion.** Runs 2 and 3 already
+  qualify (edge, then hit) — under this reading the rule is ALREADY triggered, and the
+  run-3 log's "not sustained" was wrong.
+- **(D) two consecutive windows fail on the same criterion.** Run 3's window failed on
+  hit (51.1%); run 4 triggers iff its window hit is ≤55%, whatever the cumulative says.
+  This is the reading the run-3 log's sentence most plausibly meant.
+
+**Choice: the user's, to be written here before pull 4 is made.** Not choosing before the
+data arrives would let the data choose the definition, which is the goalpost-moving the
+protocol forbids. The assistant's recommendation is (D), because it is the reading the
+prior log already committed to in writing and it does not let a single noisy window
+decide; (C) is the stricter reading and would mean recording the thesis as failed today.
+Whichever is chosen, the `SETTLED=6` view stays supplementary and the choice is recorded
+below verbatim, with the date, before run 4's raw files exist.
+
+**Chosen reading:** _pending — user to fill in._
+
 ## Cadence
 
 Every 3–4 days. First run due **2026-09-01/02**. Scheduling this as an
