@@ -106,6 +106,17 @@ step needs its own explicit user authorization naming the operation and the inst
 in the session where it runs. The proven procedures are referenced, not restated —
 read them before running one.
 
+**Precondition for every compile (2026-09-04):** a same-session schema-drift preflight
+receipt, PASS, bound to the exact body's sha256 and not expired — produced by the
+read-only procedure `python scripts/preflight.py recipe <body> --reference <id>`
+(design: `docs/superpowers/specs/2026-09-04-schema-drift-preflight-design.md`). The
+authorization checkbox quotes the printed `PREFLIGHT PASS · …` line verbatim. The
+receipt is a precondition of asking for authorization, not the authorization itself;
+its disclaimer stands: it covers the published schema and the reference record only;
+the runtime validator is not observed. A refusal after a PASS voids the receipt
+(`voided` with the refusal verbatim and a `gate_missed` class) and the post-refusal
+read-back becomes the next baseline.
+
 - **Compile dry-run** — authorization template: *"I authorize N compile_strategy_plan
   call(s) for <strategy/thesis name> in this session — compile only, nothing
   applied."* Procedure: [doc 16](16-the-write-path.md) compile discipline. Record the

@@ -1,8 +1,6 @@
 # 2026-09-04 · Schema-drift preflight — design
 
-**Status:** design approved by the user on 2026-09-04 ("do it") after the brainstorm
-opened 2026-09-02. No code exists. Implementation follows the plan at
-`docs/superpowers/plans/2026-09-04-schema-drift-preflight.md`.
+**Status:** implemented 2026-09-05 (tasks 1–7 of docs/superpowers/plans/2026-09-04-schema-drift-preflight.md); first live run pending the user's ask (task 8).
 
 ## Problem (measured, not speculative)
 
