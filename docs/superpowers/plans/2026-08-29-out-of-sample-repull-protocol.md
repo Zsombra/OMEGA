@@ -152,7 +152,7 @@ decide; (C) is the stricter reading and would mean recording the thesis as faile
 Whichever is chosen, the `SETTLED=6` view stays supplementary and the choice is recorded
 below verbatim, with the date, before run 4's raw files exist.
 
-**Chosen reading:** _pending — user to fill in._
+**Chosen reading (recorded 2026-09-05T03:20Z, no run-4 raw files exist; user: "let's go ahead and run your recommendation"): (D).** "Sustained" means two consecutive out-of-sample windows (`WINDOW=last`, `SETTLED=0`, base-calibrated thresholds, the >90th cell) fail on the SAME criterion — hit ≤55% in both, or edge ≤0 in both. Run 3's window failed on hit (51.1%, n=47). Therefore run 4 triggers the failure reading iff its window hit is ≤55%; a run-4 window that fails on edge alone starts a new edge chain and does not trigger. The cumulative cell remains THE number reported, and crossing the table above is recorded as such, but under (D) the cumulative crossing alone is not the trigger. If run 4 triggers: the registry entry for b9438519 and the research spec record the premise as failed out of sample, and the strategy stays archived; no re-cut of the cell is permitted. If it does not: the chain resets to the criterion run 4 failed on, if any, and run 5 is due ≤3 days later. This paragraph is not to be edited after run 4's raw files exist.
 
 ## Cadence
 
