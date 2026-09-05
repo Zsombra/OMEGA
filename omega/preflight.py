@@ -95,7 +95,7 @@ _MODELED_KEYWORDS = frozenset({
     "type", "properties", "required", "additionalProperties", "enum", "const",
     "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
     "minLength", "maxLength", "minItems", "maxItems", "items", "anyOf", "$ref",
-    "pattern", "description", "title", "default", "examples", "$comment",
+    "pattern", "format", "description", "title", "default", "examples", "$comment",
 })
 
 
@@ -221,6 +221,9 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
         if "pattern" in schema:
             out.append(Finding("INFO", path, f"pattern-unchecked: {schema['pattern']!r} (no regex engine "
                                              "for \\p classes; validated by the platform, not here)", "INFO"))
+        if "format" in schema:
+            out.append(Finding("INFO", path, f"format-unchecked: {schema['format']!r} (declared, not "
+                                             "modelled; validated by the platform, not here)", "INFO"))
 
 
 def diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]:

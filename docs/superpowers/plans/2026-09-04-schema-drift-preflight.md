@@ -1591,3 +1591,45 @@ git commit -m "preflight: first live run - verbatim captures, receipt, pins tied
 - **Placeholders:** the only "<…>" tokens are file-name stamps chosen at capture time and the scratchpad path; none are TODOs.
 - **Type consistency:** `resolve_arms` returns `(arms, root)` everywhere; `diff_schema(body, arm, root)`, `diff_record(body, record, arm, root)`, `mirror_findings(body, record)`, `fingerprint_schema(arm, root, *, signal_ids, template_keys, timeframes)`, `fingerprint_readback(record, strategy_id)`, `build_receipt(...)`, `gate_check(receipt, body, now)` are used with the same signatures in Tasks 5–6 as defined in 1–5. `P._parse_iso` is private but used by the CLI deliberately (same package family as `scripts/compile_dry_run.py` reaching into omega).
 - **Test counts** assume no other test file changes; adjust the "expected N passed" lines to the live baseline at execution time rather than trusting these numbers.
+
+## Execution record (copied verbatim from the local SDD ledger, 2026-09-05)
+
+The ledger below was written by the controlling session as the plan executed. It is the only record of the reviewers' rulings, the deferred minor findings, one controller erratum and one process deviation; its original lives in a git-ignored directory, so it is copied here unedited. Commit SHAs refer to this repository's history.
+
+```text
+# SDD ledger — plan: docs/superpowers/plans/2026-09-04-schema-drift-preflight.md
+Branch claude/omega-project-handoff-5d6bb9, start ebf0172 (main == origin/main). Baseline 925 passed.
+Pre-flight resolutions (controller, 2026-09-05, from real records not assumptions):
+- R1 Task 3: drift5 audit has no readbacks[<id>].entry_verbatim; built record takes entry from V5["request"]["entry"].
+- R2 Task 3: 2026-08-29 read-back custom sections carry timeframe: null (optional section override, never sent). Nested MISSING_VS_RECORD refined: record key absent from body whose value is null on every record element -> INFO "platform null default", not FAIL. No past drift instance (#3/#4/#5) was null-valued. Spec amended in Task 3 commit.
+- R3 Task 6: v5 body has 8 top-level keys the walker miniature does not declare; _captures() adds arm.setdefault(k, {}) for every V5 top-level key so UNDECLARED does not fire in the CLI PASS test.
+Task 8 excluded from this execution: needs the user's ask naming the two read-only calls.
+Task 1: minor (deferred): deref multi-hop chain in one call untested (brief's own test set); report line-count off by 3.
+Task 1: complete (commits ebf0172..04e5941, review clean; trailer verified by controller)
+Task 2: fix round 1/5 (1 addressed, 0 open — walker lacked UNSUPPORTED catch-all for unmodelled keywords/list type/tuple items; commits afff4a6..b9aed54)
+Task 2: minor (deferred): unmodelled-keyword check runs before anyOf branch selection, so a keyword inside the chosen branch is not re-checked; _pick_branch still uses _type_ok without the _KNOWN_TYPES guard; no isolated test for "unknown type name".
+Task 2: minor (deferred): discriminator-less anyOf fallback takes first required-keys fit without ambiguity check.
+Task 2: complete (commits 04e5941..b9aed54, review clean after fix 1)
+Task 3: controller erratum — R1 premise was wrong (readbacks[6a8bca67].entry_verbatim exists; my inspection printed only 2 levels deep); the correction was a behavioural no-op.
+Task 3: implementer reordered the brief's top-level loop (object-missing WARN before required-skip) — reviewer confirmed the brief's literal order contradicted its own test; kept.
+Task 3: minor (deferred): DRIFT5 fixture loaded but unused after R1; mixed path notation sections[].columns[*].key from the recursive columns call.
+Task 3: complete (commits b9aed54..438ee10, review clean; spec amended with the null rule)
+Task 4: two brief typos fixed by implementer, both confirmed by reviewer: resolve_arms tuple unpacking in a test; schema_index entry created before the anyOf dispatch so anyOf-wrapped paths get an index entry.
+Task 4: minor (deferred): second deviation disclosed only in the report's design notes, not in Concerns.
+Task 4: complete (commits 438ee10..09731bd, review clean)
+Task 5: fix round 1/5 (2 addressed, 0 open — gate_check raised on naive now / malformed receipt instead of refusing; commits 1761729..6e96761)
+Task 5: minor (deferred): gate_line(receipt, receipt_path="<receipt>") has one more parameter than the plan's interface list states.
+Task 5: complete (commits 09731bd..6e96761, review clean after fix 1)
+Task 6: fix round 1/5 (2 addressed, 0 open — _load_capture required only 2 of 4 keys; strategy_id fallback and per-capture fingerprint meta untested, and the brief's shared expression cross-contaminated the two meta strings; commits 5b9244a..550f05f)
+Task 6: minor (deferred): _now() uses P._parse_iso across the module boundary; missing/corrupt input files surface as raw tracebacks; --previous-schema/changelog path untested; recipe defaults operation to '?' while run defaults to CREATE.
+Task 6: complete (commits 6e96761..550f05f, review clean after fix 1)
+Task 7: controller amended the commit message (PowerShell heredoc left stray "@" lines); diff unchanged. 550f05f..7f58bcc
+Task 7: complete (commits 550f05f..7f58bcc, review clean)
+Task 8: NOT executed — needs the user's ask naming the two read-only calls.
+Final review (opus): 8 Important + minors; ONE fix wave c7f8b76 + 2136a64 (all 13 addressed) — re-review found 1 new Important (FAIL receipt carried a PREFLIGHT PASS gateLine) + 2 minors + item-9 ruling deviation.
+DEVIATION from the skill's one-wave rule (controller decision): a second, tightly scoped mini-round 86bde54 fixed the four wave-introduced issues; re-reviewed clean. Rationale: merging a forged gate line into FAIL receipts is worse than one more reviewed round; the user is not available to adjudicate.
+Controller edit: one spec sentence (gateLine null on FAIL) — docs only, commit after 86bde54.
+Deferred (final triage, not blocking): T1 multi-hop deref test; discriminator-less anyOf ambiguity comment; --previous-schema untested; recipe '?' default; file-not-found tracebacks; pattern INFO-only; parse_iso accepts a space separator; loose `or` in the overwrite test's assertion; plan doc shows pre-fix KNOWN_DELTAS strings (historical snapshot).
+ALL TASKS 1-7 COMPLETE. Suite 982 passed. Task 8 pending the user's ask.
+Task 8: complete (734cbf7) - live run PASS; merged and pushed 2026-09-05.
+```

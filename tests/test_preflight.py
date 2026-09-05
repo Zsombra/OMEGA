@@ -604,3 +604,18 @@ def test_gate_check_refuses_naive_now_and_malformed_receipt_without_raising():
     malformed_bad_expiry = dict(r, expiresAt="not-a-timestamp")
     ok, why = P.gate_check(malformed_bad_expiry, body, NOW)
     assert not ok and "malformed" in why
+
+
+def test_string_format_keyword_is_declared_but_unchecked_info_not_unsupported():
+    """The real definition marks UPDATE/RESTORE strategyId with format: uuid (capture
+    2026-09-05). Like pattern, format is declared-but-unchecked: one INFO, never an
+    UNSUPPORTED WARN on every UPDATE preflight."""
+    cap = ROOT / "data/contract/compile_strategy_plan/schema_20260905T011443Z.json"
+    definition = json.loads(cap.read_text(encoding="utf-8"))["response"]
+    arms, root = P.resolve_arms(definition)
+    body = {"operation": "UPDATE", "strategyId": "b9438519-8223-4ef1-a3c3-6f4592bb823d",
+            "expectedRevision": 2, "intentSummary": "x", "assumptions": [],
+            "coinSelection": {"mode": "explicit", "tickers": ["BTC"]}}
+    found = [f for f in P.diff_schema(body, arms["UPDATE"], root) if f.path == "strategyId"]
+    assert [(f.cls, f.verdict) for f in found] == [("INFO", "INFO")]
+    assert "format-unchecked" in found[0].detail and "uuid" in found[0].detail

@@ -83,7 +83,9 @@ def cmd_recipe(a) -> int:
    The definition is ~21 KB. If one Write fails or truncates, write it in <= 6 KB chunks and
    concatenate, and say so in "how". Never edit, reorder or repair the text.
 
-2. Read back the reference record (read-only; quota-free per docs/10):
+2. Read back the reference record (read-only: the 2026-09-04 and 2026-09-05 read-backs of
+   b9438519 left its revision at 2 and updatedAt at 2026-08-30T04:41:44Z; whether a read
+   touches the strategy quota is not separately measured, but quota counts strategies):
      get_strategy  {{"strategyId": "{a.reference}", "includeInactive": true}}
    Save the response VERBATIM to
      {CAPTURE_READBACK_DIR.relative_to(ROOT).as_posix()}/{a.reference}_{stamp}.json
