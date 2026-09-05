@@ -60,7 +60,10 @@ the method in the capture's `how` field.
 - `load_schema_capture(path)` → the CREATE/UPDATE/RESTORE arms, resolving the local
   `$ref`s the definition uses. Unresolvable constructs (a non-local `$ref`, an `anyOf`
   with no `operation` discriminator) become an explicit `UNSUPPORTED` finding, never a
-  silent stop of the walk.
+  silent stop of the walk. An `UNSUPPORTED` finding that leaves a subtree unvalidated
+  (no `anyOf` branch matches the value) is `FAIL`; one where the walk continues (an
+  unmodelled keyword, `type` as a list, tuple-form `items`, an unknown type name) is
+  `WARN`.
 - `fingerprint_schema(arm)` → the fidelity checks against data the repo already holds
   independently of any schema capture (verified 2026-09-04): `rules[].signalId` enum equals
   the 84-id union of `moduleSignals` in `data/derived/signal_module_map.json`; the platform
@@ -94,7 +97,8 @@ the method in the capture's `how` field.
     e.g. the optional section-level `timeframe`); a null carries nothing to mirror, and no
     drift instance to date was null-valued.
   - `ENUM` — body value not in the arm's enum. FAIL.
-  - `BOUNDS` — body number outside the arm's minimum/maximum/exclusiveMinimum. FAIL.
+  - `BOUNDS` — body number outside the arm's minimum/maximum/exclusiveMinimum, or a body
+    value of the wrong JSON type. FAIL.
   - `MIRROR` — a value omega hardcodes as a platform mirror (`entry.*`,
     `conditions[].clock/closes/exit`) differs from the record's value. WARN, never FAIL:
     the user decides whether to re-mirror. `sections[].notes` is excluded (omega sends a
@@ -113,8 +117,9 @@ the method in the capture's `how` field.
   Mirrors `omega.probe.FETCH_RECIPE`.
 - `run <body.json> --schema <capture> --readback <capture> [--expires-minutes 60]` —
   runs the diff, writes the receipt, prints the gate line.
-- `gate <receipt>` — exit 0 only if the receipt is PASS, the body file's sha256 matches,
-  `expiresAt` is in the future, and `voided` is absent. Otherwise exit 1 with the reason.
+- `gate <receipt> --body <body.json>` — exit 0 only if the receipt is PASS, the body
+  file's sha256 matches, `expiresAt` is in the future, and `voided` is absent. Otherwise
+  exit 1 with the reason.
 
 ## Receipt (the artifact the authorization depends on)
 
@@ -130,6 +135,11 @@ the method in the capture's `how` field.
 
 Gate line printed on PASS and quoted verbatim by the plan checkbox:
 `PREFLIGHT PASS · <receipt> · body <sha8> · schema <capturedAt> · ref <id> rev <n> · expires <expiresAt>`
+
+Built by `gate_line(receipt, receipt_path)` and stored on the receipt itself as
+`gateLine` (`build_receipt(..., receipt_path=...)` computes it at write time from the
+resolved output path), so the checkbox text can be copied straight out of the JSON
+without re-running `gate`.
 
 ## Session procedure (per compile)
 

@@ -115,7 +115,7 @@ receipt is a precondition of asking for authorization, not the authorization its
 its disclaimer stands: it covers the published schema and the reference record only;
 the runtime validator is not observed. A refusal after a PASS voids the receipt
 (`voided` with the refusal verbatim and a `gate_missed` class) and the post-refusal
-read-back becomes the next baseline.
+read-back becomes the next baseline. Until the first live run (plan task 8) has proven the ~21 KB capture path end to end, this precondition is policy ahead of evidence; the run that proves it is recorded in the spec's status line.
 
 - **Compile dry-run** — authorization template: *"I authorize N compile_strategy_plan
   call(s) for <strategy/thesis name> in this session — compile only, nothing
