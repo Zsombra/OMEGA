@@ -48,6 +48,14 @@ CORPUS = os.path.dirname(HERE)
 POLICY = os.environ.get("POLICY", "latest")
 WINDOW = os.environ.get("WINDOW", "cumulative")
 PRICE_TOL = 0.01
+# SETTLED=<hours> (default 0 = off, the pre-registered reading): drop every bar that was
+# younger than <hours> at the time its winning source served it. Measured 2026-09-04: bars
+# <=6h old at pull time are served incomplete (18/40 later revised, 0/1040 older), and a
+# short volume in a young bar distorts the volume-weighted reference that decides cell
+# membership. Pull times are not stored per source; the proxy is the source's latest bar
+# open + one bar, which UNDERSTATES age by up to ~1h (run 3 pulled 33-40 min after its last
+# close). Supplementary view only - it never replaces the SETTLED=0 reading.
+SETTLED = float(os.environ.get("SETTLED", "0"))
 if POLICY not in ("latest", "first", "strict"):
     raise SystemExit(f"POLICY must be latest|first|strict, got {POLICY!r}")
 if WINDOW not in ("cumulative", "last"):
@@ -60,13 +68,17 @@ def load_series(path):
 
 
 merged = {}          # key -> {timestamp: (close, volume)}
+src_of = {}          # key -> {timestamp: index of the source whose value won}
+src_last = []        # per source: key -> latest timestamp it served
 sources = [os.path.join(CORPUS, "candles.json")] + sorted(
     glob.glob(os.path.join(HERE, "*", "candles.json")))
 collisions = 0
 max_dclose = max_dvol = 0.0
-for src in sources:
+for si, src in enumerate(sources):
+    src_last.append({})
     for key, rows in load_series(src).items():
         bucket = merged.setdefault(key, {})
+        src_last[si][key] = max(r["timestamp"] for r in rows)
         for r in rows:
             t = r["timestamp"]
             val = (float(r["close"]), float(r["volume"]))
@@ -85,14 +97,40 @@ for src in sources:
                         f"{val[0]} - record it in data/audit/ before quoting any number")
                 if POLICY == "first":
                     continue          # first-seen source wins
+            if t in bucket and POLICY == "first":
+                continue              # identical re-serve: the first source still owns it
             bucket[t] = val           # latest wins (or first write)
+            src_of.setdefault(key, {})[t] = si
 print(f"sources={len(sources)}  POLICY={POLICY}  WINDOW={WINDOW}  collisions={collisions}"
       f"  max|dclose|={max_dclose:.2e}  max|dvolume|={max_dvol:.2e}")
 
+from datetime import datetime, timedelta
+
+
+def _iso(t):
+    return datetime.strptime(t, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+
+def _tf_hours(tf):
+    n, unit = int(tf[:-1]), tf[-1]
+    return n * {"m": 1 / 60, "h": 1, "d": 24}[unit]
+dropped_young = 0
 series = {}
 for key, bucket in merged.items():
     sym, tf = key.rsplit("_", 1)
-    series[(sym, tf)] = [(t, c, v) for t, (c, v) in sorted(bucket.items())]
+    rows = []
+    for t, (c, v) in sorted(bucket.items()):
+        if SETTLED > 0:
+            served_at = _iso(src_last[src_of[key][t]][key]) + timedelta(hours=_tf_hours(tf))
+            age_h = (served_at - (_iso(t) + timedelta(hours=_tf_hours(tf)))).total_seconds() / 3600
+            if age_h < SETTLED:
+                dropped_young += 1
+                continue
+        rows.append((t, c, v))
+    series[(sym, tf)] = rows
+if SETTLED > 0:
+    print(f"SETTLED={SETTLED:g}h: dropped {dropped_young} bars served younger than {SETTLED:g}h "
+          f"(age proxy = source's last close; understates by up to ~1h)")
 
 base = load_series(os.path.join(CORPUS, "candles.json"))
 base_max = {}        # per (sym, tf): last base-corpus timestamp - the THRESHOLD cutoff, always

@@ -83,6 +83,31 @@ both policies and found identical (n=58, 58.6% ±12.7pp, +1.8 bps). If a future
 restatement ever makes the two policies disagree at the cell, report both and say
 so; do not pick the one that reads better.
 
+## Amendment 2026-09-05 · young bars are held back in a SUPPLEMENTARY view (pre-registered before run 4)
+
+Run 3 measured that bars ≤6h old at pull time are served incomplete (18/40 later
+revised, 0/1040 older; `data/audit/partial_pulls_repull3/`). The cell's reference is a
+volume-weighted 4-bar mean, so a short volume in a young bar moves the deviation that
+decides cell membership. `analyze_repull.py` now takes `SETTLED=<hours>` (default 0):
+with `SETTLED=6` every bar that was younger than 6h when its winning source served it is
+dropped. Pull times are not stored per source; the age proxy is the source's latest bar
+close, which understates age by up to ~1h (run 3 pulled 33–40 min after its last close),
+so the rule is slightly lenient, not strict.
+
+**What this does NOT do:** the pre-registered reading stays `SETTLED=0`, cumulative
+NEW-ONLY >90th, hit ≤55% or edge ≤0 sustained. The settled view is reported alongside
+from run 4 on and cannot trigger or un-trigger the failure rule by itself. If the two
+views ever disagree on the verdict, that is a data-quality fact to record, not a licence
+to pick the friendlier number.
+
+**Measured on runs 1–3 (2026-09-05, before any run-4 data exists):** exactly the 6
+youngest bars per 1h coin are held back (run 3's tail; every earlier tail was re-served
+by a later pull). Cumulative cell `SETTLED=0`: n=105, 55.2% ±9.5, +3.0 bps.
+`SETTLED=6`: n=99, 56.6% ±9.8, +3.6 bps — the six dropped events went 2 hits / 4 misses.
+Window-only (`WINDOW=last`): 51.1% +4.5 (n=47) vs 53.7% +6.2 (n=41). The hold-back
+moves the cumulative cell by 1.4pp on six events, inside the interval; neither view
+changes the verdict. So the young-bar effect is real but, so far, small at the cell.
+
 ## Cadence
 
 Every 3–4 days. First run due **2026-09-01/02**. Scheduling this as an
