@@ -6,6 +6,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("preflight_cli", ROOT / "scripts" / "preflight.py")
 cli = importlib.util.module_from_spec(spec); spec.loader.exec_module(cli)  # type: ignore[union-attr]
@@ -92,3 +94,72 @@ def test_run_refuses_a_transcription_suspect_schema(tmp_path, capsys):
                      "--now", "2026-09-04T09:00:00Z"]) == 1
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert any(f["cls"] == "TRANSCRIPTION_SUSPECT" for f in receipt["findings"])
+
+
+def test_run_refuses_a_capture_missing_how_or_request(tmp_path):
+    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
+    out = tmp_path / "receipt.json"
+
+    sp, rp = _captures(tmp_path)
+    doc = json.loads(sp.read_text(encoding="utf-8"))
+    del doc["how"]
+    sp.write_text(json.dumps(doc), encoding="utf-8")
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                  "--now", "2026-09-04T09:00:00Z"])
+    assert "how" in str(excinfo.value)
+
+    sp, rp = _captures(tmp_path)
+    doc = json.loads(rp.read_text(encoding="utf-8"))
+    del doc["request"]
+    rp.write_text(json.dumps(doc), encoding="utf-8")
+    with pytest.raises(SystemExit) as excinfo:
+        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                  "--now", "2026-09-04T09:00:00Z"])
+    assert "request" in str(excinfo.value)
+
+    # a schema capture with "request": null (already the case in _captures()) is accepted
+    sp, rp = _captures(tmp_path)
+    assert json.loads(sp.read_text(encoding="utf-8"))["request"] is None
+    fixed = json.loads(json.dumps(V5))
+    for c in fixed["conditions"]:
+        c["exit"] = False
+    fixed_body = tmp_path / "fixed_body.json"; fixed_body.write_text(json.dumps(fixed), encoding="utf-8")
+    rc = cli.main(["run", str(fixed_body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                   "--now", "2026-09-04T09:00:00Z"])
+    assert rc == 0
+
+
+def test_run_falls_back_to_the_record_id_and_records_meta_fingerprints(tmp_path, capsys):
+    sp, rp = _captures(tmp_path)
+    doc = json.loads(rp.read_text(encoding="utf-8"))
+    doc["request"] = {}
+    rp.write_text(json.dumps(doc), encoding="utf-8")
+
+    fixed = json.loads(json.dumps(V5))
+    for c in fixed["conditions"]:
+        c["exit"] = False
+    body = tmp_path / "body.json"; body.write_text(json.dumps(fixed), encoding="utf-8")
+    out = tmp_path / "receipt.json"
+    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                   "--now", "2026-09-04T09:00:00Z"])
+    assert rc == 0
+    receipt = json.loads(out.read_text(encoding="utf-8"))
+    assert receipt["captures"]["readback"]["strategyId"] == "6a8bca67-45a3-428e-85ba-71ec2cd2218e"
+    assert receipt["captures"]["readback"]["fingerprint"] == "ok"
+    assert receipt["captures"]["schema"]["fingerprint"] == "ok"
+
+    sp2, rp2 = _captures(tmp_path)
+    doc2 = json.loads(rp2.read_text(encoding="utf-8"))
+    doc2["request"] = {}
+    rp2.write_text(json.dumps(doc2), encoding="utf-8")
+    doc3 = json.loads(sp2.read_text(encoding="utf-8"))
+    doc3["response"]["parameters"]["properties"]["request"]["anyOf"][0]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"].pop()
+    sp2.write_text(json.dumps(doc3), encoding="utf-8")
+    out2 = tmp_path / "receipt2.json"
+    rc2 = cli.main(["run", str(body), "--schema", str(sp2), "--readback", str(rp2), "--out", str(out2),
+                    "--now", "2026-09-04T09:00:00Z"])
+    assert rc2 == 1
+    receipt2 = json.loads(out2.read_text(encoding="utf-8"))
+    assert receipt2["captures"]["schema"]["fingerprint"] == "suspect"
+    assert receipt2["captures"]["readback"]["fingerprint"] == "ok"

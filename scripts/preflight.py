@@ -53,8 +53,10 @@ def _load_body(path: str) -> dict:
 
 def _load_capture(path: str) -> tuple[dict, dict]:
     doc = json.loads(Path(path).read_text(encoding="utf-8"))
-    if not isinstance(doc, dict) or "capturedAt" not in doc or "response" not in doc:
-        raise SystemExit(f"{path}: not a capture (need capturedAt/how/request/response)")
+    required = {"capturedAt", "how", "request", "response"}
+    missing = required - (set(doc.keys()) if isinstance(doc, dict) else set())
+    if missing:
+        raise SystemExit(f"{path}: not a capture (need capturedAt/how/request/response; missing {sorted(missing)})")
     return doc, doc["response"]
 
 
@@ -108,11 +110,11 @@ def cmd_run(a) -> int:
     if operation not in arms:
         raise SystemExit(f"operation {operation!r} has no arm in the captured definition ({sorted(arms)})")
     arm = arms[operation]
-    findings: list[P.Finding] = []
-    findings += P.fingerprint_schema(arm, root, signal_ids=repo_signal_ids(),
+    schema_fp = P.fingerprint_schema(arm, root, signal_ids=repo_signal_ids(),
                                      template_keys=repo_template_keys(), timeframes=repo_timeframes())
     strategy_id = (readback_doc.get("request") or {}).get("strategyId") or P.record_request_view(record).get("id")
-    findings += P.fingerprint_readback(record, strategy_id)
+    readback_fp = P.fingerprint_readback(record, strategy_id)
+    findings: list[P.Finding] = schema_fp + readback_fp
     if not findings:
         findings += P.diff_schema(body, arm, root)
         findings += P.diff_record(body, record, arm, root)
@@ -126,9 +128,9 @@ def cmd_run(a) -> int:
     receipt = P.build_receipt(
         body=body, body_path=a.body, operation=operation,
         schema_meta={"path": a.schema, "capturedAt": schema_doc["capturedAt"],
-                     "fingerprint": "ok" if not any(f.cls == "TRANSCRIPTION_SUSPECT" and f.path != "id" for f in findings) else "suspect"},
+                     "fingerprint": "ok" if not schema_fp else "suspect"},
         readback_meta={"path": a.readback, "capturedAt": readback_doc["capturedAt"], "strategyId": strategy_id,
-                       "revision": rec.get("revision"), "fingerprint": "ok" if not any(f.cls == "TRANSCRIPTION_SUSPECT" for f in findings) else "suspect"},
+                       "revision": rec.get("revision"), "fingerprint": "ok" if not readback_fp else "suspect"},
         findings=findings, now=now, expires_minutes=a.expires_minutes,
         unmeasured=["the runtime validator (only a compile observes it)",
                     "whether additionalProperties:false is enforced (schema-derived, not measured)",
