@@ -1,0 +1,355 @@
+{
+ "_what": "Read-only test of the checkable claims in the vendor's installed skill package (.agents/skills/battlegrid, package 31.2.13, export stamp contractVersion 53.0.0) against the live connector. Every row names the claim, the call made, what came back, and a verdict. Nothing was compiled, applied, forked, bound or deployed; the only claim that needs a compile is listed as UNTESTED with the reason. Calls were made between about 2026-09-06T00:30Z and 03:29Z (clock read at the end: 2026-09-06T03:29:21Z; individual call times not recorded). Responses are transcribed by the session from the tool results; the full column-contract responses are not stored, only the fields the claim is about.",
+ "verdict_key": {
+  "PASS": "observed exactly as the skill states",
+  "PARTIAL": "true in part, with a qualification the skill does not state",
+  "FAIL": "observed contradicts the skill",
+  "UNRESOLVED": "the observation neither confirms nor refutes (the claim lives on a path not reachable read-only)",
+  "UNTESTED": "needs a write or an authorization not given"
+ },
+ "summary": {
+  "PASS": 31,
+  "UNTESTED": 3,
+  "FAIL": 1,
+  "PARTIAL": 3,
+  "UNRESOLVED": 2
+ },
+ "rows": [
+  {
+   "id": "U1",
+   "skill": "battlegrid (umbrella)",
+   "claim": "The four strict authoring tools use the {request} envelope: get_strategy_section_template, update_strategy_signal_rule, compile_strategy_plan, apply_strategy_plan",
+   "test": "tool definitions loaded via ToolSearch",
+   "observed": "get_strategy_section_template and compile_strategy_plan both take a single required `request` property",
+   "verdict": "PASS",
+   "note": "update_strategy_signal_rule and apply_strategy_plan definitions not loaded (write tools)"
+  },
+  {
+   "id": "U2",
+   "skill": "battlegrid (umbrella)",
+   "claim": "create_strategy is retired and absent from discovery",
+   "test": "live tool list (113 tools)",
+   "observed": "no create_strategy, update_strategy, repair_strategy, get_rule_suggestions or apply_rule_suggestions in discovery",
+   "verdict": "PASS"
+  },
+  {
+   "id": "A1",
+   "skill": "strategy-authoring §3",
+   "claim": "Discovery tools exist: list_strategy_categories, list_strategy_vocabulary, get_strategy_column_contract, get_strategy_section_template, list_strategy_signals, get_strategy_signal_definition",
+   "test": "each called at least once this session",
+   "observed": "all six answer",
+   "verdict": "PASS"
+  },
+  {
+   "id": "A2",
+   "skill": "strategy-authoring §3",
+   "claim": "conditionOperators is per rendered header; a trajectory's slot header and its _trend header answer differently",
+   "test": "get_strategy_column_contract RSI14 trajectory w4 @1h",
+   "observed": "RSI14_t3/_t2/_t1/_now: [lt,lte,gte,gt,between]; RSI14_trend: [is,in] vocab [rising,falling,flat]",
+   "verdict": "PASS"
+  },
+  {
+   "id": "A3",
+   "skill": "strategy-authoring §3",
+   "claim": "get_metric_construction_hints -> rankOrderings present only when rank is composable on that metric",
+   "test": "hints for CLOSE (no rank transform) and ATR_PCT (rank transform)",
+   "observed": "CLOSE: no rankOrderings key; ATR_PCT: rankOrderings [hi,lo,far,near]",
+   "verdict": "PASS",
+   "note": "the tool's own parameter text says the far/near pair is offered only where the metric can be negative; ATR_PCT cannot be negative and still lists far/near - a platform self-inconsistency, not a skill claim"
+  },
+  {
+   "id": "A4",
+   "skill": "strategy-authoring §3 / examples",
+   "claim": "A CREATE omits sectionKey; minting custom:<uuid> on a CREATE is refused",
+   "test": "schema only",
+   "observed": "custom section schema lists sectionKey as optional (pattern ^custom:[0-9a-fA-F-]{36}$) and required [kind,title,benchmarkTicker,notes,columns]; the refusal-if-supplied is runtime",
+   "verdict": "UNTESTED",
+   "note": "needs a compile"
+  },
+  {
+   "id": "A5",
+   "skill": "strategy-authoring §3 / examples §Entry / README 52.0.0",
+   "claim": "entry is exactly six keys (trigger, confirmTf, closes, bandAtrMultiple, levelOffsetAtrMultiple, validForBars); there is no level-source key; a body carrying levelSource is refused",
+   "test": "compile_strategy_plan definition re-loaded 2026-09-06 ~00:30Z; get_strategy on an ACTIVE strategy (e0f695f1) 2026-09-05 ~23:40Z",
+   "observed": "definition: entry.required = 7 keys INCLUDING levelSource (enum SWING_HIGH, SWING_LOW, BOLLINGER_UPPER, BOLLINGER_LOWER); the active record still carries entry.levelSource 'SWING_HIGH'",
+   "verdict": "FAIL",
+   "note": "FAIL against the schema this connector publishes and the record it serves. Whether the definition was fetched fresh or served from the harness's session-start copy is not known; the record read is live. Runtime acceptance of a six-key body is UNTESTED (needs a compile). The repo's own compile body sends seven keys and matches the wire as measured."
+  },
+  {
+   "id": "A6",
+   "skill": "strategy-authoring §3",
+   "claim": "derive_strategy_rule_view reports report membership and registry-default allocations for a draft and does not return compiled plan values",
+   "test": "sections [includeRsi], rules [rsi_oversold allocation 3]",
+   "observed": "84 rows with inReport/status/reportDefaultAllocation/params; the RSI, HTF-RSI and LTF-RSI signals IN_REPORT, all reportDefaultAllocation 0; the submitted allocation 3 is not echoed",
+   "verdict": "PASS"
+  },
+  {
+   "id": "A7",
+   "skill": "strategy-authoring §1",
+   "claim": "get_regime_snapshot is the evidence read (regime, conviction, run length, context)",
+   "test": "BTC 4h",
+   "observed": "regime bull_ranging, conviction medium, regimeRunLengthBars 8, context trajectories and evidence block returned",
+   "verdict": "PASS"
+  },
+  {
+   "id": "A8",
+   "skill": "strategy-authoring §3",
+   "claim": "get_strategy_signal_definition({signalId, timeframe}) returns the param schema to read before tuning",
+   "test": "rsi_oversold @1h",
+   "observed": "paramSchemaJson threshold 1-50 required, defaultParams {threshold:30}, timeframeAvailability available true",
+   "verdict": "PASS"
+  },
+  {
+   "id": "A9",
+   "skill": "strategy-authoring §3",
+   "claim": "list_strategy_signals narrows by module",
+   "test": "module RSI",
+   "observed": "8 signals (rsi_*, htf_rsi_*, ltf_rsi_*)",
+   "verdict": "PASS"
+  },
+  {
+   "id": "A10",
+   "skill": "strategy-authoring §4/§6",
+   "claim": "compile parks a plan; apply takes {planToken, confirm:true} only; TOKEN_EXPIRED etc.",
+   "test": "none",
+   "observed": "-",
+   "verdict": "UNTESTED",
+   "note": "compile is not read-only and needs verbatim per-instance authorization; apply is a write"
+  },
+  {
+   "id": "E1a",
+   "skill": "strategy-examples header grammar",
+   "claim": "value -> <code>",
+   "test": "RSI14 value @1h",
+   "observed": "RSI14",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1b",
+   "skill": "strategy-examples header grammar",
+   "claim": "trajectory w4 -> <code>_t3.._t1, _now, _trend",
+   "test": "RSI14 trajectory w4 @1h",
+   "observed": "RSI14_t3, RSI14_t2, RSI14_t1, RSI14_now, RSI14_trend",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1c",
+   "skill": "strategy-examples header grammar",
+   "claim": "distance -> dist_<code>",
+   "test": "SMA50 distance @1h",
+   "observed": "dist_SMA50",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1d",
+   "skill": "strategy-examples header grammar",
+   "claim": "spread -> <base>_<operand>_spread",
+   "test": "MARK spread ORACLE @1h",
+   "observed": "mark_oracle_spread",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1e",
+   "skill": "strategy-examples header grammar",
+   "claim": "aggregate wN -> <code>_mean<N>",
+   "test": "FUNDING_RATE aggregate w24 @1h",
+   "observed": "rate_mean24",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1f",
+   "skill": "strategy-examples header grammar",
+   "claim": "rank -> <code>_rank_<hi|lo|far|near>",
+   "test": "BB_WIDTH_PCT rank lo @1h",
+   "observed": "bbWidthPct_rank_lo, outputType kind rank",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1g",
+   "skill": "strategy-examples header grammar",
+   "claim": "efficiency wN -> <code>_er (with _ltf on the lower rung)",
+   "test": "CLOSE efficiency w5 closed @lower, anchor 1h",
+   "observed": "close_ltf_er, resolved 15m",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1h",
+   "skill": "strategy-examples header grammar",
+   "claim": "maxShare wN -> <code>_maxShare",
+   "test": "VOLUME maxShare w4 closed @lower, anchor 1h",
+   "observed": "volBase_ltf_maxShare",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1i",
+   "skill": "strategy-examples header grammar",
+   "claim": "classifyZone -> <code>_zone",
+   "test": "RSI14 classifyZone @1h",
+   "observed": "RSI14_zone, vocab overbought/oversold/neutral",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E1j",
+   "skill": "strategy-examples header grammar",
+   "claim": "classifyState -> <code>_state, validated example ADX_state",
+   "test": "ADX classifyState @1h via get_strategy_column_contract",
+   "observed": "REFUSED: REPORT_COLUMN_PAIR_UNSUPPORTED '(ADX x classifyState) is not a composable pair'; candidates value, trajectory, classifyZone, spread, aggregate, efficiency, maxShare, rank. The header ADX_state does exist - the platform's own includeTrendStrength template uses it and an active strategy conditions on it - but it is not authorable as a custom column",
+   "verdict": "PARTIAL",
+   "note": "the vocabulary's 16 authorable transforms do not include classifyState; August called such pairs platform-privileged"
+  },
+  {
+   "id": "E1k",
+   "skill": "strategy-examples §Conditions",
+   "claim": "event columns: MACD_cross and EMA5_13 carry Bullish/Bearish",
+   "test": "MACD crossDetect; EMA_CROSS value",
+   "observed": "MACD_cross kind event vocab [Bullish,Bearish]; EMA5_13 kind event vocab [Bullish,Bearish]",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E2",
+   "skill": "strategy-examples",
+   "claim": "non-anchor rungs affix _ltf (lower) / _htf (regime): MAalign_ltf, zones_htf_support_dist",
+   "test": "MA_ALIGN value @lower; STRUCT_ZONES nearestZoneDist regime side support; anchor 1h",
+   "observed": "MAalign_ltf (resolved 15m); zones_htf_support_dist (resolved null)",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E3",
+   "skill": "strategy-examples",
+   "claim": "chains bounded at two: EMA5 spread EMA13 x trajectory -> EMA5_EMA13_spread_now + _trend",
+   "test": "EMA5 spread inputs EMA13 chained trajectory @1h",
+   "observed": "EMA5_EMA13_spread_t3/_t2/_t1/_now/_trend",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E4",
+   "skill": "strategy-examples",
+   "claim": "pinned {abs:'1d'} is valid while 1d is not an anchor; suffixes the literal: RSI14_1d, dist_SMA200_1d",
+   "test": "RSI14 value {abs:1d} and SMA200 distance {abs:1d}, anchor 4h",
+   "observed": "RSI14_1d (resolved 1d, requiresAnchorTimeframe false); dist_SMA200_1d",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E5",
+   "skill": "strategy-examples",
+   "claim": "offset:1 on a pinned value column reads t-1 and does not change the header",
+   "test": "RSI14 value {abs:1d} offset 1",
+   "observed": "header RSI14_1d, formula RSI14[t - 1]",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E6",
+   "skill": "strategy-examples",
+   "claim": "distance rejects an offset",
+   "test": "SMA20 distance offset 1 @1h",
+   "observed": "REFUSED: REPORT_COLUMN_CONSTRUCTION_FAILED \"transform 'distance' does not accept params.offset\"",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E7",
+   "skill": "strategy-examples",
+   "claim": "PDH/PDL must be bound {abs:'1d'}, the only reference the save path accepts",
+   "test": "PDH distance {rel:anchor} and {abs:1d}, anchor 1h",
+   "observed": "both ACCEPTED by the contract compiler: dist_pdh (resolved 1h) and dist_pdh_1d (resolved 1d)",
+   "verdict": "UNRESOLVED",
+   "note": "the claim is about the save path; the contract compiler accepting the relative form neither confirms nor refutes it"
+  },
+  {
+   "id": "E10",
+   "skill": "strategy-examples",
+   "claim": "regime rung is the anchor's ladder successor (1d for a 4h anchor)",
+   "test": "ADX value {rel:regime} anchor 4h; vocabulary timeframeRefs",
+   "observed": "header ADX_htf, timeframe.resolved null; the vocabulary's resolvedByAnchor for regime is null at every anchor; the active 15m strategy record carries regimeTimeframe '1h', which IS the ladder successor of 15m in rankedTimeframes [1m,5m,15m,1h,4h,1d]",
+   "verdict": "PARTIAL",
+   "note": "consistent with the stored record, not exposed by the contract compiler"
+  },
+  {
+   "id": "E11",
+   "skill": "strategy-examples §Conditions",
+   "claim": "conditions carry all eight keys, no defaults; numeric headers take lt|lte|gte|gt|between, classification headers take is|in",
+   "test": "compile schema conditions[].required; contract outputs",
+   "observed": "required = [conditionKey,name,definition,verdict,required,exit,clock,closes]; operators as stated on every header tested",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E12",
+   "skill": "strategy-examples §The evidence clock",
+   "claim": "a CLOSE clock is legal only over a header resolved from the coin's own candle series at offset 0; perp scalars, ranks, regime labels, session scalars and non-zero-offset clauses are frame-inert",
+   "test": "preview_strategy_report BTC 1h, custom section of 8 columns; read conditionColumns[].closeClockReadable",
+   "observed": "RSI14 true; RSI14_ltf true; MACD_cross true; RSI7 (offset 1) false; mark_oracle_spread false; rate false; bbWidthPct_rank_lo false; regTrend false; all session-field, market-breadth and reference-pairs scalars false",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E13",
+   "skill": "strategy-examples §Report sections",
+   "claim": "custom section shape {kind, sectionKey, title, benchmarkTicker, notes, columns}; benchmarkTicker and notes required-nullable",
+   "test": "compile schema",
+   "observed": "required [kind,title,benchmarkTicker,notes,columns]; both anyOf [..., null]",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E14",
+   "skill": "strategy-examples §Signal rules",
+   "claim": "rule shape {signalId, allocation 0-3, required, params}",
+   "test": "compile schema rules[]",
+   "observed": "allocation integer 0-3; required boolean; params object; schema requires only signalId (the skill's lifecycle text says allocation/required/params are each optional on update_strategy_signal_rule, consistent)",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E15",
+   "skill": "strategy-examples §Signal weights and gate math",
+   "claim": "aggregate = sum(score x allocation)/sum(allocation); with 3/2/2/1 weights, Critical + one Important at 1.0 -> 0.625 so a 0.6 gate routes",
+   "test": "simulate_aggregate_score with those four signals, gate 0.6",
+   "observed": "aggregateScore 0.625, wouldRoute true, attributions 60/40/0/0",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E16",
+   "skill": "strategy-examples §Routing gates",
+   "claim": "minAtrPct bounds come from get_trading_config_catalog",
+   "test": "get_trading_config_catalog",
+   "observed": "bounds minimumAtrPct 0.1, maximumAtrPct 10; minimumRiskRewardRatio 0.5, maximumRiskRewardRatio 3. The compile schema declares minAtrPct 0.01-50 and no bound on minRiskRewardRatio - the two platform sources disagree",
+   "verdict": "PARTIAL",
+   "note": "the catalog answers as the skill says; which bound the runtime enforces is untested"
+  },
+  {
+   "id": "E17",
+   "skill": "strategy-examples §Position management",
+   "claim": "validated bounds: break-even trigger 0.5-2R; trailing trigger 0-2R step 0.01; giveback 25-55; buffer 0.01-1; timeDecay tighten 0.1-50 to max 1-100; stale 0-100",
+   "test": "compile schema",
+   "observed": "breakEvenTriggerR 0.5-2; trailingTriggerR 0-2 multipleOf 0.01; trailingGivebackPct 25-55; trailingBufferPct 0.01-1; timeDecayTightenPct 0.1-50; timeDecayMaxTightenPct 1-100; timeDecayStaleThresholdTpProgressPct 0-100",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E18",
+   "skill": "strategy-examples §Not expressible",
+   "claim": "the only catalog absence worth a row is SMA100",
+   "test": "live vocabulary (135 metrics)",
+   "observed": "no SMA100 in the metric enum; every family the repo's doc 18 marked cannot-build that the skill names (Keltner, Supertrend, Ichimoku, pivots, Williams %R) is present",
+   "verdict": "PASS"
+  },
+  {
+   "id": "E19",
+   "skill": "strategy-examples",
+   "claim": "KC_SQUEEZE reads 'on' about 57% of 1h crypto bars and about 19% at 15m",
+   "test": "none",
+   "observed": "-",
+   "verdict": "UNTESTED",
+   "note": "a base-rate claim; one preview snapshot cannot measure it"
+  },
+  {
+   "id": "E20",
+   "skill": "strategy-examples §The lane",
+   "claim": "session-field scalars are refused on a radar deployment (CONDITION_OPERAND_UNSERVED_IN_LANE)",
+   "test": "none",
+   "observed": "-",
+   "verdict": "UNRESOLVED",
+   "note": "lands at deploy; deployment is out of scope and never authorised"
+  }
+ ],
+ "side_observations": [
+  "preview_strategy_report lists the session-field, market-breadth and reference-pairs condition columns whether or not those sections are requested (this preview requested none of them).",
+  "rankScopingNote on the preview: rank columns reflect the full active market (BTC bbWidthPct_rank_lo 26/78), not the previewed selection.",
+  "get_strategy returns NOT_FOUND for inactive strategies as of 2026-09-05 ~23:40Z (two tried) while the same call served one at 01:16Z; list_strategies includeInactive=true still lists them. Not a skill claim; recorded because the preflight recipe's read-back step depends on it."
+ ]
+}
