@@ -73,7 +73,7 @@
    "test": "compile_strategy_plan definition re-loaded 2026-09-06 ~00:30Z; get_strategy on an ACTIVE strategy (e0f695f1) 2026-09-05 ~23:40Z",
    "observed": "definition: entry.required = 7 keys INCLUDING levelSource (enum SWING_HIGH, SWING_LOW, BOLLINGER_UPPER, BOLLINGER_LOWER); the active record still carries entry.levelSource 'SWING_HIGH'",
    "verdict": "FAIL",
-   "note": "FAIL against the schema this connector publishes and the record it serves. Whether the definition was fetched fresh or served from the harness's session-start copy is not known; the record read is live. Runtime acceptance of a six-key body is UNTESTED (needs a compile). The repo's own compile body sends seven keys and matches the wire as measured."
+   "note": "FAIL against the schema this connector publishes and the record it serves. Whether the definition was fetched fresh or served from the harness's session-start copy is not known; the record read is live. Runtime acceptance of a six-key body is UNTESTED (needs a compile). The repo's own compile body sends seven keys and matches the wire as measured. RESOLVED 2026-09-06T03:38Z: GET https://mcp.battlegrid.trade/mcp/version returns contractVersion 51.0.0 (buildSha 5efc0778...). The README dates the levelSource removal to 52.0.0, so the skills describe a contract two majors ahead of the deployed server; the seven-key entry is correct for the wire today."
   },
   {
    "id": "A6",

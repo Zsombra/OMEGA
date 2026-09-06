@@ -358,7 +358,16 @@
  "not_re_extracted": [
   "per-metric construction hints for the 49 added metrics (data/contract/metrics/ still holds 86 files)",
   "the composability matrix and the counts in docs 00/01/03/14/18 and README (86 metrics, 322 legal cells, 46 buildable families)",
-  "the platform template column lists beyond the vocabulary listing",
-  "the contract version actually announced by this session's connector"
- ]
+  "the platform template column lists beyond the vocabulary listing"
+ ],
+ "contract_version_measured": {
+  "when": "2026-09-06T03:38:33Z",
+  "how": "GET https://mcp.battlegrid.trade/mcp/version (public, unauthenticated, curl)",
+  "response": {
+   "name": "battlegrid",
+   "contractVersion": "51.0.0",
+   "buildSha": "5efc077885cd5fb56c74acb685a93933d2e5e2fb"
+  },
+  "meaning": "The deployed server is at contract 51.0.0. The installed skills are exported at 53.0.0 and the vendor README dates the entry.levelSource removal to 52.0.0, so the seven-key entry this connector's schema requires is the wire as deployed, not drift in the schema capture. Whether the claude.ai connector reaches the same deployment as the public endpoint is assumed from the identical tool surface, not separately measured."
+ }
 }

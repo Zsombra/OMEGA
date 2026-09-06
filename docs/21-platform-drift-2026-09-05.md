@@ -107,8 +107,8 @@ appear in discovery or be reintroduced", beside `create_strategy`, `update_strat
 `.agents/skills/battlegrid` (41 files) with a harness symlink at `.claude/skills/battlegrid`
 (machine-local absolute path, git-ignored; re-run the installer in another checkout) and
 `skills-lock.json`. The package's `skills/EXPORT.json` is stamped `contractVersion 53.0.0` —
-the exporter's stamp, not a handshake from this session's connector, whose announced contract
-version was not observed. The installer's scanners reported Socket 4 alerts and Snyk "Med Risk";
+the exporter's stamp. The deployed server answered `51.0.0` on 2026-09-06T03:38Z (see the
+follow-up list). The installer's scanners reported Socket 4 alerts and Snyk "Med Risk";
 the installed files are markdown, TypeScript sources and an HTML site, none executed here.
 
 Ten SKILL.md files: the umbrella `battlegrid` plus nine sub-skills (agent-management,
@@ -144,6 +144,9 @@ into it" — that is a platform sentence, not a measurement of its usefulness.
    of doc 01 and `data/contract/metrics/_index.json`.
 2. The composability matrix and the counts in docs 00/03/14/18 and the README.
 3. Doc 18's "cannot build" verdicts for families the platform now serves.
-4. The contract version this connector actually announces.
+4. ~~The contract version this connector actually announces.~~ Measured 2026-09-06T03:38Z:
+   `GET https://mcp.battlegrid.trade/mcp/version` → `contractVersion 51.0.0`, build `5efc0778…`. The skills
+   are exported at 53.0.0 and the README dates the `entry.levelSource` removal to 52.0.0, so the seven-key
+   `entry` this connector's schema requires is the deployed wire, and the skill text is two majors ahead of it.
 5. `scripts/build_docs.py` rewrites doc 01 without its stale banner; refresh `data/contract/metrics/`
    before regenerating, or the banner disappears while the roster is still 86.
