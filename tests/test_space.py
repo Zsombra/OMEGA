@@ -23,20 +23,22 @@ def _matrix_rows():
 
 
 def test_matrix_is_the_full_metric_by_transform_grid():
+    """144 x 16 as of 2026-09-09 (contract 54.1.0). Was 86 x 16 = 1376 on 2026-08-24 and
+    135 metrics on 2026-09-05; the roster is the platform's to grow, so these track it."""
     rows = _matrix_rows()
-    assert len(rows) == 1376
-    assert len({r["metric"] for r in rows}) == 86
+    assert len(rows) == 2304
+    assert len({r["metric"] for r in rows}) == 144
     assert len({r["transform"] for r in rows}) == 16
 
 
-def test_structural_shape_count_is_488():
+def test_structural_shape_count_is_1018():
     """322 legal atoms + 166 chained forms. Chaining stops at two stages."""
     shapes = enumerate_shapes()
     atoms = [s for s in shapes if s.chained is None]
     chained = [s for s in shapes if s.chained is not None]
-    assert len(atoms) == 322
-    assert len(chained) == 166
-    assert len(shapes) == 488
+    assert len(atoms) == 663
+    assert len(chained) == 355
+    assert len(shapes) == 1018
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -48,8 +50,11 @@ def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
     assert from_code == from_matrix
 
 
-def test_chain_successors_split_42_and_10():
-    """42 atoms take the 3 general successors; 10 also take rank."""
+def test_chain_successors_split_93_and_19():
+    """93 atoms take the 3 general successors; 19 also take rank.
+
+    Was 42/10 on the 86-metric August roster. Recomputed 2026-09-09 against the
+    144-metric corpus (contract 54.1.0)."""
     shapes = enumerate_shapes()
     by_atom: dict[tuple[str, str], set[str]] = {}
     for s in shapes:
@@ -58,11 +63,11 @@ def test_chain_successors_split_42_and_10():
     three = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate", "efficiency"}]
     four = [k for k, v in by_atom.items()
             if v == {"trajectory", "aggregate", "efficiency", "rank"}]
-    assert len(three) == 42
-    assert len(four) == 10
+    assert len(three) == 93
+    assert len(four) == 19
 
 
-def test_expanding_operands_and_orderings_gives_1779():
+def test_expanding_operands_and_orderings_gives_8999():
     """2,200 until 2026-08-26, when 64 illegal shapes came out of the enumeration.
 
     Chaining spread -> rank narrows the legal operand set via the contract's
@@ -70,7 +75,7 @@ def test_expanding_operands_and_orderings_gives_1779():
     operands instead. omega's own validator had always refused those 64 - only
     enumerate_shapes disagreed. See tests/test_space_validate_agreement.py.
     """
-    assert len(enumerate_shapes(expand_operands=True)) == 1779
+    assert len(enumerate_shapes(expand_operands=True)) == 8999
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -82,7 +87,7 @@ def test_chained_rank_expands_over_its_own_ordering_axis():
     """
     expanded = enumerate_shapes(expand_operands=True)
     rank_chains = [s for s in expanded if s.chained == "rank"]
-    assert len(rank_chains) == 40
+    assert len(rank_chains) == 76
     assert {s.ordering for s in rank_chains} == {"hi", "lo", "far", "near"}
 
 
@@ -91,12 +96,32 @@ def test_expansion_produces_no_duplicate_rows():
     assert len(expanded) == len(set(expanded))
 
 
-def test_expansion_never_loses_a_shape():
-    """Every structural shape must survive expansion under some operand/ordering."""
+# Structural shapes that legally enumerate but have NO legal expansion. Measured
+# 2026-09-09, not assumed: RVOL gained the `spread` transform (the August corpus noted it
+# had none), and its whole operand pool is the two ratio-unit regime metrics
+# REGIME_VOL_ATR_RATIO and REGIME_VOL_BBW_RATIO - both TIMELESS. Chaining a spread whose
+# operand is timeless is refused (REPORT_COLUMN_CHAIN_UNSUPPORTED, see
+# tests/test_spread_chain_operand.py), so every expansion of RVOL x spread x <successor>
+# is illegal and the shape drops out. The unchained RVOL x spread survives.
+EXPANSION_DEAD_ENDS = {
+    ("RVOL", "spread", "trajectory"),
+    ("RVOL", "spread", "aggregate"),
+    ("RVOL", "spread", "efficiency"),
+}
+
+
+def test_expansion_loses_only_the_measured_dead_ends():
+    """Every structural shape survives expansion EXCEPT the measured dead ends above.
+
+    Held with no exceptions on the 86-metric August roster. If this set grows, a new
+    metric has been given a transform whose only operands cannot carry it - which is
+    worth knowing rather than papering over.
+    """
     plain = {(s.metric, s.transform, s.chained) for s in enumerate_shapes()}
     wide = {(s.metric, s.transform, s.chained)
             for s in enumerate_shapes(expand_operands=True)}
-    assert plain == wide
+    assert plain - wide == EXPANSION_DEAD_ENDS
+    assert wide - plain == set()
 
 
 def test_shape_converts_to_a_validatable_column():
@@ -147,9 +172,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 488
+    assert len(unused) + len(used) == 1018
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 488
-    assert len(query(expand_operands=True)) == 1779
+    assert len(query()) == 1018
+    assert len(query(expand_operands=True)) == 8999

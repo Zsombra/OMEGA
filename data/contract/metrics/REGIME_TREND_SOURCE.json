@@ -1,0 +1,20 @@
+{
+  "metric": "REGIME_TREND_SOURCE",
+  "label": "Regime · trend source",
+  "code": "regSrc",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "di spread",
+      "ema fallback"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

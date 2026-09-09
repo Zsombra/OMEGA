@@ -1,0 +1,20 @@
+{
+  "metric": "REGIME_CRASH_LATCH",
+  "label": "Regime · crash latch",
+  "code": "regLatch",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "armed",
+      "clear"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

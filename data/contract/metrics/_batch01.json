@@ -1,18 +1,1393 @@
 [
-{"metric":"OPEN","label":"Open price","code":"open","family":"price","nativeOutput":{"kind":"numeric","unit":"price","precision":2},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"distance","chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"efficiency"},{"id":"bandTouch"}],"spreadOperands":["HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},
-{"metric":"HIGH","label":"High price","code":"high","family":"price","nativeOutput":{"kind":"numeric","unit":"price","precision":2},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"distance","chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"efficiency"},{"id":"bandTouch"}],"spreadOperands":["OPEN","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},
-{"metric":"CLOSE","label":"Close price","code":"close","family":"price","nativeOutput":{"kind":"numeric","unit":"price","precision":2},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"distance","chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"efficiency"},{"id":"bandTouch"}],"spreadOperands":["OPEN","HIGH","LOW","LAST","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},
-{"metric":"LAST","label":"Last traded price","code":"last","family":"price","nativeOutput":{"kind":"numeric","unit":"price","precision":2},"outputKind":"scalar","timeframeMode":"timeless","transforms":[{"id":"value"},{"id":"distance"},{"id":"spread","operandRequired":true}],"spreadOperands":["OPEN","HIGH","LOW","CLOSE","MARK","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},
-{"metric":"MARK","label":"Mark price","code":"mark","family":"price","nativeOutput":{"kind":"numeric","unit":"price","precision":2},"outputKind":"scalar","timeframeMode":"timeless","transforms":[{"id":"value"},{"id":"distance"},{"id":"spread","operandRequired":true}],"spreadOperands":["OPEN","HIGH","LOW","CLOSE","LAST","ORACLE","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},
-{"metric":"ORACLE","label":"Oracle price","code":"oracle","family":"price","nativeOutput":{"kind":"numeric","unit":"price","precision":2},"outputKind":"scalar","timeframeMode":"timeless","transforms":[{"id":"value"},{"id":"distance"},{"id":"spread","operandRequired":true}],"spreadOperands":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","SPOT_CLOSE_CB","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},
-{"metric":"SPOT_CLOSE_CB","label":"Spot close (Coinbase)","code":"cbClose","family":"price","nativeOutput":{"kind":"numeric","unit":"price","precision":2},"outputKind":"scalar","timeframeMode":"timeless","transforms":[{"id":"value"},{"id":"distance"},{"id":"spread","operandRequired":true}],"spreadOperands":["OPEN","HIGH","LOW","CLOSE","LAST","MARK","ORACLE","SPOT_CLOSE_BN","SMA20","SMA50","SMA200","EMA5","EMA13","EMA20","SWING_HIGH","SWING_LOW","VWAP"]},
-{"metric":"BAR_FORMING","label":"Bar state","code":"bar","family":"price","nativeOutput":{"kind":"classification","vocab":["forming","closed"]},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"}]},
-{"metric":"RSI14","label":"RSI (14)","code":"RSI14","family":"momentum","nativeOutput":{"kind":"numeric","unit":"oscillator","precision":1,"range":{"min":0,"max":100}},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"classifyZone"},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"efficiency"},{"id":"maxShare"},{"id":"rank"}],"spreadOperands":["RSI7","STOCH_K","STOCH_D","MFI14","CCI20","ADX"],"rankOrderings":["hi","lo"]},
-{"metric":"MACD","label":"MACD histogram","code":"MACD","family":"momentum","nativeOutput":{"kind":"numeric","unit":"signedPrice","precision":4},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"crossDetect"},{"id":"efficiency"}],"spreadOperands":["ATR","BB_WIDTH","CVD","SPOT_CVD"]},
-{"metric":"CLOSE_CHANGE","label":"Close change","code":"closeChg","family":"momentum","nativeOutput":{"kind":"numeric","unit":"percent","precision":2},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"efficiency"},{"id":"rank"}],"spreadOperands":["PPO","ROC12","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"],"rankOrderings":["far","near"]},
-{"metric":"CHG_1H","label":"Change (1h)","code":"chg1h","family":"momentum","nativeOutput":{"kind":"numeric","unit":"percent","precision":2},"outputKind":"scalar","timeframeMode":"timeless","transforms":[{"id":"value"},{"id":"spread","operandRequired":true}],"spreadOperands":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_RATE","FUNDING_ANN","OI_CHG"]},
-{"metric":"ADX","label":"ADX (14)","code":"ADX","family":"trend","nativeOutput":{"kind":"numeric","unit":"oscillator","precision":1,"range":{"min":0,"max":100}},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"classifyZone"},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"efficiency"},{"id":"maxShare"},{"id":"rank"}],"spreadOperands":["RSI14","RSI7","STOCH_K","STOCH_D","MFI14","CCI20"],"rankOrderings":["hi","lo"]},
-{"metric":"VOLUME","label":"Volume","code":"volBase","family":"volumeFlow","nativeOutput":{"kind":"numeric","unit":"largeCount","precision":1,"range":{"min":0}},"outputKind":"scalar","timeframeMode":"candle","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"spread","operandRequired":true,"chainSuccessors":["trajectory","aggregate","efficiency"]},{"id":"efficiency"},{"id":"maxShare"}],"spreadOperands":["VOL_SMA20","BUY_VOLUME","SELL_VOLUME","OBV"]},
-{"metric":"FUNDING_RATE","label":"Funding rate","code":"rate","family":"derivatives","nativeOutput":{"kind":"numeric","unit":"percent","precision":4},"outputKind":"scalar","timeframeMode":"timeless","transforms":[{"id":"value"},{"id":"trajectory"},{"id":"spread","operandRequired":true},{"id":"aggregate"},{"id":"efficiency"},{"id":"rank"}],"spreadOperands":["PPO","ROC12","CLOSE_CHANGE","CHG_5M","CHG_15M","CHG_1H","CHG_4H","CHG_24H","ATR_PCT","BB_WIDTH_PCT","HIGH_DEV","LOW_DEV","FUNDING_ANN","OI_CHG"],"rankOrderings":["hi","lo","far","near"]},
-{"metric":"STRUCT_ZONES","label":"Structure zones","code":"zones","family":"structure","nativeOutput":{"kind":"entitySet","entity":"structureZone"},"outputKind":"entitySet","timeframeMode":"candle","transforms":[{"id":"count"},{"id":"nearestZoneType","sideRequired":true},{"id":"nearestZoneRange","sideRequired":true},{"id":"nearestZoneDist","sideRequired":true},{"id":"nearestZoneAge","sideRequired":true}]}
+  {
+    "metric": "ADX",
+    "label": "ADX (14)",
+    "code": "ADX",
+    "family": "trend",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "oscillator",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "classifyZone"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "maxShare"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "RSI14",
+      "RSI7",
+      "RSI2",
+      "STOCH_K",
+      "STOCH_D",
+      "MFI14",
+      "CCI20",
+      "WT1",
+      "WT2",
+      "QQE_RSI_MA",
+      "QQE_STOP",
+      "WILLR14",
+      "DI_PLUS",
+      "DI_MINUS",
+      "REGIME_TREND_MARGIN",
+      "REGIME_DI_SPREAD"
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "ATR",
+    "label": "ATR (14)",
+    "code": "ATR",
+    "family": "volatility",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "signedPrice",
+      "precision": 4
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      }
+    ],
+    "spreadOperands": [
+      "MACD",
+      "BB_WIDTH",
+      "CVD",
+      "SPOT_CVD"
+    ]
+  },
+  {
+    "metric": "ATR_PCT",
+    "label": "ATR % of price",
+    "code": "atrPct",
+    "family": "volatility",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CLOSE_CHANGE",
+      "CHG_5M",
+      "CHG_15M",
+      "CHG_1H",
+      "CHG_4H",
+      "CHG_24H",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo",
+      "far",
+      "near"
+    ]
+  },
+  {
+    "metric": "BAR_FORMING",
+    "label": "Bar state",
+    "code": "bar",
+    "family": "price",
+    "nativeOutput": {
+      "kind": "classification",
+      "vocab": [
+        "forming",
+        "closed"
+      ]
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      }
+    ]
+  },
+  {
+    "metric": "BB_LOWER",
+    "label": "Bollinger lower band",
+    "code": "bbLower",
+    "family": "structure",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "price",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "distance",
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "bandTouch"
+      }
+    ],
+    "spreadOperands": [
+      "OPEN",
+      "HIGH",
+      "LOW",
+      "CLOSE",
+      "LAST",
+      "MARK",
+      "ORACLE",
+      "SPOT_CLOSE_CB",
+      "SPOT_CLOSE_BN",
+      "SMA20",
+      "SMA50",
+      "SMA200",
+      "EMA5",
+      "EMA13",
+      "EMA20",
+      "EMA9",
+      "EMA21",
+      "EMA50",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_LOWER",
+      "VWAP",
+      "TPO_POC",
+      "TPO_VAH",
+      "TPO_VAL",
+      "TPO_IB_HIGH",
+      "TPO_IB_LOW",
+      "PRIOR_TPO_POC",
+      "PRIOR_TPO_VAH",
+      "PRIOR_TPO_VAL",
+      "BB_UPPER",
+      "KC_UPPER",
+      "KC_MID",
+      "KC_LOWER",
+      "ST_LINE",
+      "HMA20",
+      "PSAR",
+      "ICHI_CONV",
+      "ICHI_BASE",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "ICHI_LAG",
+      "PIVOT_P",
+      "PIVOT_R1",
+      "PIVOT_R2",
+      "PIVOT_R3",
+      "PIVOT_S1",
+      "PIVOT_S2",
+      "PDH",
+      "PDL",
+      "PIVOT_S3"
+    ]
+  },
+  {
+    "metric": "BB_PCT_B",
+    "label": "Bollinger %B",
+    "code": "pctB",
+    "family": "structure",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "fraction",
+      "precision": 2,
+      "range": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "maxShare"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "STOCH_RSI14",
+      "BUY_PRESSURE"
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "BB_TOUCH",
+    "label": "Band touch",
+    "code": "BBtouch",
+    "family": "structure",
+    "nativeOutput": {
+      "kind": "classification",
+      "vocab": [
+        "upper",
+        "lower",
+        "none"
+      ]
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      }
+    ]
+  },
+  {
+    "metric": "BB_UPPER",
+    "label": "Bollinger upper band",
+    "code": "bbUpper",
+    "family": "structure",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "price",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "distance",
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "bandTouch"
+      }
+    ],
+    "spreadOperands": [
+      "OPEN",
+      "HIGH",
+      "LOW",
+      "CLOSE",
+      "LAST",
+      "MARK",
+      "ORACLE",
+      "SPOT_CLOSE_CB",
+      "SPOT_CLOSE_BN",
+      "SMA20",
+      "SMA50",
+      "SMA200",
+      "EMA5",
+      "EMA13",
+      "EMA20",
+      "EMA9",
+      "EMA21",
+      "EMA50",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_LOWER",
+      "VWAP",
+      "TPO_POC",
+      "TPO_VAH",
+      "TPO_VAL",
+      "TPO_IB_HIGH",
+      "TPO_IB_LOW",
+      "PRIOR_TPO_POC",
+      "PRIOR_TPO_VAH",
+      "PRIOR_TPO_VAL",
+      "BB_LOWER",
+      "KC_UPPER",
+      "KC_MID",
+      "KC_LOWER",
+      "ST_LINE",
+      "HMA20",
+      "PSAR",
+      "ICHI_CONV",
+      "ICHI_BASE",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "ICHI_LAG",
+      "PIVOT_P",
+      "PIVOT_R1",
+      "PIVOT_R2",
+      "PIVOT_R3",
+      "PIVOT_S1",
+      "PIVOT_S2",
+      "PDH",
+      "PDL",
+      "PIVOT_S3"
+    ]
+  },
+  {
+    "metric": "BB_WIDTH",
+    "label": "Bollinger width",
+    "code": "BBwidth",
+    "family": "volatility",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "signedPrice",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      }
+    ],
+    "spreadOperands": [
+      "MACD",
+      "ATR",
+      "CVD",
+      "SPOT_CVD"
+    ]
+  },
+  {
+    "metric": "BB_WIDTH_PCT",
+    "label": "Bollinger width % of middle",
+    "code": "bbWidthPct",
+    "family": "volatility",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CLOSE_CHANGE",
+      "CHG_5M",
+      "CHG_15M",
+      "CHG_1H",
+      "CHG_4H",
+      "CHG_24H",
+      "ATR_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo",
+      "far",
+      "near"
+    ]
+  },
+  {
+    "metric": "BUY_PRESSURE",
+    "label": "Buy pressure",
+    "code": "buyPres",
+    "family": "volumeFlow",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "fraction",
+      "precision": 2,
+      "range": {
+        "min": 0,
+        "max": 1
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "maxShare"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "BB_PCT_B",
+      "STOCH_RSI14"
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "BUY_TRADES",
+    "label": "Buy trades",
+    "code": "buyTr",
+    "family": "volumeFlow",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "count",
+      "precision": 0,
+      "range": {
+        "min": 0
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "maxShare"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "TRADES",
+      "SELL_TRADES",
+      "REGIME_RUN_BARS",
+      "REGIME_MOM_BULL_VOTES",
+      "REGIME_MOM_BEAR_VOTES"
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "BUY_VOLUME",
+    "label": "Buy volume",
+    "code": "buyVol",
+    "family": "volumeFlow",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "largeCount",
+      "precision": 1,
+      "range": {
+        "min": 0
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "maxShare"
+      }
+    ],
+    "spreadOperands": [
+      "VOLUME",
+      "VOL_SMA20",
+      "SELL_VOLUME",
+      "OBV"
+    ]
+  },
+  {
+    "metric": "CAPTAIN_CONF",
+    "label": "Captain confidence",
+    "code": "captainConf",
+    "family": "derived",
+    "nativeOutput": {
+      "kind": "boolean"
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      }
+    ]
+  },
+  {
+    "metric": "CCI20",
+    "label": "CCI (20)",
+    "code": "CCI",
+    "family": "momentum",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "oscillator",
+      "precision": 1
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "classifyZone"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "RSI14",
+      "RSI7",
+      "RSI2",
+      "STOCH_K",
+      "STOCH_D",
+      "MFI14",
+      "ADX",
+      "WT1",
+      "WT2",
+      "QQE_RSI_MA",
+      "QQE_STOP",
+      "WILLR14",
+      "DI_PLUS",
+      "DI_MINUS",
+      "REGIME_TREND_MARGIN",
+      "REGIME_DI_SPREAD"
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo",
+      "far",
+      "near"
+    ],
+    "_note": "2026-08-24 note said classifyZone was NOT authorable on CCI20 though the platform's own includeBollingerBands template used it. LIFTED: classifyZone is offered on CCI20 as of the 2026-09-09 sweep, and CCI20 x classifyZone is no longer a platform-privileged pair."
+  },
+  {
+    "metric": "CHG_15M",
+    "label": "Change (15m)",
+    "code": "chg15m",
+    "family": "momentum",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CLOSE_CHANGE",
+      "CHG_5M",
+      "CHG_1H",
+      "CHG_4H",
+      "CHG_24H",
+      "ATR_PCT",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ]
+  },
+  {
+    "metric": "CHG_1H",
+    "label": "Change (1h)",
+    "code": "chg1h",
+    "family": "momentum",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CLOSE_CHANGE",
+      "CHG_5M",
+      "CHG_15M",
+      "CHG_4H",
+      "CHG_24H",
+      "ATR_PCT",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ]
+  },
+  {
+    "metric": "CHG_24H",
+    "label": "Change (24h)",
+    "code": "chg24h",
+    "family": "momentum",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CLOSE_CHANGE",
+      "CHG_5M",
+      "CHG_15M",
+      "CHG_1H",
+      "CHG_4H",
+      "ATR_PCT",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ]
+  },
+  {
+    "metric": "CHG_4H",
+    "label": "Change (4h)",
+    "code": "chg4h",
+    "family": "momentum",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CLOSE_CHANGE",
+      "CHG_5M",
+      "CHG_15M",
+      "CHG_1H",
+      "CHG_24H",
+      "ATR_PCT",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ]
+  },
+  {
+    "metric": "CHG_5M",
+    "label": "Change (5m)",
+    "code": "chg5m",
+    "family": "momentum",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CLOSE_CHANGE",
+      "CHG_15M",
+      "CHG_1H",
+      "CHG_4H",
+      "CHG_24H",
+      "ATR_PCT",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ]
+  },
+  {
+    "metric": "CLOSE",
+    "label": "Close price",
+    "code": "close",
+    "family": "price",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "price",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "distance",
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "bandTouch"
+      }
+    ],
+    "spreadOperands": [
+      "OPEN",
+      "HIGH",
+      "LOW",
+      "LAST",
+      "MARK",
+      "ORACLE",
+      "SPOT_CLOSE_CB",
+      "SPOT_CLOSE_BN",
+      "SMA20",
+      "SMA50",
+      "SMA200",
+      "EMA5",
+      "EMA13",
+      "EMA20",
+      "EMA9",
+      "EMA21",
+      "EMA50",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_LOWER",
+      "VWAP",
+      "TPO_POC",
+      "TPO_VAH",
+      "TPO_VAL",
+      "TPO_IB_HIGH",
+      "TPO_IB_LOW",
+      "PRIOR_TPO_POC",
+      "PRIOR_TPO_VAH",
+      "PRIOR_TPO_VAL",
+      "BB_UPPER",
+      "BB_LOWER",
+      "KC_UPPER",
+      "KC_MID",
+      "KC_LOWER",
+      "ST_LINE",
+      "HMA20",
+      "PSAR",
+      "ICHI_CONV",
+      "ICHI_BASE",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "ICHI_LAG",
+      "PIVOT_P",
+      "PIVOT_R1",
+      "PIVOT_R2",
+      "PIVOT_R3",
+      "PIVOT_S1",
+      "PIVOT_S2",
+      "PDH",
+      "PDL",
+      "PIVOT_S3"
+    ]
+  },
+  {
+    "metric": "CLOSE_CHANGE",
+    "label": "Close change",
+    "code": "closeChg",
+    "family": "momentum",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 2
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "candle",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "trajectory"
+      },
+      {
+        "id": "spread",
+        "operandRequired": true,
+        "chainSuccessors": [
+          "trajectory",
+          "aggregate",
+          "efficiency"
+        ]
+      },
+      {
+        "id": "aggregate"
+      },
+      {
+        "id": "efficiency"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "spreadOperands": [
+      "PPO",
+      "ROC12",
+      "CHG_5M",
+      "CHG_15M",
+      "CHG_1H",
+      "CHG_4H",
+      "CHG_24H",
+      "ATR_PCT",
+      "BB_WIDTH_PCT",
+      "HIGH_DEV",
+      "LOW_DEV",
+      "FUNDING_RATE",
+      "FUNDING_ANN",
+      "OI_CHG",
+      "REGIME_CRASH_MARGIN"
+    ],
+    "rankOrderings": [
+      "far",
+      "near"
+    ]
+  },
+  {
+    "metric": "CONFIDENCE",
+    "label": "Convergence confidence",
+    "code": "conf",
+    "family": "derived",
+    "nativeOutput": {
+      "kind": "classification",
+      "vocab": [
+        "high",
+        "moderate",
+        "low"
+      ]
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      }
+    ]
+  },
+  {
+    "metric": "CROWD_ACC",
+    "label": "Crowd accuracy",
+    "code": "crowdAcc",
+    "family": "crowd",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "CROWD_ACC_LIVE",
+    "label": "Crowd accuracy (live)",
+    "code": "crowdAccLive",
+    "family": "crowd",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "CROWD_CAPT",
+    "label": "Crowd captain rate",
+    "code": "captRate",
+    "family": "crowd",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "CROWD_CAPT_LIVE",
+    "label": "Crowd captain rate (live)",
+    "code": "captRateLive",
+    "family": "crowd",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "CROWD_PICK",
+    "label": "Crowd pick rate",
+    "code": "pick",
+    "family": "crowd",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "CROWD_PICK_LIVE",
+    "label": "Crowd pick rate (live)",
+    "code": "pickLive",
+    "family": "crowd",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  },
+  {
+    "metric": "CROWD_UPBIAS",
+    "label": "Crowd up-bias",
+    "code": "upBias",
+    "family": "crowd",
+    "nativeOutput": {
+      "kind": "numeric",
+      "unit": "percent",
+      "precision": 1,
+      "range": {
+        "min": 0,
+        "max": 100
+      }
+    },
+    "outputKind": "scalar",
+    "timeframeMode": "timeless",
+    "transforms": [
+      {
+        "id": "value"
+      },
+      {
+        "id": "rank"
+      }
+    ],
+    "rankOrderings": [
+      "hi",
+      "lo"
+    ]
+  }
 ]

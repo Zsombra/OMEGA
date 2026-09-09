@@ -1,0 +1,20 @@
+{
+  "metric": "ST_DIR",
+  "label": "Supertrend direction",
+  "code": "stDir",
+  "family": "trend",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "bullish",
+      "bearish"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

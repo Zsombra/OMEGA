@@ -31,6 +31,9 @@
       ]
     },
     {
+      "id": "aggregate"
+    },
+    {
       "id": "efficiency"
     },
     {
@@ -41,6 +44,7 @@
     }
   ],
   "spreadOperands": [
+    "STOCH_RSI14",
     "BUY_PRESSURE"
   ],
   "rankOrderings": [

@@ -1,0 +1,29 @@
+{
+  "metric": "REGIME_MOM_BULL_VOTES",
+  "label": "Regime · bullish votes",
+  "code": "regBull",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
+  ],
+  "spreadOperands": [
+    "TRADES",
+    "BUY_TRADES",
+    "SELL_TRADES",
+    "REGIME_RUN_BARS",
+    "REGIME_MOM_BEAR_VOTES"
+  ]
+}

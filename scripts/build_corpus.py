@@ -22,22 +22,36 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "data" / "contract"
 DERIVED = ROOT / "data" / "derived"
 
-# The authoritative 86-metric roster, taken verbatim from the `metric` enum in the
-# get_metric_construction_hints JSON Schema published by the connector.
+# The authoritative 144-metric roster, taken verbatim from the `metric` enum in the live
+# compile_strategy_plan JSON Schema (contract 54.1.0, 2026-09-09) and cross-checked against
+# list_strategy_vocabulary across all ten categories - the two agree exactly. Was 86 on
+# 2026-08-24 and 135 on 2026-09-05; SWING_HIGH/SWING_LOW were RENAMED to
+# DONCHIAN_UPPER/DONCHIAN_LOWER at contract 53.0.0 and nine TPO (market-profile) metrics
+# plus the two Donchian edges arrived by 54.1.0.
 METRIC_ENUM = [
     "OPEN", "HIGH", "LOW", "CLOSE", "LAST", "MARK", "ORACLE", "SPOT_CLOSE_CB",
-    "SPOT_CLOSE_BN", "BAR_FORMING", "RSI14", "RSI7", "MACD", "STOCH_K", "STOCH_D",
+    "SPOT_CLOSE_BN", "BAR_FORMING", "RSI14", "RSI7", "RSI2", "MACD", "STOCH_K", "STOCH_D",
     "MFI14", "PPO", "ROC12", "CCI20", "CLOSE_CHANGE", "CHG_5M", "CHG_15M", "CHG_1H",
     "CHG_4H", "CHG_24H", "ADX", "SMA20", "SMA50", "SMA200", "EMA5", "EMA13", "EMA20",
-    "EMA_CROSS", "MA_ALIGN", "ATR", "ATR_PCT", "BB_WIDTH", "BB_WIDTH_PCT", "HIGH_DEV",
-    "LOW_DEV", "BB_PCT_B", "SWING_HIGH", "SWING_LOW", "VWAP", "PRICE_ZONE", "BB_TOUCH",
-    "STRUCT_ZONES", "VOLUME", "VOL_SMA20", "TRADES", "BUY_VOLUME", "SELL_VOLUME",
-    "NOTIONAL_VOLUME_1D", "RVOL", "OBV", "CVD", "SPOT_CVD", "BUY_PRESSURE", "BUY_TRADES",
-    "SELL_TRADES", "FUNDING_RATE", "FUNDING_ANN", "FUNDING_LABEL", "OI", "OI_CHG",
-    "OI_VELOCITY", "OI_PX_REGIME", "REGIME_TREND", "REGIME_VOL", "REGIME_MOM",
-    "CROWD_PICK", "CROWD_UPBIAS", "CROWD_ACC", "CROWD_CAPT", "CROWD_PICK_LIVE",
-    "CROWD_UPBIAS_LIVE", "CROWD_ACC_LIVE", "CROWD_CAPT_LIVE", "SETTLED_AT", "FLOW_ALIGN",
-    "SMART_RETAIL", "CAPTAIN_CONF", "CONFIDENCE", "PERP_SPOT_FLOW", "PERP_SPOT_STRENGTH",
+    "EMA9", "EMA21", "EMA50", "EMA_CROSS", "MA_ALIGN", "ATR", "ATR_PCT", "BB_WIDTH",
+    "BB_WIDTH_PCT", "KC_SQUEEZE", "HIGH_DEV", "LOW_DEV", "BB_PCT_B", "DONCHIAN_UPPER",
+    "DONCHIAN_LOWER", "VWAP", "PRICE_ZONE", "BB_TOUCH", "STRUCT_ZONES", "TPO_POC",
+    "TPO_VAH", "TPO_VAL", "TPO_IB_HIGH", "TPO_IB_LOW", "TPO_SHAPE", "PRIOR_TPO_POC",
+    "PRIOR_TPO_VAH", "PRIOR_TPO_VAL", "BB_UPPER", "BB_LOWER", "KC_UPPER", "KC_MID",
+    "KC_LOWER", "ST_LINE", "ST_DIR", "HMA20", "WT1", "WT2", "QQE_RSI_MA", "QQE_STOP",
+    "PSAR", "ICHI_CONV", "ICHI_BASE", "ICHI_SPAN_A", "ICHI_SPAN_B", "ICHI_LAG", "WILLR14",
+    "STOCH_RSI14", "PIVOT_P", "PIVOT_R1", "PIVOT_R2", "PIVOT_R3", "PIVOT_S1", "PIVOT_S2",
+    "PDH", "PDL", "PIVOT_S3", "DI_PLUS", "DI_MINUS", "VOLUME", "VOL_SMA20", "TRADES",
+    "BUY_VOLUME", "SELL_VOLUME", "NOTIONAL_VOLUME_1D", "RVOL", "OBV", "CVD", "SPOT_CVD",
+    "BUY_PRESSURE", "BUY_TRADES", "SELL_TRADES", "FUNDING_RATE", "FUNDING_ANN",
+    "FUNDING_LABEL", "OI", "OI_CHG", "OI_VELOCITY", "OI_PX_REGIME", "REGIME_TREND",
+    "REGIME_VOL", "REGIME_MOM", "REGIME_STATE", "REGIME_CONVICTION", "REGIME_RUN_BARS",
+    "REGIME_TREND_GATE", "REGIME_TREND_MARGIN", "REGIME_TREND_SOURCE", "REGIME_DI_SPREAD",
+    "REGIME_VOL_ATR_RATIO", "REGIME_VOL_BBW_RATIO", "REGIME_MOM_BULL_VOTES",
+    "REGIME_MOM_BEAR_VOTES", "REGIME_CRASH_MARGIN", "REGIME_CRASH_LATCH", "CROWD_PICK",
+    "CROWD_UPBIAS", "CROWD_ACC", "CROWD_CAPT", "CROWD_PICK_LIVE", "CROWD_UPBIAS_LIVE",
+    "CROWD_ACC_LIVE", "CROWD_CAPT_LIVE", "SETTLED_AT", "FLOW_ALIGN", "SMART_RETAIL",
+    "CAPTAIN_CONF", "CONFIDENCE", "PERP_SPOT_FLOW", "PERP_SPOT_STRENGTH",
     "PERP_SPOT_CONFIRMS",
 ]
 
@@ -84,7 +98,7 @@ def verify(records: dict, categories: dict) -> None:
             raise SystemExit(
                 f"family '{fam}': connector declares {count}, corpus holds {actual[fam]}"
             )
-    print(f"OK  86/86 metrics; all 10 family counts reconcile with the connector")
+    print(f"OK  {len(records)}/{len(METRIC_ENUM)} metrics; all {len(categories['categories'])} family counts reconcile with the connector")
 
 
 def build_composability(records: dict, shared: dict) -> list[dict]:

@@ -1,0 +1,23 @@
+{
+  "metric": "REGIME_CONVICTION",
+  "label": "Regime · conviction",
+  "code": "regConv",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "maximum",
+      "high",
+      "medium",
+      "low",
+      "uncertain"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

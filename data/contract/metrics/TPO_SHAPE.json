@@ -1,0 +1,21 @@
+{
+  "metric": "TPO_SHAPE",
+  "label": "TPO profile shape",
+  "code": "tpoShape",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "p-shape",
+      "b-shape",
+      "balanced"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

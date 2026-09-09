@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -11,12 +12,20 @@ from omega.membership import (
 )
 from omega.types import Column, CustomSection, Report, Rule
 
+# Metrics added to the platform after the August live sweeps. Their live behaviour has
+# NOT been measured, so they are excluded from coverage assertions by name rather than
+# silently assumed to behave like the rest. See data/derived/unmeasured_metrics.json.
+UNMEASURED = set(json.loads(
+    (Path(__file__).resolve().parents[1] / "data/derived/unmeasured_metrics.json")
+    .read_text(encoding="utf-8"))["unmeasured"])
+
 MAP = json.loads((DERIVED_DIR / "signal_module_map.json").read_text(encoding="utf-8"))
 PROBES = [p for p in MAP["probes"] if "metrics" in p]
 CONTRACT = load()
 
 # simplest legal transform per metric, so probe replay builds valid columns
 SPECIAL = {"STRUCT_ZONES": "count"}
+
 
 
 def _report(metrics) -> Report:
@@ -62,12 +71,17 @@ def test_every_mapped_metric_exists_in_corpus():
             assert m in CONTRACT.metrics, f"{module} references unknown metric {m}"
 
 
-def test_mapped_plus_dead_covers_all_86_metrics():
+def test_mapped_plus_dead_plus_unmeasured_covers_the_corpus():
     mapped = {m for v in MAP["moduleSatisfiedBy"].values() for m in v}
     dead = set(MAP["metricsSatisfyingNoModule"])
     assert not (mapped & dead), f"metric both mapped and dead: {mapped & dead}"
-    assert mapped | dead == set(CONTRACT.metrics), (
-        f"unaccounted metrics: {set(CONTRACT.metrics) - (mapped | dead)}")
+    # The module map was probed live against the 86-metric roster of 2026-08-24. The
+    # corpus is now 144; the 58 metrics added since have NOT been probed, so they are
+    # accounted for explicitly rather than counted as "mapped to no module" - which
+    # would be an unmeasured claim wearing a measured answer's clothes.
+    assert not (mapped & UNMEASURED), "an unmeasured metric cannot already be mapped"
+    assert mapped | dead | UNMEASURED == set(CONTRACT.metrics), (
+        f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - (mapped | dead | UNMEASURED))}")
 
 
 def test_coverage_counts_are_accurate():

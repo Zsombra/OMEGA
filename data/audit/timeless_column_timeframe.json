@@ -1,53 +1,147 @@
 {
-  "_probe": "Does a timeframe-inert (bundle-read) metric accept a column-level timeframe other than {rel:'anchor'}?",
-  "_why": "omega/validate.py enforced the timeless rule only at SECTION level (a section carrying a `timeframe` override). The column's OWN timeframe was never checked, so omega accepted three shapes the platform refuses. Found while searching for REGIME_MOM's rule - the search needed REGIME_MOM at the regime timeframe and the platform refused to render it.",
-  "date": "2026-08-26",
-  "anchor": "1h",
-  "metric": "REGIME_MOM",
-  "transformId": "value",
-  "probes": [
-    {
-      "timeframe": { "rel": "anchor" },
-      "result": "ACCEPTED",
-      "evidence": "rendered for all 78 coins, data/samples/tier_c_drivers_1h.md"
-    },
-    {
-      "timeframe": { "rel": "lower" },
-      "result": "REJECTED",
-      "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not 'lower'"
-    },
-    {
-      "timeframe": { "rel": "regime" },
-      "result": "REJECTED",
-      "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not 'regime'"
-    },
-    {
-      "timeframe": { "abs": "4h" },
-      "result": "REJECTED",
-      "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not '4h'"
-    },
-    {
-      "timeframe": { "abs": "1h" },
-      "result": "REJECTED",
-      "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not '1h'",
-      "significance": "THE DECIDING PROBE. The anchor IS 1h, so this resolves to exactly the anchor timeframe and is still refused. The constraint is syntactic, not semantic: the column timeframe must be the literal reference {rel:'anchor'}, not merely something equal to it. Inferring the rule from the 'regime' message alone would have produced a validator that wrongly passes {abs:<anchor>}."
-    }
-  ],
-  "rule": "A metric with timeframeMode == 'timeless' accepts exactly one column timeframe: {\"rel\": \"anchor\"}. Every other rel, and every abs - including an abs equal to the anchor - is refused with REPORT_COLUMN_CONSTRUCTION_FAILED. The error's allowedDomain lists 'offset' as the only remaining free column parameter.",
-  "affectedMetrics": {
-    "count": 40,
-    "note": "every metric whose timeframeMode is 'timeless'; omega previously accepted a non-anchor column timeframe on all of them",
-    "metrics": [
-      "CAPTAIN_CONF", "CHG_15M", "CHG_1H", "CHG_24H", "CHG_4H", "CHG_5M",
-      "CONFIDENCE", "CROWD_ACC", "CROWD_ACC_LIVE", "CROWD_CAPT", "CROWD_CAPT_LIVE",
-      "CROWD_PICK", "CROWD_PICK_LIVE", "CROWD_UPBIAS", "CROWD_UPBIAS_LIVE",
-      "FLOW_ALIGN", "FUNDING_ANN", "FUNDING_LABEL", "FUNDING_RATE", "HIGH_DEV",
-      "LAST", "LOW_DEV", "MARK", "NOTIONAL_VOLUME_1D", "OI", "OI_CHG",
-      "OI_PX_REGIME", "OI_VELOCITY", "ORACLE", "PERP_SPOT_CONFIRMS",
-      "PERP_SPOT_FLOW", "PERP_SPOT_STRENGTH", "REGIME_MOM", "REGIME_TREND",
-      "REGIME_VOL", "SETTLED_AT", "SMART_RETAIL", "SPOT_CLOSE_BN",
-      "SPOT_CLOSE_CB", "SPOT_CVD"
-    ]
+ "_probe": "Does a timeframe-inert (bundle-read) metric accept a column-level timeframe other than {rel:'anchor'}?",
+ "_why": "omega/validate.py enforced the timeless rule only at SECTION level (a section carrying a `timeframe` override). The column's OWN timeframe was never checked, so omega accepted three shapes the platform refuses. Found while searching for REGIME_MOM's rule - the search needed REGIME_MOM at the regime timeframe and the platform refused to render it.",
+ "date": "2026-08-26",
+ "anchor": "1h",
+ "metric": "REGIME_MOM",
+ "transformId": "value",
+ "probes": [
+  {
+   "timeframe": {
+    "rel": "anchor"
+   },
+   "result": "ACCEPTED",
+   "evidence": "rendered for all 78 coins, data/samples/tier_c_drivers_1h.md"
   },
-  "defectClass": "OMEGA, not BattleGrid. The platform enforces this correctly and says so clearly. This was a false negative in omega's own validator - it would have emitted a column the platform refuses. Fixed in omega/validate.py; guarded by tests/test_timeless_timeframe.py."
+  {
+   "timeframe": {
+    "rel": "lower"
+   },
+   "result": "REJECTED",
+   "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not 'lower'"
+  },
+  {
+   "timeframe": {
+    "rel": "regime"
+   },
+   "result": "REJECTED",
+   "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not 'regime'"
+  },
+  {
+   "timeframe": {
+    "abs": "4h"
+   },
+   "result": "REJECTED",
+   "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not '4h'"
+  },
+  {
+   "timeframe": {
+    "abs": "1h"
+   },
+   "result": "REJECTED",
+   "message": "[column-grammar] metric 'regMom' is timeframe-inert (a bundle read) - it accepts only the anchor timeframe reference, not '1h'",
+   "significance": "THE DECIDING PROBE. The anchor IS 1h, so this resolves to exactly the anchor timeframe and is still refused. The constraint is syntactic, not semantic: the column timeframe must be the literal reference {rel:'anchor'}, not merely something equal to it. Inferring the rule from the 'regime' message alone would have produced a validator that wrongly passes {abs:<anchor>}."
+  }
+ ],
+ "rule": "A metric with timeframeMode == 'timeless' accepts exactly one column timeframe: {\"rel\": \"anchor\"}. Every other rel, and every abs - including an abs equal to the anchor - is refused with REPORT_COLUMN_CONSTRUCTION_FAILED. The error's allowedDomain lists 'offset' as the only remaining free column parameter.",
+ "affectedMetrics": {
+  "count": 62,
+  "metrics": [
+   "CAPTAIN_CONF",
+   "CHG_15M",
+   "CHG_1H",
+   "CHG_24H",
+   "CHG_4H",
+   "CHG_5M",
+   "CONFIDENCE",
+   "CROWD_ACC",
+   "CROWD_ACC_LIVE",
+   "CROWD_CAPT",
+   "CROWD_CAPT_LIVE",
+   "CROWD_PICK",
+   "CROWD_PICK_LIVE",
+   "CROWD_UPBIAS",
+   "CROWD_UPBIAS_LIVE",
+   "FLOW_ALIGN",
+   "FUNDING_ANN",
+   "FUNDING_LABEL",
+   "FUNDING_RATE",
+   "HIGH_DEV",
+   "LAST",
+   "LOW_DEV",
+   "MARK",
+   "NOTIONAL_VOLUME_1D",
+   "OI",
+   "OI_CHG",
+   "OI_PX_REGIME",
+   "OI_VELOCITY",
+   "ORACLE",
+   "PERP_SPOT_CONFIRMS",
+   "PERP_SPOT_FLOW",
+   "PERP_SPOT_STRENGTH",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "REGIME_CONVICTION",
+   "REGIME_CRASH_LATCH",
+   "REGIME_CRASH_MARGIN",
+   "REGIME_DI_SPREAD",
+   "REGIME_MOM",
+   "REGIME_MOM_BEAR_VOTES",
+   "REGIME_MOM_BULL_VOTES",
+   "REGIME_RUN_BARS",
+   "REGIME_STATE",
+   "REGIME_TREND",
+   "REGIME_TREND_GATE",
+   "REGIME_TREND_MARGIN",
+   "REGIME_TREND_SOURCE",
+   "REGIME_VOL",
+   "REGIME_VOL_ATR_RATIO",
+   "REGIME_VOL_BBW_RATIO",
+   "SETTLED_AT",
+   "SMART_RETAIL",
+   "SPOT_CLOSE_BN",
+   "SPOT_CLOSE_CB",
+   "SPOT_CVD",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "TPO_POC",
+   "TPO_SHAPE",
+   "TPO_VAH",
+   "TPO_VAL"
+  ],
+  "note": "every metric whose timeframeMode is 'timeless'; omega previously accepted a non-anchor column timeframe on all of them",
+  "_scope": {
+   "measuredOn": "2026-08-24 roster (86 metrics, 40 of them timeless) - the 5 probes below",
+   "regeneratedAt": "2026-09-09 against the 144-metric corpus (contract 54.1.0)",
+   "addedSinceTheProbes": [
+    "PRIOR_TPO_POC",
+    "PRIOR_TPO_VAH",
+    "PRIOR_TPO_VAL",
+    "REGIME_CONVICTION",
+    "REGIME_CRASH_LATCH",
+    "REGIME_CRASH_MARGIN",
+    "REGIME_DI_SPREAD",
+    "REGIME_MOM_BEAR_VOTES",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_RUN_BARS",
+    "REGIME_STATE",
+    "REGIME_TREND_GATE",
+    "REGIME_TREND_MARGIN",
+    "REGIME_TREND_SOURCE",
+    "REGIME_VOL_ATR_RATIO",
+    "REGIME_VOL_BBW_RATIO",
+    "TPO_IB_HIGH",
+    "TPO_IB_LOW",
+    "TPO_POC",
+    "TPO_SHAPE",
+    "TPO_VAH",
+    "TPO_VAL"
+   ],
+   "addedSinceTheProbesCount": 22,
+   "_honesty": "The list is regenerated from the contract because timeframeMode is a contract fact, and the rule under test is syntactic - it follows from timeframeMode alone. The metrics listed under addedSinceTheProbes were NOT exercised by the 2026-08-26 probes; omega applies the rule to them by construction, which is a consequence of the rule's shape, not a live measurement of the platform refusing them.",
+   "allAddedAreUnmeasured": true
+  }
+ },
+ "defectClass": "OMEGA, not BattleGrid. The platform enforces this correctly and says so clearly. This was a false negative in omega's own validator - it would have emitted a column the platform refuses. Fixed in omega/validate.py; guarded by tests/test_timeless_timeframe.py."
 }

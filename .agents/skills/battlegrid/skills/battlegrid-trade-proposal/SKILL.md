@@ -23,6 +23,9 @@ re-sorts a list, re-derives a verdict, or approves on the player's behalf.
 - Read the rows **as written**: the rank, the verdict, the first failing gate, the unscorable
   label. Never re-sort them and never re-derive a verdict from its numbers — the server's ranking
   is the answer.
+- The scan is the **ranking** answer, not the full gate detail. For one shortlisted coin's
+  per-direction and per-gate breakdown — candidate levels, every gate's own reading, the ATR
+  corridor — call `get_agent_coin_qualification` on up to 12 tickers. Never re-scan for it.
 - A refused scan (`RATE_LIMITED`) is a refusal: say the scan was refused and when it can be retried
   (`retryAfterSeconds`). Never say "nothing fits".
 

@@ -1,0 +1,20 @@
+{
+  "metric": "KC_SQUEEZE",
+  "label": "TTM squeeze",
+  "code": "kcSqueeze",
+  "family": "volatility",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "on",
+      "off"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

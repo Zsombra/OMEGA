@@ -51,7 +51,7 @@ def test_offset_on_a_candle_categorical_metric_warns(metric, contract):
     assert "OFFSET_NOT_HONOURED" in codes, f"{metric} accepts a no-op offset without warning"
 
 
-@pytest.mark.parametrize("metric", ["CLOSE", "ADX", "SWING_HIGH", "STOCH_K", "MFI14"])
+@pytest.mark.parametrize("metric", ["CLOSE", "ADX", "DONCHIAN_UPPER", "STOCH_K", "MFI14"])
 def test_offset_on_a_numeric_metric_is_fine(metric, contract):
     """These genuinely honour offset - measured. Warning on them would be noise."""
     assert not contract.metric(metric).vocab
@@ -74,7 +74,10 @@ def test_the_affected_set_is_exactly_the_candle_categoricals(contract):
     affected = sorted(n for n in contract.metrics
                       if contract.metric(n).timeframe_mode == "candle"
                       and contract.metric(n).vocab)
-    assert affected == ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "MA_ALIGN", "PRICE_ZONE"]
+    # KC_SQUEEZE and ST_DIR joined the roster between 2026-08-24 and 2026-09-09 and are
+    # candle-mode categoricals like the other five, so the rule catches them too.
+    assert affected == ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "KC_SQUEEZE",
+                        "MA_ALIGN", "PRICE_ZONE", "ST_DIR"]
     rec = json.loads(AUDIT.read_text(encoding="utf-8"))
     assert rec["scope"]["candleCategoricalMetrics"] == affected
     assert rec["scope"]["untested"] == [], (

@@ -1,0 +1,44 @@
+{
+  "metric": "REGIME_DI_SPREAD",
+  "label": "Regime · DI spread",
+  "code": "regDI",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+      "min": -100,
+      "max": 100
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
+  ],
+  "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "RSI2",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "CCI20",
+    "ADX",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "WILLR14",
+    "DI_PLUS",
+    "DI_MINUS",
+    "REGIME_TREND_MARGIN"
+  ]
+}

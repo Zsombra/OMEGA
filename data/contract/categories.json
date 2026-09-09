@@ -1,1 +1,634 @@
-{"categories":[{"category":"price","metricCount":10,"label":"Price","purpose":"Read the raw traded price and the individual bar’s own open, high, low, and close.","whenToUse":["Show the level a decision is being made at.","Reference a bar’s own extremes rather than a derived deviation."],"bestPractices":["Use the last traded price for the live level and a bar fact for what the bar did.","Read the bar state when a provisional bar would change the interpretation."],"commonMisuses":["Treating the perpetual mark as the traded price — they are separate metrics.","Comparing raw price levels across assets instead of a percentage relation."],"examples":[{"title":"Last traded price","description":"Read the live traded price, independent of any candle rung.","column":{"metric":"LAST","transformId":"value","timeframe":{"rel":"anchor"}}}]},{"category":"momentum","metricCount":15,"label":"Momentum","purpose":"Describe directional impulse, exhaustion, and the pace of price movement.","whenToUse":["Confirm whether a move has participation.","Identify overextended or diverging momentum."],"bestPractices":["Pair level readings with trajectories.","Interpret oscillator extremes in market context."],"commonMisuses":["Treating an overbought reading as an automatic short.","Stacking several correlated oscillators as independent evidence."],"examples":[{"title":"RSI trajectory","description":"Track the recent RSI build-up and direction.","column":{"metric":"RSI14","transformId":"trajectory","timeframe":{"rel":"anchor"},"window":4}}]},{"category":"trend","metricCount":9,"label":"Trend","purpose":"Describe direction, persistence, and price location relative to trend references.","whenToUse":["Confirm directional structure.","Measure price extension from a moving reference."],"bestPractices":["Use slower references for regime context and faster references for timing.","Read distance together with direction."],"commonMisuses":["Assuming a lagging average predicts a reversal.","Comparing trend levels without matching timeframes."],"examples":[{"title":"Distance from SMA 20","description":"Measure signed price extension from the 20-period simple moving average.","column":{"metric":"SMA20","transformId":"distance","timeframe":{"rel":"anchor"}}}]},{"category":"volatility","metricCount":6,"label":"Volatility","purpose":"Describe the magnitude and expansion or contraction of market movement.","whenToUse":["Calibrate risk to current movement.","Identify squeeze or expansion conditions."],"bestPractices":["Separate movement size from direction.","Compare volatility on the same timeframe as the decision."],"commonMisuses":["Reading high volatility as inherently bullish or bearish.","Using raw price-unit volatility across unlike assets."],"examples":[{"title":"Current ATR","description":"Read the latest average true range on the strategy timeframe.","column":{"metric":"ATR","transformId":"value","timeframe":{"rel":"anchor"}}}]},{"category":"volumeFlow","metricCount":13,"label":"Volume & Flow","purpose":"Describe participation and the balance of buying and selling pressure.","whenToUse":["Confirm whether price movement has participation.","Spot flow divergence from price.","Set an absolute activity floor, which needs the raw quantity rather than a ratio."],"bestPractices":["Use ratios when comparing activity across assets.","Treat flow as confirmation rather than a standalone direction.","Use the raw quantity for a single-coin read or a threshold, and the ratio for a cohort column."],"commonMisuses":["Equating high volume with bullish demand.","Comparing raw volume counts across structurally different markets.","Comparing raw base-unit volume across assets — that compares denominations, not activity (44,723 BTC beside 2,100,000 DOGE); use the ratio for cohort columns.","Reading a raw per-bar quantity off the forming bar, whose volume ramps from zero each interval — a closed-bar trajectory is the honest read."],"examples":[{"title":"Volume participation","description":"Read current volume relative to its baseline.","column":{"metric":"RVOL","transformId":"value","timeframe":{"rel":"anchor"}}}]},{"category":"derivatives","metricCount":7,"label":"Derivatives","purpose":"Describe positioning, leverage demand, and funding pressure in perpetual markets.","whenToUse":["Assess crowded positioning.","Confirm whether exposure is entering or leaving the market."],"bestPractices":["Combine funding with open-interest change.","Use windowed context for noisy periodic rates."],"commonMisuses":["Treating positive funding as an immediate short signal.","Interpreting open-interest growth without price context."],"examples":[{"title":"Funding mean","description":"Average the canonical funding history window.","column":{"metric":"FUNDING_RATE","transformId":"aggregate","timeframe":{"rel":"anchor"},"window":24}}]},{"category":"structure","metricCount":7,"label":"Structure","purpose":"Describe price location, reference levels, and active support or resistance zones.","whenToUse":["Plan entries around meaningful levels.","Measure room to nearby support or resistance."],"bestPractices":["Select the side relevant to the proposed direction.","Use structure with momentum or flow confirmation."],"commonMisuses":["Treating every nearby level as equally strong.","Applying a separate timeframe override to anchor-derived zones."],"examples":[{"title":"Nearest support distance","description":"Measure signed distance to the nearest active support zone.","column":{"metric":"STRUCT_ZONES","transformId":"nearestZoneDist","timeframe":{"rel":"anchor"},"side":"support"}}]},{"category":"regime","metricCount":3,"label":"Regime","purpose":"Describe the platform-classified trend, volatility, and momentum environment.","whenToUse":["Adapt tactics to the current market state.","Check whether conditions are changing across observations."],"bestPractices":["Use regime as context for other evidence.","Review trajectories when transition risk matters."],"commonMisuses":["Treating a regime label as a guaranteed trade direction.","Reconstructing regime labels from unrelated client heuristics."],"examples":[{"title":"Trend-regime trajectory","description":"Show the recent canonical trend-regime sequence.","column":{"metric":"REGIME_TREND","transformId":"trajectory","timeframe":{"rel":"anchor"},"window":4}}]},{"category":"crowd","metricCount":9,"label":"Crowd","purpose":"Describe aggregate player positioning, confidence, and historical accuracy.","whenToUse":["Compare market evidence with participant consensus.","Identify crowded or contrarian conditions."],"bestPractices":["Treat crowd measures as contextual evidence.","Distinguish popularity from demonstrated accuracy."],"commonMisuses":["Assuming consensus is always correct.","Using crowd values as candle-timeframe indicators."],"examples":[{"title":"Crowd pick rate","description":"Read the current platform-wide pick rate.","column":{"metric":"CROWD_PICK","transformId":"value","timeframe":{"rel":"anchor"}}}]},{"category":"derived","metricCount":7,"label":"Derived","purpose":"Describe platform-owned cross-family classifications and convergence facts.","whenToUse":["Summarize agreement across canonical evidence families.","Expose platform truth-table outcomes directly."],"bestPractices":["Use the derived label as a summary and retain its underlying context.","Read the declared vocabulary exactly."],"commonMisuses":["Recomputing the classification with client-local rules.","Treating a summary label as proof that every input agrees."],"examples":[{"title":"Flow alignment","description":"Read the canonical price-and-flow alignment classification.","column":{"metric":"FLOW_ALIGN","transformId":"value","timeframe":{"rel":"anchor"}}}]}]}
+{
+ "categories": [
+  {
+   "category": "price",
+   "metricCount": 10,
+   "label": "Price",
+   "purpose": "Read the raw traded price and the individual bar’s own open, high, low, and close.",
+   "whenToUse": [
+    "Show the level a decision is being made at.",
+    "Reference a bar’s own extremes rather than a derived deviation."
+   ],
+   "bestPractices": [
+    "Use the last traded price for the live level and a bar fact for what the bar did.",
+    "Read the bar state when a provisional bar would change the interpretation."
+   ],
+   "commonMisuses": [
+    "Treating the perpetual mark as the traded price — they are separate metrics.",
+    "Comparing raw price levels across assets instead of a percentage relation."
+   ],
+   "examples": [
+    {
+     "title": "Last traded price",
+     "description": "Read the live traded price, independent of any candle rung.",
+     "column": {
+      "metric": "LAST",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "category": "momentum",
+   "metricCount": 22,
+   "label": "Momentum",
+   "purpose": "Describe directional impulse, exhaustion, and the pace of price movement.",
+   "whenToUse": [
+    "Confirm whether a move has participation.",
+    "Identify overextended or diverging momentum."
+   ],
+   "bestPractices": [
+    "Pair level readings with trajectories.",
+    "Interpret oscillator extremes in market context."
+   ],
+   "commonMisuses": [
+    "Treating an overbought reading as an automatic short.",
+    "Stacking several correlated oscillators as independent evidence."
+   ],
+   "examples": [
+    {
+     "title": "RSI trajectory",
+     "description": "Track the recent RSI build-up and direction.",
+     "column": {
+      "metric": "RSI14",
+      "transformId": "trajectory",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "window": 4
+     }
+    }
+   ]
+  },
+  {
+   "category": "trend",
+   "metricCount": 21,
+   "label": "Trend",
+   "purpose": "Describe direction, persistence, and price location relative to trend references.",
+   "whenToUse": [
+    "Confirm directional structure.",
+    "Measure price extension from a moving reference."
+   ],
+   "bestPractices": [
+    "Use slower references for regime context and faster references for timing.",
+    "Read distance together with direction."
+   ],
+   "commonMisuses": [
+    "Assuming a lagging average predicts a reversal.",
+    "Comparing trend levels without matching timeframes."
+   ],
+   "examples": [
+    {
+     "title": "Distance from SMA 20",
+     "description": "Measure signed price extension from the 20-period simple moving average.",
+     "column": {
+      "metric": "SMA20",
+      "transformId": "distance",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "category": "volatility",
+   "metricCount": 7,
+   "label": "Volatility",
+   "purpose": "Describe the magnitude and expansion or contraction of market movement.",
+   "whenToUse": [
+    "Calibrate risk to current movement.",
+    "Identify squeeze or expansion conditions."
+   ],
+   "bestPractices": [
+    "Separate movement size from direction.",
+    "Compare volatility on the same timeframe as the decision."
+   ],
+   "commonMisuses": [
+    "Reading high volatility as inherently bullish or bearish.",
+    "Using raw price-unit volatility across unlike assets."
+   ],
+   "examples": [
+    {
+     "title": "Current ATR",
+     "description": "Read the latest average true range on the strategy timeframe.",
+     "column": {
+      "metric": "ATR",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "category": "volumeFlow",
+   "metricCount": 13,
+   "label": "Volume & Flow",
+   "purpose": "Describe participation and the balance of buying and selling pressure.",
+   "whenToUse": [
+    "Confirm whether price movement has participation.",
+    "Spot flow divergence from price.",
+    "Set an absolute activity floor, which needs the raw quantity rather than a ratio."
+   ],
+   "bestPractices": [
+    "Use ratios when comparing activity across assets.",
+    "Treat flow as confirmation rather than a standalone direction.",
+    "Use the raw quantity for a single-coin read or a threshold, and the ratio for a cohort column."
+   ],
+   "commonMisuses": [
+    "Equating high volume with bullish demand.",
+    "Comparing raw volume counts across structurally different markets.",
+    "Comparing raw base-unit volume across assets — that compares denominations, not activity (44,723 BTC beside 2,100,000 DOGE); use the ratio for cohort columns.",
+    "Reading a raw per-bar quantity off the forming bar, whose volume ramps from zero each interval — a closed-bar trajectory is the honest read."
+   ],
+   "examples": [
+    {
+     "title": "Volume participation",
+     "description": "Read current volume relative to its baseline.",
+     "column": {
+      "metric": "RVOL",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "category": "derivatives",
+   "metricCount": 7,
+   "label": "Derivatives",
+   "purpose": "Describe positioning, leverage demand, and funding pressure in perpetual markets.",
+   "whenToUse": [
+    "Assess crowded positioning.",
+    "Confirm whether exposure is entering or leaving the market."
+   ],
+   "bestPractices": [
+    "Combine funding with open-interest change.",
+    "Use windowed context for noisy periodic rates."
+   ],
+   "commonMisuses": [
+    "Treating positive funding as an immediate short signal.",
+    "Interpreting open-interest growth without price context."
+   ],
+   "examples": [
+    {
+     "title": "Funding mean",
+     "description": "Average the canonical funding history window.",
+     "column": {
+      "metric": "FUNDING_RATE",
+      "transformId": "aggregate",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "window": 24
+     }
+    }
+   ]
+  },
+  {
+   "category": "structure",
+   "metricCount": 32,
+   "label": "Structure",
+   "purpose": "Describe price location, reference levels, and active support or resistance zones.",
+   "whenToUse": [
+    "Plan entries around meaningful levels.",
+    "Measure room to nearby support or resistance."
+   ],
+   "bestPractices": [
+    "Select the side relevant to the proposed direction.",
+    "Use structure with momentum or flow confirmation."
+   ],
+   "commonMisuses": [
+    "Treating every nearby level as equally strong.",
+    "Applying a separate timeframe override to anchor-derived zones."
+   ],
+   "examples": [
+    {
+     "title": "Nearest support distance",
+     "description": "Measure signed distance to the nearest active support zone.",
+     "column": {
+      "metric": "STRUCT_ZONES",
+      "transformId": "nearestZoneDist",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "side": "support"
+     }
+    }
+   ]
+  },
+  {
+   "category": "regime",
+   "metricCount": 16,
+   "label": "Regime",
+   "purpose": "Describe the platform-classified trend, volatility, and momentum environment, the composite regime it resolves to, and the quantities the classifier read to decide.",
+   "whenToUse": [
+    "Adapt tactics to the current market state.",
+    "Check whether conditions are changing across observations.",
+    "Judge how close a regime is to flipping before sizing against it."
+   ],
+   "bestPractices": [
+    "Use regime as context for other evidence.",
+    "Review trajectories when transition risk matters.",
+    "Read the trend gate before the trend label: a held label is the previous bar’s, carried by the hysteresis buffer rather than re-confirmed by this bar.",
+    "Read the margin for how much room the current label has, and both volatility ratios for which of the two inputs is holding it — they must agree, so either alone can be a bar from changing it."
+   ],
+   "commonMisuses": [
+    "Treating a regime label as a guaranteed trade direction.",
+    "Reconstructing regime labels from unrelated client heuristics.",
+    "Reading conviction as how comfortably the regime matched. It encodes WHICH rule in the priority ladder matched — the margins carry comfort.",
+    "Treating a trend direction as confirmed without checking whether it came from the decisive DI spread or from the fallback that fires when the spread is indecisive."
+   ],
+   "examples": [
+    {
+     "title": "Trend-regime trajectory",
+     "description": "Show the recent canonical trend-regime sequence.",
+     "column": {
+      "metric": "REGIME_TREND",
+      "transformId": "trajectory",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "window": 4
+     }
+    },
+    {
+     "title": "Distance to a trend flip",
+     "description": "Read how many ADX points the current trend label survives by — small means a flip is near.",
+     "column": {
+      "metric": "REGIME_TREND_MARGIN",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "category": "crowd",
+   "metricCount": 9,
+   "label": "Crowd",
+   "purpose": "Describe aggregate player positioning, confidence, and historical accuracy.",
+   "whenToUse": [
+    "Compare market evidence with participant consensus.",
+    "Identify crowded or contrarian conditions."
+   ],
+   "bestPractices": [
+    "Treat crowd measures as contextual evidence.",
+    "Distinguish popularity from demonstrated accuracy."
+   ],
+   "commonMisuses": [
+    "Assuming consensus is always correct.",
+    "Using crowd values as candle-timeframe indicators."
+   ],
+   "examples": [
+    {
+     "title": "Crowd pick rate",
+     "description": "Read the current platform-wide pick rate.",
+     "column": {
+      "metric": "CROWD_PICK",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "category": "derived",
+   "metricCount": 7,
+   "label": "Derived",
+   "purpose": "Describe platform-owned cross-family classifications and convergence facts.",
+   "whenToUse": [
+    "Summarize agreement across canonical evidence families.",
+    "Expose platform truth-table outcomes directly."
+   ],
+   "bestPractices": [
+    "Use the derived label as a summary and retain its underlying context.",
+    "Read the declared vocabulary exactly."
+   ],
+   "commonMisuses": [
+    "Recomputing the classification with client-local rules.",
+    "Treating a summary label as proof that every input agrees."
+   ],
+   "examples": [
+    {
+     "title": "Flow alignment",
+     "description": "Read the canonical price-and-flow alignment classification.",
+     "column": {
+      "metric": "FLOW_ALIGN",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "modules": [
+  {
+   "sectionKey": "includePriceAction",
+   "moduleName": "priceAction",
+   "displayName": "Price Action",
+   "description": "Live price, the last five closed candle changes, session VWAP + deviation, and multi-timeframe changes",
+   "bulletPoints": [
+    "Live traded price",
+    "5 closed-candle change sequence",
+    "VWAP + deviation",
+    "Multi-timeframe changes"
+   ]
+  },
+  {
+   "sectionKey": "includeSubTimeframe",
+   "moduleName": "subTimeframe",
+   "displayName": "Candle Breakdown",
+   "description": "What the current bar is made of — the last 4 closed lower-timeframe bars",
+   "bulletPoints": [
+    "Per-bar change% and volume build-up",
+    "Efficiency ratio — a clean move vs chop",
+    "Largest bar’s share of window volume"
+   ]
+  },
+  {
+   "sectionKey": "includeRsi",
+   "moduleName": "rsi",
+   "displayName": "RSI",
+   "description": "RSI-14 and RSI-7 trajectories with overbought/oversold zone classification",
+   "bulletPoints": [
+    "RSI-14 4-period trajectory",
+    "RSI-7 4-period trajectory",
+    "Overbought/oversold zone per period",
+    "Zone transition signals"
+   ]
+  },
+  {
+   "sectionKey": "includeMacd",
+   "moduleName": "macd",
+   "displayName": "MACD",
+   "description": "MACD histogram trajectory with crossover detection",
+   "bulletPoints": [
+    "Histogram 4-period trajectory",
+    "Crossover detection",
+    "Signal line divergence"
+   ]
+  },
+  {
+   "sectionKey": "includeVolume",
+   "moduleName": "volume",
+   "displayName": "Volume",
+   "description": "Volume ratio trajectory showing relative volume progression",
+   "bulletPoints": [
+    "Volume ratio trajectory",
+    "OBV 4-period trajectory",
+    "Relative volume progression"
+   ]
+  },
+  {
+   "sectionKey": "includeVolatility",
+   "moduleName": "volatility",
+   "displayName": "Volatility",
+   "description": "ATR trajectory with high/low deviation from recent range",
+   "bulletPoints": [
+    "ATR 4-period trajectory",
+    "High/low deviation",
+    "Range expansion signals"
+   ]
+  },
+  {
+   "sectionKey": "includeBollingerBands",
+   "moduleName": "bollingerBands",
+   "displayName": "Bollinger Bands",
+   "description": "Bollinger %B trajectory, band width, and band touch detection",
+   "bulletPoints": [
+    "%B 4-period trajectory",
+    "Band width + touch detection",
+    "CCI(20) 4-period trajectory"
+   ]
+  },
+  {
+   "sectionKey": "includeMovingAverages",
+   "moduleName": "movingAverages",
+   "displayName": "Moving Averages",
+   "description": "Price distance from SMA20/SMA50/EMA20 with alignment classification",
+   "bulletPoints": [
+    "SMA20/50/200 distance",
+    "EMA20 distance",
+    "MA alignment classification"
+   ]
+  },
+  {
+   "sectionKey": "includeStochastic",
+   "moduleName": "stochastic",
+   "displayName": "Stochastic",
+   "description": "Stochastic K trajectory with overbought/oversold zone classification",
+   "bulletPoints": [
+    "Stochastic K trajectory",
+    "K/D crossover values",
+    "Overbought/oversold zone"
+   ]
+  },
+  {
+   "sectionKey": "includeFundingRates",
+   "moduleName": "fundingRates",
+   "displayName": "Funding Rates",
+   "description": "Funding rate trajectory, annualized rate, entry label, 24h average, and mark/oracle premium for derivatives sentiment",
+   "bulletPoints": [
+    "Funding rate 4-period trajectory",
+    "24h average + annualized rate",
+    "Mark/oracle premium %"
+   ]
+  },
+  {
+   "sectionKey": "includeOpenInterest",
+   "moduleName": "openInterest",
+   "displayName": "Open Interest",
+   "description": "OI trajectory, velocity, and OI-Price regime classification for positioning analysis",
+   "bulletPoints": [
+    "OI 4-period trajectory",
+    "OI velocity (accelerating/decelerating)",
+    "OI-Price regime (new longs/shorts/covering/capitulation)"
+   ]
+  },
+  {
+   "sectionKey": "includeRelativeStrength",
+   "moduleName": "relativeStrength",
+   "displayName": "Relative Strength",
+   "description": "PPO and ROC trajectories with their zero-crossings, plus peer comparison ranks for change and volume",
+   "bulletPoints": [
+    "PPO + ROC(12) trajectories",
+    "PPO zero-crossing signal (momentum turn)",
+    "ROC zero-crossing signal",
+    "Price change% + volume rank"
+   ]
+  },
+  {
+   "sectionKey": "includeSupportResistance",
+   "moduleName": "supportResistance",
+   "displayName": "Support & Resistance",
+   "description": "Donchian channel edges with distance% and price zone classification",
+   "bulletPoints": [
+    "Donchian channel edges",
+    "Distance% from levels",
+    "Price zone classification"
+   ]
+  },
+  {
+   "sectionKey": "includeTrendStrength",
+   "moduleName": "trendStrength",
+   "displayName": "Trend Strength",
+   "description": "ADX trajectory with trend strength zone classification",
+   "bulletPoints": [
+    "ADX 4-period trajectory",
+    "Trend strength zone",
+    "DI crossover signals"
+   ]
+  },
+  {
+   "sectionKey": "includeMfi",
+   "moduleName": "mfi",
+   "displayName": "Money Flow Index",
+   "description": "MFI-14 trajectory with volume-confirmed overbought/oversold zone classification",
+   "bulletPoints": [
+    "MFI-14 4-period trajectory",
+    "Volume-weighted OB/OS zone",
+    "Volume-confirmed momentum"
+   ]
+  },
+  {
+   "sectionKey": "includeCvd",
+   "moduleName": "cvd",
+   "displayName": "Volume Delta (CVD)",
+   "description": "Cumulative Volume Delta: taker-side buy/sell aggression with 4-period trajectory and divergence signals",
+   "bulletPoints": [
+    "CVD 4-period trajectory + zone (bullish/bearish/neutral)",
+    "Buy pressure ratio trajectory (taker-buy fraction)",
+    "Divergence signals: price vs CVD cross-confirmation",
+    "Session-reset: resets to 0 on MDS restart"
+   ]
+  },
+  {
+   "sectionKey": "includeHigherTimeframe",
+   "moduleName": "higherTimeframe",
+   "displayName": "Higher Timeframe",
+   "description": "Higher TF trend context: ADX zone, RSI zone, and MA alignment for trend confirmation",
+   "bulletPoints": [
+    "ADX + zone on higher TF",
+    "RSI-14 + zone on higher TF",
+    "MA alignment on higher TF"
+   ]
+  },
+  {
+   "sectionKey": "includeMtfConfluence",
+   "moduleName": "mtfConfluence",
+   "displayName": "Multi-Timeframe Confluence",
+   "description": "Values-only per-rung view of MA alignment, RSI zone, and ADX zone across the lower, primary, and higher timeframes for cross-timeframe confluence",
+   "bulletPoints": [
+    "MA alignment at lower/primary/higher TF",
+    "RSI zone at lower/primary/higher TF",
+    "ADX zone at lower/primary/higher TF"
+   ]
+  },
+  {
+   "sectionKey": "includeRegimeContext",
+   "moduleName": "regimeContext",
+   "displayName": "Regime Detection",
+   "description": "Higher-timeframe market regime classification with decomposed trend, volatility, and momentum state columns",
+   "bulletPoints": [
+    "Higher-timeframe regime timeframe",
+    "Trend/volatility/momentum regime states",
+    "Decomposed t3/t2/t1/now + direction columns",
+    "Shared regime contract across market context and trading signals"
+   ]
+  },
+  {
+   "sectionKey": "includeCrowdIntelligence",
+   "moduleName": "crowdIntelligence",
+   "displayName": "Crowd Intelligence",
+   "description": "Historical and live crowd behavior: pick rates, directional biases, accuracy, and captain preferences from recent settled games and concurrent live sessions",
+   "bulletPoints": [
+    "Per-coin pick rate, direction bias, and captain rate",
+    "Crowd accuracy from last 4 settled games",
+    "Real-time positioning from concurrent live sessions",
+    "Session-level accuracy and net capture trends"
+   ]
+  },
+  {
+   "sectionKey": "includeCvdCrowdConvergence",
+   "moduleName": "cvdCrowdConvergence",
+   "displayName": "CVD-Crowd Convergence",
+   "description": "Cross-references CVD trade flow direction with crowd positioning bias to detect smart-money vs retail alignment or divergence",
+   "bulletPoints": [
+    "Flow-crowd alignment: aligned, divergent, or neutral",
+    "Smart-retail divergence: hidden accumulation or distribution",
+    "Captain flow confirmation + alignment confidence"
+   ]
+  },
+  {
+   "sectionKey": "includeStructureZones",
+   "moduleName": "structureZones",
+   "displayName": "Price Structure",
+   "description": "Price structure zones: fair value gaps, order blocks, and zone confluence detection",
+   "bulletPoints": [
+    "FVG approach detection",
+    "Order block proximity",
+    "Zone cluster analysis",
+    "Support/resistance confluence"
+   ]
+  },
+  {
+   "sectionKey": "includePerpSpotFlow",
+   "moduleName": "perpSpotFlow",
+   "displayName": "Perp/Spot Flow",
+   "description": "Perp-vs-spot order-flow state: composite centralized-exchange spot CVD compared against perp CVD to classify spot-led accumulation, perp-led fragility, or confirmed moves (crypto-only)",
+   "bulletPoints": [
+    "Flow state: confirmed, perp-led fragile, spot-led accumulation, or neutral",
+    "Divergence strength bucket from bounded rate gap",
+    "Volume-confirms flag from the composite read",
+    "Crypto-only: TradFi coins render null"
+   ]
+  },
+  {
+   "sectionKey": "includeMarketBreadth",
+   "moduleName": "marketBreadth",
+   "displayName": "Market Breadth",
+   "description": "Report-level market breadth on two axes over the same bar: how much of the field CLOSED up or down, and how much of it carries positive momentum. A field can close red while momentum turns up, so neither axis substitutes for the other — one reading for the whole report rather than a per-coin column",
+   "bulletPoints": [
+    "Price axis — up share, down share, signed net, and mean close-change (%), over the measured universe",
+    "Momentum axis — share carrying a positive PPO histogram, share negative, signed net, and the mean histogram",
+    "Each axis carries its OWN measured universe: a coin whose momentum indicator has not warmed up counts in the price base and not the momentum one",
+    "An axis with no readings reports absent rather than zero, so a rule never reads a missing field as a bearish one",
+    "Reported per category as well as whole-universe — crypto, Layer 1, memes, DeFi, TradFi, stocks, indices, commodities — each over its own measured universe",
+    "The categories NEST rather than partition: a coin counts in its category and in its parent, so the rows do not sum to the whole",
+    "A category too small to support a share reads absent rather than publishing one over a handful of coins",
+    "No coin dimension: one value per report, identical for every coin"
+   ]
+  },
+  {
+   "sectionKey": "includeReferencePairs",
+   "moduleName": "referencePairs",
+   "displayName": "Reference Pairs",
+   "description": "Stablecoin peg deviations read from their own spot tapes — the quote-honesty reading a cross-venue premium rule reads beside the premium, never folded into it",
+   "bulletPoints": [
+    "USDT/USD deviation from par (%), signed",
+    "USDC/USDT deviation from par (%), signed",
+    "Absent when the underlying close is past its staleness bound",
+    "No coin dimension: one value per report, identical for every coin"
+   ]
+  }
+ ],
+ "_refreshed": {
+  "at": "2026-09-09T08:2xZ",
+  "how": "list_strategy_categories via mcporter CLI, read-only; deployed contract 54.1.0",
+  "note": "The August file carried `categories` only; the live response also carries `modules` (the per-section display metadata), kept here."
+ }
+}

@@ -1,44 +1,101 @@
 {
-  "_what": "BG-13. `offset` is accepted, validates, and consumes columnLookback budget - and is then SILENTLY IGNORED by every candle-backed CATEGORICAL metric. The column returns the value for NOW.",
-  "date": "2026-08-26",
-  "severity": "silent wrong answer - the worst class. Nothing errors, nothing warns, and the number you get is for a bar you did not ask for.",
-
-  "howItWasFound": "I had written that the 6 unobserved labels 'need market conditions, not effort' and that 'more anchors will not produce them'. The anchor half was measured. But when the platform refused REGIME_MOM at a non-anchor timeframe, its error named the one parameter still free: allowedDomain.candidates = ['offset']. offset walks backwards through bars, which reaches PAST market states without waiting for a different day. I had never tried it.",
-
-  "theRule": "offset is honoured by candle-backed NUMERIC metrics and silently ignored by candle-backed CATEGORICAL ones. Timeless metrics ignore it too, but that is consistent with them being bundle reads with no per-bar series - a different and already-documented thing.",
-
-  "measured": {
-    "anchor": "4h", "coins": 78, "offsets": "0 vs 8 (32 hours apart)",
-    "honoursOffset": ["close", "ADX", "swingHi", "swingLo", "STOCH_K", "MFI14", "BB_PCT_B"],
-    "ignoresOffset": ["MA_ALIGN", "BB_TOUCH", "EMA_CROSS", "PRICE_ZONE"],
-    "priceZoneIdenticalRows": "78 of 78"
+ "_what": "BG-13. `offset` is accepted, validates, and consumes columnLookback budget - and is then SILENTLY IGNORED by every candle-backed CATEGORICAL metric. The column returns the value for NOW.",
+ "date": "2026-08-26",
+ "severity": "silent wrong answer - the worst class. Nothing errors, nothing warns, and the number you get is for a bar you did not ask for.",
+ "howItWasFound": "I had written that the 6 unobserved labels 'need market conditions, not effort' and that 'more anchors will not produce them'. The anchor half was measured. But when the platform refused REGIME_MOM at a non-anchor timeframe, its error named the one parameter still free: allowedDomain.candidates = ['offset']. offset walks backwards through bars, which reaches PAST market states without waiting for a different day. I had never tried it.",
+ "theRule": "offset is honoured by candle-backed NUMERIC metrics and silently ignored by candle-backed CATEGORICAL ones. Timeless metrics ignore it too, but that is consistent with them being bundle reads with no per-bar series - a different and already-documented thing.",
+ "measured": {
+  "anchor": "4h",
+  "coins": 78,
+  "offsets": "0 vs 8 (32 hours apart)",
+  "honoursOffset": [
+   "close",
+   "ADX",
+   "swingHi",
+   "swingLo",
+   "STOCH_K",
+   "MFI14",
+   "BB_PCT_B"
+  ],
+  "ignoresOffset": [
+   "MA_ALIGN",
+   "BB_TOUCH",
+   "EMA_CROSS",
+   "PRICE_ZONE"
+  ],
+  "priceZoneIdenticalRows": "78 of 78"
+ },
+ "theProof": {
+  "_why": "Identical values could mean 'offset ignored' OR 'the label was genuinely stable'. These two coins separate the cases, because PRICE_ZONE's own inputs are rendered beside it and they DID move.",
+  "AMD": {
+   "offset0": {
+    "close": 480.7,
+    "swingHi": 482.33,
+    "swingLo": 451.62,
+    "positionInRange": "94.7%",
+    "zone": "near high"
+   },
+   "offset8": {
+    "close": 460.95,
+    "swingHi": 477.94,
+    "swingLo": 451.62,
+    "positionInRange": "35.4%",
+    "zone": "near high"
+   },
+   "verdict": "at 35% of range the label cannot be 'near high'; it is the offset-0 answer"
   },
-
-  "theProof": {
-    "_why": "Identical values could mean 'offset ignored' OR 'the label was genuinely stable'. These two coins separate the cases, because PRICE_ZONE's own inputs are rendered beside it and they DID move.",
-    "AMD": {
-      "offset0": { "close": 480.70, "swingHi": 482.33, "swingLo": 451.62, "positionInRange": "94.7%", "zone": "near high" },
-      "offset8": { "close": 460.95, "swingHi": 477.94, "swingLo": 451.62, "positionInRange": "35.4%", "zone": "near high" },
-      "verdict": "at 35% of range the label cannot be 'near high'; it is the offset-0 answer"
-    },
-    "EWY": {
-      "offset0": { "close": 180.14, "swingHi": 181.42, "swingLo": 170.26, "positionInRange": "88.5%", "zone": "near high" },
-      "offset8": { "close": 173.82, "swingHi": 182.14, "swingLo": 171.28, "positionInRange": "23.4%", "zone": "near high" },
-      "verdict": "at 23% of range the label should be near LOW"
-    },
-    "_strength": "PRICE_ZONE is candle-backed and its three inputs all honour offset in the SAME render. So this is not 'the metric has no history' - the history is right there, and the classifier is not using it."
+  "EWY": {
+   "offset0": {
+    "close": 180.14,
+    "swingHi": 181.42,
+    "swingLo": 170.26,
+    "positionInRange": "88.5%",
+    "zone": "near high"
+   },
+   "offset8": {
+    "close": 173.82,
+    "swingHi": 182.14,
+    "swingLo": 171.28,
+    "positionInRange": "23.4%",
+    "zone": "near high"
+   },
+   "verdict": "at 23% of range the label should be near LOW"
   },
-
-  "scope": {
-    "candleCategoricalMetrics": ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "MA_ALIGN", "PRICE_ZONE"],
-    "tested": ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "MA_ALIGN", "PRICE_ZONE"],
-    "untested": [],
-    "_honesty": "BAR_FORMING was the last untested entry until 2026-08-28. Measured then (1h anchor, BTC/ETH/SOL, offsets 0 vs 8, CLOSE as the moving control - see bar_forming_offset_probe_2026-08-28.json): it answers 'forming' at offset 8, where the bar is by construction closed and its settled close prints in the same row. The earlier note here allowed that 'ignores offset' might arguably be correct for this flag; measurement resolved it the other way - a question about a closed past bar should answer 'closed', so the unchanging 'forming' is the same silent-wrong-answer class as the other four. All five candle-categoricals now measured; the OFFSET_NOT_HONOURED warning already covered BAR_FORMING (candle + vocab), so nothing in omega/validate.py moved."
-  },
-
-  "consequenceForTheUnobservedLabels": "The offset avenue is CLOSED for the label hunt, but for a reason worth knowing rather than the reason I originally gave. I said the labels need different market conditions. That is still true - but not because history is unreachable. History IS reachable (close, ADX and the swings all move under offset); the CLASSIFIERS just refuse to look at it. PRICE_ZONE 'breakout high' cannot be found by walking back through 8 bars because the column will keep answering for bar 0.",
-
-  "workaround": "None for the categorical metrics. To read a past classification you would need the platform to honour offset on them. What DOES work is reading the numeric inputs at an offset and classifying yourself - close, swingHi and swingLo at offset N are all correct, and the PRICE_ZONE rule is known (percentage distance to the nearer swing, 215/216 - see tier_c_coherence.json).",
-
-  "reportedAs": "BG-13"
+  "_strength": "PRICE_ZONE is candle-backed and its three inputs all honour offset in the SAME render. So this is not 'the metric has no history' - the history is right there, and the classifier is not using it."
+ },
+ "scope": {
+  "candleCategoricalMetrics": [
+   "BAR_FORMING",
+   "BB_TOUCH",
+   "EMA_CROSS",
+   "KC_SQUEEZE",
+   "MA_ALIGN",
+   "PRICE_ZONE",
+   "ST_DIR"
+  ],
+  "tested": [
+   "BAR_FORMING",
+   "BB_TOUCH",
+   "EMA_CROSS",
+   "KC_SQUEEZE",
+   "MA_ALIGN",
+   "PRICE_ZONE",
+   "ST_DIR"
+  ],
+  "untested": [],
+  "_honesty": "BAR_FORMING was the last untested entry until 2026-08-28. Measured then (1h anchor, BTC/ETH/SOL, offsets 0 vs 8, CLOSE as the moving control - see bar_forming_offset_probe_2026-08-28.json): it answers 'forming' at offset 8, where the bar is by construction closed and its settled close prints in the same row. The earlier note here allowed that 'ignores offset' might arguably be correct for this flag; measurement resolved it the other way - a question about a closed past bar should answer 'closed', so the unchanging 'forming' is the same silent-wrong-answer class as the other four. All five candle-categoricals now measured; the OFFSET_NOT_HONOURED warning already covered BAR_FORMING (candle + vocab), so nothing in omega/validate.py moved.",
+  "_scope": {
+   "measuredOn": "2026-08-24 roster (86 metrics; 5 candle-mode categoricals)",
+   "regeneratedAt": "2026-09-09 against the 144-metric corpus (contract 54.1.0)",
+   "addedSinceTheProbes": [
+    "KC_SQUEEZE",
+    "ST_DIR"
+   ],
+   "allAddedAreUnmeasured": true,
+   "_honesty": "The set is regenerated from the contract because it is defined by timeframeMode plus nativeOutput.kind, both contract facts. The metrics under addedSinceTheProbes were not exercised by the original live probes; omega applies the rule to them by construction."
+  }
+ },
+ "consequenceForTheUnobservedLabels": "The offset avenue is CLOSED for the label hunt, but for a reason worth knowing rather than the reason I originally gave. I said the labels need different market conditions. That is still true - but not because history is unreachable. History IS reachable (close, ADX and the swings all move under offset); the CLASSIFIERS just refuse to look at it. PRICE_ZONE 'breakout high' cannot be found by walking back through 8 bars because the column will keep answering for bar 0.",
+ "workaround": "None for the categorical metrics. To read a past classification you would need the platform to honour offset on them. What DOES work is reading the numeric inputs at an offset and classifying yourself - close, swingHi and swingLo at offset N are all correct, and the PRICE_ZONE rule is known (percentage distance to the nearer swing, 215/216 - see tier_c_coherence.json).",
+ "reportedAs": "BG-13"
 }

@@ -1,0 +1,25 @@
+{
+  "metric": "REGIME_STATE",
+  "label": "Regime · state",
+  "code": "regState",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "bull expansion",
+      "bear expansion",
+      "bull ranging",
+      "bear ranging",
+      "contraction",
+      "volatile",
+      "fallback"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

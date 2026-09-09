@@ -1,0 +1,54 @@
+{
+  "metric": "STOCH_RSI14",
+  "label": "Stochastic RSI (14)",
+  "code": "stochRSI",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "fraction",
+    "precision": 2,
+    "range": {
+      "min": 0,
+      "max": 1
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "BB_PCT_B",
+    "BUY_PRESSURE"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

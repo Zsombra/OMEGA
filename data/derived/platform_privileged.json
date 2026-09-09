@@ -1,26 +1,14 @@
 {
   "_note": "Pairs referenced by platform section templates that are ABSENT from the metric's authorable transform whitelist. Custom columns using these are rejected with REPORT_COLUMN_PAIR_UNSUPPORTED.",
-  "pairCount": 8,
+  "pairCount": 7,
   "pairs": [
-    {
-      "metric": "CCI20",
-      "transform": "classifyZone",
-      "usedBySection": "includeBollingerBands",
-      "sectionTitle": "Bollinger Bands",
-      "authorableAlternatives": [
-        "efficiency",
-        "rank",
-        "spread",
-        "trajectory",
-        "value"
-      ]
-    },
     {
       "metric": "ADX",
       "transform": "classifyState",
       "usedBySection": "includeTrendStrength",
       "sectionTitle": "Trend Strength",
       "authorableAlternatives": [
+        "aggregate",
         "classifyZone",
         "efficiency",
         "maxShare",
@@ -36,6 +24,7 @@
       "usedBySection": "includeMfi",
       "sectionTitle": "Money Flow Index",
       "authorableAlternatives": [
+        "aggregate",
         "classifyZone",
         "efficiency",
         "maxShare",
@@ -51,6 +40,7 @@
       "usedBySection": "includeCvd",
       "sectionTitle": "Volume Delta (CVD)",
       "authorableAlternatives": [
+        "aggregate",
         "efficiency",
         "spread",
         "trajectory",
@@ -63,6 +53,7 @@
       "usedBySection": "includeHigherTimeframe",
       "sectionTitle": "Higher Timeframe Context",
       "authorableAlternatives": [
+        "aggregate",
         "classifyZone",
         "efficiency",
         "maxShare",
@@ -78,6 +69,7 @@
       "usedBySection": "includeMtfConfluence",
       "sectionTitle": "Multi-Timeframe Confluence",
       "authorableAlternatives": [
+        "aggregate",
         "classifyZone",
         "efficiency",
         "maxShare",
@@ -93,6 +85,7 @@
       "usedBySection": "includeMtfConfluence",
       "sectionTitle": "Multi-Timeframe Confluence",
       "authorableAlternatives": [
+        "aggregate",
         "classifyZone",
         "efficiency",
         "maxShare",
@@ -108,6 +101,7 @@
       "usedBySection": "includeMtfConfluence",
       "sectionTitle": "Multi-Timeframe Confluence",
       "authorableAlternatives": [
+        "aggregate",
         "classifyZone",
         "efficiency",
         "maxShare",

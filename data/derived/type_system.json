@@ -32,6 +32,7 @@
         "SPOT_CLOSE_BN",
         "RSI14",
         "RSI7",
+        "RSI2",
         "MACD",
         "STOCH_K",
         "STOCH_D",
@@ -52,6 +53,9 @@
         "EMA5",
         "EMA13",
         "EMA20",
+        "EMA9",
+        "EMA21",
+        "EMA50",
         "ATR",
         "ATR_PCT",
         "BB_WIDTH",
@@ -59,9 +63,47 @@
         "HIGH_DEV",
         "LOW_DEV",
         "BB_PCT_B",
-        "SWING_HIGH",
-        "SWING_LOW",
+        "DONCHIAN_UPPER",
+        "DONCHIAN_LOWER",
         "VWAP",
+        "TPO_POC",
+        "TPO_VAH",
+        "TPO_VAL",
+        "TPO_IB_HIGH",
+        "TPO_IB_LOW",
+        "PRIOR_TPO_POC",
+        "PRIOR_TPO_VAH",
+        "PRIOR_TPO_VAL",
+        "BB_UPPER",
+        "BB_LOWER",
+        "KC_UPPER",
+        "KC_MID",
+        "KC_LOWER",
+        "ST_LINE",
+        "HMA20",
+        "WT1",
+        "WT2",
+        "QQE_RSI_MA",
+        "QQE_STOP",
+        "PSAR",
+        "ICHI_CONV",
+        "ICHI_BASE",
+        "ICHI_SPAN_A",
+        "ICHI_SPAN_B",
+        "ICHI_LAG",
+        "WILLR14",
+        "STOCH_RSI14",
+        "PIVOT_P",
+        "PIVOT_R1",
+        "PIVOT_R2",
+        "PIVOT_R3",
+        "PIVOT_S1",
+        "PIVOT_S2",
+        "PDH",
+        "PDL",
+        "PIVOT_S3",
+        "DI_PLUS",
+        "DI_MINUS",
         "VOLUME",
         "VOL_SMA20",
         "TRADES",
@@ -79,6 +121,14 @@
         "FUNDING_ANN",
         "OI",
         "OI_CHG",
+        "REGIME_RUN_BARS",
+        "REGIME_TREND_MARGIN",
+        "REGIME_DI_SPREAD",
+        "REGIME_VOL_ATR_RATIO",
+        "REGIME_VOL_BBW_RATIO",
+        "REGIME_MOM_BULL_VOTES",
+        "REGIME_MOM_BEAR_VOTES",
+        "REGIME_CRASH_MARGIN",
         "CROWD_PICK",
         "CROWD_UPBIAS",
         "CROWD_ACC",
@@ -89,7 +139,7 @@
         "CROWD_CAPT_LIVE"
       ],
       "vocabularies": {},
-      "metricCount": 66
+      "metricCount": 116
     },
     "classification": {
       "conditionOperators": [
@@ -100,14 +150,22 @@
       "metrics": [
         "BAR_FORMING",
         "MA_ALIGN",
+        "KC_SQUEEZE",
         "PRICE_ZONE",
         "BB_TOUCH",
+        "TPO_SHAPE",
+        "ST_DIR",
         "FUNDING_LABEL",
         "OI_VELOCITY",
         "OI_PX_REGIME",
         "REGIME_TREND",
         "REGIME_VOL",
         "REGIME_MOM",
+        "REGIME_STATE",
+        "REGIME_CONVICTION",
+        "REGIME_TREND_GATE",
+        "REGIME_TREND_SOURCE",
+        "REGIME_CRASH_LATCH",
         "FLOW_ALIGN",
         "SMART_RETAIL",
         "CONFIDENCE",
@@ -124,6 +182,10 @@
           "bearish",
           "mixed"
         ],
+        "KC_SQUEEZE": [
+          "on",
+          "off"
+        ],
         "PRICE_ZONE": [
           "breakout high",
           "breakdown low",
@@ -135,6 +197,15 @@
           "upper",
           "lower",
           "none"
+        ],
+        "TPO_SHAPE": [
+          "p-shape",
+          "b-shape",
+          "balanced"
+        ],
+        "ST_DIR": [
+          "bullish",
+          "bearish"
         ],
         "FUNDING_LABEL": [
           "low",
@@ -169,6 +240,35 @@
           "neutral",
           "diverging"
         ],
+        "REGIME_STATE": [
+          "bull expansion",
+          "bear expansion",
+          "bull ranging",
+          "bear ranging",
+          "contraction",
+          "volatile",
+          "fallback"
+        ],
+        "REGIME_CONVICTION": [
+          "maximum",
+          "high",
+          "medium",
+          "low",
+          "uncertain"
+        ],
+        "REGIME_TREND_GATE": [
+          "cleared",
+          "held",
+          "dropped"
+        ],
+        "REGIME_TREND_SOURCE": [
+          "di spread",
+          "ema fallback"
+        ],
+        "REGIME_CRASH_LATCH": [
+          "armed",
+          "clear"
+        ],
         "FLOW_ALIGN": [
           "aligned bullish",
           "aligned bearish",
@@ -198,7 +298,7 @@
           "low"
         ]
       },
-      "metricCount": 15
+      "metricCount": 23
     },
     "event": {
       "conditionOperators": [

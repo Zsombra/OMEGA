@@ -31,6 +31,9 @@
       ]
     },
     {
+      "id": "aggregate"
+    },
+    {
       "id": "efficiency"
     },
     {
@@ -41,7 +44,8 @@
     }
   ],
   "spreadOperands": [
-    "BB_PCT_B"
+    "BB_PCT_B",
+    "STOCH_RSI14"
   ],
   "rankOrderings": [
     "hi",

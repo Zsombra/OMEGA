@@ -74,13 +74,20 @@ def test_the_enumerator_no_longer_produces_them(contract):
     assert not offenders, f"{len(offenders)} refused shapes still enumerated"
 
 
-def test_expanded_space_shrank_by_exactly_the_measured_count(contract):
+def test_the_audit_record_still_describes_what_it_measured(contract):
+    """The record is a dated measurement of the 2026-08-26 fix against the 86-metric
+    corpus. It is history and is NOT re-derived here: 357 refused shapes and the
+    2136 -> 1779 shrink are what that corpus produced. The live-space assertions moved
+    to the test below when the corpus was refreshed to 144 metrics on 2026-09-09."""
     rec = json.loads(AUDIT.read_text(encoding="utf-8"))
     assert rec["scope"]["enumeratedShapesRefused"] == 357
     assert rec["scope"]["expandedSpace"] == {"before": 2136, "after": 1779}
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 1779
 
 
-def test_structural_space_is_untouched(contract):
-    """A structural spread shape carries no operand, so the rule cannot bite there."""
-    assert len(enumerate_shapes(contract=contract)) == 488
+def test_the_rule_still_holds_on_the_current_corpus(contract):
+    """What must stay true regardless of roster size: no timeless-operand spread chain is
+    enumerated (asserted above), and the structural space is untouched by the rule because
+    a structural spread shape carries no operand. Counts recomputed 2026-09-09 against the
+    144-metric corpus; they were 488 / 1779 on the 86-metric one."""
+    assert len(enumerate_shapes(contract=contract)) == 1018
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 8999

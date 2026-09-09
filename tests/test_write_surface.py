@@ -154,18 +154,45 @@ def test_the_floor_record_does_not_overclaim():
     assert "cannot separate" in FLOOR["measured"]["_honestLimit"]
 
 
-# --- pins vs the NAMED schema capture of the first live preflight run (2026-09-05) ---------
+# --- pins vs the NAMED schema captures --------------------------------------------------
+#
+# 2026-09-05 was the first live preflight run (contract 51-era). 2026-09-09 is the current
+# capture (contract 54.1.0). Both are pinned: the top-level write surface did not move
+# between them, and asserting that explicitly is what makes "unchanged" a measurement
+# rather than an assumption.
 
 SCHEMA_CAPTURE_2026_09_05 = ROOT / "data/contract/compile_strategy_plan/schema_20260905T011443Z.json"
+SCHEMA_CAPTURE_2026_09_09 = ROOT / "data/contract/compile_strategy_plan/schema_20260909T080307Z.json"
 
 
-def test_api_pins_agree_with_the_named_schema_capture():
-    """A green suite proves pin-vs-capture agreement for THIS dated capture, not platform
+@pytest.mark.parametrize("capture", [SCHEMA_CAPTURE_2026_09_05, SCHEMA_CAPTURE_2026_09_09],
+                         ids=["2026-09-05", "2026-09-09"])
+def test_api_pins_agree_with_the_named_schema_capture(capture):
+    """A green suite proves pin-vs-capture agreement for THESE dated captures, not platform
     agreement. The preflight's gate never reads a committed capture (design 2026-09-04,
     'nothing stored in the repo is ever the truth for a verdict')."""
     from omega import preflight as P
-    definition = json.loads(SCHEMA_CAPTURE_2026_09_05.read_text(encoding="utf-8"))["response"]
+    definition = json.loads(capture.read_text(encoding="utf-8"))["response"]
     arms, root = P.resolve_arms(definition)
     create = P.deref(arms["CREATE"], root)
     assert set(create["properties"]) == API_ACCEPTS
     assert set(create["required"]) == API_REQUIRES
+
+
+def test_wire_entry_keys_match_the_live_schema_capture():
+    """The regression this exists for: on 2026-09-09 contract 54.1.0 removed
+    `entry.levelSource`, which omega had emitted since 2026-08-30. Nothing in the suite
+    compared the emitted entry object against the schema's own entry properties, so the
+    tool would have kept sending a key the platform now refuses and the failure would
+    have surfaced as a rejected compile. Pin both directions against the newest capture."""
+    from omega import preflight as P
+    definition = json.loads(SCHEMA_CAPTURE_2026_09_09.read_text(encoding="utf-8"))["response"]
+    arms, root = P.resolve_arms(definition)
+    entry_schema = P.deref(P.deref(arms["CREATE"], root)["properties"]["entry"], root)
+    allowed = set(entry_schema["properties"])
+    required = set(entry_schema.get("required", ()))
+    assert "levelSource" not in allowed, "capture predates the 54.1.0 removal - re-capture"
+    for name in sorted(PRESETS):
+        emitted = set(plan(PRESETS[name]).wire()["entry"])
+        assert emitted - allowed == set(), f"{name}: entry emits keys the API refuses"
+        assert required - emitted == set(), f"{name}: entry omits keys the API requires"

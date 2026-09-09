@@ -30,6 +30,9 @@
       ]
     },
     {
+      "id": "aggregate"
+    },
+    {
       "id": "efficiency"
     },
     {
@@ -41,7 +44,10 @@
   ],
   "spreadOperands": [
     "TRADES",
-    "BUY_TRADES"
+    "BUY_TRADES",
+    "REGIME_RUN_BARS",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_MOM_BEAR_VOTES"
   ],
   "rankOrderings": [
     "hi",

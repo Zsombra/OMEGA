@@ -1,6 +1,7 @@
 # 00 · The Mental Model
 
-> **Stale since 2026-09-05.** The platform now serves 135 metrics (49 added, none removed), wider transform attachment and two report-level sections this document does not know about. Measured record: [21 · Platform drift](21-platform-drift-2026-09-05.md). The numbers below describe the 2026-08-24 extraction.
+> **Stale since 2026-09-09.** The platform serves **144 metrics** (contract 54.1.0); SWING_HIGH/SWING_LOW were renamed to DONCHIAN_UPPER/DONCHIAN_LOWER and nine TPO market-profile metrics were added. The composability numbers below (322 legal cells, 488 shapes, 46 buildable families) describe the 2026-08-24 roster; the current ones are 663 / 1018. Measured record: [22 · Platform drift 2026-09-09](22-platform-drift-2026-09-09.md), superseding [21](21-platform-drift-2026-09-05.md).
+
 
 The single most useful reframing: **you are not writing indicators. You are composing a
 read over quantities the platform already computes.**

@@ -78,8 +78,13 @@ MODULE_RECIPES: dict[str, list[dict]] = {
         {"metric": "ROC12", "transformId": "crossDetect", "timeframe": {"rel": "anchor"}},
     ],
     "SUPPORT_RESISTANCE": [
-        {"metric": "SWING_HIGH", "transformId": "distance", "timeframe": {"rel": "anchor"}},
-        {"metric": "SWING_LOW", "transformId": "distance", "timeframe": {"rel": "anchor"}},
+        # 2026-09-09 (rename landed at contract 53.0.0, found in the 54.1.0 sweep):
+        # SWING_HIGH/SWING_LOW were RENAMED to DONCHIAN_UPPER/DONCHIAN_LOWER - identical
+        # nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi
+        # and swingLo->donchianLo. It always was a 20-bar Donchian channel; the old names
+        # answer to nothing now.
+        {"metric": "DONCHIAN_UPPER", "transformId": "distance", "timeframe": {"rel": "anchor"}},
+        {"metric": "DONCHIAN_LOWER", "transformId": "distance", "timeframe": {"rel": "anchor"}},
         {"metric": "PRICE_ZONE", "transformId": "value", "timeframe": {"rel": "anchor"}},
     ],
     "PRICE_STRUCTURE": [
@@ -431,10 +436,17 @@ class StrategyPlan:
             # defaults re-read from 6a8bca67 (levelSource SWING_HIGH even on a
             # both-directions strategy - mirrored, not interpreted). The 7-field
             # form compiled viable and round-tripped verbatim (b9438519).
+            # 2026-09-09, contract 54.1.0: `levelSource` was REMOVED from the entry object
+            # on all three arms (CREATE/UPDATE/RESTORE) - the platform now derives the level
+            # from the trigger and the trade's direction. Emitting it is an unknown key and
+            # the compile is refused, so the seven-field form above is dead. Measured by
+            # diffing the live compile schema against
+            # data/contract/compile_strategy_plan/schema_20260905T011443Z.json; the vendor
+            # README dates the removal to contract 52.0.0. The remaining six are still
+            # required on CREATE and their values are unchanged mirrors.
             "entry": {"trigger": "AT_SIGNAL", "confirmTf": self.thesis.anchor,
                       "closes": 1, "bandAtrMultiple": 1,
-                      "levelSource": "SWING_HIGH", "levelOffsetAtrMultiple": 0,
-                      "validForBars": 4},
+                      "levelOffsetAtrMultiple": 0, "validForBars": 4},
         }
         if self.thesis.execution:
             out.update(self.thesis.execution)   # validated in critique(); keys are API fields

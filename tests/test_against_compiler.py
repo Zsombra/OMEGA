@@ -52,7 +52,8 @@ def test_predicted_headers_match_compiler(case):
 
 
 def test_corpus_is_complete():
-    assert len(CONTRACT.metrics) == 86
+    # 144 as of the 2026-09-09 refresh (contract 54.1.0); was 86 on 2026-08-24.
+    assert len(CONTRACT.metrics) == 144
 
 
 def test_every_privileged_pair_is_rejected():

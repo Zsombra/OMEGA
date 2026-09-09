@@ -18,6 +18,9 @@
       "id": "trajectory"
     },
     {
+      "id": "classifyZone"
+    },
+    {
       "id": "spread",
       "operandRequired": true,
       "chainSuccessors": [
@@ -25,6 +28,9 @@
         "aggregate",
         "efficiency"
       ]
+    },
+    {
+      "id": "aggregate"
     },
     {
       "id": "efficiency"
@@ -36,10 +42,20 @@
   "spreadOperands": [
     "RSI14",
     "RSI7",
+    "RSI2",
     "STOCH_K",
     "STOCH_D",
     "MFI14",
-    "ADX"
+    "ADX",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "WILLR14",
+    "DI_PLUS",
+    "DI_MINUS",
+    "REGIME_TREND_MARGIN",
+    "REGIME_DI_SPREAD"
   ],
   "rankOrderings": [
     "hi",
@@ -47,5 +63,5 @@
     "far",
     "near"
   ],
-  "_note": "Unbounded oscillator (no range in nativeOutput) -> classifyZone NOT authorable, though platform template includeBollingerBands uses CCI20 x classifyZone."
+  "_note": "2026-08-24 note said classifyZone was NOT authorable on CCI20 though the platform's own includeBollingerBands template used it. LIFTED: classifyZone is offered on CCI20 as of the 2026-09-09 sweep, and CCI20 x classifyZone is no longer a platform-privileged pair."
 }

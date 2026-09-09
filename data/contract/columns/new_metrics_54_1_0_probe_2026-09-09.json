@@ -1,0 +1,424 @@
+{
+ "capturedAt": "2026-09-09T08:47Z (approx; clock read in the same minute as the call)",
+ "how": "preview_strategy_report via the mcporter CLI (read-only; renders without saving or mutating strategy state). Verbatim renderedSection, its conditionColumns block and budgetUsage; the platform-owned condition columns for sections not requested are omitted.",
+ "_what": "Do the eleven metrics that contract 54.1.0 added actually render? One custom section, value transform on each, BTC+ETH at a 1h anchor.",
+ "request": {
+  "timeframe": "1h",
+  "coinSelection": {
+   "mode": "explicit",
+   "tickers": [
+    "BTC",
+    "ETH"
+   ]
+  },
+  "sections": [
+   {
+    "kind": "custom",
+    "title": "New metric probe",
+    "benchmarkTicker": null,
+    "notes": "OMEGA read-only probe 2026-09-09: do the 54.1.0 metrics render?",
+    "columns": [
+     {
+      "metric": "TPO_POC",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "TPO_VAH",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "TPO_VAL",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "TPO_IB_HIGH",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "TPO_IB_LOW",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "TPO_SHAPE",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "PRIOR_TPO_POC",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "PRIOR_TPO_VAH",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "PRIOR_TPO_VAL",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "DONCHIAN_UPPER",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "DONCHIAN_LOWER",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "response_verbatim": {
+  "renderedSection": {
+   "sectionKey": "custom:5f1cfdda-2aa5-863e-822c-523eac475244",
+   "section": {
+    "title": "New metric probe",
+    "text": "OMEGA read-only probe 2026-09-09: do the 54.1.0 metrics render? tpoPOC: the price bin holding the most time in the current UTC session, over 5-bps bins — a point-in-time read at its own fold, absent for the session's first 60 minutes. tpoVAH: the upper edge of the 70% value area around the current session's point of control — a point-in-time read at its own fold, absent for the session's first 60 minutes. tpoVAL: the lower edge of the 70% value area around the current session's point of control — a point-in-time read at its own fold, absent for the session's first 60 minutes. tpoIBH: the highest price of the current session's first 60 minutes — a point-in-time read at its own fold, absent until that opening range closes. tpoIBL: the lowest price of the current session's first 60 minutes — a point-in-time read at its own fold, absent until that opening range closes. tpoShape: where the point of control sits inside the current session's value area, p-shape at or above 0.67 of its span and b-shape at or below the mirror — a point-in-time read at its own fold (p-shape / b-shape / balanced). pTpoPOC: the price bin that held the most time in the previous completed UTC session. pTpoVAH: the upper edge of the previous completed UTC session's 70% value area. pTpoVAL: the lower edge of the previous completed UTC session's 70% value area. donchianHi: the highest high of the last 20 closed bars — the Donchian channel's upper edge. donchianLo: the lowest low of the last 20 closed bars — the Donchian channel's lower edge.\n\n| coin | tpoPOC | tpoVAH | tpoVAL | tpoIBH | tpoIBL | tpoShape | pTpoPOC | pTpoVAH | pTpoVAL | donchianHi | donchianLo |\n|---|---|---|---|---|---|---|---|---|---|---|---|\n| BTC | $78752.28 | $79105.17 | $78556.23 | $78750.00 | $78418.00 | balanced | — | — | — | $79600.00 | $77617.00 |\n| ETH | $2496.10 | $2502.31 | $2487.41 | $2496.50 | $2484.30 | balanced | — | — | — | $2520.40 | $2440.00 |"
+   },
+   "structure": null,
+   "authoredNote": "OMEGA read-only probe 2026-09-09: do the 54.1.0 metrics render?"
+  },
+  "conditionColumns_probe": {
+   "sectionKey": "custom:5f1cfdda-2aa5-863e-822c-523eac475244",
+   "title": "New metric probe",
+   "benchmarkTicker": null,
+   "outputs": [
+    {
+     "header": "tpoPOC",
+     "meaning": "tpoPOC: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "tpoPOC",
+     "closeClockReadable": false
+    },
+    {
+     "header": "tpoVAH",
+     "meaning": "tpoVAH: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "tpoVAH",
+     "closeClockReadable": false
+    },
+    {
+     "header": "tpoVAL",
+     "meaning": "tpoVAL: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "tpoVAL",
+     "closeClockReadable": false
+    },
+    {
+     "header": "tpoIBH",
+     "meaning": "tpoIBH: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "tpoIBH",
+     "closeClockReadable": false
+    },
+    {
+     "header": "tpoIBL",
+     "meaning": "tpoIBL: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "tpoIBL",
+     "closeClockReadable": false
+    },
+    {
+     "header": "tpoShape",
+     "meaning": "tpoShape: latest value.",
+     "conditionOperators": [
+      "is",
+      "in"
+     ],
+     "conditionVocabulary": [
+      "p-shape",
+      "b-shape",
+      "balanced"
+     ],
+     "markerToken": "tpoShape",
+     "closeClockReadable": false
+    },
+    {
+     "header": "pTpoPOC",
+     "meaning": "pTpoPOC: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "pTpoPOC",
+     "closeClockReadable": false
+    },
+    {
+     "header": "pTpoVAH",
+     "meaning": "pTpoVAH: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "pTpoVAH",
+     "closeClockReadable": false
+    },
+    {
+     "header": "pTpoVAL",
+     "meaning": "pTpoVAL: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "pTpoVAL",
+     "closeClockReadable": false
+    },
+    {
+     "header": "donchianHi",
+     "meaning": "donchianHi: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "donchianHi",
+     "closeClockReadable": true
+    },
+    {
+     "header": "donchianLo",
+     "meaning": "donchianLo: latest value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "donchianLo",
+     "closeClockReadable": true
+    }
+   ]
+  },
+  "budgetUsage": {
+   "sections": {
+    "used": 1,
+    "cap": 32
+   },
+   "sectionColumns": {
+    "used": 11,
+    "cap": 32
+   },
+   "columnLookback": {
+    "used": 24,
+    "cap": 32
+   },
+   "distinctTimeframes": {
+    "used": 1,
+    "cap": 8
+   },
+   "estimatedTokens": {
+    "used": 590,
+    "cap": 32000
+   },
+   "reportNoteChars": {
+    "used": 63,
+    "cap": 3200
+   }
+  },
+  "resolvedCoinTickers": [
+   "BTC",
+   "ETH"
+  ]
+ },
+ "measured": {
+  "renderCount": "11/11 columns compiled and were listed as condition columns",
+  "renderedValues": "current-session TPO (tpoPOC, tpoVAH, tpoVAL, tpoIBH, tpoIBL, tpoShape) and both Donchian edges returned real values on BOTH coins",
+  "nullSentinel": "prior-session TPO (pTpoPOC, pTpoVAH, pTpoVAL) returned the null sentinel on BOTH coins at this timestamp. Cause NOT determined - the glossary says 'the previous completed UTC session', which existed at call time. Do not read this as 'broken' or as 'warm-up'; it is one observation at one time.",
+  "headers": {
+   "tpoPOC": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "tpoVAH": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "tpoVAL": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "tpoIBH": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "tpoIBL": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "tpoShape": {
+    "ops": [
+     "is",
+     "in"
+    ],
+    "vocab": [
+     "p-shape",
+     "b-shape",
+     "balanced"
+    ]
+   },
+   "pTpoPOC": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "pTpoVAH": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "pTpoVAL": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "donchianHi": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   },
+   "donchianLo": {
+    "ops": [
+     "lt",
+     "lte",
+     "gte",
+     "gt",
+     "between"
+    ],
+    "vocab": []
+   }
+  },
+  "gateability": "all eleven are gateable: the eight price-unit reads take lt/lte/gte/gt/between, tpoShape takes is/in over ['p-shape','b-shape','balanced']"
+ }
+}

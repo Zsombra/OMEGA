@@ -36,7 +36,8 @@
     "HIGH_DEV",
     "LOW_DEV",
     "FUNDING_RATE",
-    "FUNDING_ANN"
+    "FUNDING_ANN",
+    "REGIME_CRASH_MARGIN"
   ],
   "rankOrderings": [
     "hi",

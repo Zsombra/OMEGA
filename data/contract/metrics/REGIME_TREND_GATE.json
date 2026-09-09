@@ -1,0 +1,21 @@
+{
+  "metric": "REGIME_TREND_GATE",
+  "label": "Regime · trend gate",
+  "code": "regGate",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "cleared",
+      "held",
+      "dropped"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

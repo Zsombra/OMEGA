@@ -366,7 +366,10 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
 # Values omega hardcodes as platform mirrors. confirmTf is excluded: it is the thesis
 # anchor by design (Step 0 amendment, 2026-08-30). sections[].notes is excluded: omega sends a
 # provenance string on purpose while null acceptance is unmeasured.
-MIRROR_ENTRY_FIELDS = ("trigger", "closes", "bandAtrMultiple", "levelSource",
+# `levelSource` was dropped 2026-09-09: contract 54.1.0 removed it from the entry object,
+# so there is no longer a platform value to mirror. A record written before the removal
+# still carries it; that is history, not a field omega should emit.
+MIRROR_ENTRY_FIELDS = ("trigger", "closes", "bandAtrMultiple",
                        "levelOffsetAtrMultiple", "validForBars")
 MIRROR_CONDITION_FIELDS = ("clock", "closes", "exit")
 

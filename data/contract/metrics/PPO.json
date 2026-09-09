@@ -27,6 +27,12 @@
       ]
     },
     {
+      "id": "crossDetect"
+    },
+    {
+      "id": "aggregate"
+    },
+    {
       "id": "efficiency"
     },
     {
@@ -47,7 +53,8 @@
     "LOW_DEV",
     "FUNDING_RATE",
     "FUNDING_ANN",
-    "OI_CHG"
+    "OI_CHG",
+    "REGIME_CRASH_MARGIN"
   ],
   "rankOrderings": [
     "hi",

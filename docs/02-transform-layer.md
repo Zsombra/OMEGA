@@ -4,8 +4,8 @@
 
 A transform is **how you read** a metric. There are 16 authorable transforms.
 Crucially the metric×transform matrix is a **sparse partial function**, not a grid:
-only **322 of 86×16 = 1376** cells are legal
-(**23.4%** density).
+only **663 of 144×16 = 2304** cells are legal
+(**28.8%** density).
 
 ## Reference
 
@@ -17,7 +17,7 @@ Select one value at the requested offset.
 output = base[t - offset]
 ```
 
-- **Supported on:** 85 metric(s)
+- **Supported on:** 143 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the requested slot is absent or the source value is null.
 - **Parameters:**
@@ -31,7 +31,7 @@ Render the recent build-up plus its rising, falling, or flat direction.
 slots = last window non-null base values; trend = compare(first, last)
 ```
 
-- **Supported on:** 46 metric(s)
+- **Supported on:** 80 metric(s)
 - **Emits:** window + 1 — window value slots (_t{n-1}..._t1, _now) plus one _trend direction output.
 - **Null behaviour:** Missing observations produce null slots; an empty series has null now and trend.
 - **Parameters:**
@@ -46,7 +46,7 @@ Measure signed percentage distance from current price to a price-level metric.
 output = ((price - base) / base) × 100
 ```
 
-- **Supported on:** 18 metric(s)
+- **Supported on:** 51 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when price or the base level is null, or when the base level is zero.
 - **Parameters:** none
@@ -60,7 +60,7 @@ Measure the signed percentage gap between the base and one operand metric.
 output = (base - inputs[0]) / inputs[0] × 100
 ```
 
-- **Supported on:** 57 metric(s)
+- **Supported on:** 108 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when either operand is null or the second operand is zero.
 - **Parameters:**
@@ -75,7 +75,7 @@ Measure how directly the series travelled: net movement divided by the total dis
 output = |base[last] - base[first]| / sum(|base[i] - base[i-1]|) over the window
 ```
 
-- **Supported on:** 43 metric(s)
+- **Supported on:** 77 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the window holds fewer than two non-null points, or when every consecutive delta is zero (a flat series has no efficiency).
 - **Parameters:**
@@ -91,7 +91,7 @@ Compute the mean of non-null history values in the selected window.
 output = sum(nonNull(base[-window:])) / count(nonNull(base[-window:]))
 ```
 
-- **Supported on:** 3 metric(s)
+- **Supported on:** 77 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the selected history window has no non-null values.
 - **Parameters:**
@@ -106,7 +106,7 @@ Report how much of the window total sits in its single largest observation.
 output = max(nonNull(base[-window:])) / sum(nonNull(base[-window:]))
 ```
 
-- **Supported on:** 14 metric(s)
+- **Supported on:** 20 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the window holds no non-null values, or when they total zero (a share of nothing is not a number).
 - **Parameters:**
@@ -122,7 +122,7 @@ Read the platform-computed ordinal for the base metric across the tracked univer
 output = ordinal(base among the ranked universe, by the chosen ordering)
 ```
 
-- **Supported on:** 31 metric(s)
+- **Supported on:** 40 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the ranked universe carries no entry for the asset.
 - **Parameters:**
@@ -137,7 +137,7 @@ Classify a bounded oscillator with its canonical overbought and oversold policy.
 output = oscillatorZone(base)
 ```
 
-- **Supported on:** 5 metric(s)
+- **Supported on:** 8 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the source oscillator is null.
 - **Parameters:** none
@@ -150,7 +150,7 @@ Detect a bullish or bearish crossing in the canonical source series.
 output = crossDirection(base[t - 1], base[t])
 ```
 
-- **Supported on:** 2 metric(s)
+- **Supported on:** 3 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the two observations required for crossing are unavailable.
 - **Parameters:** none
@@ -163,7 +163,7 @@ Classify current price proximity to the canonical upper and lower bands.
 output = bandTouch(base, current price)
 ```
 
-- **Supported on:** 13 metric(s)
+- **Supported on:** 51 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the price or band values required by the classifier are unavailable.
 - **Parameters:** none
@@ -238,66 +238,6 @@ output = floor((now - detectedAt(nearest zone)) / 1 hour)
 - **Parameters:**
   - `side` (required) — Select whether the nearest support or resistance zone is resolved.
 
-## Which of these formulas have actually been checked
-
-The formulas above are what the contract *publishes*. Until 2026-08-25 exactly one of
-them had ever been checked against what the engine *computes*. **All 17 now have.**
-
-Method: render each transform beside its own `trajectory` slots in the same table, so no
-external data is needed and no sampling drift can enter between operand and result.
-Evidence in `data/audit/transform_formula_audit.json`, guarded by
-`tests/test_transform_formulas.py`.
-
-| transform | verdict |
-|---|---|
-| `trajectory` | exact — slots identical to the last five closed candles |
-| `efficiency` | exact — and a monotonic run gives exactly 1.000 |
-| `maxShare` | exact on two coins |
-| `aggregate` | exact, on a **varying** series — the arithmetic mean, not a median |
-| `distance` | exact on two coins |
-| `spread` | exact — six columns |
-| `rank` | exact — `hi + lo = universe + 1` on every coin tested |
-| `value` | exact at offset 0 **and** offset 3 |
-| `classifyZone` | behaviourally exact; threshold not pinned from three points |
-| `bandTouch` | direction verified; trigger threshold not pinned |
-| `nearestZoneType` | consistent on three coins |
-| `count` | plausible, not independently verifiable |
-| `crossDetect` | **scope exact** — reads the last pair only; trigger not pinned |
-
-The last four were closed by dropping two bad assumptions:
-
-- **`nearestZoneRange`** and **`nearestZoneAge`** were called unverifiable because
-  "nothing is exposed to check them against". But an FVG is a *defined three-bar
-  pattern*. Scanning 148 regime-timeframe bars for `high[i-2] < low[i]` found the
-  rendered zone `$77,859–$77,923` **exact to the dollar**, one match out of twenty
-  candidates, the next-closest $2,594 away. Its third bar closes at 16:00Z, and the
-  rendered age of 21h counts from that close — not from the bar's open, which would
-  give 25h.
-- **`classifyState`** was called "not buildable, so not verifiable", which conflated
-  *authoring* with *observing*. It cannot go in a custom column, but the
-  `includeTrendStrength` platform section renders it: ADX 23.2 → `developing`, in the
-  conventional 20–25 band.
-- **`nearestZoneDist`** was simply misfiled. The transform was measured and works; the
-  *published formula* is what is wrong (BG-9). That is a documentation defect, not an
-  unverified transform.
-
-### The metric conventions that had a real choice
-
-Three metrics have competing definitions in the wild, so which one ships is information
-rather than a formality. Measured against 876 Hyperliquid bars:
-
-| | implemented | rejected alternative |
-|---|---|---|
-| `ADX` | **Wilder's own smoothing** (24.88 vs 24.90) | plain MA of DX — off by 10 points |
-| `CCI20` | **`0.015 ×` mean absolute deviation** (−39.27 vs −39.30) | standard deviation — off by 4 |
-| `STOCH_K/D` | **slow (14,3,3)** (21.84 / 30.82 vs 22 / 31) | fast (14,1,3); and (14,3,1) fits `%K` but not `%D` |
-
-Ten points of ADX flips `trend_adx_trending` at its 25 threshold. The `(14,3,1)` case is
-the instructive one — it reproduces `%K` *exactly* and gets `%D` wrong, so a check of
-`%K` alone would have confirmed the wrong convention.
-
-Full detail in [19 · Is the data correct?](19-is-the-data-correct.md).
-
 ## Spread operand pools
 
 `spread` is unit-typed. A metric may only spread against operands sharing its
@@ -306,19 +246,20 @@ Full detail in [19 · Is the data correct?](19-is-the-data-correct.md).
 
 | Unit | Size | Members |
 |---|---|---|
-| `count` | 3 | `BUY_TRADES`, `SELL_TRADES`, `TRADES` |
-| `fraction` | 2 | `BB_PCT_B`, `BUY_PRESSURE` |
+| `count` | 6 | `BUY_TRADES`, `REGIME_MOM_BEAR_VOTES`, `REGIME_MOM_BULL_VOTES`, `REGIME_RUN_BARS`, `SELL_TRADES`, `TRADES` |
+| `fraction` | 3 | `BB_PCT_B`, `BUY_PRESSURE`, `STOCH_RSI14` |
 | `largeCount` | 5 | `BUY_VOLUME`, `OBV`, `SELL_VOLUME`, `VOLUME`, `VOL_SMA20` |
-| `oscillator` | 7 | `ADX`, `CCI20`, `MFI14`, `RSI14`, `RSI7`, `STOCH_D`, `STOCH_K` |
-| `percent` | 15 | `ATR_PCT`, `BB_WIDTH_PCT`, `CHG_15M`, `CHG_1H`, `CHG_24H`, `CHG_4H`, `CHG_5M`, `CLOSE_CHANGE`, `FUNDING_ANN`, `FUNDING_RATE`, `HIGH_DEV`, `LOW_DEV`, `OI_CHG`, `PPO`, `ROC12` |
-| `price` | 18 | `CLOSE`, `EMA13`, `EMA20`, `EMA5`, `HIGH`, `LAST`, `LOW`, `MARK`, `OPEN`, `ORACLE`, `SMA20`, `SMA200`, `SMA50`, `SPOT_CLOSE_BN`, `SPOT_CLOSE_CB`, `SWING_HIGH`, `SWING_LOW`, `VWAP` |
+| `oscillator` | 17 | `ADX`, `CCI20`, `DI_MINUS`, `DI_PLUS`, `MFI14`, `QQE_RSI_MA`, `QQE_STOP`, `REGIME_DI_SPREAD`, `REGIME_TREND_MARGIN`, `RSI14`, `RSI2`, `RSI7`, `STOCH_D`, `STOCH_K`, `WILLR14`, `WT1`, `WT2` |
+| `percent` | 16 | `ATR_PCT`, `BB_WIDTH_PCT`, `CHG_15M`, `CHG_1H`, `CHG_24H`, `CHG_4H`, `CHG_5M`, `CLOSE_CHANGE`, `FUNDING_ANN`, `FUNDING_RATE`, `HIGH_DEV`, `LOW_DEV`, `OI_CHG`, `PPO`, `REGIME_CRASH_MARGIN`, `ROC12` |
+| `price` | 51 | `BB_LOWER`, `BB_UPPER`, `CLOSE`, `DONCHIAN_LOWER`, `DONCHIAN_UPPER`, `EMA13`, `EMA20`, `EMA21`, `EMA5`, `EMA50`, `EMA9`, `HIGH`, `HMA20`, `ICHI_BASE`, `ICHI_CONV`, `ICHI_LAG`, `ICHI_SPAN_A`, `ICHI_SPAN_B`, `KC_LOWER`, `KC_MID`, `KC_UPPER`, `LAST`, `LOW`, `MARK`, `OPEN`, `ORACLE`, `PDH`, `PDL`, `PIVOT_P`, `PIVOT_R1`, `PIVOT_R2`, `PIVOT_R3`, `PIVOT_S1`, `PIVOT_S2`, `PIVOT_S3`, `PRIOR_TPO_POC`, `PRIOR_TPO_VAH`, `PRIOR_TPO_VAL`, `PSAR`, `SMA20`, `SMA200`, `SMA50`, `SPOT_CLOSE_BN`, `SPOT_CLOSE_CB`, `ST_LINE`, `TPO_IB_HIGH`, `TPO_IB_LOW`, `TPO_POC`, `TPO_VAH`, `TPO_VAL`, `VWAP` |
+| `ratio` | 3 | `REGIME_VOL_ATR_RATIO`, `REGIME_VOL_BBW_RATIO`, `RVOL` |
 | `signedPrice` | 5 | `ATR`, `BB_WIDTH`, `CVD`, `MACD`, `SPOT_CVD` |
 | `usdLargeCount` | 2 | `NOTIONAL_VOLUME_1D`, `OI` |
 
 `RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —
 its pool would have exactly one member.
 
-29 metrics offer no `spread`: mostly classifications,
+36 metrics offer no `spread`: mostly classifications,
 booleans, events and the entity set.
 
 ## Platform-privileged pairs
@@ -328,7 +269,6 @@ returns `REPORT_COLUMN_PAIR_UNSUPPORTED`.
 
 | Metric | Transform | Used by | Authorable substitute |
 |---|---|---|---|
-| `CCI20` | `classifyZone` | `includeBollingerBands` | — |
 | `ADX` | `classifyState` | `includeTrendStrength` | `classifyZone` |
 | `MFI14` | `classifyState` | `includeMfi` | `classifyZone` |
 | `CVD` | `classifyState` | `includeCvd` | — |

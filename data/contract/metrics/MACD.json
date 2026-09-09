@@ -30,6 +30,9 @@
       "id": "crossDetect"
     },
     {
+      "id": "aggregate"
+    },
+    {
       "id": "efficiency"
     }
   ],

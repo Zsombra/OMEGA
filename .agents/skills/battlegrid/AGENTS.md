@@ -17,28 +17,36 @@ Machine-readable agent discovery file for `@battlegrid/mcp-server` (thin stdio p
 
 | Field | Value |
 |-------|-------|
-| Method | API Key (stdio) / OAuth 2.1 (remote, ChatGPT Desktop) |
-| Format | `bg_live_*` |
-| Header | `Authorization: Bearer <API_KEY>` |
-| Obtain | https://battlegrid.trade → Profile → MCP tab |
+| Method | OAuth 2.1 with Dynamic Client Registration (default, remote) / API key (fallback — headless, no remote transport, or multi-account). Authentication is a property of the PATH, not of the client. |
+| Format | `bg_live_*` (API key path only) |
+| Header | `Authorization: Bearer <API_KEY>` (API key path only; OAuth carries its own token) |
+| Obtain | OAuth needs nothing to obtain — authorize in the browser. For a key: https://battlegrid.trade → Profile → MCP tab |
 | Scopes | `mcp:read` (discovery + non-financial config writes), `mcp:wager` (financial actions) |
 
 ## Connection
 
-### Option A: npm / stdio
+### Option A: Remote / streamable-http over OAuth — the default
 
-```bash
-# Single account
-BATTLEGRID_API_KEY=bg_live_xxx npx @battlegrid/mcp-server
-# Multiple accounts
-BATTLEGRID_API_KEYS=bg_live_aaa,bg_live_bbb npx @battlegrid/mcp-server
+```
+URL: https://mcp.battlegrid.trade/mcp
 ```
 
-### Option B: Remote / streamable-http
+Register the URL on a streamable-http transport and authorize: the client registers itself by Dynamic Client Registration and BattleGrid's consent page opens in the browser. No npm package, no API key. Grants are listed and revocable under Profile → MCP → OAuth Sessions.
+
+### Option B: API key — headless, no remote transport, or multi-account
+
+Use a key when the runtime cannot open a browser to consent, when the client speaks stdio only, or when one process drives several BattleGrid accounts (OAuth grants one account each).
 
 ```
 URL: https://mcp.battlegrid.trade/mcp
 Header: Authorization: Bearer bg_live_xxx
+```
+
+```bash
+# npm / stdio, single account
+BATTLEGRID_API_KEY=bg_live_xxx npx @battlegrid/mcp-server
+# npm / stdio, multiple accounts
+BATTLEGRID_API_KEYS=bg_live_aaa,bg_live_bbb npx @battlegrid/mcp-server
 ```
 
 ## Capabilities — discovered live

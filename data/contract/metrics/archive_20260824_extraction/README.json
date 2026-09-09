@@ -1,0 +1,10 @@
+{
+ "_what": "The 2026-08-24 extraction batches, superseded by the 2026-09-09 sweep (contract 54.1.0). Kept for provenance: they are the raw record the 86-metric corpus and every August measurement were built from. Moved out of the metrics/ glob so build_corpus.py does not merge both rosters.",
+ "files": [
+  "_batch01.json",
+  "_batch02.json",
+  "_batch03.json",
+  "_batch04.json",
+  "_batch05.json"
+ ]
+}

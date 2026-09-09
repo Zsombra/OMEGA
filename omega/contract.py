@@ -116,8 +116,14 @@ def load() -> Contract:
             rank_orderings=tuple(rec.get("rankOrderings", ())),
         )
 
-    if len(metrics) != 86:
-        raise RuntimeError(f"corpus incomplete: {len(metrics)} metrics, expected 86")
+    # The roster size is the platform's to choose, not ours to pin: it went 86 (2026-08-24)
+    # -> 135 (09-05) -> 144 (09-09, contract 54.1.0). A literal here made the loader raise
+    # the moment the corpus was refreshed. Check the corpus against its OWN index instead,
+    # which still catches a half-written or partially-committed refresh.
+    expected = _load(CONTRACT_DIR / "metrics" / "_index.json")["metricCount"]
+    if len(metrics) != expected:
+        raise RuntimeError(
+            f"corpus incomplete: {len(metrics)} metric files, _index.json says {expected}")
 
     return Contract(
         metrics=metrics,

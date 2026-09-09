@@ -99,7 +99,7 @@
      "transformId": "spread",
      "inputs": [
       {
-       "metric": "SWING_HIGH"
+       "metric": "DONCHIAN_UPPER"
       }
      ]
     },
@@ -108,7 +108,7 @@
      "transformId": "spread",
      "inputs": [
       {
-       "metric": "SWING_LOW"
+       "metric": "DONCHIAN_LOWER"
       }
      ]
     }
@@ -1011,5 +1011,8 @@
   ],
   "ungateable": []
  },
- "_attributionCaveat": "The `attribution` field on each family is MY mapping of a construction to a paper, not a measurement and not the platform's claim. It says 'this column set implements the shape of that idea', which is a judgement call and is sometimes arguable - a rank of funding is the carry factor in perpetuals, but Koijen et al. did not write about perpetuals. Everything else in this file was measured against the live engine; this field alone was not. Treat it as a reading aid, not evidence."
+ "_attributionCaveat": "The `attribution` field on each family is MY mapping of a construction to a paper, not a measurement and not the platform's claim. It says 'this column set implements the shape of that idea', which is a judgement call and is sometimes arguable - a rank of funding is the carry factor in perpetuals, but Koijen et al. did not write about perpetuals. Everything else in this file was measured against the live engine; this field alone was not. Treat it as a reading aid, not evidence.",
+ "_renames": [
+  "2026-09-09: SWING_HIGH/SWING_LOW renamed to DONCHIAN_UPPER/DONCHIAN_LOWER at contract 53.0.0 - identical nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi / swingLo->donchianLo. The names below were updated; the measurement they record is unchanged because the underlying indicator is the same 20-bar channel."
+ ]
 }

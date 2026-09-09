@@ -24,7 +24,7 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
-## Contract history — v37 → v53
+## Contract history — v37 → v54
 
 Eleven majors reached authors while this section stopped at v36. That gap is the mechanism, not an
 oversight: since v31 a contract move needs no release here, so nothing forced a note to be written —
@@ -291,6 +291,45 @@ refuse is now stored. Listed because a client that special-cased the refusal can
 
 ### Reshaped output — the same call returns a different shape
 
+- **`scan_agent_coins` returns the ranking, not an explanation of every coin** (54.0.0,
+  `fix-mcp-scan-row-altitude`). The scan used to wrap the app's full per-coin qualification verdict
+  in every row — two directions with candidate-level construction and a stop-loss policy band, four
+  gates each with its own measurement, condition reach reasons, the ATR corridor. For a 78-coin
+  catalog that was **82,147 characters, ~1,053 per row**, which is past the tool-result cap of every
+  client we know of: the calling model received a file path instead of an answer, so the tool did not
+  deliver its result even when the scan succeeded.
+
+  `rows` is gone. Three ranked arrays replace it, and `rank` is **global across all three**, so
+  reading them in this order reproduces the server's own sequence:
+
+  ```
+  qualified[]   { rank, coinTicker, scorePercent, coinDataStopped }
+  rejected[]    { rank, coinTicker, scorePercent, firstFailReason, scoreShortfallPercent }
+  unscorable[]  { rank, coinTicker, coinDataStopped }
+  ```
+
+  Array membership now carries what the row `kind` discriminator and the `qualifies` flag used to,
+  and both are gone with them; `firstFailReason` is non-nullable on a rejected row, because a
+  non-qualifying verdict always names the gate that blocked it. Rows also lose `long`, `short`,
+  `gates`, `tradeableAtrRange`, `evaluatedAt`, `coinName`, `assetClass` and `category`.
+
+  Two things are new. The agent's `agentId`, `agentName`, `strategyTimeframe` and `minScorePercent`
+  move to an `agent` object carried **once** instead of on all 78 rows — `null` when the scan scored
+  nothing at all. And `scoreShortfallPercent` is server-computed: how far below the minimum the score
+  fell, non-null exactly when the aggregate score is what blocked, so you never subtract a published
+  threshold from a published reading yourself.
+
+  `scanStartedAt`, `coinsScanned` and `qualifiedCount` are unchanged, and so is every coin: same
+  rows, same order, same ranks, same verdicts, same rate buckets, same evaluator. Only the fields
+  moved — about 8.8 KB for the same 78-coin scan.
+
+  **Migration.** Read `qualified` / `rejected` / `unscorable` instead of `rows`, and take the agent's
+  thresholds from `agent` rather than from the first row. For a shortlisted coin's full per-direction
+  and per-gate detail, call `get_agent_coin_qualification` on up to 12 tickers — it carries every
+  dropped field and costs no second scan (the scan is rate-limited to 3 per agent and 10 per user a
+  minute; the probe is not).
+
+
 - **Report headers, glosses and signal indicator keys are renamed for the Donchian channel**
   (53.0.0, `rename-donchian-channel`). Every report surface — `preview_strategy_report`,
   `get_strategy_section_template`, the agent prompt previews — renders `donchianHi` / `donchianLo`
@@ -412,6 +451,58 @@ refuse is now stored. Listed because a client that special-cased the refusal can
   The `unavailable` arm deliberately does **not** carry `triggered`: "the claim could not be joined to
   a stored result" and "the signal did not fire" are different states, and leaving the key off that
   arm makes conflating them a type error rather than a convention.
+
+### Additive in the same span
+
+- **Two tools join the catalog for the agent trade flow** (52.1.0, `add-mcp-agent-trade-flow`).
+  `scan_agent_coins` evaluates every active coin against one of your agents in a single call and
+  returns them server-ranked, on the same use case, buckets and ranking the app's own TRADE-tab scan
+  serves. `propose_entry_decision` runs the conversational trade turn headlessly for one (agent,
+  coin) and returns its terminal in the stream's own vocabulary: `type: recommendation` carrying the
+  PROPOSED `TradingEntryDecisionDTO` row that `get_entry_decision` and `list_pending_approvals`
+  already publish, `type: no_trade`, or `type: error` carrying the turn's `TradeConvError` verbatim.
+  Nothing narrows and no existing schema hash moves; the 12-ticker `get_agent_coin_qualification`
+  stays as the spot-check probe.
+
+  **`idempotencyKey` is REQUIRED on `propose_entry_decision`** — it is the turn's own key, and a
+  same-key retry replays the recorded terminal rather than paying for a second inference. That
+  includes a post-billing `LLM_FAILURE`, which is returned as a value for precisely that reason.
+  Pre-engine faults are typed errors instead: `RATE_LIMITED`, `NOT_FOUND`, `CONFLICT` for a same-key
+  call still in flight, and `SERVICE_UNAVAILABLE` when the surface is switched off. Both tools
+  refuse with `RATE_LIMITED` carrying `retryAfterSeconds` under the same per-(user, agent) limit the
+  app itself enforces, so a scan is never served stale or partial.
+
+- **`get_regime_snapshot` publishes the evidence behind the verdict** (47.1.0,
+  `publish-regime-classification-evidence`). The snapshot gains `evidence`: the quantities the
+  classifier read, the gates it tested them against, the signed margin to the gate deciding whether
+  the current label survives, and the two decision facts only the classifier holds — `gateState`
+  (`cleared` / `held` / `dropped`) and `directionSource` (`di` / `ema`). Nothing narrows; a client
+  that ignores the field is unaffected.
+
+  Read `gateState` before you trust a trend label: **`held` means the ADX hysteresis buffer is
+  carrying the PREVIOUS bar's label rather than this bar re-confirming it** — a materially weaker
+  claim wearing the same word, and one no client could previously detect. `directionSource: 'ema'`
+  is the same shape of warning: the direction came from the fallback that fires precisely when the
+  DI spread is indecisive. The margin is signed so **positive always means "the current label
+  survives by this much"**, in every gate state, so it is safe to branch on its sign.
+
+  `conviction` is a BRANCH DISCRIMINATOR, not a confidence: it encodes *which* rule in the priority
+  ladder matched, not how comfortably it matched. The margins carry comfort. A client reading
+  conviction as a strength score is reading it wrong, and always was — this release just makes the
+  alternative available.
+
+- **Thirteen metric keys join the catalog** (47.1.0) — the `regime` family gains `REGIME_STATE`,
+  `REGIME_CONVICTION`, `REGIME_RUN_BARS`, `REGIME_TREND_GATE`, `REGIME_TREND_MARGIN`,
+  `REGIME_TREND_SOURCE`, `REGIME_DI_SPREAD`, `REGIME_VOL_ATR_RATIO`, `REGIME_VOL_BBW_RATIO`,
+  `REGIME_MOM_BULL_VOTES`, `REGIME_MOM_BEAR_VOTES`, `REGIME_CRASH_MARGIN` and `REGIME_CRASH_LATCH`,
+  making the composite regime and its evidence addressable in a report column or condition for the
+  first time. Only a client that switches exhaustively on `MetricKey` needs new branches.
+
+  Not a contract change, but worth knowing if you author conditions: the report grammar's regime
+  metrics now resolve from the **confirmed close** on every path. They previously resolved from the
+  forming bar when a report was rendered and the confirmed close when the scan swept, so the same
+  condition could read differently in preview than in production. Same wire shape; same bar
+  everywhere now.
 
 ## Contract history — v12 → v36
 
@@ -565,38 +656,6 @@ Nothing in the proxy changes. No configuration, no environment variable, no call
 
 ### Additive in the same span
 
-- **`get_regime_snapshot` publishes the evidence behind the verdict** (47.1.0,
-  `publish-regime-classification-evidence`). The snapshot gains `evidence`: the quantities the
-  classifier read, the gates it tested them against, the signed margin to the gate deciding whether
-  the current label survives, and the two decision facts only the classifier holds — `gateState`
-  (`cleared` / `held` / `dropped`) and `directionSource` (`di` / `ema`). Nothing narrows; a client
-  that ignores the field is unaffected.
-
-  Read `gateState` before you trust a trend label: **`held` means the ADX hysteresis buffer is
-  carrying the PREVIOUS bar's label rather than this bar re-confirming it** — a materially weaker
-  claim wearing the same word, and one no client could previously detect. `directionSource: 'ema'`
-  is the same shape of warning: the direction came from the fallback that fires precisely when the
-  DI spread is indecisive. The margin is signed so **positive always means "the current label
-  survives by this much"**, in every gate state, so it is safe to branch on its sign.
-
-  `conviction` is a BRANCH DISCRIMINATOR, not a confidence: it encodes *which* rule in the priority
-  ladder matched, not how comfortably it matched. The margins carry comfort. A client reading
-  conviction as a strength score is reading it wrong, and always was — this release just makes the
-  alternative available.
-
-- **Thirteen metric keys join the catalog** (47.1.0) — the `regime` family gains `REGIME_STATE`,
-  `REGIME_CONVICTION`, `REGIME_RUN_BARS`, `REGIME_TREND_GATE`, `REGIME_TREND_MARGIN`,
-  `REGIME_TREND_SOURCE`, `REGIME_DI_SPREAD`, `REGIME_VOL_ATR_RATIO`, `REGIME_VOL_BBW_RATIO`,
-  `REGIME_MOM_BULL_VOTES`, `REGIME_MOM_BEAR_VOTES`, `REGIME_CRASH_MARGIN` and `REGIME_CRASH_LATCH`,
-  making the composite regime and its evidence addressable in a report column or condition for the
-  first time. Only a client that switches exhaustively on `MetricKey` needs new branches.
-
-  Not a contract change, but worth knowing if you author conditions: the report grammar's regime
-  metrics now resolve from the **confirmed close** on every path. They previously resolved from the
-  forming bar when a report was rendered and the confirmed close when the scan swept, so the same
-  condition could read differently in preview than in production. Same wire shape; same bar
-  everywhere now.
-
 `27.1.0` exit-policy authoring input on `compile_strategy_plan` · `19.2.0` `get_account_state` account identity · `19.1.0` Standing Orders marker authoring · `18.4.0` `list_gate_blocks` summary groups · `18.3.0` radar maintenance pause · `18.1.0` protection geometry · `17.2.0` break-even/trailing status · `17.1.0` `get_signal_log` condition evaluation · `13.1.0` four owner-scoped read tools · `12.1.0` cross-venue spot price metrics · `11.1.0` discoverable rate limit.
 
 ## v11 and earlier — contract history (v6 → v11)
@@ -706,33 +765,45 @@ The v3 authoring contract below is unchanged and still current:
 
 ## Quick Start
 
-### Single account (stdio transport)
-
-```bash
-BATTLEGRID_API_KEY=bg_live_xxx npx @battlegrid/mcp-server
-```
-
-### Multiple accounts (stdio transport)
-
-```bash
-BATTLEGRID_API_KEYS=bg_live_alice_key,bg_live_bob_key npx @battlegrid/mcp-server
-```
-
-When multiple keys are provided, the server discovers each account's identity and injects a required `account` parameter into every tool so the AI agent can choose which account to act as.
-
-### Remote server (streamable-http transport)
+### Remote server, OAuth — start here
 
 ```
 https://mcp.battlegrid.trade/mcp
 ```
 
-No npm install required — connect directly from any MCP client that supports streamable-http.
+Give that URL to your MCP client over its streamable-http (remote) transport and authorize: the
+client registers itself by Dynamic Client Registration, BattleGrid's consent page opens in your
+browser, and you sign in and click **Authorize**. No npm install, no API key. The grant is listed —
+and revocable — under **Profile → MCP → OAuth Sessions**.
+
+### API key and the stdio proxy — the fallback
+
+Reach for a key when your client has no remote transport at all, when your agent runs headless or in
+CI and cannot open a browser to consent, or when one process drives several BattleGrid accounts. It
+is fully supported for each of those, and nothing about it is deprecated.
+
+**Single account (stdio transport):**
+
+```bash
+BATTLEGRID_API_KEY=bg_live_xxx npx @battlegrid/mcp-server
+```
+
+**Multiple accounts (stdio transport):**
+
+```bash
+BATTLEGRID_API_KEYS=bg_live_alice_key,bg_live_bob_key npx @battlegrid/mcp-server
+```
+
+When multiple keys are provided, the server discovers each account's identity and injects a required `account` parameter into every tool so the AI agent can choose which account to act as. OAuth has no equivalent — one grant authorizes one account.
 
 ## Configuration
 
 ### Claude Desktop
 
-**Single account:**
+**OAuth (no key):** Settings → **Connectors** → **Add custom connector**. Paste
+`https://mcp.battlegrid.trade/mcp`, save, and authorize on the consent page Claude opens.
+
+**API key (fallback) — single account:**
 
 ```json
 {
@@ -748,7 +819,7 @@ No npm install required — connect directly from any MCP client that supports s
 }
 ```
 
-**Multiple accounts:**
+**API key (fallback) — multiple accounts:**
 
 ```json
 {
@@ -766,21 +837,43 @@ No npm install required — connect directly from any MCP client that supports s
 
 ### Claude Code
 
+**OAuth (no key):**
+
 ```bash
-claude mcp add battlegrid -- npx @battlegrid/mcp-server
+claude mcp add --transport http battlegrid https://mcp.battlegrid.trade/mcp
 ```
 
-Set your API key(s):
+Then start `claude`, run `/mcp`, select **battlegrid** and choose **Authenticate** — the consent page
+opens in your browser and the entry reads connected once you authorize.
+
+**API key (fallback):**
 
 ```bash
 # Single account
-export BATTLEGRID_API_KEY=bg_live_xxx
+claude mcp add battlegrid -e BATTLEGRID_API_KEY=bg_live_xxx -- npx @battlegrid/mcp-server
 
 # Multiple accounts
-export BATTLEGRID_API_KEYS=bg_live_alice_key,bg_live_bob_key
+claude mcp add battlegrid -e BATTLEGRID_API_KEYS=bg_live_alice_key,bg_live_bob_key -- npx @battlegrid/mcp-server
 ```
 
 ### Cursor
+
+**OAuth (no key):** Settings → **MCP** → **Add new global MCP server** opens `~/.cursor/mcp.json`.
+
+```json
+{
+  "mcpServers": {
+    "battlegrid": {
+      "url": "https://mcp.battlegrid.trade/mcp"
+    }
+  }
+}
+```
+
+Back in Settings → MCP, click **Needs login** on `battlegrid` and authorize on BattleGrid's consent
+page; the entry turns green once its tools load.
+
+**API key (fallback):** the same file, with the stdio proxy in place of the remote entry.
 
 ```json
 {
@@ -808,12 +901,16 @@ ChatGPT Desktop connects via **OAuth 2.1** — no npm package or API key needed.
 4. ChatGPT discovers OAuth endpoints, registers as a client (Dynamic Client Registration), and opens BattleGrid's consent page
 5. Log in to BattleGrid and click **Authorize**
 
-| | Claude Desktop / Cursor | ChatGPT Desktop |
+Authentication is a property of the **path**, not of the client — every client above reaches
+BattleGrid either way, so pick the row that matches your runtime rather than your client:
+
+| | Remote + OAuth | API key |
 |---|---|---|
-| **Transport** | stdio proxy (`@battlegrid/mcp-server`) | Direct HTTPS |
-| **Auth** | API key (`bg_live_*`) | OAuth 2.1 (Bearer token) |
-| **Setup** | npm package + env vars | URL + OAuth consent |
-| **Multi-account** | `BATTLEGRID_API_KEYS` env var | One OAuth grant per account |
+| **Transport** | streamable-http, direct to `mcp.battlegrid.trade` | stdio proxy (`@battlegrid/mcp-server`), or the same URL with a Bearer header |
+| **Auth** | OAuth 2.1 with Dynamic Client Registration | API key (`bg_live_*`) as a Bearer token |
+| **Setup** | paste the URL, authorize in the browser | npm package + env vars |
+| **Needs a browser** | yes, once, to consent | no — works headless and in CI |
+| **Multi-account** | one grant per account | `BATTLEGRID_API_KEYS`, several accounts through one proxy |
 
 ## Account management
 

@@ -1,0 +1,68 @@
+{
+  "metric": "QQE_STOP",
+  "label": "QQE trailing stop",
+  "code": "qqeStop",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2,
+    "range": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "RSI2",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "CCI20",
+    "ADX",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "WILLR14",
+    "DI_PLUS",
+    "DI_MINUS",
+    "REGIME_TREND_MARGIN",
+    "REGIME_DI_SPREAD"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

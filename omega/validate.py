@@ -82,7 +82,9 @@ def validate_column(
     # --- metric exists ------------------------------------------------------
     if column.metric not in c.metrics:
         return [Finding("error", "UNKNOWN_METRIC", f"{path}.metric",
-                        f"{column.metric!r} is not one of the 86 catalogued metrics")]
+                        f"{column.metric!r} is not one of the {len(c.metrics)} catalogued "
+                        f"metrics (the roster grows with the platform; re-extract before "
+                        f"concluding a metric does not exist)")]
     m = c.metric(column.metric)
 
     # --- metric x transform composability ----------------------------------

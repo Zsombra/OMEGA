@@ -170,12 +170,18 @@ def test_wire_emits_the_platform_migration_entry(name):
     the same day added levelSource/levelOffsetAtrMultiple/validForBars, mirrored
     from the same record's silent re-migration) - semantics unmeasured, so
     nothing else may be emitted. The 7-field form compiled viable and
-    round-tripped verbatim (b9438519, deep_tail_fade_create_2026-08-30.json)."""
+    round-tripped verbatim (b9438519, deep_tail_fade_create_2026-08-30.json).
+
+    2026-09-09, contract 54.1.0: `levelSource` was REMOVED from the entry object on
+    every arm, so the seven-field form above is now refused as an unknown key and
+    this expects six. The level is derived from the trigger and the trade's
+    direction. See test_wire_entry_keys_match_the_live_schema_capture in
+    tests/test_write_surface.py, which pins this against the captured schema so the
+    next removal fails a test instead of a compile."""
     p = plan(PRESETS[name])
     assert p.wire()["entry"] == {"trigger": "AT_SIGNAL",
                                  "confirmTf": p.thesis.anchor,
                                  "closes": 1, "bandAtrMultiple": 1,
-                                 "levelSource": "SWING_HIGH",
                                  "levelOffsetAtrMultiple": 0, "validForBars": 4}
 
 

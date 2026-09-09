@@ -1,0 +1,26 @@
+{
+  "metric": "REGIME_VOL_BBW_RATIO",
+  "label": "Regime · BB-width ratio",
+  "code": "regBbwR",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "ratio",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
+  ],
+  "spreadOperands": [
+    "RVOL",
+    "REGIME_VOL_ATR_RATIO"
+  ]
+}

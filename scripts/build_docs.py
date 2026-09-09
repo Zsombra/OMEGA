@@ -33,7 +33,8 @@ def metric_layer(c) -> str:
         "",
         "*Generated from `data/contract/metrics/` — do not hand-edit.*",
         "",
-        "86 metrics across 10 families. A metric is a **named quantity the platform already",
+        f"{len(c.metrics)} metrics across {len({m.family for m in c.metrics.values()})} families. "
+        "A metric is a **named quantity the platform already",
         "computes**; you never define the maths, you select the quantity and then choose how",
         "to read it. Four fields govern everything you can do with one:",
         "",

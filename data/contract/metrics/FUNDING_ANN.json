@@ -33,6 +33,7 @@
     "HIGH_DEV",
     "LOW_DEV",
     "FUNDING_RATE",
-    "OI_CHG"
+    "OI_CHG",
+    "REGIME_CRASH_MARGIN"
   ]
 }

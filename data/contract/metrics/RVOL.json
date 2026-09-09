@@ -18,11 +18,27 @@
       "id": "trajectory"
     },
     {
+      "id": "spread",
+      "operandRequired": true,
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "id": "aggregate"
+    },
+    {
       "id": "efficiency"
     },
     {
       "id": "rank"
     }
+  ],
+  "spreadOperands": [
+    "REGIME_VOL_ATR_RATIO",
+    "REGIME_VOL_BBW_RATIO"
   ],
   "rankOrderings": [
     "hi",
@@ -30,5 +46,5 @@
     "far",
     "near"
   ],
-  "_note": "No spread transform at all - the 'ratio' unit has no operand pool."
+  "_note": "2026-08-24 note said RVOL had no spread transform at all ('the ratio unit has no operand pool'). LIFTED: spread is offered as of the 2026-09-09 sweep."
 }

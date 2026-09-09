@@ -1,0 +1,453 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-09T08:03:07Z",
+  "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+  "role": "metrics array only; the category-invariant blocks were compared to price.json programmatically and matched exactly"
+ },
+ "category": "trend",
+ "metrics": [
+  {
+   "metric": "ADX",
+   "label": "ADX (14)",
+   "code": "ADX",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  },
+  {
+   "metric": "SMA20",
+   "label": "SMA (20)",
+   "code": "SMA20",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "SMA50",
+   "label": "SMA (50)",
+   "code": "SMA50",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "SMA200",
+   "label": "SMA (200)",
+   "code": "SMA200",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "EMA5",
+   "label": "EMA (5)",
+   "code": "EMA5",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "EMA13",
+   "label": "EMA (13)",
+   "code": "EMA13",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "EMA20",
+   "label": "EMA (20)",
+   "code": "EMA20",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "EMA9",
+   "label": "EMA (9)",
+   "code": "EMA9",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "EMA21",
+   "label": "EMA (21)",
+   "code": "EMA21",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "EMA50",
+   "label": "EMA (50)",
+   "code": "EMA50",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "EMA_CROSS",
+   "label": "EMA 5/13 cross",
+   "code": "EMA5_13",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "event",
+    "vocab": [
+     "Bullish",
+     "Bearish"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "MA_ALIGN",
+   "label": "MA alignment",
+   "code": "MAalign",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish",
+     "mixed"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "ST_DIR",
+   "label": "Supertrend direction",
+   "code": "stDir",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "HMA20",
+   "label": "Hull MA (20)",
+   "code": "HMA20",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "ICHI_CONV",
+   "label": "Ichimoku conversion",
+   "code": "tenkan",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "ICHI_BASE",
+   "label": "Ichimoku base",
+   "code": "kijun",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "ICHI_SPAN_A",
+   "label": "Ichimoku span A",
+   "code": "senkouA",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "ICHI_SPAN_B",
+   "label": "Ichimoku span B",
+   "code": "senkouB",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "ICHI_LAG",
+   "label": "Ichimoku lagging close",
+   "code": "chikou",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "DI_PLUS",
+   "label": "DI+",
+   "code": "DIplus",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  },
+  {
+   "metric": "DI_MINUS",
+   "label": "DI−",
+   "code": "DIminus",
+   "family": "trend",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  }
+ ]
+}
