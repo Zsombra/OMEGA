@@ -187,8 +187,8 @@ since, so that set needed no extension. Saying so is better than inventing verdi
   "scoreable" are different questions for them.
 - **`entry.anchor` is captured but not enforced.** See section 6.
 - **`data/contract/_manifest.json` still describes the August extraction.**
-- **The three prior-session TPO reads returned null** in the one render that observed them. Not
-  diagnosed.
+- **The three prior-session TPO reads do not populate.** Verified across thirteen coins and three
+  observations spanning ten hours - see section 11. Cause not determined.
 
 ## 10. The endpoint rate-limits, and says so
 
@@ -215,3 +215,52 @@ timeouts at roughly one call every 5–15 seconds, nowhere near 3/s, and the lim
 said so out loud rather than returning empty bodies. What it corrects is the broader
 impression that this endpoint has no rate limit. It has one, and any batch or parallel sweep
 must respect it. Record: `data/audit/rate_limit_2026-09-09.json`.
+
+## 11. Verified: the prior-session TPO reads are not populating
+
+Asked for directly, so it was checked properly rather than left as one observation.
+
+| when | coins | `pTpoPOC` / `pTpoVAH` / `pTpoVAL` | current-session controls |
+|---|---|---|---|
+| 08:47Z | BTC, ETH | null | values |
+| 09:47Z | BTC, ETH | null | values, and `tpoShape` had moved (BTC balanced → b-shape) |
+| 18:2xZ | all 13 research coins | **null on every one** | `tpoPOC`, `tpoVAH`, `tpoIBH` carried values on every one |
+
+So it is **not coin-specific and not a transient**. Three things were ruled out. The column
+contract does not distinguish them — `get_strategy_column_contract` returns the same shape for
+`PRIOR_TPO_POC` and `TPO_POC`, both `nullable: true` with identical null behaviour. There is no
+second surface to cross-check against: `get_market_context` and `get_coin_signal_preview` carry
+no TPO fields at all. And "the prior session has not closed yet" does not explain it, because at
+the first observation the previous completed UTC session was 2026-09-08, long finished.
+
+**The cause is not determined.** One hypothesis fits and has not been tested: the TPO family
+arrived with contract 54.1.0, deployed within the last few days, so there may be no *completed*
+UTC session carrying TPO data yet. That predicts the prior-session reads begin populating after
+2026-09-10T00:00Z. It is a prediction to check, not a finding.
+
+**What matters practically, and this part is measured.** A condition on a null column reads
+**FALSE — in both directions**:
+
+```
+pTpoPOC gt 0                 -> FALSE     (evidence operand: "—")
+pTpoPOC lt 1000000000000     -> FALSE     (evidence operand: "—")
+tpoPOC  gt 0                 -> TRUE      (control)
+conditionVerdictTally: UNRESOLVED: 0
+```
+
+So a gate on the prior-session TPO is silently false. A `required: true` condition on it would
+block every trade while the scorecard still looked fully populated, and a `NOT`-negated gate on
+it would fire on every coin. That is the "silent zero-trigger" the vendor's own authoring skill
+exists to prevent.
+
+This re-confirms trap 21 in doc 06 — *a null reads FALSE, never UNRESOLVED* — on a new column at
+contract 54.1.0, and sharpens the distinction: a **missing** header (dropped from
+`conditionColumns`) goes UNRESOLVED; a **present** header holding null reads FALSE. It also sits
+awkwardly against the vendor's strategy-examples skill, which says "Evaluation is three-valued:
+UNRESOLVED never collapses to FALSE". The two may describe different levels — an unevaluable
+condition versus a null clause operand — but an author following the vendor line would get this
+wrong.
+
+**Recommendation: do not build on `PRIOR_TPO_POC` / `VAH` / `VAL` until they are observed
+carrying values.** The current-session TPO reads work and are safe. Record:
+`data/audit/prior_session_tpo_verification_2026-09-09.json`.

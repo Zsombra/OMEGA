@@ -1,0 +1,61 @@
+{
+ "_what": "Verification requested 2026-09-09: are the PRIOR-session TPO reads (PRIOR_TPO_POC, PRIOR_TPO_VAH, PRIOR_TPO_VAL) populating? Answer: NO, consistently. All read-only.",
+ "capturedAt": "2026-09-09T18:30:40Z",
+ "verdict": "NOT POPULATING - the three prior-session columns render the null sentinel everywhere tested.",
+ "evidence": [
+  {
+   "when": "2026-09-09T08:47Z",
+   "coins": [
+    "BTC",
+    "ETH"
+   ],
+   "prior": "null on both",
+   "current": "values on both"
+  },
+  {
+   "when": "2026-09-09T09:47Z",
+   "coins": [
+    "BTC",
+    "ETH"
+   ],
+   "prior": "null on both",
+   "current": "values on both; tpoShape had MOVED (BTC balanced -> b-shape), so the section was live"
+  },
+  {
+   "when": "2026-09-09T18:2xZ",
+   "coins": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "PEPE",
+    "POPCAT",
+    "MET",
+    "MELANIA",
+    "TRUMP",
+    "HYPE",
+    "MOODENG",
+    "AIXBT",
+    "CAKE",
+    "LDO"
+   ],
+   "prior": "null on ALL THIRTEEN",
+   "current": "tpoPOC, tpoVAH and tpoIBH carried values on ALL THIRTEEN"
+  }
+ ],
+ "notCoinSpecific": true,
+ "notATransient": "three observations spanning about ten hours",
+ "whatWasRuledOut": {
+  "contractDifference": "get_strategy_column_contract on PRIOR_TPO_POC and TPO_POC returns the same shape - both nullable:true, same operators, same nullBehavior text. The contract does not distinguish them.",
+  "anotherReadSurface": "get_market_context and get_coin_signal_preview carry no TPO fields at all, so the strategy report is the only surface that exposes this family and there is nowhere else to cross-check the value.",
+  "sessionNotYetComplete": "At the first observation (2026-09-09T08:47Z) the previous completed UTC session was 2026-09-08, which had long since closed. So 'the prior session has not finished yet' does NOT explain it."
+ },
+ "causeNotDetermined": true,
+ "_hypothesisNotTested": "The TPO family arrived with contract 54.1.0, deployed within the last few days. If the platform only began accumulating TPO when that shipped, there may be no COMPLETED UTC session with TPO data recorded yet, and the prior-session reads would start populating after the next full session closes. TESTABLE: re-render pTpoPOC after 2026-09-10T00:00Z. This is a hypothesis consistent with the observations; it has NOT been tested and no cause is asserted.",
+ "practicalConsequence": {
+  "measured": "A condition on a null column reads FALSE - in BOTH directions. Probed on BTC: `pTpoPOC gt 0` -> FALSE and `pTpoPOC lt 1000000000000` -> FALSE, with the evidence block showing operand '—'. The control `tpoPOC gt 0` -> TRUE. conditionVerdictTally reported UNRESOLVED: 0.",
+  "soWhat": "Any gate on the prior-session TPO is silently FALSE. A `required: true` condition on it would block every trade and the scorecard would still look fully populated; a NOT-negated gate on it would fire on every coin. This is the 'silent zero-trigger' failure the vendor's own authoring skill exists to prevent.",
+  "confirmsExistingRepoFinding": "docs/06-cookbook.md trap 21 already states 'a null reads FALSE, never UNRESOLVED'. This re-confirms it on a new column at contract 54.1.0. The distinction that matters: a MISSING header (column dropped from conditionColumns) goes UNRESOLVED; a PRESENT header holding null reads FALSE.",
+  "tensionWithVendorText": "The vendor's battlegrid-strategy-examples skill says 'Evaluation is three-valued: UNRESOLVED never collapses to FALSE'. Measured behaviour on a null clause operand is FALSE, not UNRESOLVED. The two may be talking about different levels - an unevaluable CONDITION versus a null CLAUSE operand - but an author reading the vendor line would get this wrong."
+ },
+ "recommendation": "Do not build on PRIOR_TPO_POC / VAH / VAL until they are observed carrying values. The current-session TPO reads work and are safe to use. If a prior-session gate is wanted, re-run this check after a full UTC session has closed."
+}

@@ -448,7 +448,7 @@ accumulates *since the daily 00:00-UTC anchor*:
 | null off-crypto | renders off-crypto |
 |---|---|
 | `CVD`, `SPOT_CVD`, `OBV`, `VWAP` | `BUY_VOLUME`, `SELL_VOLUME`, `BUY_TRADES`, `SELL_TRADES`, `BUY_PRESSURE` |
-| `SPOT_CLOSE_CB`, `SPOT_CLOSE_BN` | `VOLUME`, `RVOL`, `SWING_HIGH`, `REGIME_*`, `STRUCT_ZONES` |
+| `SPOT_CLOSE_CB`, `SPOT_CLOSE_BN` | `VOLUME`, `RVOL`, `DONCHIAN_UPPER`, `REGIME_*`, `STRUCT_ZONES` |
 | `PERP_SPOT_FLOW`, `_STRENGTH`, `_CONFIRMS` | funding, open interest, every classical indicator |
 
 Measured across STOCKS, TRADFI, INDICES and COMMODITIES. **The rule is the daily anchor,
