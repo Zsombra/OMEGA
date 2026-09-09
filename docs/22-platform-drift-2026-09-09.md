@@ -154,10 +154,21 @@ be put in a report and conditioned on, but they cannot be weighted in the aggreg
 because no signal reads them.** A strategy that leans on TPO or Ichimoku has to express it
 through conditions, not allocations. `DONCHIAN_UPPER`/`DONCHIAN_LOWER` were probed separately —
 they are the rename, not new — and feed the same four support-and-resistance signals the old
-names did, which is what makes the rename safe rather than merely plausible. Caveat recorded in
-the map itself: one transform per metric (`value` where offered), so a metric feeding a module
-only through some other transform would not have been seen. Record:
-`data/audit/module_membership_new_metrics_2026-09-09.json`.
+names did, which is what makes the rename safe rather than merely plausible. That first pass probed one transform per metric and said so. **The caveat is now closed:**
+every legal metric × transform cell was probed — **663 cells, zero failures** — and
+membership is **not** transform-dependent. For every metric, all of its non-spread
+transforms return the same signal set, and the full probe reproduces the single-transform
+result exactly: 83 feed a module, 61 feed none, zero disagreements either way.
+
+The 108 **spread** cells are excluded from attribution deliberately. A spread column puts
+the base *and* its operand in the report, so it cannot isolate the base — and subtracting
+the operand's own signals is not a fix, because where base and operand feed the same module
+it removes the base's contribution too. Measured: `PPO × spread` with operand `ROC12` reads
+empty under subtraction, while PPO's four other transforms each return the same four
+relative-strength signals. Every metric has at least one non-spread cell, so nothing is
+attributed from a spread cell alone. Records:
+`data/audit/module_membership_full_2026-09-09.json` (full) and
+`data/audit/module_membership_new_metrics_2026-09-09.json` (the first pass).
 
 **The timeless rule — measured, not generalised.** All 22 newly-timeless metrics were probed
 with a pinned `{abs: "4h"}` against a 1h anchor. The platform **refused every one**, so the rule
@@ -178,3 +189,29 @@ since, so that set needed no extension. Saying so is better than inventing verdi
 - **`data/contract/_manifest.json` still describes the August extraction.**
 - **The three prior-session TPO reads returned null** in the one render that observed them. Not
   diagnosed.
+
+## 10. The endpoint rate-limits, and says so
+
+Found while running the full membership probe: an unthrottled four-worker run failed 162 of
+663 cells with
+
+> `Rate limited: 3 requests/second sustained, up to 120 banked. Retry after 1s, or wait 40s
+> for full capacity.`
+
+A token bucket: 3 requests per second sustained, a burst bank of 120 that refills at the
+sustained rate. The first ~65 probes succeeded because they spent the bank; everything after
+it failed. Re-running the same cells with call starts spaced 0.45 s apart produced **zero**
+errors. The limiter is never silent — it returns JSON-RPC `-32000` with that message — so a
+sweep that fails quietly is failing for some other reason.
+
+One thing measured, one not. Measured: the limit, its shape, and that throttling fixes it.
+Not measured: why ~0.67 *logical probes* per second tripped a 3-requests-per-second limit. The
+likely explanation is that one `mcporter call` costs more than one HTTP request, because a
+fresh CLI invocation performs an MCP handshake before the tool call. That is a hypothesis
+consistent with the observation, not a measurement.
+
+**This does not overturn the 2026-09-06 Hermes diagnosis.** Those failures were client-side
+timeouts at roughly one call every 5–15 seconds, nowhere near 3/s, and the limiter would have
+said so out loud rather than returning empty bodies. What it corrects is the broader
+impression that this endpoint has no rate limit. It has one, and any batch or parallel sweep
+must respect it. Record: `data/audit/rate_limit_2026-09-09.json`.

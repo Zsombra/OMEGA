@@ -726,10 +726,11 @@
    "headers": "data/contract/columns/_coverage_sweep_2026-09-09.json (registered in render_coverage.SEEN_FILES)"
   },
   "moduleMembership": {
-   "status": "MEASURED 2026-09-09",
-   "record": "data/audit/module_membership_new_metrics_2026-09-09.json",
-   "result": "58 metrics probed individually with derive_strategy_rule_view; 31 feed a signal module, 27 feed none. Control: a section carrying only CLOSE returns zero signals, so results are attributable to the metric.",
-   "caveat": "one transform probed per metric (value where offered); a metric feeding a module only via another transform would not have been seen"
+   "status": "MEASURED 2026-09-09, FULL (caveat closed)",
+   "record": "data/audit/module_membership_full_2026-09-09.json",
+   "result": "every legal metric x transform cell probed - 663 cells, ZERO failures. 83 metrics feed a signal module, 61 feed none. Membership is NOT transform-dependent, and the full probe reproduces the single-transform result exactly.",
+   "spreadCells": "108 spread cells excluded from attribution by design - a spread column carries two metrics so it cannot isolate the base; every metric has a non-spread cell, so nothing rests on them",
+   "supersedes": "data/audit/module_membership_new_metrics_2026-09-09.json (single transform per metric)"
   },
   "tierCVerdicts": {
    "status": "NOT APPLICABLE",

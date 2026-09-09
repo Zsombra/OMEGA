@@ -1,0 +1,1838 @@
+{
+ "_what": "Signal-module membership probed at EVERY legal metric x transform cell (663 unchained atoms), one column per probe, 2026-09-09. Supersedes the single-transform pass in module_membership_new_metrics_2026-09-09.json and closes its caveat.",
+ "_control": "A section carrying only CLOSE value returns ZERO signals in report, re-verified at the start of this run, so a non-empty result is attributable to the column under test.",
+ "capturedAt": "2026-09-09T10:10:26Z",
+ "cellsProbed": 663,
+ "failures": {},
+ "membershipIsTransformDependent": false,
+ "transformDependentMetrics": {},
+ "_spreadAttribution": "A spread cell puts the base AND its operand in the report, so it cannot attribute membership to the base. Subtracting the operand's own signals is NOT a fix: where base and operand feed the same module it removes the base's contribution too. Spread cells are therefore excluded from the counts and from the transform-dependence question, and listed under spreadCells with their operand so the exclusion can be checked.",
+ "spreadCells": {
+  "ADX|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "htf_trend_adx_ranging",
+    "htf_trend_adx_trending",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "ltf_trend_adx_ranging",
+    "ltf_trend_adx_trending",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold",
+    "trend_adx_ranging",
+    "trend_adx_trending"
+   ],
+   "attributable": false
+  },
+  "ATR|spread": {
+   "operand": "MACD",
+   "signalsInReport": [
+    "macd_bear_cross",
+    "macd_bear_divergence",
+    "macd_bull_cross",
+    "macd_bull_divergence",
+    "volatility_atr_contracting",
+    "volatility_atr_expanding"
+   ],
+   "attributable": false
+  },
+  "ATR_PCT|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive",
+    "volatility_atr_contracting",
+    "volatility_atr_expanding"
+   ],
+   "attributable": false
+  },
+  "BB_LOWER|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch"
+   ],
+   "attributable": false
+  },
+  "BB_PCT_B|spread": {
+   "operand": "STOCH_RSI14",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch"
+   ],
+   "attributable": false
+  },
+  "BB_UPPER|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch"
+   ],
+   "attributable": false
+  },
+  "BB_WIDTH|spread": {
+   "operand": "MACD",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch",
+    "macd_bear_cross",
+    "macd_bear_divergence",
+    "macd_bull_cross",
+    "macd_bull_divergence"
+   ],
+   "attributable": false
+  },
+  "BB_WIDTH_PCT|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch",
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "BUY_PRESSURE|spread": {
+   "operand": "BB_PCT_B",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch",
+    "cvd_bear_divergence",
+    "cvd_bearish",
+    "cvd_bull_divergence",
+    "cvd_bullish"
+   ],
+   "attributable": false
+  },
+  "BUY_TRADES|spread": {
+   "operand": "TRADES",
+   "signalsInReport": [
+    "cvd_bear_divergence",
+    "cvd_bearish",
+    "cvd_bull_divergence",
+    "cvd_bullish"
+   ],
+   "attributable": false
+  },
+  "BUY_VOLUME|spread": {
+   "operand": "VOLUME",
+   "signalsInReport": [
+    "cvd_bear_divergence",
+    "cvd_bearish",
+    "cvd_bull_divergence",
+    "cvd_bullish",
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "CCI20|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch",
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "CHG_15M|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "CHG_1H|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "CHG_24H|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "CHG_4H|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "CHG_5M|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "CLOSE|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "CLOSE_CHANGE|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "CVD|spread": {
+   "operand": "MACD",
+   "signalsInReport": [
+    "cvd_bear_divergence",
+    "cvd_bearish",
+    "cvd_bull_divergence",
+    "cvd_bullish",
+    "macd_bear_cross",
+    "macd_bear_divergence",
+    "macd_bull_cross",
+    "macd_bull_divergence"
+   ],
+   "attributable": false
+  },
+  "DI_MINUS|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "htf_trend_adx_ranging",
+    "htf_trend_adx_trending",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "ltf_trend_adx_ranging",
+    "ltf_trend_adx_trending",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold",
+    "trend_adx_ranging",
+    "trend_adx_trending"
+   ],
+   "attributable": false
+  },
+  "DI_PLUS|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "htf_trend_adx_ranging",
+    "htf_trend_adx_trending",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "ltf_trend_adx_ranging",
+    "ltf_trend_adx_trending",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold",
+    "trend_adx_ranging",
+    "trend_adx_trending"
+   ],
+   "attributable": false
+  },
+  "DONCHIAN_LOWER|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "DONCHIAN_UPPER|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "EMA13|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "EMA20|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "EMA21|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "EMA5|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "EMA50|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "EMA9|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "FUNDING_ANN|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "funding_extreme_negative",
+    "funding_extreme_positive",
+    "funding_rate_flipping",
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "FUNDING_RATE|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "funding_extreme_negative",
+    "funding_extreme_positive",
+    "funding_rate_flipping",
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "HIGH|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "HIGH_DEV|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "HMA20|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "ICHI_BASE|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "ICHI_CONV|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "ICHI_LAG|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "ICHI_SPAN_A|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "ICHI_SPAN_B|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "KC_LOWER|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "KC_MID|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "KC_UPPER|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "LAST|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "LOW|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "LOW_DEV|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "MACD|spread": {
+   "operand": "ATR",
+   "signalsInReport": [
+    "macd_bear_cross",
+    "macd_bear_divergence",
+    "macd_bull_cross",
+    "macd_bull_divergence",
+    "volatility_atr_contracting",
+    "volatility_atr_expanding"
+   ],
+   "attributable": false
+  },
+  "MARK|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "MFI14|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "mfi_bear_divergence",
+    "mfi_bull_divergence",
+    "mfi_overbought",
+    "mfi_oversold",
+    "mfi_sustained_bearish",
+    "mfi_sustained_bullish",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "NOTIONAL_VOLUME_1D|spread": {
+   "operand": "OI",
+   "signalsInReport": [
+    "oi_divergence_bear",
+    "oi_divergence_bull",
+    "oi_surge"
+   ],
+   "attributable": false
+  },
+  "OBV|spread": {
+   "operand": "VOLUME",
+   "signalsInReport": [
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "OI|spread": {
+   "operand": "NOTIONAL_VOLUME_1D",
+   "signalsInReport": [
+    "oi_divergence_bear",
+    "oi_divergence_bull",
+    "oi_surge"
+   ],
+   "attributable": false
+  },
+  "OI_CHG|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "oi_divergence_bear",
+    "oi_divergence_bull",
+    "oi_surge",
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "OPEN|spread": {
+   "operand": "HIGH",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "PDH|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PDL|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PIVOT_P|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PIVOT_R1|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PIVOT_R2|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PIVOT_R3|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PIVOT_S1|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PIVOT_S2|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PIVOT_S3|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ],
+   "attributable": false
+  },
+  "PPO|spread": {
+   "operand": "ROC12",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "PRIOR_TPO_POC|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "PRIOR_TPO_VAH|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "PRIOR_TPO_VAL|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "PSAR|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "QQE_RSI_MA|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "QQE_STOP|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "REGIME_CRASH_MARGIN|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift",
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "REGIME_DI_SPREAD|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "REGIME_MOM_BEAR_VOTES|spread": {
+   "operand": "TRADES",
+   "signalsInReport": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ],
+   "attributable": false
+  },
+  "REGIME_MOM_BULL_VOTES|spread": {
+   "operand": "TRADES",
+   "signalsInReport": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ],
+   "attributable": false
+  },
+  "REGIME_RUN_BARS|spread": {
+   "operand": "TRADES",
+   "signalsInReport": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ],
+   "attributable": false
+  },
+  "REGIME_VOL_ATR_RATIO|spread": {
+   "operand": "RVOL",
+   "signalsInReport": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift",
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "REGIME_VOL_BBW_RATIO|spread": {
+   "operand": "RVOL",
+   "signalsInReport": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift",
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "ROC12|spread": {
+   "operand": "PPO",
+   "signalsInReport": [
+    "rel_ppo_bear_cross",
+    "rel_ppo_bull_cross",
+    "rel_roc_negative",
+    "rel_roc_positive"
+   ],
+   "attributable": false
+  },
+  "RSI14|spread": {
+   "operand": "RSI7",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "RSI2|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "RVOL|spread": {
+   "operand": "REGIME_VOL_ATR_RATIO",
+   "signalsInReport": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift",
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "SELL_TRADES|spread": {
+   "operand": "TRADES",
+   "signalsInReport": [
+    "cvd_bear_divergence",
+    "cvd_bearish",
+    "cvd_bull_divergence",
+    "cvd_bullish"
+   ],
+   "attributable": false
+  },
+  "SELL_VOLUME|spread": {
+   "operand": "VOLUME",
+   "signalsInReport": [
+    "cvd_bear_divergence",
+    "cvd_bearish",
+    "cvd_bull_divergence",
+    "cvd_bullish",
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "SMA20|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "SMA200|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "SMA50|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ],
+   "attributable": false
+  },
+  "SPOT_CLOSE_BN|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "SPOT_CLOSE_CB|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "SPOT_CVD|spread": {
+   "operand": "MACD",
+   "signalsInReport": [
+    "flow_perp_spot_bear_divergence",
+    "flow_perp_spot_bull_divergence",
+    "macd_bear_cross",
+    "macd_bear_divergence",
+    "macd_bull_cross",
+    "macd_bull_divergence"
+   ],
+   "attributable": false
+  },
+  "STOCH_D|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold",
+    "stoch_bear_cross",
+    "stoch_bull_cross",
+    "stoch_overbought",
+    "stoch_oversold"
+   ],
+   "attributable": false
+  },
+  "STOCH_K|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold",
+    "stoch_bear_cross",
+    "stoch_bull_cross",
+    "stoch_overbought",
+    "stoch_oversold"
+   ],
+   "attributable": false
+  },
+  "STOCH_RSI14|spread": {
+   "operand": "BB_PCT_B",
+   "signalsInReport": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch"
+   ],
+   "attributable": false
+  },
+  "ST_LINE|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "TPO_IB_HIGH|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "TPO_IB_LOW|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "TPO_POC|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "TPO_VAH|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "TPO_VAL|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "TRADES|spread": {
+   "operand": "BUY_TRADES",
+   "signalsInReport": [
+    "cvd_bear_divergence",
+    "cvd_bearish",
+    "cvd_bull_divergence",
+    "cvd_bullish"
+   ],
+   "attributable": false
+  },
+  "VOLUME|spread": {
+   "operand": "VOL_SMA20",
+   "signalsInReport": [
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "VOL_SMA20|spread": {
+   "operand": "VOLUME",
+   "signalsInReport": [
+    "volume_dry_up",
+    "volume_obv_bear_divergence",
+    "volume_obv_bull_divergence",
+    "volume_surge"
+   ],
+   "attributable": false
+  },
+  "VWAP|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "WILLR14|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "WT1|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "WT2|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "ORACLE|spread": {
+   "operand": "OPEN",
+   "signalsInReport": [],
+   "attributable": false
+  },
+  "REGIME_TREND_MARGIN|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  },
+  "RSI7|spread": {
+   "operand": "RSI14",
+   "signalsInReport": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ],
+   "attributable": false
+  }
+ },
+ "metricsWithOnlySpreadCells": [],
+ "metricsFeedingAModule": {
+  "ADX": [
+   "htf_trend_adx_ranging",
+   "htf_trend_adx_trending",
+   "ltf_trend_adx_ranging",
+   "ltf_trend_adx_trending",
+   "trend_adx_ranging",
+   "trend_adx_trending"
+  ],
+  "ATR": [
+   "volatility_atr_contracting",
+   "volatility_atr_expanding"
+  ],
+  "ATR_PCT": [
+   "volatility_atr_contracting",
+   "volatility_atr_expanding"
+  ],
+  "BB_LOWER": [
+   "bollinger_cci_overbought",
+   "bollinger_cci_oversold",
+   "bollinger_lower_touch",
+   "bollinger_squeeze",
+   "bollinger_upper_touch"
+  ],
+  "BB_PCT_B": [
+   "bollinger_cci_overbought",
+   "bollinger_cci_oversold",
+   "bollinger_lower_touch",
+   "bollinger_squeeze",
+   "bollinger_upper_touch"
+  ],
+  "BB_TOUCH": [
+   "bollinger_cci_overbought",
+   "bollinger_cci_oversold",
+   "bollinger_lower_touch",
+   "bollinger_squeeze",
+   "bollinger_upper_touch"
+  ],
+  "BB_UPPER": [
+   "bollinger_cci_overbought",
+   "bollinger_cci_oversold",
+   "bollinger_lower_touch",
+   "bollinger_squeeze",
+   "bollinger_upper_touch"
+  ],
+  "BB_WIDTH": [
+   "bollinger_cci_overbought",
+   "bollinger_cci_oversold",
+   "bollinger_lower_touch",
+   "bollinger_squeeze",
+   "bollinger_upper_touch"
+  ],
+  "BB_WIDTH_PCT": [
+   "bollinger_cci_overbought",
+   "bollinger_cci_oversold",
+   "bollinger_lower_touch",
+   "bollinger_squeeze",
+   "bollinger_upper_touch"
+  ],
+  "BUY_PRESSURE": [
+   "cvd_bear_divergence",
+   "cvd_bearish",
+   "cvd_bull_divergence",
+   "cvd_bullish"
+  ],
+  "BUY_TRADES": [
+   "cvd_bear_divergence",
+   "cvd_bearish",
+   "cvd_bull_divergence",
+   "cvd_bullish"
+  ],
+  "BUY_VOLUME": [
+   "cvd_bear_divergence",
+   "cvd_bearish",
+   "cvd_bull_divergence",
+   "cvd_bullish"
+  ],
+  "CCI20": [
+   "bollinger_cci_overbought",
+   "bollinger_cci_oversold",
+   "bollinger_lower_touch",
+   "bollinger_squeeze",
+   "bollinger_upper_touch"
+  ],
+  "CVD": [
+   "cvd_bear_divergence",
+   "cvd_bearish",
+   "cvd_bull_divergence",
+   "cvd_bullish"
+  ],
+  "DI_MINUS": [
+   "htf_trend_adx_ranging",
+   "htf_trend_adx_trending",
+   "ltf_trend_adx_ranging",
+   "ltf_trend_adx_trending",
+   "trend_adx_ranging",
+   "trend_adx_trending"
+  ],
+  "DI_PLUS": [
+   "htf_trend_adx_ranging",
+   "htf_trend_adx_trending",
+   "ltf_trend_adx_ranging",
+   "ltf_trend_adx_trending",
+   "trend_adx_ranging",
+   "trend_adx_trending"
+  ],
+  "DONCHIAN_LOWER": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "DONCHIAN_UPPER": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "EMA13": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "EMA20": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "EMA21": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "EMA5": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "EMA50": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "EMA9": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "EMA_CROSS": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "FUNDING_ANN": [
+   "funding_extreme_negative",
+   "funding_extreme_positive",
+   "funding_rate_flipping"
+  ],
+  "FUNDING_LABEL": [
+   "funding_extreme_negative",
+   "funding_extreme_positive",
+   "funding_rate_flipping"
+  ],
+  "FUNDING_RATE": [
+   "funding_extreme_negative",
+   "funding_extreme_positive",
+   "funding_rate_flipping"
+  ],
+  "HMA20": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "MACD": [
+   "macd_bear_cross",
+   "macd_bear_divergence",
+   "macd_bull_cross",
+   "macd_bull_divergence"
+  ],
+  "MA_ALIGN": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "MFI14": [
+   "mfi_bear_divergence",
+   "mfi_bull_divergence",
+   "mfi_overbought",
+   "mfi_oversold",
+   "mfi_sustained_bearish",
+   "mfi_sustained_bullish"
+  ],
+  "OBV": [
+   "volume_dry_up",
+   "volume_obv_bear_divergence",
+   "volume_obv_bull_divergence",
+   "volume_surge"
+  ],
+  "OI": [
+   "oi_divergence_bear",
+   "oi_divergence_bull",
+   "oi_surge"
+  ],
+  "OI_CHG": [
+   "oi_divergence_bear",
+   "oi_divergence_bull",
+   "oi_surge"
+  ],
+  "OI_PX_REGIME": [
+   "oi_divergence_bear",
+   "oi_divergence_bull",
+   "oi_surge"
+  ],
+  "OI_VELOCITY": [
+   "oi_divergence_bear",
+   "oi_divergence_bull",
+   "oi_surge"
+  ],
+  "PDH": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PDL": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PERP_SPOT_CONFIRMS": [
+   "flow_perp_spot_bear_divergence",
+   "flow_perp_spot_bull_divergence"
+  ],
+  "PERP_SPOT_FLOW": [
+   "flow_perp_spot_bear_divergence",
+   "flow_perp_spot_bull_divergence"
+  ],
+  "PERP_SPOT_STRENGTH": [
+   "flow_perp_spot_bear_divergence",
+   "flow_perp_spot_bull_divergence"
+  ],
+  "PIVOT_P": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PIVOT_R1": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PIVOT_R2": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PIVOT_R3": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PIVOT_S1": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PIVOT_S2": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PIVOT_S3": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "PPO": [
+   "rel_ppo_bear_cross",
+   "rel_ppo_bull_cross",
+   "rel_roc_negative",
+   "rel_roc_positive"
+  ],
+  "PRICE_ZONE": [
+   "sr_at_resistance",
+   "sr_at_support",
+   "sr_resistance_break",
+   "sr_support_break"
+  ],
+  "REGIME_CONVICTION": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_CRASH_LATCH": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_CRASH_MARGIN": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_DI_SPREAD": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_MOM": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_MOM_BEAR_VOTES": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_MOM_BULL_VOTES": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_RUN_BARS": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_STATE": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_TREND": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_TREND_GATE": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_TREND_MARGIN": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_TREND_SOURCE": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_VOL": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_VOL_ATR_RATIO": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "REGIME_VOL_BBW_RATIO": [
+   "regime_alignment",
+   "regime_divergence",
+   "regime_trend_shift",
+   "regime_volatility_shift"
+  ],
+  "ROC12": [
+   "rel_ppo_bear_cross",
+   "rel_ppo_bull_cross",
+   "rel_roc_negative",
+   "rel_roc_positive"
+  ],
+  "RSI14": [
+   "htf_rsi_overbought",
+   "htf_rsi_oversold",
+   "ltf_rsi_overbought",
+   "ltf_rsi_oversold",
+   "rsi_bear_divergence",
+   "rsi_bull_divergence",
+   "rsi_overbought",
+   "rsi_oversold"
+  ],
+  "RSI2": [
+   "htf_rsi_overbought",
+   "htf_rsi_oversold",
+   "ltf_rsi_overbought",
+   "ltf_rsi_oversold",
+   "rsi_bear_divergence",
+   "rsi_bull_divergence",
+   "rsi_overbought",
+   "rsi_oversold"
+  ],
+  "RSI7": [
+   "htf_rsi_overbought",
+   "htf_rsi_oversold",
+   "ltf_rsi_overbought",
+   "ltf_rsi_oversold",
+   "rsi_bear_divergence",
+   "rsi_bull_divergence",
+   "rsi_overbought",
+   "rsi_oversold"
+  ],
+  "RVOL": [
+   "volume_dry_up",
+   "volume_obv_bear_divergence",
+   "volume_obv_bull_divergence",
+   "volume_surge"
+  ],
+  "SELL_TRADES": [
+   "cvd_bear_divergence",
+   "cvd_bearish",
+   "cvd_bull_divergence",
+   "cvd_bullish"
+  ],
+  "SELL_VOLUME": [
+   "cvd_bear_divergence",
+   "cvd_bearish",
+   "cvd_bull_divergence",
+   "cvd_bullish"
+  ],
+  "SMA20": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "SMA200": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "SMA50": [
+   "htf_ma_aligned_bear",
+   "htf_ma_aligned_bull",
+   "ltf_ma_aligned_bear",
+   "ltf_ma_aligned_bull",
+   "ma_ema_aligned_bear",
+   "ma_ema_aligned_bull",
+   "ma_ema_bear_cross",
+   "ma_ema_bull_cross",
+   "ma_sma200_above",
+   "ma_sma200_below"
+  ],
+  "SPOT_CVD": [
+   "flow_perp_spot_bear_divergence",
+   "flow_perp_spot_bull_divergence"
+  ],
+  "STOCH_D": [
+   "stoch_bear_cross",
+   "stoch_bull_cross",
+   "stoch_overbought",
+   "stoch_oversold"
+  ],
+  "STOCH_K": [
+   "stoch_bear_cross",
+   "stoch_bull_cross",
+   "stoch_overbought",
+   "stoch_oversold"
+  ],
+  "STRUCT_ZONES": [
+   "structure_fvg_approach",
+   "structure_ob_approach",
+   "structure_zone_cluster",
+   "structure_zone_confluence"
+  ],
+  "VOLUME": [
+   "volume_dry_up",
+   "volume_obv_bear_divergence",
+   "volume_obv_bull_divergence",
+   "volume_surge"
+  ],
+  "VOL_SMA20": [
+   "volume_dry_up",
+   "volume_obv_bear_divergence",
+   "volume_obv_bull_divergence",
+   "volume_surge"
+  ]
+ },
+ "metricsSatisfyingNoModule": [
+  "BAR_FORMING",
+  "CAPTAIN_CONF",
+  "CHG_15M",
+  "CHG_1H",
+  "CHG_24H",
+  "CHG_4H",
+  "CHG_5M",
+  "CLOSE",
+  "CLOSE_CHANGE",
+  "CONFIDENCE",
+  "CROWD_ACC",
+  "CROWD_ACC_LIVE",
+  "CROWD_CAPT",
+  "CROWD_CAPT_LIVE",
+  "CROWD_PICK",
+  "CROWD_PICK_LIVE",
+  "CROWD_UPBIAS",
+  "CROWD_UPBIAS_LIVE",
+  "FLOW_ALIGN",
+  "HIGH",
+  "HIGH_DEV",
+  "ICHI_BASE",
+  "ICHI_CONV",
+  "ICHI_LAG",
+  "ICHI_SPAN_A",
+  "ICHI_SPAN_B",
+  "KC_LOWER",
+  "KC_MID",
+  "KC_SQUEEZE",
+  "KC_UPPER",
+  "LAST",
+  "LOW",
+  "LOW_DEV",
+  "MARK",
+  "NOTIONAL_VOLUME_1D",
+  "OPEN",
+  "ORACLE",
+  "PRIOR_TPO_POC",
+  "PRIOR_TPO_VAH",
+  "PRIOR_TPO_VAL",
+  "PSAR",
+  "QQE_RSI_MA",
+  "QQE_STOP",
+  "SETTLED_AT",
+  "SMART_RETAIL",
+  "SPOT_CLOSE_BN",
+  "SPOT_CLOSE_CB",
+  "STOCH_RSI14",
+  "ST_DIR",
+  "ST_LINE",
+  "TPO_IB_HIGH",
+  "TPO_IB_LOW",
+  "TPO_POC",
+  "TPO_SHAPE",
+  "TPO_VAH",
+  "TPO_VAL",
+  "TRADES",
+  "VWAP",
+  "WILLR14",
+  "WT1",
+  "WT2"
+ ],
+ "counts": {
+  "feed": 83,
+  "feedNothing": 61,
+  "transformDependent": 0,
+  "spreadCellsExcluded": 108,
+  "attributedFromNonSpreadCells": 144
+ }
+}

@@ -700,8 +700,8 @@
   "metricsSatisfyingNothing": 61,
   "modulesReachable": 17,
   "modulesUnreachable": 2,
-  "probeCount": 82,
-  "_note": "metricsMappedToAModule / metricsSatisfyingNothing cover the full 144-metric corpus as of 2026-09-09: 24 probes on the 2026-08-24 roster plus 58 single-metric probes on the metrics added since. signalsReachable/Unreachable and modulesReachable/Unreachable were NOT recomputed - they describe signals and modules, which the new metrics do not add to."
+  "probeCount": 687,
+  "_note": "metricsMappedToAModule / metricsSatisfyingNothing cover the full 144-metric corpus as of 2026-09-09, confirmed by probing every legal metric x transform cell (663, zero failures) and not merely one transform per metric. signalsReachable/Unreachable and modulesReachable/Unreachable were NOT recomputed - they describe signals and modules, which the new metrics do not add to."
  },
  "defaultParams": {
   "bollinger_cci_overbought": {
@@ -872,6 +872,6 @@
   "2026-09-09: SWING_HIGH/SWING_LOW renamed to DONCHIAN_UPPER/DONCHIAN_LOWER at contract 53.0.0 - identical nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi / swingLo->donchianLo. The names below were updated; the measurement they record is unchanged because the underlying indicator is the same 20-bar channel."
  ],
  "_extensions": [
-  "2026-09-09: the 58 metrics added since the 2026-08-24 probes were probed individually with derive_strategy_rule_view (read-only), one metric per custom section. A control section carrying only CLOSE returned ZERO signals in report, so a non-empty result is attributable to the metric. 31 feed a module and 27 feed none. CAVEAT: each metric was probed with ONE transform (value where offered); a metric could in principle feed a module only through a different transform, and that was not tested. Raw run: data/audit/module_membership_new_metrics_2026-09-09.json. DONCHIAN_UPPER/DONCHIAN_LOWER were probed separately (they are the SWING_HIGH/SWING_LOW rename, not new) and feed the same four support/resistance signals the old names did."
+  "2026-09-09 (second pass, CAVEAT CLOSED): the single-transform pass carried a caveat - a metric feeding a module only through some OTHER transform would not have been seen. Every legal metric x transform cell was then probed: 663 cells, ZERO failures. Membership is NOT transform-dependent - for every metric, all its non-spread transforms return the same signal set - and the full probe reproduces this map exactly (83 feed a module, 61 feed none, zero disagreements either way). The 108 SPREAD cells are excluded from attribution on purpose: a spread column puts the base AND its operand in the report, so it cannot isolate the base, and subtracting the operand's own signals is not a fix - where base and operand feed the same module it removes the base's contribution too (measured: PPO x spread with operand ROC12 reads empty that way while PPO's four other transforms each return the same four relative-strength signals). Every metric has at least one non-spread cell, so nothing is attributed from a spread cell alone. Raw: data/audit/module_membership_full_2026-09-09.json."
  ]
 }

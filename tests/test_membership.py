@@ -78,8 +78,11 @@ def test_mapped_plus_dead_covers_the_whole_corpus():
     been probed against 86. The 58 added metrics were then probed individually with
     derive_strategy_rule_view - a control section carrying only CLOSE returns zero
     signals, so a non-empty result is attributable to the metric - and 31 feed a module
-    while 27 feed none. Each was probed with ONE transform (value where offered), which
-    is the caveat recorded in the map's own _extensions note.
+    while 27 feed none. That pass probed ONE transform per metric; the caveat it carried
+    was then closed by probing every legal metric x transform cell - 663 cells, zero
+    failures - which found membership is NOT transform-dependent and reproduced this map
+    exactly. Spread cells are excluded from attribution because a spread column carries
+    the base AND its operand, so it cannot isolate the base.
     """
     mapped = {m for v in MAP["moduleSatisfiedBy"].values() for m in v}
     dead = set(MAP["metricsSatisfyingNoModule"])

@@ -1,0 +1,19 @@
+{
+ "_what": "The BattleGrid MCP endpoint rate-limits, and says so explicitly. Discovered 2026-09-09 when an unthrottled 4-worker membership probe failed 162 of 663 cells.",
+ "capturedAt": "2026-09-09T10:06:12Z",
+ "verbatimMessage": "Rate limited: 3 requests/second sustained, up to 120 banked. Retry after 1s, or wait 40s for full capacity.",
+ "transport": "JSON-RPC error code -32000 returned by the endpoint; mcporter surfaces it as \"Error POSTing to endpoint\". It is NEVER silent - a rate-limited call fails loudly.",
+ "measured": {
+  "limitIsReal": true,
+  "shape": "token bucket: 3 requests/second sustained, burst bank of 120, refilling at the sustained rate",
+  "observedBehaviour": "The first ~65 probes of a 4-worker run succeeded - they spent the bank - and the run then failed 162 consecutive cells. Re-running the same cells with call starts spaced 0.45s apart and 3 workers produced ZERO errors.",
+  "remedy": "space call starts under the sustained rate; retry a rate-limited call after ~1s"
+ },
+ "_hypothesisNotMeasured": "The probe rate that triggered this was ~0.67 logical probes/second, well under 3/s, which suggests ONE `mcporter call` costs more than one HTTP request - a fresh CLI invocation does an MCP handshake (initialize, capability exchange) before the tool call. That would put the effective request rate near the limit. This is a hypothesis consistent with the observation; the per-call request count was NOT measured.",
+ "_correctsEarlierReasoning": "On 2026-09-06 a Hermes session's failures were diagnosed as client timeouts, and rate limiting was ruled out because spacing calls 15-60s apart did not help. That diagnosis stands - at one call per 5-15 seconds Hermes was nowhere near 3/s, and the limiter would have said so out loud rather than returning empty bodies. What is now corrected is the broader impression that this endpoint has no rate limit. It has one, it is documented in its own error message, and any batch or parallel sweep must respect it.",
+ "affects": [
+  "scripts/probe_module_membership_full.py (throttled)",
+  "scripts/sweep_render_coverage.py (sequential, ~1 call per several seconds - under the limit)",
+  "any future parallel sweep"
+ ]
+}

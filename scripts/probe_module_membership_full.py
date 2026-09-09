@@ -14,7 +14,18 @@ non-empty probe result could be an artefact of the section existing and the run 
 Resumable: each result is appended to the partial file as it is measured, and a re-run skips
 pairs already recorded there.
 
-Usage: python scripts/probe_module_membership_full.py [--limit N]
+Runs WORKERS probes concurrently (default 4), THROTTLED. The server rate-limits and says so
+in as many words:
+
+    "Rate limited: 3 requests/second sustained, up to 120 banked. Retry after 1s, or wait
+     40s for full capacity."
+
+An unthrottled 4-worker run burned the 120-request bank and then failed 162 of 663 cells.
+The limiter is explicit, never silent, so a throttled run that still fails is failing for
+some other reason. Calls are spaced to stay under the sustained rate and a rate-limited
+call is retried with backoff.
+
+Usage: python scripts/probe_module_membership_full.py [--limit N] [--workers N]
 """
 from __future__ import annotations
 
@@ -22,7 +33,9 @@ import json
 import os
 import subprocess
 import sys
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 sys.path.insert(0, ".")
 from omega.contract import load          # noqa: E402
@@ -33,7 +46,34 @@ OUT = "data/audit/module_membership_full_2026-09-09.json"
 NOTE = "OMEGA read-only full membership probe 2026-09-09"
 
 
-def call(tool, args, timeout=180):
+# The server allows 3 requests/second sustained. Space call STARTS a little wider than that
+# so a burst cannot outrun the bucket, and never rely on the 120-request bank: it refills at
+# the sustained rate, so a long run consumes it once and then lives at the sustained rate.
+_MIN_INTERVAL = 0.45
+_rate_lock = threading.Lock()
+_last_call = [0.0]
+
+
+def _throttle():
+    with _rate_lock:
+        wait = _last_call[0] + _MIN_INTERVAL - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        _last_call[0] = time.monotonic()
+
+
+def call(tool, args, timeout=180, attempts=4):
+    for attempt in range(1, attempts + 1):
+        _throttle()
+        res, err = _call_once(tool, args, timeout)
+        if err and "Rate limited" in err:
+            time.sleep(1.5 * attempt)      # the limiter says "retry after 1s"
+            continue
+        return res, err
+    return None, err
+
+
+def _call_once(tool, args, timeout=180):
     p = subprocess.Popen(
         ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
          "--output", "json", "--args", "-"],
@@ -106,17 +146,31 @@ def main() -> int:
     todo = [t for t in targets if f"{t[0]}|{t[1]}" not in done]
     if limit:
         todo = todo[:limit]
-    for i, (metric, transform, col, operand) in enumerate(todo, 1):
+    workers = 4
+    if "--workers" in sys.argv:
+        workers = int(sys.argv[sys.argv.index("--workers") + 1])
+    lock = threading.Lock()
+    counter = {"n": 0}
+
+    def one(job):
+        metric, transform, col, operand = job
         key = f"{metric}|{transform}"
         sigs, err = signals_for(col, f"probe {key}")
-        done[key] = {"signalsFed": sigs, "error": err, "operand": operand}
-        if i % 5 == 0 or i == len(todo):
-            json.dump(done, open(PARTIAL, "w", encoding="utf-8"), ensure_ascii=False)
-        if i % 25 == 0 or i == len(todo):
-            rate = (time.time() - t0) / i
-            print(f"  [{i}/{len(todo)}] {key} -> "
-                  f"{len(sigs) if sigs is not None else 'ERR'} "
-                  f"({round(time.time()-t0)}s, ~{round(rate*(len(todo)-i)/60,1)}min left)")
+        with lock:
+            done[key] = {"signalsFed": sigs, "error": err, "operand": operand}
+            counter["n"] += 1
+            i = counter["n"]
+            if i % 10 == 0 or i == len(todo):
+                json.dump(done, open(PARTIAL, "w", encoding="utf-8"), ensure_ascii=False)
+            if i % 25 == 0 or i == len(todo):
+                rate = (time.time() - t0) / i
+                print(f"  [{i}/{len(todo)}] {key} -> "
+                      f"{len(sigs) if sigs is not None else 'ERR ' + str(err)[:60]} "
+                      f"({round(time.time()-t0)}s, ~{round(rate*(len(todo)-i)/60,1)}min left)")
+
+    print(f"probing with {workers} workers")
+    with ThreadPoolExecutor(max_workers=workers) as ex:
+        list(ex.map(one, todo))
     json.dump(done, open(PARTIAL, "w", encoding="utf-8"), ensure_ascii=False)
 
     # ---- collate ----------------------------------------------------------------
@@ -130,32 +184,33 @@ def main() -> int:
         if v.get("operand"):
             operands[key] = v["operand"]
 
-    # A spread column puts TWO metrics in the report - the base and its operand - so the
-    # operand's own signals appear in the result. Subtract them, or every spread cell looks
-    # transform-dependent when it is really operand contribution. Measured on ADX x spread
-    # with operand RSI14: 14 signals, of which the 8 RSI ones are RSI14's, not ADX's.
-    def own(m):
-        """A metric's own signals, from its non-spread cells."""
-        return set().union(*[v for t, v in raw.get(m, {}).items() if t != "spread"])             if any(t != "spread" for t in raw.get(m, {})) else set()
-
-    by_metric, unattributed = {}, []
+    # A spread column puts TWO metrics in the report - the base and its operand - so it
+    # CANNOT isolate the base's contribution. Subtracting the operand's own signals looked
+    # like a fix and is not: when base and operand feed the SAME module the subtraction
+    # removes the base's contribution too, and the cell reads as zero. Measured: PPO x spread
+    # with operand ROC12 came back empty that way, while PPO x value/trajectory/rank/crossDetect
+    # all return the same four relative-strength signals. So spread cells are EXCLUDED from
+    # attribution and from the transform-dependence question, and recorded separately with
+    # their operand so the exclusion is inspectable rather than silent.
+    spread_cells = {}
+    by_metric = {}
     for metric, per in raw.items():
-        by_metric[metric] = {}
         for transform, sigs in per.items():
             if transform == "spread":
-                op = operands.get(f"{metric}|spread")
-                # Only subtract when the operand's OWN cells were probed. On a partial run
-                # they may not be, and under-subtracting would invent transform-dependence.
-                if op and any(t != "spread" for t in raw.get(op, {})):
-                    sigs = sigs - own(op)
-                elif op:
-                    unattributed.append(f"{metric}|spread (operand {op} not probed)")
-                    continue
-            by_metric[metric][transform] = sigs
+                spread_cells[f"{metric}|spread"] = {
+                    "operand": operands.get(f"{metric}|spread"),
+                    "signalsInReport": sorted(sigs),
+                    "attributable": False}
+            else:
+                by_metric.setdefault(metric, {})[transform] = sigs
 
-    transform_dependent, feeds, none = {}, {}, []
-    for metric, per in sorted(by_metric.items()):
-        union = set().union(*per.values()) if per else set()
+    transform_dependent, feeds, none, spread_only = {}, {}, [], []
+    for metric in sorted(raw):
+        per = by_metric.get(metric)
+        if not per:                      # every legal cell for this metric is a spread cell
+            spread_only.append(metric)
+            continue
+        union = set().union(*per.values())
         distinct = {frozenset(v) for v in per.values()}
         if union:
             feeds[metric] = sorted(union)
@@ -175,16 +230,22 @@ def main() -> int:
         "capturedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "cellsProbed": len(done) - len(failures),
         "failures": failures,
-        "spreadCellsUnattributed": unattributed,
         "membershipIsTransformDependent": bool(transform_dependent),
         "transformDependentMetrics": transform_dependent,
-        "_spreadAttribution": ("For a spread cell the operand metric is also in the report, so its own "
-                       "signals are subtracted before attributing anything to the base metric. "
-                       "The operand used for each spread probe is recorded in the partial file."),
+        "_spreadAttribution": ("A spread cell puts the base AND its operand in the report, so it cannot "
+                              "attribute membership to the base. Subtracting the operand's own signals is "
+                              "NOT a fix: where base and operand feed the same module it removes the base's "
+                              "contribution too. Spread cells are therefore excluded from the counts and "
+                              "from the transform-dependence question, and listed under spreadCells with "
+                              "their operand so the exclusion can be checked."),
+        "spreadCells": spread_cells,
+        "metricsWithOnlySpreadCells": spread_only,
         "metricsFeedingAModule": feeds,
         "metricsSatisfyingNoModule": sorted(none),
         "counts": {"feed": len(feeds), "feedNothing": len(none),
-                   "transformDependent": len(transform_dependent)},
+                   "transformDependent": len(transform_dependent),
+                   "spreadCellsExcluded": len(spread_cells),
+                   "attributedFromNonSpreadCells": len(feeds) + len(none)},
     }
     json.dump(out, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"\ncells probed {out['cellsProbed']}, failures {len(failures)}")

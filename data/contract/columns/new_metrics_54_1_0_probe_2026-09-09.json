@@ -419,6 +419,12 @@
     "vocab": []
    }
   },
-  "gateability": "all eleven are gateable: the eight price-unit reads take lt/lte/gte/gt/between, tpoShape takes is/in over ['p-shape','b-shape','balanced']"
+  "gateability": "all eleven are gateable: the eight price-unit reads take lt/lte/gte/gt/between, tpoShape takes is/in over ['p-shape','b-shape','balanced']",
+  "priorSessionRecheck": {
+   "when": "2026-09-09T09:47Z (about one hour after the first observation)",
+   "how": "preview_strategy_report, same three prior-session columns plus TPO_POC and TPO_SHAPE as live controls, BTC and ETH",
+   "result": "pTpoPOC, pTpoVAH and pTpoVAL returned the null sentinel again on BOTH coins. The current-session controls rendered in the same call (tpoPOC $78752.28 on BTC, $2496.10 on ETH) and tpoShape had MOVED since the first observation - BTC went balanced -> b-shape - so the section was live and updating while the prior-session reads stayed empty.",
+   "conclusion": "Two observations an hour apart, both null on both coins, with a live control in the same response. That rules out a one-off blip in a single call. It does NOT establish why: not diagnosed, and no cause is asserted here. A UTC-session boundary has not been crossed between the two observations, so 'populates at the next session roll' remains untested rather than refuted."
+  }
  }
 }
