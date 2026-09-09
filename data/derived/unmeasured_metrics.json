@@ -1,5 +1,5 @@
 {
- "_what": "Metrics present in the live corpus that the repository's LIVE measurements have never covered. The August sweeps - render coverage, signal-module probes, tier-C render verdicts, the timeless column-timeframe audit - all ran against the 86-metric roster of 2026-08-24. The corpus is now 144 (contract 54.1.0, 2026-09-09). Nothing here is a claim about how these metrics behave; it is a claim that we have not looked.",
+ "_what": "CLOSED 2026-09-09. This file recorded the metrics whose live behaviour the repository had never measured after the corpus grew from 86 to 144. All four dimensions of that gap have since been measured; the lists are kept because they define what 'added since the August sweeps' means, and the renderedMechanisms block is still what tells you which mechanisms the ORIGINAL sweep covered.",
  "_measuredRoster": {
   "asOf": "2026-08-24",
   "count": 86
@@ -716,5 +716,30 @@
    "PERP_SPOT_STRENGTH|value": [],
    "PERP_SPOT_CONFIRMS|value": []
   }
+ },
+ "gapClosure": {
+  "status": "CLOSED",
+  "renderCoverage": {
+   "status": "MEASURED 2026-09-09",
+   "record": "data/audit/coverage_sweep_2026-09-09.json",
+   "result": "7,840 previously-unrendered shapes rendered live; 13,572 headers minted; ZERO refusals; ZERO predicted-but-not-rendered. Coverage is complete again: 675 structural and 8979 operand-expanded, nothing uncovered.",
+   "headers": "data/contract/columns/_coverage_sweep_2026-09-09.json (registered in render_coverage.SEEN_FILES)"
+  },
+  "moduleMembership": {
+   "status": "MEASURED 2026-09-09",
+   "record": "data/audit/module_membership_new_metrics_2026-09-09.json",
+   "result": "58 metrics probed individually with derive_strategy_rule_view; 31 feed a signal module, 27 feed none. Control: a section carrying only CLOSE returns zero signals, so results are attributable to the metric.",
+   "caveat": "one transform probed per metric (value where offered); a metric feeding a module only via another transform would not have been seen"
+  },
+  "tierCVerdicts": {
+   "status": "NOT APPLICABLE",
+   "result": "no TIER_C member is among the metrics added since, so the coherence set needed no extension"
+  },
+  "timelessRule": {
+   "status": "MEASURED 2026-09-09",
+   "record": "data/audit/timeless_rule_new_metrics_2026-09-09.json",
+   "result": "all 22 newly-timeless metrics were probed with a pinned {abs:'4h'} against a 1h anchor; the platform REFUSED every one, so the rule is measured across the whole corpus rather than generalised"
+  },
+  "closedAt": "2026-09-09T09:23:43Z"
  }
 }

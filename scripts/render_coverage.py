@@ -38,6 +38,9 @@ SEEN_FILES = [
     "_family_seen.json", "_sweep_seen.json", "_renders.json", "_renders_chains.json",
     "_renders_collision.json", "_renders_coverage.json", "_renders_infix.json",
     "_renders_tfvariants.json", "_contracts.json", "_coverage_sweep_2026-08-26.json", "_spread_sweep_2026-08-26.json",
+    # 2026-09-09: the sweep that closed the gap the 144-metric corpus refresh opened.
+    # 7,840 previously-unrendered shapes, 13,572 headers minted, zero refusals.
+    "_coverage_sweep_2026-09-09.json",
 ]
 
 

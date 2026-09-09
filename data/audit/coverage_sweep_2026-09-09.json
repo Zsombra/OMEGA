@@ -1,0 +1,163 @@
+{
+ "_what": "Run record for the 2026-09-09 live coverage sweep: what was asked for, what the platform refused, and every shape whose omega-predicted header did not turn up in the render. Kept OUT of data/contract/columns/ so none of these strings can be mistaken for a rendered header.",
+ "capturedAt": "2026-09-09T09:19:38Z",
+ "how": "preview_strategy_report via the mcporter CLI, read-only, BTC only, 32 columns per custom section, up to 8 sections per call; refused batches bisected to the offending column.",
+ "shapesRequested": 7459,
+ "batches": [
+  {
+   "batch": 1,
+   "columns": 256,
+   "headers": 448
+  },
+  {
+   "batch": 2,
+   "columns": 256,
+   "headers": 420
+  },
+  {
+   "batch": 3,
+   "columns": 256,
+   "headers": 496
+  },
+  {
+   "batch": 4,
+   "columns": 256,
+   "headers": 492
+  },
+  {
+   "batch": 5,
+   "columns": 256,
+   "headers": 476
+  },
+  {
+   "batch": 6,
+   "columns": 256,
+   "headers": 496
+  },
+  {
+   "batch": 7,
+   "columns": 256,
+   "headers": 488
+  },
+  {
+   "batch": 8,
+   "columns": 256,
+   "headers": 488
+  },
+  {
+   "batch": 9,
+   "columns": 256,
+   "headers": 492
+  },
+  {
+   "batch": 10,
+   "columns": 256,
+   "headers": 488
+  },
+  {
+   "batch": 11,
+   "columns": 256,
+   "headers": 492
+  },
+  {
+   "batch": 12,
+   "columns": 256,
+   "headers": 484
+  },
+  {
+   "batch": 13,
+   "columns": 256,
+   "headers": 492
+  },
+  {
+   "batch": 14,
+   "columns": 256,
+   "headers": 484
+  },
+  {
+   "batch": 15,
+   "columns": 256,
+   "headers": 460
+  },
+  {
+   "batch": 16,
+   "columns": 256,
+   "headers": 460
+  },
+  {
+   "batch": 17,
+   "columns": 256,
+   "headers": 456
+  },
+  {
+   "batch": 18,
+   "columns": 256,
+   "headers": 492
+  },
+  {
+   "batch": 19,
+   "columns": 256,
+   "headers": 496
+  },
+  {
+   "batch": 20,
+   "columns": 256,
+   "headers": 488
+  },
+  {
+   "batch": 21,
+   "columns": 256,
+   "headers": 488
+  },
+  {
+   "batch": 22,
+   "columns": 256,
+   "headers": 480
+  },
+  {
+   "batch": 23,
+   "columns": 256,
+   "headers": 364
+  },
+  {
+   "batch": 24,
+   "columns": 256,
+   "headers": 436
+  },
+  {
+   "batch": 25,
+   "columns": 256,
+   "headers": 484
+  },
+  {
+   "batch": 26,
+   "columns": 256,
+   "headers": 444
+  },
+  {
+   "batch": 27,
+   "columns": 256,
+   "headers": 476
+  },
+  {
+   "batch": 28,
+   "columns": 256,
+   "headers": 264
+  },
+  {
+   "batch": 29,
+   "columns": 256,
+   "headers": 496
+  },
+  {
+   "batch": 30,
+   "columns": 35,
+   "headers": 63
+  }
+ ],
+ "headersMinted": 13572,
+ "refusalCount": 0,
+ "refusals": [],
+ "predictedButNotRenderedCount": 0,
+ "predictedButNotRendered": []
+}

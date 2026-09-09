@@ -1,0 +1,355 @@
+{
+ "_what": "Signal-module membership for the metrics added to the platform after the 2026-08-24 probes, measured 2026-09-09 with derive_strategy_rule_view (reads no persisted strategy, writes nothing). One probe per metric, the metric alone in one custom section.",
+ "_control": "A section carrying only CLOSE returns ZERO signals in report, so a non-empty result below is attributable to the metric under test, not to the section existing. The control was re-run at the start of this sweep and was empty.",
+ "capturedAt": "2026-09-09T09:14:07Z",
+ "probed": 58,
+ "failed": {},
+ "metricsFeedingAModule": {
+  "BB_LOWER": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch"
+   ]
+  },
+  "BB_UPPER": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "bollinger_cci_overbought",
+    "bollinger_cci_oversold",
+    "bollinger_lower_touch",
+    "bollinger_squeeze",
+    "bollinger_upper_touch"
+   ]
+  },
+  "DI_MINUS": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "htf_trend_adx_ranging",
+    "htf_trend_adx_trending",
+    "ltf_trend_adx_ranging",
+    "ltf_trend_adx_trending",
+    "trend_adx_ranging",
+    "trend_adx_trending"
+   ]
+  },
+  "DI_PLUS": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "htf_trend_adx_ranging",
+    "htf_trend_adx_trending",
+    "ltf_trend_adx_ranging",
+    "ltf_trend_adx_trending",
+    "trend_adx_ranging",
+    "trend_adx_trending"
+   ]
+  },
+  "EMA21": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ]
+  },
+  "EMA50": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ]
+  },
+  "EMA9": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ]
+  },
+  "HMA20": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "htf_ma_aligned_bear",
+    "htf_ma_aligned_bull",
+    "ltf_ma_aligned_bear",
+    "ltf_ma_aligned_bull",
+    "ma_ema_aligned_bear",
+    "ma_ema_aligned_bull",
+    "ma_ema_bear_cross",
+    "ma_ema_bull_cross",
+    "ma_sma200_above",
+    "ma_sma200_below"
+   ]
+  },
+  "PDH": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PDL": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PIVOT_P": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PIVOT_R1": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PIVOT_R2": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PIVOT_R3": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PIVOT_S1": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PIVOT_S2": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "PIVOT_S3": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "sr_at_resistance",
+    "sr_at_support",
+    "sr_resistance_break",
+    "sr_support_break"
+   ]
+  },
+  "REGIME_CONVICTION": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_CRASH_LATCH": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_CRASH_MARGIN": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_DI_SPREAD": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_MOM_BEAR_VOTES": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_MOM_BULL_VOTES": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_RUN_BARS": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_STATE": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_TREND_GATE": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_TREND_MARGIN": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_TREND_SOURCE": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_VOL_ATR_RATIO": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "REGIME_VOL_BBW_RATIO": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "regime_alignment",
+    "regime_divergence",
+    "regime_trend_shift",
+    "regime_volatility_shift"
+   ]
+  },
+  "RSI2": {
+   "transformProbed": "value",
+   "signalsFed": [
+    "htf_rsi_overbought",
+    "htf_rsi_oversold",
+    "ltf_rsi_overbought",
+    "ltf_rsi_oversold",
+    "rsi_bear_divergence",
+    "rsi_bull_divergence",
+    "rsi_overbought",
+    "rsi_oversold"
+   ]
+  }
+ },
+ "metricsSatisfyingNoModule": [
+  "ICHI_BASE",
+  "ICHI_CONV",
+  "ICHI_LAG",
+  "ICHI_SPAN_A",
+  "ICHI_SPAN_B",
+  "KC_LOWER",
+  "KC_MID",
+  "KC_SQUEEZE",
+  "KC_UPPER",
+  "PRIOR_TPO_POC",
+  "PRIOR_TPO_VAH",
+  "PRIOR_TPO_VAL",
+  "PSAR",
+  "QQE_RSI_MA",
+  "QQE_STOP",
+  "STOCH_RSI14",
+  "ST_DIR",
+  "ST_LINE",
+  "TPO_IB_HIGH",
+  "TPO_IB_LOW",
+  "TPO_POC",
+  "TPO_SHAPE",
+  "TPO_VAH",
+  "TPO_VAL",
+  "WILLR14",
+  "WT1",
+  "WT2"
+ ],
+ "counts": {
+  "feed": 31,
+  "feedNothing": 27
+ }
+}

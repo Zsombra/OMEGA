@@ -1,0 +1,119 @@
+{
+ "_what": "Does the platform refuse a PINNED non-anchor timeframe on a metric that is timeless in the contract? Probed 2026-09-09 with get_strategy_column_contract (read-only), one call per newly-timeless metric, timeframe {abs:'4h'} against a 1h anchor.",
+ "capturedAt": "2026-09-09T09:22:48Z",
+ "results": {
+  "PRIOR_TPO_POC": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'pTpoPOC' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "PRIOR_TPO_VAH": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'pTpoVAH' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "PRIOR_TPO_VAL": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'pTpoVAL' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_CONVICTION": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regConv' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_CRASH_LATCH": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regLatch' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_CRASH_MARGIN": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regCrash' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_DI_SPREAD": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regDI' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_MOM_BEAR_VOTES": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regBear' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_MOM_BULL_VOTES": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regBull' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_RUN_BARS": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regBars' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_STATE": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regState' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_TREND_GATE": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regGate' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_TREND_MARGIN": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regMargin' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_TREND_SOURCE": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regSrc' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_VOL_ATR_RATIO": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regAtrR' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "REGIME_VOL_BBW_RATIO": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'regBbwR' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "TPO_IB_HIGH": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'tpoIBH' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "TPO_IB_LOW": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'tpoIBL' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "TPO_POC": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'tpoPOC' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "TPO_SHAPE": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'tpoShape' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "TPO_VAH": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'tpoVAH' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  },
+  "TPO_VAL": {
+   "verdict": "REFUSED",
+   "code": "VALIDATION_ERROR",
+   "message": "[column-grammar] metric 'tpoVAL' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'"
+  }
+ },
+ "summary": {
+  "REFUSED": 22
+ }
+}

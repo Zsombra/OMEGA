@@ -135,6 +135,7 @@
  "moduleSatisfiedBy": {
   "RSI": [
    "RSI14",
+   "RSI2",
    "RSI7"
   ],
   "MACD": [
@@ -155,24 +156,32 @@
    "ATR_PCT"
   ],
   "BOLLINGER": [
+   "BB_LOWER",
    "BB_PCT_B",
+   "BB_TOUCH",
+   "BB_UPPER",
    "BB_WIDTH",
    "BB_WIDTH_PCT",
-   "BB_TOUCH",
    "CCI20"
   ],
   "MOVING_AVERAGES": [
-   "SMA20",
-   "SMA50",
-   "SMA200",
-   "EMA5",
    "EMA13",
    "EMA20",
+   "EMA21",
+   "EMA5",
+   "EMA50",
+   "EMA9",
    "EMA_CROSS",
-   "MA_ALIGN"
+   "HMA20",
+   "MA_ALIGN",
+   "SMA20",
+   "SMA200",
+   "SMA50"
   ],
   "TREND_STRENGTH": [
-   "ADX"
+   "ADX",
+   "DI_MINUS",
+   "DI_PLUS"
   ],
   "FUNDING": [
    "FUNDING_RATE",
@@ -190,17 +199,39 @@
    "ROC12"
   ],
   "SUPPORT_RESISTANCE": [
-   "DONCHIAN_UPPER",
    "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER",
+   "PDH",
+   "PDL",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PIVOT_S3",
    "PRICE_ZONE"
   ],
   "MFI": [
    "MFI14"
   ],
   "REGIME": [
+   "REGIME_CONVICTION",
+   "REGIME_CRASH_LATCH",
+   "REGIME_CRASH_MARGIN",
+   "REGIME_DI_SPREAD",
+   "REGIME_MOM",
+   "REGIME_MOM_BEAR_VOTES",
+   "REGIME_MOM_BULL_VOTES",
+   "REGIME_RUN_BARS",
+   "REGIME_STATE",
    "REGIME_TREND",
+   "REGIME_TREND_GATE",
+   "REGIME_TREND_MARGIN",
+   "REGIME_TREND_SOURCE",
    "REGIME_VOL",
-   "REGIME_MOM"
+   "REGIME_VOL_ATR_RATIO",
+   "REGIME_VOL_BBW_RATIO"
   ],
   "PRICE_STRUCTURE": [
    "STRUCT_ZONES"
@@ -252,40 +283,67 @@
   }
  },
  "metricsSatisfyingNoModule": [
-  "OPEN",
-  "HIGH",
-  "LOW",
-  "CLOSE",
-  "LAST",
-  "MARK",
-  "ORACLE",
-  "SPOT_CLOSE_CB",
-  "SPOT_CLOSE_BN",
   "BAR_FORMING",
-  "CLOSE_CHANGE",
-  "CHG_5M",
+  "CAPTAIN_CONF",
   "CHG_15M",
   "CHG_1H",
-  "CHG_4H",
   "CHG_24H",
-  "HIGH_DEV",
-  "LOW_DEV",
-  "VWAP",
-  "TRADES",
-  "NOTIONAL_VOLUME_1D",
-  "CROWD_PICK",
-  "CROWD_UPBIAS",
+  "CHG_4H",
+  "CHG_5M",
+  "CLOSE",
+  "CLOSE_CHANGE",
+  "CONFIDENCE",
   "CROWD_ACC",
-  "CROWD_CAPT",
-  "CROWD_PICK_LIVE",
-  "CROWD_UPBIAS_LIVE",
   "CROWD_ACC_LIVE",
+  "CROWD_CAPT",
   "CROWD_CAPT_LIVE",
-  "SETTLED_AT",
+  "CROWD_PICK",
+  "CROWD_PICK_LIVE",
+  "CROWD_UPBIAS",
+  "CROWD_UPBIAS_LIVE",
   "FLOW_ALIGN",
+  "HIGH",
+  "HIGH_DEV",
+  "ICHI_BASE",
+  "ICHI_CONV",
+  "ICHI_LAG",
+  "ICHI_SPAN_A",
+  "ICHI_SPAN_B",
+  "KC_LOWER",
+  "KC_MID",
+  "KC_SQUEEZE",
+  "KC_UPPER",
+  "LAST",
+  "LOW",
+  "LOW_DEV",
+  "MARK",
+  "NOTIONAL_VOLUME_1D",
+  "OPEN",
+  "ORACLE",
+  "PRIOR_TPO_POC",
+  "PRIOR_TPO_VAH",
+  "PRIOR_TPO_VAL",
+  "PSAR",
+  "QQE_RSI_MA",
+  "QQE_STOP",
+  "SETTLED_AT",
   "SMART_RETAIL",
-  "CAPTAIN_CONF",
-  "CONFIDENCE"
+  "SPOT_CLOSE_BN",
+  "SPOT_CLOSE_CB",
+  "STOCH_RSI14",
+  "ST_DIR",
+  "ST_LINE",
+  "TPO_IB_HIGH",
+  "TPO_IB_LOW",
+  "TPO_POC",
+  "TPO_SHAPE",
+  "TPO_VAH",
+  "TPO_VAL",
+  "TRADES",
+  "VWAP",
+  "WILLR14",
+  "WT1",
+  "WT2"
  ],
  "surprises": [
   {
@@ -638,11 +696,12 @@
   "signalsTotal": 84,
   "signalsReachable": 77,
   "signalsUnreachable": 7,
-  "metricsMappedToAModule": 52,
-  "metricsSatisfyingNothing": 34,
+  "metricsMappedToAModule": 83,
+  "metricsSatisfyingNothing": 61,
   "modulesReachable": 17,
   "modulesUnreachable": 2,
-  "probeCount": 24
+  "probeCount": 82,
+  "_note": "metricsMappedToAModule / metricsSatisfyingNothing cover the full 144-metric corpus as of 2026-09-09: 24 probes on the 2026-08-24 roster plus 58 single-metric probes on the metrics added since. signalsReachable/Unreachable and modulesReachable/Unreachable were NOT recomputed - they describe signals and modules, which the new metrics do not add to."
  },
  "defaultParams": {
   "bollinger_cci_overbought": {
@@ -811,5 +870,8 @@
  "_defaultParamsNote": "Report-default signal params, taken verbatim from derive_strategy_rule_view and cross-checked against two live strategies (EL_ALAMEIN, MATH-C3).",
  "_renames": [
   "2026-09-09: SWING_HIGH/SWING_LOW renamed to DONCHIAN_UPPER/DONCHIAN_LOWER at contract 53.0.0 - identical nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi / swingLo->donchianLo. The names below were updated; the measurement they record is unchanged because the underlying indicator is the same 20-bar channel."
+ ],
+ "_extensions": [
+  "2026-09-09: the 58 metrics added since the 2026-08-24 probes were probed individually with derive_strategy_rule_view (read-only), one metric per custom section. A control section carrying only CLOSE returned ZERO signals in report, so a non-empty result is attributable to the metric. 31 feed a module and 27 feed none. CAVEAT: each metric was probed with ONE transform (value where offered); a metric could in principle feed a module only through a different transform, and that was not tested. Raw run: data/audit/module_membership_new_metrics_2026-09-09.json. DONCHIAN_UPPER/DONCHIAN_LOWER were probed separately (they are the SWING_HIGH/SWING_LOW rename, not new) and feed the same four support/resistance signals the old names did."
  ]
 }

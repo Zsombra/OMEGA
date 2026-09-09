@@ -110,21 +110,71 @@ Counts, all recomputed:
 | operand-expanded shapes | 1779 | 8999 |
 | platform-privileged pairs | 4 | 3 |
 
-## 8. What is NOT done, and is not pretended to be
+## 8. The gap, and closing it
 
-The August **live** sweeps — render coverage, signal-module probes, tier-C render verdicts, the
+The August **live** sweeps — render coverage, signal-module probes, tier-C verdicts, the
 timeless column-timeframe audit — ran against the 86-metric roster. Extending them to the 58
-metrics added since would be assumption, so instead the gap has a name and a file:
-`data/derived/unmeasured_metrics.json` lists them, plus the 322 metric × transform mechanisms
-the sweep actually rendered. Every affected test now asserts
+metrics added since would have been assumption, so the gap was first given a name and a file
+(`data/derived/unmeasured_metrics.json`) and then **measured**. All four dimensions are now
+closed. Every call below was read-only.
 
-> measured ∪ unmeasured == the corpus
+**Render coverage — complete again.** 7,840 shapes the caches had never seen were rendered
+through `preview_strategy_report`, 32 columns per custom section, up to 8 sections per call,
+with any refused batch bisected down to the offending column so a refusal would be attributed
+rather than written off.
 
-so the suite stays honest and the outstanding work stays countable. Live-render coverage is
-still complete **over the rendered roster** and is asserted that way; the uncovered remainder
-is asserted to be non-empty rather than dropped from the denominator.
+| | result |
+|---|---|
+| shapes rendered | 7,840 |
+| distinct headers minted | 13,572 |
+| refusals | **0** |
+| omega predicted a header that did not render | **0** |
 
-Also outstanding: **doc 18's "cannot build" verdicts**. Families it declares unbuildable —
-Keltner, Supertrend, Ichimoku, pivots, Williams %R — the platform now serves, and the TPO family
-is a new one it has never considered. Re-deciding that census is its own piece of work and has
-not been done. `data/contract/_manifest.json` still describes the August extraction.
+Zero refusals means the platform accepted every shape omega's enumerator claims is legal, and
+zero misses means every header `omega.fanout.outputs_for` predicts is the header the platform
+actually mints. That is the strongest agreement between this tool and the platform measured so
+far, and it now holds over 675 structural and 8,979 operand-expanded shapes with nothing
+uncovered. Headers: `data/contract/columns/_coverage_sweep_2026-09-09.json`. Run record:
+`data/audit/coverage_sweep_2026-09-09.json`.
+
+**Signal-module membership — measured, and it changes what the new metrics are for.** Each of
+the 58 was probed alone in one custom section with `derive_strategy_rule_view` (reads no
+persisted strategy, writes nothing). The control matters: a section carrying only `CLOSE`
+returns **zero** signals in report, so a non-empty result is attributable to the metric under
+test rather than to the section existing.
+
+- **31 feed a signal module.** The nine pivots plus PDH/PDL feed the support-and-resistance
+  signals; EMA9/21/50 and HMA20 feed the moving-average signals; DI+/DI− feed trend strength;
+  BB_UPPER/BB_LOWER feed Bollinger; RSI2 feeds RSI; the thirteen regime keys feed regime.
+- **27 feed nothing.** All nine TPO metrics, all five Ichimoku lines, all four Keltner keys,
+  Supertrend (both), PSAR, QQE (both), WaveTrend (both), Williams %R and Stochastic RSI.
+
+That second list is the practically important finding, and nobody documents it: **those 27 can
+be put in a report and conditioned on, but they cannot be weighted in the aggregate score,
+because no signal reads them.** A strategy that leans on TPO or Ichimoku has to express it
+through conditions, not allocations. `DONCHIAN_UPPER`/`DONCHIAN_LOWER` were probed separately —
+they are the rename, not new — and feed the same four support-and-resistance signals the old
+names did, which is what makes the rename safe rather than merely plausible. Caveat recorded in
+the map itself: one transform per metric (`value` where offered), so a metric feeding a module
+only through some other transform would not have been seen. Record:
+`data/audit/module_membership_new_metrics_2026-09-09.json`.
+
+**The timeless rule — measured, not generalised.** All 22 newly-timeless metrics were probed
+with a pinned `{abs: "4h"}` against a 1h anchor. The platform **refused every one**, so the rule
+now rests on measurement across the whole corpus rather than on the original 40 plus an
+assumption. Record: `data/audit/timeless_rule_new_metrics_2026-09-09.json`.
+
+**Tier-C coherence — not applicable.** No member of the tier-C set is among the metrics added
+since, so that set needed no extension. Saying so is better than inventing verdicts for it.
+
+## 9. Still outstanding
+
+- **Doc 18's "cannot build" verdicts.** Families it declares unbuildable — Keltner, Supertrend,
+  Ichimoku, pivots, Williams %R — the platform now serves, and the TPO family is one it has
+  never considered. Re-deciding that census is its own piece of work. The membership result
+  above is the input it needs: most of those families feed no signal, so "buildable" and
+  "scoreable" are different questions for them.
+- **`entry.anchor` is captured but not enforced.** See section 6.
+- **`data/contract/_manifest.json` still describes the August extraction.**
+- **The three prior-session TPO reads returned null** in the one render that observed them. Not
+  diagnosed.

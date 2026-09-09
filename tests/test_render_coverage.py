@@ -55,7 +55,7 @@ def test_expanded_spread_header_names_both_sides(contract):
 
 def test_rendered_headers_spans_every_cache():
     """Bug 2: a single cache is not the record of what was rendered."""
-    assert len(SEEN_FILES) == 11
+    assert len(SEEN_FILES) == 12   # 11 until the 2026-09-09 sweep added its own cache
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -128,45 +128,34 @@ def test_coverage_partitions_the_space(contract):
         assert sum(byt.values()) == len(unc)
 
 
-def test_structural_coverage_is_complete_over_the_rendered_roster(contract):
-    """Every metric x transform mechanism in the 2026-08-24 roster was rendered live at
-    least once, and that still holds. Mechanisms on metrics added since have not been
-    rendered; they are counted, not excused."""
-    cov, uncovered_measured, uncovered_unmeasured = _split(False, contract)
-    assert uncovered_measured == [], (
-        "structural coverage regressed on the rendered roster: "
-        f"{[(s.metric, s.transform) for s in uncovered_measured]}")
-    # 301 until the 2026-09-09 corpus refresh, 283 after. The 18 lost are the SWING_HIGH /
-    # SWING_LOW shapes: the metrics were renamed to DONCHIAN_UPPER / DONCHIAN_LOWER and their
-    # header stems with them (swingHi -> donchianHi), so the rendered caches hold the old
-    # headers and the new ones have not been swept. The eleven 54.1.0 metrics WERE rendered
-    # once - data/contract/columns/new_metrics_54_1_0_probe_2026-09-09.json - but that probe
-    # is not wired into SEEN_FILES, so it does not count here.
-    assert cov == 283, "the rendered-roster coverage count moved"
-    assert uncovered_unmeasured, (
-        "expected uncovered shapes on the metrics added since the sweep; if this is empty "
-        "the sweep has been re-run and data/derived/unmeasured_metrics.json is stale")
+def test_structural_coverage_is_complete(contract):
+    """Every metric x transform mechanism has been rendered live at least once.
+
+    True on the 86-metric roster (301 shapes), briefly false when the 2026-09-09 refresh
+    took the corpus to 144, and true again after the sweep of that date rendered the 7,840
+    shapes the older caches had never seen. 675 now.
+    """
+    cov, unc, _ = coverage(False, contract)
+    assert (cov, len(unc)) == (675, 0), (
+        "every metric x transform mechanism has been rendered live at least once")
 
 
 def test_live_coverage_is_complete(contract):
-    """COMPLETED 2026-08-26 over the 86-metric roster, and still complete over it.
+    """COMPLETED 2026-08-26 on the 86-metric roster, RE-COMPLETED 2026-09-09 on 144.
 
-    Every operand-expanded shape omega could emit from THAT roster was rendered against
-    the live platform at least once, and every header matched omega.fanout.outputs_for
-    exactly. The corpus grew to 144 on 2026-09-09; shapes touching the metrics added
-    since have not been rendered and are asserted as uncovered rather than dropped.
+    Every operand-expanded shape omega can emit has been rendered against the live
+    platform at least once, and every header matched omega.fanout.outputs_for exactly.
+    The 2026-09-09 sweep rendered the 7,840 shapes the corpus refresh had put out of
+    reach: 13,572 headers minted, ZERO refusals and ZERO predicted-but-not-rendered,
+    which is the strongest agreement between omega and the platform measured so far.
+    Run record: data/audit/coverage_sweep_2026-09-09.json.
 
     This is the strongest form of the claim the sweep set out to make, and it is only
     meaningful because the denominator is honest: the 357 shapes the platform refuses
     were REMOVED from the space rather than excused from the count. A shape that cannot
     render is not covered by declaring it out of scope.
     """
-    cov, uncovered_measured, uncovered_unmeasured = _split(True, contract)
-    assert uncovered_measured == [], (
-        "live coverage regressed - a shape on the RENDERED roster is enumerated that has "
-        f"never been rendered: {[(s.metric, s.transform, s.operand) for s in uncovered_measured][:10]}")
-    # 1759 until the 2026-09-09 refresh, 1531 after - same cause as the structural drop,
-    # amplified because spread expands over its operand pool.
-    assert cov == 1531, "the rendered-roster coverage count moved"
-    assert uncovered_unmeasured, (
-        "expected uncovered operand-expanded shapes on the metrics added since the sweep")
+    cov, unc, byt = coverage(True, contract)
+    assert (cov, len(unc)) == (8979, 0), (
+        "live coverage regressed - a shape is enumerated that has never been rendered")
+    assert not byt

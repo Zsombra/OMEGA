@@ -71,17 +71,21 @@ def test_every_mapped_metric_exists_in_corpus():
             assert m in CONTRACT.metrics, f"{module} references unknown metric {m}"
 
 
-def test_mapped_plus_dead_plus_unmeasured_covers_the_corpus():
+def test_mapped_plus_dead_covers_the_whole_corpus():
+    """Membership is measured for every metric in the corpus again.
+
+    It briefly was not: the 2026-09-09 refresh took the roster to 144 while the map had
+    been probed against 86. The 58 added metrics were then probed individually with
+    derive_strategy_rule_view - a control section carrying only CLOSE returns zero
+    signals, so a non-empty result is attributable to the metric - and 31 feed a module
+    while 27 feed none. Each was probed with ONE transform (value where offered), which
+    is the caveat recorded in the map's own _extensions note.
+    """
     mapped = {m for v in MAP["moduleSatisfiedBy"].values() for m in v}
     dead = set(MAP["metricsSatisfyingNoModule"])
     assert not (mapped & dead), f"metric both mapped and dead: {mapped & dead}"
-    # The module map was probed live against the 86-metric roster of 2026-08-24. The
-    # corpus is now 144; the 58 metrics added since have NOT been probed, so they are
-    # accounted for explicitly rather than counted as "mapped to no module" - which
-    # would be an unmeasured claim wearing a measured answer's clothes.
-    assert not (mapped & UNMEASURED), "an unmeasured metric cannot already be mapped"
-    assert mapped | dead | UNMEASURED == set(CONTRACT.metrics), (
-        f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - (mapped | dead | UNMEASURED))}")
+    assert mapped | dead == set(CONTRACT.metrics), (
+        f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - (mapped | dead))}")
 
 
 def test_coverage_counts_are_accurate():
