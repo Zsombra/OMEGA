@@ -321,3 +321,66 @@ files: `repulls/2026-09-05/raw/`. Pool: base + runs 1–3. Batches of 4/4/5/3 ca
   premise has not failed; it fails if run 5's window edge is ≤ 0.
 - **Next pull due ≤ 2026-09-08** (three days), hard limit ≈ 2026-09-10T00:00Z for the
   100-bar window to reach back to 2026-09-05T21:00Z. Write `raw/_pulled_at.json`.
+
+
+## Addendum 2026-09-09 · out-of-sample re-pull 5 (run 5) — not triggered; both criteria passed and the edge came back
+
+Pulled 2026-09-09T07:38:13–07:41:11Z (`repulls/2026-09-09/raw/_pulled_at.json`), **one day past
+the ≤ 2026-09-08 due date** and about 16 h inside the ≈ 2026-09-10T00:00Z hard limit; the window
+still overlaps run 4, so nothing was lost. Verbatim raw files: `repulls/2026-09-09/raw/`.
+Pool: base + runs 1–4. 81 new 1h bars per coin — more than twice run 4's 38.
+
+- **Method change, stated because it is a change.** Runs 1–4 had the agent transcribe each MCP
+  response into a file by hand. Run 5 fetched the SAME tool (`get_coin_candles`) on the SAME
+  server and account through the `mcporter` CLI and wrote the bytes straight to disk, which
+  removes transcription risk rather than guarding against it. Equality was verified first:
+  `BTC 1h limit=100` fetched through the claude.ai connector and through the CLI returned the
+  same 100 bars with identical first and last OHLCV. Nothing else about the procedure changed.
+- **Integrity** (`verify_repull.py`): 16/16 series, 100 bars, 0 gaps, 0 dupes, 19/100 overlap
+  (1h) and 79/100 (4h), 81 new 1h bars per coin, 21 new 4h bars. 82 bars / 89 fields restated,
+  **all of them tiny** — the largest price move was 6.7e-3 % (MOODENG), three orders of
+  magnitude inside the 1 % gate, and 74 volume revisions, every one upward. **No young-bar
+  price restatement over tolerance this run**, unlike run 4. Record:
+  `data/audit/candle_restatement_2026-09-09.json`.
+- **THE cell, cumulative new-only >90th, base-calibrated (SETTLED=0, POLICY=latest):**
+  **n=209, hit 61.2% ±6.6pp, edge +19.5 bps/bar** (128/209). `POLICY=first` gives 60.8% / +19.2
+  — the two policies now differ by a fraction of a basis point; both are reported per the
+  2026-09-02 amendment and neither changes any verdict.
+- **This window alone (WINDOW=last — the reading that decides under (D)):**
+  **n=66, hit 68.2% ±11.2pp (45/66), edge +58.4 bps/bar.** Hit criterion **passed**; edge
+  criterion **passed**.
+- **Verdict under the chosen reading (D), recorded 2026-09-05T03:31Z before run 4 existed:**
+  run 5 triggers iff its window edge ≤ 0. **+58.4 > 0 → NOT triggered.** Run 4's window failed
+  on edge and opened an edge chain; run 5's window failed on neither criterion, so **the edge
+  chain resets and no chain is now active** — run 6 cannot trigger on its own, it can only open
+  a new chain. For the record: readings (A), (B) and (C) all also read as not triggered this
+  run, so for the first time since run 2 every reading agrees.
+- **Supplementary settled view (SETTLED=6):** cumulative n=206, 60.7% ±6.7, **+17.7 bps**;
+  window n=63, 66.7% ±11.6, **+54.4 bps**. This is the important difference from run 4. There,
+  the window's entire positive tail sat on unsettled bars and the settled view was far harsher
+  (−37.6 vs −13.5). Here the settled and unsettled readings agree within 4 bps, so this
+  window's result does not depend on bars the platform is measured to restate.
+- **Moderate stretch (>75th), new-only, all coins:** n=606, 58.1% ±3.9, **+9.9 bps** — the
+  largest sample in the study, positive again after run 4 had it at −3.3 on 399 events.
+- **Per-coin split at the cell (cumulative):** CAKE 40/78, AIXBT 15/22, MET 15/21, MOODENG
+  12/18, LDO 11/21, PEPE 11/15, BTC 7/9, ETH 5/7, TRUMP 5/6, MELANIA 3/5, SOL 2/4, POPCAT 1/2,
+  HYPE 1/1. **Majors n=20:** 70.0% ±20.1, +9.4. **BTC+ETH, the created strategy's universe:
+  n=16**, 75.0% ±21.2, +9.7 — sixteen events, and the confidence interval is 21 points wide.
+- **Concentration, unchanged as a caveat.** CAKE supplies 24 of this window's 66 cell events
+  (36 %) and 78 of the 209 cumulative (37 %). The pooled cell remains mostly alt evidence
+  carried by one coin; the universe the strategy was written for still has sixteen events.
+- **Funding sign mix (81 new hours per coin):** BTC **17/81 negative**, ETH 0/81, SOL **18/81**.
+  This is the first window in the study with a substantial block of negative-funding hours
+  (runs 1–4 had at most 3). The protocol has said since run 1 that the FUNDING-leg confound
+  resolves only in a window containing negative-funding hours. That window now exists in the
+  corpus. **The confound test has not been run** — this note records that it became possible,
+  not that it was answered.
+- **Honest summary.** The premise did not fail, and on this window it did well: 68.2 % hit and
+  +58.4 bps on 66 events, with the settled view agreeing. But the cumulative edge has now read
+  +36.7 → +1.8 → +3.0 → −0.7 → +19.5 across five runs, which is a number that has swung 20 bps
+  in a single window twice. Five windows is not enough to call that convergence, and the two
+  structural caveats are untouched: one alt supplies a third of the events, and the universe
+  the strategy was actually written for has sixteen. What changed is that the failure reading
+  is now further away, not that the thesis is established.
+- **Next pull due ≤ 2026-09-12** (three days), hard limit ≈ 2026-09-13T08:00Z for the 100-bar
+  window to reach back to run 5's last bar (2026-09-09T06:00Z). Write `raw/_pulled_at.json`.

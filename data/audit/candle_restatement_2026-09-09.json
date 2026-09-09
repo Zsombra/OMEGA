@@ -1,0 +1,1224 @@
+{
+ "_what": "Re-pull 2026-09-09: every field on which the candle endpoint now disagrees with what it served earlier (old = the latest prior source that held the bar; new = this pull). Written by verify_repull.py; nothing here was interpreted.",
+ "when": "2026-09-09",
+ "comparison_pool_sources": [
+  "candles.json",
+  "repulls/2026-08-30/candles.json",
+  "repulls/2026-09-02/candles.json",
+  "repulls/2026-09-04/candles.json",
+  "repulls/2026-09-05/candles.json"
+ ],
+ "summary": {
+  "bars_changed": 82,
+  "fields_changed": {
+   "volume": 74,
+   "high": 2,
+   "low": 4,
+   "open": 9
+  },
+  "volume_direction": {
+   "up": 74,
+   "down": 0
+  },
+  "price_tolerance": 0.01,
+  "price_tolerance_breached": [],
+  "young_bar_price_restatements_over_tolerance": 0,
+  "young_bar_rule": "bars < 6h old when their earlier source served them are reported, not failed (amendment 2026-09-05)"
+ },
+ "per_series": {
+  "AIXBT_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-05T09:00:00.000Z",
+   "bars_matched_before_first_change": 6,
+   "fields_changed": {
+    "volume": 2
+   },
+   "max_relative_change": {
+    "volume": 0.13317812311531246
+   }
+  },
+  "BTC_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 11,
+   "first_changed_bar": "2026-09-05T09:00:00.000Z",
+   "bars_matched_before_first_change": 6,
+   "fields_changed": {
+    "volume": 11
+   },
+   "max_relative_change": {
+    "volume": 0.09534322871723566
+   }
+  },
+  "BTC_4h": {
+   "overlap_bars": 79,
+   "new_bars": 21,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-05T08:00:00.000Z",
+   "bars_matched_before_first_change": 76,
+   "fields_changed": {
+    "volume": 3
+   },
+   "max_relative_change": {
+    "volume": 0.016743831797022584
+   }
+  },
+  "CAKE_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 5,
+   "first_changed_bar": "2026-09-05T09:00:00.000Z",
+   "bars_matched_before_first_change": 6,
+   "fields_changed": {
+    "volume": 5,
+    "high": 1
+   },
+   "max_relative_change": {
+    "high": 0.00013972334777150063,
+    "volume": 0.26273151667085864
+   }
+  },
+  "ETH_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 12,
+   "first_changed_bar": "2026-09-05T09:00:00.000Z",
+   "bars_matched_before_first_change": 6,
+   "fields_changed": {
+    "volume": 12
+   },
+   "max_relative_change": {
+    "volume": 0.43406920526542114
+   }
+  },
+  "ETH_4h": {
+   "overlap_bars": 79,
+   "new_bars": 21,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-05T08:00:00.000Z",
+   "bars_matched_before_first_change": 76,
+   "fields_changed": {
+    "volume": 3
+   },
+   "max_relative_change": {
+    "volume": 0.04731158946399498
+   }
+  },
+  "HYPE_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 12,
+   "first_changed_bar": "2026-09-05T09:00:00.000Z",
+   "bars_matched_before_first_change": 6,
+   "fields_changed": {
+    "volume": 12,
+    "low": 1
+   },
+   "max_relative_change": {
+    "low": 0.0003072450752160814,
+    "volume": 0.15666426769619324
+   }
+  },
+  "LDO_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 4,
+   "first_changed_bar": "2026-09-05T10:00:00.000Z",
+   "bars_matched_before_first_change": 7,
+   "fields_changed": {
+    "volume": 3,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.0005369470723599795,
+    "volume": 0.2069374117768944
+   }
+  },
+  "MELANIA_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 4,
+   "first_changed_bar": "2026-09-05T09:00:00.000Z",
+   "bars_matched_before_first_change": 6,
+   "fields_changed": {
+    "open": 2,
+    "high": 1,
+    "volume": 3
+   },
+   "max_relative_change": {
+    "open": 0.0006324539212143171,
+    "high": 0.0004500855162481625,
+    "volume": 0.308547856149195
+   }
+  },
+  "MET_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-05T09:00:00.000Z",
+   "bars_matched_before_first_change": 6,
+   "fields_changed": {
+    "low": 2,
+    "volume": 2,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 5.2731491246625186e-05,
+    "low": 0.00037062529782397677,
+    "volume": 0.0936229402953135
+   }
+  },
+  "MOODENG_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 5,
+   "first_changed_bar": "2026-09-05T10:00:00.000Z",
+   "bars_matched_before_first_change": 7,
+   "fields_changed": {
+    "volume": 4,
+    "open": 1
+   },
+   "max_relative_change": {
+    "open": 0.006656739949198536,
+    "volume": 0.03880464429597377
+   }
+  },
+  "PEPE_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 2,
+   "first_changed_bar": "2026-09-05T10:00:00.000Z",
+   "bars_matched_before_first_change": 7,
+   "fields_changed": {
+    "volume": 2
+   },
+   "max_relative_change": {
+    "volume": 0.15474470963620626
+   }
+  },
+  "POPCAT_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 4,
+   "first_changed_bar": "2026-09-05T10:00:00.000Z",
+   "bars_matched_before_first_change": 7,
+   "fields_changed": {
+    "volume": 2,
+    "open": 2
+   },
+   "max_relative_change": {
+    "open": 0.0008964504377348114,
+    "volume": 0.09350537103346092
+   }
+  },
+  "SOL_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 6,
+   "first_changed_bar": "2026-09-05T10:00:00.000Z",
+   "bars_matched_before_first_change": 7,
+   "fields_changed": {
+    "low": 1,
+    "volume": 6
+   },
+   "max_relative_change": {
+    "low": 9.769441187969046e-05,
+    "volume": 0.10493582218980556
+   }
+  },
+  "SOL_4h": {
+   "overlap_bars": 79,
+   "new_bars": 21,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-05T08:00:00.000Z",
+   "bars_matched_before_first_change": 76,
+   "fields_changed": {
+    "volume": 3
+   },
+   "max_relative_change": {
+    "volume": 0.012585955671490042
+   }
+  },
+  "TRUMP_1h": {
+   "overlap_bars": 19,
+   "new_bars": 81,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 3,
+   "first_changed_bar": "2026-09-05T10:00:00.000Z",
+   "bars_matched_before_first_change": 7,
+   "fields_changed": {
+    "volume": 1,
+    "open": 2
+   },
+   "max_relative_change": {
+    "open": 0.0010081492060825758,
+    "volume": 0.048610592340051925
+   }
+  }
+ },
+ "differences_verbatim": [
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-09-05T09:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 3805217,
+     "new": 3832436
+    }
+   }
+  },
+  {
+   "series": "AIXBT_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 747803,
+     "new": 847394
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T09:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 159.88174,
+     "new": 160.16016
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 110.91569,
+     "new": 121.49075
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T11:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 205.35461,
+     "new": 205.35728
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T13:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 420.5231,
+     "new": 420.8403
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T14:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 133.16111,
+     "new": 133.17971
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T15:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 393.38789,
+     "new": 393.72305
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 2005.08732,
+     "new": 2005.11644
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T17:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 798.13206,
+     "new": 798.3908
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T18:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 400.98288,
+     "new": 400.98362
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 1202.35194,
+     "new": 1205.49429
+    }
+   }
+  },
+  {
+   "series": "BTC_1h",
+   "timestamp": "2026-09-05T20:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 324.33322,
+     "new": 324.5553
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-09-05T08:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 648.36712,
+     "new": 659.22327
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-09-05T12:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 1076.62353,
+     "new": 1077.29449
+    }
+   }
+  },
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 4406.5542,
+     "new": 4409.98515
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-05T09:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 167849.5,
+     "new": 168094.7
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "high": {
+     "old": 2.1471,
+     "new": 2.1474
+    },
+    "volume": {
+     "old": 36179.9,
+     "new": 45685.5
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-05T18:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 46677.4,
+     "new": 46684.4
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-05T20:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 23017.3,
+     "new": 23234.7
+    }
+   }
+  },
+  {
+   "series": "CAKE_1h",
+   "timestamp": "2026-09-05T21:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 28512.5,
+     "new": 28749.1
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T09:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 1982.4404,
+     "new": 1994.7978
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 647.1733,
+     "new": 928.0913
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T11:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 697.6732,
+     "new": 697.9535
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T12:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 3691.2015,
+     "new": 3705.2602
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T13:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 4924.1615,
+     "new": 4924.855
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T14:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 5213.6293,
+     "new": 5213.6831
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T15:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 4497.1571,
+     "new": 4506.0039
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 21493.4993,
+     "new": 21599.1508
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T17:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 19708.1503,
+     "new": 19708.9717
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 5079.3802,
+     "new": 5094.8446
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T20:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 2236.4234,
+     "new": 2239.9365
+    }
+   }
+  },
+  {
+   "series": "ETH_1h",
+   "timestamp": "2026-09-05T21:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 12479.6258,
+     "new": 12487.0897
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-09-05T08:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 6204.7313,
+     "new": 6498.287
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-09-05T12:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 18326.1494,
+     "new": 18349.8022
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 48820.064,
+     "new": 48942.0013
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T09:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 40288.43,
+     "new": 40365.78
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "low": {
+     "old": 84.623,
+     "new": 84.597
+    },
+    "volume": {
+     "old": 48423.55,
+     "new": 56009.79
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T11:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 73770.11,
+     "new": 73901.89
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T12:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 103494.83,
+     "new": 103607.64
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T13:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 222447.47,
+     "new": 223295.75
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T14:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 56159.91,
+     "new": 56179.91
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T15:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 129904.88,
+     "new": 129905.38
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 154875.52,
+     "new": 155233.2
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T17:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 101865.51,
+     "new": 101928.39
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 126610.65,
+     "new": 126967.03
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T20:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 110712.69,
+     "new": 110735.02
+    }
+   }
+  },
+  {
+   "series": "HYPE_1h",
+   "timestamp": "2026-09-05T21:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 70571.88,
+     "new": 70584.77
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 15443.8,
+     "new": 18639.7
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 45646,
+     "new": 45700
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 120874.3,
+     "new": 122109.3
+    }
+   }
+  },
+  {
+   "series": "LDO_1h",
+   "timestamp": "2026-09-05T21:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.3911,
+     "new": 0.39089
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-09-05T09:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.11098,
+     "new": 0.11104
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.11068,
+     "new": 0.11061
+    },
+    "high": {
+     "old": 0.11109,
+     "new": 0.11114
+    },
+    "volume": {
+     "old": 14520.6,
+     "new": 19000.9
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-09-05T17:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 146061.8,
+     "new": 146612.7
+    }
+   }
+  },
+  {
+   "series": "MELANIA_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 100332.4,
+     "new": 100554.4
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-09-05T09:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.18924,
+     "new": 0.18923
+    },
+    "volume": {
+     "old": 28027,
+     "new": 28272
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "low": {
+     "old": 0.18887,
+     "new": 0.1888
+    },
+    "volume": {
+     "old": 9346,
+     "new": 10221
+    }
+   }
+  },
+  {
+   "series": "MET_1h",
+   "timestamp": "2026-09-05T11:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.18964,
+     "new": 0.18963
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 159852,
+     "new": 166055
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 6937266,
+     "new": 6940411
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-09-05T17:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 9187384,
+     "new": 9202069
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-09-05T18:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.045668,
+     "new": 0.045972
+    }
+   }
+  },
+  {
+   "series": "MOODENG_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 1173116,
+     "new": 1173906
+    }
+   }
+  },
+  {
+   "series": "PEPE_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 19761968,
+     "new": 22820028
+    }
+   }
+  },
+  {
+   "series": "PEPE_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 125024216,
+     "new": 125638931
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 80990,
+     "new": 88563
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-09-05T15:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.052429,
+     "new": 0.052476
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-09-05T20:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 131878,
+     "new": 132166
+    }
+   }
+  },
+  {
+   "series": "POPCAT_1h",
+   "timestamp": "2026-09-05T21:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 0.052914,
+     "new": 0.052909
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "low": {
+     "old": 102.36,
+     "new": 102.35
+    },
+    "volume": {
+     "old": 9652.09,
+     "new": 10664.94
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-05T14:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 19691.74,
+     "new": 19692.1
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-05T15:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 38442.34,
+     "new": 38444.28
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 21114.21,
+     "new": 21114.54
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-05T17:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 124127.03,
+     "new": 124130.44
+    }
+   }
+  },
+  {
+   "series": "SOL_1h",
+   "timestamp": "2026-09-05T19:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 54628.19,
+     "new": 54628.39
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-09-05T08:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 80474.62,
+     "new": 81487.47
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-09-05T12:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 162093.87,
+     "new": 162096.17
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-09-05T16:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 228322.51,
+     "new": 228326.45
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-09-05T10:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "volume": {
+     "old": 218197.3,
+     "new": 228804
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-09-05T11:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 2.3918,
+     "new": 2.3928
+    }
+   }
+  },
+  {
+   "series": "TRUMP_1h",
+   "timestamp": "2026-09-05T15:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-05/candles.json",
+   "fields": {
+    "open": {
+     "old": 2.3806,
+     "new": 2.383
+    }
+   }
+  }
+ ]
+}

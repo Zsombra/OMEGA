@@ -25,8 +25,13 @@ re-pull" is sufficient; no write-path authorization is involved.
 - [ ] Write `raw/_pulled_at.json` as `{"start": "<date -u before the first call>", "end": "<date -u after the last call>"}` (from run 4 on; exact bar age for the SETTLED view).
 - [ ] Save each response's `candles` array VERBATIM to
       `data/research/2026-08-29-deep-tail-fade/repulls/<YYYY-MM-DD>/raw/<TICKER>_<tf>.json`
-      (16 files; a subagent keeps the payloads out of the main context — retry a
-      failed call once, record the error verbatim, never fabricate rows).
+      (16 files; retry a failed call once, record the error verbatim, never fabricate
+      rows). **From run 5 on, fetch through the `mcporter` CLI and write the bytes
+      straight to disk** (`repulls/pull_repull.py <YYYY-MM-DD>`) rather than having the
+      agent transcribe each response: same tool, same server and account, and it removes
+      transcription risk instead of guarding against it. Verify equality once per run by
+      fetching one series both ways before trusting the batch. A subagent is no longer
+      needed to keep payloads out of context.
 - [ ] `python …/repulls/verify_repull.py <YYYY-MM-DD>` — checks against EVERY prior
       source; fails on gaps, dupes, zero overlap, or a price restated by >1%;
       RECORDS (does not fail) volume/tick revisions to
@@ -242,3 +247,21 @@ session on the user's ask.
   64.7% / +7.2; BTC+ETH n=13 69.2% / +6.9; >75th all coins n=399 52.9% / −3.3. Funding:
   BTC 1/37 negative, ETH 0/37, SOL 3/37. Next pull due ≤ **2026-09-08** (hard limit
   ≈ 2026-09-10T00:00Z).
+- **Run 5, 2026-09-09** (one day past the ≤ 09-08 due date, ~16 h inside the hard limit;
+  16 calls 07:38:13–07:41:11Z, fetched through the `mcporter` CLI instead of hand-transcribed
+  — same tool, same server and account, equality verified on BTC 1h against the connector
+  response before the run): `repulls/2026-09-09/` + addendum. Integrity: 0 gaps/dupes, 19/100
+  overlap, **81 new 1h bars** per coin; 82 bars restated, all tiny (largest price move
+  6.7e-3 %, 74 volume revisions all upward), **no young-bar price restatement over tolerance**.
+  THE cell cumulative: **n=209, 61.2% ±6.6, +19.5 bps** (POLICY=first 60.8% / +19.2).
+  **This window: n=66, 68.2% ±11.2, +58.4 bps** — both criteria passed.
+  **Under reading (D): NOT triggered** (+58.4 > 0); the edge chain opened by run 4 **resets and
+  no chain is active**, so run 6 can only open a new one. Readings (A), (B) and (C) also read as
+  not triggered — the first run since run 2 where every reading agrees. SETTLED=6: cumulative
+  60.7% / +17.7 (n=206), window 66.7% / +54.4 (n=63) — the settled view AGREES this run, unlike
+  run 4 where the window's whole positive tail sat on unsettled bars. Majors n=20 70.0% / +9.4;
+  BTC+ETH n=16 75.0% / +9.7; >75th all coins n=606 58.1% / +9.9. CAKE supplies 24/66 of the
+  window's cell events (36 %). Funding: BTC **17/81 negative**, ETH 0/81, SOL **18/81** — the
+  first window with a real block of negative-funding hours, so the FUNDING-leg confound is now
+  testable; **the test has not been run**. Next pull due ≤ **2026-09-12** (hard limit
+  ≈ 2026-09-13T08:00Z).
