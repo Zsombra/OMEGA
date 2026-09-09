@@ -1,0 +1,51 @@
+{
+ "_what": "What the metric contract's `anchor` field actually constrains. PDH, PDL and the seven pivots declare anchor '1d' from contract 54.1.0. Probed live 2026-09-09 on PIVOT_P with get_strategy_column_contract (read-only, compiles a column without reading market values).",
+ "capturedAt": "2026-09-09T09:45:54Z",
+ "metricProbed": "PIVOT_P",
+ "declaredAnchor": "1d",
+ "anchorTimeframeInRequest": "1h",
+ "results": [
+  {
+   "timeframe": {
+    "rel": "anchor"
+   },
+   "verdict": "ACCEPTED",
+   "header": "pivotP",
+   "resolved": "1h"
+  },
+  {
+   "timeframe": {
+    "abs": "1d"
+   },
+   "verdict": "ACCEPTED",
+   "header": "pivotP_1d",
+   "resolved": "1d"
+  },
+  {
+   "timeframe": {
+    "abs": "4h"
+   },
+   "verdict": "REFUSED",
+   "message": "[column-grammar] metric 'pivotP' is anchored to '1d' - it accepts only that absolute timeframe reference, not '4h'"
+  },
+  {
+   "timeframe": {
+    "rel": "lower"
+   },
+   "verdict": "ACCEPTED",
+   "header": "pivotP_ltf",
+   "resolved": "15m"
+  },
+  {
+   "timeframe": {
+    "rel": "regime"
+   },
+   "verdict": "ACCEPTED",
+   "header": "pivotP_htf",
+   "resolved": null
+  }
+ ],
+ "rule": "The anchor binds PINNED (absolute) references only: an anchored metric accepts any RELATIVE reference and, among absolute references, only its declared anchor.",
+ "_discrepancy": "The vendor's battlegrid-strategy-examples skill says of PDH/PDL: 'bind them {abs: \"1d\"}, which is the only reference the save path accepts on them'. That is STRICTER than what the column contract accepts. The SAVE path was NOT probed - doing so needs a compile, which parks a plan server-side. omega therefore errors on a mismatched absolute reference (measured) and only WARNS on a relative one (vendor claim, unverified).",
+ "enforcedBy": "omega/validate.py METRIC_ANCHOR_MISMATCH (error) and METRIC_ANCHOR_RELATIVE_UNVERIFIED (warning)"
+}

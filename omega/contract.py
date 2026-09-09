@@ -33,6 +33,15 @@ class Metric:
     transforms: dict[str, dict]          # transformId -> flags (operandRequired, chainSuccessors, ...)
     spread_operands: tuple[str, ...] = ()
     rank_orderings: tuple[str, ...] = ()
+    anchor: str | None = None
+    """The one ABSOLUTE timeframe this metric accepts, when the platform declares one.
+
+    Published by get_metric_construction_hints from contract 54.1.0 on PDH, PDL and the
+    seven pivots (all "1d"). Measured 2026-09-09 on PIVOT_P: relative references
+    (rel anchor/lower/regime) are accepted, {abs: "1d"} is accepted, and {abs: "4h"} is
+    refused with "metric 'pivotP' is anchored to '1d' - it accepts only that absolute
+    timeframe reference". See data/audit/metric_anchor_rule_2026-09-09.json.
+    """
 
     @property
     def is_timeless(self) -> bool:
@@ -114,6 +123,7 @@ def load() -> Contract:
             transforms={t["id"]: t for t in rec["transforms"]},
             spread_operands=tuple(rec.get("spreadOperands", ())),
             rank_orderings=tuple(rec.get("rankOrderings", ())),
+            anchor=rec.get("anchor"),
         )
 
     # The roster size is the platform's to choose, not ours to pin: it went 86 (2026-08-24)

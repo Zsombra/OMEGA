@@ -87,6 +87,33 @@ def validate_column(
                         f"concluding a metric does not exist)")]
     m = c.metric(column.metric)
 
+
+    # --- metric-declared absolute anchor -------------------------------------
+    # PDH, PDL and the seven pivots declare anchor "1d". Measured live 2026-09-09 on
+    # PIVOT_P via get_strategy_column_contract: {"rel": "anchor"|"lower"|"regime"} and
+    # {"abs": "1d"} are all ACCEPTED; {"abs": "4h"} is REFUSED with "metric 'pivotP' is
+    # anchored to '1d' - it accepts only that absolute timeframe reference, not '4h'".
+    # So the constraint binds PINNED references only. Record:
+    # data/audit/metric_anchor_rule_2026-09-09.json.
+    if m.anchor and not m.is_timeless:
+        got_abs = getattr(column.timeframe, "abs", None)
+        if got_abs is not None and got_abs != m.anchor:
+            out.append(Finding(
+                "error", "METRIC_ANCHOR_MISMATCH", f"{path}.timeframe",
+                f"{m.metric} is anchored to {m.anchor!r} - it accepts only that absolute "
+                f"timeframe reference, not {got_abs!r}. Use "
+                f'timeframe={{"abs": "{m.anchor}"}} or a relative reference.'))
+        elif got_abs is None:
+            # The vendor's authoring skill states the SAVE path accepts only {abs: <anchor>}
+            # on these metrics. That is a stricter claim than the column contract, and the
+            # save path was NOT probed here, so this is a warning rather than an error.
+            out.append(Finding(
+                "warning", "METRIC_ANCHOR_RELATIVE_UNVERIFIED", f"{path}.timeframe",
+                f"{m.metric} declares anchor {m.anchor!r}. A relative reference is accepted "
+                f"by the column contract (measured), but the vendor's authoring skill says "
+                f'the save path accepts only {{"abs": "{m.anchor}"}}. That path is unmeasured; '
+                f"pin it if the column must survive a save."))
+
     # --- metric x transform composability ----------------------------------
     tid = column.transformId
     if not m.offers(tid):

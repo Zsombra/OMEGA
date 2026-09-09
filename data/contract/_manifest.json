@@ -1,43 +1,61 @@
 {
-  "extractedOn": "2026-08-24",
-  "source": "BattleGrid MCP connector (account ANBUJEFF), read-only tools only",
+  "extractedOn": "2026-09-09",
+  "supersedes": {
+    "extractedOn": "2026-08-24",
+    "note": "The 2026-08-24 extraction. Its raw batches are kept at data/contract/metrics/archive_20260824_extraction/ because every August measurement was built from them."
+  },
+  "servedContractVersion": "54.1.0",
+  "contractVersionSource": "GET https://mcp.battlegrid.trade/mcp/version at 2026-09-09T08:03:07Z (build 37cb29b6)",
+  "source": "BattleGrid MCP connector (account ANBUJEFF), read-only tools only, via the mcporter CLI",
   "warning": "This is a dated snapshot of a LIVE system. The connector's instructions state that cached capability lists are not authoritative after a deployment. Re-run the extraction before trusting the matrix against a changed platform.",
   "toolsUsed": [
     "list_strategy_categories",
     "list_strategy_vocabulary",
     "get_metric_construction_hints",
     "get_strategy_column_contract",
+    "get_strategy_section_template",
     "derive_strategy_rule_view",
-    "simulate_aggregate_score",
+    "preview_strategy_report",
     "list_strategies"
   ],
   "writeToolsUsed": [],
   "counts": {
-    "metrics": 86,
+    "metrics": 144,
     "families": 10,
     "authorableTransforms": 16,
     "platformSectionTemplates": 25,
-    "platformTemplateColumns": 124,
-    "composabilityCells": 1376,
-    "composabilityLegal": 322,
-    "composabilityDensityPct": 23.4,
-    "platformPrivilegedPairInstances": 8,
-    "platformPrivilegedPairsUnique": 4,
-    "compilerProbes": 20,
-    "aggregateOracleCases": 3
+    "customSectionTemplates": 2,
+    "composabilityCells": 2304,
+    "composabilityLegal": 663,
+    "composabilityDensityPct": 28.8,
+    "structuralShapes": 1018,
+    "structuralAtoms": 663,
+    "operandExpandedShapes": 8999,
+    "platformPrivilegedPairsUnique": 3,
+    "metricsWithADeclaredAnchor": 9
   },
   "verification": {
     "metricRosterMatchesToolSchemaEnum": true,
+    "_metricRosterNote": "the compile_strategy_plan metric enum and list_strategy_vocabulary agree exactly (144)",
     "familyCountsReconcileWithConnector": true,
-    "compilerProbesMatchingValidator": "20/20",
-    "spreadGraphAsymmetricEdges": 0
+    "transformAuthoringInvariance": "re-verified: exactly one authoring variant per transform across all 663 metric x transform pairs",
+    "liveRenderCoverage": "complete: 675/675 structural and 8979/8979 operand-expanded, zero uncovered (data/audit/coverage_sweep_2026-09-09.json)",
+    "compilerProbeAgreement": "7,840 shapes rendered with ZERO refusals and ZERO predicted-but-not-rendered"
   },
+  "refreshedBy": [
+    "scripts/refresh_metric_contracts.py",
+    "scripts/build_corpus.py",
+    "scripts/sweep_render_coverage.py",
+    "scripts/probe_module_membership_full.py"
+  ],
+  "_manifestRefreshedAt": "2026-09-09T09:46:50Z",
   "accountStateAtExtraction": {
     "privateStrategyQuota": {
       "used": 24,
       "limit": 25,
       "remaining": 1
     },
-    "note": "No strategy was created, updated, forked or archived. Quota untouched."
+    "note": "No strategy was created, updated, forked or archived. Quota untouched.",
+    "_note": "carried from the 2026-08-24 manifest; the quota was NOT re-read in the 2026-09-09 refresh"
   }
 }
