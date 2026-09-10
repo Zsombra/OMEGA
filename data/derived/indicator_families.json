@@ -1014,5 +1014,32 @@
  "_attributionCaveat": "The `attribution` field on each family is MY mapping of a construction to a paper, not a measurement and not the platform's claim. It says 'this column set implements the shape of that idea', which is a judgement call and is sometimes arguable - a rank of funding is the carry factor in perpetuals, but Koijen et al. did not write about perpetuals. Everything else in this file was measured against the live engine; this field alone was not. Treat it as a reading aid, not evidence.",
  "_renames": [
   "2026-09-09: SWING_HIGH/SWING_LOW renamed to DONCHIAN_UPPER/DONCHIAN_LOWER at contract 53.0.0 - identical nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi / swingLo->donchianLo. The names below were updated; the measurement they record is unchanged because the underlying indicator is the same 20-bar channel."
+ ],
+ "_knownWrongSince_2026-09-09": [
+  "THIS CENSUS WAS MEASURED AGAINST THE 2026-08-24 ROSTER OF 86 METRICS. The platform now",
+  "serves 144 (contract 54.1.0), and some blocked verdicts below are demonstrably wrong.",
+  "",
+  "MEASURED, so state it as fact: KC_UPPER, KC_MID, KC_LOWER, ST_LINE, ST_DIR, ICHI_CONV,",
+  "ICHI_BASE, ICHI_SPAN_A, ICHI_SPAN_B, ICHI_LAG, PIVOT_P and the six other pivots, and",
+  "WILLR14 are all PRESENT in the live metric roster, and the 2026-09-09 render sweep put",
+  "every legal shape omega enumerates through the live renderer with ZERO refusals",
+  "(675/675 structural, 8,979/8,979 expanded). So the underlying quantities exist and render.",
+  "",
+  "WHAT THAT BREAKS: the blocked entry 'keltner' (cause operator-absent, reasoning: the",
+  "channel could not be constructed because ATR could not be scaled and added to an EMA) is",
+  "obsolete - the platform now publishes the three Keltner bands as native metrics, so the",
+  "family is selected, not constructed. The same reasoning very likely applies to Supertrend,",
+  "Ichimoku, the pivot ladder and Williams %R, none of which appear in EITHER list.",
+  "",
+  "WHAT IS *NOT* DECIDED, and must not be assumed: no buildable entry has been written for",
+  "any of them. A buildable entry carries a real column spec that tests/test_indicator_families.py",
+  "builds and validates, and choosing which columns constitute each family is a judgement call",
+  "that has not been made. Membership matters too and is measured separately: all nine TPO,",
+  "all five Ichimoku, all four Keltner, Supertrend, PSAR, QQE, WaveTrend, WILLR14 and STOCH_RSI14",
+  "feed NO signal module, so for these families 'buildable' and 'scoreable' are DIFFERENT",
+  "questions - they can be conditioned on but never weighted in the aggregate score.",
+  "",
+  "NEXT SESSION: re-decide these families with real column specs, then delete this block.",
+  "See data/audit/module_membership_full_2026-09-09.json and docs/22-platform-drift-2026-09-09.md."
  ]
 }

@@ -1,6 +1,22 @@
 # 18 · Indicator census
 
 > **Stale since 2026-09-09.** The platform serves **144 metrics** (contract 54.1.0); SWING_HIGH/SWING_LOW were renamed to DONCHIAN_UPPER/DONCHIAN_LOWER and nine TPO market-profile metrics were added. The composability numbers below (322 legal cells, 488 shapes, 46 buildable families) describe the 2026-08-24 roster; the current ones are 663 / 1018. Measured record: [22 · Platform drift 2026-09-09](22-platform-drift-2026-09-09.md), superseding [21](21-platform-drift-2026-09-05.md).
+>
+> **Some verdicts in this document are known to be WRONG, and here is exactly which.** The
+> blocked entry **Keltner Channels** is obsolete: it was blocked because the channel could not be
+> *constructed* (ATR could not be scaled and added to an EMA), and the platform now publishes
+> `KC_UPPER`, `KC_MID` and `KC_LOWER` as native metrics — so the family is *selected*, not built.
+> `ST_LINE`/`ST_DIR` (Supertrend), the five `ICHI_*` metrics, the seven `PIVOT_*` metrics and
+> `WILLR14` are likewise present in the live roster and appear in **neither** list here. All of
+> those metrics rendered live in the 2026-09-09 sweep with zero refusals.
+>
+> **What has *not* been decided — do not assume it:** no buildable entry has been written for any
+> of them, because a buildable entry carries a real column spec that `tests/test_indicator_families.py`
+> builds and validates, and picking the columns that constitute each family is a judgement call
+> nobody has made yet. And for these particular families **buildable and scoreable are different
+> questions**: all four Keltner metrics, all five Ichimoku, Supertrend, PSAR, QQE, WaveTrend,
+> WILLR14, STOCH_RSI14 and all nine TPO metrics **feed no signal module**, so they can be
+> conditioned on but never weighted in the aggregate score.
 
 
 Which named indicator families this platform can build, which it cannot, and — the
