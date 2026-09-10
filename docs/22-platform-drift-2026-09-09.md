@@ -216,7 +216,12 @@ said so out loud rather than returning empty bodies. What it corrects is the bro
 impression that this endpoint has no rate limit. It has one, and any batch or parallel sweep
 must respect it. Record: `data/audit/rate_limit_2026-09-09.json`.
 
-## 11. Verified: the prior-session TPO reads are not populating
+## 11. Verified: the prior-session TPO reads were not populating on 09-09
+
+> **Resolved the next day — read §12 before acting on this section.** The prediction this
+> section records came true: after the 2026-09-10T00:00Z session roll the prior-session reads
+> populate, and the UI agrees with the API exactly. §11 is kept as written because the
+> null-reads-FALSE measurement in it still stands and still bites, on a different window.
 
 Asked for directly, so it was checked properly rather than left as one observation.
 
@@ -261,6 +266,60 @@ UNRESOLVED never collapses to FALSE". The two may describe different levels — 
 condition versus a null clause operand — but an author following the vendor line would get this
 wrong.
 
-**Recommendation: do not build on `PRIOR_TPO_POC` / `VAH` / `VAL` until they are observed
-carrying values.** The current-session TPO reads work and are safe. Record:
+**Recommendation as written on 09-09: do not build on `PRIOR_TPO_POC` / `VAH` / `VAL` until they
+are observed carrying values.** That condition has since been met — see §12. Record:
 `data/audit/prior_session_tpo_verification_2026-09-09.json`.
+
+## 12. Resolved 2026-09-10: they populate, and the UI matches the API exactly
+
+Two questions were put: *do the prior-session TPO levels provide data*, and *does what the UI shows
+match what the API returns*. Both were measured rather than reasoned about, because the answer to
+the second one is only worth anything if the UI was actually driven.
+
+**They populate.** Re-read at 2026-09-10T01:11Z and again at 01:18Z, after the first full UTC
+session carrying TPO data had closed:
+
+| coin | `tpoPOC` | `pTpoPOC` | `pTpoVAH` | `pTpoVAL` |
+|---|---|---|---|---|
+| BTC | $78249.43 | $78752.28 | $79418.84 | $78438.60 |
+| ETH | $2467.82 | $2496.10 | $2513.49 | $2486.16 |
+| SOL | $101.26 | $103.66 | $104.69 | $102.98 |
+
+The check that makes this more than "the nulls went away": **today's `pTpoPOC` equals yesterday's
+`tpoPOC` exactly** — $78752.28, $2496.10, $103.66 are the current-session values read on 09-09.
+Three coins, three exact matches. That is what "the prior completed session's point of control"
+has to mean if the column is real, so the column is doing what its name says.
+
+**The UI matches, cell for cell.** The builder at `/strategies/create` was driven directly:
+*Start blank* → palette search `TPO` → `tpoPOC`, `pTpoPOC`, `pTpoVAH`, `pTpoVAL` added as `value`
+columns into one custom section → read the live preview → *Cancel* → *Discard changes*. Every
+number the UI rendered is identical to the API reading above. There is no UI-versus-API
+discrepancy: both read the same store. What was seen earlier was the pre-roll state — the same
+empty state §11 measured all through 09-09.
+
+Nothing was written. The strategy quota read `used 7 / limit 25` afterwards, unchanged, and
+`list_strategies` shows no such strategy. Adding a column in the builder composes server-side for
+preview only; the draft is not a strategy until *Create Strategy* is pressed, and it was not.
+
+**The cause is now determined**, and it is the untested hypothesis from §11: the TPO family
+shipped with contract 54.1.0 a few days earlier, so no *completed* UTC session carried TPO data
+until 2026-09-10T00:00Z. Nothing was broken.
+
+**The vendor now publishes the semantics** in the rendered section note, which §11 had to infer:
+
+> `tpoPOC`: the price bin holding the most time in the current UTC session, over 5-bps bins — a
+> point-in-time read at its own fold, absent for the session's first 60 minutes.
+> `pTpoPOC`: the price bin that held the most time in the previous completed UTC session.
+
+**What does not change, and this is the part to carry forward.** The null-reads-FALSE measurement
+in §11 stands; the window it applies to has simply moved. By the vendor's own note the
+*current*-session reads are **absent for the first 60 minutes of every UTC day**, and a gate on an
+absent value reads FALSE in both directions rather than UNRESOLVED. So a strategy gating on
+`tpoPOC` quietly does not fire between 00:00Z and 01:00Z, every day, with a scorecard that looks
+fully populated. That is a live trap in a column that is otherwise safe to use.
+
+One caveat stated plainly: the roll has been observed **once**. It is consistent with the stated
+semantics and with the exact match to yesterday's values, but "it will populate correctly after
+every future roll" is an extrapolation from a single observation, not a measurement.
+
+Record: `data/audit/prior_session_tpo_verification_2026-09-09.json`, `followUp_2026-09-10` block.

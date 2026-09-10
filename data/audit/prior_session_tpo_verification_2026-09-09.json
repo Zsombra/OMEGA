@@ -1,7 +1,7 @@
 {
- "_what": "Verification requested 2026-09-09: are the PRIOR-session TPO reads (PRIOR_TPO_POC, PRIOR_TPO_VAH, PRIOR_TPO_VAL) populating? Answer: NO, consistently. All read-only.",
+ "_what": "Verification requested 2026-09-09: are the PRIOR-session TPO reads (PRIOR_TPO_POC, PRIOR_TPO_VAH, PRIOR_TPO_VAL) populating? On 09-09 the answer was NO, consistently. RE-CHECKED 2026-09-10 after the UTC session rolled: they DO populate, and the UI agrees with the API cell for cell. All read-only.",
  "capturedAt": "2026-09-09T18:30:40Z",
- "verdict": "NOT POPULATING - the three prior-session columns render the null sentinel everywhere tested.",
+ "verdict": "SUPERSEDED by followUp_2026-09-10. On 2026-09-09 the three prior-session columns rendered the null sentinel everywhere tested; after the 2026-09-10T00:00Z session roll they carry values on every coin tested.",
  "evidence": [
   {
    "when": "2026-09-09T08:47Z",
@@ -50,12 +50,76 @@
   "sessionNotYetComplete": "At the first observation (2026-09-09T08:47Z) the previous completed UTC session was 2026-09-08, which had long since closed. So 'the prior session has not finished yet' does NOT explain it."
  },
  "causeNotDetermined": true,
- "_hypothesisNotTested": "The TPO family arrived with contract 54.1.0, deployed within the last few days. If the platform only began accumulating TPO when that shipped, there may be no COMPLETED UTC session with TPO data recorded yet, and the prior-session reads would start populating after the next full session closes. TESTABLE: re-render pTpoPOC after 2026-09-10T00:00Z. This is a hypothesis consistent with the observations; it has NOT been tested and no cause is asserted.",
  "practicalConsequence": {
   "measured": "A condition on a null column reads FALSE - in BOTH directions. Probed on BTC: `pTpoPOC gt 0` -> FALSE and `pTpoPOC lt 1000000000000` -> FALSE, with the evidence block showing operand '—'. The control `tpoPOC gt 0` -> TRUE. conditionVerdictTally reported UNRESOLVED: 0.",
   "soWhat": "Any gate on the prior-session TPO is silently FALSE. A `required: true` condition on it would block every trade and the scorecard would still look fully populated; a NOT-negated gate on it would fire on every coin. This is the 'silent zero-trigger' failure the vendor's own authoring skill exists to prevent.",
   "confirmsExistingRepoFinding": "docs/06-cookbook.md trap 21 already states 'a null reads FALSE, never UNRESOLVED'. This re-confirms it on a new column at contract 54.1.0. The distinction that matters: a MISSING header (column dropped from conditionColumns) goes UNRESOLVED; a PRESENT header holding null reads FALSE.",
   "tensionWithVendorText": "The vendor's battlegrid-strategy-examples skill says 'Evaluation is three-valued: UNRESOLVED never collapses to FALSE'. Measured behaviour on a null clause operand is FALSE, not UNRESOLVED. The two may be talking about different levels - an unevaluable CONDITION versus a null CLAUSE operand - but an author reading the vendor line would get this wrong."
  },
- "recommendation": "Do not build on PRIOR_TPO_POC / VAH / VAL until they are observed carrying values. The current-session TPO reads work and are safe to use. If a prior-session gate is wanted, re-run this check after a full UTC session has closed."
+ "recommendation": "SUPERSEDED. As of 2026-09-10 the prior-session TPO columns carry values and may be built on. The live constraint that remains is the current-session one: tpo* is absent for the first 60 minutes of each UTC session, and a gate on an absent value reads FALSE, not UNRESOLVED.",
+ "_hypothesisNotTested": "The TPO family arrived with contract 54.1.0, deployed within the last few days. If the platform only began accumulating TPO when that shipped, there may be no COMPLETED UTC session with TPO data recorded yet, and the prior-session reads would start populating after the next full session closes. TESTABLE: re-render pTpoPOC after 2026-09-10T00:00Z. This is a hypothesis consistent with the observations; it has NOT been tested and no cause is asserted. -- OUTCOME: TESTED AND CONFIRMED, see followUp_2026-09-10.",
+ "followUp_2026-09-10": {
+  "_what": "The 09-09 hypothesis predicted the prior-session reads would begin populating after 2026-09-10T00:00Z, when the first full UTC session carrying TPO data closed. Tested at 01:11Z and again at 01:18Z. The prediction held.",
+  "capturedAt": "2026-09-10T01:18:57Z",
+  "verdict": "POPULATING. pTpoPOC, pTpoVAH and pTpoVAL all carry values.",
+  "theDecisiveCheck": "Today's pTpoPOC equals YESTERDAY's tpoPOC exactly, on all three coins - which is what 'the prior completed session's point of control' must mean if the column is real. BTC $78752.28, ETH $2496.10, SOL $103.66, identical to the current-session values read on 2026-09-09. Not a coincidence of rounding: three coins, three exact matches.",
+  "apiReading": {
+   "tool": "preview_strategy_report",
+   "at": "2026-09-10T01:18:57Z",
+   "timeframe": "1h",
+   "rows": {
+    "BTC": {
+     "tpoPOC": 78249.43,
+     "pTpoPOC": 78752.28,
+     "pTpoVAH": 79418.84,
+     "pTpoVAL": 78438.6
+    },
+    "ETH": {
+     "tpoPOC": 2467.82,
+     "pTpoPOC": 2496.1,
+     "pTpoVAH": 2513.49,
+     "pTpoVAL": 2486.16
+    },
+    "SOL": {
+     "tpoPOC": 101.26,
+     "pTpoPOC": 103.66,
+     "pTpoVAH": 104.69,
+     "pTpoVAL": 102.98
+    }
+   }
+  },
+  "uiReading": {
+   "_why": "The user reported the UI showed 'basically no data at all' and asked whether what they see matches what the API returns. So the UI was driven directly rather than reasoned about.",
+   "how": "battlegrid.trade/strategies/create -> Start blank -> palette search 'TPO' -> added tpoPOC, pTpoPOC, pTpoVAH, pTpoVAL as `value` columns into one custom section titled TPO CHECK, read the live preview, then Cancel -> Discard changes. NOTHING WAS SAVED: the strategy quota read used 7 / limit 25 afterwards, unchanged, and list_strategies shows no such strategy.",
+   "at": "2026-09-10T01:17Z",
+   "rows": {
+    "BTC": {
+     "tpoPOC": 78249.43,
+     "pTpoPOC": 78752.28,
+     "pTpoVAH": 79418.84,
+     "pTpoVAL": 78438.6
+    },
+    "ETH": {
+     "tpoPOC": 2467.82,
+     "pTpoPOC": 2496.1,
+     "pTpoVAH": 2513.49,
+     "pTpoVAL": 2486.16
+    },
+    "SOL": {
+     "tpoPOC": 101.26,
+     "pTpoPOC": 103.66,
+     "pTpoVAH": 104.69,
+     "pTpoVAL": 102.98
+    }
+   }
+  },
+  "uiApiParity": "EXACT on every cell of every coin compared. The UI and the MCP surface are reading the same store; there is no UI-versus-API discrepancy. What the user saw earlier was the pre-roll state, which is the same empty state measured on 09-09.",
+  "vendorNoteNowPublished": "The rendered section note states the semantics the 09-09 record had to infer: 'tpoPOC: the price bin holding the most time in the current UTC session, over 5-bps bins - a point-in-time read at its own fold, absent for the session's first 60 minutes' and 'pTpoPOC: the price bin that held the most time in the previous completed UTC session'.",
+  "whatThisChanges": {
+   "cause": "Determined. The family was not broken - there was simply no COMPLETED UTC session carrying TPO data until 2026-09-10T00:00Z, because the metrics shipped with contract 54.1.0 days earlier.",
+   "recommendationNowLifted": "PRIOR_TPO_POC / VAH / VAL may be built on. They are observed carrying values.",
+   "whatDoesNotChange": "The null-reads-FALSE finding stands and is the durable lesson: a PRESENT header holding null reads FALSE in BOTH directions, never UNRESOLVED. Two windows are still dark every UTC day - the current-session tpo* reads are absent for the session's first 60 minutes (the vendor says so), and any gate on them is silently FALSE during that hour. A strategy gating on tpoPOC will quietly not fire between 00:00Z and 01:00Z.",
+   "residualUnknown": "Whether the prior-session values persist correctly across EVERY future roll is now a one-observation result. It is consistent with the stated semantics and with the exact match to yesterday's values, but it has been seen roll once."
+  }
+ }
 }
