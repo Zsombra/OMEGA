@@ -254,9 +254,26 @@ clause addresses each by naming its `sectionKey`. Verified: `COIN_UP_24H` on the
 unbound section and `BTC_STRONG` on the bound one resolved independently, and a group
 over both produced a correct relative read (TRUE on ETH and SOL, FALSE on DOGE).
 
-**You may also supply your own `sectionKey`** on a custom section — the server accepts
-`custom:<uuid>` as given rather than minting one. That removes the compile-first step
-when authoring conditions, since you already know the key you will reference.
+**You may supply your own `sectionKey` on a PREVIEW, but not on a CREATE.**
+`preview_strategy_report` accepts `custom:<uuid>` as given rather than minting one, which
+removes the compile-first step when *drafting* conditions — used throughout the 2026-09-10
+TPO session without a single refusal.
+
+`compile_strategy_plan` with `operation: CREATE` refuses it (measured 2026-09-10):
+
+```
+REPORT_CUSTOM_SECTION_NOT_OWNED
+  Custom section 'custom:7b0d4a1e-…' does not belong to this strategy.
+  rule: omit sectionKey on a new custom section — the server derives it from the section
+```
+
+Which is coherent: on a CREATE the section does not exist yet, so it cannot be owned. The
+earlier form of this paragraph asserted the permissive behaviour without qualification; it
+was almost certainly measured on an UPDATE, where the section already exists.
+
+**The workaround on CREATE is `sectionKey: null` in the clause**, and it is confirmed: all
+three conditions of `56c08ef6` were submitted with `sectionKey: null` and read back carrying
+the server-minted `custom:88da7c5c-…`.
 
 ### A null value reads FALSE, not UNRESOLVED
 

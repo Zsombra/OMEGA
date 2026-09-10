@@ -1,0 +1,51 @@
+{
+ "_what": "OMEGA-TEST: TPO Value Location - the first TPO strategy created on BattleGrid. Rung 1 of the S1-S7 ladder.",
+ "id": "56c08ef6-480b-4293-8136-81beed2161cf",
+ "createdAt": "2026-09-10T15:52:46.290Z",
+ "revision": 1,
+ "isActive": true,
+ "boundAgentCount": 0,
+ "disposition": "ACTIVE - deliberately left unbound. Binding is the capital step and was not authorised.",
+ "serverMintedSectionKey": "custom:88da7c5c-ccc9-8a32-8956-e06263f6201b",
+ "cannotRoute": "Server's own words at compile: 'No signal is active in this plan: every allocation is Off, so the strategy scores 0, clears no gate and will never route a trade.' minAggregateScore 0.99, zero weighted signals.",
+ "measuredThisCompile": [
+  {
+   "finding": "A caller-supplied sectionKey is REFUSED on CREATE.",
+   "code": "REPORT_CUSTOM_SECTION_NOT_OWNED",
+   "verbatim": "Custom section 'custom:7b0d4a1e-...' does not belong to this strategy.",
+   "rule": "omit sectionKey on a new custom section - the server derives it from the section",
+   "correctsRepo": "docs/09-conditions.md states 'You may also supply your own sectionKey ... the server accepts custom:<uuid> as given'. That is TRUE for preview_strategy_report (used repeatedly this session) and FALSE for compile_strategy_plan CREATE. The section does not exist yet, so it cannot be owned. The doc claim was almost certainly measured on UPDATE."
+  },
+  {
+   "finding": "sectionKey:null in a condition column IS resolved by the server.",
+   "evidence": "All three conditions were submitted with sectionKey:null and were read back carrying the server-minted custom:88da7c5c-.... This is the documented workaround and it works on CREATE."
+  },
+  {
+   "finding": "The planToken is CREDENTIAL-bound, not just time-bound.",
+   "code": "TOKEN_BINDING_MISMATCH",
+   "verbatim": "Strategy plan token does not match the approved plan or current authority.",
+   "detail": "Compiled through the session MCP connection, then attempted apply through the mcporter CLI against battlegrid-anbu. Refused. The token carries a credentialId claim. Compile and apply MUST run on the same transport/credential. Re-applying on the original MCP connection succeeded immediately."
+  },
+  {
+   "finding": "Omitting `rules` does not leave the scorecard empty.",
+   "detail": "No rules were submitted. The applied record came back carrying ALL 84 signalRules materialised at allocation 0, required false, each with its platform default params. So `rules` is schema-optional but the scorecard is always fully instantiated - 'absent' means 'all Off', not 'not present'."
+  },
+  {
+   "finding": "Execution defaults are server-filled and match the repo's recorded values exactly.",
+   "detail": "minAtrPct 0.5, minRiskRewardRatio 1.5, minStopLoss 1, maxStopLoss 2, breakEvenTriggerR 1.08, trailingGivebackPct 45, timeDecay* as recorded in omega.authoring.vocabulary()['execution']['defaults']. Corroborates that capture."
+  }
+ ],
+ "appliedImpact": {
+  "changedAxes": [
+   "IDENTITY",
+   "TIMEFRAME_PROFILE",
+   "REPORT",
+   "CONDITIONS",
+   "SETUP_GATES",
+   "LIFECYCLE"
+  ],
+  "boundAgentCount": 0,
+  "propagatedAgentCount": 0,
+  "openPositionCount": 0
+ }
+}
