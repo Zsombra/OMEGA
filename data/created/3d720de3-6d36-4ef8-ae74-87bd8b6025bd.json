@@ -1,0 +1,71 @@
+{
+ "_what": "TPO Prior-Value Momentum - the first TPO strategy on this account that CAN score and route. Created 2026-09-10 under the user's explicit instruction to build the planned ladder properly and deploy it so trades can be tested.",
+ "strategyId": "3d720de3-6d36-4ef8-ae74-87bd8b6025bd",
+ "name": "TPO Prior-Value Momentum",
+ "createdAt": "2026-09-10T19:14Z",
+ "revision": 1,
+ "isActive": true,
+ "agentId": "8e2f362e-62ff-4c36-8e66-3ff185b3f03c",
+ "agentName": "PVM Alpha",
+ "shape": {
+  "timeframe": "1h",
+  "universe": ["BTC", "ETH", "SOL", "HYPE", "XRP", "AVAX", "LINK", "DOGE"],
+  "columns": 6,
+  "conditions": 11,
+  "weightedSignals": 12,
+  "totalAllocation": 19,
+  "minAggregateScore": 0.65,
+  "entry": "ON_CANDLE_CLOSE / 1h / closes 1 / bandAtr 0.5 / levelOffset 0 / validForBars 4",
+  "changedAxes": ["IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "CONDITIONS", "SETUP_GATES", "SIGNAL_RULES", "LIFECYCLE"]
+ },
+ "theResultThatMatters": {
+  "claim": "The gate is reachable and the curation works. MEASURED on the LIVE ROUTER, not the simulator.",
+  "tool": "get_agent_coin_qualification - runs the full five-gate ladder with no LLM call and no capital",
+  "at": "2026-09-10T19:15:45Z",
+  "verdicts": {
+   "BTC": {"qualifies": true, "aggregate": 69, "atrPct": 0.561},
+   "ETH": {"qualifies": false, "firstFailReason": "AGGREGATE_BELOW_MIN", "aggregate": 61},
+   "SOL": {"qualifies": true, "aggregate": 78, "atrPct": 0.929},
+   "HYPE": {"qualifies": true, "aggregate": 84, "atrPct": 1.422},
+   "XRP": {"qualifies": true, "aggregate": 87, "atrPct": 0.963},
+   "AVAX": {"qualifies": true, "aggregate": 87, "atrPct": 1.022},
+   "LINK": {"qualifies": true, "aggregate": 69, "atrPct": 1.108},
+   "DOGE": {"qualifies": true, "aggregate": 94, "atrPct": 1.078}
+  },
+  "summary": "7 of 8 qualify. Both long and short candidateLevels resolve ok on every passing coin. requiredCount and requiredConditions both NOT_ENFORCED. The one rejection is ETH at 61 against the 65 floor - a 4-point miss, which is the gate discriminating rather than blocking.",
+  "whyThisIsTheHeadline": "The whole design rested on an UNMEASURED assumption: that the live router computes its aggregate the way simulate_aggregate_score does - a weighted mean over TRIGGERED signals only, with allocation-0 signals leaving the denominator. If the router had instead averaged over all 84 materialised signals, 0.65 would have been unreachable and this would have joined the 12 coins already reading AGGREGATE_BELOW_MIN. The router agrees. The assumption is now measured."
+ },
+ "howTheGateWasSet": {
+  "method": "Derived from an empty interval, not picked. simulate_aggregate_score on this exact card: ETH 0.5648 REJECT, ballast-only floor 0.6083 REJECT, BTC 0.7699 ADMIT, SOL 0.7831 ADMIT, HYPE 0.8560 ADMIT. Highest reject to lowest admit is a 16.2-point gap with nothing in it; 0.65 sits inside.",
+  "curationIsTheEdge": "The aggregate is a weighted mean over TRIGGERED signals only, so every frequently-triggering LOW scorer that carries weight is a direct subtraction. Excluding them lifted BTC from 48 unweighted to 77 and SOL from 54 to 78 at the same instant - same tape, same moment, purely from curation.",
+  "deliberateZeros": "flow_perp_spot_bear_divergence (0.109/0.144/0.100), mfi_oversold (0.205/0.020/0.071), rel_roc_negative (0.003), trend_adx_trending, ma_sma200_below, structure_fvg_approach. The last is a direct reversal of an earlier design that weighted it at 3: it measured 0.392/0.451 against 0.707/0.935 twenty-four hours earlier, too unstable to weight on a one-day reading."
+ },
+ "twoSpecErrorsCaughtBeforeCompile": [
+  "The three tpoShape clauses were specified with the key `value`. The compile schema's label clause requires {kind, column, op, label} with additionalProperties false, so all three would have been refused. Changed to `label`.",
+  "A DEV_POC_ABOVE condition read tpoPOC_close_spread, a header the spec itself described as inferred by symmetry and never emitted. Dropped along with its column, taking the payload from 7 columns / 12 conditions to 6 / 11 and buying byte headroom."
+ ],
+ "whatStillBlocksAREALTRADE": [
+  {"blocker": "THE AGENT HAS NO FUNDS.", "measured": "get_agent_fund_allocation on 8e2f362e returns availableUsd 0, committedUsd 0, lifetimeAllocatedUsd 0. get_agent_budget returns effectiveNotionalUsd 0 and accountEquityUsd 0.",
+   "consequence": "The tool documentation states it plainly: 'Allocating and recalling funds are deliberately NOT available over MCP - this is a read.' Funds must be allocated to the agent in the BattleGrid UI. No assistant action can do this. The same zero was observed on TPO Alpha, so it is the default state of a new agent, not a fault in this one.",
+   "whoCanFixIt": "USER ONLY, in the UI."},
+  {"blocker": "RADAR IS FULL.", "measured": "list_radar_deployments returns coinsDeployed 20 of coinCap 20, held by CTP / OSCW / VOLB / FUND / STRUCT Alpha. Every one of the 20 live policies currently reads qualified false - 12 AGGREGATE_BELOW_MIN, 5 REQUIRED_CONDITION_FALSE, 4 ACCOUNT_BLOCKED (STRUCT Alpha, daily cap, since 2026-09-10T08:43).",
+   "consequence": "A Radar slot must be freed before this agent can be scheduled, which means taking a coin away from one of the five existing agents.",
+   "whoCanFixIt": "USER ONLY - which agent loses a coin is their call, not the assistant's."},
+  {"blocker": "upsert_radar_deployment HAS NEVER BEEN CALLED ON THIS ACCOUNT.",
+   "consequence": "The slot payload shape is inferred from preview_radar_resolution's input schema and the shape of the 20 live policies. It is an unmeasured writer against a live wallet and should be exercised only once funds and a free slot exist.",
+   "whoCanFixIt": "Assistant, but only with explicit per-instance authorization and after the two blockers above are cleared."},
+  {"blocker": "Each Radar slot carries its own minConviction gate, default 0.5, which is NOT minAggregateScore and is absent from the strategy.",
+   "consequence": "A coin can clear the strategy's 0.65 and still be filtered by the slot's own conviction floor."}
+ ],
+ "notDone": [
+  "No Radar deployment. No automation assignment. The only assignable presets are MARKET_GRID prediction games (CRYPTO WARS, STOCKS OFFENSIVE) at 10 USDC entry, which cannot produce a perpetual trade.",
+  "Trading config left at platform defaults (exposure 100, drawdown 100, dailyLoss 50). These MUST be tightened before any deployment - the wallet is 33.56 USDC and the defaults exceed it.",
+  "contextSources are all false and overlayText is empty, inherited from the strategy, so the model would reason with the TPO section and nothing else. Enable price action, S/R, regime, CVD and moving averages before running it for real."
+ ],
+ "inventedValuesStillStanding": [
+  "The five bull-mirror allocations (mfi_sustained_bullish, oi_divergence_bull, htf_ma_aligned_bull, ma_ema_aligned_bull, cvd_bullish, all at 1). None triggered on any coin sampled; their scores are entirely unmeasured. Free while untriggered, drag the moment the tape turns.",
+  "The three condition thresholds are measured quartiles over TWELVE observations at ONE instant: VAL_REJECT_DN 6.42 (p75), VAH_CONFLUENCE_DN 2.14 (p25), VAL_CONFLUENCE_UP 4.25 (p25). Twelve observations is not a distribution.",
+  "The gate 0.65 came from a four-coin simulation in a single bearish regime. The router has now confirmed it discriminates 7-of-8 on this tape; it has never been seen on a bullish one.",
+  "The entry block is copied verbatim from 56c08ef6, which compiles and has never produced a fill. Compiling is the only property demonstrated."
+ ]
+}
