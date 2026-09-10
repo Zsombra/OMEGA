@@ -1,0 +1,56 @@
+{
+ "_what": "TPO Alpha - the first agent bound to a TPO strategy. Created 2026-09-10 under the user's explicit 'create a new agent that would work well with this strategy'.",
+ "agentId": "786c327c-c0ed-4919-9bfa-a9cfd4205666",
+ "displayName": "TPO Alpha",
+ "createdAt": "2026-09-10T16:25:44.211Z",
+ "status": "ACTIVE",
+ "bindingState": "BOUND",
+ "strategyId": "56c08ef6-480b-4293-8136-81beed2161cf",
+ "strategyName": "OMEGA-TEST: TPO Value Location",
+ "strategyRevision": 1,
+ "modelId": "z-ai/glm-5.3",
+ "behavior": {
+  "risk": "CONSERVATIVE",
+  "outlook": "REALIST",
+  "conviction": "MEASURED"
+ },
+ "whyTheseChoices": {
+  "model": "z-ai/glm-5.3 is what all five existing Alpha agents run. Holding the model constant against the incumbent fleet is the point: it makes any behavioural difference attributable to the TPO report rather than to the model.",
+  "risk_CONSERVATIVE": "The strategy has zero validated edge and no backtest is possible. Conservative is the honest setting for a rung whose purpose is observation.",
+  "outlook_REALIST": "S1 emits only NEITHER verdicts and claims no direction. OPTIMIST or PESSIMIST would impose a bias the strategy itself does not carry.",
+  "conviction_MEASURED": "Conditions are advisory, not decisive. MEASURED matches an input that informs rather than commands.",
+  "tradingConfig": "OMITTED deliberately, so platform defaults apply. Supplying it requires all 9 fields and must satisfy (smallPct/100) x ceiling x floor(maxLeverage) >= max(10, minAllocationUsd). NOTE: the five incumbent agents (smallPct 1, ceiling 100, leverage 1, minAlloc 10) give 1 >= 10, which FAILS that constraint - they appear to predate it. Inventing a config would have meant inventing nine numbers and risking a refusal."
+ },
+ "materializedTradingConfig": {
+  "minAllocationUsd": 10,
+  "maxDailyTrades": 10,
+  "balanceThresholdUsd": 25,
+  "maxLeverage": 1,
+  "maxSlippageBps": 300,
+  "maxConcurrentExposureUsd": 100,
+  "maxCumulativeDrawdownUsd": 100,
+  "maxDailyLossUsd": 50,
+  "positionSizePresets": {
+   "smallPct": 1,
+   "mediumPct": 2,
+   "largePct": 3
+  },
+  "strategyTimeframe": "1h",
+  "regimeTimeframe": "4h"
+ },
+ "capitalExposure": {
+  "verdict": "NONE on two independent locks, both measured rather than assumed.",
+  "lock1_strategyCannotRoute": "The server said it at compile: 'every allocation is Off, so the strategy scores 0, clears no gate and will never route a trade.' minAggregateScore 0.99, zero weighted signals.",
+  "lock2_noAutomation": "hasActiveAssignments false, and get_agent_automation_status returns assignments: [] - verified AFTER creation, not inferred from the create response. Auto-play is a SEPARATE assignment step. The only assignable presets are MARKET_GRID 'CRYPTO WARS' and 'STOCKS OFFENSIVE', both entryFee 10 USDC.",
+  "accountBalanceAtCreation": "33.563887 USDC, tradingWalletProvisioned true, mcpWagerEnabled true - the wallet is real, which is why both locks were verified first.",
+  "note": "balanceThresholdUsd is 25 and the balance is 33.56, so the equity floor would NOT block trading. Only the two locks above do."
+ },
+ "correctionToAStandingRule": "The memory rule read 'never bind test strategies to agents - binding is the only step with real capital'. The stated rationale is INCOMPLETE: binding alone spends nothing. The capital gate is the automation assignment (and, separately, a strategy that can actually route). Measured 2026-09-10 on STRUCT Alpha (bound, ACTIVE, assignments []) and again on this agent.",
+ "contextSourcesAllFalse": "Every includeX context module is false and overlayText is empty, inherited from the strategy. So the agent sees ONLY the one custom TPO section - which is exactly the isolation wanted for rung 1.",
+ "slotUsage": {
+  "limit": 24,
+  "used": 6,
+  "remaining": 18
+ },
+ "disposition": "ACTIVE, BOUND, NO automation assignment. Do not assign a preset without its own explicit authorization - that is the step that spends USDC."
+}
