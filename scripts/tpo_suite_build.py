@@ -1,9 +1,22 @@
-"""Build the TPO strategy suite S1-S7 as validated, submit-ready payloads.
+"""Build the TPO strategy suite S1-S7: a design record AND a wire body per strategy.
 
 PREPARE, NEVER EXECUTE (docs/20, decision P4).
     This script makes ZERO live calls and writes NOTHING to the platform. It emits
-    JSON payloads to out/tpo_suite/. Compiling, applying and binding are separate,
+    JSON files to out/tpo_suite/. Compiling, applying and binding are separate,
     human-initiated acts, each per-instance authorised.
+
+TWO FILES PER STRATEGY, BECAUSE ONE FILE CANNOT BE BOTH (measured 2026-09-11)
+    <id>.json       the DESIGN RECORD: thesis, what it teaches, null exposure, threshold
+                    provenance, predicted headers, offline validation. Human-facing.
+    <id>.wire.json  the exact compile_strategy_plan CREATE request body and nothing
+                    else. This is what the preflight diffs and what a compile is sent.
+    Until 2026-09-11 this script emitted only the first file and called it
+    "submit-ready". Run through scripts/preflight.py against a fresh schema capture it
+    FAILED on every strategy: five required wire fields missing (operation,
+    intentSummary, assumptions, timeframe, entry) and ten undeclared annotation keys.
+    It had passed omega's offline validation with zero errors, which is the trap named
+    at SK below - offline validation is this repo's MODEL of the contract, not the
+    server. The assumption that the payloads were compile-ready had never been RUN.
 
 EVERY NUMBER'S PROVENANCE IS RECORDED
     Each condition carries a thresholdBasis string. There are exactly two honest
@@ -284,40 +297,113 @@ SUITE = [
 ]
 
 
-def main():
-    os.makedirs(OUT, exist_ok=True)
-    total_err = 0
-    print("%-4s %-22s %5s %5s %6s  %s" % ("id", "name", "cols", "conds", "errors", "status"))
-    print("-" * 78)
-    manifest = []
+# --- the entry block: MIRRORED from a record, never invented ---------------------
+# `entry` is REQUIRED on CREATE. omega/preflight.py MIRROR_ENTRY_FIELDS warns when a
+# hardcoded value differs from the reference record, and the recipe's rule for a
+# missing field is "mirror the record's value, never invent". These six are read back
+# VERBATIM from 56c08ef6 (rev 4) and 3d720de3 (rev 2) on 2026-09-11 - identical on both.
+# confirmTf is the thesis anchor by design (Step 0 amendment, 2026-08-30).
+# NOTE omega/generate.py still hardcodes trigger AT_SIGNAL / bandAtrMultiple 1, mirrored
+# from 6a8bca67 in August. Both records bound to TPO strategies now carry the values
+# below; that is a live mirror drift in generate.py, recorded here rather than fixed
+# here because generate.py's mirror has its own tests and its own reference record.
+ENTRY_MIRROR = {"trigger": "ON_CANDLE_CLOSE", "confirmTf": ANCHOR, "closes": 1,
+                "bandAtrMultiple": 0.5, "levelOffsetAtrMultiple": 0, "validForBars": 4}
+ENTRY_MIRROR_SOURCE = "get_strategy 56c08ef6-480b-4293-8136-81beed2161cf rev 4, 2026-09-11T06:39:51Z"
+
+# Routing gate, mirrored from the same record. No strategy here carries a rules array
+# (all nine TPO metrics feed zero of the 84 signal modules - 663-cell probe, 0 failures),
+# so none can produce an aggregate and none can qualify a coin at ANY gate. 0.99 states
+# that honestly on the record instead of leaving a platform default we have not measured.
+GATE_MIRROR = {"minAggregateScore": 0.99, "minRequiredCount": 0}
+
+# The CREATE arm's string caps, read from the live compile schema (byte-identical to the
+# 2026-09-09 capture, sha256 bb5961fd..., re-verified 2026-09-11). Enforced here so a
+# too-long field fails offline instead of at the server.
+CAPS = {"name": 50, "tagline": 80, "description": 500, "intentSummary": 2000,
+        "assumption": 500, "assumptions": 20}
+
+STANDING_ASSUMPTIONS = [
+    "Measured: all nine TPO metrics feed zero of the 84 signal modules (663-cell probe, "
+    "zero failures). This strategy carries no rules array, so it has no aggregate and "
+    "cannot qualify a coin at any gate. Its conditions are advisory and reach an agent "
+    "only as prompt context.",
+    "Measured: spread(M,O) = (M - O)/O in percent, positive meaning M sits above O. Proven "
+    "by arithmetic on BTC 2026-09-11 (close 76845.00 vs pTpoVAL 76488.38 -> -0.46%). Every "
+    "sign in the conditions is read against that convention.",
+    "Measured: TPO has no history by any route - offset inert, chaining refused with an "
+    "empty candidate list, CLOSE clock refused. Every column is a current read.",
+    "Measured: verdicts resolve first-true-wins in array order. Conditions are sorted "
+    "directional-first (ordered()) so a NEITHER cannot shadow an UP or DOWN.",
+    "Scope: dry-run body. Compile only; nothing applied, bound or deployed by this file.",
+]
+
+
+def _cap(text: str, key: str) -> str:
+    return text[:CAPS[key]]
+
+
+def wire(s: dict, report: Report) -> dict:
+    """The exact compile_strategy_plan CREATE request body for one suite entry - the
+    shape omega.generate.StrategyPlan.wire() proved live on 2026-08-28, minus the rules
+    array (annotation-only by construction), with entry and gate MIRRORED from the
+    reference record rather than invented. Every key here is declared by the CREATE arm;
+    nothing else is emitted, because the arm is additionalProperties:false."""
+    # Measured 2026-08-28 and again 2026-09-10: CREATE refuses ANY client-supplied custom
+    # sectionKey (REPORT_CUSTOM_SECTION_NOT_OWNED). The server mints it. SK is None so
+    # CustomSection.wire() already drops it; the filter makes that explicit and durable.
+    sections = [{k: v for k, v in sec.items() if not (sec.get("kind") == "custom" and k == "sectionKey")}
+                for sec in report.wire()]
+    thresholds = [
+        "Threshold BIN %s%%: MEASURED - the vendor bins price at 5 bps, so anything finer "
+        "measures quantisation rather than structure." % BIN,
+        "Threshold WIDTH_P25 %s%%: MEASURED as the p25 of prior value-area width across 36 "
+        "CRYPTO coins at 2026-09-10T12:21Z. ONE SNAPSHOT, not a calibration." % WIDTH_P25,
+        "Threshold RSI_MID %s: INVENTED. No measurement supports it." % RSI_MID,
+    ]
+    assumptions = ([("Null exposure: " + s["null"])[:CAPS["assumption"]],
+                    ("What this strategy is meant to teach: " + s["teaches"])[:CAPS["assumption"]]]
+                   + thresholds + STANDING_ASSUMPTIONS)[:CAPS["assumptions"]]
+    for a in assumptions:
+        assert len(a) <= CAPS["assumption"], "assumption over cap: %r" % a[:60]
+    return {
+        "operation": "CREATE",
+        "intentSummary": _cap("%s. %s Teaches: %s Built by scripts/tpo_suite_build.py; "
+                              "compile dry-run only, nothing applied."
+                              % (s["name"], s["thesis"], s["teaches"]), "intentSummary"),
+        "assumptions": assumptions,
+        "coinSelection": {"mode": "explicit", "tickers": COINS},
+        "name": _cap("OMEGA-TEST: " + s["name"], "name"),
+        "tagline": _cap(s["thesis"], "tagline"),
+        "description": _cap(s["thesis"] + " " + s["teaches"], "description"),
+        "timeframe": ANCHOR,
+        "sections": sections,
+        "conditions": s["conds"],
+        "entry": dict(ENTRY_MIRROR),
+        **GATE_MIRROR,
+    }
+
+
+def build():
+    """Validate every suite entry offline and return (design_record, wire_body, nerr)
+    triples. Pure: no files, no network. main() does the writing."""
+    out = []
     for s in SUITE:
         section = CustomSection(
             title=("TPO " + s["name"])[:60], sectionKey=SK, benchmarkTicker=None,
             notes=(s["thesis"])[:400], columns=SPINE + s["extra"],
         )
         report = Report(anchor=ANCHOR, sections=[section])
-
         vr = validate_report(report)
         rep_errs = [f for f in vr.findings if f.severity == "error"]
         cf = validate_conditions(report, s["conds"])
         cond_errs = [f for f in cf if f.severity == "error"]
         warns = [f for f in cf if f.severity == "warning"]
-        nerr = len(rep_errs) + len(cond_errs)
-        total_err += nerr
-
-        status = "OK" if nerr == 0 else "BLOCKED"
-        print("%-4s %-22s %5d %5d %6d  %s" % (
-            s["id"], s["name"], len(section.columns), len(s["conds"]), nerr, status))
-        for f in rep_errs:
-            print("      [report error] %s" % (f,))
-        for f in cond_errs:
-            print("      %s" % (f,))
-        for f in warns:
-            print("      %s" % (f,))
-
-        payload = {
-            "_what": "Submit-ready TPO strategy payload. NOT compiled, NOT applied, NOT bound.",
-            "_provenance": "scripts/tpo_suite_build.py, contract 54.1.0, measured 2026-09-10",
+        design = {
+            "_what": "DESIGN RECORD for a TPO strategy - human-facing provenance. NOT a wire "
+                     "body: the compile request is the sibling <id>.wire.json. NOT compiled, "
+                     "NOT applied, NOT bound.",
+            "_provenance": "scripts/tpo_suite_build.py, contract 54.1.0, measured 2026-09-10/11",
             "id": s["id"], "name": s["name"], "thesis": s["thesis"],
             "teaches": s["teaches"], "nullExposure": s["null"],
             "anchor": ANCHOR,
@@ -332,23 +418,50 @@ def main():
                                        "ONE SNAPSHOT, not a calibration."},
                 "RSI_MID": {"value": RSI_MID, "basis": "INVENTED"},
             },
+            "entryMirror": {"values": ENTRY_MIRROR, "source": ENTRY_MIRROR_SOURCE},
             "validation": {"reportErrors": [str(f) for f in rep_errs],
                            "conditionErrors": [str(f) for f in cond_errs],
                            "warnings": [str(f) for f in warns]},
         }
-        path = os.path.join(OUT, s["id"] + ".json")
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(payload, f, indent=1)
-        manifest.append({"id": s["id"], "name": s["name"], "file": s["id"] + ".json",
+        out.append((s, section, design, wire(s, report), rep_errs, cond_errs, warns))
+    return out
+
+
+def main():
+    os.makedirs(OUT, exist_ok=True)
+    total_err = 0
+    print("%-4s %-22s %5s %5s %6s  %s" % ("id", "name", "cols", "conds", "errors", "status"))
+    print("-" * 78)
+    manifest = []
+    for s, section, design, body, rep_errs, cond_errs, warns in build():
+        nerr = len(rep_errs) + len(cond_errs)
+        total_err += nerr
+        status = "OK" if nerr == 0 else "BLOCKED"
+        print("%-4s %-22s %5d %5d %6d  %s" % (
+            s["id"], s["name"], len(section.columns), len(s["conds"]), nerr, status))
+        for f in rep_errs:
+            print("      [report error] %s" % (f,))
+        for f in cond_errs:
+            print("      %s" % (f,))
+        for f in warns:
+            print("      %s" % (f,))
+
+        with open(os.path.join(OUT, s["id"] + ".json"), "w", encoding="utf-8") as f:
+            json.dump(design, f, indent=1)
+        with open(os.path.join(OUT, s["id"] + ".wire.json"), "w", encoding="utf-8") as f:
+            json.dump(body, f, indent=1)
+        manifest.append({"id": s["id"], "name": s["name"], "design": s["id"] + ".json",
+                         "wire": s["id"] + ".wire.json",
                          "columns": len(section.columns), "conditions": len(s["conds"]),
                          "errors": nerr})
 
     with open(os.path.join(OUT, "_manifest.json"), "w", encoding="utf-8") as f:
         json.dump({"suite": manifest, "anchor": ANCHOR, "sectionKey": SK,
-                   "coins": COINS, "totalErrors": total_err}, f, indent=1)
+                   "coins": COINS, "entryMirror": ENTRY_MIRROR, "entryMirrorSource": ENTRY_MIRROR_SOURCE,
+                   "totalErrors": total_err}, f, indent=1)
 
     print("-" * 78)
-    print("payloads -> %s" % OUT)
+    print("payloads -> %s  (<id>.json = design record, <id>.wire.json = compile body)" % OUT)
     print("total errors: %d" % total_err)
     if total_err:
         print("BLOCKED - payloads with errors are written but must not be compiled.")

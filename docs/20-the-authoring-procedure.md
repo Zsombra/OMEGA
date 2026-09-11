@@ -115,7 +115,7 @@ receipt is a precondition of asking for authorization, not the authorization its
 its disclaimer stands: it covers the published schema and the reference record only;
 the runtime validator is not observed. A refusal after a PASS voids the receipt
 (`voided` with the refusal verbatim and a `gate_missed` class) and the post-refusal
-read-back becomes the next baseline. Until the first live run (plan task 8) has proven the ~21 KB capture path end to end, this precondition is policy ahead of evidence; the run that proves it is recorded in the spec's status line.
+read-back becomes the next baseline. ~~Until the first live run (plan task 8) has proven the ~21 KB capture path end to end, this precondition is policy ahead of evidence.~~ **Proven end to end 2026-09-11.** Both captures were taken by script over the `mcporter` CLI (the MCP transport was unauthenticated in that session, so the recipe's `ToolSearch` route was unavailable — the CLI reaches the same server and account): the ~40 KB tool definition from `mcporter list`, the read-back from `get_strategy`. Every fidelity fingerprint passed (84 signalIds, 25 platform section keys, 13 timeframes; record id, 84 signalRules) and the changelog against the 2026-09-09 capture was empty. The run then did exactly what it exists to do: the suite builder's "submit-ready" payloads **FAILED** — five required fields missing, ten undeclared keys — while omega's offline validation had passed them with zero errors. The corrected wire body passed: `PREFLIGHT PASS · data/audit/compile_preflight_2026-09-11-tpo-S7-create-wire.json · body 6cc4de48 · schema 2026-09-11T06:39:14Z · ref 56c08ef6-480b-4293-8136-81beed2161cf rev 4 · expires 2026-09-11T07:39:14Z`. Both receipts are committed; the FAIL one is the evidence.
 
 - **Compile dry-run** — authorization template: *"I authorize N compile_strategy_plan
   call(s) for <strategy/thesis name> in this session — compile only, nothing
@@ -138,8 +138,14 @@ read-back becomes the next baseline. Until the first live run (plan task 8) has 
   inspection** between compile and apply, and the measured caveat: a full-body UPDATE
   re-mints custom `sectionKey`s in lockstep even when the report is byte-identical —
   semantically safe, but anything caching a sectionKey across revisions holds a stale
-  name. Conflict handling and omitted-field semantics are deliberately unmeasured —
-  treat them as unknown.
+  name. Conflict handling is deliberately unmeasured — treat it as unknown.
+  **Omitted-field semantics were measured 2026-09-11: UPDATE merges.** On `56c08ef6`
+  rev 3 → 4, omitting `entry`, `minAggregateScore` and `signalRules` preserved all three
+  exactly, and the same held on `3d720de3` rev 1 → 2, where sending only `sections` and
+  `conditions` left its 12 weighted signals, 0.65 gate, entry block and open position
+  untouched. `coinSelection` is required on an UPDATE but is **not persisted** — it reads
+  back `null`; it is a compile-time input for the internal validation preview. See
+  [09 § the write path's remaining shapes](09-conditions.md).
 
 ## 6 · After every create or revise
 
