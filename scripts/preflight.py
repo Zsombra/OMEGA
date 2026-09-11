@@ -23,7 +23,7 @@ import argparse
 import json
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -92,10 +92,17 @@ def cmd_recipe(a) -> int:
    as {{"capturedAt": "<YYYY-MM-DDTHH:MM:SSZ, fractional seconds accepted>", "how": "get_strategy", "request": {{...the call...}}, "response": <the response>}}.
 
 3. Run the diff:
-     python scripts/preflight.py run {a.body} --schema <step 1 file> --readback <step 2 file>
-   It checks the captures' fidelity first (signalId enum == 84 ids, 25 platform section keys,
-   13 timeframes; record id, 84 signalRules), then diffs, writes the receipt under
-   data/audit/, and prints the gate line.
+     python scripts/preflight.py run {a.body} --schema <step 1 file> --readback <step 2 file> --slug <slug>
+   Never pass --now on a live run: it exists for tests and back-dates the receipt. Always
+   pass --slug so a second run the same day cannot collide with (or be blocked by) the first.
+   It refuses outright if the read-back capture lacks request.strategyId, if either capture
+   is stamped in the future, or if the captures are already past the expiry window
+   (measured 2026-09-11). Then it checks the captures' fidelity (signalId enum == 84 ids,
+   25 platform section keys, 13 timeframes; record id, 84 signalRules), diffs, writes the
+   receipt under data/audit/, and prints the gate line.
+   Over the mcporter route (npx mcporter list battlegrid-anbu --output json) the catalogue
+   names the schema `inputSchema`: save it under `parameters` with `name` and `description`,
+   or resolve_arms crashes on KeyError 'parameters'. Compact it is ~20 KB, indented ~40 KB.
 
 4. On FAIL: stop. For each MISSING_* finding, mirror the record's value in omega in its own
    commit with tests; if no record carries the field, the user chooses and the receipt
@@ -123,6 +130,26 @@ def cmd_run(a) -> int:
     schema_doc, definition = _load_capture(a.schema)
     readback_doc, record = _load_capture(a.readback)
     now = _now(a.now)
+    # Three refusals measured 2026-09-11 by hostile review of the first live run. Each is a
+    # way a receipt could gate PASS on a body the platform has not actually been checked
+    # against, so each stops the run before any diff is attempted.
+    # (1) A read-back capture without request.strategyId made fingerprint_readback compare
+    #     the record's id with ITSELF - a read-back of the wrong strategy passed clean.
+    if not (readback_doc.get("request") or {}).get("strategyId"):
+        raise SystemExit(f"{a.readback}: the read-back capture must carry request.strategyId - "
+                         "without it the wrong-record check cannot fire (measured 2026-09-11)")
+    # (2) A capture stamped in the future gated PASS with an expiry still further out.
+    for label, doc in (("schema", schema_doc), ("readback", readback_doc)):
+        cap_at = P.parse_iso(doc["capturedAt"])
+        if cap_at > now:
+            raise SystemExit(f"{label} capture is stamped {doc['capturedAt']}, after now "
+                             f"{now.strftime('%Y-%m-%dT%H:%M:%SZ')} - a future capturedAt cannot be trusted")
+    # (3) run never compared now with the expiry it was about to write, so stale captures
+    #     produced a receipt that gate would refuse one line later, printed as PASS.
+    oldest = min(P.parse_iso(schema_doc["capturedAt"]), P.parse_iso(readback_doc["capturedAt"]))
+    if now >= oldest + timedelta(minutes=a.expires_minutes):
+        raise SystemExit(f"captures are older than --expires-minutes {a.expires_minutes} (oldest "
+                         f"{oldest.strftime('%Y-%m-%dT%H:%M:%SZ')}); re-capture rather than run")
     operation = body.get("operation", "CREATE")
     arms, root = P.resolve_arms(definition)
     if operation not in arms:

@@ -1,0 +1,303 @@
+{
+ "operation": "CREATE",
+ "intentSummary": "Developing Value. Today's developing POC and profile skew against the previous completed session. Teaches: Whether developing-vs-prior carries information beyond time-of-day. Built by scripts/tpo_suite_build.py; compile dry-run only, nothing applied.",
+ "assumptions": [
+  "Null exposure: SEVERE - all three added columns are null 00:00-01:00 UTC, and the developing area is structurally narrow all morning (measured 40-48% of prior width at the 12:00 midpoint). A silent FALSE both ways. Every condition here is verdict NEITHER so it cannot flip a direction.",
+  "What this strategy is meant to teach: Whether developing-vs-prior carries information beyond time-of-day.",
+  "Threshold BIN 0.05%: MEASURED - the vendor bins price at 5 bps, so anything finer measures quantisation rather than structure.",
+  "Threshold WIDTH_P25 2.06%: MEASURED as the p25 of prior value-area width across 36 CRYPTO coins at 2026-09-10T12:21Z. ONE SNAPSHOT, not a calibration.",
+  "Threshold RSI_MID 50.0: INVENTED. No measurement supports it.",
+  "Measured: all nine TPO metrics feed zero of the 84 signal modules (663-cell probe, zero failures). This strategy carries no rules array, so it has no aggregate and cannot qualify a coin at any gate. Its conditions are advisory and reach an agent only as prompt context.",
+  "Measured: spread(M,O) = (M - O)/O in percent, positive meaning M sits above O. Proven by arithmetic on BTC 2026-09-11 (close 76845.00 vs pTpoVAL 76488.38 -> -0.46%). Every sign in the conditions is read against that convention.",
+  "Measured: TPO has no history by any route - offset inert, chaining refused with an empty candidate list, CLOSE clock refused. Every column is a current read.",
+  "Measured: verdicts resolve first-true-wins in array order. Conditions are sorted directional-first (ordered()) so a NEITHER cannot shadow an UP or DOWN.",
+  "Scope: dry-run body. Compile only; nothing applied, bound or deployed by this file."
+ ],
+ "coinSelection": {
+  "mode": "explicit",
+  "tickers": [
+   "BTC",
+   "ETH",
+   "SOL",
+   "BNB",
+   "XRP",
+   "LINK",
+   "DOGE",
+   "MOODENG"
+  ]
+ },
+ "name": "OMEGA-TEST: Developing Value",
+ "tagline": "Today's developing POC and profile skew against the previous completed session.",
+ "description": "Today's developing POC and profile skew against the previous completed session. Whether developing-vs-prior carries information beyond time-of-day.",
+ "timeframe": "1h",
+ "sections": [
+  {
+   "kind": "custom",
+   "title": "TPO Developing Value",
+   "columns": [
+    {
+     "metric": "PRIOR_TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAL",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "OPEN"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAL",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "OPEN"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_POC",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "PRIOR_TPO_VAL"
+      }
+     ]
+    },
+    {
+     "metric": "TPO_POC",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "PRIOR_TPO_POC"
+      }
+     ]
+    },
+    {
+     "metric": "TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "TPO_VAL"
+      }
+     ]
+    },
+    {
+     "metric": "TPO_SHAPE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ],
+   "notes": "Today's developing POC and profile skew against the previous completed session.",
+   "benchmarkTicker": null
+  }
+ ],
+ "conditions": [
+  {
+   "conditionKey": "ABOVE_PRIOR_VALUE",
+   "name": "Close above the prior value area",
+   "definition": {
+    "kind": "clause",
+    "column": {
+     "sectionKey": null,
+     "header": "pTpoVAH_close_spread"
+    },
+    "op": "lte",
+    "value": -0.05
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "INSIDE_PRIOR_VALUE",
+   "name": "Close inside the prior value area",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAH_close_spread"
+      },
+      "op": "gte",
+      "value": 0.05
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAL_close_spread"
+      },
+      "op": "lte",
+      "value": -0.05
+     }
+    ]
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "BELOW_PRIOR_VALUE",
+   "name": "Close below the prior value area",
+   "definition": {
+    "kind": "clause",
+    "column": {
+     "sectionKey": null,
+     "header": "pTpoVAL_close_spread"
+    },
+    "op": "gte",
+    "value": 0.05
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "VALUE_MIGRATING_UP",
+   "name": "Developing POC above the prior POC",
+   "definition": {
+    "kind": "clause",
+    "column": {
+     "sectionKey": null,
+     "header": "tpoPOC_pTpoPOC_spread"
+    },
+    "op": "gte",
+    "value": 0.05
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "VALUE_MIGRATING_DOWN",
+   "name": "Developing POC below the prior POC",
+   "definition": {
+    "kind": "clause",
+    "column": {
+     "sectionKey": null,
+     "header": "tpoPOC_pTpoPOC_spread"
+    },
+    "op": "lte",
+    "value": -0.05
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "SHAPE_P",
+   "name": "Developing POC skewed to the top of value",
+   "definition": {
+    "kind": "clause",
+    "column": {
+     "sectionKey": null,
+     "header": "tpoShape"
+    },
+    "op": "in",
+    "labels": [
+     "p-shape"
+    ]
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "SHAPE_B",
+   "name": "Developing POC skewed to the bottom of value",
+   "definition": {
+    "kind": "clause",
+    "column": {
+     "sectionKey": null,
+     "header": "tpoShape"
+    },
+    "op": "in",
+    "labels": [
+     "b-shape"
+    ]
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  }
+ ],
+ "entry": {
+  "trigger": "ON_CANDLE_CLOSE",
+  "confirmTf": "1h",
+  "closes": 1,
+  "bandAtrMultiple": 0.5,
+  "levelOffsetAtrMultiple": 0,
+  "validForBars": 4
+ },
+ "minAggregateScore": 0.99,
+ "minRequiredCount": 0
+}

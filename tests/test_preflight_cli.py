@@ -148,12 +148,14 @@ def test_run_fail_receipt_has_no_gate_line_on_disk(tmp_path, capsys):
     assert "PREFLIGHT PASS" not in raw
 
 
-def test_run_falls_back_to_the_record_id_and_records_meta_fingerprints(tmp_path, capsys):
+def test_run_records_meta_fingerprints_and_marks_a_mistranscribed_schema_suspect(tmp_path, capsys):
+    """Until 2026-09-11 this test asserted that an EMPTY request fell back to the record's
+    own id and still passed. Hostile review measured that fallback as a hole - the
+    wrong-record check compared the record with itself - so run now refuses it (see
+    test_run_refuses_a_readback_capture_without_request_strategy_id). What this test still
+    owns: the receipt records both capture fingerprints, and a schema whose signalId enum
+    lost a value is marked suspect and fails."""
     sp, rp = _captures(tmp_path)
-    doc = json.loads(rp.read_text(encoding="utf-8"))
-    doc["request"] = {}
-    rp.write_text(json.dumps(doc), encoding="utf-8")
-
     fixed = json.loads(json.dumps(V5))
     for c in fixed["conditions"]:
         c["exit"] = False
@@ -168,9 +170,6 @@ def test_run_falls_back_to_the_record_id_and_records_meta_fingerprints(tmp_path,
     assert receipt["captures"]["schema"]["fingerprint"] == "ok"
 
     sp2, rp2 = _captures(tmp_path)
-    doc2 = json.loads(rp2.read_text(encoding="utf-8"))
-    doc2["request"] = {}
-    rp2.write_text(json.dumps(doc2), encoding="utf-8")
     doc3 = json.loads(sp2.read_text(encoding="utf-8"))
     doc3["response"]["parameters"]["properties"]["request"]["anyOf"][0]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"].pop()
     sp2.write_text(json.dumps(doc3), encoding="utf-8")
@@ -281,3 +280,45 @@ def test_receipt_gate_line_records_a_repo_relative_path_under_the_repo(tmp_path,
     finally:
         if inside.exists():
             inside.unlink()
+
+
+# --- three refusals added 2026-09-11 after hostile review of the first live run ------------
+
+def test_run_refuses_a_readback_capture_without_request_strategy_id(tmp_path):
+    """Measured 2026-09-11: with request null, fingerprint_readback fell back to the record's
+    own id and compared it with itself, so a read-back of the WRONG strategy passed clean."""
+    sp, rp = _captures(tmp_path)
+    doc = json.loads(rp.read_text(encoding="utf-8")); doc["request"] = {"includeInactive": True}
+    rp.write_text(json.dumps(doc), encoding="utf-8")
+    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
+    out = tmp_path / "receipt.json"
+    with pytest.raises(SystemExit, match="request.strategyId"):
+        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                  "--now", "2026-09-04T09:00:00Z"])
+    assert not out.exists()
+
+
+def test_run_refuses_a_capture_stamped_in_the_future(tmp_path):
+    """Measured 2026-09-11: captures stamped 2027-01-01 produced a receipt that gated PASS."""
+    sp, rp = _captures(tmp_path)
+    doc = json.loads(sp.read_text(encoding="utf-8")); doc["capturedAt"] = "2027-01-01T00:00:00Z"
+    sp.write_text(json.dumps(doc), encoding="utf-8")
+    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
+    out = tmp_path / "receipt.json"
+    with pytest.raises(SystemExit, match="future capturedAt"):
+        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                  "--now", "2026-09-04T09:00:00Z"])
+    assert not out.exists()
+
+
+def test_run_refuses_captures_already_past_the_expiry_window(tmp_path):
+    """Measured 2026-09-11: run never compared now with the expiresAt it was writing, so stale
+    captures printed PREFLIGHT PASS on a receipt gate would refuse a line later."""
+    sp, rp = _captures(tmp_path)
+    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
+    out = tmp_path / "receipt.json"
+    with pytest.raises(SystemExit, match="older than --expires-minutes"):
+        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
+                  "--now", "2026-09-04T11:00:00Z"])          # captures are 08:55 / 08:58
+    assert not out.exists()
+
