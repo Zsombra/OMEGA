@@ -1,0 +1,110 @@
+{
+ "_what": "Why the TPO metrics were not driving either live strategy, proven over all 36 active CRYPTO instruments, and what was changed. The headline: 5 of 11 conditions on the routing strategy fired but never decided a verdict, and 86 percent of verdicts were decided by two conditions that never look at a TPO level against price or against another TPO level. Both strategies were repaired and the repair was verified against the live records.",
+ "capturedAt": "2026-09-11T04:00Z",
+ "universe": {
+  "source": "get_coin_metadata, filtered assetClass == CRYPTO and isActive",
+  "n": 36,
+  "note": "The platform carries 78 instruments; 42 are TRADFI (stocks, indices, commodities, FX). TPO on those is a different animal because the UTC day is not their auction session, so they are excluded from every measurement here."
+ },
+
+ "theSignConventionIsNowPROVEN": {
+  "claim": "spread(M, O) = (M - O) / O, expressed as a percentage. Positive means metric M sits ABOVE operand O.",
+  "whyItNeededProving": "The platform documents the transform only as 'Spread vs metric'. No formula, no sign. Every directional condition in this project encodes an assumption about it, and the whole verdict set inverts if it is backwards.",
+  "method": "Asked for the absolute level (value transform) and the spread and the close in ONE atomic preview call, then decided the sign by subtraction rather than by reading our own condition labels.",
+  "evidence": [
+   "BTC close 76845.00, pTpoVAL 76488.38 -> (76488.38-76845.00)/76845.00 = -0.4640 percent; reported -0.46 percent.",
+   "BTC pTpoPOC 77153.67 -> +0.4017 percent; reported +0.40 percent.",
+   "BTC pTpoVAH 78053.76 -> +1.5730 percent; reported +1.57 percent."
+  ],
+  "verdict": "Three exact matches. The existing condition semantics were RIGHT. An earlier suspicion in this session that the sign was inverted was itself wrong and is retracted here."
+ },
+
+ "theRealDefect_reachability": {
+  "mechanism": "Verdict resolution is FIRST-TRUE-WINS in array order. That makes the condition array a switch with fall-through, not a set of independent tests: a broad condition placed early shadows every condition below it, which can then fire without ever deciding anything.",
+  "measuredOn": "3d720de3 revision 1, all 36 CRYPTO instruments, 2026-09-11",
+  "table": [
+   {"i": 0, "key": "ABOVE_VALUE", "verdict": "UP", "fires": 2, "decides": 2, "status": "live"},
+   {"i": 1, "key": "VAL_REJECT_DN", "verdict": "DOWN", "fires": 1, "decides": 1, "status": "live but near-dead, see below"},
+   {"i": 2, "key": "VAH_CONFLUENCE_DN", "verdict": "DOWN", "fires": 13, "decides": 12, "status": "live"},
+   {"i": 3, "key": "VAL_CONFLUENCE_UP", "verdict": "UP", "fires": 32, "decides": 19, "status": "the shadow caster"},
+   {"i": 4, "key": "SHAPE_B", "verdict": "DOWN", "fires": 9, "decides": 1, "status": "nearly unreachable"},
+   {"i": 5, "key": "SHAPE_P", "verdict": "UP", "fires": 9, "decides": 0, "status": "UNREACHABLE"},
+   {"i": 6, "key": "BELOW_VALUE", "verdict": "DOWN", "fires": 14, "decides": 1, "status": "nearly unreachable"},
+   {"i": 7, "key": "POC_ABOVE", "verdict": "UP", "fires": 26, "decides": 0, "status": "UNREACHABLE"},
+   {"i": 8, "key": "INSIDE_VALUE", "verdict": "NEITHER", "fires": 34, "decides": 0, "status": "UNREACHABLE"},
+   {"i": 9, "key": "SHAPE_BALANCED", "verdict": "NEITHER", "fires": 18, "decides": 0, "status": "UNREACHABLE"},
+   {"i": 10, "key": "NO_DECISIVE_LOCATION", "verdict": "NEITHER", "fires": 22, "decides": 0, "status": "UNREACHABLE"}
+  ],
+  "theHeadline": "31 of 36 verdicts (86 percent) were decided by conditions 2 and 3. NEITHER compares a TPO level to price or to another TPO level - both compare a TPO level to a DONCHIAN band. Every condition expressing the Market Profile thesis was dead code. POC_ABOVE was TRUE on 26 of 36 instruments and decided nothing, ever.",
+  "twoSeparateBugsWorthNaming": {
+   "VAL_REJECT_DN_deadByConstruction": "Required pTpoVAL_close_spread >= 6.42 while the entire 36-instrument range topped out at +6.26 (PUMP). The threshold sat above the whole observed range. It was set from a single instant on 2026-09-10.",
+   "INSIDE_VALUE_mislabelled": "A clause references ONE column, and this one tested only pTpoVAH_close_spread. 'Close is below prior VAH' is true both when price is inside value AND when it is below value, so it fired on 34 of 36 including all 15 instruments that were below value, not inside it. The conditionKey claimed a containment the clause never checked."
+  }
+ },
+
+ "theTPOnativeColumnSpace": {
+  "finding": "Neither live strategy ever compared a TPO level to another TPO level. Both only spread TPO against CLOSE or against a DONCHIAN band. But the spread transform accepts ANY metric as its operand, so TPO-versus-TPO columns are legal, and every one of them populated on all 36 instruments with nothing inert.",
+  "whyThisMatters": "It needs no history. TPO has none by any route here - the offset operand is inert, chaining is refused with an empty candidate list, and the CLOSE clock is refused. Comparing the CURRENT session's developing profile against the PRIOR session's is two current reads, so it is lawful where a same-level time comparison is not.",
+  "measuredColumns": {
+   "tpoPOC_vs_pTpoVAH": "value migrated clear ABOVE the whole prior value area. 2 of 36. Rare and therefore high-conviction.",
+   "tpoPOC_vs_pTpoVAL": "value migrated clear BELOW it. 15 of 36.",
+   "tpoPOC_vs_pTpoPOC": "direction of value migration. Range -6.95 to +5.40 percent, 28 negative and 8 positive. A real distribution, not a constant.",
+   "pTpoVAH_vs_pTpoVAL": "prior value-area WIDTH, +1.16 percent (WLFI) to +10.36 percent (ZEC). The normaliser this project has been missing: a 2 percent move means something different against a 1.2 percent wide value area than a 10 percent wide one.",
+   "close_vs_tpoPOC": "price against the DEVELOPING point of control, used here as confirmation.",
+   "tpoVAH_vs_tpoVAL": "developing value width.",
+   "tpoIBH_vs_tpoIBL": "initial-balance width, populated on all 36 once the opening hour has closed."
+  },
+  "locationTrichotomy": {"abovePriorValue": 3, "insidePriorValue": 17, "belowPriorValue": 16,
+   "note": "Derived from pTpoVAH_close_spread < 0 and pTpoVAL_close_spread > 0 at the same instant. A usable, well-populated partition."}
+ },
+
+ "whatWasChanged": {
+  "ladder": "Seven primary conditions ordered most-specific-first so they PARTITION the universe, plus a three-condition fallback tier. Ordering substitutes for boolean composition: with ABOVE and BELOW placed first, anything reaching the third position is inside value, so the conjunction comes free from the order.",
+  "conditions": ["VALUE_ABOVE_CONFIRMED UP", "VALUE_ABOVE UP", "VALUE_BELOW_CONFIRMED DOWN", "VALUE_BELOW DOWN", "VALUE_RISING_IN_BALANCE UP", "VALUE_FALLING_IN_BALANCE DOWN", "VALUE_UNCHANGED_IN_BALANCE NEITHER", "PRE_PROFILE_BELOW_VALUE DOWN", "PRE_PROFILE_ABOVE_VALUE UP", "PRE_PROFILE_INSIDE_VALUE NEITHER"],
+  "reachabilityOver36": {"decides": [0, 2, 11, 4, 4, 10, 5], "sum": 36,
+   "result": "Every instrument decided, no UNRESOLVED, zero unreachable primary conditions. Compare with 5 unreachable before."},
+  "VALUE_ABOVE_CONFIRMED_is_rare_not_dead": "It decided 0 of 36 at that instant, but it sits at index 0 with nothing above it to shadow it, and its zero is correct arithmetic: APT read +3.36 percent on tpoPOC vs pTpoVAH but -1.22 percent on close vs tpoPOC, so the conjunction is legitimately false. Rare is not the same as unreachable - that distinction is the whole point of this audit.",
+  "theFallbackTierIsDeliberate": "Every tpo* current-session metric is, in the platform's own words, 'absent for the session's first 60 minutes', and a clause on an absent value reads FALSE. Without the fallback the verdict would be UNRESOLVED for one hour every UTC day. The three PRE_PROFILE conditions use only pTpo* columns, which are available around the clock.",
+  "fallbackIsUNVERIFIED": "It has never been observed firing, because it can only fire between 00:00 and 01:00 UTC and that window cannot be forced. Its reachability is reasoned from the platform's own statement, not measured. Flagged rather than claimed."
+ },
+
+ "applied": [
+  {"strategyId": "56c08ef6-480b-4293-8136-81beed2161cf", "name": "OMEGA-TEST: TPO Value Migration",
+   "revision": "3 -> 4", "columns": 11, "conditions": 10,
+   "role": "the pure TPO analysis surface; annotation-only, cannot route",
+   "liveVerification": "8 coins previewed against the LIVE record: all decided, none UNRESOLVED, every verdict decided by a TPO-vs-TPO condition."},
+  {"strategyId": "3d720de3-6d36-4ef8-ae74-87bd8b6025bd", "name": "PVM router",
+   "revision": "1 -> 2", "columns": 11, "conditions": 10,
+   "role": "the only live strategy that can route, so the only surface where TPO can influence a real trade",
+   "appliedImpact": {"changedAxes": ["REPORT", "CONDITIONS"], "boundAgentCount": 1, "propagatedAgentCount": 1, "openPositionCount": 1},
+   "liveVerification": "12 weighted signals PRESERVED (12 before, 12 after), gate still 0.65, entry block unchanged, open position still open. Qualification re-run after the revision: XRP, DOGE, ZEC and MOODENG qualify; BTC, ETH, SOL and LINK fail on AGGREGATE_BELOW_MIN. The TPO ladder reads DOWN on all seven sampled coins, so a qualifying coin now arrives with a coherent directional read."}
+ ],
+
+ "platformContractFactsMeasuredHere": {
+  "previewSectionKey": "preview_strategy_report REQUIRES sectionKey as a non-null string matching a 'custom:<uuid>' regex, and REQUIRES the benchmarkTicker and notes KEYS to be present. benchmarkTicker may be null; sectionKey may not. This is zod .nullable() versus .optional(): the key must exist, the value may be null. CREATE, by contrast, REFUSES a caller-supplied sectionKey with REPORT_CUSTOM_SECTION_NOT_OWNED. Three different rules on one field across three calls.",
+  "benchmarkTickerFootgun": "Setting benchmarkTicker to a ticker collapses the whole section to that one instrument, with the server warning 'Every reading below is BTC's, not the coin being evaluated'. Both live strategies carry null, so neither was affected, but a probe written with 'BTC' silently returned 36 identical rows.",
+  "applyShape": "apply_strategy_plan takes {request: {planToken, confirm: true}}. A bare {planToken} is refused, and confirm must be the literal true - an explicit write gate, not a default.",
+  "updateMerges": "Omitted fields are PRESERVED, measured on 56c08ef6 rev 4 where omitting entry, minAggregateScore and signalRules kept all three exactly. This is what made it safe to send only sections and conditions to the router and keep its 12 weighted signals.",
+  "coinSelectionIsNotPersisted": "coinSelection is REQUIRED on an UPDATE but reads back null. It is a compile-time input used to run the internal validation preview, not stored state, so the small universe forced by the byte cap does NOT restrict the strategy at runtime.",
+  "compileInternalPreviewCost": {
+   "finding": "compile_strategy_plan runs its own preview and is bounded by the same 256000-byte cap as preview_strategy_report. The cost is linear and was measured, not estimated.",
+   "observations": [{"coins": 36, "bytes": 523926}, {"coins": 24, "bytes": 409162}, {"coins": 18, "bytes": 351960}, {"coins": 14, "bytes": 313702}, {"coins": 12, "bytes": 294652}, {"coins": 10, "bytes": 275534}, {"coins": 8, "bytes": 256420}],
+   "model": "about 9550 bytes per coin on roughly 180000 bytes of fixed overhead. Fitted intercept 180126; predicted 256526 at 8 coins against 256420 measured.",
+   "consequence": "The fixed overhead dominates, and it includes the echoed intentSummary and assumptions. Verbose assumptions shrink the universe a compile will accept. For this payload the ceiling was 8 coins on 56c08ef6 and 7 on the router."
+  },
+  "qualificationToolDrift": "get_agent_coin_qualification takes coinTickers as an ARRAY and refuses the key 'symbol'. An earlier script in this project used symbol, so that contract has drifted."
+ },
+
+ "honestLimits": [
+  "EVERY threshold here rests on ONE instant, 2026-09-11 around 03:00-04:00Z, across many instruments. That is a spatial cross-section, not a time distribution. It says how the 36 instruments differ from each other right now; it says nothing about how any one of them behaves over days.",
+  "The plus-or-minus 0.25 percent balance band on tpoPOC vs pTpoPOC is the most fragile number in the new ladder. It was chosen to split the 19 in-balance instruments into roughly 4 up / 11 down / 4 flat at one moment, and it should be re-derived from forward panel logging.",
+  "Measured instability that makes the point: BTC's pTpoVAL versus Donchian-lower separation was 2.31 percent on 2026-09-10 and inside 0.5 percent on 2026-09-11. bollinger_cci_oversold fired on 6 of 6 coins one day and 0 of 6 the next. Calibration from a single instant is unreliable on this platform and has already burned this project once.",
+  "The tape was bearish across the whole measurement window, so the UP legs of the new ladder are thinly observed: VALUE_ABOVE decided 2 of 36 and VALUE_RISING_IN_BALANCE decided 4 of 36. Their behaviour on a bullish day is unobserved.",
+  "Still unbuildable, and deliberately not attempted: the deviation-and-return play needs two states across time, and reject-back-into-value needs intrabar sequence. OHLC carries no intrabar sequence, so whether a level was touched before or after the close cannot be known. No condition claims to detect a return or a rejection.",
+  "Conditions remain advisory. They do not gate, score or qualify. TPO influences a decision only as prompt context for the agent, because all nine TPO metrics feed zero of the 84 signal modules."
+ ],
+
+ "scope": "Revisions only. No deployment, no agent binding or rebinding, no fund allocation, no trade. Every agent on the account holds assignments=False, so neither revision can cause an evaluation until deployed by hand.",
+
+ "theNextHonestStep": "Not another strategy. The panel logger on a schedule, so the next threshold comes from a distribution over days instead of one instant. The data is unrecoverable after the fact because get_coin_candles has no start-time parameter."
+}

@@ -339,3 +339,85 @@ header at offset 0 is an error, as is a CLOSE condition referencing a LIVE one.
 This dovetails with the `provisional` flags above: ambient conditions came back
 `provisional: false` precisely because ambient data is not read off a live
 forming bar. The clock axis makes that distinction author-controlled.
+
+## Measured 2026-09-11: first-true-wins makes condition order into control flow
+
+Verdict resolution is **first-true-wins in array order**. That means the condition array is
+not a set of independent tests — it is a `switch` with fall-through. A broad condition
+placed early **shadows** every condition below it, which can then evaluate TRUE on most of
+the universe and still never decide anything.
+
+Measured on `3d720de3` revision 1 across all 36 active CRYPTO instruments:
+
+| # | conditionKey | verdict | fires | decides |
+|---|---|---|---|---|
+| 0 | ABOVE_VALUE | UP | 2/36 | 2/36 |
+| 1 | VAL_REJECT_DN | DOWN | 1/36 | 1/36 |
+| 2 | VAH_CONFLUENCE_DN | DOWN | 13/36 | 12/36 |
+| 3 | VAL_CONFLUENCE_UP | UP | 32/36 | 19/36 |
+| 4 | SHAPE_B | DOWN | 9/36 | 1/36 |
+| 5 | SHAPE_P | UP | 9/36 | **0/36** |
+| 6 | BELOW_VALUE | DOWN | 14/36 | 1/36 |
+| 7 | POC_ABOVE | UP | 26/36 | **0/36** |
+| 8 | INSIDE_VALUE | NEITHER | 34/36 | **0/36** |
+| 9 | SHAPE_BALANCED | NEITHER | 18/36 | **0/36** |
+| 10 | NO_DECISIVE_LOCATION | NEITHER | 22/36 | **0/36** |
+
+Five conditions fired and never decided. `POC_ABOVE` was TRUE on 26 of 36 and decided
+nothing, ever. Reproduce with `scripts/tpo_condition_reachability.py`.
+
+**`fires` without `decides` is dead code.** Audit any condition set by that pair, not by
+whether each clause evaluates.
+
+Two consequences worth keeping:
+
+- **Ordering substitutes for boolean composition.** A `clause` references one column, so
+  "inside value" needs `VAL < 0 AND VAH > 0`. But placing `ABOVE_VALUE` and `BELOW_VALUE`
+  first means anything reaching the third position *is* inside value — the conjunction comes
+  free from the order, with no `group` needed.
+- **Rare is not unreachable.** A condition at index 0 with nothing above it to shadow it can
+  legitimately decide 0 on a given day. Distinguish "shadowed" from "did not happen" before
+  calling a condition dead.
+
+### A one-sided clause mislabelled as a two-sided state
+
+`INSIDE_VALUE` tested only `pTpoVAH_close_spread`. "Close is below prior VAH" is true both
+when price is inside value **and** when it is below it, so it fired on 34/36 — including all
+15 instruments that were *below* value. The `conditionKey` claimed a containment the clause
+never checked. A threshold can also sit outside the whole observed range: `VAL_REJECT_DN`
+required `>= 6.42` while the 36-instrument range topped out at `+6.26`, so it was dead by
+construction.
+
+## Measured 2026-09-11: three different rules for `sectionKey` across three calls
+
+| call | `sectionKey` |
+|---|---|
+| `CREATE` | **refuses** a caller-supplied key — `REPORT_CUSTOM_SECTION_NOT_OWNED` |
+| `UPDATE` | accepts the section's own owned key |
+| `preview_strategy_report` | **requires** a non-null string matching a `custom:<uuid>` regex |
+
+`preview_strategy_report` also requires the `benchmarkTicker` and `notes` **keys to be
+present**; `benchmarkTicker` may be `null` but `sectionKey` may not. That is zod
+`.nullable()` versus `.optional()` — the key must exist, the value may be null. Omitting
+`benchmarkTicker` entirely returns `Required`; passing `null` is accepted and is what both
+live strategies carry.
+
+## Measured 2026-09-11: the write path's remaining shapes
+
+- **`apply_strategy_plan` takes `{request: {planToken, confirm: true}}`.** A bare
+  `{planToken}` is refused, and `confirm` must be the literal `true` — an explicit write
+  gate, not a default.
+- **`UPDATE` merges.** Omitted fields are preserved: on `56c08ef6` rev 4, omitting `entry`,
+  `minAggregateScore` and `signalRules` kept all three exactly. This is what makes it safe
+  to send only `sections` and `conditions` to a routing strategy without disturbing its
+  weighted signals.
+- **`coinSelection` is required on `UPDATE` but is not persisted** — it reads back `null`.
+  It is a compile-time input used to run the internal validation preview, so a small
+  universe forced by the byte cap does **not** restrict the strategy at runtime.
+- **`compile_strategy_plan` runs its own preview and shares the 256,000-byte cap.** The cost
+  is linear and was measured: 36 coins → 523,926 bytes; 24 → 409,162; 18 → 351,960; 14 →
+  313,702; 12 → 294,652; 10 → 275,534; 8 → 256,420. That is **≈9,550 bytes per coin on
+  ≈180,000 bytes of fixed overhead** (fitted intercept 180,126; predicted 256,526 at 8 coins
+  against 256,420 measured). The fixed overhead includes the echoed `intentSummary` and
+  `assumptions`, so **verbose assumptions shrink the universe a compile will accept.**
+- `get_agent_coin_qualification` takes `coinTickers` as an **array** and refuses `symbol`.
