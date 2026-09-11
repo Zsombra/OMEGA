@@ -14,7 +14,15 @@ WHY THE COIN LIST IS EXPLICIT AND NOT RANKED
     preview_strategy_report accepts ranked limit 50 - the panel logger uses it. The
     COMPILE path does not: the measured BG-14 ceiling is ranked limit 4 (README,
     2026-08-28), so a realistic ranked universe cannot compile. Explicit lists are the
-    only way to carry breadth into a saved strategy. Schema cap is 50; we carry 36.
+    only way to carry breadth into a saved strategy. The schema cap is 50 but the 256 KB
+    report-preview cap binds far earlier - see COINS below. We carry 8.
+
+NOT ALL OF THESE ARE WORTH CREATING, AND THIS FILE DOES NOT DECIDE THAT
+    S1 and S7 emit only NEITHER verdicts, so neither can produce a direction. S2's
+    re-entry geometry (bar opened outside prior value, closed inside) has been observed
+    firing ZERO times across two days of probing, and S3 and S5 both lean on it. None of
+    the seven carries a rules array, so all seven are annotation-only and cannot route at
+    any gate. Emitting a legal payload is not the same as it being worth a quota slot.
 
 USAGE
     python scripts/tpo_suite_build.py
@@ -36,9 +44,25 @@ from omega.validate import validate_report  # noqa: E402
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "out", "tpo_suite")
 
-# One fixed section key so conditions can address headers without a compile-first
-# round trip. The server accepts a caller-supplied custom:<uuid> (docs/09).
-SK = "custom:7b0d4a1e-9c3f-4a52-8e61-2f5c8d0a4b77"
+# SECTION KEY: None, and that is load-bearing.
+#
+# MEASURED 2026-09-10 on a real CREATE: a caller-supplied sectionKey is REFUSED with
+#   REPORT_CUSTOM_SECTION_NOT_OWNED
+#   "Custom section 'custom:7b0d4a1e-...' does not belong to this strategy."
+#   rule: omit sectionKey on a new custom section - the server derives it from the section
+# which is coherent - on a CREATE the section does not exist yet, so it cannot be owned.
+# It IS accepted on UPDATE, where the section exists (also measured, same day).
+#
+# Setting SK to None fixes both halves at once: CustomSection.wire() drops sectionKey via
+# exclude_none, and every condition clause carries sectionKey null, which the server
+# resolves to the key it mints (verified - all conditions read back carrying
+# custom:88da7c5c-... after being submitted as null).
+#
+# An earlier version of this file hardcoded custom:7b0d4a1e-... Every payload it emitted
+# would have been refused on submission. They all passed omega offline validation with
+# zero errors, which is exactly the trap: offline validation is this repo's MODEL of the
+# contract, not the server.
+SK = None
 
 ANCHOR = "1h"
 
@@ -55,12 +79,29 @@ WIDTH_P25 = 2.06
 RSI_MID = 50.0
 
 # 36 CRYPTO tickers observed in the 2026-09-10T12:21Z ranked panel pull.
-COINS = [
+# UNIVERSE. 36 tickers is MEASURED REFUSED.
+#
+# The 256 KB compile report-preview cap binds on coins x columns x conditions, not on
+# ranked mode alone as the README records. Measured on one identical payload:
+#   36 tickers -> "mcp_result_bytes limit exceeded: 433118 > 256000"  REFUSED
+#   16 tickers -> "281848 > 256000"                                    REFUSED
+#   10 tickers ->  compiled
+# Fitting those two refusals: about 7563 bytes per coin on about 160832 fixed overhead,
+# against a 262144 cap. So the ceiling is roughly (262144 - 160832) / 7563 = 13 coins at
+# 8 columns / 9 conditions, and fewer as the column x condition grid grows.
+#
+# COINS_ALL is kept so the full cohort is not silently lost - the read-only panel logger
+# still covers all 36 through preview, which is NOT subject to this cap.
+COINS_ALL = [
     "AAVE", "AIXBT", "APT", "AVAX", "BNB", "BTC", "CAKE", "CRV", "DOGE", "ENA",
     "ETH", "FARTCOIN", "GRAM", "HYPE", "JUP", "LDO", "LINK", "LTC", "MELANIA",
     "MET", "MOODENG", "PENGU", "PEPE", "POPCAT", "PUMP", "PURR", "SHIB", "SNX",
     "SOL", "SUI", "TRUMP", "UNI", "WIF", "WLFI", "XRP", "ZEC",
 ]
+# The eight carried into a compile: the liquid majors plus the two memes that actually
+# produced ENTER decisions on the live agent (MOODENG, DOGE). Eight leaves headroom even
+# at 9 columns.
+COINS = ["BTC", "ETH", "SOL", "BNB", "XRP", "LINK", "DOGE", "MOODENG"]
 
 
 def c(metric, transform, operand=None, **kw):
@@ -177,30 +218,49 @@ DEVELOPING = [
               in_("tpoShape", ["b-shape"], section_key=SK), verdict="NEITHER"),
 ]
 
+def ordered(conds):
+    """Sort conditions so a directional verdict can never be masked.
+
+    MEASURED 2026-09-10: verdict resolution is FIRST-TRUE-WINS in array order. The same
+    nine conditions, same thresholds, same columns, differing ONLY in array order returned
+    0 UP / 0 DOWN / 10 NEITHER in one order and 0 UP / 4 DOWN / 0 NEITHER in the other,
+    with decidedBy naming the directional condition. A NEITHER condition placed ahead of a
+    directional one SILENTLY MASKS it, and the rendered conditions table still shows every
+    row's TRUE/FALSE correctly, so the masking is invisible unless you read the Verdict
+    column. That is how strategy 56c08ef6 revision 2 shipped emitting nothing.
+
+    UP/DOWN first, then verdict-null building blocks, then NEITHER tags last. Whether a
+    verdict-null condition can also mask is UNMEASURED, so it sits in the middle rather
+    than being assumed harmless. sorted() is stable, so order within a rank is preserved.
+    """
+    rank = {"UP": 0, "DOWN": 0, None: 1, "NEITHER": 2}
+    return sorted(conds, key=lambda c: rank.get(c.get("verdict"), 1))
+
+
 SUITE = [
     dict(id="S1", name="Value Location",
          thesis="Where the close sits against the previous completed UTC session's value area. No direction claimed.",
-         extra=[], conds=LOC,
+         extra=[], conds=ordered(LOC),
          teaches="The spine renders, the signs are right, and a TPO condition reaches only the report.",
          null="ZERO - every column pairs a prior-session base with a candle operand."),
     dict(id="S2", name="Value Re-Entry",
          thesis="Price that was outside prior value at the bar's open and is back inside at its close.",
-         extra=[], conds=LOC + REENTRY,
+         extra=[], conds=ordered(LOC + REENTRY),
          teaches="Whether the re-entry geometry ever fires at all. It has never been observed TRUE.",
          null="ZERO."),
     dict(id="S3", name="Rotation Target",
          thesis="Re-entry, plus whether the prior POC is still ahead of price or already behind it.",
-         extra=[], conds=LOC + REENTRY + TARGET,
+         extra=[], conds=ordered(LOC + REENTRY + TARGET),
          teaches="Separates a setup from a completed rotation.",
          null="ZERO."),
     dict(id="S4", name="Width Regime",
          thesis="Stand down when the prior value area is too narrow for the rotation to pay.",
-         extra=[], conds=LOC + REENTRY + TARGET + [WIDE],
+         extra=[], conds=ordered(LOC + REENTRY + TARGET + [WIDE]),
          teaches="The only never-null TPO regime read available.",
          null="ZERO."),
     dict(id="S5", name="Confirmed Re-Entry",
          thesis="Re-entry that survived two closed bars of momentum, joined by conditionRef across clocks.",
-         extra=[c("RSI14", "value")], conds=LOC + REENTRY + HELD + CONFIRMED,
+         extra=[c("RSI14", "value")], conds=ordered(LOC + REENTRY + HELD + CONFIRMED),
          teaches="The split-clock composition, and the only leg in the suite that can persist.",
          null="RSI14 warm-up only - null until 14 anchor bars exist."),
     dict(id="S6", name="POC Cross-Recross",
@@ -208,7 +268,7 @@ SUITE = [
          extra=[c("PRIOR_TPO_POC", "spread", "OPEN"),
                 c("PRIOR_TPO_POC", "spread", "LOW"),
                 c("PRIOR_TPO_POC", "spread", "HIGH")],
-         conds=LOC + POC_DEFENCE,
+         conds=ordered(LOC + POC_DEFENCE),
          teaches="The nearest lawful reading of 'the POC acted as support'. It cannot distinguish a defence from a failed breakout.",
          null="ZERO."),
     dict(id="S7", name="Developing Value",
@@ -216,7 +276,7 @@ SUITE = [
          extra=[c("TPO_POC", "spread", "PRIOR_TPO_POC"),
                 c("TPO_VAH", "spread", "TPO_VAL"),
                 c("TPO_SHAPE", "value")],
-         conds=LOC + DEVELOPING,
+         conds=ordered(LOC + DEVELOPING),
          teaches="Whether developing-vs-prior carries information beyond time-of-day.",
          null="SEVERE - all three added columns are null 00:00-01:00 UTC, and the developing area is "
               "structurally narrow all morning (measured 40-48% of prior width at the 12:00 midpoint). "
