@@ -23,7 +23,7 @@ the thing itself. Most TV strategies run on the daily chart: carry that with the
 daily-strategy pattern above (pinned-1d thesis at `offset: 1` on an intraday anchor), which
 binds decisions to daily closes while the studio keeps managing risk intraday.
 
-Event-column behaviour, state-vs-event, `PDH`/`PDL` binding and the squeeze's anchor calibration are
+Event-column behaviour, state-vs-event, previous-session-level binding and the squeeze's anchor calibration are
 rules about the columns themselves, not about porting — they live in the skill body's
 `## Header grammar` and `## Conditions`. Read those first; this document is the per-script recipes.
 
@@ -64,8 +64,8 @@ rules about the columns themselves, not about porting — they live in the skill
   `RVOL gte 1.5`; `sr_resistance_break` 3 required; turtle exits = trend preset (trail from
   1R, giveback 50). Mirror with `"breakdown low"`. **Daily-breakout variant on any anchor:**
   pin the structure at 1d — `zone_1d is "breakout high"`, `dist_donchianHi_1d gte 0` (validated).
-  **Literal previous-day levels are native**: `dist_PDH gte 0` composes directly. Their `{abs: '1d'}`
-  binding is stated in `## Header grammar` in the skill body.
+  **Literal previous-day levels are native**: `dist_PDH gte 0` composes directly. They are TIMELESS
+  and take `{rel: 'anchor'}` — see `## Header grammar` in the skill body.
 - **ICT / SMC (FVG + order blocks)** → `STRUCT_ZONES` is the native zone engine:
   `zones_htf_support_type` (`bullish FVG`/`bullish order block`), `zones_htf_support_dist
   between -1.5 0`, `_age_h gte 12`, HTF bias required via `MAalign_htf`; rules
@@ -79,5 +79,5 @@ rules about the columns themselves, not about porting — they live in the skill
   Parabolic SAR (`PSAR`), Keltner (`KC_UPPER`/`KC_MID`/`KC_LOWER`), daily pivots
   (`PIVOT_P`/`PIVOT_R1`–`R3`/`PIVOT_S1`–`S3`), Williams %R (`WILLR14`), Stochastic RSI
   (`STOCH_RSI14`), the TTM squeeze (`KC_SQUEEZE`), Connors RSI-2 (`RSI2`), the 9/21/50 EMAs
-  (`EMA9`/`EMA21`/`EMA50`), and literal previous-day levels (`PDH`/`PDL`). Port these directly —
+  (`EMA9`/`EMA21`/`EMA50`), and literal previous-session levels (`PDH`/`PDL`/`PDO`). Port these directly —
   do not offer a substitute for a primitive the catalog serves.

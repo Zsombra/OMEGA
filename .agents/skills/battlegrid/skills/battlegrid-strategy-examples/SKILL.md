@@ -76,11 +76,13 @@ column as a TRIGGER inside a carrier, and pair it with a persistent state — a 
 `MAalign` — for regime. A condition that treats an event column as a standing state is unresolved on
 nearly every bar, which is a gate that never gates.
 
-**`PDH` and `PDL` are anchored to `1d`.** They are catalogued price levels, so `dist_PDH gte 0`
-composes directly — but bind them `{abs: '1d'}`, which is the only reference the save path accepts on
-them, and read them from any anchor that way. (`distance` still rejects an `offset`, and a clause
-still compares a column against a literal; neither of those shapes is what a previous-day level
-needed.)
+**The previous-session levels are TIMELESS.** `PDH`, `PDL`, `PDO` and the seven floor pivots
+(`pivotP`, `pivotR1`–`R3`, `pivotS1`–`S3`) read the session profile, not a candle rung, so they take
+no timeframe reference at all: bind them `{rel: 'anchor'}` — the default — and they serve the same
+previous UTC session from any anchor. An absolute reference is REFUSED at save, including `1d`,
+because there is no rung for one to select. They are catalogued price levels, so `dist_PDH gte 0`
+composes directly. (`distance` still rejects an `offset`, and a clause still compares a column
+against a literal; neither of those shapes is what a previous-session level needed.)
 
 ## Conditions
 

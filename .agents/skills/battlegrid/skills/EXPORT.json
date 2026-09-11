@@ -1,6 +1,6 @@
 {
   "generator": "battlegrid-app/server/scripts/export-mcp-skills.mjs",
-  "contractVersion": "54.0.0",
+  "contractVersion": "55.0.0",
   "files": {
     "battlegrid-agent-management/SKILL.md": "b6ea75b3d838c1dbaaf3984d7e99a11c81686de2c1a1910c35699ee7e70dafa5",
     "battlegrid-arena-play/SKILL.md": "03fa153bf82be18bf5ed01e3ba12e2cd9f99a81b08d903a77b52169e7519a182",
@@ -8,10 +8,10 @@
     "battlegrid-radar-deployment/SKILL.md": "d2a012b154e1e529db19529bd7c3d75d069f4e410d5804add51165f0f0902b2e",
     "battlegrid-strategy-authoring/SKILL.md": "2a973a9e52832ab1e0d9bf1b6d21b8bf898899bc3a455fde223646a01e914242",
     "battlegrid-strategy-doctor/SKILL.md": "9ab3f79128ec81d3e90167c3f1ea4bd6f6b570290e5ebe2bf855195263c58239",
-    "battlegrid-strategy-examples/SKILL.md": "316c9635219c9a732e9c4bce9918a442be8b3ad9abac16c613224951e12887a1",
+    "battlegrid-strategy-examples/SKILL.md": "6b7a882fedd4f63c083319ed2cd1e4354873d9dc70253217eb60ad3c23871c77",
     "battlegrid-strategy-examples/references/playbooks.md": "35c543c090d00ba19e4bcf0a80502afac7a4954643fc535de0b24381c91ecbf4",
     "battlegrid-strategy-examples/references/recipes.md": "53887daece17995543e7d3fe1bf2577fc41a6254c291acacde48d7de63853641",
-    "battlegrid-strategy-examples/references/tradingview-ports.md": "1ff63367de1f9a9fbbcd7ecd5367137800373df47aaeb1d61fb1298d3a1924f4",
+    "battlegrid-strategy-examples/references/tradingview-ports.md": "2b13adbc137178955edcca31b6ab40c01c745a932a0750b91db8820c736700bb",
     "battlegrid-trade-analysis/SKILL.md": "32573a67e55d735e6ee4e36b3b48c815694102704bc453c4d1c13db39551b3da",
     "battlegrid-trade-proposal/SKILL.md": "311af5a91576b095dcfcb3e3fc8b41e8a75d7af505222f975fde9733c633cb7e"
   }

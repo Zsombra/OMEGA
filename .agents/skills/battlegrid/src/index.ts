@@ -65,7 +65,7 @@ import {
  * being asked. Move it for a change to THIS package — a proxy fix, a dependency bump, a docs
  * correction. Never move it to track the server.
  */
-export const PACKAGE_VERSION = '31.2.17';
+export const PACKAGE_VERSION = '31.2.18';
 export const DEFAULT_URL = 'https://mcp.battlegrid.trade/mcp';
 const MAX_RETRIES = 3;
 const RETRY_DELAYS_MS = [2000, 4000, 8000];
