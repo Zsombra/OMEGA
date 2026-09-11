@@ -1,0 +1,362 @@
+{
+ "operation": "CREATE",
+ "intentSummary": "Create the TPO rotation strategy: fade the edge of the prior session value area back toward the prior point of control. Two required, direction-neutral gates - the close is inside prior value, and there is at least 0.25 percent of room to the prior POC - block compose-trade otherwise. Verdicts: UP when the prior POC is above the close, DOWN when below, NEITHER at the POC or outside value. Built only from prior-session columns, which never go null. Routing weights, gates, levels and position management mirror the vendor's validated 1h intraday fade playbook; no signal is required, the TPO gates gate.",
+ "assumptions": [
+  "Measured 2026-09-12 over 36 CRYPTO instruments: 20 inside prior value; prior POC above the close on 10, below on 8, at it on 2; |POC distance| p25 0.29, median 0.83, p75 1.91 percent. The 0.25 percent room threshold is five 5-bps bins and sits at that p25. ONE instant, not a calibration.",
+  "Measured: spread(M,O) = (M - O)/O in percent, positive meaning M sits above O. So pTpoPOC_close_spread > 0 means the prior POC is ABOVE the close and the rotation target is up.",
+  "Measured 2026-09-12 on 3d720de3 rev 3: a required, verdict-null condition blocks compose-trade (REQUIRED_CONDITION_FALSE), for long and short alike. The two gates here use that pattern.",
+  "Measured 2026-09-11 on 54.1.0: a null reads FALSE. Every column here is prior-session and never null during the UTC day, so this strategy is live in the first UTC hour when tpo* is absent.",
+  "Weights, gates (0.55 / 0 / 0.5), levels (1.0-2.5 ATR, RR 1.5) and position management (BE 0.8R, no trail, time decay 120/60, 10 to 40, stale 25) MIRROR the vendor's CI-validated Playbook 2, the 1h intraday fade, minus its funding and open-interest thesis signals. Not invented.",
+  "Measured 2026-09-11 and again today: the mean-reversion signal family can be silent for a whole day (0 of 22 firing). No signal is required so a silent day blocks nothing by itself; the aggregate gate does. On such days this strategy qualifies nothing, which is correct.",
+  "Unbuildable and not claimed: the classic 80 percent rule needs the RETURN into value held for two brackets. TPO has no history and OHLC no intrabar sequence. This strategy reads location and room, not the re-entry event. The entry trigger ON_CANDLE_CLOSE supplies the only confirmation the platform can express.",
+  "Scope: CREATE only. No agent is bound, nothing is deployed, no funds allocated. Quota was 9 of 25 before this call."
+ ],
+ "coinSelection": {
+  "mode": "explicit",
+  "tickers": [
+   "DOGE",
+   "XRP",
+   "MOODENG",
+   "SOL",
+   "BTC",
+   "HYPE"
+  ]
+ },
+ "name": "OMEGA-TEST: TPO Rotation to POC",
+ "tagline": "Fade the edge of prior value back toward the prior point of control",
+ "description": "Inside the prior session's value area, price tends to rotate toward the prior point of control. Two required gates - inside prior value, and at least 0.25% of room to the prior POC - block anything else before the agent is billed. UP when the prior POC is above the close, DOWN when below. Prior-session columns only, so it is live all day. Routing weights and trade management mirror the vendor's validated 1h intraday fade playbook.",
+ "timeframe": "1h",
+ "sections": [
+  {
+   "kind": "custom",
+   "title": "TPO rotation to prior POC",
+   "benchmarkTicker": null,
+   "notes": "Positive spread means the first metric sits above the second.",
+   "columns": [
+    {
+     "metric": "PRIOR_TPO_VAL",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_POC",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "PRIOR_TPO_VAL"
+      }
+     ]
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  }
+ ],
+ "conditions": [
+  {
+   "conditionKey": "ROTATE_UP_TO_POC",
+   "name": "Inside prior value, prior POC above the close: rotate up",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "INSIDE_PRIOR_VALUE"
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoPOC_close_spread"
+      },
+      "op": "gte",
+      "value": 0.25
+     }
+    ]
+   },
+   "verdict": "UP",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "ROTATE_DOWN_TO_POC",
+   "name": "Inside prior value, prior POC below the close: rotate down",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "INSIDE_PRIOR_VALUE"
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoPOC_close_spread"
+      },
+      "op": "lte",
+      "value": -0.25
+     }
+    ]
+   },
+   "verdict": "DOWN",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "AT_PRIOR_POC",
+   "name": "Inside prior value but sitting on the prior POC: no room",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "INSIDE_PRIOR_VALUE"
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoPOC_close_spread"
+      },
+      "op": "between",
+      "low": -0.25,
+      "high": 0.25
+     }
+    ]
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "OUTSIDE_PRIOR_VALUE",
+   "name": "Close outside the prior value area: not a rotation setup",
+   "definition": {
+    "kind": "group",
+    "op": "NOT",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "INSIDE_PRIOR_VALUE"
+     }
+    ]
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "INSIDE_PRIOR_VALUE",
+   "name": "Close inside the prior session value area",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAL_close_spread"
+      },
+      "op": "lt",
+      "value": 0.0
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAH_close_spread"
+      },
+      "op": "gt",
+      "value": 0.0
+     }
+    ]
+   },
+   "verdict": null,
+   "required": true,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "ROOM_TO_POC",
+   "name": "At least 0.25% of room between the close and the prior POC",
+   "definition": {
+    "kind": "group",
+    "op": "ANY",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "ROTATE_UP_TO_POC"
+     },
+     {
+      "kind": "conditionRef",
+      "conditionKey": "ROTATE_DOWN_TO_POC"
+     }
+    ]
+   },
+   "verdict": null,
+   "required": true,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  }
+ ],
+ "entry": {
+  "trigger": "ON_CANDLE_CLOSE",
+  "confirmTf": "1h",
+  "closes": 1,
+  "bandAtrMultiple": 0.5,
+  "levelOffsetAtrMultiple": 0,
+  "validForBars": 4
+ },
+ "rules": [
+  {
+   "signalId": "rsi_oversold",
+   "allocation": 2,
+   "required": false,
+   "params": {
+    "threshold": 35
+   }
+  },
+  {
+   "signalId": "rsi_overbought",
+   "allocation": 2,
+   "required": false,
+   "params": {
+    "threshold": 65
+   }
+  },
+  {
+   "signalId": "bollinger_lower_touch",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "bollinger_upper_touch",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "sr_at_support",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "sr_at_resistance",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "cvd_bull_divergence",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "cvd_bear_divergence",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "bollinger_cci_oversold",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "bollinger_cci_overbought",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "stoch_oversold",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "stoch_overbought",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "mfi_oversold",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "mfi_overbought",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "trend_adx_ranging",
+   "allocation": 1,
+   "required": false
+  }
+ ],
+ "minAggregateScore": 0.55,
+ "minRequiredCount": 0,
+ "minAtrPct": 0.5,
+ "minStopLossAtrMultiple": 1.0,
+ "maxStopLossAtrMultiple": 2.5,
+ "minRiskRewardRatio": 1.5,
+ "breakEvenEnabled": true,
+ "breakEvenTriggerR": 0.8,
+ "trailingEnabled": false,
+ "timeDecayEnabled": true,
+ "timeDecayGracePeriodMinutes": 120,
+ "timeDecayIntervalMinutes": 60,
+ "timeDecayTightenPct": 10,
+ "timeDecayMaxTightenPct": 40,
+ "timeDecayStaleThresholdTpProgressPct": 25
+}

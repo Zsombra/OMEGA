@@ -84,8 +84,16 @@ A `requiredConditions` gate sits in the qualification ladder beside the aggregat
 `NOT_ENFORCED` only because **no condition on any strategy in this account carries
 `required: true`** (0 of 10 on both TPO strategies). So the "advisory" boilerplate is true of
 `required: false` conditions and false of `required: true` ones. For this project that is the
-missing piece: a TPO condition can *block* a trade, not merely inform the agent. Whether the gate
-actually blocks is unmeasured until a `required: true` condition is applied — a compile.
+missing piece: a TPO condition can *block* a trade, not merely inform the agent.
+
+**Measured 2026-09-12, `3d720de3` rev 3.** One required, verdict-null condition
+`TPO_HAS_DIRECTION` = `ANY(VALUE_ABOVE, VALUE_BELOW, VALUE_RISING_IN_BALANCE,
+VALUE_FALLING_IN_BALANCE)`. Qualification afterwards on eight coins: `requiredConditions` reads
+`CLEARED` (true 1/1) on XRP, DOGE, ZEC, SOL, LINK and `FAILING` with `failedKeys:
+["TPO_HAS_DIRECTION"]` on MOODENG, BTC, ETH; MOODENG and ETH carry `firstFailReason:
+REQUIRED_CONDITION_FALSE`. **It blocks.** It blocks `long` and `short` identically — the gate is
+direction-neutral, so it enforces that TPO has an opinion, not that the trade side agrees with it.
+Side-matching remains the agent's decision, informed by the verdict ladder.
 
 ## The pack's position on pre-checking, versus the preflight
 
