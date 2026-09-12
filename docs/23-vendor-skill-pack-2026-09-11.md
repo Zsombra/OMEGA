@@ -128,3 +128,11 @@ it uniquely catches; do not present a PASS as evidence the server will accept th
   No exec, spawn or file writes. The installer's scanners flagged it (Socket 4 alerts, Snyk
   medium); nothing in the source explains the flags beyond network and env access.
 - `AGENTS.md` also states "Wager spend $500 USD/day". Unmeasured.
+- **The `mcporter` CLI can vanish from the npx cache** (measured 2026-09-12, minutes after the
+  skills-pack install): `npx --no-install mcporter` refused with `missing packages
+  ["mcporter@0.13.12"]` while `~/.mcporter/credentials.json` was intact. npx keys its cache by the
+  literal spec string, so `mcporter@0.13.12` and bare `mcporter` are separate entries and every
+  repo script uses the bare one. Restore with `npx --yes mcporter --version` — **bare spec** —
+  then `--no-install` resolves again and `mcporter list battlegrid-anbu` authenticates (status ok,
+  115 tools). A `--yes mcporter@0.13.12` run prints the version but does **not** repopulate the
+  bare entry. The MCP connector was live throughout, despite a session banner saying otherwise.
