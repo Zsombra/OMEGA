@@ -265,3 +265,18 @@ session on the user's ask.
   first window with a real block of negative-funding hours, so the FUNDING-leg confound is now
   testable; **the test has not been run**. Next pull due ≤ **2026-09-12** (hard limit
   ≈ 2026-09-13T08:00Z).
+- **Run 6, 2026-09-12** (on the due date, ~30 h inside the hard limit; 16 calls
+  02:28:29–02:30:31Z through the `mcporter` CLI, restored minutes earlier after npx evicted its
+  cache entry — same tool, server and account, credential store untouched):
+  `repulls/2026-09-12/` + addendum. Integrity: 0 gaps/dupes, 33/100 overlap, **67 new 1h bars**
+  per coin; 3 bars restated, all SOL 4h, largest price move 1.91e-3, under tolerance. THE cell
+  cumulative: **n=300, 61.0% ±5.5, +15.7 bps** (POLICY=first 60.7% / +15.5). **This window:
+  n=90, 60.0% ±10.1, +6.4 bps** — both criteria passed. **Under reading (D): NOT triggered**; no
+  chain was active and none opens. SETTLED=6: cumulative 61.9% / +18.7 (n=294), window 63.1% /
+  +16.3 (n=84) — the settled window is FIRMER than the unsettled one, the reverse of run 4.
+  Majors n=37 67.6% / +16.0; BTC+ETH n=30 70.0% / +12.6; >75th all coins n=815 58.5% / +11.5.
+  CAKE 14/90 of the window's cell events (16%), 93/300 cumulative (31%); MET 23/90 with 8 hits,
+  so the window's alt edge is +2.3 on 73 and the majors carry the window (+23.8 on 17). Funding:
+  BTC **13/67 negative**, ETH **13/67**, SOL **26/67** — second consecutive negative-funding
+  window; **the confound test has not been run**. Next pull due ≤ **2026-09-15** (hard limit
+  ≈ 2026-09-16T05:00Z).
