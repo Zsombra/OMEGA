@@ -345,6 +345,8 @@ The MAEZTRO cron job and `bg_mcp.py` path are retired at phase 1 exit; the Windo
 
 ### 5.3 Manager MCP tools (what the bots see)
 
+> **Revised 2026-09-14 (Phase 1 plan).** Reads are BattleGrid's own read-only tools re-exposed by name when they are on the reviewed allowlist, declared `readOnlyHint: true` and present on the platform (85 of 115 that day); native tools are `manager_fleet_report`, `manager_platform_changes` and `manager_ledger`. The write tools listed below arrive with the executor in Phase 3. Hermes profiles get only the `mcp-battlegrid_manager` toolset plus non-shell toolsets.
+
 Reads: `fleet_overview`, `agent_detail`, `strategy_detail`, `positions`,
 `position_dossier`, `scan_coin`, `coin_qualification`, `market_read`, `policy_get`,
 `ledger_query`, `triage_pending`, `report_daily`.

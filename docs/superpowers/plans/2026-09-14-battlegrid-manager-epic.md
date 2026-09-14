@@ -64,7 +64,7 @@ P0 Foundations ──▶ P1 Commander ──▶ P2 Shadow sentinel ──▶ P3 
 | Phase | Plan file | Depends on | Exit gate (from spec §9) |
 |---|---|---|---|
 | 0 Foundations | `2026-09-14-battlegrid-manager-phase-0.md` (full) | — | inventory report reviewed by user; Windows task retired |
-| 1 Commander | `…-phase-1.md` (to write at P0 exit) | P0 | user converses with the bot and gets platform answers |
+| 1 Commander | `2026-09-14-battlegrid-manager-phase-1.md` (full) | P0 | user converses with the bot and gets platform answers |
 | 2 Shadow sentinel | `…-phase-2.md` | P1 | ≥ 7 days, ≥ 20 AMBER decisions reviewed, none vetoed |
 | 3 Guarded execution | `…-phase-3.md` | P2 | first live close verified through `get_position_audit_history` |
 | 4 Fleet autonomy | `…-phase-4.md` | P3 + OMEGA tagged | one full review → revise → deploy cycle logged |
@@ -106,7 +106,9 @@ Tasks (each fully specified in the phase-0 file):
 
 ---
 
-## Phase 1 — Commander (task list; full plan written at P0 exit)
+## Phase 1 — Commander (full plan: `2026-09-14-battlegrid-manager-phase-1.md`)
+
+Design change recorded 2026-09-14 while writing the full plan: instead of eight hand-written read tools, the `mcp` service re-exposes BattleGrid's own tools that are on a reviewed allowlist AND declared read-only AND present on the platform (85 of 115 on 2026-09-14), under their real names and schemas, plus three native tools (`manager_fleet_report`, `manager_platform_changes`, `manager_ledger`). The vendor skills' read steps then work unchanged, the exposed surface follows platform changes, and a tool that flips to writing disappears. The commander profile gets no shell, file, browser, code-execution, delegation or cron toolsets. All services share one Postgres rate limiter. The task table below is the original outline, superseded by the full plan.
 
 Goal: talk to a bot in Hermes desktop that answers from the platform through the manager.
 
