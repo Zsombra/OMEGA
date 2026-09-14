@@ -2947,7 +2947,7 @@ Then write `2026-09-14-battlegrid-manager-phase-1.md` from the epic's Phase 1 ta
 
 Executed inline in one session on `C:/Users/rafae/Documents/GitHub/battlegrid-manager`, branch
 `phase-0-foundations` (17 commits over an initial README commit on `main`). Result: all 17 tasks'
-code written, **80 tests passing**, image built, `postgres`, `api` and `watch` running in Docker,
+code written, **80 tests passing**, image built, `postgres`, `api` and `watch` running in Docker (18 commits),
 stop/start of a single service verified. Nothing has logged in to BattleGrid yet.
 
 ### Where the written plan was wrong, and what was done instead
@@ -2965,6 +2965,7 @@ stop/start of a single service verified. Nothing has logged in to BattleGrid yet
 | 9 | Fixtures recorded through the manager's session | Recorded read-only through the existing mcporter CLI, because the manager's login needs the user; `manager fixtures record` re-records after login |
 | 10 | 22 strategies in the fixture | 23, counted |
 | 11 | Every job scheduled inside the API | `api` keeps heartbeat and health; `snapshot`, `panel`, `watch` run as their own Compose services via `run <job>` (the user's Docker on/off requirement) |
+| 12 | `init_db` via plain `create_all` in every service | Measured in a throwaway Compose project: six concurrent calls on an empty Postgres gave 1 success and 5 errors. Now serialized with a transaction-scoped advisory lock: 6 of 6, twice. `scripts/check_init_race.py` reproduces it |
 
 Process notes: long shell heredocs failed to parse through the command wrapper, so files were
 written with the file tool. Task 10's fail-first run was skipped because its test and code were
@@ -2985,4 +2986,4 @@ recorded one `pack.refresh_recommended` event. (This worktree's copy was updated
 | Task 15 rate headroom | login | `measurements.md` section 4 |
 | Platform LLM cost per day | 7 days of snapshots | `measurements.md` section 4 |
 | Task 16: `--profile panel` for 24 h, then disable the Windows task | login, then the user (Windows setting) | runbook |
-| Independent code review of the branch | running | fixes committed before the exit gate |
+| Independent code review of the branch | done: no issue at the reviewer's confidence bar (it read every file; it could not run tests; 80 pass in this session) | — |
