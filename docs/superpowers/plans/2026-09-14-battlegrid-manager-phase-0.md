@@ -2939,3 +2939,50 @@ Register it in `manager/commands/__init__.py`. Add to `manager/api/app.py`:
 - `/api/platform/changes` shows a baseline surface and, after any deployment, a `contract.drift` event with the per-tool diff.
 
 Then write `2026-09-14-battlegrid-manager-phase-1.md` from the epic's Phase 1 table.
+
+
+---
+
+## Execution record (2026-09-14)
+
+Executed inline in one session on `C:/Users/rafae/Documents/GitHub/battlegrid-manager`, branch
+`phase-0-foundations` (17 commits over an initial README commit on `main`). Result: all 17 tasks'
+code written, **80 tests passing**, image built, `postgres`, `api` and `watch` running in Docker,
+stop/start of a single service verified. Nothing has logged in to BattleGrid yet.
+
+### Where the written plan was wrong, and what was done instead
+
+| # | Plan said | Measured / done |
+|---|---|---|
+| 1 | `httpx.AsyncClient`, `Tool.inputSchema`, `McpError` | `mcp` 2.1.1 uses `httpx2`; tools expose `input_schema`; JSON-RPC errors are `mcp.shared.exceptions.MCPError(code, message, data)`; `AuthorizationCodeResult` lives in `mcp.shared.auth`; pagination is `ListToolsResult.next_cursor` |
+| 2 | Background jobs open the MCP session on demand | Without saved tokens the client raises `AUTH` before any network call. The SDK performs dynamic client registration before it reaches the redirect handler, so an unguarded job would register a client on BattleGrid without the user |
+| 3 | Scope `mcp:read mcp:wager` | Phase 0 requests `mcp:read` only (`BG_OAUTH_SCOPE`); Phase 3 re-consents with `mcp:wager` as a deliberate gate |
+| 4 | Snapshot attached the Radar summary and position totals after flush | Those would never have been saved (in-place JSON mutation is not tracked). Assembled before the write; a fresh-session test guards it |
+| 5 | Panel request `category: CRYPTO`, ranked | Refused since at least 09:47Z ("resolved to no active coins") for CRYPTO and ALL, while ranked L1 and explicit tickers work; it rendered 36 coins at 09:05Z. The panel falls back to the last known cohort (or `PANEL_SEED_TICKERS`) as an explicit list, labels rows `explicit-fallback`, records `panel.fallback`. Cause not known |
+| 6 | `get_coin_metadata {"ticker": ...}` per coin | Both measurement tools take no arguments. No exchange minimum notional is exposed; bounds give 10 USD minimum allocation and trading equity (`docs/phase-0/measurements.md`) |
+| 7 | npm version via `npm view` subprocess | The container has no Node; the watch reads `registry.npmjs.org/@battlegrid%2Fmcp-server/latest`, injectable so tests never touch the network |
+| 8 | Watch diff always compares tools | An unreadable tool list (before login) is recorded as unreadable and never reported as removals; a build change under the same contract is drift (measured: `a0dbbdd5` → `f0b17e8f` under 56.1.0) |
+| 9 | Fixtures recorded through the manager's session | Recorded read-only through the existing mcporter CLI, because the manager's login needs the user; `manager fixtures record` re-records after login |
+| 10 | 22 strategies in the fixture | 23, counted |
+| 11 | Every job scheduled inside the API | `api` keeps heartbeat and health; `snapshot`, `panel`, `watch` run as their own Compose services via `run <job>` (the user's Docker on/off requirement) |
+
+Process notes: long shell heredocs failed to parse through the command wrapper, so files were
+written with the file tool. Task 10's fail-first run was skipped because its test and code were
+written in one step.
+
+### First live finding of the watch
+
+The vendor pack mounted into Docker (`OMEGA/.agents/skills/battlegrid` in the main checkout) is
+31.2.17, exported at contract 54.0.0, while the server runs 56.1.0 and npm has 31.2.22. The watch
+recorded one `pack.refresh_recommended` event. (This worktree's copy was updated to 31.2.22 today.)
+
+### Still open, and who acts
+
+| Step | Needs | Then |
+|---|---|---|
+| Task 6 steps 5–6: `docker compose exec api python -m manager auth login` | the user approves BattleGrid's consent page | record in `docs/phase-0/oauth.md`: granted scope, whether mcporter's session still works |
+| Start `inventory`; Task 14 live report | login | `docs/phase-0/inventory-report.md` for the exit-gate review |
+| Task 15 rate headroom | login | `measurements.md` section 4 |
+| Platform LLM cost per day | 7 days of snapshots | `measurements.md` section 4 |
+| Task 16: `--profile panel` for 24 h, then disable the Windows task | login, then the user (Windows setting) | runbook |
+| Independent code review of the branch | running | fixes committed before the exit gate |
