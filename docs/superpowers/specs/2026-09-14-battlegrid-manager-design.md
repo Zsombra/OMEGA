@@ -41,19 +41,32 @@ new repository `battlegrid-manager`; cadence = anchor-candle close + 5-minute sa
 
 ---
 
-## 1. What exists today (measured 2026-09-14, platform DOWN)
+## 1. What exists today (measured 2026-09-14)
 
-- **BattleGrid** returned HTTP 502 from nginx on the public `/mcp/version` endpoint during
-  this session. Live account state could not be verified. Last recorded state (2026-09-12):
-  three TPO strategies (`3d720de3`, `6c58dd38`, `430f9037`) each bound to its own agent,
-  all unassigned; `56c08ef6` + TPO Alpha kept as a read-only surface; wallet ≈ 53 USDC;
-  contract 54.1.0.
-- **MAEZTRO** (`C:/Users/rafae/Documents/HERMES/PROJECT/MAEZTRO`, a Hermes project):
-  five "Cycle-1" strategies and agents (`CTP/OSCW/VOLB/FUND/STRUCT Alpha`, platform LLM
-  `anthropic/claude-opus-4.6`). Its own files disagree on deployment: `ORIGINAL_GOAL.md`
-  says 20/20 Radar coins deployed; `HANDOFF_2026-09-06.md` says 0 deployed. **Unknown until
-  measured.** A Hermes cron job "BattleGrid Daily Report (UTC 00:00)" runs from this folder
-  via `bg_mcp.py` → `npx mcporter` (5–8 s per call).
+- **BattleGrid** returned HTTP 502 from nginx for the first part of the session, then came
+  back. **Live state, read 2026-09-14 (all read-only):** wallet **54.35 USDC**; agent slots
+  **9/24**; strategy quota **11/25**; `mcpWagerEnabled: true`; `llmAccess.allowed: true`;
+  contract 54.1.0. Open positions: **0**. Nine ACTIVE agents, **all on `z-ai/glm-5.3`**:
+  - OMEGA's TPO books: `3d720de3` rev 8 → PVM Alpha (1 closed trade, +0.0078); `6c58dd38`
+    rev 6 → ROT Alpha (0); `430f9037` rev 6 → BRK Alpha (0); `56c08ef6` rev 4 → TPO Alpha
+    (annotation-only, 0). None has a Radar policy or an Arena assignment.
+  - MAEZTRO's Cycle-1 fleet: CTP Alpha (`8d2d64df`, 0 trades), OSCW Alpha (`d6f512db`, 0),
+    VOLB Alpha (`9132a708`, 2 trades, avg −0.163), FUND Alpha (`c713d41d`, 0), STRUCT Alpha
+    (`824f4343`, **15 trades, 9W/6L, avg +0.133**, `last24hCostUsd` 0.024). Their trading
+    configs are the platform defaults: exposure 100 USD, drawdown 100, daily loss 50, 10
+    trades/day, presets 1/2/3 %.
+- **Radar is FULL: 20 of 20 coins deployed, all to the Cycle-1 fleet**, every policy at
+  revision 1 with one default slot at minConviction 0.5 and no conditions. CTP: BTC, ETH,
+  SOL, AVAX (1h). OSCW: LINK, UNI, JUP, LDO (15m). VOLB: PEPE, POPCAT, WIF, MOODENG (15m).
+  FUND: AAVE, CAKE, CRV, ENA (1h). STRUCT: XRP, SUI, HYPE, APT (1h). All 20 resolve
+  `SCANNING` with `qualificationBlock: AGGREGATE_BELOW_MIN`; `radarPaused: false`; fires
+  recorded on 09-05, 09-11, 09-12 and 09-13. This resolves the MAEZTRO contradiction: the
+  fleet was deployed after the 09-06 handoff. **Consequence:** no TPO book can be put on
+  Radar without freeing a Cycle-1 coin or sharing one through rule slots (§3.4).
+- **MAEZTRO** (`C:/Users/rafae/Documents/HERMES/PROJECT/MAEZTRO`, a Hermes project): the
+  five Cycle-1 strategies and agents above. A Hermes cron job "BattleGrid Daily Report
+  (UTC 00:00)" runs from this folder via `bg_mcp.py` → `npx mcporter` (5–8 s per call).
+  Its `DEPLOY_HANDOFF.md` says the agents run on Claude Opus 4.6; they measure as GLM-5.3.
 - **grid-commander** (`C:/Users/rafae/grid-commander`): Next.js/Postgres workbench,
   Dockerised, read-only MCP server, last touched 2026-08-11 against surface v17. Not reused
   (D9); its docs on positionManagement and report grammar remain reference material.
@@ -183,7 +196,7 @@ user-editable only.
 | `actions_per_day` (close / tighten / deploy / revise / agent-config) | 8 / 12 / 6 / 3 / 6 | ×0.5–×2 | guard |
 | `dossier_max_age_s` | 300 | 60–900 | evidence guard |
 | `min_notional_usd` | **measured in phase 0** | — | guard; sizing |
-| `platform_llm_budget_usd_per_day` (agents' own evaluations) | measured in phase 0 | — | guard on agent model changes |
+| `platform_llm_budget_usd_per_day` (agents' own evaluations) | measured in phase 0 (all agents on GLM-5.3 today) | — | guard on agent model changes |
 
 Platform-side limits are written with `update_intelligence_agent` so the platform refuses
 what the policy forbids even if the manager is down. The manager's guards are the second
@@ -225,13 +238,19 @@ in Hermes as "would have …"; nothing executes except RED mechanical actions.
 - **Authoring.** Thesis → OMEGA generate → validate + preflight offline → `compile` once
   → review approved plan → `apply`. Revisions to bound strategies check open positions
   first (propagation is live). Market read text stays purely technical (user rule).
-- **Deployment.** Radar per coin: `get_coin_metadata` → `preview_radar_resolution` →
-  `upsert_radar_deployment` with the revision just read; respects the 20-coin cap and
-  `radarPaused`. Arena deployment policies via `preview_deployment_resolution` →
+- **Deployment and the 20-slot allocation.** Radar per coin: `get_coin_metadata` →
+  `preview_radar_resolution` → `upsert_radar_deployment` with the revision just read;
+  respects `radarPaused`. The per-user cap is **20 coins and it is full today**, so Radar
+  is a scarce resource the manager allocates: a `radar_allocation` decision (daily review)
+  ranks (agent, coin) pairs by qualification proximity and realised performance, may
+  **undeploy** a coin (`enabled:false` keeps the slots; a full replacement drops them),
+  and may **share** a coin between agents with RULE slots (priority + regime/hours
+  conditions, at most one of each kind per slot) rather than one default slot per coin.
+  MAEZTRO chose no sharing; the manager may choose either, logged. Arena deployment policies via `preview_deployment_resolution` →
   `upsert_deployment_policy`. Manual Market Grid submissions are a **non-goal** (§8).
 - **Agent lifecycle.** Create only against a committed strategy; model from
-  `list_approved_models` (`modelId`); may re-model Cycle-1 agents off Claude Opus 4.6 per
-  the platform LLM budget (D12); archive underperformers per policy; never delete.
+  `list_approved_models` (`modelId`); may re-model any agent per the platform LLM budget (D12; all are on
+  GLM-5.3 today); archive underperformers per policy; never delete.
 
 ---
 
@@ -350,7 +369,7 @@ not committed.
 
 | Phase | Deliverable | Exit criterion |
 |---|---|---|
-| 0 Foundations | Repo, compose, Dockerfile, OAuth (DCR measured), platform client + rate limiter, inventory snapshots, audit ledger, panel logger in-process, **live inventory report** of the real roster incl. the Cycle-1 fleet, `min_notional_usd` and platform LLM cost measured | inventory report reviewed by user; Windows task retired |
+| 0 Foundations | Repo, compose, Dockerfile, OAuth (DCR measured), platform client + rate limiter, inventory snapshots, audit ledger, panel logger in-process, **live inventory report** (baseline snapshot of the 09-14 state in §1), `min_notional_usd` and platform LLM cost per evaluation measured | inventory report reviewed by user; Windows task retired |
 | 1 Commander | `commander` profile wired; read tools; skill; "scan X against book Y" works in chat; MAEZTRO cron retired | user converses with the bot and gets platform answers |
 | 2 Shadow sentinel | triage + dossiers + `sentinel` cron; decisions recorded as "would have" | ≥ 7 days, ≥ 20 AMBER decisions reviewed, none vetoed (D13) |
 | 3 Guarded execution | risk policy v1 synced to agent configs; closes/tightens live behind all four guards; kill switch | first live close verified through audit history |
@@ -362,11 +381,15 @@ not committed.
 
 ## 10. Phase-0 measurements (not assumptions)
 
-1. Live roster and deployment state of every agent (resolves the MAEZTRO contradiction).
+1. ~~Live roster and deployment state of every agent~~ **Measured 2026-09-14** (§1): 9
+   agents, 20/20 Radar coins on the Cycle-1 fleet, 0 open positions. Re-measure at phase 0
+   start; it is the baseline snapshot.
 2. Whether BattleGrid OAuth dynamic client registration issues an independent client for
    the backend without revoking mcporter's, and whether `mcp:wager` is granted to it.
 3. Exchange minimum notional per coin at the current wallet size.
-4. Platform LLM cost per evaluation for the Cycle-1 agents on Claude Opus 4.6.
+4. Platform LLM cost per evaluation: all agents measure as GLM-5.3 (not Claude Opus 4.6);
+   STRUCT Alpha shows `last24hCostUsd` 0.024. Measure the per-evaluation cost over a week.
 5. Whether `override_agent_protection` accepts a stop tightened toward entry on a
    position whose trailing is already armed (needed for `TIGHTEN`).
-6. The Claude Code connector's "needs authentication" banner: outage or expiry.
+6. ~~The Claude Code connector's "needs authentication" banner~~ Resolved: it was the
+   outage; the connector answered normally once the platform returned.
