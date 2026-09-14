@@ -38,7 +38,8 @@ Hermes 0.21.x (profiles, cron, `mcp_servers`, Desktop Plugin SDK), OMEGA (git de
 - No autonomous write before the shadow gate: **≥ 7 days AND ≥ 20 reviewed AMBER decisions,
   none the user would have vetoed** (D13). RED mechanical actions excepted.
 - Contract version at last acknowledged start must equal the live `/mcp/version`
-  `contractVersion` for any write (54.1.0 today).
+  `contractVersion` for any write (54.1.0 in the morning of 2026-09-14, **56.1.0 by 13:34**; the
+  tool count did not move — never use it as the freshness signal).
 - TPO evidence is `UNAVAILABLE` (never FALSE) during the first 60 min of each UTC day.
 - Market read text stays purely technical; cap 2000 chars; condition names cap 80 chars.
 - Radar cap is 20 coins per user and is **full today** (all Cycle-1). Radar slots are a
@@ -98,6 +99,9 @@ Tasks (each fully specified in the phase-0 file):
 14. Inventory report CLI (markdown) — the phase deliverable.
 15. Measurements: min notional, platform LLM cost per evaluation, rate-limit headroom.
 16. Runbook: keep-awake, Docker Desktop autostart, retire the Windows task.
+17. **Platform watch**: surface observation (version, build, per-tool schema hash, pack version,
+    npm latest), diff, `contract.drift` ledger event, writes-blocked flag + `contract ack`,
+    pack-refresh recommendation, `platform_changes` read for Hermes.
 
 ---
 
@@ -177,7 +181,7 @@ user's explicit ask) and tag OMEGA `v0.2.0`; pin it in `battlegrid-manager/pypro
 | OAuth DCR for a second client revokes mcporter's session | P0 task 6 measures it first; if it does, the manager becomes the single client and Hermes/MAEZTRO stop using mcporter (they were to be retired anyway) |
 | Minimum notional exceeds professional sizing at 54 USDC | P0 task 15 measures; the risk policy's sizing refuses orders below `min_notional_usd` and reports "fund more or fewer books" honestly |
 | PC sleep / Docker Desktop down | P0 task 16 runbook; heartbeat gap alert; SAFE mode on restart until a fresh snapshot |
-| Contract drift (54.1.0 → next) | health job compares `/mcp/version`; drift ⇒ writes disabled until `manager contract ack <version>` after preflight captures are refreshed |
+| Contract drift (happened today: 54.1.0 → 56.1.0 in hours, semantics changed, tool count unmoved) | P0 task 17 platform watch: version + build + per-tool schema hash + pack version every 10 min; drift ⇒ `contract.drift` event, writes disabled until `manager contract ack <version>`, pack refresh recommended, fixtures re-recorded; Hermes gets `platform_changes` to explain sudden errors |
 | Rate-limit bank exhaustion on a full-fleet triage | limiter at 2 r/s / bank 100; triage staggers reads; P0 task 15 measures headroom |
 | Free model quality | shadow gate + P6 harness; model switchable per job without code change |
 | Two OMEGA branches | P4 prerequisite: merge TPO branch to main (PR on explicit ask), tag `v0.2.0` |

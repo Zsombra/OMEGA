@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Stand up the `battlegrid-manager` repository and Docker stack with an OAuth-authenticated, rate-limited BattleGrid client, a database, inventory snapshots with diffs, an append-only audit ledger, the TPO panel logger in-process, a bearer-guarded REST API, and the **inventory report** of the real roster — plus the three phase-0 measurements recorded.
+**Goal:** Stand up the `battlegrid-manager` repository and Docker stack with an OAuth-authenticated, rate-limited BattleGrid client, a database, inventory snapshots with diffs, an append-only audit ledger, the TPO panel logger in-process, a bearer-guarded REST API, a **platform watch** that detects drift (the platform moved 54.1.0 → 56.1.0 on planning day), and the **inventory report** of the real roster — plus the three phase-0 measurements recorded.
 
 **Architecture:** One Python package `manager/` in a new repo, run by Docker Compose beside Postgres. `manager/platform/` is the only module that talks to BattleGrid (reads only in this phase). `manager/inventory/` turns five read tools into normalised rows and diffs. `manager/audit/` records everything. `manager/scheduler/` runs heartbeat/health/snapshot/panel jobs inside the FastAPI lifespan. No LLM anywhere. No BattleGrid write tool is called in this phase.
 
@@ -2552,6 +2552,281 @@ schtasks /Query /TN "OMEGA TPO panel" /FO LIST | Select-Object -First 5; schtask
 
 ---
 
+---
+
+### Task 17: Platform watch — self-monitoring for drift
+
+**Why this task exists (measured 2026-09-14):** the live contract went 54.1.0 → 56.1.0 between 09:00 and 13:34 local with **115 tools before and after**. Semantics changed (verdict resolution, direction binding, settled-bar rule, timeless session levels, ten new TPO metrics). A tool count is not a freshness signal; per-tool schema hashes and the version/build pair are.
+
+**Files:**
+- Modify: `manager/platform/client.py` (add `list_tools()`), `manager/scheduler/jobs.py` (add `job_watch`, register it), `manager/api/app.py` (add `GET /api/platform/changes`), `manager/settings.py` (add `pack_dir`), `compose.yaml` (mount the pack read-only), `tests/platform/fake.py` (add `tools`), `tests/scheduler/test_jobs.py` (five job ids)
+- Create: `manager/platform/watch.py`, `manager/commands/contract.py`, `tests/platform/test_watch.py`
+
+**Interfaces:**
+- Produces: `PlatformClient.list_tools() -> list[dict]` (each `{"name": str, "inputSchema": dict}`); `observe(client, pack_dir: str | None) -> dict` = `{"contractVersion", "buildSha", "tools": {name: sha256_of_canonical_inputSchema}, "pack": {"version": str|None, "contractVersion": str|None}, "npmLatest": str|None, "observedAt": iso}`; `diff_surfaces(old: dict | None, new: dict) -> dict` = `{"changed": bool, "version": [from, to], "build": [from, to], "tools_added": [...], "tools_removed": [...], "tools_changed": [...], "pack_stale": bool, "pack_update_available": bool}`; `job_watch(ctx)` every 600 s; system-state keys `"surface"` (last observation) and `"writes_blocked"` (`{"blocked": bool, "reason": str|None, "since": str|None, "acknowledged": str|None}`); CLI `python -m manager contract ack <version>` and `contract status`; `GET /api/platform/changes?limit=` (auth) returns the surface, the block flag, the last `contract.drift` events and the last `pack.refresh_recommended` events.
+
+- [ ] **Step 1: Failing tests**
+
+```python
+# tests/platform/test_watch.py
+from manager.audit.ledger import get_state, query
+from manager.db.session import init_db, make_engine, make_session_factory
+from manager.platform.watch import diff_surfaces, observe
+from manager.scheduler.jobs import JobContext, job_watch
+from tests.platform.fake import FakePlatform
+
+
+def surface(v, build, tools):
+    return {"contractVersion": v, "buildSha": build, "tools": tools, "pack": {"version": "31.2.22", "contractVersion": v},
+            "npmLatest": "31.2.22", "observedAt": "2026-09-14T06:34:00Z"}
+
+
+def test_diff_flags_version_and_schema_change_with_same_tool_count():
+    old = surface("54.1.0", "aaa", {"get_account_state": "h1", "compile_strategy_plan": "h2"})
+    new = surface("56.1.0", "bbb", {"get_account_state": "h1", "compile_strategy_plan": "h9"})
+    d = diff_surfaces(old, new)
+    assert d["changed"] and d["version"] == ["54.1.0", "56.1.0"] and d["tools_changed"] == ["compile_strategy_plan"]
+    assert d["tools_added"] == [] and d["tools_removed"] == []
+
+
+def test_diff_first_observation_is_not_drift():
+    assert diff_surfaces(None, surface("56.1.0", "bbb", {}))["changed"] is False
+
+
+def test_pack_stale_when_pack_contract_differs():
+    new = surface("56.1.0", "bbb", {})
+    new["pack"] = {"version": "31.2.17", "contractVersion": "54.0.0"}
+    d = diff_surfaces(new, new)
+    assert d["pack_stale"] is True and d["pack_update_available"] is True
+
+
+async def test_observe_hashes_schemas(settings):
+    fake = FakePlatform({}, tools=[{"name": "get_account_state", "inputSchema": {"type": "object", "properties": {}}}])
+    obs = await observe(fake, pack_dir=None)
+    assert obs["contractVersion"] == "54.1.0" and len(obs["tools"]["get_account_state"]) == 64
+
+
+async def test_job_watch_records_drift_and_blocks_writes(settings):
+    e = make_engine("sqlite+pysqlite:///:memory:"); init_db(e); Session = make_session_factory(e)
+    ctx = JobContext(client=FakePlatform({}, tools=[{"name": "get_account_state", "inputSchema": {"a": 1}}],
+                                         version={"name": "battlegrid", "contractVersion": "54.1.0", "buildSha": "aaa"}),
+                     session_factory=Session, settings=settings)
+    await job_watch(ctx)  # first observation: baseline, no drift
+    ctx.client = FakePlatform({}, tools=[{"name": "get_account_state", "inputSchema": {"a": 2}}],
+                              version={"name": "battlegrid", "contractVersion": "56.1.0", "buildSha": "bbb"})
+    await job_watch(ctx)  # second: drift
+    with Session() as s:
+        ev = query(s, kind="contract.drift")
+        assert len(ev) == 1 and ev[0].payload["version"] == ["54.1.0", "56.1.0"]
+        assert get_state(s, "writes_blocked", {})["blocked"] is True
+```
+
+Replace the test double so it can serve a tool list:
+
+```python
+# tests/platform/fake.py  (replace the class)
+from manager.platform.errors import Kind, PlatformError
+
+
+class FakePlatform:
+    def __init__(self, responses: dict, version: dict | None = None, tools: list[dict] | None = None):
+        self.responses, self.calls = responses, []
+        self._version = version or {"name": "battlegrid", "contractVersion": "54.1.0", "buildSha": "aaa"}
+        self._tools = tools or []
+
+    async def call(self, tool: str, args: dict | None = None) -> dict:
+        self.calls.append((tool, args or {}))
+        r = self.responses.get(tool)
+        if r is None:
+            raise PlatformError(Kind.TOOL_ERROR, f"no fixture for {tool}")
+        if isinstance(r, Exception):
+            raise r
+        return r
+
+    async def version(self) -> dict:
+        return self._version
+
+    async def list_tools(self) -> list[dict]:
+        return self._tools
+```
+
+- [ ] **Step 2: Run** `pytest tests/platform/test_watch.py -v` → FAIL.
+
+- [ ] **Step 3: Implement**
+
+Add to `PlatformClient` in `manager/platform/client.py`:
+
+```python
+    async def list_tools(self) -> list[dict]:
+        await self._bucket.acquire()
+        client = await self._session()
+        result = await client.list_tools()
+        out = []
+        for t in result.tools:
+            schema = getattr(t, "inputSchema", None) or getattr(t, "input_schema", None) or {}
+            out.append({"name": t.name, "inputSchema": schema if isinstance(schema, dict) else dict(schema)})
+        return out
+```
+
+```python
+# manager/platform/watch.py
+"""Self-monitoring: observe the platform surface, diff it, never trust a tool count."""
+from __future__ import annotations
+
+import hashlib
+import json
+import shutil
+import subprocess
+from datetime import UTC, datetime
+from pathlib import Path
+
+
+def _h(obj) -> str:
+    return hashlib.sha256(json.dumps(obj, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def read_pack(pack_dir: str | None) -> dict:
+    if not pack_dir:
+        return {"version": None, "contractVersion": None}
+    p = Path(pack_dir)
+    try:
+        version = json.loads((p / "package.json").read_text(encoding="utf-8")).get("version")
+    except (OSError, json.JSONDecodeError):
+        version = None
+    try:
+        contract = json.loads((p / "skills" / "EXPORT.json").read_text(encoding="utf-8")).get("contractVersion")
+    except (OSError, json.JSONDecodeError):
+        contract = None
+    return {"version": version, "contractVersion": contract}
+
+
+def npm_latest(package: str = "@battlegrid/mcp-server") -> str | None:
+    npm = shutil.which("npm")
+    if not npm:
+        return None
+    try:
+        out = subprocess.run([npm, "view", package, "version"], capture_output=True, text=True, timeout=30)
+        return out.stdout.strip() or None
+    except (subprocess.SubprocessError, OSError):
+        return None
+
+
+async def observe(client, pack_dir: str | None) -> dict:
+    version = await client.version()
+    tools = await client.list_tools()
+    return {
+        "contractVersion": version.get("contractVersion"), "buildSha": version.get("buildSha"),
+        "tools": {t["name"]: _h(t.get("inputSchema", {})) for t in tools},
+        "pack": read_pack(pack_dir), "npmLatest": npm_latest(),
+        "observedAt": datetime.now(UTC).isoformat(),
+    }
+
+
+def diff_surfaces(old: dict | None, new: dict) -> dict:
+    pack = new.get("pack", {})
+    d = {
+        "changed": False, "version": [None, new.get("contractVersion")], "build": [None, new.get("buildSha")],
+        "tools_added": [], "tools_removed": [], "tools_changed": [],
+        "pack_stale": bool(pack.get("contractVersion")) and pack.get("contractVersion") != new.get("contractVersion"),
+        "pack_update_available": bool(new.get("npmLatest")) and new.get("npmLatest") != pack.get("version"),
+    }
+    if old is None:
+        return d
+    ot, nt = old.get("tools", {}), new.get("tools", {})
+    d["version"] = [old.get("contractVersion"), new.get("contractVersion")]
+    d["build"] = [old.get("buildSha"), new.get("buildSha")]
+    d["tools_added"] = sorted(nt.keys() - ot.keys())
+    d["tools_removed"] = sorted(ot.keys() - nt.keys())
+    d["tools_changed"] = sorted(k for k in ot.keys() & nt.keys() if ot[k] != nt[k])
+    d["changed"] = (d["version"][0] != d["version"][1] or d["build"][0] != d["build"][1]
+                    or bool(d["tools_added"] or d["tools_removed"] or d["tools_changed"]))
+    return d
+```
+
+Add to `manager/scheduler/jobs.py` (import `diff_surfaces, observe` from `manager.platform.watch`):
+
+```python
+async def job_watch(ctx: JobContext) -> None:
+    try:
+        new = await observe(ctx.client, ctx.settings.pack_dir)
+    except PlatformError as e:
+        _beat(ctx, "watch", False, e.message)
+        return
+    with ctx.session_factory() as s:
+        old = get_state(s, "surface", {}) or None
+        d = diff_surfaces(old, new)
+        if d["changed"]:
+            record(s, "contract.drift", d | {"observedAt": new["observedAt"]})
+            set_state(s, "writes_blocked", {
+                "blocked": True, "since": new["observedAt"], "acknowledged": None,
+                "reason": f"contract {d['version'][0]} -> {d['version'][1]}, build {d['build'][0]} -> {d['build'][1]}"})
+        if d["pack_stale"] or d["pack_update_available"]:
+            record(s, "pack.refresh_recommended", {
+                "installed": new["pack"], "npmLatest": new["npmLatest"], "live": new["contractVersion"],
+                "command": "npx skills add playbattlegrid/battlegrid-mcp  (host action: the container has no node)"})
+        set_state(s, "surface", new)
+        s.commit()
+    _beat(ctx, "watch", True, f"{new['contractVersion']}@{(new.get('buildSha') or '')[:7]} tools={len(new['tools'])}")
+```
+
+In `build_scheduler` add `sched.add_job(job_watch, IntervalTrigger(seconds=600), id="watch", args=[ctx], max_instances=1, coalesce=True)` and change the scheduler test's expected ids to `{"heartbeat", "health", "snapshot", "panel", "watch"}`.
+
+In `manager/settings.py` add `pack_dir: str | None = Field(default=None, alias="PACK_DIR")`. In `compose.yaml` under the `manager` service add the volume `- C:/Users/rafae/Documents/GitHub/OMEGA/.agents/skills/battlegrid:/pack:ro` and the environment entry `PACK_DIR: /pack`.
+
+```python
+# manager/commands/contract.py
+import argparse
+from datetime import UTC, datetime
+
+from manager.audit.ledger import get_state, record, set_state
+from manager.cli import register
+from manager.db.session import make_engine, make_session_factory
+from manager.settings import get_settings
+
+
+def _add(p: argparse.ArgumentParser) -> None:
+    p.add_argument("action", choices=["ack", "status"])
+    p.add_argument("version", nargs="?")
+
+
+def _run(a: argparse.Namespace) -> int:
+    Session = make_session_factory(make_engine(get_settings().database_url))
+    with Session() as s:
+        surface = get_state(s, "surface", {})
+        blocked = get_state(s, "writes_blocked", {"blocked": False})
+        if a.action == "status":
+            print("live:", surface.get("contractVersion"), surface.get("buildSha"), "| writes_blocked:", blocked)
+            return 0
+        if a.version != surface.get("contractVersion"):
+            print(f"refusing: live contract is {surface.get('contractVersion')}, you acknowledged {a.version}")
+            return 2
+        record(s, "contract.acknowledged", {"version": a.version, "build": surface.get("buildSha")})
+        set_state(s, "writes_blocked", {"blocked": False, "reason": None, "since": None, "acknowledged": a.version})
+        set_state(s, "contract", {"acknowledged": a.version, "at": datetime.now(UTC).isoformat()})
+        s.commit()
+        print("acknowledged", a.version)
+    return 0
+
+
+register("contract", "Acknowledge a platform contract version (unblocks writes)", _add, _run)
+```
+
+Register it in `manager/commands/__init__.py`. Add to `manager/api/app.py`:
+
+```python
+    @app.get("/api/platform/changes", dependencies=[Depends(auth)])
+    def platform_changes(limit: int = Query(default=20, le=200)):
+        with ctx.session_factory() as s:
+            return {"surface": get_state(s, "surface", {}),
+                    "writes_blocked": get_state(s, "writes_blocked", {"blocked": False}),
+                    "drift": [{"at": e.at.isoformat(), **e.payload} for e in query(s, kind="contract.drift", limit=limit)],
+                    "pack": [{"at": e.at.isoformat(), **e.payload} for e in query(s, kind="pack.refresh_recommended", limit=5)]}
+```
+
+- [ ] **Step 4: Run** `pytest -q` → all green (scheduler test now expects five jobs).
+- [ ] **Step 5: Live check** — `docker compose up -d --build`, wait 11 minutes, then `curl -s -H "Authorization: Bearer $MANAGER_TOKEN" http://127.0.0.1:8790/api/platform/changes` shows `surface.contractVersion` equal to the live `/mcp/version` and a `tools` map with one entry per live tool (115 today; the number is reported, never asserted).
+- [ ] **Step 6: Commit** `"Platform watch: version, build, per-tool schema hashes, pack freshness; drift blocks writes until acknowledged"`.
+
 ## Exit gate for Phase 0
 
 - `docs/phase-0/inventory-report.md` reviewed by the user (the real roster: 9 agents, 20/20 Radar on Cycle-1, open positions, wallet).
@@ -2559,5 +2834,6 @@ schtasks /Query /TN "OMEGA TPO panel" /FO LIST | Select-Object -First 5; schtask
 - `docs/phase-0/measurements.md` filled (notional, LLM cost, rate headroom).
 - Windows task "OMEGA TPO panel" disabled; `panel.pulled` rows hourly for 24 h.
 - `pytest -q` green; `docker compose up -d` healthy; `/health` reports `safe:false` and the live contract.
+- `/api/platform/changes` shows a baseline surface and, after any deployment, a `contract.drift` event with the per-tool diff.
 
 Then write `2026-09-14-battlegrid-manager-phase-1.md` from the epic's Phase 1 table.

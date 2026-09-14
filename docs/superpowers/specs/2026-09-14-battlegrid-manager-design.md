@@ -46,7 +46,8 @@ new repository `battlegrid-manager`; cadence = anchor-candle close + 5-minute sa
 - **BattleGrid** returned HTTP 502 from nginx for the first part of the session, then came
   back. **Live state, read 2026-09-14 (all read-only):** wallet **54.35 USDC**; agent slots
   **9/24**; strategy quota **11/25**; `mcpWagerEnabled: true`; `llmAccess.allowed: true`;
-  contract 54.1.0. Open positions: **0**. Nine ACTIVE agents, **all on `z-ai/glm-5.3`**:
+  contract 54.1.0 at 09:00 local, **56.1.0 at 13:34 local the same day** (deployed during the
+  outage; 115 tools before and after, none added or removed). Open positions: **0**. Nine ACTIVE agents, **all on `z-ai/glm-5.3`**:
   - OMEGA's TPO books: `3d720de3` rev 8 → PVM Alpha (1 closed trade, +0.0078); `6c58dd38`
     rev 6 → ROT Alpha (0); `430f9037` rev 6 → BRK Alpha (0); `56c08ef6` rev 4 → TPO Alpha
     (annotation-only, 0). None has a Radar policy or an Arena assignment.
@@ -63,6 +64,14 @@ new repository `battlegrid-manager`; cadence = anchor-candle close + 5-minute sa
   recorded on 09-05, 09-11, 09-12 and 09-13. This resolves the MAEZTRO contradiction: the
   fleet was deployed after the 09-06 handoff. **Consequence:** no TPO book can be put on
   Radar without freeing a Cycle-1 coin or sharing one through rule slots (§3.4).
+- **Drift measured the same afternoon (54.1.0 → 56.1.0, vendor pack 31.2.17 → 31.2.22):**
+  verdict resolution changed from first-TRUE-wins to "distinct verdicts of the TRUE carriers;
+  disagreeing carriers resolve NEITHER"; the resolved verdict now binds entry direction (UP
+  admits longs only); verdict carriers must read a settled bar (`clock: "CLOSE"`) wherever
+  their closure allows; previous-session levels (`PDH/PDL/PDO`, floor pivots) are timeless and
+  an absolute timeframe is REFUSED at save; ten TPO metrics added (`NAKED_POC_ABOVE/BELOW`,
+  `PRIOR_TPO_IB_HIGH/LOW`, `PRIOR_TPO_VPOC/VVAH/VVAL`, `TPO_IB_HIGH/LOW`, `PDO`). The three
+  live TPO books were authored under the old resolution rule and must be re-measured.
 - **MAEZTRO** (`C:/Users/rafae/Documents/HERMES/PROJECT/MAEZTRO`, a Hermes project): the
   five Cycle-1 strategies and agents above. A Hermes cron job "BattleGrid Daily Report
   (UTC 00:00)" runs from this folder via `bg_mcp.py` → `npx mcporter` (5–8 s per call).
@@ -139,6 +148,7 @@ per contract version; the manager bumps deliberately.
 | Package | Responsibility | Interface | Depends on |
 |---|---|---|---|
 | `platform/` | One BattleGrid MCP session: OAuth 2.1 + PKCE, refresh, token volume; Streamable HTTP client; rate limiter ≤ 2 req/s sustained (measured cap 3/s, 120 bank); typed error envelopes; `/mcp/version` watch; SAFE mode on 5xx | `call(tool, args) → Result \| PlatformError`, `version()`, `health()` | httpx, mcp SDK |
+| `platform/watch` | **Self-monitoring.** Every 10 min records the surface: `contractVersion` + `buildSha`, the tool list, a hash of every tool's input schema, the installed vendor-pack version and its exported contract, and the newest pack on npm. Any change → ledger `contract.drift` with the per-tool diff, writes blocked until `manager contract ack <version>`, an alert to `commander`, and a recorded recommendation to refresh the pack (`npx skills add playbattlegrid/battlegrid-mcp`, a host action Hermes can run) and to re-record fixtures/preflight captures. Exposed to Hermes as `platform_changes` so an unexplained error can be answered with "the platform changed at HH:MM, here is what moved" | `observe()`, `diff_surfaces()`, `job_watch()` | platform, audit |
 | `inventory/` | Scheduled snapshots of account, agents, strategies, Radar policies, Arena policies, positions, pending approvals; row-level diffs; freshness stamps | `snapshot()`, `diff(since)`, `fleet()` | platform, db |
 | `risk/` | The policy document (versioned), meta-bounds, guard evaluation, platform-side limit sync (`update_intelligence_agent` tradingConfig, `halt/resume`) | `policy()`, `propose_revision()`, `guards(action, ctx) → Verdict`, `sync_platform_limits()` | inventory, actions |
 | `dossier/` | Evidence pack per open position (§4.2) | `build(position_id) → Dossier`, `hash` | platform, panel, tape |
@@ -344,6 +354,9 @@ not committed.
 
 - Platform 5xx / version-probe failure → SAFE mode: no writes, exponential backoff, one
   alert per episode, reads reported UNDETERMINED. Exactly today's situation.
+- **Platform drift** (version, build, tool schema, pack version) → `contract.drift` event, writes
+  blocked until acknowledged, pack refresh recommended, fixtures re-recorded; the tool count is
+  never used as the freshness signal (56.1.0 changed semantics with the count unmoved).
 - Rate limit `-32000` → honour `retryAfter`; never batch faster than 2 req/s.
 - CONFLICT on CAS → re-read, re-guard, re-propose; never bump-and-retry.
 - Tool result over the size cap → paginate/stream to file; never truncate silently.
@@ -369,7 +382,7 @@ not committed.
 
 | Phase | Deliverable | Exit criterion |
 |---|---|---|
-| 0 Foundations | Repo, compose, Dockerfile, OAuth (DCR measured), platform client + rate limiter, inventory snapshots, audit ledger, panel logger in-process, **live inventory report** (baseline snapshot of the 09-14 state in §1), `min_notional_usd` and platform LLM cost per evaluation measured | inventory report reviewed by user; Windows task retired |
+| 0 Foundations | Repo, compose, Dockerfile, OAuth (DCR measured), platform client + rate limiter, **platform watch (drift detection)**, inventory snapshots, audit ledger, panel logger in-process, **live inventory report** (baseline snapshot of the 09-14 state in §1), `min_notional_usd` and platform LLM cost per evaluation measured | inventory report reviewed by user; Windows task retired |
 | 1 Commander | `commander` profile wired; read tools; skill; "scan X against book Y" works in chat; MAEZTRO cron retired | user converses with the bot and gets platform answers |
 | 2 Shadow sentinel | triage + dossiers + `sentinel` cron; decisions recorded as "would have" | ≥ 7 days, ≥ 20 AMBER decisions reviewed, none vetoed (D13) |
 | 3 Guarded execution | risk policy v1 synced to agent configs; closes/tightens live behind all four guards; kill switch | first live close verified through audit history |
