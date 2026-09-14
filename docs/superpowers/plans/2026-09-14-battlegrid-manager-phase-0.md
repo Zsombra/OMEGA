@@ -19,7 +19,8 @@
 - Rate limit: token bucket **2.0 requests/second, capacity 100**. On JSON-RPC `-32000` honour
   `retryAfter` (seconds) then retry once.
 - Python `>=3.12`; Docker image `python:3.12-slim`; Postgres `16`.
-- Ports: manager API **8790**, OAuth callback listener **8791**, Postgres internal only.
+- **Every backend job is its own Compose service** (one image; `python -m manager serve` or `python -m manager run <job>`), so any part of the backend is switched on or off with `docker compose stop|start <service>` or a profile. Nothing backend runs on the host. Hermes and the desktop app are not backend and stay on the host.
+- Ports: manager API **8790**, OAuth callback listener **8791**, Hermes MCP **8792** (phase 1), Postgres internal only.
 - Token store path inside the container: `/data/tokens/battlegrid.json`, mode `0600`, on a
   named volume. Never logged, never in the image.
 - Contract version watched: `GET https://mcp.battlegrid.trade/mcp/version` →
@@ -36,7 +37,7 @@
 ```
 battlegrid-manager/
   pyproject.toml                 package + deps + pytest config
-  compose.yaml                   manager + postgres, volumes tokens/db/panel
+  compose.yaml                   postgres + one service per backend job (api, watch, inventory, panel)
   Dockerfile                     multi-stage, non-root, no secrets
   .env.example                   every variable the service reads
   .gitignore
@@ -64,7 +65,8 @@ battlegrid-manager/
   manager/panel/columns.py       COLUMNS, build_request, parse_table, to_number
   manager/panel/pull.py          pull_panel()
   manager/scheduler/__init__.py
-  manager/scheduler/jobs.py      build_scheduler(), job functions
+  manager/scheduler/jobs.py      job functions; build_scheduler() = heartbeat + health only
+  manager/commands/run.py        `run <job>`: one job as one process = one Compose service
   manager/api/__init__.py
   manager/api/app.py             FastAPI app + lifespan
   manager/api/auth.py            bearer dependency
@@ -194,26 +196,32 @@ def main(argv: list[str] | None = None) -> int:
 - [ ] **Step 4: Write `compose.yaml`, `Dockerfile`, `.env.example`, `.gitignore`**
 
 ```yaml
-# compose.yaml
+# compose.yaml — one image, one service per backend job. Every job is switched on/off from Docker:
+#   docker compose up -d                      core: postgres, api, watch, inventory
+#   docker compose --profile panel up -d      also the TPO panel logger
+#   docker compose stop watch                 switch one job off; `docker compose start watch` back on
+#   docker compose ps                         what is running right now
+# Later phases add: mcp (P1), triage [profile shadow] (P2), executor [profile live] (P3),
+# review [profile live] (P4), eval [profile eval] (P6).
+x-manager: &manager
+  build: .
+  image: battlegrid-manager:local
+  env_file: .env
+  environment:
+    DATABASE_URL: postgresql+psycopg://manager:${POSTGRES_PASSWORD}@postgres:5432/manager
+    TOKEN_PATH: /data/tokens/battlegrid.json
+    PANEL_DIR: /data/panel
+    PACK_DIR: /pack
+  volumes:
+    - tokens:/data/tokens
+    - panel:/data/panel
+    - ${PACK_HOST_DIR}:/pack:ro
+  depends_on:
+    postgres:
+      condition: service_healthy
+  restart: unless-stopped
+
 services:
-  manager:
-    build: .
-    env_file: .env
-    environment:
-      DATABASE_URL: postgresql+psycopg://manager:${POSTGRES_PASSWORD}@postgres:5432/manager
-      TOKEN_PATH: /data/tokens/battlegrid.json
-      PANEL_DIR: /data/panel
-    ports:
-      - "127.0.0.1:8790:8790"
-      - "127.0.0.1:8791:8791"
-    volumes:
-      - tokens:/data/tokens
-      - panel:/data/panel
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    command: ["python", "-m", "manager", "serve"]
   postgres:
     image: postgres:16-alpine
     environment:
@@ -228,6 +236,23 @@ services:
       timeout: 3s
       retries: 20
     restart: unless-stopped
+  api:          # REST API + OAuth callback; heartbeat and health run inside this process
+    <<: *manager
+    ports:
+      - "127.0.0.1:8790:8790"
+      - "127.0.0.1:8791:8791"
+    command: ["python", "-m", "manager", "serve"]
+  watch:        # platform watch: version, build, per-tool schema hashes, pack freshness
+    <<: *manager
+    command: ["python", "-m", "manager", "run", "watch", "--every", "600"]
+  inventory:    # account snapshots and diffs
+    <<: *manager
+    command: ["python", "-m", "manager", "run", "snapshot", "--every", "300"]
+  panel:        # TPO panel logger, hourly at :05 UTC; opt-in
+    <<: *manager
+    profiles: ["panel"]
+    command: ["python", "-m", "manager", "run", "panel", "--hourly-at", "5"]
+
 volumes:
   tokens:
   panel:
@@ -235,22 +260,17 @@ volumes:
 ```
 
 ```dockerfile
-# Dockerfile
-FROM python:3.12-slim AS base
+# Dockerfile — one image for every service; the service's `command` picks the job.
+FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 RUN addgroup --system manager && adduser --system --ingroup manager manager \
  && mkdir -p /data/tokens /data/panel && chown -R manager:manager /data
-
-FROM base AS deps
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir . 2>/dev/null || true
 COPY manager ./manager
 RUN pip install --no-cache-dir .
-
-FROM deps AS runtime
 USER manager
-EXPOSE 8790 8791
+EXPOSE 8790 8791 8792
 CMD ["python", "-m", "manager", "serve"]
 ```
 
@@ -264,6 +284,8 @@ OAUTH_REDIRECT_URI=http://127.0.0.1:8791/callback
 RATE_LIMIT_RPS=2.0
 RATE_LIMIT_BURST=100
 LOG_LEVEL=INFO
+# Host folder of the vendor skill pack, mounted read-only for the platform watch
+PACK_HOST_DIR=C:/Users/rafae/Documents/GitHub/OMEGA/.agents/skills/battlegrid
 ```
 
 ```gitignore
@@ -311,9 +333,9 @@ Expected: `2 passed`.
 - [ ] **Step 7: Validate Compose and build the image**
 
 ```bash
-cp .env.example .env && docker compose config >/dev/null && docker compose build
+cp .env.example .env && docker compose config --services && docker compose --profile panel config --services && docker compose build
 ```
-Expected: exit 0, image built.
+Expected: the first list is `postgres api watch inventory`, the second adds `panel`; the image builds. (Services other than `postgres` fail to start until later tasks add `serve` and `run`; that is expected.)
 
 - [ ] **Step 8: Commit**
 
@@ -1927,13 +1949,13 @@ Register in `manager/commands/__init__.py`.
 
 ---
 
-### Task 12: Scheduler
+### Task 12: Jobs as processes (API scheduler + `run` for every other job)
 
 **Files:**
-- Create: `manager/scheduler/__init__.py`, `manager/scheduler/jobs.py`, `tests/scheduler/test_jobs.py`
+- Create: `manager/scheduler/__init__.py`, `manager/scheduler/jobs.py`, `manager/commands/run.py`, `tests/scheduler/test_jobs.py`
 
 **Interfaces:**
-- Produces: `async job_heartbeat(ctx)`, `async job_health(ctx)` (calls `client.version()`; on `PlatformError` sets `safe={"safe": True, "reason": ..., "since": ...}` and records `safe.enter`; on success clears it and records `safe.exit` if it was set), `async job_snapshot(ctx)`, `async job_panel(ctx)`; `build_scheduler(ctx) -> AsyncIOScheduler` with jobs: heartbeat every 60 s, health every 60 s, snapshot every 300 s, panel cron `minute=5` (UTC). `ctx` is a `JobContext(client, session_factory, settings)` dataclass.
+- Produces: `async job_heartbeat(ctx)`, `async job_health(ctx)` (calls `client.version()`; on `PlatformError` sets `safe={"safe": True, "reason": ..., "since": ...}` and records `safe.enter`; on success clears it and records `safe.exit` if it was set), `async job_snapshot(ctx)`, `async job_panel(ctx)`; `build_scheduler(ctx) -> AsyncIOScheduler` with ONLY heartbeat and health (60 s each), for the `api` process; `seconds_until_hourly(minute: int, now: datetime | None = None) -> float`; CLI `python -m manager run <job> (--every N | --hourly-at M) [--once]` runs one job as its own process. The Compose services `inventory` (`run snapshot --every 300`) and `panel` (`run panel --hourly-at 5`) from Task 1 use it, so each job is switched on or off from Docker. `ctx` is a `JobContext(client, session_factory, settings)` dataclass.
 
 - [ ] **Step 1: Failing tests**
 
@@ -1978,9 +2000,20 @@ async def test_health_enters_and_exits_safe(settings):
         assert get_state(s, "safe", {})["safe"] is False
 
 
-def test_scheduler_has_four_jobs(settings):
+def test_scheduler_has_only_the_api_jobs(settings):
     sched = build_scheduler(ctx(FakePlatform({}), settings))
-    assert {j.id for j in sched.get_jobs()} == {"heartbeat", "health", "snapshot", "panel"}
+    assert {j.id for j in sched.get_jobs()} == {"heartbeat", "health"}
+
+
+def test_seconds_until_hourly():
+    from datetime import UTC, datetime
+
+    from manager.commands.run import seconds_until_hourly
+
+    now = datetime(2026, 9, 14, 6, 20, tzinfo=UTC)
+    assert seconds_until_hourly(5, now) == 45 * 60
+    assert seconds_until_hourly(30, now) == 10 * 60
+    assert seconds_until_hourly(20, now) == 60 * 60
 ```
 
 - [ ] **Step 2: Run** → FAIL.
@@ -2000,7 +2033,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from sqlalchemy.orm import sessionmaker
 
@@ -2068,16 +2100,85 @@ async def job_panel(ctx: JobContext) -> None:
 
 
 def build_scheduler(ctx: JobContext) -> AsyncIOScheduler:
+    """Only the jobs the api process itself needs. Every other job is its own Compose service."""
     sched = AsyncIOScheduler(timezone="UTC")
     sched.add_job(job_heartbeat, IntervalTrigger(seconds=60), id="heartbeat", args=[ctx], max_instances=1)
     sched.add_job(job_health, IntervalTrigger(seconds=60), id="health", args=[ctx], max_instances=1)
-    sched.add_job(job_snapshot, IntervalTrigger(seconds=300), id="snapshot", args=[ctx], max_instances=1, coalesce=True)
-    sched.add_job(job_panel, CronTrigger(minute=5, timezone="UTC"), id="panel", args=[ctx], max_instances=1, coalesce=True, misfire_grace_time=600)
     return sched
 ```
 
-- [ ] **Step 4: Run** → PASS.
-- [ ] **Step 5: Commit** `"Scheduler: heartbeat, health with SAFE mode, snapshot, hourly panel"`.
+```python
+# manager/commands/run.py — one job, one process, one Compose service. Switch it off from Docker.
+from __future__ import annotations
+
+import argparse
+import asyncio
+import logging
+import time
+from datetime import UTC, datetime, timedelta
+
+from manager.cli import register
+from manager.db.session import init_db, make_engine, make_session_factory
+from manager.platform.client import PlatformClient
+from manager.platform.ratelimit import TokenBucket
+from manager.platform.tokens import FileTokenStorage
+from manager.scheduler.jobs import JobContext, job_panel, job_snapshot
+from manager.settings import get_settings
+
+log = logging.getLogger(__name__)
+JOBS = {"snapshot": job_snapshot, "panel": job_panel}  # Task 17 adds "watch"
+
+
+def seconds_until_hourly(minute: int, now: datetime | None = None) -> float:
+    now = now or datetime.now(UTC)
+    target = now.replace(minute=minute, second=0, microsecond=0)
+    if target <= now:
+        target += timedelta(hours=1)
+    return (target - now).total_seconds()
+
+
+def _add(p: argparse.ArgumentParser) -> None:
+    p.add_argument("job", choices=sorted(JOBS))
+    when = p.add_mutually_exclusive_group(required=True)
+    when.add_argument("--every", type=int, help="seconds between runs; the first run is immediate")
+    when.add_argument("--hourly-at", type=int, help="minute past every hour, UTC")
+    p.add_argument("--once", action="store_true", help="run one time and exit")
+
+
+def _run(a: argparse.Namespace) -> int:
+    s = get_settings()
+    engine = make_engine(s.database_url)
+    init_db(engine)
+    client = PlatformClient(s, FileTokenStorage(s.token_path), TokenBucket(s.rate_limit_rps, s.rate_limit_burst))
+    ctx = JobContext(client=client, session_factory=make_session_factory(engine), settings=s)
+    job = JOBS[a.job]
+
+    async def loop() -> int:
+        try:
+            while True:
+                if a.hourly_at is not None and not a.once:
+                    await asyncio.sleep(seconds_until_hourly(a.hourly_at))
+                started = time.monotonic()
+                try:
+                    await job(ctx)
+                except Exception:  # noqa: BLE001 - one failed run is logged; the next tick retries
+                    log.exception("job %s failed", a.job)
+                if a.once:
+                    return 0
+                if a.every is not None:
+                    await asyncio.sleep(max(1.0, a.every - (time.monotonic() - started)))
+        finally:
+            await client.aclose()
+
+    return asyncio.run(loop())
+
+
+register("run", "Run one background job as its own process (one Compose service each)", _add, _run)
+```
+Register it: add `from manager.commands import run  # noqa: F401` to `manager/commands/__init__.py`.
+
+- [ ] **Step 4: Run** → PASS. Then `docker compose up -d --build && docker compose ps` lists `postgres`, `api`, `watch`, `inventory` running; `docker compose stop inventory && docker compose ps` shows only `inventory` stopped; `docker compose start inventory` brings it back.
+- [ ] **Step 5: Commit** `"Jobs as processes: api keeps heartbeat and health; snapshot and panel run as their own Compose services"`.
 
 ---
 
@@ -2087,7 +2188,7 @@ def build_scheduler(ctx: JobContext) -> AsyncIOScheduler:
 - Create: `manager/api/__init__.py`, `manager/api/auth.py`, `manager/api/app.py`, `manager/commands/serve.py`, `tests/api/test_app.py`
 
 **Interfaces:**
-- Produces: `create_app(ctx: JobContext | None = None) -> FastAPI`; routes `GET /health` (no auth: `{"ok": true, "safe": bool, "contract": str|null, "last_heartbeat": str|null}`), `GET /api/inventory/latest` (auth: snapshot id, taken_at, reads status map, counts), `GET /api/inventory/report` (auth: markdown from Task 14), `GET /api/ledger?kind=&limit=` (auth). Bearer = `Authorization: Bearer <MANAGER_TOKEN>`. `python -m manager serve` runs uvicorn on `0.0.0.0:8790` with the scheduler started in lifespan.
+- Produces: `create_app(ctx: JobContext | None = None) -> FastAPI`; routes `GET /health` (no auth: `{"ok": true, "safe": bool, "contract": str|null, "last_heartbeat": str|null}`), `GET /api/inventory/latest` (auth: snapshot id, taken_at, reads status map, counts), `GET /api/inventory/report` (auth: markdown from Task 14), `GET /api/ledger?kind=&limit=` (auth). Bearer = `Authorization: Bearer <MANAGER_TOKEN>`. `python -m manager serve` runs uvicorn on `0.0.0.0:8790` with only heartbeat and health in its lifespan; every other job is a separate Compose service (Task 12).
 
 - [ ] **Step 1: Failing tests**
 
@@ -2559,7 +2660,7 @@ schtasks /Query /TN "OMEGA TPO panel" /FO LIST | Select-Object -First 5; schtask
 **Why this task exists (measured 2026-09-14):** the live contract went 54.1.0 → 56.1.0 between 09:00 and 13:34 local with **115 tools before and after**. Semantics changed (verdict resolution, direction binding, settled-bar rule, timeless session levels, ten new TPO metrics). A tool count is not a freshness signal; per-tool schema hashes and the version/build pair are.
 
 **Files:**
-- Modify: `manager/platform/client.py` (add `list_tools()`), `manager/scheduler/jobs.py` (add `job_watch`, register it), `manager/api/app.py` (add `GET /api/platform/changes`), `manager/settings.py` (add `pack_dir`), `compose.yaml` (mount the pack read-only), `tests/platform/fake.py` (add `tools`), `tests/scheduler/test_jobs.py` (five job ids)
+- Modify: `manager/platform/client.py` (add `list_tools()`), `manager/scheduler/jobs.py` (add `job_watch`), `manager/commands/run.py` (add `watch` to `JOBS`), `manager/api/app.py` (add `GET /api/platform/changes`), `manager/settings.py` (add `pack_dir`), `tests/platform/fake.py` (add `tools`)
 - Create: `manager/platform/watch.py`, `manager/commands/contract.py`, `tests/platform/test_watch.py`
 
 **Interfaces:**
@@ -2769,9 +2870,9 @@ async def job_watch(ctx: JobContext) -> None:
     _beat(ctx, "watch", True, f"{new['contractVersion']}@{(new.get('buildSha') or '')[:7]} tools={len(new['tools'])}")
 ```
 
-In `build_scheduler` add `sched.add_job(job_watch, IntervalTrigger(seconds=600), id="watch", args=[ctx], max_instances=1, coalesce=True)` and change the scheduler test's expected ids to `{"heartbeat", "health", "snapshot", "panel", "watch"}`.
+Register it as a process: in `manager/commands/run.py` import `job_watch` and add `"watch": job_watch` to `JOBS`. The `watch` service from Task 1 (`run watch --every 600`) runs it; `docker compose stop watch` switches it off.
 
-In `manager/settings.py` add `pack_dir: str | None = Field(default=None, alias="PACK_DIR")`. In `compose.yaml` under the `manager` service add the volume `- C:/Users/rafae/Documents/GitHub/OMEGA/.agents/skills/battlegrid:/pack:ro` and the environment entry `PACK_DIR: /pack`.
+In `manager/settings.py` add `pack_dir: str | None = Field(default=None, alias="PACK_DIR")`. Task 1's `compose.yaml` already mounts the pack read-only at `/pack` (from `PACK_HOST_DIR`) and sets `PACK_DIR`.
 
 ```python
 # manager/commands/contract.py
@@ -2823,8 +2924,8 @@ Register it in `manager/commands/__init__.py`. Add to `manager/api/app.py`:
                     "pack": [{"at": e.at.isoformat(), **e.payload} for e in query(s, kind="pack.refresh_recommended", limit=5)]}
 ```
 
-- [ ] **Step 4: Run** `pytest -q` → all green (scheduler test now expects five jobs).
-- [ ] **Step 5: Live check** — `docker compose up -d --build`, wait 11 minutes, then `curl -s -H "Authorization: Bearer $MANAGER_TOKEN" http://127.0.0.1:8790/api/platform/changes` shows `surface.contractVersion` equal to the live `/mcp/version` and a `tools` map with one entry per live tool (115 today; the number is reported, never asserted).
+- [ ] **Step 4: Run** `pytest -q` → all green.
+- [ ] **Step 5: Live check** — `docker compose up -d --build` (the `watch` service observes once at start), then `curl -s -H "Authorization: Bearer $MANAGER_TOKEN" http://127.0.0.1:8790/api/platform/changes` shows `surface.contractVersion` equal to the live `/mcp/version` and a `tools` map with one entry per live tool (115 today; the number is reported, never asserted).
 - [ ] **Step 6: Commit** `"Platform watch: version, build, per-tool schema hashes, pack freshness; drift blocks writes until acknowledged"`.
 
 ## Exit gate for Phase 0
@@ -2834,6 +2935,7 @@ Register it in `manager/commands/__init__.py`. Add to `manager/api/app.py`:
 - `docs/phase-0/measurements.md` filled (notional, LLM cost, rate headroom).
 - Windows task "OMEGA TPO panel" disabled; `panel.pulled` rows hourly for 24 h.
 - `pytest -q` green; `docker compose up -d` healthy; `/health` reports `safe:false` and the live contract.
+- `docker compose ps` lists `postgres`, `api`, `watch`, `inventory` (and `panel` under its profile), and `docker compose stop <service>` stops exactly that job and nothing else.
 - `/api/platform/changes` shows a baseline surface and, after any deployment, a `contract.drift` event with the per-tool diff.
 
 Then write `2026-09-14-battlegrid-manager-phase-1.md` from the epic's Phase 1 table.

@@ -101,7 +101,7 @@ new repository `battlegrid-manager`; cadence = anchor-candle close + 5-minute sa
 ```
 Hermes desktop (host, Windows)                Docker Compose (host, this PC)
 ┌────────────────────────────────┐            ┌──────────────────────────────────────┐
-│ commander profile  (chat)      │ MCP/HTTP   │ manager    FastAPI + MCP + scheduler │
+│ commander profile  (chat)      │ MCP/HTTP   │ one image, one service per job       │
 │ sentinel  profile  (cron only) │───────────▶│   platform/   BattleGrid client      │──▶ mcp.battlegrid.trade
 │ desktop plugin     (phase 5)   │ REST       │   inventory/  fleet snapshots + diffs│──▶ api.hyperliquid.xyz (read)
 └────────────────────────────────┘            │   risk/       policy + guards        │
@@ -124,6 +124,16 @@ snapshots plus pass-through).
 **Rule 3 — unreadable is not empty.** Any failed read is reported as UNDETERMINED with the
 error; never as an absence.
 
+**Rule 4 — every backend job is a Docker service** (user requirement, 2026-09-14). One image;
+each job is its own Compose service, switched on or off with `docker compose stop|start <service>`
+or a profile (§2.4). Nothing backend runs on the host. Hermes and the desktop app are not
+backend and stay on the host.
+
+**Rule 5 — the platform moves; watch it.** Contract 54.1.0 became 56.1.0 on planning day with
+the tool count unchanged. The `watch` service records version, build, a hash of every tool's
+input schema and the skill-pack version every 10 minutes; any change blocks writes until
+acknowledged. A tool count is never a freshness signal.
+
 ### 2.1 Repository
 
 New repository `battlegrid-manager` (location chosen at phase 0; sibling of OMEGA under
@@ -131,7 +141,7 @@ New repository `battlegrid-manager` (location chosen at phase 0; sibling of OMEG
 
 ```
 battlegrid-manager/
-  compose.yaml            manager + postgres; volumes for tokens, db, panel data
+  compose.yaml            postgres + one service per job (§2.4); volumes for tokens, db, panel
   Dockerfile              multi-stage; runtime image carries no secrets
   manager/                the service (packages below)
   hermes/                 profile templates, skill, cron job specs, plugin package
@@ -158,7 +168,25 @@ per contract version; the manager bumps deliberately.
 | `panel/` | The OMEGA TPO panel logger (`scripts/tpo_panel_pull.py`) moved in-process, hourly at :05 UTC | `latest(coin)`, `history(coin, n)` | platform, db |
 | `tape/` | Hyperliquid public reads: candles, funding, OI (read-only, no key) | `candles(coin, tf, n)`, `funding(coin)` | httpx |
 | `mcp/` | The tools Hermes sees (§5.3); REST twins for the plugin | Streamable HTTP MCP at `/mcp`; REST at `/api` | all above |
-| `scheduler/` | APScheduler: triage cadence, snapshots, panel, daily review, keep-alive | jobs table | all above |
+| `scheduler/` + `commands/run` | Job functions. The `api` process keeps only heartbeat and health; every other job runs as its own Compose service via `python -m manager run <job>` | one service per job (§2.4) | all above |
+
+### 2.4 Docker services (every backend job on/off from Docker)
+
+| Service | Phase | Profile | What it runs | Off means |
+|---|---|---|---|---|
+| `postgres` | 0 | core | database | everything below stops working |
+| `api` | 0 | core | REST (8790), OAuth callback (8791), heartbeat, health | no REST, no plugin data, no health |
+| `watch` | 0 | core | platform watch every 10 min | drift goes undetected |
+| `inventory` | 0 | core | snapshots every 5 min | reads go stale |
+| `panel` | 0 | `panel` | TPO panel hourly at :05 | no panel rows |
+| `mcp` | 1 | core | Hermes MCP tools (8792) | Hermes loses the manager |
+| `triage` | 2 | `shadow` | anchor-close + 5-min triage, dossiers | no AMBER decisions requested |
+| `executor` | 3 | `live` | the only BattleGrid write path | **no write can happen** |
+| `review` | 4 | `live` | daily fleet review | no authoring or deployment proposals |
+| `eval` | 6 | `eval` | model replay harness, on demand | — |
+
+`docker compose up -d` starts the core; `--profile shadow` adds triage; `--profile live` adds
+executor and review. `docker compose stop <service>` switches one job off; `start` resumes it.
 
 ### 2.3 Data model (Postgres)
 
@@ -185,6 +213,9 @@ All timestamps UTC. Nothing is deleted; supersession is a new row.
    strategy revision that propagates.
 4. **Kill switch.** `PAUSED` flag (db row, settable from Hermes or plugin): all actions
    become propose-only; RED mechanical actions still execute (they only reduce risk).
+   A second switch sits at the Docker level: every BattleGrid write runs only inside the
+   `executor` service, so `docker compose stop executor` makes a write impossible whatever
+   any flag says.
 
 ### 3.2 Self-governing risk policy
 
@@ -297,7 +328,7 @@ reads it — the model never learns an option the guards would refuse), `triage_
 | `sentinel` | Cron only. Triage decisions, daily review, daily report | per-job pins (`hermes cron edit --model`) | `battlegrid-manager` skill | same |
 
 Each profile is its own Hermes home (memory isolation per Hermes docs). Both get
-`mcp_servers.battlegrid_manager: {url: http://127.0.0.1:8790/mcp, headers:
+`mcp_servers.battlegrid_manager: {url: http://127.0.0.1:8792/mcp, headers:
 {Authorization: "Bearer ${MANAGER_TOKEN}"}, trust: full, supports_parallel_tool_calls: false}`.
 
 ### 5.2 Cron jobs (sentinel)
