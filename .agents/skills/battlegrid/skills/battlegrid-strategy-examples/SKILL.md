@@ -76,11 +76,13 @@ column as a TRIGGER inside a carrier, and pair it with a persistent state — a 
 `MAalign` — for regime. A condition that treats an event column as a standing state is unresolved on
 nearly every bar, which is a gate that never gates.
 
-**`PDH` and `PDL` are anchored to `1d`.** They are catalogued price levels, so `dist_PDH gte 0`
-composes directly — but bind them `{abs: '1d'}`, which is the only reference the save path accepts on
-them, and read them from any anchor that way. (`distance` still rejects an `offset`, and a clause
-still compares a column against a literal; neither of those shapes is what a previous-day level
-needed.)
+**The previous-session levels are TIMELESS.** `PDH`, `PDL`, `PDO` and the seven floor pivots
+(`pivotP`, `pivotR1`–`R3`, `pivotS1`–`S3`) read the session profile, not a candle rung, so they take
+no timeframe reference at all: bind them `{rel: 'anchor'}` — the default — and they serve the same
+previous UTC session from any anchor. An absolute reference is REFUSED at save, including `1d`,
+because there is no rung for one to select. They are catalogued price levels, so `dist_PDH gte 0`
+composes directly. (`distance` still rejects an `offset`, and a clause still compares a column
+against a literal; neither of those shapes is what a previous-session level needed.)
 
 ## Conditions
 
@@ -89,10 +91,27 @@ required, no defaults. Clauses: numeric/rank headers take `lt|lte|gte|gt|between
 classification/direction headers take `is|in` with the served vocabulary. Groups:
 `ALL | ANY | NOT | N_OF` (with `n`), depth ≤ 2. `conditionRef` composes named conditions (no
 cycles; forward refs legal). `sectionKey: null` is sugar for a report-unique header only.
-Verdicts: first TRUE carrier **in declaration order** decides UP/DOWN/NEITHER — order carriers
-most-specific first; building blocks carry `null`. `required: true` = FALSE blocks compose-trade
-before billing. Evaluation is three-valued: UNRESOLVED never collapses to FALSE; forming-bar
-reads are provisional.
+Verdicts: resolution is taken over the DISTINCT verdicts of the carriers that read TRUE. One
+distinct verdict decides, and the first carrier in declaration order carrying it is named as the
+decider — so order breaks ties between carriers that AGREE. Carriers that DISAGREE resolve
+`NEITHER` and stand the coin aside; declaration order never picks a side between them. Building
+blocks carry `null`.
+
+**Two things block a trade, not one.** `required: true` = a FALSE reading blocks compose-trade
+before billing. And the RESOLVED verdict binds entry DIRECTION: `UP` admits long setups only,
+`DOWN` short only, and `NEITHER`/`UNRESOLVED` admit none — the refused side is absent from the
+setups block and from the `decide_trade` contract, not merely discouraged in them. A strategy that
+declares no verdict-carrying condition resolves `null` and constrains nothing.
+
+A verdict carrier must read a SETTLED bar wherever one is available to it — `clock: "CLOSE"`
+whenever every column in its CLOSURE accepts a closed frame. The closure is what it reads directly
+plus everything reached through `conditionRef`, transitively: a referenced condition contributes what
+IT reads, never the clock it happens to declare, so moving a clause into a building block and leaving
+that block `LIVE` does not make a settled bar unavailable to the carrier. Where no closed frame moves
+some operand in the closure (a published regime label, an open-interest regime, a published rolling
+change), `LIVE` stays legal at any depth: there is no settled bar to take.
+
+Evaluation is three-valued: UNRESOLVED never collapses to FALSE; forming-bar reads are provisional.
 
 **The evidence clock.** `clock: "LIVE"` reads the forming bar; `clock: "CLOSE"` reads settled
 bars, and `closes` is how many consecutive closed bars must read TRUE (1–5) — always `1` under
@@ -101,10 +120,13 @@ this coin's own candle series at offset 0. Frame-inert operands are refused
 (`CONDITION_CLOCK_OPERAND_ILLEGAL`): perp-payload scalars, published rolling changes, ranks, zone
 entities, MDS regime labels, enrichment metrics, session scalars, and any clause authored at a
 non-zero offset. A closed frame cannot move them, so "held for N closes" would describe reads
-that never happened. The remedy is a split, not a re-clock: move that clause into its own LIVE
-condition and `conditionRef` it. **Worked liquidity floor:** `LIQUID_FLOOR` is LIVE because
-`vol24hUsd` is a bundle scalar; the carrier that refs it may be CLOSE over its own candle-series
-clauses.
+that never happened. A frame-inert operand anywhere in a condition's closure simply keeps that
+condition on `LIVE`, and that is legal — splitting the clause into its own condition and
+`conditionRef`-ing it does NOT buy the referencing condition a CLOSE clock, because a `CLOSE`
+condition may not reference a `LIVE` one (`CONDITION_CLOCK_REFERENCE_ILLEGAL`) and availability walks
+into the referenced closure anyway. **Worked liquidity floor:** `LIQUID_FLOOR` is `LIVE` because
+`vol24hUsd` is a bundle scalar, and a condition that references it is `LIVE` too. Reach for a split to
+keep a condition's MEANING separable, not to change its clock.
 
 **The lane a strategy is deployed to.** Report-level scalars split by LANE, and the split is not a
 quality of the header — it is which reader runs. Market breadth and the reference pairs are ordinary
