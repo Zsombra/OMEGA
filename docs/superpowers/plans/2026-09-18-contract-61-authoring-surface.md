@@ -167,10 +167,12 @@ def test_a_confirmed_higher_timeframe_read_admits_a_verdict():
 
 
 def test_exit_true_needs_operands_a_completed_bar_moves():
-    inert = condition("X", "n", num("mktBreadth_all", "gt", 10), exit=True)
+    # keys are two characters: the published conditionKey pattern is ^[A-Z][A-Z0-9_]{1,39}$ (corrected during
+    # execution 2026-09-18; the plan first wrote "X"/"Y", which the pattern refuses)
+    inert = condition("XX", "n", num("mktBreadth_all", "gt", 10), exit=True)
     errs = [f for f in validate_conditions(RSI_REPORT, [inert]) if f.severity == "error"]
     assert any("CONDITION_EXIT_READ_ILLEGAL" in f.message for f in errs)
-    moved = condition("Y", "n", num("RSI14_now", "gt", 50), exit=True)
+    moved = condition("YY", "n", num("RSI14_now", "gt", 50), exit=True)
     assert not [f for f in validate_conditions(RSI_REPORT, [moved]) if f.severity == "error"]
 ```
 
