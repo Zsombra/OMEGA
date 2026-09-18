@@ -56,7 +56,7 @@
                                          "required": {"type": "boolean"},
                                          "exit": {"type": "boolean"},
                                          "clock": {"enum": ["LIVE", "CLOSE"], "type": "string"},
-                                         "closes": {"type": "integer", "minimum": 1, "maximum": 5}}}
+                                         "closes": {"type": "integer", "minimum": 1, "maximum": 5, "multipleOf": 1}}}
               },
               "rules": {"type": "array", "items": {"additionalProperties": false, "type": "object",
                         "required": ["signalId", "allocation", "required"],
@@ -71,7 +71,7 @@
                                        "closes": {"type": "integer", "minimum": 1, "maximum": 5},
                                        "bandAtrMultiple": {"type": "number", "exclusiveMinimum": 0},
                                        "levelSource": {"enum": ["SWING_HIGH", "SWING_LOW"], "type": "string"},
-                                       "levelOffsetAtrMultiple": {"type": "number", "minimum": 0, "maximum": 2},
+                                       "levelOffsetAtrMultiple": {"type": "number", "minimum": 0, "maximum": 2, "multipleOf": 0.1},
                                        "validForBars": {"type": "integer", "minimum": 1, "maximum": 24}}}
             }
           },

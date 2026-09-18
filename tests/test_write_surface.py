@@ -156,17 +156,20 @@ def test_the_floor_record_does_not_overclaim():
 
 # --- pins vs the NAMED schema captures --------------------------------------------------
 #
-# 2026-09-05 was the first live preflight run (contract 51-era). 2026-09-09 is the current
-# capture (contract 54.1.0). Both are pinned: the top-level write surface did not move
-# between them, and asserting that explicitly is what makes "unchanged" a measurement
-# rather than an assumption.
+# 2026-09-05 was the first live preflight run (contract 51-era). 2026-09-18 is the current
+# capture (contract 61.0.1); 2026-09-09 (contract 54.1.0) sits between them. All three are
+# pinned: the top-level write surface did not move across them - 61.0.0 moved `entry` and
+# `conditions[]`, not the request's own properties - and asserting that explicitly is what
+# makes "unchanged" a measurement rather than an assumption.
 
 SCHEMA_CAPTURE_2026_09_05 = ROOT / "data/contract/compile_strategy_plan/schema_20260905T011443Z.json"
 SCHEMA_CAPTURE_2026_09_09 = ROOT / "data/contract/compile_strategy_plan/schema_20260909T080307Z.json"
+SCHEMA_CAPTURE_2026_09_18 = ROOT / "data/contract/compile_strategy_plan/schema_20260918T083359Z.json"
 
 
-@pytest.mark.parametrize("capture", [SCHEMA_CAPTURE_2026_09_05, SCHEMA_CAPTURE_2026_09_09],
-                         ids=["2026-09-05", "2026-09-09"])
+@pytest.mark.parametrize("capture", [SCHEMA_CAPTURE_2026_09_05, SCHEMA_CAPTURE_2026_09_09,
+                                     SCHEMA_CAPTURE_2026_09_18],
+                         ids=["2026-09-05", "2026-09-09", "2026-09-18"])
 def test_api_pins_agree_with_the_named_schema_capture(capture):
     """A green suite proves pin-vs-capture agreement for THESE dated captures, not platform
     agreement. The preflight's gate never reads a committed capture (design 2026-09-04,
@@ -184,14 +187,18 @@ def test_wire_entry_keys_match_the_live_schema_capture():
     `entry.levelSource`, which omega had emitted since 2026-08-30. Nothing in the suite
     compared the emitted entry object against the schema's own entry properties, so the
     tool would have kept sending a key the platform now refuses and the failure would
-    have surfaced as a rejected compile. Pin both directions against the newest capture."""
+    have surfaced as a rejected compile. It happened again on 60.0.0, which took
+    `confirmTf`, `closes` and `bandAtrMultiple` out of the entry object (captured
+    2026-09-18), so the capture this reads moved with it. Pin both directions against the
+    newest capture."""
     from omega import preflight as P
-    definition = json.loads(SCHEMA_CAPTURE_2026_09_09.read_text(encoding="utf-8"))["response"]
+    definition = json.loads(SCHEMA_CAPTURE_2026_09_18.read_text(encoding="utf-8"))["response"]
     arms, root = P.resolve_arms(definition)
     entry_schema = P.deref(P.deref(arms["CREATE"], root)["properties"]["entry"], root)
     allowed = set(entry_schema["properties"])
     required = set(entry_schema.get("required", ()))
     assert "levelSource" not in allowed, "capture predates the 54.1.0 removal - re-capture"
+    assert "confirmTf" not in allowed, "capture predates the 60.0.0 removal - re-capture"
     for name in sorted(PRESETS):
         emitted = set(plan(PRESETS[name]).wire()["entry"])
         assert emitted - allowed == set(), f"{name}: entry emits keys the API refuses"

@@ -9,8 +9,9 @@ human mirrors it from a record, exactly as was done for drift instances #3, #4 a
 
 The walker covers only the JSON-Schema subset the compile definition uses: properties /
 required / additionalProperties:false / enum / const / type / minimum / maximum /
-exclusiveMinimum / exclusiveMaximum / minLength / maxLength / minItems / maxItems / items /
-anyOf (discriminated by a const on operation|kind|mode, else by type) / local $ref.
+exclusiveMinimum / exclusiveMaximum / multipleOf / minLength / maxLength / minItems /
+maxItems / items / anyOf (discriminated by a const on operation|kind|mode, else by type) /
+local $ref.
 Anything else is reported as UNSUPPORTED, never silently skipped.
 """
 from __future__ import annotations
@@ -95,6 +96,7 @@ _MODELED_KEYWORDS = frozenset({
     "type", "properties", "required", "additionalProperties", "enum", "const",
     "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
     "minLength", "maxLength", "minItems", "maxItems", "items", "anyOf", "$ref",
+    "multipleOf",
     "pattern", "format", "description", "title", "default", "examples", "$comment",
 })
 
@@ -213,6 +215,24 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
             out.append(Finding("BOUNDS", path, f"{v} <= exclusiveMinimum {schema['exclusiveMinimum']}", "FAIL"))
         if "exclusiveMaximum" in schema and v >= schema["exclusiveMaximum"]:
             out.append(Finding("BOUNDS", path, f"{v} >= exclusiveMaximum {schema['exclusiveMaximum']}", "FAIL"))
+        if "multipleOf" in schema:
+            # Contract 61.0.1 (capture schema_20260918T083359Z.json) declares multipleOf on
+            # 18 numeric fields - entry.levelOffsetAtrMultiple 0.1, conditions[].closes 1,
+            # rules[].allocation 1, minAggregateScore 0.05, minRequiredCount 1 and the
+            # execution knobs. Unmodelled, it produced ~93 UNSUPPORTED warnings per preset
+            # body on 2026-09-18. The remainder is taken on the QUOTIENT, not with `%`:
+            # 0.3 % 0.1 == 0.0999... in binary floating point while 0.3 / 0.1 rounds to 3
+            # within 1.5e-16, so a tolerance on the quotient is what makes a legal value pass.
+            m = schema["multipleOf"]
+            if not _is_num(m) or m <= 0:
+                # JSON Schema requires a positive number; anything else is a shape the
+                # walker does not model, and dividing by it would raise inside the check.
+                out.append(Finding("UNSUPPORTED", path,
+                                   f"multipleOf {m!r} is not a positive number", "WARN"))
+            else:
+                q = v / m
+                if abs(round(q) - q) > 1e-9:
+                    out.append(Finding("BOUNDS", path, f"{v} is not a multiple of {m}", "FAIL"))
     elif isinstance(value, str):
         if "minLength" in schema and len(value) < schema["minLength"]:
             out.append(Finding("BOUNDS", path, f"length {len(value)} < minLength {schema['minLength']}", "FAIL"))
@@ -363,15 +383,21 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
     return out
 
 
-# Values omega hardcodes as platform mirrors. confirmTf is excluded: it is the thesis
-# anchor by design (Step 0 amendment, 2026-08-30). sections[].notes is excluded: omega sends a
+# Values omega hardcodes as platform mirrors. sections[].notes is excluded: omega sends a
 # provenance string on purpose while null acceptance is unmeasured.
-# `levelSource` was dropped 2026-09-09: contract 54.1.0 removed it from the entry object,
-# so there is no longer a platform value to mirror. A record written before the removal
-# still carries it; that is history, not a field omega should emit.
-MIRROR_ENTRY_FIELDS = ("trigger", "closes", "bandAtrMultiple",
-                       "levelOffsetAtrMultiple", "validForBars")
-MIRROR_CONDITION_FIELDS = ("clock", "closes", "exit")
+# Each name here left the list when the platform stopped carrying the field, never because
+# omega stopped caring about it - a field the schema no longer declares has no platform
+# value to mirror, and a record written before the removal still carrying it is history:
+#   `levelSource`  - removed from `entry` by contract 54.1.0 (captured 2026-09-09).
+#   `confirmTf`, `closes`, `bandAtrMultiple` - removed from `entry` by contract 60.0.0
+#     (captured 2026-09-18, schema_20260918T083359Z.json: `entry` publishes exactly
+#     trigger / levelOffsetAtrMultiple / validForBars, all three required). `confirmTf`
+#     had in any case been excluded since the Step 0 amendment of 2026-08-30 as the thesis
+#     anchor omega chooses rather than mirrors.
+#   `clock` - retired from `conditions[]` by contract 61.0.0 and REFUSED on input
+#     (captured 2026-09-18; the seven-key condition shape).
+MIRROR_ENTRY_FIELDS = ("trigger", "levelOffsetAtrMultiple", "validForBars")
+MIRROR_CONDITION_FIELDS = ("closes", "exit")
 
 
 def mirror_findings(body: dict, record: dict) -> list[Finding]:

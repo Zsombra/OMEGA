@@ -93,6 +93,57 @@ def test_walker_passes_a_conforming_body():
     assert _fails(P.diff_schema(_good_body(), arm, root)) == []
 
 
+def test_walker_models_multiple_of():
+    """The 61.0.1 definition declares multipleOf on closes (1), rules[].allocation (1), minAggregateScore (0.05),
+    minRequiredCount (1) and entry.levelOffsetAtrMultiple (0.1); a preset body's receipt carried ~93 UNSUPPORTED
+    warnings for it on 2026-09-18. Modelled: a non-multiple is a BOUNDS FAIL, a multiple passes, no UNSUPPORTED."""
+    arm, root = _create_arm()
+    body = _good_body()
+    body["entry"]["levelOffsetAtrMultiple"] = 0.15
+    findings = P.diff_schema(body, arm, root)
+    assert ("BOUNDS", "entry.levelOffsetAtrMultiple") in _fails(findings)
+    assert not [f for f in findings if f.cls == "UNSUPPORTED" and "multipleOf" in f.detail]
+    body["entry"]["levelOffsetAtrMultiple"] = 0.3
+    assert ("BOUNDS", "entry.levelOffsetAtrMultiple") not in _fails(P.diff_schema(body, arm, root))
+
+
+def test_walker_reports_a_non_positive_multiple_of_as_unsupported_not_crash():
+    """JSON Schema requires multipleOf to be a positive number; a zero (or a string) would
+    raise inside the divide. The Global Constraint says WARN and keep walking, never crash
+    and never silently skip."""
+    mini = copy.deepcopy(MINI)
+    create_props = mini["parameters"]["properties"]["request"]["anyOf"][0]["properties"]
+    create_props["entry"]["properties"]["levelOffsetAtrMultiple"]["multipleOf"] = 0
+    arms, root = P.resolve_arms(mini)
+    body = _good_body()
+    del body["entry"]["validForBars"]            # walking must continue past the warning
+    findings = P.diff_schema(body, arms["CREATE"], root)   # must not raise
+    assert any(f.cls == "UNSUPPORTED" and f.path == "entry.levelOffsetAtrMultiple"
+               and f.verdict == "WARN" and "multipleOf" in f.detail for f in findings)
+    assert ("MISSING_REQUIRED", "entry.validForBars") in _fails(findings)
+
+
+def test_mirror_fields_are_the_61_shapes():
+    assert P.MIRROR_ENTRY_FIELDS == ("trigger", "levelOffsetAtrMultiple", "validForBars")
+    assert P.MIRROR_CONDITION_FIELDS == ("closes", "exit")
+
+
+def test_every_preset_body_passes_the_preflight_against_the_2026_09_18_captures():
+    """The gate this plan exists for: zero FAIL and zero UNSUPPORTED against the committed 61.0.1 capture and the
+    09-18 read-back, for every preset."""
+    from omega.generate import PRESETS, plan
+    schema = json.loads((ROOT / "data/contract/compile_strategy_plan/schema_20260918T083359Z.json").read_text(encoding="utf-8"))["response"]
+    arms, root = P.resolve_arms(schema)
+    record = json.loads((ROOT / "data/contract/get_strategy/43d11467-637c-42b1-b88b-8a71ed8c32c3_20260918T083500Z.json").read_text(encoding="utf-8"))["response"]
+    for name in sorted(PRESETS):
+        body = plan(PRESETS[name]).wire()
+        findings = P.diff_schema(body, arms["CREATE"], root) + P.diff_record(body, record, arms["CREATE"], root) \
+            + P.mirror_findings(body, record)
+        assert _fails(findings) == [], (name, _fails(findings))
+        assert [f for f in findings if f.cls == "UNSUPPORTED"] == [], name
+        assert [f for f in findings if f.cls == "MIRROR"] == [], name
+
+
 def test_walker_flags_missing_required_at_nested_paths():
     arm, root = _create_arm()
     body = _good_body()
@@ -408,17 +459,17 @@ MIRROR_ENTRY = {"trigger": "AT_SIGNAL", "confirmTf": "1h", "closes": 1, "bandAtr
 def test_mirror_is_quiet_when_values_match_and_ignores_confirmTf():
     rec = _migrated_record()
     body = {"entry": dict(MIRROR_ENTRY, confirmTf="4h"),
-            "conditions": [{"clock": "LIVE", "closes": 1, "exit": False}]}
+            "conditions": [{"closes": 1, "exit": False}]}
     assert P.mirror_findings(body, rec) == []
 
 
 def test_mirror_warns_never_fails_on_a_differing_mirror_value():
     rec = _migrated_record()
     body = {"entry": dict(MIRROR_ENTRY, validForBars=6),
-            "conditions": [{"clock": "CLOSE", "closes": 1, "exit": False}]}
+            "conditions": [{"closes": 2, "exit": False}]}
     finds = P.mirror_findings(body, rec)
     assert {(f.cls, f.path, f.verdict) for f in finds} == {
-        ("MIRROR", "entry.validForBars", "WARN"), ("MIRROR", "conditions[0].clock", "WARN")}
+        ("MIRROR", "entry.validForBars", "WARN"), ("MIRROR", "conditions[0].closes", "WARN")}
 
 
 def test_mirror_findings_handles_a_list_valued_body_condition_field_without_raising():
@@ -426,7 +477,7 @@ def test_mirror_findings_handles_a_list_valued_body_condition_field_without_rais
     a body condition can legally carry a list-valued field. Must compare by value, not by
     set membership, and still report the mismatch."""
     rec = _migrated_record()
-    body = {"entry": dict(MIRROR_ENTRY), "conditions": [{"clock": "LIVE", "closes": [1, 2], "exit": False}]}
+    body = {"entry": dict(MIRROR_ENTRY), "conditions": [{"closes": [1, 2], "exit": False}]}
     finds = P.mirror_findings(body, rec)          # must not raise
     assert ("MIRROR", "conditions[0].closes", "WARN") in {(f.cls, f.path, f.verdict) for f in finds}
 
