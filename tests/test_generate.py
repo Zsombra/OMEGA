@@ -8,7 +8,7 @@ import pytest
 
 from omega.contract import DERIVED_DIR, load
 from omega.generate import (
-    MODULE_RECIPES, PRESETS, Thesis, plan, plan_for_signals,
+    ENTRY_MIRROR, MODULE_RECIPES, PRESETS, Thesis, plan, plan_for_signals,
 )
 from omega.membership import signals_for
 from omega.types import Column
@@ -164,31 +164,24 @@ def test_custom_sections_carry_provenance_notes(name):
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
 def test_wire_emits_the_platform_migration_entry(name):
-    """entry is REQUIRED on CREATE since 2026-08-30. Values mirror the platform's
-    own migration of existing records (6a8bca67 read-back: AT_SIGNAL, confirmTf =
-    the anchor timeframe, closes 1, bandAtrMultiple 1; drift instance #4 later
-    the same day added levelSource/levelOffsetAtrMultiple/validForBars, mirrored
-    from the same record's silent re-migration) - semantics unmeasured, so
-    nothing else may be emitted. The 7-field form compiled viable and
-    round-tripped verbatim (b9438519, deep_tail_fade_create_2026-08-30.json).
-
-    2026-09-09, contract 54.1.0: `levelSource` was REMOVED from the entry object on
-    every arm, so the seven-field form above is now refused as an unknown key and
-    this expects six. The level is derived from the trigger and the trade's
-    direction. See test_wire_entry_keys_match_the_live_schema_capture in
-    tests/test_write_surface.py, which pins this against the captured schema so the
-    next removal fails a test instead of a compile."""
+    """entry is REQUIRED on CREATE since 2026-08-30. Contract 60.0.0 shrank the entry
+    object to three keys and retired AT_SIGNAL; the platform migrated every stored
+    record to ENTRY_MIRROR, including the pre-60 record 824f4343 (AT_SIGNAL, six keys
+    -> data/contract/get_strategy/824f4343-..._20260918T084500Z.json) and the 60.x-authored
+    record 43d11467 (data/contract/get_strategy/43d11467-..._20260918T083500Z.json).
+    Mirrored, not interpreted."""
     p = plan(PRESETS[name])
-    assert p.wire()["entry"] == {"trigger": "AT_SIGNAL",
-                                 "confirmTf": p.thesis.anchor,
-                                 "closes": 1, "bandAtrMultiple": 1,
-                                 "levelOffsetAtrMultiple": 0, "validForBars": 4}
+    assert p.wire()["entry"] == ENTRY_MIRROR
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_wire_conditions_all_carry_clock_and_closes(name):
+def test_wire_conditions_carry_the_seven_keys_with_a_one_close_hold(name):
+    """61.0.0 retired the per-condition clock (seven-key condition shape, contract
+    61.0.1). Every emitted condition holds one completed strategy bar - a hold
+    above 1 is unmeasured for the presets."""
     for c in plan(PRESETS[name]).wire()["conditions"]:
-        assert c["clock"] in ("LIVE", "CLOSE")
+        assert list(c) == ["conditionKey", "name", "definition", "verdict",
+                            "required", "exit", "closes"]
         assert c["closes"] == 1
 
 

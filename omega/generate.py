@@ -282,6 +282,13 @@ PRESETS: dict[str, Thesis] = {
     ),
 }
 
+# The entry axis, contract 60.0.0/61.0.1. Mirrored, not interpreted: the platform migrated the pre-60 record
+# 824f4343 (AT_SIGNAL, six keys) to exactly this (data/contract/get_strategy/824f4343-..._20260918T084500Z.json),
+# and both 60.x-authored records carry it. ON_CANDLE_CLOSE takes the entry AT the qualifying close, at market;
+# 0 and 4 are the inert values for a non-level trigger ("levelOffsetAtrMultiple != 0 and validForBars != 4 are
+# refused under a non-level trigger", vendor pack 31.2.28). The level triggers rest orders omega has not measured.
+ENTRY_MIRROR: dict = {"trigger": "ON_CANDLE_CLOSE", "levelOffsetAtrMultiple": 0, "validForBars": 4}
+
 
 @dataclass
 class StrategyPlan:
@@ -427,26 +434,11 @@ class StrategyPlan:
             ],
             "minAggregateScore": self.thesis.gate,
             "minRequiredCount": sum(1 for r in self.rules if r.required),
-            # REQUIRED on CREATE since the schema published it (2026-08-30). Values
-            # mirror the platform's own migration of existing records, read back
-            # from 6a8bca67 (confirmTf = the anchor timeframe); semantics are
-            # unmeasured, so nothing else is emitted (plan Step 0 amendment).
-            # Drift instance #4, same day: the runtime validator grew three MORE
-            # required fields the published schema does not declare; migration
-            # defaults re-read from 6a8bca67 (levelSource SWING_HIGH even on a
-            # both-directions strategy - mirrored, not interpreted). The 7-field
-            # form compiled viable and round-tripped verbatim (b9438519).
-            # 2026-09-09, contract 54.1.0: `levelSource` was REMOVED from the entry object
-            # on all three arms (CREATE/UPDATE/RESTORE) - the platform now derives the level
-            # from the trigger and the trade's direction. Emitting it is an unknown key and
-            # the compile is refused, so the seven-field form above is dead. Measured by
-            # diffing the live compile schema against
-            # data/contract/compile_strategy_plan/schema_20260905T011443Z.json; the vendor
-            # README dates the removal to contract 52.0.0. The remaining six are still
-            # required on CREATE and their values are unchanged mirrors.
-            "entry": {"trigger": "AT_SIGNAL", "confirmTf": self.thesis.anchor,
-                      "closes": 1, "bandAtrMultiple": 1,
-                      "levelOffsetAtrMultiple": 0, "validForBars": 4},
+            # REQUIRED on CREATE since the schema published it (2026-08-30). See git history
+            # (368bad6 and earlier) for the six- and seven-key forms this superseded as the
+            # entry object was migrated across contracts 52.0.0-60.0.0; ENTRY_MIRROR above
+            # carries the current evidence and reasoning.
+            "entry": dict(ENTRY_MIRROR),
         }
         if self.thesis.execution:
             out.update(self.thesis.execution)   # validated in critique(); keys are API fields

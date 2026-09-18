@@ -529,21 +529,9 @@ def test_a_condition_without_exit_is_an_error():
     assert ".exit" in paths
 
 
-# Clock policy over the presets: ambient reads and composite verdicts LIVE, CORE
-# checklists CLOSE only when every contributing module is candle-backed. Pinned
-# per preset so a recipe edit that flips a module's eligibility fails loudly.
-CORE_CLOCK = {"trend-continuation": "CLOSE",     # MA/MACD/VOLUME + ADX: all candle
-              "structure-reversal": "CLOSE",     # structure/SR/RSI/CVD: all candle
-              "mean-reversion": "LIVE",          # FUNDING is inert
-              "squeeze-breakout": "LIVE",        # OPEN_INTEREST is inert
-              "flow-divergence": "LIVE"}         # FLOW_DIVERGENCE is inert
-
-
 @pytest.mark.parametrize("name", PRESET_IDS)
-def test_preset_clock_policy(name):
+def test_presets_hold_one_close_everywhere_and_carry_no_clock(name):
+    """61.0.0 retired the per-condition clock; a hold above 1 is unmeasured for the presets, so every emitted
+    condition holds one completed strategy bar (vendor pack 31.2.28: `closes` is the hold)."""
     for c in plan(PRESETS[name]).conditions:
-        key, expected = c["conditionKey"], "LIVE"
-        if "_CORE_" in key:
-            expected = CORE_CLOCK[name]
-        assert c["clock"] == expected, f"{key}: {c['clock']} != {expected}"
-        assert c["closes"] == 1, f"{key}: closes >1 is unmeasured"
+        assert "clock" not in c and c["closes"] == 1, c["conditionKey"]
