@@ -356,6 +356,10 @@ does not carry. Non-blocking — viability stayed true.
 
 ## Drift instance #3: required-but-unpublished, then the schema caught up (2026-08-29 → 30)
 
+*(2026-09-18: this section is the record of what was served in August. Both shapes it
+measured are gone — `conditions[].clock` was retired in contract 61.0.0 and the entry axis
+is three keys. See [drift instance #6](#drift-instance-6-2026-09-18-the-entry-axis-shrank-to-three-keys-and-the-clock-left).)*
+
 The third instance inverted the first two. On 2026-08-29 the runtime input
 validator began REQUIRING `sections[].notes`, `conditions[].clock` and
 `conditions[].closes` — none of which the published schema declared (schema read
@@ -386,6 +390,9 @@ The standing-rules addendum this instance earns:
 
 ### Drift instance #4: the entry axis grew mid-session (2026-08-30)
 
+*(2026-09-18: the axis has since shrunk. `levelSource` left in 52.0.0, and 60.0.0 took
+`confirmTf`, `closes` and `bandAtrMultiple` with it — the served entry is three keys.)*
+
 Hours after the viable v4 compile, the identical body was refused at the
 connector input layer: `entry` now REQUIRES `levelSource`
 (`SWING_HIGH | SWING_LOW | BOLLINGER_UPPER | BOLLINGER_LOWER`),
@@ -414,7 +421,8 @@ left open:
   remains unmeasured: strings were sent.
 - **The mixed-clock condition DAG is legal**: CLOSE-clocked candle-only cores
   referenced from LIVE-clocked verdict composites drew no refusal, and
-  postState echoed every `clock`/`closes` exactly as sent.
+  postState echoed every `clock`/`closes` exactly as sent. *(2026-09-18: the clock
+  axis no longer exists — 61.0.0 retired it and a `clock` key is refused.)*
 - **`entry` round-trips**: the mirrored migration default came back verbatim,
   with `diff.entry` null and ENTRY absent from `changedAxes` — sending exactly
   the default registers as no change. Non-default values and runtime semantics
@@ -423,3 +431,84 @@ left open:
 - Execution defaults: all 16 postState values equal the measured table,
   `minRiskRewardRatio: 1.5` included (`6a8bca67`'s 2.0 is the 2026-08-29
   UPDATE probe's explicit override, not a default).
+
+## Drift instance #6 (2026-09-18): the entry axis shrank to three keys and the clock left
+
+Instances #3 and #4 were *required-but-unpublished*. This one is the opposite and the
+quieter failure: the published schema dropped keys omega was still sending, so every body
+the generator emitted was refused at the input layer, and nothing about the generator had
+changed. It was found by running the preflight, not by a compile — the manager's watch
+stored the served `tools/list` definition at 08:33:59 UTC (contract 61.0.1, build
+`7296172b`) and `scripts/preflight.py run` was pointed at it.
+
+**What was refused.** At 08:40 UTC the preflight ran over the five `plan(PRESETS[…]).wire()`
+bodies against that capture and the 09-18 read-back. Every body FAILed, with the same
+findings each time: **7 × `UNDECLARED conditions[i].clock`** (one per emitted condition);
+**`ENUM entry.trigger 'AT_SIGNAL' not in the declared enum (3 values)`**; **3 ×
+`UNDECLARED`** entry keys — `entry.confirmTf`, `entry.closes`, `entry.bandAtrMultiple`; one
+**`WARN MIRROR entry.trigger`**, body `AT_SIGNAL` against the record's `ON_CANDLE_CLOSE`;
+and **~93 × `WARN UNSUPPORTED … ['multipleOf']`** — a keyword the walker did not model,
+raised on every `closes`, every `rules[i].allocation`, `minAggregateScore`,
+`minRequiredCount` and `entry.levelOffsetAtrMultiple`. With `additionalProperties: false`
+on the CREATE arm, the ten UNDECLARED keys are ten refusals on their own, and the
+trigger enum an eleventh.
+
+**What the platform migrated the stored records to.** The standing rule held again: read a
+record back and mirror what the platform itself wrote. `824f4343` was created
+on 2026-09-03 with `trigger: "AT_SIGNAL"` and the six-key entry, and its revision is
+**still 1** — nobody revised it. It reads back
+`entry: {trigger: "ON_CANDLE_CLOSE", levelOffsetAtrMultiple: 0, validForBars: 4}` and
+seven-key conditions with no `clock`
+([`824f4343…_20260918T084500Z.json`](../data/contract/get_strategy/824f4343-e51f-4e5a-87b1-6b44d0bc547f_20260918T084500Z.json)).
+`43d11467`, authored on 60.x on 2026-09-16, carries the identical shape
+([`43d11467…_20260918T083500Z.json`](../data/contract/get_strategy/43d11467-637c-42b1-b88b-8a71ed8c32c3_20260918T083500Z.json)).
+So the three-key entry is a migration observed on the platform's own record, not a reading
+of the schema, and `ON_CANDLE_CLOSE / 0 / 4` is what omega emits. The two level triggers
+rest orders whose semantics are unmeasured here, and the vendor's rule for the two dials
+under a non-level trigger is that their inert values are the only legal ones.
+
+**What changed in omega**, three commits on `claude/omega-contract-61-authoring`:
+
+- `368bad6` — conditions carry the seven served keys in the read-back's order; the hold
+  (`closes`) and the three vendor read rules replace every clock check, each error naming
+  the platform's code (`CONDITION_HOLD_OPERAND_ILLEGAL`, `CONDITION_HOLD_ILLEGAL`,
+  `CONDITION_VERDICT_READ_ILLEGAL`, `CONDITION_EXIT_READ_ILLEGAL`) and pack 31.2.28
+  ([09 · Conditions](09-conditions.md#the-hold-count-the-clock-was-retired-in-contract-6100)).
+- `1c72dc3` — `wire()` emits `ENTRY_MIRROR`, the three-key entry above, and the generator's
+  clock policy is gone with the clock.
+- `31045fe` — the preflight walker models `multipleOf` (a non-multiple is now a BOUNDS FAIL
+  instead of ~93 warnings that would hide the next drift), the mirror lists follow the
+  61 shapes, and `execution.SCHEMA_BOUNDS` follows the changelog the walker computed
+  between the 09-09 and 09-18 captures.
+
+**The receipt.** The trend-continuation body compiled by the fixed generator
+([`compile_body_trend_continuation_2026-09-18.json`](../data/audit/compile_body_trend_continuation_2026-09-18.json))
+now passes:
+[`compile_preflight_2026-09-18-trend-continuation.json`](../data/audit/compile_preflight_2026-09-18-trend-continuation.json)
+is a **PASS** — 58 findings, all INFO, zero FAIL, zero UNSUPPORTED, zero MIRROR — and the
+gate line reads
+`PREFLIGHT PASS · data/audit/compile_preflight_2026-09-18-trend-continuation.json · body 9e0d70d4 · schema 2026-09-18T08:33:59Z · ref 43d11467-637c-42b1-b88b-8a71ed8c32c3 rev 1 · expires 2026-09-19T08:33:59Z`.
+The captures are the ones committed with the plan at `21b4bbd` and were not re-taken, so
+the run was given `--expires-minutes 1440`; a compile authorization still needs a fresh
+capture and a fresh receipt, and a PASS was never the authorization. The same gate is
+pinned for all five presets by
+`tests/test_preflight.py::test_every_preset_body_passes_the_preflight_against_the_2026_09_18_captures`.
+The measured moves are recorded in
+[`_drift_2026-09-18.json`](../data/contract/_drift_2026-09-18.json), written from the
+receipt's own CHANGELOG findings by `scripts/write_drift.py`.
+
+**Two things this did not resolve**, both recorded in that drift record:
+
+- The metric/transform/vocabulary **extraction is still the 2026-09-09 one at contract
+  54.1.0**. The changelog shows the compile schema's metric enum has gained twelve keys
+  since (the nine TPO keys plus `NAKED_POC_ABOVE`, `NAKED_POC_BELOW`, `PDO`); this plan
+  touched the authoring surface only and re-extracted nothing.
+- The TPO branch `claude/tpo-strategy-brainstorm-796f15` **pins the pre-60 entry** —
+  `tests/test_tpo_suite_wire.py` asserts `builder.ENTRY_MIRROR` carries `confirmTf`. It
+  must be brought to the three-key entry when it is merged.
+
+The addendum this instance earns: **a body that has not changed can start being refused.**
+Nothing in omega moved between 09-09 and 09-18; the schema did. The preflight is worth
+running before an authoring session even when the generator is untouched, and a warning
+class it cannot model (here, `multipleOf`) is not noise to live with — it is the noise the
+next removal will hide in.

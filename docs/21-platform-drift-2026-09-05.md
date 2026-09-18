@@ -127,7 +127,9 @@ Column JSON, exactly as the platform normalises it:
 Header: **`mark_bnClose_spread`**. Formula (contract compiler): `(mark − bnClose) / bnClose × 100`,
 percent, 2 dp, nullable, operators lt/lte/gte/gt/between, timeless (the anchor timeframe is
 accepted and resolves to null), `closeClockReadable: false` (a condition on it must run on the
-LIVE clock). The glossary line the report prints: "mark: the perpetual mark price, read live at
+LIVE clock; *2026-09-18: the per-condition clock was retired in contract 61.0.0 — what the
+flag means for the hold and the exit role has not been re-measured,
+[09 · Conditions](09-conditions.md#the-hold-count-the-clock-was-retired-in-contract-6100)*). The glossary line the report prints: "mark: the perpetual mark price, read live at
 report build time — not a bar close."
 
 Evidence: the August header grammar (`{code}_{operandCode}_spread`, codes `mark` / `bnClose`),

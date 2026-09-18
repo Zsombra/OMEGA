@@ -34,6 +34,10 @@ From the `compile_strategy_plan` / `preview_strategy_report` schema — authorit
 }
 ```
 
+*(2026-09-18: the served shape is seven keys — `exit` and `closes` join these five, and
+`clock` was retired. See [The hold count](#the-hold-count-the-clock-was-retired-in-contract-6100)
+below.)*
+
 A `definition` is one of six things:
 
 | kind | shape |
@@ -285,40 +289,97 @@ This matters for design. `crowdAccLive` is null whenever no concurrent sessions 
 running, which is most of the time. A condition on it reads FALSE, and FALSE is
 indistinguishable from "the crowd was measured and was wrong."
 
-## The condition clock (deployed 2026-08-29, schema published 2026-08-30)
+## The hold count (the clock was retired in contract 61.0.0)
 
-Every condition now carries two more required fields — the compile refuses their
-absence:
+A condition carried a `clock` from 2026-08-29 (deployed) and 2026-08-30 (published) until
+contract 61.0.0 retired it. The compile definition captured on 2026-09-18 at 08:33:59 UTC
+(contract 61.0.1, build `7296172b`,
+[`schema_20260918T083359Z.json`](../data/contract/compile_strategy_plan/schema_20260918T083359Z.json))
+declares a condition's required keys as
+`[conditionKey, name, definition, verdict, required, exit, closes]` with
+`additionalProperties: false` — seven keys, no `clock` among them. The platform migrated
+the stored records without a revision bump, as it has every time: `824f4343`, created
+2026-09-03 and still at revision 1, reads back seven-key conditions with no `clock`
+([`824f4343…_20260918T084500Z.json`](../data/contract/get_strategy/824f4343-e51f-4e5a-87b1-6b44d0bc547f_20260918T084500Z.json)).
+The vendor pack (31.2.28, `battlegrid-strategy-examples` § Conditions) states both halves:
 
-- **`clock`**: `'LIVE' | 'CLOSE'`. What frame the condition's reads resolve
-  against. `LIVE` reads the current forming state; `CLOSE` reads the last closed
-  bar. LIVE is the permissive clock and the platform's own migration default —
-  every pre-existing condition was migrated to `clock: "LIVE"` without a revision
-  bump (read back from `6a8bca67` on 2026-08-29 and again 2026-08-30).
-- **`closes`**: integer 1..5 (schema bounds). Semantics for values above 1 are
-  **unmeasured**; omega emits 1 everywhere.
+> `{ conditionKey, name, definition, verdict, required, exit, closes }` — all seven
+> required, no defaults. A `clock` key is REFUSED: the per-condition evidence clock was
+> retired in contract `61.0.0`.
 
-`CLOSE` is the restricted clock, with one measured rule
-(`CONDITION_CLOCK_OPERAND_ILLEGAL`, 2026-08-29):
+> **Every condition is decided at the strategy bar's close.** There is no per-condition
+> clock. Which bar a condition reads is decided by the surface asking — a decision (the
+> radar's close decision, the compose that takes the trade, the exit sweep) reads completed
+> strategy bars; a display read shows the forming one and decides nothing — and by each
+> candle column's own Confirmed / Developing selector.
 
-> a CLOSE-clocked condition may only read headers resolved from the coin's own
-> candle series, at offset 0
+So what used to be an author-controlled axis is now two things the author does control: the
+column's `bars` selector, and the hold count.
 
-An ambient header (`reference-pairs.*`, `market-breadth.*`, `session-field.*`)
-never comes from the coin's candles — "a closed bar frame cannot move it, so it
-would read the same number on every close." The refusal's prescription: put the
-clause in its own LIVE condition and reference it **from a LIVE condition**.
-Timeframe-inert metrics (`FUNDING_RATE`, `OI`, `REGIME_*`, ...) fail the same
-test even from a custom section.
+**The hold.** `closes` is the number of consecutive completed strategy bars a condition must
+read TRUE, bounded `1..5` with `multipleOf: 1` in the capture. The vendor:
 
-**omega's clock policy** (`generate._build_conditions`, decision 2026-08-29):
-ambient conditions and the composite verdicts run LIVE; the CORE checklists run
-CLOSE only when every contributing module reads the coin's own candle series
-(stable reads, matching the closed-bar research); a checklist touching any inert
-module stays LIVE. The offline guardrail in `conditions.validate_conditions`
-mirrors the rule: a CLOSE condition reading anything but a custom-candle-section
-header at offset 0 is an error, as is a CLOSE condition referencing a LIVE one.
+> `closes` is how many consecutive COMPLETED strategy bars must read TRUE (1–5). A hold
+> counts the same completed bars whichever surface asks, so a held condition reads them on
+> the display lane too. Above `1` it is legal **only** where a completed bar changes the
+> reading: over a header resolved from this coin's own candle series, at offset 0, at or
+> above the strategy timeframe, read Confirmed. Everything else is refused
+> (`CONDITION_HOLD_OPERAND_ILLEGAL`) … A hold also needs a clause of the condition's OWN
+> (`CONDITION_HOLD_ILLEGAL`): a referenced condition is resolved once and contributes the
+> same answer to every frame, so a hold that moves with the bar only through a reference
+> would count reads that never happened.
 
-This dovetails with the `provisional` flags above: ambient conditions came back
-`provisional: false` precisely because ambient data is not read off a live
-forming bar. The clock axis makes that distinction author-controlled.
+**The verdict read rule.** A carrier may not read a bar that is still in progress:
+
+> A verdict carrier must read no DEVELOPING bar. A verdict is refused over any closure that
+> reads a column selecting Developing above the strategy timeframe
+> (`CONDITION_VERDICT_READ_ILLEGAL`). The closure is what the condition reads directly plus
+> everything reached through `conditionRef`, transitively: a referenced condition
+> contributes what IT reads, so moving the clause into a building block does not launder it.
+
+**The exit read rule.** `exit: true` needs operands that a completed bar actually moves:
+
+> Legal only over a closure every operand of which a completed bar MOVES
+> (`CONDITION_EXIT_READ_ILLEGAL`), which rules out a developing read — a bar in progress is
+> the forming bar, and an exit fired on one is an intrabar exit — and rules out a
+> frame-inert operand, which could never fire.
+
+The three rules share one vocabulary, `bars` per candle column:
+
+> `"closed"` is Confirmed — the newest bar completed at the strategy close — and `"all"` is
+> Developing, the higher-timeframe bar still in progress at that close, which REPAINTS until
+> it completes. Left unset the default is a rule, not a value: Confirmed for a column ABOVE
+> the strategy timeframe, and at or below it the series as the frame carries it.
+
+**A forming bar at the anchor is not a developing read** (ruling recorded 2026-09-18 while
+this was implemented). `developing` is *above the anchor and `bars: "all"`* — a column at the
+strategy's own timeframe reading `"all"` is not a developing read, so a hold or an exit over
+it stays legal offline. That is the vendor's own sentence: "At or below the strategy
+timeframe the choice therefore sets only what the live lane shows — no bar is in progress at
+the anchor's own close — so Developing there is legal and changes no decision."
+
+**What omega checks offline.** `conditions.report_headers(report)` classifies every header it
+can see from the report it was given: `candle` (the header comes from a custom section's
+column on this coin's own candle series, on a non-timeless metric, at offset 0),
+`above_anchor` / `below_anchor` (the column's timeframe against the report anchor, absolute
+timeframes ordered by `absoluteTimeframes` in
+[`_shared.json`](../data/contract/vocabulary/_shared.json)), and `developing`
+(`above_anchor and bars == "all"`). `conditions.validate_conditions` then enforces the four
+rules above at the clause path, naming the platform's own error code and the pack version:
+a hold over anything but a confirmed, offset-0, at-or-above-anchor candle header
+(`CONDITION_HOLD_OPERAND_ILLEGAL`); a hold with no clause of its own
+(`CONDITION_HOLD_ILLEGAL`); a verdict carrier whose closure reads a developing higher-timeframe
+bar (`CONDITION_VERDICT_READ_ILLEGAL`); an `exit: true` whose closure reads a header no
+completed bar moves (`CONDITION_EXIT_READ_ILLEGAL`). A leftover `clock` key is an error that
+names the retirement. The generator emits `closes: 1` everywhere: a hold above 1 is legal to
+author by hand where the vendor says, and remains unmeasured for the presets.
+
+**Where the offline check is conservative.** It is stricter than the platform, never looser,
+and it knows it. A platform-section header (`includeRsi`, `includeHigherTimeframe`, …) has no
+column omega can inspect, so it is `candle: False` with both timeframe flags `False`; the
+same holds for the ambient report-level headers (`market-breadth.*`, `reference-pairs.*`,
+`session-field.*`). A hold or an `exit: true` over one of those is refused offline. For the
+ambient headers that matches the platform's own reasoning — a closed-bar frame cannot move
+them — but for a platform-section candle header it may well be a refusal the platform would
+not make. Nothing here has been measured against a compile since the retirement; the check
+errs toward the body the platform is known to accept.

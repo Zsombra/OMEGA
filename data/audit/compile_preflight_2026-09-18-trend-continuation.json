@@ -1,0 +1,383 @@
+{
+ "_what": "Schema-drift preflight receipt: the wire body diffed against a fresh compile definition capture and a fresh read-back. A PASS is a precondition of the compile authorization, not the authorization. Nothing here was interpreted.",
+ "when": "2026-09-18T10:31:00Z",
+ "body": {
+  "path": "data/audit/compile_body_trend_continuation_2026-09-18.json",
+  "sha256": "9e0d70d417ba0af9d96dfddebe560c15869295106ca1c59c425db1877dc2bba2",
+  "operation": "CREATE"
+ },
+ "captures": {
+  "schema": {
+   "path": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+   "capturedAt": "2026-09-18T08:33:59Z",
+   "fingerprint": "ok"
+  },
+  "readback": {
+   "path": "data/contract/get_strategy/43d11467-637c-42b1-b88b-8a71ed8c32c3_20260918T083500Z.json",
+   "capturedAt": "2026-09-18T08:35:00Z",
+   "strategyId": "43d11467-637c-42b1-b88b-8a71ed8c32c3",
+   "revision": 1,
+   "fingerprint": "ok"
+  }
+ },
+ "findings": [
+  {
+   "cls": "INFO",
+   "path": "sections[0].title",
+   "detail": "pattern-unchecked: '^[^\\\\p{Cc}\\\\p{Cf}]+$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "sections[0].notes",
+   "detail": "pattern-unchecked: '^[^\\\\p{Cc}\\\\p{Cf}\\\\p{Zl}\\\\p{Zp}]+$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "sections[1].title",
+   "detail": "pattern-unchecked: '^[^\\\\p{Cc}\\\\p{Cf}]+$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "sections[1].notes",
+   "detail": "pattern-unchecked: '^[^\\\\p{Cc}\\\\p{Cf}\\\\p{Zl}\\\\p{Zp}]+$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "conditions[0].conditionKey",
+   "detail": "pattern-unchecked: '^[A-Z][A-Z0-9_]{1,39}$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "conditions[1].conditionKey",
+   "detail": "pattern-unchecked: '^[A-Z][A-Z0-9_]{1,39}$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "conditions[2].conditionKey",
+   "detail": "pattern-unchecked: '^[A-Z][A-Z0-9_]{1,39}$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "conditions[3].conditionKey",
+   "detail": "pattern-unchecked: '^[A-Z][A-Z0-9_]{1,39}$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "conditions[4].conditionKey",
+   "detail": "pattern-unchecked: '^[A-Z][A-Z0-9_]{1,39}$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "conditions[5].conditionKey",
+   "detail": "pattern-unchecked: '^[A-Z][A-Z0-9_]{1,39}$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "conditions[6].conditionKey",
+   "detail": "pattern-unchecked: '^[A-Z][A-Z0-9_]{1,39}$' (no regex engine for \\p classes; validated by the platform, not here)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "id",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "ownerUserId",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "scope",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "systemKey",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "visibility",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "cadence",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "regimeTimeframe",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "minAtrPct",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "minStopLossAtrMultiple",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "maxStopLossAtrMultiple",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "minRiskRewardRatio",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "breakEvenEnabled",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "breakEvenTriggerR",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "trailingEnabled",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "trailingTriggerR",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "trailingGivebackPct",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "trailingBufferPct",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "timeDecayEnabled",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "timeDecayGracePeriodMinutes",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "timeDecayIntervalMinutes",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "timeDecayTightenPct",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "timeDecayMaxTightenPct",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "timeDecayStaleThresholdTpProgressPct",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "decisionInvalidationExitEnabled",
+   "detail": "declared optional; the record carries a value the body omits (platform default or deliberate omission)",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "forkedFromStrategyId",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "revision",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "isActive",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "boundAgentCount",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "openPositionCount",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "createdAt",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "INFO",
+   "path": "updatedAt",
+   "detail": "server-derived key on the record, not part of the request",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "conditions[]",
+   "detail": "required ['clock', 'closes', 'conditionKey', 'definition', 'exit', 'name', 'required', 'verdict'] -> ['closes', 'conditionKey', 'definition', 'exit', 'name', 'required', 'verdict']",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "conditions[]",
+   "detail": "properties added [] removed ['clock']",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "conditions[].clock",
+   "detail": "removed from the current schema",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "entry",
+   "detail": "required ['bandAtrMultiple', 'closes', 'confirmTf', 'levelOffsetAtrMultiple', 'trigger', 'validForBars'] -> ['levelOffsetAtrMultiple', 'trigger', 'validForBars']",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "entry",
+   "detail": "properties added [] removed ['bandAtrMultiple', 'closes', 'confirmTf']",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "entry.bandAtrMultiple",
+   "detail": "removed from the current schema",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "entry.closes",
+   "detail": "removed from the current schema",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "entry.confirmTf",
+   "detail": "removed from the current schema",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "entry.trigger",
+   "detail": "enum added [] removed ['AT_SIGNAL']",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "maxStopLossAtrMultiple",
+   "detail": "bounds {} -> {'maximum': 3}",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "minAtrPct",
+   "detail": "bounds {'minimum': 0.01, 'maximum': 50} -> {}",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "sections[]|1.columns[].inputs[].metric",
+   "detail": "enum added ['PRIOR_TPO_SHAPE', 'PRIOR_TPO_IB_HIGH', 'PRIOR_TPO_IB_LOW', 'TPO_VPOC', 'TPO_VVAH', 'TPO_VVAL', 'PRIOR_TPO_VPOC', 'PRIOR_TPO_VVAH', 'PRIOR_TPO_VVAL', 'NAKED_POC_ABOVE', 'NAKED_POC_BELOW', 'PDO'] removed []",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "sections[]|1.columns[].metric",
+   "detail": "enum added ['PRIOR_TPO_SHAPE', 'PRIOR_TPO_IB_HIGH', 'PRIOR_TPO_IB_LOW', 'TPO_VPOC', 'TPO_VVAH', 'TPO_VVAL', 'PRIOR_TPO_VPOC', 'PRIOR_TPO_VVAH', 'PRIOR_TPO_VVAL', 'NAKED_POC_ABOVE', 'NAKED_POC_BELOW', 'PDO'] removed []",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "timeDecayGracePeriodMinutes",
+   "detail": "bounds {'minimum': 1, 'maximum': 1440} -> {'minimum': 5, 'maximum': 1440}",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "timeDecayIntervalMinutes",
+   "detail": "bounds {'minimum': 1, 'maximum': 480} -> {'minimum': 5, 'maximum': 480}",
+   "verdict": "INFO"
+  },
+  {
+   "cls": "CHANGELOG",
+   "path": "timeDecayTightenPct",
+   "detail": "bounds {'minimum': 0.1, 'maximum': 50} -> {'minimum': 0.5, 'maximum': 50}",
+   "verdict": "INFO"
+  }
+ ],
+ "verdict": "PASS",
+ "expiresAt": "2026-09-19T08:33:59Z",
+ "disclaimer": "covers the published schema and the reference record only; the runtime validator is not observed by this check",
+ "unmeasured": [
+  "the runtime validator (only a compile observes it)",
+  "whether additionalProperties:false is enforced (schema-derived, not measured)",
+  "semantics of any field first seen in this capture"
+ ],
+ "voided": null,
+ "gateLine": "PREFLIGHT PASS · data/audit/compile_preflight_2026-09-18-trend-continuation.json · body 9e0d70d4 · schema 2026-09-18T08:33:59Z · ref 43d11467-637c-42b1-b88b-8a71ed8c32c3 rev 1 · expires 2026-09-19T08:33:59Z"
+}

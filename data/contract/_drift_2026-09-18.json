@@ -1,0 +1,348 @@
+{
+ "_what": "Measured drift on the COMPILE DEFINITION between 2026-09-09T08:03:07Z (contract 54.1.0, build 37cb29b6) and 2026-09-18T08:33:59Z (contract 61.0.1, build 7296172b). Every list below is parsed by scripts/write_drift.py out of the CHANGELOG findings of the preflight receipt named under evidence.receipt - none was typed by hand, and the record can say nothing the receipt does not. Read-only throughout: omega never calls BattleGrid, and the two captures were taken by the manager's watch and by get_strategy. This record covers the AUTHORING SURFACE only; see notResolved for what it does not cover.",
+ "measuredAt": "2026-09-18T10:31:00Z",
+ "evidence": {
+  "receipt": "data/audit/compile_preflight_2026-09-18-trend-continuation.json",
+  "receiptVerdict": "PASS",
+  "gateLine": "PREFLIGHT PASS · data/audit/compile_preflight_2026-09-18-trend-continuation.json · body 9e0d70d4 · schema 2026-09-18T08:33:59Z · ref 43d11467-637c-42b1-b88b-8a71ed8c32c3 rev 1 · expires 2026-09-19T08:33:59Z",
+  "body": {
+   "path": "data/audit/compile_body_trend_continuation_2026-09-18.json",
+   "sha256": "9e0d70d417ba0af9d96dfddebe560c15869295106ca1c59c425db1877dc2bba2",
+   "operation": "CREATE"
+  },
+  "schemaCurrent": {
+   "capture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+   "capturedAt": "2026-09-18T08:33:59Z",
+   "contractVersion": "61.0.1",
+   "buildSha": "7296172b",
+   "how": "battlegrid-manager watch: system_state.surface_tools (stored tools/list definition, contract 61.0.1, build 7296172b), read-only psql export"
+  },
+  "schemaPrevious": {
+   "capture": "data/contract/compile_strategy_plan/schema_20260909T080307Z.json",
+   "capturedAt": "2026-09-09T08:03:07Z",
+   "contractVersion": "54.1.0",
+   "buildSha": "37cb29b6",
+   "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+   "buildShaSource": "data/contract/_manifest.json contractVersionSource - the same GET /mcp/version read, at the capture's own second"
+  },
+  "readback": {
+   "path": "data/contract/get_strategy/43d11467-637c-42b1-b88b-8a71ed8c32c3_20260918T083500Z.json",
+   "capturedAt": "2026-09-18T08:35:00Z",
+   "strategyId": "43d11467-637c-42b1-b88b-8a71ed8c32c3",
+   "revision": 1,
+   "fingerprint": "ok"
+  },
+  "readbackOfTheMigratedRecord": "data/contract/get_strategy/824f4343-e51f-4e5a-87b1-6b44d0bc547f_20260918T084500Z.json - created 2026-09-03 with entry.trigger AT_SIGNAL and six entry keys, revision still 1: what it reads back now is the platform's own migration, not an authoring choice",
+  "captureAge": "The captures are the ones committed with the plan at 21b4bbd (08:33:59Z and 08:35:00Z) and were NOT re-taken for this run, so the receipt was produced with --expires-minutes 1440 instead of the default 60. The gate line's expiry is measured from the schema capture, and a compile authorization must re-capture.",
+  "vendorPackage": ".agents/skills/battlegrid (@battlegrid/mcp-server 31.2.28; skills/EXPORT.json contractVersion 61.0.1)",
+  "writer": "scripts/write_drift.py"
+ },
+ "contractVersion": {
+  "previous": {
+   "contractVersion": "54.1.0",
+   "buildSha": "37cb29b6",
+   "statedBy": "data/contract/compile_strategy_plan/schema_20260909T080307Z.json",
+   "buildShaSource": "data/contract/_manifest.json contractVersionSource - the same GET /mcp/version read, at the capture's own second"
+  },
+  "current": {
+   "contractVersion": "61.0.1",
+   "buildSha": "7296172b",
+   "statedBy": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json"
+  },
+  "extractionManifest": {
+   "extractedOn": "2026-09-09",
+   "servedContractVersion": "54.1.0",
+   "contractVersionSource": "GET https://mcp.battlegrid.trade/mcp/version at 2026-09-09T08:03:07Z (build 37cb29b6)"
+  }
+ },
+ "conditions": {
+  "keysRemoved": [
+   "clock"
+  ],
+  "keysAdded": [],
+  "requiredPrevious": [
+   "clock",
+   "closes",
+   "conditionKey",
+   "definition",
+   "exit",
+   "name",
+   "required",
+   "verdict"
+  ],
+  "requiredCurrent": [
+   "closes",
+   "conditionKey",
+   "definition",
+   "exit",
+   "name",
+   "required",
+   "verdict"
+  ]
+ },
+ "entry": {
+  "keysRemoved": [
+   "bandAtrMultiple",
+   "closes",
+   "confirmTf"
+  ],
+  "keysAdded": [],
+  "requiredPrevious": [
+   "bandAtrMultiple",
+   "closes",
+   "confirmTf",
+   "levelOffsetAtrMultiple",
+   "trigger",
+   "validForBars"
+  ],
+  "requiredCurrent": [
+   "levelOffsetAtrMultiple",
+   "trigger",
+   "validForBars"
+  ],
+  "triggerEnumRemoved": [
+   "AT_SIGNAL"
+  ],
+  "triggerEnumAdded": []
+ },
+ "boundsMoved": {
+  "maxStopLossAtrMultiple": {
+   "previous": {},
+   "current": {
+    "maximum": 3
+   }
+  },
+  "minAtrPct": {
+   "previous": {
+    "minimum": 0.01,
+    "maximum": 50
+   },
+   "current": {}
+  },
+  "timeDecayGracePeriodMinutes": {
+   "previous": {
+    "minimum": 1,
+    "maximum": 1440
+   },
+   "current": {
+    "minimum": 5,
+    "maximum": 1440
+   }
+  },
+  "timeDecayIntervalMinutes": {
+   "previous": {
+    "minimum": 1,
+    "maximum": 480
+   },
+   "current": {
+    "minimum": 5,
+    "maximum": 480
+   }
+  },
+  "timeDecayTightenPct": {
+   "previous": {
+    "minimum": 0.1,
+    "maximum": 50
+   },
+   "current": {
+    "minimum": 0.5,
+    "maximum": 50
+   }
+  }
+ },
+ "metricEnumAdded": {
+  "keys": [
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "PDO",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "PRIOR_TPO_SHAPE",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL"
+  ],
+  "removed": [],
+  "paths": [
+   "sections[]|1.columns[].inputs[].metric",
+   "sections[]|1.columns[].metric"
+  ],
+  "_note": "12 keys across 2 column paths; the same list on each. The plan's measured-facts table named only the nine TPO keys of this list; the changelog line carries all 12. What any of them MEANS is unmeasured here - see notResolved."
+ },
+ "schemaMoves": {
+  "schemaPathsRemoved": [
+   "conditions[].clock",
+   "entry.bandAtrMultiple",
+   "entry.closes",
+   "entry.confirmTf"
+  ],
+  "schemaPathsAdded": [],
+  "enumsChanged": {
+   "entry.trigger": {
+    "added": [],
+    "removed": [
+     "AT_SIGNAL"
+    ]
+   },
+   "sections[]|1.columns[].inputs[].metric": {
+    "added": [
+     "PRIOR_TPO_SHAPE",
+     "PRIOR_TPO_IB_HIGH",
+     "PRIOR_TPO_IB_LOW",
+     "TPO_VPOC",
+     "TPO_VVAH",
+     "TPO_VVAL",
+     "PRIOR_TPO_VPOC",
+     "PRIOR_TPO_VVAH",
+     "PRIOR_TPO_VVAL",
+     "NAKED_POC_ABOVE",
+     "NAKED_POC_BELOW",
+     "PDO"
+    ],
+    "removed": []
+   },
+   "sections[]|1.columns[].metric": {
+    "added": [
+     "PRIOR_TPO_SHAPE",
+     "PRIOR_TPO_IB_HIGH",
+     "PRIOR_TPO_IB_LOW",
+     "TPO_VPOC",
+     "TPO_VVAH",
+     "TPO_VVAL",
+     "PRIOR_TPO_VPOC",
+     "PRIOR_TPO_VVAH",
+     "PRIOR_TPO_VVAL",
+     "NAKED_POC_ABOVE",
+     "NAKED_POC_BELOW",
+     "PDO"
+    ],
+    "removed": []
+   }
+  },
+  "requiredListsChanged": {
+   "conditions[]": {
+    "previous": [
+     "clock",
+     "closes",
+     "conditionKey",
+     "definition",
+     "exit",
+     "name",
+     "required",
+     "verdict"
+    ],
+    "current": [
+     "closes",
+     "conditionKey",
+     "definition",
+     "exit",
+     "name",
+     "required",
+     "verdict"
+    ]
+   },
+   "entry": {
+    "previous": [
+     "bandAtrMultiple",
+     "closes",
+     "confirmTf",
+     "levelOffsetAtrMultiple",
+     "trigger",
+     "validForBars"
+    ],
+    "current": [
+     "levelOffsetAtrMultiple",
+     "trigger",
+     "validForBars"
+    ]
+   }
+  },
+  "propertiesChanged": {
+   "conditions[]": {
+    "added": [],
+    "removed": [
+     "clock"
+    ]
+   },
+   "entry": {
+    "added": [],
+    "removed": [
+     "bandAtrMultiple",
+     "closes",
+     "confirmTf"
+    ]
+   }
+  },
+  "boundsChanged": {
+   "maxStopLossAtrMultiple": {
+    "previous": {},
+    "current": {
+     "maximum": 3
+    }
+   },
+   "minAtrPct": {
+    "previous": {
+     "minimum": 0.01,
+     "maximum": 50
+    },
+    "current": {}
+   },
+   "timeDecayGracePeriodMinutes": {
+    "previous": {
+     "minimum": 1,
+     "maximum": 1440
+    },
+    "current": {
+     "minimum": 5,
+     "maximum": 1440
+    }
+   },
+   "timeDecayIntervalMinutes": {
+    "previous": {
+     "minimum": 1,
+     "maximum": 480
+    },
+    "current": {
+     "minimum": 5,
+     "maximum": 480
+    }
+   },
+   "timeDecayTightenPct": {
+    "previous": {
+     "minimum": 0.1,
+     "maximum": 50
+    },
+    "current": {
+     "minimum": 0.5,
+     "maximum": 50
+    }
+   }
+  }
+ },
+ "refusedBeforeTheFix": {
+  "_source": "docs/superpowers/plans/2026-09-18-contract-61-authoring-surface.md, 'Measured facts' row 1 - scripts/preflight.py run 2026-09-18T08:40Z over the five preset bodies; that run's receipts were not kept, these are its counts",
+  "verdict": "FAIL",
+  "perBody": [
+   "7 x FAIL UNDECLARED conditions[i].clock",
+   "1 x FAIL ENUM entry.trigger 'AT_SIGNAL' not in the declared enum (3 values)",
+   "3 x FAIL UNDECLARED entry keys: entry.confirmTf, entry.closes, entry.bandAtrMultiple",
+   "1 x WARN MIRROR entry.trigger body 'AT_SIGNAL' vs record 'ON_CANDLE_CLOSE'",
+   "~93 x WARN UNSUPPORTED ... ['multipleOf'] (every closes, every rules[i].allocation, minAggregateScore, minRequiredCount, entry.levelOffsetAtrMultiple)"
+  ]
+ },
+ "notResolved": [
+  {
+   "what": "The metric/transform/vocabulary EXTRACTION (data/contract/_manifest.json) is still the 2026-09-09 one at contract 54.1.0.",
+   "whyItMatters": "metricEnumAdded below shows the compile schema's metric enum has grown since that extraction, so the repo's metric catalogue, the composability matrix and every count derived from them (docs 00/01/03/14/18, README) under-report the served platform. This plan changed the authoring surface only; it did not re-extract, and it did not measure what the added keys mean.",
+   "owner": "a re-extraction session (read-only, the 2026-09-09 recipe), not this plan"
+  },
+  {
+   "what": "The TPO branch claude/tpo-strategy-brainstorm-796f15 pins the pre-60 entry: tests/test_tpo_suite_wire.py asserts builder.ENTRY_MIRROR carries confirmTf.",
+   "whyItMatters": "that test fails against the three-key entry on this branch; the branch must be brought to {trigger, levelOffsetAtrMultiple, validForBars} when it is merged (a Phase 4 prerequisite).",
+   "owner": "whoever merges the TPO branch"
+  }
+ ]
+}

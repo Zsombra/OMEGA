@@ -175,7 +175,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 370 passed
+python -m pytest tests/ -q     # 1020 passed (2026-09-18)
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector
