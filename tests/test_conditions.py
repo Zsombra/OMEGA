@@ -397,35 +397,100 @@ def test_every_disjoint_header_carries_a_numeric_replacement():
             assert m.get("numericReplacement"), f"{header} refuses with no way out"
 
 
-# --- the condition clock (deployed 2026-08-29; schema published 2026-08-30) ---
-# Every condition must carry clock ('LIVE' | 'CLOSE') and closes (int 1..5) - the
-# compile refuses their absence (compile_dry_run_2026-08-29-deep-tail-fade.json).
-# CLOSE restricts reads to the coin's own candle series at offset 0
-# (CONDITION_CLOCK_OPERAND_ILLEGAL); LIVE is the platform's migration default.
+# --- contract 61.0.1: seven keys, the hold, the read rules (2026-09-18) ---------------
+# Captures: data/contract/compile_strategy_plan/schema_20260918T083359Z.json (condition required keys
+# [conditionKey, name, definition, verdict, required, exit, closes]; closes 1..5) and the two read-backs under
+# data/contract/get_strategy/*_20260918T*.json. Rules quoted from vendor pack 31.2.28, strategy-examples § Conditions.
 
-def test_condition_emits_the_clock_fields_with_migration_defaults():
+def test_condition_emits_exactly_the_seven_read_back_keys_in_order():
     c = condition("CHK", "n", num("mktBreadth_all", "gt", 10))
-    assert c["clock"] == "LIVE" and c["closes"] == 1
+    assert list(c) == ["conditionKey", "name", "definition", "verdict", "required", "exit", "closes"]
+    assert c["closes"] == 1 and c["exit"] is False and "clock" not in c
 
 
-@pytest.mark.parametrize("kwargs", [
-    {"clock": "closed"}, {"clock": "live"}, {"closes": 0}, {"closes": 6},
-    {"closes": 1.5}, {"closes": True},
-])
-def test_condition_refuses_a_bad_clock_or_closes(kwargs):
+def test_condition_refuses_the_retired_clock_keyword():
+    with pytest.raises(TypeError):
+        condition("CHK", "n", num("mktBreadth_all", "gt", 10), clock="LIVE")
+
+
+@pytest.mark.parametrize("closes", [0, 6, 1.5, True])
+def test_condition_refuses_a_hold_outside_one_to_five(closes):
     with pytest.raises(ValueError):
-        condition("CHK", "n", num("mktBreadth_all", "gt", 10), **kwargs)
+        condition("CHK", "n", num("mktBreadth_all", "gt", 10), closes=closes)
 
 
-def test_a_condition_without_clock_or_closes_is_an_error():
-    """A hand-built dict that skips condition() must still carry both fields -
-    the live input validator refused their absence on 2026-08-29."""
-    bare = {"conditionKey": "CHK", "name": "n",
-            "definition": num("mktBreadth_all", "gt", 10),
-            "verdict": None, "required": False, "exit": False}
-    paths = {f.path for f in validate_conditions(RSI_REPORT, [bare])
-             if f.severity == "error"}
-    assert ".clock" in paths and ".closes" in paths
+def test_a_hand_built_condition_with_clock_is_an_error_naming_the_retirement():
+    bare = dict(condition("CHK", "n", num("mktBreadth_all", "gt", 10)), clock="LIVE")
+    [f] = [f for f in validate_conditions(RSI_REPORT, [bare]) if f.path == ".clock"]
+    assert f.severity == "error" and "61.0.0" in f.message
+
+
+def test_a_hold_over_a_custom_candle_header_at_the_anchor_is_legal():
+    cond = condition("CHK", "n", num("RSI14_now", "gt", 50), closes=3)
+    assert not [f for f in validate_conditions(RSI_REPORT, [cond]) if f.severity == "error"]
+
+
+def test_a_hold_over_an_ambient_header_is_refused():
+    from omega.conditions import stables_at_par
+    cond = condition("CHK", "n", stables_at_par(), closes=2)
+    errs = [f for f in validate_conditions(RSI_REPORT, [cond]) if f.severity == "error"]
+    assert errs and all("CONDITION_HOLD_OPERAND_ILLEGAL" in f.message for f in errs)
+
+
+def test_a_hold_over_an_offset_column_is_refused():
+    rep = _report({"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "anchor"}, "offset": 4})
+    cond = condition("CHK", "n", num("RSI14", "gt", 50), closes=2)
+    assert any("CONDITION_HOLD_OPERAND_ILLEGAL" in f.message
+               for f in validate_conditions(rep, [cond]) if f.severity == "error")
+
+
+def test_a_hold_over_an_inert_custom_header_is_refused():
+    rep = _report({"metric": "FUNDING_RATE", "transformId": "value", "timeframe": {"rel": "anchor"}})
+    cond = condition("CHK", "n", num("rate", "gt", 0), closes=2)
+    assert any("CONDITION_HOLD_OPERAND_ILLEGAL" in f.message
+               for f in validate_conditions(rep, [cond]) if f.severity == "error")
+
+
+def test_a_hold_over_a_column_below_the_anchor_is_refused():
+    rep = _report({"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "lower"}})
+    [header] = [h for h in report_headers(rep) if h.startswith("RSI14")]
+    cond = condition("CHK", "n", num(header, "gt", 50), closes=2)
+    assert any("CONDITION_HOLD_OPERAND_ILLEGAL" in f.message
+               for f in validate_conditions(rep, [cond]) if f.severity == "error")
+
+
+def test_a_hold_reached_only_through_a_reference_is_refused():
+    core = condition("CORE", "n", num("RSI14_now", "gt", 50))
+    held = condition("HELD", "n", ref("CORE"), closes=2)
+    errs = [f for f in validate_conditions(RSI_REPORT, [core, held]) if f.severity == "error"]
+    assert any("CONDITION_HOLD_ILLEGAL" in f.message and f.condition_key == "HELD" for f in errs)
+
+
+def test_a_verdict_carrier_may_not_read_a_developing_higher_timeframe_bar_even_through_a_reference():
+    rep = _report({"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "regime"}, "bars": "all"})
+    [header] = [h for h in report_headers(rep) if h.startswith("RSI14")]
+    block = condition("BLOCK", "n", num(header, "gt", 50))                       # verdict None: legal
+    carrier = condition("TOP", "n", ref("BLOCK"), verdict="UP")
+    findings = validate_conditions(rep, [block, carrier])
+    assert not [f for f in findings if f.condition_key == "BLOCK" and f.severity == "error"]
+    assert any("CONDITION_VERDICT_READ_ILLEGAL" in f.message and f.condition_key == "TOP" for f in findings)
+
+
+def test_a_confirmed_higher_timeframe_read_admits_a_verdict():
+    rep = _report({"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "regime"}, "bars": "closed"})
+    [header] = [h for h in report_headers(rep) if h.startswith("RSI14")]
+    carrier = condition("TOP", "n", num(header, "gt", 50), verdict="UP")
+    assert not [f for f in validate_conditions(rep, [carrier]) if f.severity == "error"]
+
+
+def test_exit_true_needs_operands_a_completed_bar_moves():
+    # keys are two characters: ^[A-Z][A-Z0-9_]{1,39}$ refuses a one-character key, and
+    # that unrelated finding would mask the clean read below
+    inert = condition("XX", "n", num("mktBreadth_all", "gt", 10), exit=True)
+    errs = [f for f in validate_conditions(RSI_REPORT, [inert]) if f.severity == "error"]
+    assert any("CONDITION_EXIT_READ_ILLEGAL" in f.message for f in errs)
+    moved = condition("YY", "n", num("RSI14_now", "gt", 50), exit=True)
+    assert not [f for f in validate_conditions(RSI_REPORT, [moved]) if f.severity == "error"]
 
 
 # --- drift instance #5: conditions[].exit (schema published by 2026-09-04) ---
@@ -440,7 +505,7 @@ def test_condition_emits_exit_with_the_migration_default():
     assert c["exit"] is False
     # key order mirrors the platform's read-back shape exactly
     assert list(c) == ["conditionKey", "name", "definition", "verdict", "required",
-                       "exit", "clock", "closes"]
+                       "exit", "closes"]
 
 
 @pytest.mark.parametrize("bad", [0, 1, "false", None, "no"])
@@ -451,10 +516,10 @@ def test_condition_refuses_a_non_boolean_exit(bad):
 
 def test_a_condition_without_exit_is_an_error():
     """A hand-built dict that skips condition() must carry exit - the published
-    schema requires it (2026-09-04), the same way clock/closes are required."""
+    schema requires it (2026-09-04), the same way closes is required."""
     bare = {"conditionKey": "CHK", "name": "n",
             "definition": num("mktBreadth_all", "gt", 10),
-            "verdict": None, "required": False, "clock": "LIVE", "closes": 1}
+            "verdict": None, "required": False, "closes": 1}
     paths = {f.path for f in validate_conditions(RSI_REPORT, [bare])
              if f.severity == "error"}
     assert ".exit" in paths
@@ -462,60 +527,6 @@ def test_a_condition_without_exit_is_an_error():
     paths = {f.path for f in validate_conditions(RSI_REPORT, [bad])
              if f.severity == "error"}
     assert ".exit" in paths
-
-
-def test_close_may_not_read_an_ambient_header():
-    """Mirror of the measured refusal: DF_RISK_ON clocked CLOSE reading
-    reference-pairs.usdtUsdDev_market drew CONDITION_CLOCK_OPERAND_ILLEGAL -
-    'a closed bar frame cannot move it'."""
-    from omega.conditions import stables_at_par
-    cond = condition("CHK", "n", stables_at_par(), clock="CLOSE")
-    errs = [f for f in validate_conditions(RSI_REPORT, [cond])
-            if f.severity == "error"]
-    assert errs
-    assert all("CLOSE" in f.message for f in errs)
-
-
-def test_close_may_read_a_custom_candle_header_at_offset_zero():
-    cond = condition("CHK", "n", num("RSI14_now", "gt", 50), clock="CLOSE")
-    assert not [f for f in validate_conditions(RSI_REPORT, [cond])
-                if f.severity == "error"]
-
-
-def test_close_may_not_read_an_offset_column():
-    """The measured rule says 'at offset 0' - a shifted read is not eligible."""
-    rep = _report({"metric": "RSI14", "transformId": "value",
-                   "timeframe": {"rel": "anchor"}, "offset": 4})
-    cond = condition("CHK", "n", num("RSI14", "gt", 50), clock="CLOSE")
-    errs = [f for f in validate_conditions(rep, [cond]) if f.severity == "error"]
-    assert any("CLOSE" in f.message for f in errs)
-
-
-def test_close_may_not_read_an_inert_custom_header():
-    """FUNDING_RATE is timeframe-inert - not the coin's candle series - so its
-    header is illegal under CLOSE even from a custom section."""
-    rep = _report({"metric": "FUNDING_RATE", "transformId": "value",
-                   "timeframe": {"rel": "anchor"}})
-    cond = condition("CHK", "n", num("rate", "gt", 0), clock="CLOSE")
-    errs = [f for f in validate_conditions(rep, [cond]) if f.severity == "error"]
-    assert any("CLOSE" in f.message for f in errs)
-
-
-def test_close_referencing_a_live_condition_is_an_error():
-    """The refusal's prescription: 'move that clause into its own LIVE condition
-    and reference it from a LIVE condition'."""
-    live = condition("AMB", "n", num("mktBreadth_all", "gt", 10), clock="LIVE")
-    close = condition("CHK", "n", all_of(num("RSI14_now", "gt", 50), ref("AMB")),
-                      clock="CLOSE")
-    findings = validate_conditions(RSI_REPORT, [live, close])
-    assert any("LIVE condition 'AMB'" in f.message for f in findings)
-
-
-def test_live_referencing_a_close_condition_is_legal():
-    close = condition("CORE", "n", num("RSI14_now", "gt", 50), clock="CLOSE")
-    live = condition("TOP", "n", ref("CORE"), clock="LIVE", verdict="UP")
-    assert not [f for f in validate_conditions(RSI_REPORT, [close, live])
-                if f.severity == "error"]
 
 
 # Clock policy over the presets: ambient reads and composite verdicts LIVE, CORE

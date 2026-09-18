@@ -563,16 +563,6 @@ def _clause_for(module: str, side: str, fade: bool) -> dict:
     return spec[side]()
 
 
-def _candle_module(module: str) -> bool:
-    """True when every column the module contributes reads the coin's own candle
-    series - the eligibility test for the CLOSE clock
-    (CONDITION_CLOCK_OPERAND_ILLEGAL: CLOSE conditions may only read candle-series
-    headers at offset 0; measured 2026-08-29)."""
-    c = load()
-    specs = MODULE_RECIPES.get(module, [])
-    return bool(specs) and all(not c.metric(s["metric"]).is_timeless for s in specs)
-
-
 def _build_conditions(thesis: Thesis) -> list[dict]:
     """A layered condition DAG, not one flat checklist.
 
@@ -597,27 +587,17 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
     n = max(2, (len(directional) * 2) // 3)          # two-thirds of the checklist
     fade = thesis.stance == "FADE"
 
-    # Clock policy (decision 2026-08-29, plan: condition-clock migration):
-    # ambient conditions and the composite verdicts run LIVE - ambient headers and
-    # conditionRefs to LIVE conditions are illegal under CLOSE. The CORE checklists
-    # run CLOSE only when every contributing module reads the coin's own candle
-    # series (stable reads; matches the closed-bar research); a checklist touching
-    # any inert module (FUNDING, REGIME, ...) stays on the permissive LIVE clock.
-    # closes: 1 everywhere - >1 semantics are unmeasured.
-    core_close = all(_candle_module(m) for m in directional + filters)
-    core_clock = "CLOSE" if core_close else "LIVE"
-
     out = [
         condition(f"{prefix}_RISK_ON", "Stablecoin pairs at par",
-                  stables_at_par(), verdict=None, clock="LIVE"),
+                  stables_at_par(), verdict=None),
         condition(f"{prefix}_CTX_UP",
                   "Crowd leaning down - room to fade up" if fade else "Broad tape up",
                   crowd_leaning_down() if fade else tape_bullish(),
-                  verdict=None, clock="LIVE"),
+                  verdict=None),
         condition(f"{prefix}_CTX_DOWN",
                   "Crowd leaning up - room to fade down" if fade else "Broad tape down",
                   crowd_leaning_up() if fade else tape_bearish(),
-                  verdict=None, clock="LIVE"),
+                  verdict=None),
     ]
     for side, verdict in (("up", "UP"), ("down", "DOWN")):
         checklist = n_of(n, *[_clause_for(m, side, fade) for m in directional])
@@ -625,7 +605,7 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
                 if filters else checklist)
         out.append(condition(f"{prefix}_CORE_{verdict}",
                              f"{n} of {len(directional)} filters agree - {side}",
-                             core, verdict=None, clock=core_clock))
+                             core, verdict=None))
     for verdict in ("UP", "DOWN"):
         out.append(condition(
             f"{prefix}_{verdict}",
@@ -633,7 +613,7 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
             all_of(ref(f"{prefix}_CORE_{verdict}"),
                    ref(f"{prefix}_CTX_{verdict}"),
                    ref(f"{prefix}_RISK_ON")),
-            verdict=verdict, clock="LIVE"))
+            verdict=verdict))
     return out
 
 

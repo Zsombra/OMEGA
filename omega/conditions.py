@@ -31,13 +31,14 @@ CONDITION_KEY = re.compile(r"^[A-Z][A-Z0-9_]{1,39}$")
 GROUP_OPS = ("ALL", "ANY", "NOT", "N_OF")
 NUMERIC_OPS = ("lt", "lte", "gte", "gt")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
-# The condition-clock axis (deployed 2026-08-29, published in the schema 2026-08-30).
-# LIVE is the permissive clock - the platform migrated every existing condition to
-# LIVE/1. CLOSE restricts reads to the coin's own candle series at offset 0
-# (CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29). closes is a schema-bounded
-# integer 1..5; >1 semantics are unmeasured, so authoring stays at 1.
-CLOCKS = ("LIVE", "CLOSE")
-CLOSES_MIN, CLOSES_MAX = 1, 5
+CARRIER_VERDICTS = ("UP", "DOWN", "NEITHER")
+# The per-condition clock was RETIRED in contract 61.0.0 (2026-09-17) and the compile
+# schema refuses the key outright: conditions[] is additionalProperties:false over
+# [conditionKey, name, definition, verdict, required, exit, closes]
+# (data/contract/compile_strategy_plan/schema_20260918T083359Z.json, captured 2026-09-18).
+# What survives is `closes`: the HOLD, how many consecutive COMPLETED strategy bars must
+# read TRUE. The schema bounds it to an integer 1..5, multipleOf 1.
+HOLD_MIN, HOLD_MAX = 1, 5
 
 
 OBSERVED_VOCAB = DERIVED_DIR.parent / "contract" / "columns" / "_observed_vocabulary.json"
@@ -86,10 +87,15 @@ def ambient_headers() -> dict[str, dict]:
                 "ops": o["ops"],
                 "vocab": o.get("vocab", []),
                 "meaning": o["meaning"],
-                # ambient values do not come from the coin's own candle series, so
-                # a CLOSE-clocked condition may never read them
-                # (CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29)
+                # ambient values do not come from the coin's own candle series, so a
+                # completed bar does not move them: no hold above 1 and no exit role
+                # (CONDITION_HOLD_OPERAND_ILLEGAL / CONDITION_EXIT_READ_ILLEGAL,
+                # vendor pack 31.2.28 § Conditions). They are not read off a column
+                # omega can inspect either, so the three timeframe flags are False.
                 "candle": False,
+                "above_anchor": False,
+                "below_anchor": False,
+                "developing": False,
             }
     return out
 
@@ -151,26 +157,26 @@ def n_of(n: int, *members: dict) -> dict:
 
 def condition(key: str, name: str, definition: dict, *,
               verdict: str | None = None, required: bool = False,
-              exit: bool = False, clock: str = "LIVE", closes: int = 1) -> dict:
-    """One wire-shaped condition. clock/closes are REQUIRED by the compile schema
-    since 2026-08-29; the defaults mirror the platform's own migration of existing
-    records (clock=LIVE, closes=1, read back from 6a8bca67 on 2026-08-30).
-    exit is REQUIRED since the schema re-read of 2026-09-04 (drift instance #5,
-    caught offline): both existing records read back exit=false on every condition
-    with no revision bump (drift5_exit_rediscovery_2026-09-04.json). Mirrored, not
-    interpreted - what exit=true does is unmeasured, so authoring never sets it.
-    Key order mirrors the platform's read-back shape."""
+              exit: bool = False, closes: int = 1) -> dict:
+    """One wire-shaped condition, contract 61.0.1: exactly the seven keys the platform reads back
+    (data/contract/get_strategy/43d11467-637c-42b1-b88b-8a71ed8c32c3_20260918T083500Z.json), in that
+    order. `closes` is the hold: how many consecutive COMPLETED strategy bars must read TRUE (1..5).
+    The per-condition clock was retired in 61.0.0 and a `clock` key is refused (vendor pack 31.2.28,
+    strategy-examples § Conditions) - it is not a keyword here, so passing it raises TypeError.
+
+    exit is REQUIRED since the schema re-read of 2026-09-04 (drift instance #5, caught offline):
+    both records then in existence read back exit=false on every condition with no revision bump
+    (drift5_exit_rediscovery_2026-09-04.json). 61.0.1 published what exit=true does - a settled TRUE
+    reading closes positions its verdict opposes - and the read rule that goes with it, mirrored in
+    validate_conditions; authoring still defaults to False."""
     if not isinstance(exit, bool):
         raise ValueError(f"exit must be a bool (required by the compile schema since "
                          f"2026-09-04), got {exit!r}")
-    if clock not in CLOCKS:
-        raise ValueError(f"clock {clock!r} is not one of {CLOCKS}")
     if not isinstance(closes, int) or isinstance(closes, bool) \
-            or not CLOSES_MIN <= closes <= CLOSES_MAX:
-        raise ValueError(f"closes must be an int {CLOSES_MIN}..{CLOSES_MAX}, got {closes!r}")
+            or not HOLD_MIN <= closes <= HOLD_MAX:
+        raise ValueError(f"closes must be an int {HOLD_MIN}..{HOLD_MAX}, got {closes!r}")
     return {"conditionKey": key, "name": name, "definition": definition,
-            "verdict": verdict, "required": required, "exit": exit,
-            "clock": clock, "closes": closes}
+            "verdict": verdict, "required": required, "exit": exit, "closes": closes}
 
 
 # --- ambient clause library -----------------------------------------------
@@ -232,9 +238,40 @@ class ConditionFinding:
         return f"[{self.severity}] {self.condition_key}{self.path}: {self.message}"
 
 
+def _anchor_side(column, anchor: str, order: list[str]) -> tuple[bool, bool]:
+    """(above_anchor, below_anchor) for one column's timeframe reference.
+
+    `rel` is resolved by name: regime is the higher frame, lower the retained lower
+    series, anchor the strategy timeframe itself. An `abs` reference is placed by its
+    index in `absoluteTimeframes` (data/contract/vocabulary/_shared.json, 13 values)
+    against the report anchor's index. An abs reference EQUAL to the anchor is neither
+    above nor below - "at or above the strategy timeframe" admits it.
+    """
+    tf = column.timeframe
+    rel = getattr(tf, "rel", None)
+    if rel is not None:
+        return rel == "regime", rel == "lower"
+    abs_tf = getattr(tf, "abs", None)
+    if abs_tf not in order or anchor not in order:
+        return False, False
+    here, there = order.index(abs_tf), order.index(anchor)
+    return here > there, here < there
+
+
 def report_headers(report: Report) -> dict[str, dict]:
-    """Every header the report exposes to conditions, ambient headers included."""
+    """Every header the report exposes to conditions, ambient headers included.
+
+    Each entry carries four booleans the 61.0.1 read rules turn on:
+      candle        the header resolves from this coin's own candle series at offset 0
+      above_anchor  its column reads a timeframe above the report anchor
+      below_anchor  ... below it (the retained lower series)
+      developing    above_anchor and bars="all" - the higher-timeframe bar still in
+                    progress at the strategy close, which REPAINTS until it completes.
+                    Left unset, bars above the anchor default to Confirmed, so an unset
+                    column is never developing (vendor pack 31.2.28 § Conditions).
+    """
     c = load()
+    order = list(c.shared["absoluteTimeframes"])
     out = dict(ambient_headers())
     for section in report.sections:
         if isinstance(section, PlatformSection):
@@ -246,14 +283,16 @@ def report_headers(report: Report) -> dict[str, dict]:
             for spec in tmpl["columns"]:
                 try:
                     for o in outputs_for(Column.model_validate(spec), c):
-                        # conservative: the measured CLOSE rule names "headers
-                        # resolved from the coin's own candle series"; only
+                        # conservative: the published hold rule names "a header
+                        # resolved from this coin's own candle series"; only
                         # custom-candle-section headers are treated as eligible
-                        # offline, platform-section headers are not
+                        # offline, platform-section headers are not, and their
+                        # timeframe placement is not omega's to assert either
                         out[o.header] = {"sectionKey": section.sectionKey,
                                          "ops": o.condition_operators,
                                          "vocab": list(o.vocabulary), "meaning": "",
-                                         "candle": False}
+                                         "candle": False, "above_anchor": False,
+                                         "below_anchor": False, "developing": False}
                 except Exception:
                     continue
         elif isinstance(section, CustomSection):
@@ -262,18 +301,50 @@ def report_headers(report: Report) -> dict[str, dict]:
                     continue
                 candle = (not c.metric(column.metric).is_timeless
                           and (column.offset or 0) == 0)
+                above, below = _anchor_side(column, report.anchor, order)
+                developing = above and column.bars == "all"
                 for o in outputs_for(column, c):
                     out[o.header] = {"sectionKey": section.sectionKey,
                                      "ops": o.condition_operators,
                                      "vocab": list(o.vocabulary), "meaning": "",
-                                     "candle": candle}
+                                     "candle": candle, "above_anchor": above,
+                                     "below_anchor": below, "developing": developing}
     return out
 
 
+@dataclass(frozen=True)
+class _Mode:
+    """What the current condition needs checked at each of its OWN clauses.
+
+    The verdict and exit read rules are NOT here: both are stated over the closure
+    (what the condition reads directly plus everything reached through conditionRef,
+    transitively), so they are checked once per condition against the collected
+    closure rather than node by node.
+    """
+    closes: int = HOLD_MIN
+
+
+def _holdable(spec: dict) -> bool:
+    """True when a completed strategy bar changes this header's reading.
+
+    "Above 1 it is legal only where a completed bar changes the reading: over a header
+    resolved from this coin's own candle series, at offset 0, at or above the strategy
+    timeframe, read Confirmed." (vendor pack 31.2.28 § Conditions)
+    """
+    return (bool(spec.get("candle"))
+            and not spec.get("below_anchor")
+            and not spec.get("developing"))
+
+
 def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
-          out: list[ConditionFinding], depth: int = 0, clock: str = "LIVE",
-          clock_by_key: dict[str, str] | None = None) -> int:
-    """Validate one definition node. Returns the number of clauses beneath it."""
+          out: list[ConditionFinding], depth: int = 0,
+          mode: _Mode | None = None) -> int:
+    """Validate one definition node. Returns the number of clauses beneath it.
+
+    conditionRef is an edge, not a descent: the target's own clauses are validated
+    when that condition's turn comes, and closure rules are handled separately.
+    """
+    mode = mode or _Mode()
     kind = defn.get("kind")
 
     if kind == "conditionRef":
@@ -283,12 +354,6 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
         elif target not in known_keys:
             out.append(ConditionFinding("error", key, path,
                                         f"references unknown condition {target!r}"))
-        elif clock == "CLOSE" and (clock_by_key or {}).get(target) == "LIVE":
-            out.append(ConditionFinding(
-                "error", key, path,
-                f"CLOSE-clocked condition references LIVE condition {target!r} - a "
-                f"condition referencing a LIVE condition must itself be LIVE (mirror "
-                f"of CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29)"))
         return 0
 
     if kind == "group":
@@ -313,7 +378,7 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
         total = 0
         for i, member in enumerate(members):
             total += _walk(member, key, f"{path}.members[{i}]", headers, known_keys,
-                           out, depth + 1, clock, clock_by_key)
+                           out, depth + 1, mode)
         return total
 
     if kind != "clause":
@@ -330,13 +395,13 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"(nor ambient). Add a column that emits it, or fix the name."))
         return 1
 
-    if clock == "CLOSE" and not spec.get("candle", False):
+    if mode.closes > HOLD_MIN and not _holdable(spec):
         out.append(ConditionFinding(
             "error", key, path,
-            f"CLOSE-clocked condition reads {header!r}, which is not a custom-"
-            f"candle-section header at offset 0 - a closed bar frame cannot move "
-            f"it. Put the clause in a LIVE condition instead "
-            f"(CONDITION_CLOCK_OPERAND_ILLEGAL, measured 2026-08-29)."))
+            f"{header!r} cannot hold {mode.closes} closes: a hold above 1 is legal only "
+            f"over a header resolved from this coin's own candle series at offset 0, at "
+            f"or above the strategy timeframe, read Confirmed "
+            f"(CONDITION_HOLD_OPERAND_ILLEGAL, vendor pack 31.2.28, contract 61.0.1)"))
 
     declared = (defn.get("column") or {}).get("sectionKey")
     if declared is not None and spec["sectionKey"] is not None and declared != spec["sectionKey"]:
@@ -418,7 +483,8 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
             "error", cycle[0], ".definition",
             f"conditionRef cycle: {' -> '.join(cycle)} -> {cycle[0]}"))
 
-    clock_by_key = {x.get("conditionKey", ""): x.get("clock") for x in conditions}
+    defn_by_key = {x.get("conditionKey", ""): (x.get("definition") or {})
+                   for x in conditions}
 
     clause_cap = c.budgets["conditionClauses"]
     for cond in conditions:
@@ -439,26 +505,63 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
                 "error", key, ".exit",
                 f"must be a bool (required by the compile schema since 2026-09-04; "
                 f"platform migration default false), got {cond.get('exit')!r}"))
-        # clock/closes are REQUIRED by the compile schema (published 2026-08-30)
-        clock = cond.get("clock")
-        if clock not in CLOCKS:
+        # The per-condition clock was retired in 61.0.0 and the compile schema is
+        # additionalProperties:false over the seven keys, so a surviving `clock` is
+        # not a stale default - it is a refused payload.
+        if "clock" in cond:
             out.append(ConditionFinding(
                 "error", key, ".clock",
-                f"must be one of {CLOCKS} (required by the compile schema since "
-                f"2026-08-29), got {clock!r}"))
-            clock = "LIVE"      # keep walking; clause-level clock findings suppressed
+                "clock was retired in contract 61.0.0 and is refused by the compile "
+                "schema; drop the key (the hold is `closes`)"))
+        # closes is REQUIRED by the compile schema: integer, minimum 1, maximum 5,
+        # multipleOf 1 (schema_20260918T083359Z.json)
         closes = cond.get("closes")
         if not isinstance(closes, int) or isinstance(closes, bool) \
-                or not CLOSES_MIN <= closes <= CLOSES_MAX:
+                or not HOLD_MIN <= closes <= HOLD_MAX:
             out.append(ConditionFinding(
                 "error", key, ".closes",
-                f"must be an int {CLOSES_MIN}..{CLOSES_MAX} (required by the compile "
-                f"schema since 2026-08-29), got {closes!r}"))
+                f"must be an int {HOLD_MIN}..{HOLD_MAX} (the compile schema declares "
+                f"integer, minimum 1, maximum 5, multipleOf 1; "
+                f"schema_20260918T083359Z.json), got {closes!r}"))
+            closes = HOLD_MIN   # keep walking; clause-level hold findings suppressed
         clauses = _walk(cond.get("definition") or {}, key, ".definition", headers,
-                        known, out, 0, clock, clock_by_key)
+                        known, out, 0, _Mode(closes=closes))
         if clauses > clause_cap:
             out.append(ConditionFinding("error", key, ".definition",
                                         f"{clauses} clauses exceeds the budget of {clause_cap}"))
+        # A hold needs a clause of the condition's OWN: conditionRef contributes an
+        # answer resolved once, not one that moves with the bar.
+        if closes > HOLD_MIN and clauses == 0:
+            out.append(ConditionFinding(
+                "error", key, ".definition",
+                f"a hold of {closes} closes needs a clause of the condition's own; a "
+                f"referenced condition is resolved once and contributes the same answer "
+                f"to every bar (CONDITION_HOLD_ILLEGAL)"))
+
+        # The two CLOSURE rules. "The closure is what the condition reads directly plus
+        # everything reached through conditionRef, transitively: a referenced condition
+        # contributes what IT reads, so moving the clause into a building block does not
+        # launder it." (vendor pack 31.2.28 § Conditions)
+        carrier = cond.get("verdict") in CARRIER_VERDICTS
+        exits = cond.get("exit") is True
+        if carrier or exits:
+            for owner, cpath, header in _closure_clauses(key, defn_by_key):
+                spec = headers.get(header)
+                if spec is None:
+                    continue            # unknown header: already reported at its clause
+                where = cpath if owner == key else f"{cpath} (in {owner})"
+                if carrier and spec.get("developing"):
+                    out.append(ConditionFinding(
+                        "error", key, where,
+                        f"{header!r} reads a Developing higher-timeframe bar; a verdict "
+                        f"carrier may not read one, at any depth "
+                        f"(CONDITION_VERDICT_READ_ILLEGAL)"))
+                if exits and (not spec.get("candle") or spec.get("developing")):
+                    out.append(ConditionFinding(
+                        "error", key, where,
+                        f"{header!r} is not moved by a completed bar (or is a developing "
+                        f"read); exit: true needs a closure every operand of which a "
+                        f"completed bar moves (CONDITION_EXIT_READ_ILLEGAL)"))
     return out
 
 
@@ -469,6 +572,46 @@ def _reference_edges(defn: dict, out: set[str]) -> None:
         out.add(defn.get("conditionKey", ""))
     for member in defn.get("members") or []:
         _reference_edges(member, out)
+
+
+def _own_clauses(defn: dict, path: str = ".definition") -> list[tuple[str, str]]:
+    """(path, header) for every clause this definition holds itself.
+
+    conditionRef is not followed: what a reference contributes belongs to the
+    condition it names, which _closure_clauses collects separately.
+    """
+    if not isinstance(defn, dict):
+        return []
+    if defn.get("kind") == "clause":
+        return [(path, ((defn.get("column") or {}).get("header", "")))]
+    out: list[tuple[str, str]] = []
+    for i, member in enumerate(defn.get("members") or []):
+        out.extend(_own_clauses(member, f"{path}.members[{i}]"))
+    return out
+
+
+def _closure_clauses(key: str, defn_by_key: dict[str, dict]) -> list[tuple[str, str, str]]:
+    """(owner key, clause path, header) for the whole closure of one condition.
+
+    The closure is the condition's own clauses plus everything reached through
+    conditionRef, transitively. Breadth-first from `key`, each condition visited once -
+    which also makes this terminate on a reference cycle (reported separately by
+    _find_reference_cycles).
+    """
+    out: list[tuple[str, str, str]] = []
+    seen: set[str] = set()
+    queue = [key]
+    while queue:
+        cur = queue.pop(0)
+        if cur in seen or cur not in defn_by_key:
+            continue
+        seen.add(cur)
+        defn = defn_by_key[cur]
+        out.extend((cur, path, header) for path, header in _own_clauses(defn))
+        edges: set[str] = set()
+        _reference_edges(defn, edges)
+        queue.extend(sorted(edges))
+    return out
 
 
 def _find_reference_cycles(conditions: list[dict]) -> list[list[str]]:
