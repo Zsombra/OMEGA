@@ -170,7 +170,7 @@
    "sections[]|1.columns[].inputs[].metric",
    "sections[]|1.columns[].metric"
   ],
-  "_note": "12 keys across 2 column paths; the same list on each. The plan's measured-facts table named only the nine TPO keys of this list; the changelog line carries all 12. What any of them MEANS is unmeasured here - see notResolved."
+  "_note": "12 keys across 2 column paths; the same list on each. The plan's measured-facts table FIRST named only nine TPO keys of this list, read off a truncated changelog line; it was corrected in commit 48efdee to the 12 the changelog actually carries, which is the list above. What any of them MEANS is unmeasured here - see notResolved."
  },
  "schemaMoves": {
   "schemaPathsRemoved": [

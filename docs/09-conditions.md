@@ -359,27 +359,48 @@ timeframe the choice therefore sets only what the live lane shows — no bar is 
 the anchor's own close — so Developing there is legal and changes no decision."
 
 **What omega checks offline.** `conditions.report_headers(report)` classifies every header it
-can see from the report it was given: `candle` (the header comes from a custom section's
-column on this coin's own candle series, on a non-timeless metric, at offset 0),
-`above_anchor` / `below_anchor` (the column's timeframe against the report anchor, absolute
-timeframes ordered by `absoluteTimeframes` in
-[`_shared.json`](../data/contract/vocabulary/_shared.json)), and `developing`
-(`above_anchor and bars == "all"`). `conditions.validate_conditions` then enforces the four
-rules above at the clause path, naming the platform's own error code and the pack version:
-a hold over anything but a confirmed, offset-0, at-or-above-anchor candle header
-(`CONDITION_HOLD_OPERAND_ILLEGAL`); a hold with no clause of its own
-(`CONDITION_HOLD_ILLEGAL`); a verdict carrier whose closure reads a developing higher-timeframe
-bar (`CONDITION_VERDICT_READ_ILLEGAL`); an `exit: true` whose closure reads a header no
-completed bar moves (`CONDITION_EXIT_READ_ILLEGAL`). A leftover `clock` key is an error that
-names the retirement. The generator emits `closes: 1` everywhere: a hold above 1 is legal to
-author by hand where the vendor says, and remains unmeasured for the presets.
+can see from the report it was given: `moved` (a completed bar moves it — the header comes
+from a custom section's column on this coin's own candle series, on a non-timeless metric, at
+**any** offset), `candle` (`moved` *and* the column reads offset 0), `above_anchor` /
+`below_anchor` (the column's timeframe against the report anchor, absolute timeframes ordered
+by `absoluteTimeframes` in [`_shared.json`](../data/contract/vocabulary/_shared.json)), and
+`developing` (`above_anchor and bars == "all"`). The two operand flags are split because the
+two sentences are: the hold sentence says "at offset 0" and lists "a non-zero offset" among
+its refusals, and the exit sentence says only "every operand of which a completed bar MOVES",
+ruling out a developing read and a frame-inert operand and never mentioning offset. So the
+hold rule reads `candle` and the exit rule reads `moved`.
 
-**Where the offline check is conservative.** It is stricter than the platform, never looser,
-and it knows it. A platform-section header (`includeRsi`, `includeHigherTimeframe`, …) has no
-column omega can inspect, so it is `candle: False` with both timeframe flags `False`; the
-same holds for the ambient report-level headers (`market-breadth.*`, `reference-pairs.*`,
-`session-field.*`). A hold or an `exit: true` over one of those is refused offline. For the
-ambient headers that matches the platform's own reasoning — a closed-bar frame cannot move
-them — but for a platform-section candle header it may well be a refusal the platform would
-not make. Nothing here has been measured against a compile since the retirement; the check
-errs toward the body the platform is known to accept.
+`conditions.validate_conditions` then enforces the four rules above at the clause path, naming
+the platform's own error code and the pack version: a hold over anything but a confirmed,
+offset-0, at-or-above-anchor candle header (`CONDITION_HOLD_OPERAND_ILLEGAL`); a hold with no
+clause of its own (`CONDITION_HOLD_ILLEGAL`); a verdict carrier whose closure reads a developing
+higher-timeframe bar (`CONDITION_VERDICT_READ_ILLEGAL`); an `exit: true` whose closure reads a
+header no completed bar moves, or a developing one (`CONDITION_EXIT_READ_ILLEGAL`). A leftover
+`clock` key is an error that names the retirement. The generator emits `closes: 1` everywhere:
+a hold above 1 is legal to author by hand where the vendor says, and remains unmeasured for the
+presets.
+
+**Where the offline check is conservative.** A platform-section header (`includeRsi`,
+`includeHigherTimeframe`, …) has no column omega can inspect, so it is `moved: False`,
+`candle: False` with both timeframe flags `False`; the same holds for the ambient report-level
+headers (`market-breadth.*`, `reference-pairs.*`, `session-field.*`). A hold or an `exit: true`
+over one of those is refused offline. For the ambient headers that matches the platform's own
+reasoning — a closed-bar frame cannot move them — but for a platform-section candle header it
+may well be a refusal the platform would not make.
+
+**Where the offline check may be looser.** The check is *not* known to be stricter than the
+platform in every direction — that claim was never measured, and nothing here has been sent to
+a compile since the retirement. Four cells are **unmeasured**, and in each the offline check
+may admit a body the platform refuses. None of them is encoded as a rule, because the evidence
+that would ground one does not exist in this repo:
+
+| # | cell | what omega does | why it is unmeasured |
+|---|---|---|---|
+| a | a column **at** the anchor with `bars: "all"` and `closes > 1` | passes: `developing` is `above_anchor and bars == "all"`, so an at-anchor Developing column is not a developing read | on the strength of the vendor's own at-or-below sentence — "no bar is in progress at the anchor's own close — so Developing there is legal and changes no decision" — recorded as a ruling in the plan, not as a compile result |
+| b | a `rank` transform over a candle metric | holdable: `report_headers` classifies by the column's **metric**, and the transform never enters the test | the vendor's `CONDITION_HOLD_OPERAND_ILLEGAL` refusal list names "ranks". Whether that means the `rank` transform, a published rank metric, or both, is not stated and was not probed |
+| c | `STRUCT_ZONES` / `PRICE_ZONE` | holdable: both are `timeframeMode: candle`, non-timeless, in the 2026-09-09 extraction | the same refusal list names "zone entities". Which metrics that phrase covers is not enumerated by the vendor and was not probed |
+| d | `PDH` / `PDL` | holdable: both read `timeframeMode: candle`, non-timeless, in the 2026-09-09 extraction | the vendor pack says the opposite today — "**The previous-session levels are TIMELESS.** `PDH`, `PDL`, `PDO` and the seven floor pivots … read the session profile, not a candle rung" (31.2.28 § the level layer) — and a timeless operand is frame-inert. The extraction has not been refreshed since 09-09; it is the first `notResolved` item of [`_drift_2026-09-18.json`](../data/contract/_drift_2026-09-18.json), and correcting one metric's flag by hand would be encoding a rule from a source this repo has not extracted |
+
+Rows b, c and d would all be closed by one thing: a refreshed metric/transform extraction at
+the served contract. Until that exists, guessing at the refusal list would be inventing rules,
+which is the one thing this repo does not do.

@@ -209,9 +209,10 @@ def main() -> None:
                 f"{len(metric_added)} keys across {len(metric_enums)} column paths"
                 + ("; the same list on each" if len({tuple(v["added"]) for v in metric_enums.values()}) == 1
                    else "; the paths differ - see schemaMoves.enumsChanged")
-                + f". The plan's measured-facts table named only the nine TPO keys of this list; the "
-                  f"changelog line carries all {len(metric_added)}. What any of them MEANS is unmeasured "
-                  f"here - see notResolved."),
+                + f". The plan's measured-facts table FIRST named only nine TPO keys of this list, read off "
+                  f"a truncated changelog line; it was corrected in commit 48efdee to the {len(metric_added)} "
+                  f"the changelog actually carries, which is the list above. What any of them MEANS is "
+                  f"unmeasured here - see notResolved."),
         },
         "schemaMoves": moves,
         "refusedBeforeTheFix": REFUSED_BEFORE_THE_FIX,

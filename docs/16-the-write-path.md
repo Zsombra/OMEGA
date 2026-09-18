@@ -485,7 +485,8 @@ under a non-level trigger is that their inert values are the only legal ones.
 ([`compile_body_trend_continuation_2026-09-18.json`](../data/audit/compile_body_trend_continuation_2026-09-18.json))
 now passes:
 [`compile_preflight_2026-09-18-trend-continuation.json`](../data/audit/compile_preflight_2026-09-18-trend-continuation.json)
-is a **PASS** — 58 findings, all INFO, zero FAIL, zero UNSUPPORTED, zero MIRROR — and the
+is a **PASS** — 58 findings: 42 `INFO` and 16 `CHANGELOG`, every verdict `INFO`, zero FAIL,
+zero UNSUPPORTED, zero MIRROR — and the
 gate line reads
 `PREFLIGHT PASS · data/audit/compile_preflight_2026-09-18-trend-continuation.json · body 9e0d70d4 · schema 2026-09-18T08:33:59Z · ref 43d11467-637c-42b1-b88b-8a71ed8c32c3 rev 1 · expires 2026-09-19T08:33:59Z`.
 The captures are the ones committed with the plan at `21b4bbd` and were not re-taken, so

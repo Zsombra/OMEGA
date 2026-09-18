@@ -74,6 +74,14 @@ def condition(key: str, name: str, definition: dict, *,
 3. `closes > 1` with no clause of its own (a definition that is a `conditionRef`, or a group whose members are all `conditionRef`s at any depth) — error at `.definition`: `"a hold of {closes} closes needs a clause of the condition's own; a referenced condition is resolved once and contributes the same answer to every bar (CONDITION_HOLD_ILLEGAL)"`.
 4. Verdict carrier (`verdict` in UP/DOWN/NEITHER) whose closure (its own clauses plus everything reached through `conditionRef`, transitively) contains a clause over a header with `developing` True — error at the clause path: `"{header!r} reads a Developing higher-timeframe bar; a verdict carrier may not read one, at any depth (CONDITION_VERDICT_READ_ILLEGAL)"`.
 5. `exit: true` whose closure contains a clause over a header with `candle` False or `developing` True — error at the clause path: `"{header!r} is not moved by a completed bar (or is a developing read); exit: true needs a closure every operand of which a completed bar moves (CONDITION_EXIT_READ_ILLEGAL)"`.
+
+> **Correction recorded 2026-09-18 by the final fix wave.** Rule 5 as written above reuses `candle`, and `candle`
+> folds in `offset == 0` — a clause that belongs to the HOLD sentence ("at offset 0", and "a non-zero offset" in its
+> refusal list), not to the exit sentence, which says only "Legal only over a closure every operand of which a
+> completed bar MOVES (`CONDITION_EXIT_READ_ILLEGAL`), which rules out a developing read … and rules out a
+> frame-inert operand" (pack 31.2.28). Enforcing offset on `exit` was a rule the vendor does not state. `report_headers`
+> therefore carries FIVE booleans: `moved` (non-timeless custom-section metric, any offset), `candle`
+> (`moved` and offset 0), `above_anchor`, `below_anchor`, `developing`. Rule 5 reads `moved`; rule 2 keeps `candle`.
 6. A condition carrying a `clock` key — error at `.clock`: `"clock was retired in contract 61.0.0 and is refused by the compile schema; drop the key (the hold is `closes`)"`.
 
 > Ruling recorded 2026-09-18 after Task 1's review: a column AT the anchor with `bars: "all"` is NOT a developing read
