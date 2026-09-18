@@ -232,7 +232,7 @@ def test_presets_hold_one_close_everywhere_and_carry_no_clock(name):
 
 **Files:**
 - Modify: `omega/preflight.py` (`_MODELED_KEYWORDS`, numeric branch of `_walk`, `MIRROR_ENTRY_FIELDS`, `MIRROR_CONDITION_FIELDS`), `omega/execution.py` (`SCHEMA_BOUNDS` + its provenance comment)
-- Test: `tests/test_preflight.py`, `tests/test_execution.py` (whichever asserts `SCHEMA_BOUNDS`), `tests/fixtures/preflight/schema_walker_min.json` (add one `multipleOf` to the miniature's `entry.levelOffsetAtrMultiple` and to `conditions.items.closes`)
+- Test: `tests/test_preflight.py`, `tests/test_execution.py` (whichever asserts `SCHEMA_BOUNDS`), `tests/fixtures/preflight/schema_walker_min.json` (add one `multipleOf` to the miniature's `entry.levelOffsetAtrMultiple` and to `conditions.items.closes`), and `tests/test_write_surface.py::test_wire_entry_keys_match_the_live_schema_capture` — it pins the emitted entry keys against `SCHEMA_CAPTURE_2026_09_09`; point it (and the constant) at `data/contract/compile_strategy_plan/schema_20260918T083359Z.json`, keeping its two-direction assertion and its `levelSource` guard, and add the guard `assert "confirmTf" not in allowed, "capture predates the 60.0.0 removal - re-capture"` (added 2026-09-18 during execution: Task 2 made this test fail as the plan expected but had not named it)
 
 **Behaviour:**
 1. `multipleOf` joins `_MODELED_KEYWORDS`; in the numeric branch: a value `v` with `multipleOf: m` where `abs(round(v / m) - v / m) > 1e-9` is `BOUNDS` FAIL `f"{v} is not a multiple of {m}"`.
