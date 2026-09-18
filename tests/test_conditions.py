@@ -493,6 +493,50 @@ def test_exit_true_needs_operands_a_completed_bar_moves():
     assert not [f for f in validate_conditions(RSI_REPORT, [moved]) if f.severity == "error"]
 
 
+def test_exit_admits_an_offset_column_that_a_hold_refuses():
+    """"At offset 0" belongs to the HOLD sentence, not to the exit sentence.
+
+    Hold (vendor pack 31.2.28 § Conditions): "over a header resolved from this coin's own
+    candle series, at offset 0, at or above the strategy timeframe, read Confirmed.
+    Everything else is refused (CONDITION_HOLD_OPERAND_ILLEGAL) - ... a non-zero offset".
+    Exit: "Legal only over a closure every operand of which a completed bar MOVES
+    (CONDITION_EXIT_READ_ILLEGAL), which rules out a developing read ... and rules out a
+    frame-inert operand" - no offset clause anywhere in it. A completed bar moves an
+    offset column too, one bar later, so the offline check may not refuse it.
+    """
+    rep = _report({"metric": "RSI14", "transformId": "value",
+                   "timeframe": {"rel": "anchor"}, "offset": 4})
+    [header] = [h for h in report_headers(rep) if h.startswith("RSI14")]
+    exiting = condition("XT", "n", num(header, "gt", 50), exit=True)
+    assert not [f for f in validate_conditions(rep, [exiting]) if f.severity == "error"]
+    held = condition("HD", "n", num(header, "gt", 50), closes=2)
+    assert any("CONDITION_HOLD_OPERAND_ILLEGAL" in f.message
+               for f in validate_conditions(rep, [held]) if f.severity == "error")
+
+
+@pytest.mark.parametrize("abs_tf,above,below", [
+    ("4h", True, False),      # above the 1h anchor
+    ("1h", False, False),     # AT the anchor: neither - "at or above" admits it
+    ("15m", False, True),     # below
+    ("1d", True, False),      # above
+])
+def test_an_absolute_column_timeframe_is_placed_by_index_against_the_anchor(abs_tf, above, below):
+    """The {"abs": tf} branch of _anchor_side, ordered by absoluteTimeframes.
+
+    A column's timeframe is {"rel": ...} or {"abs": <tf>}; the absolute values are ordered
+    in data/contract/vocabulary/_shared.json. Reported through report_headers because that
+    is the only surface the read rules consume. bars="all" makes `developing` the mirror of
+    `above_anchor` (developing = above_anchor and bars == "all").
+    """
+    rep = _report({"metric": "RSI14", "transformId": "value",
+                   "timeframe": {"abs": abs_tf}, "bars": "all"})
+    headers = report_headers(rep)
+    [header] = [h for h in headers if h.startswith("RSI14")]
+    assert headers[header]["above_anchor"] == above
+    assert headers[header]["below_anchor"] == below
+    assert headers[header]["developing"] == above
+
+
 # --- drift instance #5: conditions[].exit (schema published by 2026-09-04) ---
 # Caught OFFLINE before any compile was spent (drift5_exit_rediscovery_2026-09-04.json):
 # the published compile schema lists `exit` (boolean) among the REQUIRED keys of every

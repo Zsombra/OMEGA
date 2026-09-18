@@ -92,6 +92,7 @@ def ambient_headers() -> dict[str, dict]:
                 # (CONDITION_HOLD_OPERAND_ILLEGAL / CONDITION_EXIT_READ_ILLEGAL,
                 # vendor pack 31.2.28 § Conditions). They are not read off a column
                 # omega can inspect either, so the three timeframe flags are False.
+                "moved": False,
                 "candle": False,
                 "above_anchor": False,
                 "below_anchor": False,
@@ -261,8 +262,15 @@ def _anchor_side(column, anchor: str, order: list[str]) -> tuple[bool, bool]:
 def report_headers(report: Report) -> dict[str, dict]:
     """Every header the report exposes to conditions, ambient headers included.
 
-    Each entry carries four booleans the 61.0.1 read rules turn on:
-      candle        the header resolves from this coin's own candle series at offset 0
+    Each entry carries five booleans the 61.0.1 read rules turn on:
+      moved         a completed bar MOVES the header: it resolves from this coin's own
+                    candle series (a non-timeless metric on a custom section), at any
+                    offset. This is the exit rule's operand test - the vendor's exit
+                    sentence rules out "a frame-inert operand" and a developing read,
+                    and says nothing about offset.
+      candle        `moved` AND the column reads offset 0 - the hold rule's operand
+                    test, which does name the offset ("at offset 0", and "a non-zero
+                    offset" is in its refusal list).
       above_anchor  its column reads a timeframe above the report anchor
       below_anchor  ... below it (the retained lower series)
       developing    above_anchor and bars="all" - the higher-timeframe bar still in
@@ -291,7 +299,8 @@ def report_headers(report: Report) -> dict[str, dict]:
                         out[o.header] = {"sectionKey": section.sectionKey,
                                          "ops": o.condition_operators,
                                          "vocab": list(o.vocabulary), "meaning": "",
-                                         "candle": False, "above_anchor": False,
+                                         "moved": False, "candle": False,
+                                         "above_anchor": False,
                                          "below_anchor": False, "developing": False}
                 except Exception:
                     continue
@@ -299,15 +308,16 @@ def report_headers(report: Report) -> dict[str, dict]:
             for column in section.columns:
                 if column.metric not in c.metrics:
                     continue
-                candle = (not c.metric(column.metric).is_timeless
-                          and (column.offset or 0) == 0)
+                moved = not c.metric(column.metric).is_timeless
+                candle = moved and (column.offset or 0) == 0
                 above, below = _anchor_side(column, report.anchor, order)
                 developing = above and column.bars == "all"
                 for o in outputs_for(column, c):
                     out[o.header] = {"sectionKey": section.sectionKey,
                                      "ops": o.condition_operators,
                                      "vocab": list(o.vocabulary), "meaning": "",
-                                     "candle": candle, "above_anchor": above,
+                                     "moved": moved, "candle": candle,
+                                     "above_anchor": above,
                                      "below_anchor": below, "developing": developing}
     return out
 
@@ -330,6 +340,14 @@ def _holdable(spec: dict) -> bool:
     "Above 1 it is legal only where a completed bar changes the reading: over a header
     resolved from this coin's own candle series, at offset 0, at or above the strategy
     timeframe, read Confirmed." (vendor pack 31.2.28 § Conditions)
+
+    `candle` already carries the "at offset 0" clause of that sentence, which is why the
+    exit rule reads `moved` instead: its own sentence never mentions offset.
+
+    Four cells of this test are UNMEASURED and may be LOOSER here than on the platform -
+    they are enumerated, as unmeasured, in docs/09-conditions.md § "Where the offline
+    check may be looser". None of them is encoded as a rule: the extraction that would
+    ground them is the not-resolved item of data/contract/_drift_2026-09-18.json.
     """
     return (bool(spec.get("candle"))
             and not spec.get("below_anchor")
@@ -556,7 +574,11 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
                         f"{header!r} reads a Developing higher-timeframe bar; a verdict "
                         f"carrier may not read one, at any depth "
                         f"(CONDITION_VERDICT_READ_ILLEGAL)"))
-                if exits and (not spec.get("candle") or spec.get("developing")):
+                # `moved`, not `candle`: the exit sentence rules out "a developing read"
+                # and "a frame-inert operand" and never mentions offset, so an offset
+                # column - which a completed bar still moves, one bar later - is legal
+                # here while the hold rule ("at offset 0") refuses it.
+                if exits and (not spec.get("moved") or spec.get("developing")):
                     out.append(ConditionFinding(
                         "error", key, where,
                         f"{header!r} is not moved by a completed bar (or is a developing "
