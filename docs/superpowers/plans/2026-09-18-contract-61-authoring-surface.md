@@ -75,6 +75,13 @@ def condition(key: str, name: str, definition: dict, *,
 4. Verdict carrier (`verdict` in UP/DOWN/NEITHER) whose closure (its own clauses plus everything reached through `conditionRef`, transitively) contains a clause over a header with `developing` True — error at the clause path: `"{header!r} reads a Developing higher-timeframe bar; a verdict carrier may not read one, at any depth (CONDITION_VERDICT_READ_ILLEGAL)"`.
 5. `exit: true` whose closure contains a clause over a header with `candle` False or `developing` True — error at the clause path: `"{header!r} is not moved by a completed bar (or is a developing read); exit: true needs a closure every operand of which a completed bar moves (CONDITION_EXIT_READ_ILLEGAL)"`.
 6. A condition carrying a `clock` key — error at `.clock`: `"clock was retired in contract 61.0.0 and is refused by the compile schema; drop the key (the hold is `closes`)"`.
+
+> Ruling recorded 2026-09-18 after Task 1's review: a column AT the anchor with `bars: "all"` is NOT a developing read
+> (`developing` is `above_anchor and bars == "all"`), so a hold or an exit over it is legal offline. That is the
+> vendor's own sentence — "At or below the strategy timeframe the choice therefore sets only what the live lane shows —
+> no bar is in progress at the anchor's own close — so Developing there is legal and changes no decision" (pack
+> 31.2.28, strategy-examples § Conditions, now committed in this repo at `.agents/skills/battlegrid`, refreshed from
+> 31.2.17 for exactly this reason: every rule the code quotes must be checkable here).
 7. Everything else (`_walk`'s header/op/vocab checks, cycles, budgets, key/name/verdict/exit checks) unchanged. `_walk` loses its `clock`/`clock_by_key` parameters and gains a `mode` describing what to check for the current condition; closure walking for rules 4 and 5 uses `_reference_edges` plus a per-key clause collector.
 
 - [ ] **Step 1: Write the failing tests** (replace the clock block in `tests/test_conditions.py`; `_report`, `RSI_REPORT`, `num`, `ref`, `all_of`, `condition`, `validate_conditions` are already imported there):

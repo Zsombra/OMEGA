@@ -185,9 +185,9 @@ describe('published skill states the live authoring contract', () => {
     expect(digest.domains.entryTrigger.filter((member) => !entry.includes(member))).toEqual([]);
   });
 
-  it('states the whole clock domain', () => {
+  it('states the whole column-bars domain', () => {
     const conditions = sectionBody(skill, AXIS_HEADING.condition);
-    expect(digest.domains.conditionClock.filter((member) => !conditions.includes(member))).toEqual([]);
+    expect(digest.domains.columnBars.filter((member) => !conditions.includes(member))).toEqual([]);
   });
 
   it('states the whole authored-verdict domain', () => {
@@ -237,7 +237,6 @@ describe('the contract check fails on the drift it was written for', () => {
   it('reports the keys the pre-contract-44 recipe omitted', () => {
     const stale = '\n## X\n\n`{ conditionKey, name, definition, verdict, required }` — five.\n';
     expect(missingFrom(digest.axes.condition, braceListKeys(stale, '## X')).sort()).toEqual([
-      'clock',
       'closes',
       'exit',
     ]);

@@ -2,7 +2,7 @@
   "digestVersion": 1,
   "server": {
     "name": "battlegrid",
-    "contractVersion": "54.0.0"
+    "contractVersion": "61.0.1"
   },
   "axes": {
     "create": [
@@ -36,15 +36,11 @@
       "trailingTriggerR"
     ],
     "entry": [
-      "bandAtrMultiple",
-      "closes",
-      "confirmTf",
       "levelOffsetAtrMultiple",
       "trigger",
       "validForBars"
     ],
     "condition": [
-      "clock",
       "closes",
       "conditionKey",
       "definition",
@@ -95,14 +91,13 @@
   },
   "domains": {
     "entryTrigger": [
-      "AT_SIGNAL",
       "ON_CANDLE_CLOSE",
       "ON_RETEST",
       "STOP_THROUGH_LEVEL"
     ],
-    "conditionClock": [
-      "CLOSE",
-      "LIVE"
+    "columnBars": [
+      "all",
+      "closed"
     ],
     "conditionVerdict": [
       "DOWN",
@@ -112,9 +107,105 @@
   },
   "bounds": {
     "conditionMaxCloses": 5,
-    "entryMaxCloses": 5,
     "entryMaxLevelOffsetAtrMultiple": 2,
     "entryMaxValidForBars": 24
+  },
+  "dials": {
+    "breakEvenTriggerR": {
+      "min": 0.5,
+      "max": 2,
+      "step": 0.01
+    },
+    "condition.closes": {
+      "min": 1,
+      "max": 5,
+      "step": 1
+    },
+    "entry.levelOffsetAtrMultiple": {
+      "min": 0,
+      "max": 2,
+      "step": 0.1
+    },
+    "entry.validForBars": {
+      "min": 1,
+      "max": 24,
+      "step": 1
+    },
+    "maxStopLossAtrMultiple": {
+      "min": null,
+      "max": 3,
+      "step": 0.1
+    },
+    "minAggregateScore": {
+      "min": 0,
+      "max": 1,
+      "step": 0.05
+    },
+    "minAtrPct": {
+      "min": null,
+      "max": null,
+      "step": 0.05
+    },
+    "minRequiredCount": {
+      "min": 0,
+      "max": 20,
+      "step": 1
+    },
+    "minRiskRewardRatio": {
+      "min": null,
+      "max": null,
+      "step": 0.25
+    },
+    "minStopLossAtrMultiple": {
+      "min": null,
+      "max": null,
+      "step": 0.1
+    },
+    "signalRule.allocation": {
+      "min": 0,
+      "max": 3,
+      "step": 1
+    },
+    "timeDecayGracePeriodMinutes": {
+      "min": 5,
+      "max": 1440,
+      "step": 5
+    },
+    "timeDecayIntervalMinutes": {
+      "min": 5,
+      "max": 480,
+      "step": 5
+    },
+    "timeDecayMaxTightenPct": {
+      "min": 1,
+      "max": 100,
+      "step": 1
+    },
+    "timeDecayStaleThresholdTpProgressPct": {
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    "timeDecayTightenPct": {
+      "min": 0.5,
+      "max": 50,
+      "step": 0.5
+    },
+    "trailingBufferPct": {
+      "min": 0.01,
+      "max": 1,
+      "step": 0.01
+    },
+    "trailingGivebackPct": {
+      "min": 25,
+      "max": 55,
+      "step": 1
+    },
+    "trailingTriggerR": {
+      "min": 0,
+      "max": 2,
+      "step": 0.01
+    }
   },
   "metricKeys": [
     "ADX",
@@ -183,6 +274,8 @@
     "MARK",
     "MA_ALIGN",
     "MFI14",
+    "NAKED_POC_ABOVE",
+    "NAKED_POC_BELOW",
     "NOTIONAL_VOLUME_1D",
     "OBV",
     "OI",
@@ -193,6 +286,7 @@
     "ORACLE",
     "PDH",
     "PDL",
+    "PDO",
     "PERP_SPOT_CONFIRMS",
     "PERP_SPOT_FLOW",
     "PERP_SPOT_STRENGTH",
@@ -205,6 +299,15 @@
     "PIVOT_S3",
     "PPO",
     "PRICE_ZONE",
+    "PRIOR_TPO_IB_HIGH",
+    "PRIOR_TPO_IB_LOW",
+    "PRIOR_TPO_POC",
+    "PRIOR_TPO_SHAPE",
+    "PRIOR_TPO_VAH",
+    "PRIOR_TPO_VAL",
+    "PRIOR_TPO_VPOC",
+    "PRIOR_TPO_VVAH",
+    "PRIOR_TPO_VVAL",
     "PSAR",
     "QQE_RSI_MA",
     "QQE_STOP",
@@ -245,6 +348,15 @@
     "STRUCT_ZONES",
     "ST_DIR",
     "ST_LINE",
+    "TPO_IB_HIGH",
+    "TPO_IB_LOW",
+    "TPO_POC",
+    "TPO_SHAPE",
+    "TPO_VAH",
+    "TPO_VAL",
+    "TPO_VPOC",
+    "TPO_VVAH",
+    "TPO_VVAL",
     "TRADES",
     "VOLUME",
     "VOL_SMA20",

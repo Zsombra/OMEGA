@@ -24,6 +24,160 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
+## Contract history — v61
+
+One part to read first: **the per-condition evidence clock is gone**, and what replaced it is not a
+rename. Which bar a condition reads is now decided by the surface asking — a decision reads completed
+strategy bars, a display read shows the forming one — and by each candle column's own Confirmed /
+Developing selector. `closes` survives and changes meaning. The canonical record for every contract
+move is `docs/architecture/MCP_CONTRACT_HISTORY.md` in `battlegrid-app`; the served version is what
+the handshake announces.
+
+### Rejected input — something you author is no longer accepted
+
+- **A condition entry carrying `clock` is REFUSED** (61.0.0, `read-higher-timeframes-per-column`).
+  The authoring schemas are `.strict()`, so `compile_strategy_plan`, `apply_strategy_plan`,
+  `fork_strategy` and the HTTP save alike fail the body with the unknown-key error. There is no
+  replacement key to send: the decision instant belongs to the caller, not to the condition. Two
+  input hashes move, `compile_strategy_plan`'s and `preview_strategy_report`'s — the two tools that
+  accept a condition entry.
+
+- **`closes` stays mandatory and means something new.** It is now *held for N completed strategy
+  bars* (1–5). Above `1` it is legal only over a header a completed bar actually moves, at or above
+  the strategy timeframe, never over a developing read, and only where the condition carries a clause
+  of its own — a referenced condition resolves once and contributes the same answer to every bar, so
+  a hold reached only through a reference would count reads that never happened.
+
+### Changed shape — what you receive moves
+
+- **`ConditionOutcome.closeClock` becomes `hold`, and it is NON-NULL for every condition.** A
+  one-close condition reads `0 or 1 of 1` rather than serving an absence, so a client no longer
+  branches on whether the reading exists. The count is taken from completed strategy bars whatever
+  basis the surface evaluated on.
+
+- **`ReportConditionColumnDTO.closeClockReadable` becomes `closesReadable`, beside a new
+  `developingRead`.** The first answers whether a condition addressing that header may hold more than
+  one completed bar; the second states whether the header reads the bar still in progress at the
+  decision instant. Both are server-supplied — derive neither. Eight output hashes move, covering
+  every tool that serves a strategy's conditions or a report's addressable columns.
+
+### Wider input — nothing you send today breaks
+
+- **The `bars` selector is declared on eleven candle-series transforms, not four.** `value`,
+  `classifyZone`, `classifyState`, `distance`, `spread`, `crossDetect` and `bandTouch` join
+  `trajectory`, `aggregate`, `efficiency` and `maxShare`. It carries **no default value**, because
+  the default is a rule rather than a constant: Confirmed (`"closed"`) above the strategy timeframe,
+  and at or below it the series as the frame carries it. The resolved answer is served per column on
+  `effectiveParameters.bars` — `null` where discovery has no anchor to resolve a rung against.
+
+- **A higher-timeframe level is measured from the current strategy-bar price.** Distances and the
+  candle label classifiers compare against the frame's current price rather than the higher-timeframe
+  bar's own close, which could be a full higher-timeframe bar stale. A distance chained into a series
+  keeps every slot on its own bar's close.
+
+### Vocabulary
+
+`domains.conditionClock` is removed; `domains.columnBars: ["all", "closed"]` takes its place, and
+`axes.condition` loses `clock`. `toolCount` stays 117.
+
+## Contract history — v60
+
+One release train, four numbers, and two parts to read first: **`propose_entry_decision` no longer
+decides in the call**, and **a closed trade's `tradeStatus` now follows its net P&L**. v55 through v59 are not written up here; the canonical record for
+every contract move is `docs/architecture/MCP_CONTRACT_HISTORY.md` in `battlegrid-app`, and the
+served version is what the handshake announces.
+
+### Rejected input — something you author is no longer accepted
+
+- **The entry axis names no bar but the strategy's own, and three of its keys are gone** (60.0.0,
+  `decide-entry-on-strategy-close`). The authoring schemas are `.strict()`, so `compile_strategy_plan`,
+  `apply_strategy_plan`, `fork_strategy` and `restore_strategy` REFUSE a body carrying
+  `entry.confirmTf` (the deciding bar is the strategy's own timeframe, so a required input whose only
+  legal value was another field of the same strategy is absent rather than mirrored), `entry.closes`
+  and `entry.bandAtrMultiple` (a multi-bar hold is declared on the condition that needs it; the
+  displacement band is replaced by the platform's own entry-deviation gate, measured against the
+  decided close), and the whole `exit` object (the open-position exit lane judges one closed candle
+  of the position's strategy timeframe). Exactly one input hash moves, `compile_strategy_plan`'s.
+
+- **`entry.trigger: AT_SIGNAL` is retired for authoring** (60.0.0, `retire-at-signal-trigger`, riding
+  the same number). Refused on every authoring surface and on a RESTORE, which rebuilds a stored
+  revision through the same value object. The enum member stays READABLE on every strategy read and
+  on a fired decision's provenance, so a pre-retirement revision is still legible — it just cannot be
+  re-authored. The three that remain are `ON_CANDLE_CLOSE`, `STOP_THROUGH_LEVEL` and `ON_RETEST`.
+
+### Changed meaning, unchanged shape
+
+- **`tradeStatus` follows NET P&L on every closed trade** (60.3.0, `label-trade-outcome-by-pnl`).
+  No schema hash moves for this and the values you receive change anyway. It used to map the close
+  REASON onto a verdict — every `TAKE_PROFIT` was `WON`, every `STOP_LOSS` was `LOST`, and a
+  `MARKET_CLOSE` of either sign was the neutral `CLOSED` — so a stop that filled after a break-even
+  reprice was reported as a loss and a take-profit eaten by fees as a win. `LIQUIDATED` still
+  outranks the number, because a force-close is not a verdict about the trade; `CLOSED` now means
+  only that there is no outcome row to judge. A client that counted `WON` rows was counting
+  take-profits.
+
+- **A proposal is QUEUED, not decided** (60.2.0, `queue-manual-entry-for-close`). This is the entry in
+  this section to act on. `propose_entry_decision` registers a request against the agent's next
+  strategy-bar close and returns immediately: no model runs, nothing is spent, and the call carries
+  `type: "queued"` with `request` — `requestId`, the bar (`barStart`), when the answer is due
+  (`decidesBy`) and the last instant that bar may still be decided (`windowEndsAt`). The answer
+  arrives later, in the agent's conversation and, when it proposes a trade, in
+  `list_pending_approvals`. A close that does not qualify, a window that passes with no sweep, and a
+  bar the agent's own radar deployment decided first are each recorded in the conversation instead.
+
+  `recommendation` and `no_trade` REMAIN in the union: the idempotency registrar replays results
+  recorded before this release for their TTL, so a client that dropped those members would fail on
+  its own retry. **A client written against 60.2 handles `queued` and `error`**; one that must also
+  replay handles all four.
+
+### Reshaped output — the same call returns a different shape
+
+- **The four retired entry keys leave every strategy read** (60.0.0) — `get_strategy`,
+  `list_strategies`, `fork_strategy` and both plan envelopes — and `confirmTimeframesByMainCandle`
+  leaves `list_strategy_vocabulary`, because there is no confirm set left to publish.
+
+- **`entryDiscipline.closes` and `.bandAtrMultiple` go `number` → `number | null`** (60.0.0) on
+  `get_trade_outcome_by_decision` and `list_trade_outcomes`. Null on every decision fired after this
+  release, which authors neither; a non-null pair dates the row to the arming era.
+
+### Widened enum — new members your own copy rejects
+
+- **`TradeConvErrorCode` gains `REQUEST_PENDING`** (60.2.0), on the SURFACE arm of
+  `propose_entry_decision`'s error: one pending request per user and coin, so a second is refused. A
+  coin already carrying a pending or live position is refused before anything is queued, as an
+  ENGINE-origin `OPEN_POSITION_CONFLICT` — a member that was already published, reaching this surface
+  for the first time.
+
+### Additive in the same span
+
+- **The exit names the leg that filled** (60.3.0, `label-trade-outcome-by-pnl`). `TradeOutcomeDTO`
+  and the pipeline outcome summary gain `exitRepriceSource`: the reprice that placed the protection
+  leg which actually closed the position — `BREAK_EVEN`, `TRAILING`, `TIME_DECAY`,
+  `MANUAL_OVERRIDE`, `UPDATED` — or null on every close no protection leg filled and on a leg that
+  was never repriced. It is the mechanism behind the verdict above, so read it beside `closeReason`
+  before calling a stopped-out trade a failure. The enum is the one `get_position_audit_history`
+  already publishes. Four output hashes move; no input schema does.
+
+- **Two tools join the catalog for the request lifecycle** (60.2.0, `queue-manual-entry-for-close`).
+  `get_entry_request` (read scope) reads a request that is still pending and is `NOT_FOUND` once it
+  has been answered, cancelled or expired — the answer is in the conversation, not there.
+  `cancel_entry_request` (`mcp:wager`) withdraws one before its bar is decided. `toolCount` 115 → 117.
+
+- **Three radar reads publish the close decision** (60.1.0, `add-radar-close-decision-state`).
+  `get_radar_deployment`, `list_radar_deployments` and `preview_radar_resolution` carry one further
+  key on `resolvesNow`: `closeDecision`, non-null whenever an agent is on duty for the pair. It
+  carries the deciding `timeframe`, the `nextCloseAt` instant, a `state` of `WAITING` or `DEFERRED`
+  (a bar has closed and no sweep has decided it yet), and `last` — the bar, the instant, the outcome
+  (`FIRED` / `NOT_QUALIFIED` / `MISSED`), the gate and the closed reading's score against its
+  minimum — or null before the pair's first close decision.
+
+  **Read it first on a close-deciding pair.** The sibling `qualified` and `qualificationBlock` fields
+  are the per-minute DISPLAY reading there and decide nothing, so an agent ranking them reports
+  "qualified — watching for a setup" about a pair whose last three closes were each refused. Neither
+  field is removed or reshaped. A `NOT_QUALIFIED` outcome with a NULL gate beside a score at or above
+  the minimum is the consumed edge — the close qualified and the baseline was already spent — stated
+  by the server so no client compares the two numbers.
+
 ## Contract history — v37 → v54
 
 Eleven majors reached authors while this section stopped at v36. That gap is the mechanism, not an

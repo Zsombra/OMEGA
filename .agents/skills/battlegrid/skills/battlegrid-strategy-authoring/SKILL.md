@@ -100,11 +100,13 @@ question you would otherwise guess — and a refusal you would otherwise earn:
   yourself on a CREATE is refused with a hint telling you to omit `sectionKey` on CREATE; on an
   UPDATE, send back the key the compile returned. This is the one composition field whose right
   answer is "leave it out".
-- **The `entry` axis is required on every CREATE**, all six keys, no defaults — `trigger`,
-  `confirmTf`, `closes`, `bandAtrMultiple`, `levelOffsetAtrMultiple`, `validForBars`. It decides
-  when an entry is taken; for the level triggers the level itself is derived from the trigger and
-  the trade's direction, never named. The `strategy-examples` skill carries the vocabulary and the
-  one-directional legality matrix; a CREATE without it is refused outright.
+- **The `entry` axis is required on every CREATE**, all three keys, no defaults — `trigger`,
+  `levelOffsetAtrMultiple`, `validForBars`. Every trigger is decided at the close of the strategy's
+  OWN bar, so there is no confirm-timeframe key; for the level triggers the level itself is derived
+  from the trigger and the trade's direction, never named. A multi-bar hold belongs to the condition
+  that needs it (its own `closes`, counted in completed strategy bars), not to this axis. The
+  `strategy-examples` skill carries the vocabulary, the hold's legality and the per-column
+  Confirmed / Developing read; a CREATE without it is refused outright.
 - `get_strategy_column_contract` → `outputs[].conditionOperators`. An empty array means that
   rendered header has no comparison semantics and cannot appear in a condition clause at all.
   Legality is per rendered header, not per column: a trajectory's slot header and its `_trend`
@@ -187,6 +189,12 @@ point-in-time reading, and you say so.
 
 ### 6. Confirm, then apply
 
+**In a conversation the Strategy Builder hosts, this section does not apply: compile and stop.**
+The compiled plan lands on the player's rail as unsaved changes and their Review & save is the one
+consent. Report that it is staged, name the axes, and present no apply confirmation — the server
+refuses `apply_strategy_plan` from such a conversation as a tool error, so calling it spends an op
+of your budget and commits nothing.
+
 One confirmation carrying the plan's own `confirmationSummary`, offering Apply / Revise / Cancel.
 
 On **Apply**, call `apply_strategy_plan` with two values and nothing else:
@@ -214,6 +222,12 @@ only authority on all of them; your job is to react to what it returns.
 
 `fork_strategy`, `update_strategy_signal_rule`, `restore_strategy`, `archive_strategy` and
 `preview_strategy_report` are part of this flow.
+
+**In a builder-hosted conversation, three of those are refused at execution** —
+`update_strategy_signal_rule`, `restore_strategy` and `archive_strategy`, alongside
+`apply_strategy_plan` — because each commits a revision of the open strategy around the player's
+save. `fork_strategy` stays available: it writes a DIFFERENT strategy, which is not the one the
+builder owns. `preview_strategy_report` and every read stay available.
 
 Before any destructive one, state the blast radius from the server's own fields and confirm it
 with the player:
