@@ -25,8 +25,17 @@ from scripts.render_coverage import (
 # Operand-expanded spread shapes: 1807, then 1743 after rankableSpreadOperands, then
 # 1386 after the series-chain operand rule, then 8190 when the corpus was refreshed to
 # the 144-metric roster on 2026-09-09 - spread expands over its operand pool, and the
-# price-unit pool alone widened from 17 to 43 members.
-EXPANDED_SPREAD_SHAPES = 8190
+# price-unit pool alone widened from 17 to 43 members. Now 7640 at contract 61.2.0
+# (156 metrics): unchained spread shapes actually GREW (3146 -> 4378) because every
+# metric's spreadOperands pool widened to include the twelve metrics added at 61.2.0,
+# and eleven of those twelve offer their own unchained spread atom (61 operands each).
+# Chained spread shapes fell far more (5044 -> 3262): PDH, PDL and the seven pivots lost
+# the chainSuccessors on their own distance/spread atoms when they went candle ->
+# timeless, AND those nine plus the twelve new metrics are all timeless, so any OTHER
+# metric's spread chained into a series (aggregate/trajectory/efficiency) now refuses
+# whenever one of those 21 names is the operand (tests/test_spread_chain_operand.py) -
+# shapes blocked by a timeless operand rose from 1782 to 3171. Net: 8190 - 550 = 7640.
+EXPANDED_SPREAD_SHAPES = 7640
 
 
 @pytest.fixture(scope="module")
