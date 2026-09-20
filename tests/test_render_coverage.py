@@ -64,7 +64,7 @@ def test_expanded_spread_header_names_both_sides(contract):
 
 def test_rendered_headers_spans_every_cache():
     """Bug 2: a single cache is not the record of what was rendered."""
-    assert len(SEEN_FILES) == 12   # 11 until the 2026-09-09 sweep added its own cache
+    assert len(SEEN_FILES) == 13   # 11 until the 09-09 sweep, 13 since the 09-20 one
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -141,11 +141,15 @@ def test_structural_coverage_is_complete(contract):
     """Every metric x transform mechanism has been rendered live at least once.
 
     True on the 86-metric roster (301 shapes), briefly false when the 2026-09-09 refresh
-    took the corpus to 144, and true again after the sweep of that date rendered the 7,840
-    shapes the older caches had never seen. 675 now.
+    took the corpus to 144, true again after that date's sweep rendered the 7,840 shapes the
+    older caches had never seen (675), briefly false again when the 2026-09-20 refresh took it
+    to 156 at contract 61.2.0, and true again after that date's sweep. 655 now, BELOW the 675
+    it was: twelve metrics arrived carrying 45 mechanisms between them, while PDH, PDL and the
+    seven pivots each lost three (trajectory, aggregate, efficiency) when they went timeless.
+    The denominator shrank faster than it grew; what matters is that the uncovered set is empty.
     """
     cov, unc, _ = coverage(False, contract)
-    assert (cov, len(unc)) == (675, 0), (
+    assert (cov, len(unc)) == (655, 0), (
         "every metric x transform mechanism has been rendered live at least once")
 
 
@@ -159,12 +163,19 @@ def test_live_coverage_is_complete(contract):
     which is the strongest agreement between omega and the platform measured so far.
     Run record: data/audit/coverage_sweep_2026-09-09.json.
 
+    RE-COMPLETED 2026-09-20 on the 156-metric roster at contract 61.2.0. That refresh put
+    1,266 operand-expanded shapes out of reach - the twelve new prior-session metrics had
+    never been rendered - and the sweep of that date closed them: 1,266 headers minted, ZERO
+    refusals, and ZERO predicted-but-not-rendered, so omega.fanout.outputs_for described the
+    new metrics correctly on the first pass without a single correction.
+    Run record: data/audit/coverage_sweep_2026-09-20.json.
+
     This is the strongest form of the claim the sweep set out to make, and it is only
     meaningful because the denominator is honest: the 357 shapes the platform refuses
     were REMOVED from the space rather than excused from the count. A shape that cannot
     render is not covered by declaring it out of scope.
     """
     cov, unc, byt = coverage(True, contract)
-    assert (cov, len(unc)) == (8979, 0), (
+    assert (cov, len(unc)) == (8409, 0), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
     assert not byt

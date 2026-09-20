@@ -42,7 +42,8 @@ from omega.contract import load          # noqa: E402
 from omega.space import enumerate_shapes  # noqa: E402
 
 PARTIAL = "data/audit/_module_membership_full_partial.json"
-OUT = "data/audit/module_membership_full_2026-09-09.json"
+PROBE_DATE = os.environ.get("PROBE_DATE", "2026-09-09")
+OUT = f"data/audit/module_membership_full_{PROBE_DATE}.json"
 NOTE = "OMEGA read-only full membership probe 2026-09-09"
 
 
