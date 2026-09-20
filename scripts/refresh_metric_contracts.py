@@ -15,6 +15,9 @@ which metric it is attached to" claim in transforms/_authoring.json can be re-ch
 rather than assumed.
 
 Resumable: a metric whose file already carries this run's stamp is skipped.
+
+Re-run 2026-09-20 at contract 61.2.0. EXTRACTION_SCRATCH and EXTRACTION_STAMP replace the constants the
+first run pinned to one session's scratch directory, which no longer exists.
 """
 import glob
 import json
@@ -25,8 +28,9 @@ import time
 
 ROOT = r"C:\Users\rafae\Documents\GitHub\OMEGA\.claude\worktrees\vwap-strategy-dev-c75dc9"
 OUT = os.path.join(ROOT, "data", "contract", "metrics")
-SP = r"C:\Users\rafae\AppData\Local\Temp\claude\C--Users-rafae-Documents-GitHub-OMEGA--claude-worktrees-vwap-strategy-dev-c75dc9\79a52272-a56d-4902-9595-98fac9bb1dda\scratchpad"
-RAW = os.path.join(SP, "hints_20260909")
+STAMP = os.environ.get("EXTRACTION_STAMP", "20260909")
+SP = os.environ.get("EXTRACTION_SCRATCH") or r"C:\Users\rafae\AppData\Local\Temp\claude\C--Users-rafae-Documents-GitHub-OMEGA--claude-worktrees-vwap-strategy-dev-c75dc9\79a52272-a56d-4902-9595-98fac9bb1dda\scratchpad"
+RAW = os.path.join(SP, "hints_" + STAMP)
 os.makedirs(RAW, exist_ok=True)
 
 # Every per-transform flag the platform actually returns, enumerated from the 144 responses
@@ -129,7 +133,7 @@ json.dump({"_what": "get_metric_construction_hints authoring blocks grouped by t
                     "transforms/_authoring.json.",
            "variantsPerTransform": variants,
            "metricsPerTransform": {t: sum(len(v) for v in b.values()) for t, b in authoring_seen.items()}},
-          open(os.path.join(SP, "authoring_invariance_20260909.json"), "w", encoding="utf-8"),
+          open(os.path.join(SP, "authoring_invariance_" + STAMP + ".json"), "w", encoding="utf-8"),
           ensure_ascii=False, indent=1)
 
 print(f"\nwritten {len(written)}; retired {retired}; failed {failed or 'none'}")

@@ -1,0 +1,289 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-20T19:45:32Z",
+  "how": "npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category - the same transport and account as the 2026-09-09 capture, so the two are comparable. Deployed contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7, read from the manager's `auth status` and its watch job the same hour.",
+  "role": "metrics array only; the category-invariant blocks are unchanged and live in _shared.json.",
+  "supersedes": "20260909T080307Z (contract 54.1.0)"
+ },
+ "category": "volumeFlow",
+ "metrics": [
+  {
+   "metric": "VOLUME",
+   "label": "Volume",
+   "code": "volBase",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "largeCount",
+    "precision": 1,
+    "range": {
+     "min": 0
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare"
+   ]
+  },
+  {
+   "metric": "VOL_SMA20",
+   "label": "Volume SMA (20)",
+   "code": "volSMA20",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "largeCount",
+    "precision": 1
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "TRADES",
+   "label": "Trades",
+   "code": "trades",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0,
+    "range": {
+     "min": 0
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  },
+  {
+   "metric": "BUY_VOLUME",
+   "label": "Buy volume",
+   "code": "buyVol",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "largeCount",
+    "precision": 1,
+    "range": {
+     "min": 0
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare"
+   ]
+  },
+  {
+   "metric": "SELL_VOLUME",
+   "label": "Sell volume",
+   "code": "sellVol",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "largeCount",
+    "precision": 1,
+    "range": {
+     "min": 0
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare"
+   ]
+  },
+  {
+   "metric": "NOTIONAL_VOLUME_1D",
+   "label": "Notional volume (24h)",
+   "code": "vol24hUsd",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "usdLargeCount",
+    "precision": 1
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "RVOL",
+   "label": "RVOL (relative volume)",
+   "code": "RVOL",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "ratio",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "rank"
+   ]
+  },
+  {
+   "metric": "OBV",
+   "label": "OBV",
+   "code": "OBV",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "largeCount",
+    "precision": 1
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "CVD",
+   "label": "CVD (session)",
+   "code": "CVD",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 0
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "SPOT_CVD",
+   "label": "Spot CVD (composite)",
+   "code": "spotCVD",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 0
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "BUY_PRESSURE",
+   "label": "Buy pressure",
+   "code": "buyPres",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "fraction",
+    "precision": 2,
+    "range": {
+     "min": 0,
+     "max": 1
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  },
+  {
+   "metric": "BUY_TRADES",
+   "label": "Buy trades",
+   "code": "buyTr",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0,
+    "range": {
+     "min": 0
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  },
+  {
+   "metric": "SELL_TRADES",
+   "label": "Sell trades",
+   "code": "sellTr",
+   "family": "volumeFlow",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0,
+    "range": {
+     "min": 0
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  }
+ ]
+}

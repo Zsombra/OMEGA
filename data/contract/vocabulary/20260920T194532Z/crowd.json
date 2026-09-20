@@ -1,0 +1,184 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-20T19:45:32Z",
+  "how": "npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category - the same transport and account as the 2026-09-09 capture, so the two are comparable. Deployed contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7, read from the manager's `auth status` and its watch job the same hour.",
+  "role": "metrics array only; the category-invariant blocks are unchanged and live in _shared.json.",
+  "supersedes": "20260909T080307Z (contract 54.1.0)"
+ },
+ "category": "crowd",
+ "metrics": [
+  {
+   "metric": "CROWD_PICK",
+   "label": "Crowd pick rate",
+   "code": "pick",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CROWD_UPBIAS",
+   "label": "Crowd up-bias",
+   "code": "upBias",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CROWD_ACC",
+   "label": "Crowd accuracy",
+   "code": "crowdAcc",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CROWD_CAPT",
+   "label": "Crowd captain rate",
+   "code": "captRate",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CROWD_PICK_LIVE",
+   "label": "Crowd pick rate (live)",
+   "code": "pickLive",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CROWD_UPBIAS_LIVE",
+   "label": "Crowd up-bias (live)",
+   "code": "upBiasLive",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CROWD_ACC_LIVE",
+   "label": "Crowd accuracy (live)",
+   "code": "crowdAccLive",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CROWD_CAPT_LIVE",
+   "label": "Crowd captain rate (live)",
+   "code": "captRateLive",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "rank"
+   ]
+  },
+  {
+   "metric": "SETTLED_AT",
+   "label": "Settled at",
+   "code": "settledAt",
+   "family": "crowd",
+   "nativeOutput": {
+    "kind": "date"
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  }
+ ]
+}

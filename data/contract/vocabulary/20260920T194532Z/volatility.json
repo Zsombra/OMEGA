@@ -1,0 +1,140 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-20T19:45:32Z",
+  "how": "npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category - the same transport and account as the 2026-09-09 capture, so the two are comparable. Deployed contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7, read from the manager's `auth status` and its watch job the same hour.",
+  "role": "metrics array only; the category-invariant blocks are unchanged and live in _shared.json.",
+  "supersedes": "20260909T080307Z (contract 54.1.0)"
+ },
+ "category": "volatility",
+ "metrics": [
+  {
+   "metric": "ATR",
+   "label": "ATR (14)",
+   "code": "ATR",
+   "family": "volatility",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "ATR_PCT",
+   "label": "ATR % of price",
+   "code": "atrPct",
+   "family": "volatility",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "rank"
+   ]
+  },
+  {
+   "metric": "BB_WIDTH",
+   "label": "Bollinger width",
+   "code": "BBwidth",
+   "family": "volatility",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "BB_WIDTH_PCT",
+   "label": "Bollinger width % of middle",
+   "code": "bbWidthPct",
+   "family": "volatility",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "rank"
+   ]
+  },
+  {
+   "metric": "KC_SQUEEZE",
+   "label": "TTM squeeze",
+   "code": "kcSqueeze",
+   "family": "volatility",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "on",
+     "off"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "HIGH_DEV",
+   "label": "Bar high vs open",
+   "code": "highDev",
+   "family": "volatility",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread",
+    "rank"
+   ]
+  },
+  {
+   "metric": "LOW_DEV",
+   "label": "Bar low vs open",
+   "code": "lowDev",
+   "family": "volatility",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread",
+    "rank"
+   ]
+  }
+ ]
+}

@@ -74,6 +74,16 @@
     "PRIOR_TPO_POC",
     "PRIOR_TPO_VAH",
     "PRIOR_TPO_VAL",
+    "PRIOR_TPO_IB_HIGH",
+    "PRIOR_TPO_IB_LOW",
+    "TPO_VPOC",
+    "TPO_VVAH",
+    "TPO_VVAL",
+    "PRIOR_TPO_VPOC",
+    "PRIOR_TPO_VVAH",
+    "PRIOR_TPO_VVAL",
+    "NAKED_POC_ABOVE",
+    "NAKED_POC_BELOW",
     "BB_UPPER",
     "KC_UPPER",
     "KC_MID",
@@ -94,6 +104,7 @@
     "PIVOT_S2",
     "PDH",
     "PDL",
+    "PDO",
     "PIVOT_S3"
   ]
 }

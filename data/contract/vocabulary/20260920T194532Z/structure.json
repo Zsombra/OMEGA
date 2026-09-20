@@ -1,0 +1,842 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-20T19:45:32Z",
+  "how": "npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category - the same transport and account as the 2026-09-09 capture, so the two are comparable. Deployed contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7, read from the manager's `auth status` and its watch job the same hour.",
+  "role": "metrics array only; the category-invariant blocks are unchanged and live in _shared.json.",
+  "supersedes": "20260909T080307Z (contract 54.1.0)"
+ },
+ "category": "structure",
+ "metrics": [
+  {
+   "metric": "BB_PCT_B",
+   "label": "Bollinger %B",
+   "code": "pctB",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "fraction",
+    "precision": 2,
+    "range": {
+     "min": 0,
+     "max": 1
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "rank"
+   ]
+  },
+  {
+   "metric": "DONCHIAN_UPPER",
+   "label": "20-bar high",
+   "code": "donchianHi",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "DONCHIAN_LOWER",
+   "label": "20-bar low",
+   "code": "donchianLo",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "VWAP",
+   "label": "VWAP (session)",
+   "code": "VWAP",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRICE_ZONE",
+   "label": "Price zone",
+   "code": "zone",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "breakout high",
+     "breakdown low",
+     "near high",
+     "near low",
+     "mid-range"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "BB_TOUCH",
+   "label": "Band touch",
+   "code": "BBtouch",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "upper",
+     "lower",
+     "none"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "STRUCT_ZONES",
+   "label": "Structure zones",
+   "code": "zones",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "entitySet",
+    "entity": "structureZone"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "count",
+    "nearestZoneType",
+    "nearestZoneRange",
+    "nearestZoneDist",
+    "nearestZoneAge"
+   ]
+  },
+  {
+   "metric": "TPO_POC",
+   "label": "TPO point of control",
+   "code": "tpoPOC",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_VAH",
+   "label": "TPO value-area high",
+   "code": "tpoVAH",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_VAL",
+   "label": "TPO value-area low",
+   "code": "tpoVAL",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_IB_HIGH",
+   "label": "Initial balance high",
+   "code": "tpoIBH",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_IB_LOW",
+   "label": "Initial balance low",
+   "code": "tpoIBL",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_SHAPE",
+   "label": "TPO profile shape",
+   "code": "tpoShape",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "p-shape",
+     "b-shape",
+     "balanced"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_POC",
+   "label": "TPO point of control (prior session)",
+   "code": "pTpoPOC",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_VAH",
+   "label": "TPO value-area high (prior session)",
+   "code": "pTpoVAH",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_VAL",
+   "label": "TPO value-area low (prior session)",
+   "code": "pTpoVAL",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_SHAPE",
+   "label": "TPO profile shape (prior session)",
+   "code": "pTpoShape",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "p-shape",
+     "b-shape",
+     "balanced"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_IB_HIGH",
+   "label": "Initial balance high (prior session)",
+   "code": "pTpoIBH",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_IB_LOW",
+   "label": "Initial balance low (prior session)",
+   "code": "pTpoIBL",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_VPOC",
+   "label": "Volume point of control",
+   "code": "tpoVPOC",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_VVAH",
+   "label": "Volume value-area high",
+   "code": "tpoVVAH",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "TPO_VVAL",
+   "label": "Volume value-area low",
+   "code": "tpoVVAL",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_VPOC",
+   "label": "Volume point of control (prior session)",
+   "code": "pTpoVPOC",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_VVAH",
+   "label": "Volume value-area high (prior session)",
+   "code": "pTpoVVAH",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PRIOR_TPO_VVAL",
+   "label": "Volume value-area low (prior session)",
+   "code": "pTpoVVAL",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "NAKED_POC_ABOVE",
+   "label": "Naked POC above",
+   "code": "nPocAbove",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "NAKED_POC_BELOW",
+   "label": "Naked POC below",
+   "code": "nPocBelow",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "BB_UPPER",
+   "label": "Bollinger upper band",
+   "code": "bbUpper",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "BB_LOWER",
+   "label": "Bollinger lower band",
+   "code": "bbLower",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "KC_UPPER",
+   "label": "Keltner upper",
+   "code": "kcUpper",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "KC_MID",
+   "label": "Keltner basis",
+   "code": "kcMid",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "KC_LOWER",
+   "label": "Keltner lower",
+   "code": "kcLower",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "ST_LINE",
+   "label": "Supertrend stop",
+   "code": "stLine",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PSAR",
+   "label": "Parabolic SAR",
+   "code": "PSAR",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PIVOT_P",
+   "label": "Pivot",
+   "code": "pivotP",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PIVOT_R1",
+   "label": "Pivot R1",
+   "code": "pivotR1",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PIVOT_R2",
+   "label": "Pivot R2",
+   "code": "pivotR2",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PIVOT_R3",
+   "label": "Pivot R3",
+   "code": "pivotR3",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PIVOT_S1",
+   "label": "Pivot S1",
+   "code": "pivotS1",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PIVOT_S2",
+   "label": "Pivot S2",
+   "code": "pivotS2",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PDH",
+   "label": "Previous-day high",
+   "code": "pdh",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PDL",
+   "label": "Previous-day low",
+   "code": "pdl",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PDO",
+   "label": "Previous-day open",
+   "code": "pdo",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "PIVOT_S3",
+   "label": "Pivot S3",
+   "code": "pivotS3",
+   "family": "structure",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  }
+ ]
+}

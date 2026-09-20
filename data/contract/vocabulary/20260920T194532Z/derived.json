@@ -1,0 +1,130 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-20T19:45:32Z",
+  "how": "npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category - the same transport and account as the 2026-09-09 capture, so the two are comparable. Deployed contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7, read from the manager's `auth status` and its watch job the same hour.",
+  "role": "metrics array only; the category-invariant blocks are unchanged and live in _shared.json.",
+  "supersedes": "20260909T080307Z (contract 54.1.0)"
+ },
+ "category": "derived",
+ "metrics": [
+  {
+   "metric": "FLOW_ALIGN",
+   "label": "Flow alignment",
+   "code": "flowAlign",
+   "family": "derived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "aligned bullish",
+     "aligned bearish",
+     "divergent",
+     "neutral"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "SMART_RETAIL",
+   "label": "Smart vs retail",
+   "code": "smartRetail",
+   "family": "derived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "hidden accumulation",
+     "hidden distribution",
+     "confirmed"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "CAPTAIN_CONF",
+   "label": "Captain confidence",
+   "code": "captainConf",
+   "family": "derived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "CONFIDENCE",
+   "label": "Convergence confidence",
+   "code": "conf",
+   "family": "derived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "high",
+     "moderate",
+     "low"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "PERP_SPOT_FLOW",
+   "label": "Perp/spot flow",
+   "code": "perpSpotFlow",
+   "family": "derived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "confirmed_bull",
+     "confirmed_bear",
+     "perp_led_fragile",
+     "spot_led_accumulation",
+     "neutral"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "PERP_SPOT_STRENGTH",
+   "label": "Perp/spot strength",
+   "code": "perpSpotStr",
+   "family": "derived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "high",
+     "moderate",
+     "low"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "PERP_SPOT_CONFIRMS",
+   "label": "Perp/spot confirms",
+   "code": "perpSpotConf",
+   "family": "derived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  }
+ ]
+}

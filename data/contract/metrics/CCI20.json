@@ -62,6 +62,5 @@
     "lo",
     "far",
     "near"
-  ],
-  "_note": "2026-08-24 note said classifyZone was NOT authorable on CCI20 though the platform's own includeBollingerBands template used it. LIFTED: classifyZone is offered on CCI20 as of the 2026-09-09 sweep, and CCI20 x classifyZone is no longer a platform-privileged pair."
+  ]
 }

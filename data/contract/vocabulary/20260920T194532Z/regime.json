@@ -1,0 +1,299 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-20T19:45:32Z",
+  "how": "npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category - the same transport and account as the 2026-09-09 capture, so the two are comparable. Deployed contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7, read from the manager's `auth status` and its watch job the same hour.",
+  "role": "metrics array only; the category-invariant blocks are unchanged and live in _shared.json.",
+  "supersedes": "20260909T080307Z (contract 54.1.0)"
+ },
+ "category": "regime",
+ "metrics": [
+  {
+   "metric": "REGIME_TREND",
+   "label": "Regime \u00b7 trend",
+   "code": "regTrend",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "trending up",
+     "trending down",
+     "ranging"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "trajectory"
+   ]
+  },
+  {
+   "metric": "REGIME_VOL",
+   "label": "Regime \u00b7 volatility",
+   "code": "regVol",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "expanding",
+     "contracting",
+     "normal"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "trajectory"
+   ]
+  },
+  {
+   "metric": "REGIME_MOM",
+   "label": "Regime \u00b7 momentum",
+   "code": "regMom",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish",
+     "neutral",
+     "diverging"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "trajectory"
+   ]
+  },
+  {
+   "metric": "REGIME_STATE",
+   "label": "Regime \u00b7 state",
+   "code": "regState",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bull expansion",
+     "bear expansion",
+     "bull ranging",
+     "bear ranging",
+     "contraction",
+     "volatile",
+     "fallback"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_CONVICTION",
+   "label": "Regime \u00b7 conviction",
+   "code": "regConv",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "maximum",
+     "high",
+     "medium",
+     "low",
+     "uncertain"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_RUN_BARS",
+   "label": "Regime \u00b7 run length",
+   "code": "regBars",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_TREND_GATE",
+   "label": "Regime \u00b7 trend gate",
+   "code": "regGate",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "cleared",
+     "held",
+     "dropped"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_TREND_MARGIN",
+   "label": "Regime \u00b7 trend margin",
+   "code": "regMargin",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_TREND_SOURCE",
+   "label": "Regime \u00b7 trend source",
+   "code": "regSrc",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "di spread",
+     "ema fallback"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_DI_SPREAD",
+   "label": "Regime \u00b7 DI spread",
+   "code": "regDI",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": -100,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_VOL_ATR_RATIO",
+   "label": "Regime \u00b7 ATR ratio",
+   "code": "regAtrR",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "ratio",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_VOL_BBW_RATIO",
+   "label": "Regime \u00b7 BB-width ratio",
+   "code": "regBbwR",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "ratio",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_MOM_BULL_VOTES",
+   "label": "Regime \u00b7 bullish votes",
+   "code": "regBull",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_MOM_BEAR_VOTES",
+   "label": "Regime \u00b7 bearish votes",
+   "code": "regBear",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_CRASH_MARGIN",
+   "label": "Regime \u00b7 crash margin",
+   "code": "regCrash",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_CRASH_LATCH",
+   "label": "Regime \u00b7 crash latch",
+   "code": "regLatch",
+   "family": "regime",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "armed",
+     "clear"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,202 @@
+{
+ "_capture": {
+  "capturedAt": "2026-09-20T19:45:32Z",
+  "how": "npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category - the same transport and account as the 2026-09-09 capture, so the two are comparable. Deployed contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7, read from the manager's `auth status` and its watch job the same hour.",
+  "role": "metrics array only; the category-invariant blocks are unchanged and live in _shared.json.",
+  "supersedes": "20260909T080307Z (contract 54.1.0)"
+ },
+ "category": "price",
+ "metrics": [
+  {
+   "metric": "OPEN",
+   "label": "Open price",
+   "code": "open",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "HIGH",
+   "label": "High price",
+   "code": "high",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "LOW",
+   "label": "Low price",
+   "code": "low",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "CLOSE",
+   "label": "Close price",
+   "code": "close",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "LAST",
+   "label": "Last traded price",
+   "code": "last",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "MARK",
+   "label": "Mark price",
+   "code": "mark",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "ORACLE",
+   "label": "Oracle price",
+   "code": "oracle",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "SPOT_CLOSE_CB",
+   "label": "Spot close (Coinbase)",
+   "code": "cbClose",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "SPOT_CLOSE_BN",
+   "label": "Spot close (Binance)",
+   "code": "bnClose",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "bandTouch"
+   ]
+  },
+  {
+   "metric": "BAR_FORMING",
+   "label": "Bar state",
+   "code": "bar",
+   "family": "price",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "forming",
+     "closed"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  }
+ ]
+}
