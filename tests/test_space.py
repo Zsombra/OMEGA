@@ -23,22 +23,36 @@ def _matrix_rows():
 
 
 def test_matrix_is_the_full_metric_by_transform_grid():
-    """144 x 16 as of 2026-09-09 (contract 54.1.0). Was 86 x 16 = 1376 on 2026-08-24 and
-    135 metrics on 2026-09-05; the roster is the platform's to grow, so these track it."""
+    """156 x 16 as of 2026-09-21 (contract 61.2.0). Was 144 x 16 = 2304 on 2026-09-09,
+    86 x 16 = 1376 on 2026-08-24 and 135 metrics on 2026-09-05; the roster is the
+    platform's to grow, so these track it."""
     rows = _matrix_rows()
-    assert len(rows) == 2304
-    assert len({r["metric"] for r in rows}) == 144
+    assert len(rows) == 2496
+    assert len({r["metric"] for r in rows}) == 156
     assert len({r["transform"] for r in rows}) == 16
 
 
 def test_structural_shape_count_is_1018():
-    """322 legal atoms + 166 chained forms. Chaining stops at two stages."""
+    """681 legal atoms + 301 chained forms = 982, at contract 61.2.0.
+
+    Was 663 + 355 = 1018 at 54.1.0 (name kept for history; the number moved). Atoms grew
+    12 -> 681 (663 + 18): the twelve new metrics contribute 45 atoms of their own (eleven
+    at 4 transforms each plus PRIOR_TPO_SHAPE at 1), while PDH, PDL and the seven pivots
+    each shed 3 atoms (trajectory, aggregate, efficiency) going candle -> timeless,
+    -27. 45 - 27 = 18, matching the corpus's own 663 -> 681.
+
+    Chained forms FELL despite atoms growing, because the same nine metrics also lost
+    `chainSuccessors: [trajectory, aggregate, efficiency]` on their `distance` and
+    `spread` atoms - two chain-bearing atoms per metric, 18 removed from the
+    "three general successors" bucket (93 -> 75 below), each worth 3 chained forms:
+    18 x 3 = 54 fewer chained shapes (355 -> 301). The "four successors" (+rank) bucket
+    is untouched (19 -> 19) because none of the nine ever chained spread into rank."""
     shapes = enumerate_shapes()
     atoms = [s for s in shapes if s.chained is None]
     chained = [s for s in shapes if s.chained is not None]
-    assert len(atoms) == 663
-    assert len(chained) == 355
-    assert len(shapes) == 1018
+    assert len(atoms) == 681
+    assert len(chained) == 301
+    assert len(shapes) == 982
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -51,10 +65,13 @@ def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
 
 
 def test_chain_successors_split_93_and_19():
-    """93 atoms take the 3 general successors; 19 also take rank.
+    """75 atoms take the 3 general successors; 19 also take rank, at contract 61.2.0.
 
-    Was 42/10 on the 86-metric August roster. Recomputed 2026-09-09 against the
-    144-metric corpus (contract 54.1.0)."""
+    Was 93/19 at 54.1.0 (name kept for history), 42/10 on the 86-metric August roster.
+    The three-successor bucket lost exactly PDH, PDL and the seven pivots' `distance`
+    and `spread` atoms (9 metrics x 2 = 18) when those nine went candle -> timeless and
+    dropped chainSuccessors from both: 93 - 18 = 75. The four-successor (+rank) bucket
+    is untouched at 19 - none of the nine ever offered a rank chain."""
     shapes = enumerate_shapes()
     by_atom: dict[tuple[str, str], set[str]] = {}
     for s in shapes:
@@ -63,19 +80,30 @@ def test_chain_successors_split_93_and_19():
     three = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate", "efficiency"}]
     four = [k for k, v in by_atom.items()
             if v == {"trajectory", "aggregate", "efficiency", "rank"}]
-    assert len(three) == 93
+    assert len(three) == 75
     assert len(four) == 19
 
 
 def test_expanding_operands_and_orderings_gives_8999():
-    """2,200 until 2026-08-26, when 64 illegal shapes came out of the enumeration.
+    """8,429 at contract 61.2.0 (name kept for history - was 8999 at 54.1.0, 2,200 until
+    2026-08-26, when 64 illegal shapes came out of the enumeration).
+
+    The 570-shape drop nets two opposing moves. Unchained spread shapes grew (every
+    metric's spreadOperands pool widened to include the twelve new metrics, and eleven
+    of those twelve offer their own unchained spread atom). Chained spread shapes fell
+    much further: PDH, PDL and the seven pivots no longer chain spread into a series at
+    all (they lost the chainSuccessors), AND every one of those nine plus the twelve new
+    metrics is timeless, so any OTHER metric's spread chained into aggregate/trajectory/
+    efficiency now refuses whenever the operand is one of these 21 names (see
+    tests/test_spread_chain_operand.py - a series chain needs a candle-backed operand).
+    Net effect verified directly against the corpus: -570.
 
     Chaining spread -> rank narrows the legal operand set via the contract's
     `rankableSpreadOperands`; the enumerator paired the chain with all of spread's
     operands instead. omega's own validator had always refused those 64 - only
     enumerate_shapes disagreed. See tests/test_space_validate_agreement.py.
     """
-    assert len(enumerate_shapes(expand_operands=True)) == 8999
+    assert len(enumerate_shapes(expand_operands=True)) == 8429
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -172,9 +200,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 1018
+    assert len(unused) + len(used) == 982
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 1018
-    assert len(query(expand_operands=True)) == 8999
+    assert len(query()) == 982
+    assert len(query(expand_operands=True)) == 8429

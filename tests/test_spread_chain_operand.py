@@ -87,7 +87,17 @@ def test_the_audit_record_still_describes_what_it_measured(contract):
 def test_the_rule_still_holds_on_the_current_corpus(contract):
     """What must stay true regardless of roster size: no timeless-operand spread chain is
     enumerated (asserted above), and the structural space is untouched by the rule because
-    a structural spread shape carries no operand. Counts recomputed 2026-09-09 against the
-    144-metric corpus; they were 488 / 1779 on the 86-metric one."""
-    assert len(enumerate_shapes(contract=contract)) == 1018
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 8999
+    a structural spread shape carries no operand. Counts recomputed 2026-09-21 against the
+    156-metric corpus (contract 61.2.0): 982 / 8429. They were 1018 / 8999 on the
+    144-metric corpus (54.1.0), 488 / 1779 on the 86-metric one.
+
+    The structural count (982) fell even though THIS rule never touches unexpanded
+    shapes (a structural spread carries no operand to be timeless or not) - that drop is
+    the metric/transform roster change covered in
+    tests/test_space.py::test_structural_shape_count_is_1018. The expanded count (8429)
+    additionally reflects this rule biting harder than before: PDH, PDL, the seven
+    pivots and the twelve metrics added at 61.2.0 are all timeless, so any OTHER metric's
+    spread chained into a series now refuses whenever one of those 21 names is the
+    operand - on top of the nine no longer offering that chain themselves."""
+    assert len(enumerate_shapes(contract=contract)) == 982
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 8429
