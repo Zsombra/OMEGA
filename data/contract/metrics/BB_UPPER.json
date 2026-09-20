@@ -1,49 +1,14 @@
 {
-  "metric": "BB_UPPER",
-  "label": "Bollinger upper band",
   "code": "bbUpper",
   "family": "structure",
+  "label": "Bollinger upper band",
+  "metric": "BB_UPPER",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "price",
-    "precision": 2
+    "precision": 2,
+    "unit": "price"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "distance",
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "bandTouch"
-    }
-  ],
   "spreadOperands": [
     "OPEN",
     "HIGH",
@@ -106,5 +71,40 @@
     "PDL",
     "PDO",
     "PIVOT_S3"
+  ],
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "distance"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "bandTouch"
+    }
   ]
 }

@@ -1,8 +1,8 @@
 {
-  "metric": "FLOW_ALIGN",
-  "label": "Flow alignment",
   "code": "flowAlign",
   "family": "derived",
+  "label": "Flow alignment",
+  "metric": "FLOW_ALIGN",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

@@ -1,14 +1,23 @@
 {
-  "metric": "OI",
-  "label": "Open interest",
   "code": "OI",
   "family": "derivatives",
+  "label": "Open interest",
+  "metric": "OI",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "usdLargeCount",
-    "precision": 1
+    "precision": 1,
+    "unit": "usdLargeCount"
   },
   "outputKind": "scalar",
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ],
+  "spreadOperands": [
+    "NOTIONAL_VOLUME_1D"
+  ],
   "timeframeMode": "timeless",
   "transforms": [
     {
@@ -30,14 +39,5 @@
     {
       "id": "rank"
     }
-  ],
-  "spreadOperands": [
-    "NOTIONAL_VOLUME_1D"
-  ],
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
   ]
 }

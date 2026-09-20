@@ -1,44 +1,23 @@
 {
-  "metric": "WILLR14",
-  "label": "Williams %R (14)",
   "code": "willR",
   "family": "momentum",
+  "label": "Williams %R (14)",
+  "metric": "WILLR14",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "oscillator",
     "precision": 1,
     "range": {
-      "min": -100,
-      "max": 0
-    }
+      "max": 0,
+      "min": -100
+    },
+    "unit": "oscillator"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ],
   "spreadOperands": [
     "RSI14",
@@ -58,10 +37,31 @@
     "REGIME_TREND_MARGIN",
     "REGIME_DI_SPREAD"
   ],
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
   ]
 }

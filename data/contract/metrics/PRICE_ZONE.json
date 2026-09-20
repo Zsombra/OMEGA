@@ -1,8 +1,8 @@
 {
-  "metric": "PRICE_ZONE",
-  "label": "Price zone",
   "code": "zone",
   "family": "structure",
+  "label": "Price zone",
+  "metric": "PRICE_ZONE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

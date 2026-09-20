@@ -1,28 +1,18 @@
 {
-  "metric": "REGIME_TREND_MARGIN",
-  "label": "Regime · trend margin",
   "code": "regMargin",
   "family": "regime",
+  "label": "Regime · trend margin",
+  "metric": "REGIME_TREND_MARGIN",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "oscillator",
     "precision": 1,
     "range": {
-      "min": 0,
-      "max": 100
-    }
+      "max": 100,
+      "min": 0
+    },
+    "unit": "oscillator"
   },
   "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    }
-  ],
   "spreadOperands": [
     "RSI14",
     "RSI7",
@@ -40,5 +30,15 @@
     "DI_PLUS",
     "DI_MINUS",
     "REGIME_DI_SPREAD"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
   ]
 }

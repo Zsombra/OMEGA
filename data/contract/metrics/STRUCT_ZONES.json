@@ -1,11 +1,11 @@
 {
-  "metric": "STRUCT_ZONES",
-  "label": "Structure zones",
   "code": "zones",
   "family": "structure",
+  "label": "Structure zones",
+  "metric": "STRUCT_ZONES",
   "nativeOutput": {
-    "kind": "entitySet",
-    "entity": "structureZone"
+    "entity": "structureZone",
+    "kind": "entitySet"
   },
   "outputKind": "entitySet",
   "timeframeMode": "candle",

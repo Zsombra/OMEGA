@@ -1,8 +1,8 @@
 {
-  "metric": "TPO_SHAPE",
-  "label": "TPO profile shape",
   "code": "tpoShape",
   "family": "structure",
+  "label": "TPO profile shape",
+  "metric": "TPO_SHAPE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

@@ -74,6 +74,16 @@
         "PRIOR_TPO_POC",
         "PRIOR_TPO_VAH",
         "PRIOR_TPO_VAL",
+        "PRIOR_TPO_IB_HIGH",
+        "PRIOR_TPO_IB_LOW",
+        "TPO_VPOC",
+        "TPO_VVAH",
+        "TPO_VVAL",
+        "PRIOR_TPO_VPOC",
+        "PRIOR_TPO_VVAH",
+        "PRIOR_TPO_VVAL",
+        "NAKED_POC_ABOVE",
+        "NAKED_POC_BELOW",
         "BB_UPPER",
         "BB_LOWER",
         "KC_UPPER",
@@ -101,6 +111,7 @@
         "PIVOT_S2",
         "PDH",
         "PDL",
+        "PDO",
         "PIVOT_S3",
         "DI_PLUS",
         "DI_MINUS",
@@ -139,7 +150,7 @@
         "CROWD_CAPT_LIVE"
       ],
       "vocabularies": {},
-      "metricCount": 116
+      "metricCount": 127
     },
     "classification": {
       "conditionOperators": [
@@ -154,6 +165,7 @@
         "PRICE_ZONE",
         "BB_TOUCH",
         "TPO_SHAPE",
+        "PRIOR_TPO_SHAPE",
         "ST_DIR",
         "FUNDING_LABEL",
         "OI_VELOCITY",
@@ -199,6 +211,11 @@
           "none"
         ],
         "TPO_SHAPE": [
+          "p-shape",
+          "b-shape",
+          "balanced"
+        ],
+        "PRIOR_TPO_SHAPE": [
           "p-shape",
           "b-shape",
           "balanced"
@@ -298,7 +315,7 @@
           "low"
         ]
       },
-      "metricCount": 23
+      "metricCount": 24
     },
     "event": {
       "conditionOperators": [

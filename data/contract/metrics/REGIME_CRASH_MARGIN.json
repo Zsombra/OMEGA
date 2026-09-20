@@ -1,24 +1,14 @@
 {
-  "metric": "REGIME_CRASH_MARGIN",
-  "label": "Regime · crash margin",
   "code": "regCrash",
   "family": "regime",
+  "label": "Regime · crash margin",
+  "metric": "REGIME_CRASH_MARGIN",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
-    "precision": 2
+    "precision": 2,
+    "unit": "percent"
   },
   "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    }
-  ],
   "spreadOperands": [
     "PPO",
     "ROC12",
@@ -35,5 +25,15 @@
     "FUNDING_RATE",
     "FUNDING_ANN",
     "OI_CHG"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
   ]
 }

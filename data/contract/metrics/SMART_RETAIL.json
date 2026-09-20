@@ -1,8 +1,8 @@
 {
-  "metric": "SMART_RETAIL",
-  "label": "Smart vs retail",
   "code": "smartRetail",
   "family": "derived",
+  "label": "Smart vs retail",
+  "metric": "SMART_RETAIL",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

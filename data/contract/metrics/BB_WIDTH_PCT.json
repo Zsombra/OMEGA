@@ -1,40 +1,19 @@
 {
-  "metric": "BB_WIDTH_PCT",
-  "label": "Bollinger width % of middle",
   "code": "bbWidthPct",
   "family": "volatility",
+  "label": "Bollinger width % of middle",
+  "metric": "BB_WIDTH_PCT",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
-    "precision": 2
+    "precision": 2,
+    "unit": "percent"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ],
   "spreadOperands": [
     "PPO",
@@ -53,10 +32,31 @@
     "OI_CHG",
     "REGIME_CRASH_MARGIN"
   ],
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
   ]
 }

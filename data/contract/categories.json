@@ -194,7 +194,7 @@
   },
   {
    "category": "structure",
-   "metricCount": 32,
+   "metricCount": 44,
    "label": "Structure",
    "purpose": "Describe price location, reference levels, and active support or resistance zones.",
    "whenToUse": [
@@ -626,9 +626,5 @@
    ]
   }
  ],
- "_refreshed": {
-  "at": "2026-09-09T08:2xZ",
-  "how": "list_strategy_categories via mcporter CLI, read-only; deployed contract 54.1.0",
-  "note": "The August file carried `categories` only; the live response also carries `modules` (the per-section display metadata), kept here."
- }
+ "_refreshed": "2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
 }

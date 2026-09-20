@@ -1,8 +1,8 @@
 {
-  "metric": "PERP_SPOT_STRENGTH",
-  "label": "Perp/spot strength",
   "code": "perpSpotStr",
   "family": "derived",
+  "label": "Perp/spot strength",
+  "metric": "PERP_SPOT_STRENGTH",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

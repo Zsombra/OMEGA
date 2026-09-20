@@ -1,8 +1,8 @@
 {
-  "metric": "ST_DIR",
-  "label": "Supertrend direction",
   "code": "stDir",
   "family": "trend",
+  "label": "Supertrend direction",
+  "metric": "ST_DIR",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

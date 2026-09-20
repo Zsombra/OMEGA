@@ -1,40 +1,19 @@
 {
-  "metric": "WT1",
-  "label": "WaveTrend",
   "code": "wt1",
   "family": "momentum",
+  "label": "WaveTrend",
+  "metric": "WT1",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "oscillator",
-    "precision": 2
+    "precision": 2,
+    "unit": "oscillator"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ],
   "spreadOperands": [
     "RSI14",
@@ -54,10 +33,31 @@
     "REGIME_TREND_MARGIN",
     "REGIME_DI_SPREAD"
   ],
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
   ]
 }

@@ -1,43 +1,19 @@
 {
-  "metric": "PPO",
-  "label": "PPO histogram",
   "code": "PPO",
   "family": "momentum",
+  "label": "PPO histogram",
+  "metric": "PPO",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
-    "precision": 2
+    "precision": 2,
+    "unit": "percent"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "crossDetect"
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ],
   "spreadOperands": [
     "ROC12",
@@ -56,10 +32,34 @@
     "OI_CHG",
     "REGIME_CRASH_MARGIN"
   ],
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
   ]
 }

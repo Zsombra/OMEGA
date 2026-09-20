@@ -1,8 +1,8 @@
 {
-  "metric": "EMA_CROSS",
-  "label": "EMA 5/13 cross",
   "code": "EMA5_13",
   "family": "trend",
+  "label": "EMA 5/13 cross",
+  "metric": "EMA_CROSS",
   "nativeOutput": {
     "kind": "event",
     "vocab": [

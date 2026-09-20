@@ -1,5 +1,5 @@
 {
-  "metricCount": 144,
+  "metricCount": 156,
   "byFamily": {
     "crowd": [
       "CROWD_ACC",
@@ -94,8 +94,11 @@
       "KC_LOWER",
       "KC_MID",
       "KC_UPPER",
+      "NAKED_POC_ABOVE",
+      "NAKED_POC_BELOW",
       "PDH",
       "PDL",
+      "PDO",
       "PIVOT_P",
       "PIVOT_R1",
       "PIVOT_R2",
@@ -104,9 +107,15 @@
       "PIVOT_S2",
       "PIVOT_S3",
       "PRICE_ZONE",
+      "PRIOR_TPO_IB_HIGH",
+      "PRIOR_TPO_IB_LOW",
       "PRIOR_TPO_POC",
+      "PRIOR_TPO_SHAPE",
       "PRIOR_TPO_VAH",
       "PRIOR_TPO_VAL",
+      "PRIOR_TPO_VPOC",
+      "PRIOR_TPO_VVAH",
+      "PRIOR_TPO_VVAL",
       "PSAR",
       "STRUCT_ZONES",
       "ST_LINE",
@@ -116,6 +125,9 @@
       "TPO_SHAPE",
       "TPO_VAH",
       "TPO_VAL",
+      "TPO_VPOC",
+      "TPO_VVAH",
+      "TPO_VVAL",
       "VWAP"
     ],
     "trend": [

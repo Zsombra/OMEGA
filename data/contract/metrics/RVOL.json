@@ -1,14 +1,24 @@
 {
-  "metric": "RVOL",
-  "label": "RVOL (relative volume)",
   "code": "RVOL",
   "family": "volumeFlow",
+  "label": "RVOL (relative volume)",
+  "metric": "RVOL",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "ratio",
-    "precision": 2
+    "precision": 2,
+    "unit": "ratio"
   },
   "outputKind": "scalar",
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ],
+  "spreadOperands": [
+    "REGIME_VOL_ATR_RATIO",
+    "REGIME_VOL_BBW_RATIO"
+  ],
   "timeframeMode": "candle",
   "transforms": [
     {
@@ -18,13 +28,13 @@
       "id": "trajectory"
     },
     {
-      "id": "spread",
-      "operandRequired": true,
       "chainSuccessors": [
         "trajectory",
         "aggregate",
         "efficiency"
-      ]
+      ],
+      "id": "spread",
+      "operandRequired": true
     },
     {
       "id": "aggregate"
@@ -35,16 +45,5 @@
     {
       "id": "rank"
     }
-  ],
-  "spreadOperands": [
-    "REGIME_VOL_ATR_RATIO",
-    "REGIME_VOL_BBW_RATIO"
-  ],
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
-  ],
-  "_note": "2026-08-24 note said RVOL had no spread transform at all ('the ratio unit has no operand pool'). LIFTED: spread is offered as of the 2026-09-09 sweep."
+  ]
 }

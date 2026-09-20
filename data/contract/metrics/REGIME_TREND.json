@@ -1,8 +1,8 @@
 {
-  "metric": "REGIME_TREND",
-  "label": "Regime · trend",
   "code": "regTrend",
   "family": "regime",
+  "label": "Regime · trend",
+  "metric": "REGIME_TREND",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

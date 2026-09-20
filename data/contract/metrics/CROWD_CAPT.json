@@ -1,18 +1,22 @@
 {
-  "metric": "CROWD_CAPT",
-  "label": "Crowd captain rate",
   "code": "captRate",
   "family": "crowd",
+  "label": "Crowd captain rate",
+  "metric": "CROWD_CAPT",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
     "precision": 1,
     "range": {
-      "min": 0,
-      "max": 100
-    }
+      "max": 100,
+      "min": 0
+    },
+    "unit": "percent"
   },
   "outputKind": "scalar",
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ],
   "timeframeMode": "timeless",
   "transforms": [
     {
@@ -21,9 +25,5 @@
     {
       "id": "rank"
     }
-  ],
-  "rankOrderings": [
-    "hi",
-    "lo"
   ]
 }

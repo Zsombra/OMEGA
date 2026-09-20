@@ -1,18 +1,22 @@
 {
-  "metric": "CROWD_PICK_LIVE",
-  "label": "Crowd pick rate (live)",
   "code": "pickLive",
   "family": "crowd",
+  "label": "Crowd pick rate (live)",
+  "metric": "CROWD_PICK_LIVE",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
     "precision": 1,
     "range": {
-      "min": 0,
-      "max": 100
-    }
+      "max": 100,
+      "min": 0
+    },
+    "unit": "percent"
   },
   "outputKind": "scalar",
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ],
   "timeframeMode": "timeless",
   "transforms": [
     {
@@ -21,9 +25,5 @@
     {
       "id": "rank"
     }
-  ],
-  "rankOrderings": [
-    "hi",
-    "lo"
   ]
 }

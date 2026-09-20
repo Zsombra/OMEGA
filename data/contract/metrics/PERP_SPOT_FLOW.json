@@ -1,8 +1,8 @@
 {
-  "metric": "PERP_SPOT_FLOW",
-  "label": "Perp/spot flow",
   "code": "perpSpotFlow",
   "family": "derived",
+  "label": "Perp/spot flow",
+  "metric": "PERP_SPOT_FLOW",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

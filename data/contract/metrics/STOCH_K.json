@@ -1,50 +1,21 @@
 {
-  "metric": "STOCH_K",
-  "label": "Stochastic %K",
   "code": "K",
   "family": "momentum",
+  "label": "Stochastic %K",
+  "metric": "STOCH_K",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "oscillator",
     "precision": 0,
     "range": {
-      "min": 0,
-      "max": 100
-    }
+      "max": 100,
+      "min": 0
+    },
+    "unit": "oscillator"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "classifyZone"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "maxShare"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo"
   ],
   "spreadOperands": [
     "RSI14",
@@ -64,8 +35,37 @@
     "REGIME_TREND_MARGIN",
     "REGIME_DI_SPREAD"
   ],
-  "rankOrderings": [
-    "hi",
-    "lo"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "id": "classifyZone"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
   ]
 }

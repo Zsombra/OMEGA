@@ -1,47 +1,21 @@
 {
-  "metric": "QQE_RSI_MA",
-  "label": "QQE smoothed RSI",
   "code": "qqeRsi",
   "family": "momentum",
+  "label": "QQE smoothed RSI",
+  "metric": "QQE_RSI_MA",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "oscillator",
     "precision": 2,
     "range": {
-      "min": 0,
-      "max": 100
-    }
+      "max": 100,
+      "min": 0
+    },
+    "unit": "oscillator"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "maxShare"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo"
   ],
   "spreadOperands": [
     "RSI14",
@@ -61,8 +35,34 @@
     "REGIME_TREND_MARGIN",
     "REGIME_DI_SPREAD"
   ],
-  "rankOrderings": [
-    "hi",
-    "lo"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "maxShare"
+    },
+    {
+      "id": "rank"
+    }
   ]
 }

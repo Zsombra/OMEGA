@@ -1,49 +1,14 @@
 {
-  "metric": "ICHI_CONV",
-  "label": "Ichimoku conversion",
   "code": "tenkan",
   "family": "trend",
+  "label": "Ichimoku conversion",
+  "metric": "ICHI_CONV",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "price",
-    "precision": 2
+    "precision": 2,
+    "unit": "price"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "distance",
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "bandTouch"
-    }
-  ],
   "spreadOperands": [
     "OPEN",
     "HIGH",
@@ -74,6 +39,16 @@
     "PRIOR_TPO_POC",
     "PRIOR_TPO_VAH",
     "PRIOR_TPO_VAL",
+    "PRIOR_TPO_IB_HIGH",
+    "PRIOR_TPO_IB_LOW",
+    "TPO_VPOC",
+    "TPO_VVAH",
+    "TPO_VVAL",
+    "PRIOR_TPO_VPOC",
+    "PRIOR_TPO_VVAH",
+    "PRIOR_TPO_VVAL",
+    "NAKED_POC_ABOVE",
+    "NAKED_POC_BELOW",
     "BB_UPPER",
     "BB_LOWER",
     "KC_UPPER",
@@ -94,6 +69,42 @@
     "PIVOT_S2",
     "PDH",
     "PDL",
+    "PDO",
     "PIVOT_S3"
+  ],
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "distance"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "bandTouch"
+    }
   ]
 }

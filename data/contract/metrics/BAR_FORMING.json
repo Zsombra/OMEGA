@@ -1,8 +1,8 @@
 {
-  "metric": "BAR_FORMING",
-  "label": "Bar state",
   "code": "bar",
   "family": "price",
+  "label": "Bar state",
+  "metric": "BAR_FORMING",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

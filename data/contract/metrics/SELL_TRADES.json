@@ -1,17 +1,28 @@
 {
-  "metric": "SELL_TRADES",
-  "label": "Sell trades",
   "code": "sellTr",
   "family": "volumeFlow",
+  "label": "Sell trades",
+  "metric": "SELL_TRADES",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "count",
     "precision": 0,
     "range": {
       "min": 0
-    }
+    },
+    "unit": "count"
   },
   "outputKind": "scalar",
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ],
+  "spreadOperands": [
+    "TRADES",
+    "BUY_TRADES",
+    "REGIME_RUN_BARS",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_MOM_BEAR_VOTES"
+  ],
   "timeframeMode": "candle",
   "transforms": [
     {
@@ -21,13 +32,13 @@
       "id": "trajectory"
     },
     {
-      "id": "spread",
-      "operandRequired": true,
       "chainSuccessors": [
         "trajectory",
         "aggregate",
         "efficiency"
-      ]
+      ],
+      "id": "spread",
+      "operandRequired": true
     },
     {
       "id": "aggregate"
@@ -41,16 +52,5 @@
     {
       "id": "rank"
     }
-  ],
-  "spreadOperands": [
-    "TRADES",
-    "BUY_TRADES",
-    "REGIME_RUN_BARS",
-    "REGIME_MOM_BULL_VOTES",
-    "REGIME_MOM_BEAR_VOTES"
-  ],
-  "rankOrderings": [
-    "hi",
-    "lo"
   ]
 }

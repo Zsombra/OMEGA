@@ -1,14 +1,20 @@
 {
-  "metric": "VOL_SMA20",
-  "label": "Volume SMA (20)",
   "code": "volSMA20",
   "family": "volumeFlow",
+  "label": "Volume SMA (20)",
+  "metric": "VOL_SMA20",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "largeCount",
-    "precision": 1
+    "precision": 1,
+    "unit": "largeCount"
   },
   "outputKind": "scalar",
+  "spreadOperands": [
+    "VOLUME",
+    "BUY_VOLUME",
+    "SELL_VOLUME",
+    "OBV"
+  ],
   "timeframeMode": "candle",
   "transforms": [
     {
@@ -18,13 +24,13 @@
       "id": "trajectory"
     },
     {
-      "id": "spread",
-      "operandRequired": true,
       "chainSuccessors": [
         "trajectory",
         "aggregate",
         "efficiency"
-      ]
+      ],
+      "id": "spread",
+      "operandRequired": true
     },
     {
       "id": "aggregate"
@@ -32,11 +38,5 @@
     {
       "id": "efficiency"
     }
-  ],
-  "spreadOperands": [
-    "VOLUME",
-    "BUY_VOLUME",
-    "SELL_VOLUME",
-    "OBV"
   ]
 }

@@ -1,8 +1,8 @@
 {
-  "metric": "REGIME_MOM",
-  "label": "Regime · momentum",
   "code": "regMom",
   "family": "regime",
+  "label": "Regime · momentum",
+  "metric": "REGIME_MOM",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

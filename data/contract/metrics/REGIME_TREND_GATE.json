@@ -1,8 +1,8 @@
 {
-  "metric": "REGIME_TREND_GATE",
-  "label": "Regime · trend gate",
   "code": "regGate",
   "family": "regime",
+  "label": "Regime · trend gate",
+  "metric": "REGIME_TREND_GATE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

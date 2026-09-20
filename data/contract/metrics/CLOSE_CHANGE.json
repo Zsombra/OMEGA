@@ -1,40 +1,17 @@
 {
-  "metric": "CLOSE_CHANGE",
-  "label": "Close change",
   "code": "closeChg",
   "family": "momentum",
+  "label": "Close change",
+  "metric": "CLOSE_CHANGE",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
-    "precision": 2
+    "precision": 2,
+    "unit": "percent"
   },
   "outputKind": "scalar",
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true,
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ]
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "far",
+    "near"
   ],
   "spreadOperands": [
     "PPO",
@@ -53,8 +30,31 @@
     "OI_CHG",
     "REGIME_CRASH_MARGIN"
   ],
-  "rankOrderings": [
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "trajectory"
+    },
+    {
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency"
+      ],
+      "id": "spread",
+      "operandRequired": true
+    },
+    {
+      "id": "aggregate"
+    },
+    {
+      "id": "efficiency"
+    },
+    {
+      "id": "rank"
+    }
   ]
 }

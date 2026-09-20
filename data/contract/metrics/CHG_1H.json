@@ -1,24 +1,14 @@
 {
-  "metric": "CHG_1H",
-  "label": "Change (1h)",
   "code": "chg1h",
   "family": "momentum",
+  "label": "Change (1h)",
+  "metric": "CHG_1H",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
-    "precision": 2
+    "precision": 2,
+    "unit": "percent"
   },
   "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    }
-  ],
   "spreadOperands": [
     "PPO",
     "ROC12",
@@ -35,5 +25,15 @@
     "FUNDING_ANN",
     "OI_CHG",
     "REGIME_CRASH_MARGIN"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    },
+    {
+      "id": "spread",
+      "operandRequired": true
+    }
   ]
 }

@@ -1,8 +1,8 @@
 {
-  "metric": "REGIME_CONVICTION",
-  "label": "Regime · conviction",
   "code": "regConv",
   "family": "regime",
+  "label": "Regime · conviction",
+  "metric": "REGIME_CONVICTION",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

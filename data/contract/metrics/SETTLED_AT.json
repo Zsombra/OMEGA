@@ -1,8 +1,8 @@
 {
-  "metric": "SETTLED_AT",
-  "label": "Settled at",
   "code": "settledAt",
   "family": "crowd",
+  "label": "Settled at",
+  "metric": "SETTLED_AT",
   "nativeOutput": {
     "kind": "date"
   },

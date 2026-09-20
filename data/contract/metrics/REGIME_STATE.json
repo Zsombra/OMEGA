@@ -1,8 +1,8 @@
 {
-  "metric": "REGIME_STATE",
-  "label": "Regime · state",
   "code": "regState",
   "family": "regime",
+  "label": "Regime · state",
+  "metric": "REGIME_STATE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

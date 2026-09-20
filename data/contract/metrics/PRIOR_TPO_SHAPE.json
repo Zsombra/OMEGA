@@ -1,0 +1,21 @@
+{
+  "code": "pTpoShape",
+  "family": "structure",
+  "label": "TPO profile shape (prior session)",
+  "metric": "PRIOR_TPO_SHAPE",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "p-shape",
+      "b-shape",
+      "balanced"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value"
+    }
+  ]
+}

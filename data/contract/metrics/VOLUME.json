@@ -1,17 +1,23 @@
 {
-  "metric": "VOLUME",
-  "label": "Volume",
   "code": "volBase",
   "family": "volumeFlow",
+  "label": "Volume",
+  "metric": "VOLUME",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "largeCount",
     "precision": 1,
     "range": {
       "min": 0
-    }
+    },
+    "unit": "largeCount"
   },
   "outputKind": "scalar",
+  "spreadOperands": [
+    "VOL_SMA20",
+    "BUY_VOLUME",
+    "SELL_VOLUME",
+    "OBV"
+  ],
   "timeframeMode": "candle",
   "transforms": [
     {
@@ -21,13 +27,13 @@
       "id": "trajectory"
     },
     {
-      "id": "spread",
-      "operandRequired": true,
       "chainSuccessors": [
         "trajectory",
         "aggregate",
         "efficiency"
-      ]
+      ],
+      "id": "spread",
+      "operandRequired": true
     },
     {
       "id": "aggregate"
@@ -38,11 +44,5 @@
     {
       "id": "maxShare"
     }
-  ],
-  "spreadOperands": [
-    "VOL_SMA20",
-    "BUY_VOLUME",
-    "SELL_VOLUME",
-    "OBV"
   ]
 }
