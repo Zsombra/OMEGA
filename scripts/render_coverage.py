@@ -41,6 +41,11 @@ SEEN_FILES = [
     # 2026-09-09: the sweep that closed the gap the 144-metric corpus refresh opened.
     # 7,840 previously-unrendered shapes, 13,572 headers minted, zero refusals.
     "_coverage_sweep_2026-09-09.json",
+    # 2026-09-20: the same again for the 156-metric refresh at contract 61.2.0. 1,266
+    # previously-unrendered shapes, 1,266 headers minted, zero refusals, and zero headers
+    # predicted by outputs_for that the platform did not mint - the authoring model matched
+    # the new prior-session metrics exactly on the first pass.
+    "_coverage_sweep_2026-09-20.json",
 ]
 
 

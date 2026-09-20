@@ -1,4 +1,7 @@
-"""Close the live-render coverage gap left by the 2026-09-09 corpus refresh.
+"""Close the live-render coverage gap left by a corpus refresh.
+
+First run 2026-09-09 (7,840 shapes, 13,572 headers, zero refusals); re-run 2026-09-20 for the
+61.2.0 refresh. SWEEP_DATE names the output pair so each run keeps its own evidence.
 
 Renders every uncovered shape through preview_strategy_report (read-only: it renders without
 saving or mutating strategy state) and records the headers the platform actually mints.
@@ -28,9 +31,10 @@ from scripts.render_coverage import (                # noqa: E402
 
 COLS_PER_SECTION = 32
 SECTIONS_PER_CALL = 8
-HEADERS_OUT = "data/contract/columns/_coverage_sweep_2026-09-09.json"
-RECORD_OUT = "data/audit/coverage_sweep_2026-09-09.json"
-NOTE = "OMEGA read-only coverage sweep 2026-09-09"
+SWEEP_DATE = os.environ.get("SWEEP_DATE", "2026-09-09")
+HEADERS_OUT = f"data/contract/columns/_coverage_sweep_{SWEEP_DATE}.json"
+RECORD_OUT = f"data/audit/coverage_sweep_{SWEEP_DATE}.json"
+NOTE = f"OMEGA read-only coverage sweep {SWEEP_DATE}"
 
 
 def call(tool, args, timeout=240):
@@ -126,7 +130,7 @@ for i in range(0, len(targets), per_call):
 
 headers = sorted(set(all_headers))
 os.makedirs(os.path.dirname(HEADERS_OUT), exist_ok=True)
-json.dump({"_what": ("Headers minted live by preview_strategy_report during the 2026-09-09 "
+json.dump({"_what": ("Headers minted live by preview_strategy_report during the " + SWEEP_DATE + " "
                      "coverage sweep. HEADERS ONLY - render_coverage treats every string in "
                      "this file as a seen header, so nothing else may be added here."),
            "headers": headers},
