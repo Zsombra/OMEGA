@@ -70,11 +70,20 @@ def test_candle_metric_still_accepts_every_relative_timeframe(contract):
 def test_every_timeless_metric_is_covered(contract):
     """Not just REGIME_MOM - the rule is a property of timeframeMode."""
     # 40 timeless metrics on the 86-metric roster this rule was measured against
-    # (2026-08-26). 62 on the 144-metric corpus; the 22 added since are excluded here
-    # because the rule was never exercised against them live.
+    # (2026-08-26). 62 on the 144-metric corpus (54.1.0); the 22 added since were
+    # excluded because the rule was never exercised against them live. 83 on the
+    # 156-metric corpus (61.2.0): PDH, PDL and the seven pivots joined the timeless
+    # roster (already on UNMEASURED from the 86->144 growth) and twelve brand-new
+    # metrics arrived timeless too - but UNMEASURED is data/derived/unmeasured_metrics.json,
+    # a record frozen 2026-09-09 that was never extended for the twelve new arrivals, so
+    # they fall through this filter and land in "covered" without ever having been
+    # exercised live against this specific rule. Re-derived directly (52 = 83 timeless
+    # minus 31 that are in the frozen UNMEASURED list); the loop below still holds for
+    # all 52, because the rule is syntactic and follows from timeframeMode alone - see
+    # data/audit/timeless_column_timeframe.json's _honesty note for the same caveat.
     timeless = [n for n in contract.metrics
                 if contract.metric(n).is_timeless and n not in UNMEASURED]
-    assert len(timeless) == 40
+    assert len(timeless) == 52
     for name in timeless:
         codes = [f.code for f in _findings(name, {"rel": "regime"}, contract)]
         assert "REPORT_COLUMN_CONSTRUCTION_FAILED" in codes, name
