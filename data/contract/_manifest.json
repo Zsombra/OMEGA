@@ -1,61 +1,69 @@
 {
+ "extractedOn": "2026-09-20",
+ "supersedes": {
   "extractedOn": "2026-09-09",
-  "supersedes": {
-    "extractedOn": "2026-08-24",
-    "note": "The 2026-08-24 extraction. Its raw batches are kept at data/contract/metrics/archive_20260824_extraction/ because every August measurement was built from them."
-  },
   "servedContractVersion": "54.1.0",
-  "contractVersionSource": "GET https://mcp.battlegrid.trade/mcp/version at 2026-09-09T08:03:07Z (build 37cb29b6)",
-  "source": "BattleGrid MCP connector (account ANBUJEFF), read-only tools only, via the mcporter CLI",
-  "warning": "This is a dated snapshot of a LIVE system. The connector's instructions state that cached capability lists are not authoritative after a deployment. Re-run the extraction before trusting the matrix against a changed platform.",
-  "toolsUsed": [
-    "list_strategy_categories",
-    "list_strategy_vocabulary",
-    "get_metric_construction_hints",
-    "get_strategy_column_contract",
-    "get_strategy_section_template",
-    "derive_strategy_rule_view",
-    "preview_strategy_report",
-    "list_strategies"
-  ],
-  "writeToolsUsed": [],
-  "counts": {
-    "metrics": 144,
-    "families": 10,
-    "authorableTransforms": 16,
-    "platformSectionTemplates": 25,
-    "customSectionTemplates": 2,
-    "composabilityCells": 2304,
-    "composabilityLegal": 663,
-    "composabilityDensityPct": 28.8,
-    "structuralShapes": 1018,
-    "structuralAtoms": 663,
-    "operandExpandedShapes": 8999,
-    "platformPrivilegedPairsUnique": 3,
-    "metricsWithADeclaredAnchor": 9
-  },
-  "verification": {
-    "metricRosterMatchesToolSchemaEnum": true,
-    "_metricRosterNote": "the compile_strategy_plan metric enum and list_strategy_vocabulary agree exactly (144)",
-    "familyCountsReconcileWithConnector": true,
-    "transformAuthoringInvariance": "re-verified: exactly one authoring variant per transform across all 663 metric x transform pairs",
-    "liveRenderCoverage": "complete: 675/675 structural and 8979/8979 operand-expanded, zero uncovered (data/audit/coverage_sweep_2026-09-09.json)",
-    "compilerProbeAgreement": "7,840 shapes rendered with ZERO refusals and ZERO predicted-but-not-rendered"
-  },
-  "refreshedBy": [
-    "scripts/refresh_metric_contracts.py",
-    "scripts/build_corpus.py",
-    "scripts/sweep_render_coverage.py",
-    "scripts/probe_module_membership_full.py"
-  ],
-  "_manifestRefreshedAt": "2026-09-09T09:46:50Z",
-  "accountStateAtExtraction": {
-    "privateStrategyQuota": {
-      "used": 24,
-      "limit": 25,
-      "remaining": 1
-    },
-    "note": "No strategy was created, updated, forked or archived. Quota untouched.",
-    "_note": "carried from the 2026-08-24 manifest; the quota was NOT re-read in the 2026-09-09 refresh"
+  "note": "The 2026-09-09 extraction at contract 54.1.0. Its raw batches are kept at data/contract/metrics/archive_20260909_extraction/ because the September measurements were built from them.",
+  "supersedes": {
+   "extractedOn": "2026-08-24",
+   "note": "The 2026-08-24 extraction. Its raw batches are kept at data/contract/metrics/archive_20260824_extraction/ because every August measurement was built from them."
   }
+ },
+ "servedContractVersion": "61.2.0",
+ "contractVersionSource": "manager auth status and the manager's watch job, both read 2026-09-20: contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7",
+ "source": "BattleGrid MCP connector (account ANBUJEFF), read-only tools only, via the mcporter CLI",
+ "warning": "This is a dated snapshot of a LIVE system. The connector's instructions state that cached capability lists are not authoritative after a deployment. Re-run the extraction before trusting the matrix against a changed platform.",
+ "toolsUsed": [
+  "list_strategy_categories",
+  "list_strategy_vocabulary",
+  "get_metric_construction_hints",
+  "get_strategy_column_contract",
+  "get_strategy_section_template",
+  "derive_strategy_rule_view",
+  "preview_strategy_report",
+  "list_strategies"
+ ],
+ "writeToolsUsed": [],
+ "counts": {
+  "metrics": 156,
+  "families": 10,
+  "authorableTransforms": 16,
+  "platformSectionTemplates": 25,
+  "customSectionTemplates": 2,
+  "composabilityCells": 2496,
+  "composabilityLegal": 681,
+  "composabilityDensityPct": 27.3,
+  "structuralShapes": 982,
+  "structuralAtoms": 681,
+  "operandExpandedShapes": 8429,
+  "platformPrivilegedPairsUnique": 3,
+  "metricsWithADeclaredAnchor": 0
+ },
+ "verification": {
+  "metricRosterMatchesToolSchemaEnum": true,
+  "_metricRosterNote": "the compile_strategy_plan metric enum and list_strategy_vocabulary agree exactly (156); the enum captured 2026-09-18 already carried all twelve additions",
+  "familyCountsReconcileWithConnector": true,
+  "_familyNote": "structure 32 -> 44; every other family unchanged",
+  "transformAuthoringInvariance": "re-verified at 61.2.0: exactly one authoring variant per transform across all 681 metric x transform pairs",
+  "liveRenderCoverage": "complete: 655/655 structural and 8429/8429 operand-expanded, zero uncovered (data/audit/coverage_sweep_2026-09-20.json)",
+  "compilerProbeAgreement": "1,266 previously-unrendered shapes rendered with ZERO refusals and ZERO predicted-but-not-rendered - omega.fanout.outputs_for described the twelve new metrics correctly on the first pass",
+  "signalModuleMembership": "re-probed over all 681 cells with zero failures: 84 metrics feed a module, 72 feed none, membership still not transform-dependent (data/audit/module_membership_full_2026-09-20.json)",
+  "_whatMoved": "144 -> 156 metrics, none retired; timeless 62 -> 83 because the twelve arrivals are all timeless and PDH, PDL and the seven pivots changed from candle; those nine also lost trajectory, aggregate and efficiency, so the metric-level anchor field is now absent from every metric in the corpus"
+ },
+ "refreshedBy": [
+  "scripts/refresh_metric_contracts.py",
+  "scripts/build_corpus.py",
+  "scripts/sweep_render_coverage.py",
+  "scripts/probe_module_membership_full.py"
+ ],
+ "_manifestRefreshedAt": "2026-09-20T21:10:00Z",
+ "accountStateAtExtraction": {
+  "privateStrategyQuota": {
+   "used": 24,
+   "limit": 25,
+   "remaining": 1
+  },
+  "note": "No strategy was created, updated, forked or archived. Quota untouched.",
+  "_note": "carried from the 2026-08-24 manifest; the quota was NOT re-read in the 2026-09-09 refresh"
+ }
 }
