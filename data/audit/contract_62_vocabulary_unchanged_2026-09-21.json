@@ -1,0 +1,67 @@
+{
+ "_what": "Does BattleGrid 62.0.0 - a MAJOR version bump - move the authoring vocabulary OMEGA extracted at 61.2.0? Measured 2026-09-21 by set-comparing the live enums against this repo's own extraction. Read-only, and NO BattleGrid call was made: the live enums were read out of the manager's stored tool surface (system_state[\"surface_tools\"]), which its watch job captures every 600 s and which carried contract 62.0.0 build a3530f8e at 2026-09-21T17:29:58Z. ANSWER: no. The metric, signal and section-key enums are identical in both directions, so the 61.2.0 extraction stands and no re-extraction is required by this bump.",
+ "measuredAt": "2026-09-21T17:35:00Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture)",
+  "liveContractVersion": "62.0.0",
+  "liveBuildSha": "a3530f8e9eab23adb4c97a8643e36bebb5c3724a",
+  "liveObservedAt": "2026-09-21T17:29:58.186580+00:00",
+  "liveToolCount": 117,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "platformCallsMade": 0,
+  "enumsCompared": {
+   "metric": "get_metric_construction_hints.inputSchema.properties.metric.enum",
+   "signalId": "update_strategy_signal_rule \u2026properties.signalId.enum",
+   "sectionKey": "compile_strategy_plan \u2026sections[].anyOf[0].properties.sectionKey.enum"
+  }
+ },
+ "drifts": [
+  {
+   "at": "2026-09-21T07:09:57Z",
+   "version": [
+    "61.2.0",
+    "61.3.0"
+   ],
+   "toolsChanged": [
+    "get_agent_coin_qualification",
+    "get_regime_snapshot"
+   ],
+   "toolsAdded": [],
+   "toolsRemoved": []
+  },
+  {
+   "at": "2026-09-21T13:10:01Z",
+   "version": [
+    "61.3.0",
+    "62.0.0"
+   ],
+   "toolsChanged": [
+    "compile_strategy_plan",
+    "get_agent_coin_qualification",
+    "preview_strategy_report"
+   ],
+   "toolsAdded": [],
+   "toolsRemoved": []
+  }
+ ],
+ "results": {
+  "metrics": {
+   "live": 156,
+   "stored": 156,
+   "liveNotStored": [],
+   "storedNotLive": []
+  },
+  "signals": {
+   "live": 84,
+   "stored": 84,
+   "liveNotStored": [],
+   "storedNotLive": []
+  },
+  "sectionKeys": {
+   "live": 25,
+   "storedPerManifest": 25
+  }
+ },
+ "conclusion": "The 61 -> 62 major bump added and removed no tools (117 throughout) and moved none of the three authoring enums. OMEGA's 61.2.0 extraction is NOT invalidated by it.",
+ "notMeasured": "WHAT the major bump changed. Three tool DEFINITIONS changed across the two drifts, and the watch stores no output schemas, so a semantic or response-shape change cannot be ruled out from this evidence - only a vocabulary change can. compile_strategy_plan is among the three that changed, so a compile-path behaviour change is specifically NOT excluded; the next compile receipt is what would settle it. The vendor pack is also now stale (pack_stale true on both drifts)."
+}
