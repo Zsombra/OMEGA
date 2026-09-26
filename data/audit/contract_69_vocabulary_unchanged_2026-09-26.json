@@ -1,0 +1,30 @@
+{
+ "_what": "Does BattleGrid 69.0.0 move the authoring vocabulary OMEGA extracted at 61.2.0? One drift separates it from the 68.0.0 record: 68.0.0 -> 69.0.0 at 2026-09-26T15:15:15Z, a MAJOR bump (Radar went multi-agent). Measured 2026-09-26 by set-comparing the live enums against this repo's own extraction, with the same method as contract_68_vocabulary_unchanged_2026-09-25.json. Read-only, and NO BattleGrid call was made: the live enums were read out of the manager's stored tool surface (system_state[\"surface_tools\"]), which carried contract 69.0.0 build e81d5d6b at 2026-09-26T16:35:46Z. ANSWER: no. The metric, signal and section-key enums are identical in both directions, so the 61.2.0 extraction stands.",
+ "measuredAt": "2026-09-26T16:44:26Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture)",
+  "liveContractVersion": "69.0.0",
+  "liveBuildSha": "e81d5d6bd3e85165cc076a2751c6aa8e34fd31c3",
+  "liveObservedAt": "2026-09-26T16:35:46.533934+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "platformCallsMade": 0,
+  "enumsCompared": {
+   "metric": "get_metric_construction_hints.inputSchema.properties.metric.enum vs the 156 data/contract/metrics/<METRIC>.json files",
+   "signalId": "update_strategy_signal_rule inputSchema, first 'signalId' enum found vs the keys of data/contract/signals/_scoring.json['signals']",
+   "sectionKey": "compile_strategy_plan inputSchema, first 'sectionKey' enum found vs the same enum in data/contract/compile_strategy_plan/schema_20260918T083359Z.json (a set comparison)"
+  }
+ },
+ "drifts": [
+  {"at": "2026-09-26T15:15:15Z", "version": ["68.0.0", "69.0.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": ["get_deployment_policy_draft", "get_radar_activity", "get_radar_activity_summary", "get_radar_deployment", "get_radar_deployment_draft", "get_trade_conversation", "list_radar_deployment_drafts", "list_radar_deployments", "preview_radar_resolution", "stage_deployment_policy_draft", "stage_radar_deployment_draft"], "descriptionsChanged": ["get_radar_activity", "get_radar_activity_summary", "get_radar_deployment", "get_trade_conversation", "list_radar_deployments", "preview_radar_resolution", "stage_deployment_policy_draft", "stage_radar_deployment_draft"]}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "None. No authoring tool (compile_strategy_plan, stage_strategy_plan, get/list/discard_strategy_draft, list_strategy_vocabulary, get_strategy_column_contract, get_strategy_section_template, update_strategy_signal_rule, get_metric_construction_hints, get_strategy_signal_definition, list_strategy_signals, get_strategy, fork_strategy) is among the 11 changed tools, and none is among the 8 whose description changed. Description changes are visible for this step because the manager's watch has ledgered contract.description_changed since 2026-09-25 (its D16); the 68 record could not see prose changes at all.",
+ "toolArithmetic": "141 at 68.0.0 + 0 added - 0 removed = 141 live.",
+ "conclusion": "Across 61.2.0 -> 69.0.0 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. 69.0.0 changed only Radar and deployment-policy tools (the manager's radar normaliser needed a fix; see battlegrid-manager docs/status/2026-09-26-battlegrid-69-review.md).",
+ "notMeasured": "The compile path is still not re-cleared by a compile receipt since 62.0.0 changed compile_strategy_plan (see the 68 record). 69.0.0 did not touch it: no input, output-hash or description change. What can still move without any of these signals is server behaviour behind an unchanged schema. The next compile receipt settles it. The vendor pack is still stale (pack_stale true; installed 31.2.32 against npm 31.2.51 per the manager's 15:25Z pack.refresh_recommended)."
+}
