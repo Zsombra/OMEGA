@@ -1,0 +1,40 @@
+{
+ "_what": "Does BattleGrid 68.0.0 move the authoring vocabulary OMEGA extracted at 61.2.0? Fourteen drifts separate them (2026-09-21 to 09-24), among them five MAJOR bumps (62, 63, 64, 66, 68); the two up to 62.0.0 are in the 62 record, the twelve since are listed here. Measured 2026-09-25 by set-comparing the live enums against this repo's own extraction. Read-only, and NO BattleGrid call was made: the live enums were read out of the manager's stored tool surface (system_state[\"surface_tools\"]), which carried contract 68.0.0 build 3eaa2e2c at 2026-09-25T11:32:24Z. ANSWER: no. The metric, signal and section-key enums are identical in both directions, so the 61.2.0 extraction stands and no re-extraction is required by these bumps. Sibling of contract_62_vocabulary_unchanged_2026-09-21.json (OMEGA commit 48af249, branch claude/battlegrid-sentinel-decisions-131638, not on main).",
+ "measuredAt": "2026-09-25T11:40:00Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture)",
+  "liveContractVersion": "68.0.0",
+  "liveBuildSha": "3eaa2e2c68a3d44b656920bf7029648a8bd12f40",
+  "liveObservedAt": "2026-09-25T11:32:24.531922+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "platformCallsMade": 0,
+  "enumsCompared": {
+   "metric": "get_metric_construction_hints.inputSchema.properties.metric.enum vs the 156 data/contract/metrics/<METRIC>.json files",
+   "signalId": "update_strategy_signal_rule inputSchema, first 'signalId' enum found vs the keys of data/contract/signals/_scoring.json['signals']",
+   "sectionKey": "compile_strategy_plan inputSchema, first 'sectionKey' enum found vs the same enum in data/contract/compile_strategy_plan/schema_20260918T083359Z.json (a set comparison; the 62 record compared this one by count only)"
+  }
+ },
+ "drifts": [
+  {"at": "2026-09-21T19:19:58Z", "version": ["62.0.0", "62.1.0"], "toolsAdded": ["get_trade_conversation"], "toolsRemoved": [], "toolsChanged": ["compile_strategy_plan", "get_market_context", "preview_strategy_report"]},
+  {"at": "2026-09-21T20:39:58Z", "version": ["62.1.0", "62.1.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "build change only"},
+  {"at": "2026-09-22T04:29:59Z", "version": ["62.1.0", "63.0.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": ["get_agent_coin_qualification"]},
+  {"at": "2026-09-22T05:30:00Z", "version": ["63.0.0", "63.0.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "build change only"},
+  {"at": "2026-09-22T06:20:00Z", "version": ["63.0.0", "63.0.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "build change only"},
+  {"at": "2026-09-22T09:40:02Z", "version": ["63.0.0", "63.2.0"], "toolsAdded": ["discard_strategy_draft", "get_strategy_draft", "list_strategy_drafts", "stage_strategy_plan"], "toolsRemoved": [], "toolsChanged": ["compile_strategy_plan"]},
+  {"at": "2026-09-23T00:50:47Z", "version": ["63.2.0", "64.1.0"], "toolsComparable": false, "note": "the watch's hash version changed or a side was missing, so tools added/removed/changed in this step are UNKNOWN"},
+  {"at": "2026-09-24T07:10:57Z", "version": ["64.1.0", "66.0.0"], "toolsAdded": ["commit_radar_deployment_draft", "discard_radar_deployment_draft", "get_radar_deployment_draft", "list_radar_deployment_drafts", "pause_radar_deployment", "resume_radar_deployment", "stage_radar_deployment_draft"], "toolsRemoved": ["upsert_radar_deployment"], "toolsChanged": ["preview_radar_resolution", "stage_agent_draft"]},
+  {"at": "2026-09-24T10:30:58Z", "version": ["66.0.0", "66.1.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": ["get_strategy_draft"]},
+  {"at": "2026-09-24T15:50:59Z", "version": ["66.1.0", "68.0.0"], "toolsAdded": ["cancel_market_grid_submission", "commit_deployment_policy_draft", "discard_deployment_policy_draft", "get_deployment_policy_draft", "get_onboarding_requirements", "list_deployment_policy_drafts", "pause_deployment_policy", "resume_deployment_policy", "scan_coin_agents", "stage_deployment_policy_draft"], "toolsRemoved": ["upsert_deployment_policy"], "toolsChanged": ["delete_deployment_policy", "get_agent_journal", "get_agent_thought_log", "get_agents_hub", "get_deployment_policy", "get_user_thought_log", "list_deployment_policies", "preview_deployment_resolution", "test_generate_deployment_grid"]},
+  {"at": "2026-09-24T18:42:20Z", "version": ["68.0.0", "68.0.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "build change only"},
+  {"at": "2026-09-24T19:32:21Z", "version": ["68.0.0", "68.0.0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "build change only"}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "toolArithmetic": "117 at 61.2.0 + 22 added - 2 removed over the comparable steps = 137, against 141 live: four tools arrived in the non-comparable 63.2.0 -> 64.1.0 step. Live names that are in neither the comparable added-lists nor the manager's 09-14 fixture (tests/fixtures/2026-09-14/tool_annotations.json, 115 tools) are six: cancel_entry_request, discard_agent_draft, get_agent_draft, get_entry_request, list_agent_drafts, stage_agent_draft. Two of them arrived between 09-14 and 61.2.0 (115 -> 117, if nothing was removed) and four in that step; which four is NOT recoverable from stored evidence. stage_agent_draft is listed as CHANGED at 66.0.0, so it existed before then.",
+ "conclusion": "Across 61.2.0 -> 68.0.0 the tool count went 117 -> 141, and none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated by these drifts.",
+ "notMeasured": "WHAT changed in the authoring path. compile_strategy_plan's definition changed at 62.1.0 and 63.2.0 (after 62.0.0, which already changed it), and 63.2.0 added a second authoring route: stage_strategy_plan with get/list/discard_strategy_draft, the stage/commit draft model. The watch hashes inputSchema, annotations and outputSchema but NOT descriptions, so prose-level behaviour changes are invisible to every drift listed here. And the 63.2.0 -> 64.1.0 step was not comparable at all. So an enum-preserving change to the compile path or a response shape is NOT excluded. The next compile receipt settles the compile path. Whether OMEGA should author through the staged-draft route is a design question for the strategy-creation-assistant goal, not a vocabulary question. The vendor pack is stale (pack_stale true)."
+}
