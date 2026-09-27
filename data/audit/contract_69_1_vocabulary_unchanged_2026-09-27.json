@@ -1,0 +1,32 @@
+{
+ "_what": "Does BattleGrid 69.1.0 move the authoring vocabulary OMEGA extracted at 61.2.0? Two drifts separate it from the 69.0.0 record: a build-only drift 69.0.0 e81d5d6b -> fe132448 at 2026-09-27T02:23:02Z (a mojibake fix in about a hundred tool descriptions, no callable change), then 69.0.0 -> 69.1.0 build 613bb0ea at 2026-09-27T03:53:02Z (a MINOR bump: the output schemas of six strategy tools). Measured 2026-09-27 by set-comparing the live enums against this repo's own extraction with scripts/compare_vocabulary.py, the same method as contract_69_vocabulary_unchanged_2026-09-26.json. Read-only, and NO BattleGrid call was made for this comparison: the live enums were read out of the manager's stored tool surface (system_state[\"surface_tools\"]), which carried contract 69.1.0 build 613bb0ea at 2026-09-27T06:23:03Z. ANSWER: no. The metric, signal and section-key enums are identical in both directions, so the 61.2.0 extraction stands.",
+ "measuredAt": "2026-09-27T06:31:00Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), dumped to a scratch file and passed to scripts/compare_vocabulary.py",
+  "liveContractVersion": "69.1.0",
+  "liveBuildSha": "613bb0eac4b5b658f5f4dc66671324f0cc86f67e",
+  "liveObservedAt": "2026-09-27T06:23:03.198819+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 0,
+  "enumsCompared": {
+   "metric": "get_metric_construction_hints.inputSchema.properties.metric.enum vs the 156 data/contract/metrics/<METRIC>.json files",
+   "signalId": "update_strategy_signal_rule inputSchema, first 'signalId' enum found vs the keys of data/contract/signals/_scoring.json['signals']",
+   "sectionKey": "compile_strategy_plan inputSchema, first 'sectionKey' enum found vs the same enum in data/contract/compile_strategy_plan/schema_20260918T083359Z.json (a set comparison)"
+  }
+ },
+ "drifts": [
+  {"at": "2026-09-27T02:23:02Z", "version": ["69.0.0", "69.0.0"], "build": ["e81d5d6b", "fe132448"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "descriptions only: the same mojibake repaired in about a hundred tools (â€\" -> —, Ã— -> ×, â†’ -> →); after normalising those sequences no description differs from the 69.0.0 fixture"},
+  {"at": "2026-09-27T03:53:02Z", "version": ["69.0.0", "69.1.0"], "build": ["fe132448", "613bb0ea"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": ["apply_strategy_plan", "archive_strategy", "fork_strategy", "get_strategy", "restore_strategy", "update_strategy_signal_rule"], "note": "output schemas only: for all six the inputSchema and annotations are byte-identical to the 69.0.0 fixture; the manager's watch hashes outputSchema but does not store it, so the delta is unrecoverable; the six live output schemas are saved in battlegrid-manager tests/fixtures/2026-09-27-surface-69.1/output_schemas_six.json for the next diff"}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "Three authoring tools are among the six changed: update_strategy_signal_rule, get_strategy and fork_strategy (plus apply_strategy_plan, the write end of the compile path). All three changed only in their OUTPUT schema: the input schemas, and so the enums this comparison reads (the signalId enum lives in update_strategy_signal_rule's input), are unchanged. What a strategy READS BACK may have gained or lost fields; what OMEGA can WRITE has not moved.",
+ "toolArithmetic": "141 at 69.0.0 + 0 added - 0 removed = 141 live.",
+ "conclusion": "Across 61.2.0 -> 69.1.0 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. 69.1.0 changed the response shape of six strategy tools; the manager needs no change (its one caller, the inventory's get_strategy read, still finds revision, name, timeframe, minRequiredCount, conditions and sections; see battlegrid-manager docs/status/2026-09-27-battlegrid-69-1-review.md).",
+ "notMeasured": "The compile path is still not re-cleared by a compile receipt since 62.0.0 changed compile_strategy_plan. 69.1.0 touched apply_strategy_plan's output (appliedImpact + strategy) and get_strategy's output, so the NEXT compile-and-apply receipt should be read against the saved output schemas rather than the 61.2.0 notes: a field OMEGA reads back after apply (the strategy's revision, its conditions, its sections) may sit under a changed shape. The vendor pack is still stale (pack_stale true)."
+}
