@@ -1,0 +1,25 @@
+{
+ "_what": "Does BattleGrid 69.2.0 move the authoring vocabulary OMEGA extracted at 61.2.0? One drift separates it from the 69.1.1 record: 69.1.1 d88d9d96 -> 69.2.0 e16dd7d0 at 2026-09-27T11:03:08Z (a MINOR bump). Measured 2026-09-27T12:11Z with scripts/compare_vocabulary.py over the manager's stored surface (system_state[\"surface_tools\"], observed 12:02:56Z). Read-only, no BattleGrid call. ANSWER: no. The metric, signal and section-key enums are identical in both directions.",
+ "measuredAt": "2026-09-27T12:11:30Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture)",
+  "liveContractVersion": "69.2.0",
+  "liveBuildSha": "e16dd7d041baeb1bb21e2d31b899515935062fcf",
+  "liveObservedAt": "2026-09-27T12:02:56.411661+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "platformCallsMade": 0
+ },
+ "drifts": [
+  {"at": "2026-09-27T11:03:08Z", "version": ["69.1.1", "69.2.0"], "build": ["d88d9d96", "e16dd7d0"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": ["preview_radar_resolution"], "note": "output schema only: against the 69.1.1 fixture no tool's inputSchema, annotations or description differs at all; the watch hashes outputSchema but does not store it, so the delta is unrecoverable. preview_radar_resolution is a Radar deployment preview (stage -> preview -> commit), not an authoring tool."}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "None.",
+ "toolArithmetic": "141 at 69.1.1 + 0 added - 0 removed = 141 live.",
+ "conclusion": "Across 61.2.0 -> 69.2.0 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated.",
+ "notMeasured": "As in the 69.1.0 record: the compile path awaits its next compile receipt; the vendor pack is still stale. Four drifts in one UTC day (02:23Z, 03:53Z, 06:53Z, 11:03Z): the platform is shipping continuously, so the next compile receipt should be read the same day it is taken."
+}
