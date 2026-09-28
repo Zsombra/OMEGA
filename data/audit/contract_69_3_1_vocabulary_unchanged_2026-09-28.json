@@ -1,0 +1,45 @@
+{
+ "_what": "Does BattleGrid 69.3.1 move the authoring vocabulary OMEGA extracted at 61.2.0? Six drift events separate it from the 69.2.0 record, all overnight 2026-09-28: 69.2.0 992538c9 -> 69.3.0 1831d473 (~01:24Z, a MINOR bump) -> 69.3.0 cbbe64fa (~02:04Z) -> HTTP 502 on the version probe (02:54-03:14Z) -> 69.3.1 7bdcf0d1 (~03:24Z, a PATCH) -> 69.3.1 43a651a7 (~04:04Z) -> 69.3.1 70adaa7b (~05:44Z). Measured 2026-09-28T10:02Z with scripts/compare_vocabulary.py over the manager's stored surface (system_state[\"surface_tools\"], observed 09:54:53Z). Read-only, no BattleGrid call. ANSWER: no. The metric, signal and section-key enums are identical in both directions.",
+ "measuredAt": "2026-09-28T10:02:23Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), saved as tests/fixtures/2026-09-28-surface-69.3.1-70adaa7b/ in the manager repository",
+  "liveContractVersion": "69.3.1",
+  "liveBuildSha": "70adaa7bf57250bdc6ef36d6c43b5b32b9527400",
+  "liveObservedAt": "2026-09-28T09:54:53.447418+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 0
+ },
+ "drifts": [
+  {"at": "2026-09-28T01:24Z (first watch beat)", "version": ["69.2.0", "69.3.0"], "build": ["992538c9", "1831d473"], "note": "MINOR bump. The manager's watch keeps only the last drift event, so the per-event tool lists are gone; the fixture diff below spans all six events at once."},
+  {"at": "2026-09-28T02:04Z", "version": ["69.3.0", "69.3.0"], "build": ["1831d473", "cbbe64fa"]},
+  {"at": "2026-09-28T02:54-03:14Z", "version": null, "build": null, "note": "the version probe answered HTTP 502 for three beats"},
+  {"at": "2026-09-28T03:24Z", "version": ["69.3.0", "69.3.1"], "build": ["cbbe64fa", "7bdcf0d1"]},
+  {"at": "2026-09-28T04:04Z", "version": ["69.3.1", "69.3.1"], "build": ["7bdcf0d1", "43a651a7"]},
+  {"at": "2026-09-28T05:44:51Z", "version": ["69.3.1", "69.3.1"], "build": ["43a651a7", "70adaa7b"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "the only event the watch still holds: zero tools changed by hash"}
+ ],
+ "surfaceDiff_69_2_0_to_69_3_1": {
+  "toolsAdded": [],
+  "toolsRemoved": [],
+  "toolsWithAnyStoredFieldChanged": 100,
+  "inputSchemaDiffs": 48,
+  "inputSchemaDiffsThatAreOnlyUtf8MojibakeRepairs": 47,
+  "inputSchemaDiffsWithAnyOtherText": ["create_intelligence_agent"],
+  "inputSchemaStructuralChanges": "none: no property, required list, enum, type or const moved on any of the 141 tools; create_intelligence_agent's diff is one sentence in tradingConfig's description ('The exit policy is not part of it: the bound strategy owns it, so a nested positionManagement object is rejected as an unknown key')",
+  "descriptionDiffs": 91,
+  "descriptionDiffsThatAreOnlyUtf8MojibakeRepairs": 89,
+  "descriptionRewordings": ["cancel_entry_request", "get_entry_request"],
+  "outputSchemas": "not stored by the watch; unrecoverable, as in the 69.1/69.2 records",
+  "mojibakeRepair": "the platform replaced cp1252-mangled UTF-8 (e.g. 'â€”' for an em dash, 'Ã—' for a multiplication sign) with the real characters across schema and tool descriptions"
+ },
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "compile_strategy_plan, derive_strategy_rule_view and generate_agent_grid each show an inputSchema diff that is a mojibake repair only; no enum or property moved.",
+ "toolArithmetic": "141 at 69.2.0 + 0 added - 0 removed = 141 live.",
+ "conclusion": "Across 61.2.0 -> 69.3.1 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. A MINOR bump and a PATCH that moved no schema structure at all: encoding repairs, two rewordings on the entry-request tools, and one clarification that create_intelligence_agent rejects a nested positionManagement.",
+ "notMeasured": "As in the 69.1.0 record: the compile path awaits its next compile receipt (compile_strategy_plan's schema text changed only in encoding); output schemas are not stored; the vendor pack is still stale (installed 31.2.32 = contract 61.3.0, npm latest 31.2.51, live 69.3.1)."
+}
