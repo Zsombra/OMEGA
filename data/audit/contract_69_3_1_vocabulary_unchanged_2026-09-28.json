@@ -13,28 +13,114 @@
   "platformCallsMade": 0
  },
  "drifts": [
-  {"at": "2026-09-28T01:24Z (first watch beat)", "version": ["69.2.0", "69.3.0"], "build": ["992538c9", "1831d473"], "note": "MINOR bump. The manager's watch keeps only the last drift event, so the per-event tool lists are gone; the fixture diff below spans all six events at once."},
-  {"at": "2026-09-28T02:04Z", "version": ["69.3.0", "69.3.0"], "build": ["1831d473", "cbbe64fa"]},
-  {"at": "2026-09-28T02:54-03:14Z", "version": null, "build": null, "note": "the version probe answered HTTP 502 for three beats"},
-  {"at": "2026-09-28T03:24Z", "version": ["69.3.0", "69.3.1"], "build": ["cbbe64fa", "7bdcf0d1"]},
-  {"at": "2026-09-28T04:04Z", "version": ["69.3.1", "69.3.1"], "build": ["7bdcf0d1", "43a651a7"]},
-  {"at": "2026-09-28T05:44:51Z", "version": ["69.3.1", "69.3.1"], "build": ["43a651a7", "70adaa7b"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": [], "note": "the only event the watch still holds: zero tools changed by hash"}
+  {
+   "at": "2026-09-28T01:24Z (first watch beat)",
+   "version": [
+    "69.2.0",
+    "69.3.0"
+   ],
+   "build": [
+    "992538c9",
+    "1831d473"
+   ],
+   "note": "MINOR bump. The manager's watch keeps only the last drift event, so the per-event tool lists are gone; the fixture diff below spans all six events at once. From the manager's audit ledger (read 10:10Z): compile_strategy_plan and preview_strategy_report moved by hash at this event while their stored inputSchema, annotations and description are byte-identical, so their OUTPUT schemas changed (hashed, not stored, unrecoverable).",
+   "toolsChangedByHash": [
+    "compile_strategy_plan",
+    "preview_strategy_report"
+   ]
+  },
+  {
+   "at": "2026-09-28T02:04Z",
+   "version": [
+    "69.3.0",
+    "69.3.0"
+   ],
+   "build": [
+    "1831d473",
+    "cbbe64fa"
+   ]
+  },
+  {
+   "at": "2026-09-28T02:54-03:14Z",
+   "version": null,
+   "build": null,
+   "note": "the version probe answered HTTP 502 for three beats"
+  },
+  {
+   "at": "2026-09-28T03:24Z",
+   "version": [
+    "69.3.0",
+    "69.3.1"
+   ],
+   "build": [
+    "cbbe64fa",
+    "7bdcf0d1"
+   ],
+   "toolsChangedByHash": [
+    "create_intelligence_agent"
+   ]
+  },
+  {
+   "at": "2026-09-28T04:04Z",
+   "version": [
+    "69.3.1",
+    "69.3.1"
+   ],
+   "build": [
+    "7bdcf0d1",
+    "43a651a7"
+   ]
+  },
+  {
+   "at": "2026-09-28T05:44:51Z",
+   "version": [
+    "69.3.1",
+    "69.3.1"
+   ],
+   "build": [
+    "43a651a7",
+    "70adaa7b"
+   ],
+   "toolsAdded": [],
+   "toolsRemoved": [],
+   "toolsChanged": [],
+   "note": "the only event the watch still holds: zero tools changed by hash"
+  }
  ],
  "surfaceDiff_69_2_0_to_69_3_1": {
   "toolsAdded": [],
   "toolsRemoved": [],
-  "toolsChanged": ["cancel_entry_request (description)", "get_entry_request (description)", "create_intelligence_agent (one sentence in tradingConfig's description inside inputSchema)"],
+  "toolsChanged": [
+   "cancel_entry_request (description)",
+   "get_entry_request (description)",
+   "create_intelligence_agent (one sentence in tradingConfig's description inside inputSchema)"
+  ],
   "structuralChanges": "none: no property, required list, enum, type, const or annotation moved on any of the 141 tools",
   "wording": "cancel_entry_request / get_entry_request: an entry request whose close has fired but is not yet answered is still readable and can no longer be cancelled (NOT_FOUND); create_intelligence_agent: 'The exit policy is not part of it: the bound strategy owns it, so a nested positionManagement object is rejected as an unknown key'",
   "outputSchemas": "not stored by the watch; unrecoverable, as in the 69.1/69.2 records"
  },
  "results": {
-  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
-  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
-  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+  "metrics": {
+   "live": 156,
+   "stored": 156,
+   "liveNotStored": [],
+   "storedNotLive": []
+  },
+  "signals": {
+   "live": 84,
+   "stored": 84,
+   "liveNotStored": [],
+   "storedNotLive": []
+  },
+  "sectionKeys": {
+   "live": 25,
+   "stored": 25,
+   "liveNotStored": [],
+   "storedNotLive": []
+  }
  },
- "authoringToolsTouched": "None. compile_strategy_plan, derive_strategy_rule_view and generate_agent_grid are byte-identical between the two stored surfaces.",
+ "authoringToolsTouched": "compile_strategy_plan's OUTPUT schema moved at 69.3.0 (hash only; its input schema, description and the vocabulary enums are byte-identical). derive_strategy_rule_view and generate_agent_grid unchanged.",
  "toolArithmetic": "141 at 69.2.0 + 0 added - 0 removed = 141 live.",
  "conclusion": "Across 61.2.0 -> 69.3.1 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. A MINOR bump and a PATCH that moved no schema structure at all: two rewordings on the entry-request tools and one clarification that create_intelligence_agent rejects a nested positionManagement.",
- "notMeasured": "As in the 69.1.0 record: the compile path awaits its next compile receipt; output schemas are not stored; the vendor pack is still stale (installed 31.2.32 = contract 61.3.0, npm latest 31.2.51, live 69.3.1)."
+ "notMeasured": "The compile path awaits its next compile receipt, and that receipt matters more now: compile_strategy_plan's output shape changed at 69.3.0 (unrecoverable from the stored surface). Output schemas are not stored; the vendor pack is still stale (installed 31.2.32 = contract 61.3.0, npm latest 31.2.51, live 69.3.1)."
 }
