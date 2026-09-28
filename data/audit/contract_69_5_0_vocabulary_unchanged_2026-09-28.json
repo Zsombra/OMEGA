@@ -1,0 +1,33 @@
+{
+ "_what": "Does BattleGrid 69.5.0 move the authoring vocabulary OMEGA extracted at 61.2.0? One drift separates it from the 69.3.1 record: 69.3.1 70adaa7b -> 69.5.0 8195e0fa at 2026-09-28T13:44:51Z (two MINOR steps at once; no 69.4.x was observed by the manager's 10-minute watch). Measured 2026-09-28T13:50Z with scripts/compare_vocabulary.py over the manager's stored surface (system_state[\"surface_tools\"], observed 13:44:51Z). Read-only, no BattleGrid call. ANSWER: no. The metric, signal and section-key enums are identical in both directions.",
+ "measuredAt": "2026-09-28T13:50Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), saved as tests/fixtures/2026-09-28-surface-69.5.0-8195e0fa/ in the manager repository (both fixtures read as UTF-8)",
+  "liveContractVersion": "69.5.0",
+  "liveBuildSha": "8195e0fa24e491b0a91545fe5e0bcba42013ab24",
+  "liveObservedAt": "2026-09-28T13:44:51.806314+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 0
+ },
+ "drifts": [
+  {"at": "2026-09-28T13:44:51Z", "version": ["69.3.1", "69.5.0"], "build": ["70adaa7b", "8195e0fa"], "toolsAdded": [], "toolsRemoved": [], "toolsChanged": ["get_public_agent_realized_trades", "get_public_agent_signal_log_detail", "get_public_agent_signal_logs", "get_signal_log"], "note": "the first two and the last: get_public_agent_realized_trades and get_public_agent_signal_logs gain two values in their rejectionReason filter enum (AGENT_HALTED, LIQUIDATION_BUFFER_UNREACHABLE) - two new order-rejection reasons the platform can now report on a FAILED signal; get_public_agent_signal_log_detail and get_signal_log moved by hash only, so their OUTPUT schemas changed (hashed, not stored, unrecoverable)."}
+ ],
+ "surfaceDiff_69_3_1_to_69_5_0": {
+  "toolsAdded": [],
+  "toolsRemoved": [],
+  "toolsChanged": ["get_public_agent_realized_trades (inputSchema: rejectionReason enum +2)", "get_public_agent_signal_logs (inputSchema: rejectionReason enum +2)"],
+  "structuralChanges": "two enum values added to a read filter; no property, required list, type, const, annotation or description moved on any of the 141 tools",
+  "outputSchemas": "get_signal_log and get_public_agent_signal_log_detail changed (hash only, unrecoverable); the manager's triage reads get_signal_log for its dossier inputs"
+ },
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "None. compile_strategy_plan, derive_strategy_rule_view, generate_agent_grid, list_strategy_vocabulary and get_strategy_column_contract are byte-identical between the two stored surfaces.",
+ "toolArithmetic": "141 at 69.3.1 + 0 added - 0 removed = 141 live.",
+ "conclusion": "Across 61.2.0 -> 69.5.0 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. The two new rejection reasons are execution-side vocabulary (why an order failed), not authoring vocabulary.",
+ "notMeasured": "The compile path still awaits its next compile receipt (compile_strategy_plan's output schema moved at 69.3.0); output schemas are not stored; the vendor pack is still stale (installed 31.2.32 = contract 61.3.0)."
+}
