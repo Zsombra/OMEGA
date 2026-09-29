@@ -1,0 +1,26 @@
+{
+ "_what": "Does BattleGrid 73.0.0 move the authoring vocabulary OMEGA extracted at 61.2.0? One drift separates it from the 72.0.1 record: 72.0.1 35ad6add -> 73.0.0 2a41bdc1 (ledger 2026-09-29T15:50:28Z; served to snapshot 4339 at 15:46:00Z), a MAJOR bump. Measured 2026-09-29T15:51Z with scripts/compare_vocabulary.py over the manager's stored surface (system_state[\"surface_tools\"], observed 15:50:28Z). Read-only, no BattleGrid call. ANSWER: no. The metric, signal and section-key enums are identical in both directions.",
+ "measuredAt": "2026-09-29T15:51:22Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), saved as tests/fixtures/2026-09-29-surface-73.0.0/ in the manager repository (both fixtures read as UTF-8)",
+  "liveContractVersion": "73.0.0",
+  "liveBuildSha": "2a41bdc19d8cedc4cb89342ca24273f7e111a77d",
+  "liveObservedAt": "2026-09-29T15:50:28.148114+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 0
+ },
+ "drifts": [
+  {"at": "2026-09-29T15:50:28Z", "version": ["72.0.1", "73.0.0"], "build": ["35ad6add", "2a41bdc1"], "toolsAdded": [], "toolsRemoved": [], "toolsChangedByHash": ["get_trade_conversation", "propose_entry_decision"], "note": "no inputSchema or annotation moved on any tool; nine descriptions changed: a new radar-readability refusal on compile_strategy_plan, apply_strategy_plan, restore_strategy, rebind_intelligence_agent, commit_radar_deployment_draft, preview_radar_resolution and propose_entry_decision; manual halts made breach-gated on resume_intelligence_agent and get_agent_budget."}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "compile_strategy_plan (description only): UPDATE and RESTORE are now REFUSED with VALIDATION_ERROR CONDITION_UNREADABLE_BY_RADAR_SCAN or CONDITION_OPERAND_UNSERVED_IN_LANE when a condition the radar acts on (required, verdict-carrying, exit, or one they reference) is unreadable by the radar scan on a coin the radar acts on for a bound agent; a refused compile issues no token. apply_strategy_plan: a plan compiled before a bound agent's radar deployment moved no longer verifies (RADAR_DEPLOYMENT_MOVED). The input schemas and every enum are byte-identical.",
+ "toolArithmetic": "141 at 72.0.1 + 0 added - 0 removed = 141 live.",
+ "conclusion": "Across 61.2.0 -> 73.0.0 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. New for OMEGA's authoring path: a compile can now be refused because a column is not readable by the radar scan on the bound agent's deployed coins - a readability check per coin and timeframe, not a vocabulary change.",
+ "notMeasured": "Which columns the radar scan cannot read on which coins (the refusal names them per compile; no listing tool was found in the surface text); the compile path still awaits its next compile receipt; output schemas are not stored; the vendor pack is still stale (installed 31.2.32 = contract 61.3.0)."
+}
