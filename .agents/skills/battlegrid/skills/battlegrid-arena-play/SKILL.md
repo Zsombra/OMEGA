@@ -27,12 +27,20 @@ the grid you submit is the one that gets scored. There is no draft state and no 
 `get_account_state`. It carries the balance, the rank, and **`mcpWagerEnabled`** — a served
 projection of the player's Server-Signed Wagers signer consent.
 
-- **False** ⇒ say so up front, name the enablement path (Profile → Wallet tab → enable Agent
-  Wagers), and continue **read-only**: sessions, market context, results and journals are all still
-  useful. Do not pretend a submit will work.
-- **True** ⇒ proceed. It is a routing signal for what you tell them, never an authorization: the
-  wager pipeline re-checks consent at the fee itself, and its refusal is the authority in either
-  direction.
+- **False** ⇒ a **definite refusal**, before any submission. Say so up front, name the enablement
+  path (Profile → Wallet tab → enable Agent Wagers), and continue **read-only**: sessions, market
+  context, results and journals are all still useful. Never call a submission tool the flag says
+  will be refused.
+- **True** ⇒ proceed, but it is **consent alone and never readiness**. It projects the signer
+  consent and nothing else, so an account whose server signer is unregistered reads true here and
+  is still refused at the fee. The wager pipeline re-checks at the fee itself and its refusal is
+  the authority in either direction.
+
+**In a conversation a web Commander surface hosts, the switch renders beneath the account card just
+shown, or beneath the refusal — offer it there.** Say the arena needs Agent Wagers and point at the
+control rather than at a settings path they would have to leave the conversation for. Every other
+host — an external MCP client, Telegram — renders no such control, so the Wallet-tab path above is
+the enablement path there.
 
 ### 2. Workflow A reads, in order
 
@@ -120,7 +128,8 @@ Each is typed and distinguishable. Read the code, do not paraphrase:
   you to think.
 - **Your confirmation with the player is interaction, never authorization.** Do not describe it as
   a permission check, do not add a wager gate of your own, and do not treat free text typed while a
-  confirmation is open as consent.
+  confirmation is open as consent — in chat or in the form's own answer-in-your-own-words box. Only
+  an explicit pick from the options you offered confirms.
 - **Never re-submit over an unknown outcome.** An interrupted submit may have committed the fee.
   Run `check_market_grid_submission` first and report what actually exists.
 

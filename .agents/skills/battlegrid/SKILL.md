@@ -57,14 +57,16 @@ than about authoring:
 
 - **The envelope is `{ request }`, or `{ account, request }` on a multi-account proxy** (see above).
   It applies to `get_strategy_section_template`, `update_strategy_signal_rule`,
-  `compile_strategy_plan` and `apply_strategy_plan`.
+  `compile_strategy_plan`, `apply_strategy_plan` and `stage_strategy_plan`.
 - **`planToken` is opaque and is forwarded byte-for-byte.** Never retype, paraphrase, abbreviate or
   rebuild it from memory — the proxy passes the bytes through unchanged, and a mangled token
   addresses no approved plan and is refused. It lives five minutes.
 - **`apply_strategy_plan` carries no `plan` member.** One is rejected as an unknown key: the server
   reads back the plan its own compile approved, so nothing is copied out of the compile response and
   nothing can be truncated or half-reconstructed in transit. Send
-  `{ request: { planToken, confirm: true } }` and nothing else.
+  `{ request: { planToken, confirm: true } }` and nothing else. **`stage_strategy_plan` is the same
+  shape with the token alone** — it puts the plan into the player's unsaved draft for them to review
+  in the builder, commits nothing, and leaves the token still applicable.
 
 Agents bind to a strategy at creation (`create_intelligence_agent({ …, modelId, strategyId })`);
 there is no direct strategy-creation tool. **`battlegrid-agent-management`** carries commissioning,

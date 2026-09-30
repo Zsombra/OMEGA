@@ -21,10 +21,12 @@ step named beside it before doing anything else.
 2. **Acting without blast radius.** *Cue: halt, archive, rebind, update, close, override — any
    verb that changes what the agent may do.* Every one of these has a reach the player cannot see
    from the verb: open positions that keep running, deployments that stop firing, materialized
-   configuration that is replaced. State the reach from the reads BEFORE the confirm form. → step 3.
+   configuration that is replaced. State the reach from the reads BEFORE the confirm form. And a
+   configuration change to an agent the player is mid-edit on is staged, not committed. → steps 3
+   and 4.
 3. **Mis-lever'd halt recovery.** *Cue: "why is it stopped", "start it again", any halted agent.*
    There are three halt reasons and they do not share a lever. Offering a drawdown baseline reset
-   to a daily-loss halt is offering something that cannot work. → step 4.
+   to a daily-loss halt is offering something that cannot work. → step 5.
 4. **Driving strategy writes from this arc.** *Cue: the answer to an agent problem turns out to be
    "change the strategy".* You can SEE strategies here because you must name what you bind. That is
    not permission to author them. → the cross-skill rule below.
@@ -54,6 +56,9 @@ discipline governs the change, not about what the server would accept.)
   never its `id`. The `id` UUID identifies the catalogue row; `create_intelligence_agent` and
   `update_intelligence_agent` key on `modelId` and accept nothing else.
 - `list_strategies` — the binding candidates.
+- `list_agent_drafts` — what the player is already part-way through. **Mention an existing draft
+  before starting new work** — "you have an unsaved <agent / new agent>, last touched from
+  <surface> at <time>" — and offer to continue it rather than opening a second one beside it.
 
 Read each thing once. A roster or agent you already fetched in this conversation is still in front
 of you; re-fetching costs the player the same payload twice and it rides every later step.
@@ -73,12 +78,49 @@ When the picks come back, restate in one line: *"Commissioning: <name>, bound to
 budget posture** — the capital ceiling and stops the trading configuration will carry, or that it
 will take platform defaults.
 
-Call `create_intelligence_agent` with an **`idempotencyKey`** derived from this conversation and
-this confirm turn. A create spends an agent slot against the player's rank quota; a retry after a
+**Build it in a create draft.** As the picks come back, stage them with `stage_agent_draft` —
+omit `agentId` and send `draftVersion: 0` on the first call, then reuse the id and the `version` it
+returns — each axis WHOLE: IDENTITY
+`{ displayName }`, BEHAVIOR `{ behavior: { risk, outlook, conviction } }`, MODEL `{ modelId }`,
+TRADING_CONFIG with every agent-owned field, and STRATEGY_BINDING `{ strategyId }`. The build then
+survives a refresh, lists in the Agents Hub as *not yet created*, and opens on the create screen,
+where **the player's Save creates it**. Staging creates nothing and spends no slot.
+
+Call `create_intelligence_agent` yourself only when the player asks you to create it from this
+conversation — on a surface with no create screen to save from — with an **`idempotencyKey`**
+derived from this conversation and this confirm turn. A create spends an agent slot against the player's rank quota; a retry after a
 dropped response would spend a second one. With the key, an ambiguous retry replays the original
 result instead.
 
-### 3. Lifecycle verbs: read first, state the radius, then confirm
+**When the mandate names the arena, read `get_account_state` in the same breath.** The arena needs
+Agent Wagers: `mcpWagerEnabled: false` means every entry will be refused at the fee, so say the
+arena needs it and offer the switch — **in a conversation a web Commander surface hosts, the switch
+renders beneath the account card just shown, so offer it there**, and in every other host name the
+Profile → Wallet tab path instead, because no control renders there. **Create the agent either
+way**: the consent gates entering a game, never commissioning one. A `true` flag is consent alone
+and not readiness — the pipeline's own refusal at the fee is the authority.
+
+### 3. Stage, review, commit — never commit around an open draft
+
+Before proposing any change to an existing agent, `get_agent_draft`. **A draft means the player is
+mid-edit in their form.** Then:
+
+- **Stage** the change with `stage_agent_draft`, naming as `draftVersion` the `version` the read you
+  proposed against returned (0 when `get_agent_draft` returned null): it lands in their open form,
+  labelled as yours, and **their Save commits it** together with their own edits.
+  `update_intelligence_agent` and `rebind_intelligence_agent` are REFUSED while the draft exists —
+  that refusal is the server's, so do not retry them.
+- A staging call **refused naming an axis** means the player changed it after the version you name:
+  read again and propose against what they now have — never re-send the same values. A call refused
+  because that version is one the draft never reached means the draft you read is gone: read again.
+  Never raise the number to get past either refusal.
+- **Rebinding is never staged.** While a draft is open, ask the player to save or discard it first.
+- `discard_agent_draft` only on the player's word: call it with `confirm:false` first, tell them
+  when the draft was last written and from which surface, ask, then confirm.
+
+With **no draft open**, the update verb below stands, confirm and all.
+
+### 4. Lifecycle verbs: read first, state the radius, then confirm
 
 Every one of update, rebind, halt, resume, activate and archive runs this shape. The reads
 (`get_agent_budget`, `get_agent_fund_allocation`, `get_agent_open_positions`,
@@ -96,8 +138,9 @@ State the blast radius **from server fields, as numbers**, before the confirm fo
   Agent-owned settings are untouched.
 - **Update** — the concrete diff: each field, from what, to what.
 
-Then one confirmation. Act only on an explicit pick. Free text while a confirmation is open is
-not consent — answer what they said and re-present the same confirmation.
+Then one confirmation. Act only on an explicit pick — one of the options you offered. Free text
+while a confirmation is open is not consent, whether it arrives in chat or in the form's own
+answer-in-your-own-words box — answer what they said and re-present the same confirmation.
 
 **`expectedRevision` comes from the latest read.** A CONFLICT means the stored agent moved since
 you read it: re-read, re-state the radius against the NEW state, and re-confirm. Never retry with a
@@ -109,7 +152,7 @@ the reason, and name what would clear it (un-deploy via the radar/deployment too
 the positions resolve, wait for the session to settle). Never paraphrase the refusal into "it
 didn't work", and never retry it unchanged.
 
-### 4. Halt recovery: branch on the served halt reason
+### 5. Halt recovery: branch on the served halt reason
 
 `get_agent_budget` serves `haltReason`. There are exactly three, and the lever differs:
 
@@ -127,7 +170,7 @@ figure against the limit. Surface those served figures and the applicable lever 
 above. Do not retry the resume, and do not reach for the reset to "get past" a refusal that names
 a different stop.
 
-### 5. Risk limits are a whole object
+### 6. Risk limits are a whole object
 
 `update_intelligence_agent`'s `tradingConfig` is a **complete** configuration: what you send
 replaces what is stored, and every field in that schema is required when the object is present.
@@ -137,7 +180,7 @@ name **every changed value** in the confirm — from what, to what. Never assemb
 and never echo a read config back unchanged: the read shape is wider than the write shape
 (`strategyTimeframe` and `regimeTimeframe` are strategy-derived and rejected as unknown keys).
 
-### 6. Live positions: present the served state, name the bypass
+### 7. Live positions: present the served state, name the bypass
 
 - `get_agent_open_positions` / `list_user_active_positions` / `get_position_audit_history` first —
   the `decisionId` these two tools need is discoverable only through those reads.

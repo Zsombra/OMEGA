@@ -27,6 +27,11 @@ Not "what were its returns" — whether it did *the thing it was told to do*.
 
 - `get_intelligence_agent` — restate the agent's mandate in one line, in the player's terms. This
   is the yardstick; without it "up 4%" means nothing.
+- `get_strategy` on the `strategyId` that read returns — the mandate is the bound strategy, so the
+  yardstick is its admission gates, required conditions and trade levels, not the agent's overlay
+  prose. Read `bindingState` too: at `SYNCING` or `ORPHANED` the agent evaluates a materialized copy
+  at its own `strategyRevision`, and judging it against the strategy's current revision measures it
+  by rules it is not running.
 - `get_agent_performance` and `list_trade_outcomes` — judge against that mandate.
 - `get_trade_outcome_by_decision` / `get_trade_chart` when a specific trade needs explaining.
 - `get_signal_performance` when the question is whether the agent's signals are working, as

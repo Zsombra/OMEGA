@@ -157,30 +157,101 @@ into the worst shape, where the checklist clears a branch the workflow then reje
 what it can from `files`; `skill-package.test.ts` and `shipped-paths.test.ts` assert the one
 mapping it cannot (`dist` ← `src/index.ts`).
 
+The registry is also the wrong place to ask whether a number is still *free*. It knows only what has
+already been published, and two other things hold a number before it appears there:
+
+- **`main`.** `publish.yml` releases `main`'s version from `main`'s own commit, which does not
+  contain this branch. If the registry lacks that version, its release is in flight. The number is
+  not free.
+- **Every other open PR into `main`**, including the export lane's `claude/skills-export`. Each
+  carries its own bump, and the registry cannot see it until it merges. Two branches that make the
+  identical version change merge cleanly one after the other, and the second publishes nothing.
+  That happened when #100 merged after #101 at 31.2.38: publish run 89 went red, and #102 had to
+  re-bump by hand. Two *different* version changes conflict on the version lines instead, which
+  blocks the second merge rather than stranding it.
+
+So a version is **taken** if the registry has it, if `main` holds it, or if any open PR into `main`
+other than this branch's own holds it. The number to use is **the next PATCH above every version
+held on `main`'s MAJOR.MINOR line**. The check below prints that number.
+
 ```bash
+(
+set -euo pipefail
+REPO=playbattlegrid/battlegrid-mcp
+git fetch --quiet origin main
 SHIPPED=$(git diff --name-only origin/main...HEAD | grep -E "$(node scripts/shipped-paths.mjs)" || true)
 PKG=$(node -p "require('./package.json').version")
-
 if [ -z "$SHIPPED" ]; then
   echo "Nothing that ships changed — $PKG may stay published; no bump needed."
-elif npm view "@battlegrid/mcp-server@$PKG" version >/dev/null 2>&1; then
+  exit 0
+fi
+
+# Every held version: main's, then each open PR's into main except this branch's own.
+version() { node -p "JSON.parse(require('fs').readFileSync(0, 'utf8')).version"; }
+MAIN=$(git show origin/main:package.json | version)
+echo "main holds $MAIN"
+HELD="main $MAIN"
+BRANCH=$(git branch --show-current)
+OPEN_PRS=$(gh pr list --repo "$REPO" --base main --state open --limit 1000 \
+  --json number,headRefName,isCrossRepository \
+  --jq ".[] | select(.isCrossRepository or .headRefName != \"$BRANCH\") | .number") \
+  || { echo "NO VERDICT — cannot list the open PRs into main."; exit 1; }
+while read -r PR; do
+  [ -n "$PR" ] || continue
+  PR_VERSION=$(gh api -H "Accept: application/vnd.github.raw+json" \
+    "repos/$REPO/contents/package.json?ref=refs/pull/$PR/head" | version) \
+    || { echo "NO VERDICT — cannot read #$PR's package.json."; exit 1; }
+  echo "#$PR holds $PR_VERSION"
+  HELD="$HELD"$'\n'"#$PR $PR_VERSION"
+done <<< "$OPEN_PRS"
+
+# The number to use: the next PATCH above every held version on main's MAJOR.MINOR line.
+NEXT=$(node -e '
+  const [main, ...open] = process.argv.slice(1).map((version) => {
+    const parts = /^(\d+)\.(\d+)\.(\d+)$/.exec(version);
+    if (!parts) {
+      console.error(`NO VERDICT — ${version} is not a MAJOR.MINOR.PATCH release version.`);
+      process.exit(1);
+    }
+    return parts.slice(1).map(Number);
+  });
+  const onMainLine = open.filter(([major, minor]) => major === main[0] && minor === main[1]);
+  const patch = Math.max(main[2], ...onMainLine.map(([, , held]) => held)) + 1;
+  console.log(`${main[0]}.${main[1]}.${patch}`);
+' $(echo "$HELD" | cut -d' ' -f2))
+TAKEN_BY=$(echo "$HELD" | awk -v v="$PKG" '$2 == v { printf "%s%s", sep, $1; sep = " and " }')
+
+if npm view "@battlegrid/mcp-server@$PKG" version >/dev/null 2>&1; then
   echo "STRANDED — $PKG is already published and this branch changes shipped files:"
   echo "$SHIPPED" | sed 's/^/  /'
-  echo "Merging would publish NOTHING. Bump before opening the PR."
+  echo "Merging would publish NOTHING. Bump to $NEXT before opening the PR."
+elif [ -n "$TAKEN_BY" ]; then
+  echo "TAKEN — $PKG is held by $TAKEN_BY, which publishes it without this branch's changes to:"
+  echo "$SHIPPED" | sed 's/^/  /'
+  echo "Whichever merges second publishes NOTHING. Bump to $NEXT before opening the PR."
 else
-  echo "OK — $PKG is unpublished and will carry:"
+  echo "OK — $PKG is unpublished, held by nothing else, and will carry:"
   echo "$SHIPPED" | sed 's/^/  /'
 fi
+)
 ```
 
 Run it **before opening the PR**, not after merging. Once the release lands, the version is
 published and the check reads STRANDED for every branch — true, and useless.
 
+It needs `gh` authenticated with read access to this repository. If it cannot list the open PRs or
+read one's `package.json`, it stops with **NO VERDICT** rather than reporting OK from a partial
+view, and a version that is not `MAJOR.MINOR.PATCH` stops it the same way. Once this branch's own PR
+is open it no longer counts as a holder, so re-running the check after a conflict is safe. A PR
+opened *after* yours sees your number when its author runs this check. The printed number is a
+PATCH; a MINOR or MAJOR bump that reads TAKEN needs the next free number on its own line instead.
+
 ### Release checklist
 
 1. Change the code or docs.
 2. Move all four version values together; run the integrity snippet above.
-3. Run the reach check above. **STRANDED means bump now** — merging would publish nothing.
+3. Run the reach check above. **STRANDED or TAKEN means bump now, to the number it prints** —
+   merging would publish nothing. It reads the registry, `main` and every open PR into `main`.
 4. `npm run build && npm test`.
 5. Open a PR; merge it.
 6. The workflow publishes with OIDC provenance and tags `mcp-server@<version>` after success.
