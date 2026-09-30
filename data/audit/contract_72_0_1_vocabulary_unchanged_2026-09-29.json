@@ -1,0 +1,27 @@
+{
+ "_what": "Does BattleGrid 72.0.1 move the authoring vocabulary OMEGA extracted at 61.2.0? Two drift events separate it from the 69.5.0 record: 69.5.0 8195e0fa -> 72.0.1 71873428 at 2026-09-29T07:04:50Z (a MAJOR bump; no 70.x or 71.x observed by the manager's 10-minute watch) and a build-only 72.0.1 71873428 -> 3a8c9c04 at 09:14:51Z. Measured 2026-09-29T09:5xZ with scripts/compare_vocabulary.py over the manager's stored surface (system_state[\"surface_tools\"], observed 09:24:52Z). Read-only, no BattleGrid call. ANSWER: no. The metric, signal and section-key enums are identical in both directions.",
+ "measuredAt": "2026-09-29T09:5xZ",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), saved as tests/fixtures/2026-09-29-surface-72.0.1/ in the manager repository (both fixtures read as UTF-8)",
+  "liveContractVersion": "72.0.1",
+  "liveBuildSha": "3a8c9c04e9f4ce06ec6b50e59a24ff092b5c68e3",
+  "liveObservedAt": "2026-09-29T09:24:52.287114+00:00",
+  "liveToolCount": 141,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 0
+ },
+ "drifts": [
+  {"at": "2026-09-29T07:04:50Z", "version": ["69.5.0", "72.0.1"], "build": ["8195e0fa", "71873428"], "toolsAdded": [], "toolsRemoved": [], "toolsChangedByHash": ["get_agent_budget", "get_public_agent_realized_trades", "get_public_agent_signal_log_detail", "get_public_agent_signal_logs", "get_radar_activity", "get_radar_deployment", "get_signal_log", "get_trade_conversation", "list_gate_blocks", "list_radar_deployments", "preview_radar_resolution", "propose_entry_decision", "rebind_intelligence_agent", "reset_agent_drawdown_baseline", "update_intelligence_agent"], "note": "six differ in a stored field (descriptions of get_agent_budget, resume_intelligence_agent, reset_agent_drawdown_baseline, get_public_agent_signal_log_detail; the public rejectionReason filter enums of get_public_agent_realized_trades and get_public_agent_signal_logs lose five owner-account values and gain AGENT_UNAVAILABLE); the rest moved output schemas only."},
+  {"at": "2026-09-29T09:14:51Z", "version": ["72.0.1", "72.0.1"], "build": ["71873428", "3a8c9c04"], "toolsChangedByHash": []}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "None. compile_strategy_plan, derive_strategy_rule_view, generate_agent_grid, list_strategy_vocabulary and get_strategy_column_contract are byte-identical in their stored fields between 69.5.0 and 72.0.1, and none moved by hash at 07:04:50Z.",
+ "toolArithmetic": "141 at 69.5.0 + 0 added - 0 removed = 141 live.",
+ "conclusion": "Across 61.2.0 -> 72.0.1 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. The major bump's breaking change is the removal of five owner-account values from a PUBLIC signal-log filter enum; the halt/resume/drawdown-baseline semantics were rewritten (resume refused while any stop is breached; a new haltResumeEligibility verdict); none of it is authoring vocabulary.",
+ "notMeasured": "The compile path still awaits its next compile receipt (compile_strategy_plan's output schema moved at 69.3.0); output schemas are not stored; the vendor pack is still stale (installed 31.2.32 = contract 61.3.0)."
+}
