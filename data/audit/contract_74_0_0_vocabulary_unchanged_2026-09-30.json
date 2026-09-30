@@ -1,0 +1,26 @@
+{
+ "_what": "Does BattleGrid 74.0.0 move the authoring vocabulary OMEGA extracted at 61.2.0? One drift separates it from the 73.2.0 record: 73.2.0 3b0c2b51 -> 74.0.0 9a2a7086 at 2026-09-30T04:20:33Z (a MAJOR bump, after a 02:18-04:20Z outage). Measured 2026-09-30T04:21Z with scripts/compare_vocabulary.py over the manager's stored surface (system_state[\"surface_tools\"], observed 04:20:33Z). Read-only, no BattleGrid call. ANSWER: no. The metric, signal and section-key enums are identical in both directions.",
+ "measuredAt": "2026-09-30T04:21Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), saved as tests/fixtures/2026-09-30-surface-74.0.0/ in the manager repository (both fixtures read as UTF-8)",
+  "liveContractVersion": "74.0.0",
+  "liveBuildSha": "9a2a7086e6dfc90c0aa19391de4ed438ce5f9c05",
+  "liveObservedAt": "2026-09-30T04:20:33.463847+00:00",
+  "liveToolCount": 142,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 0
+ },
+ "drifts": [
+  {"at": "2026-09-30T04:20:33Z", "version": ["73.2.0", "74.0.0"], "build": ["3b0c2b51", "9a2a7086"], "toolsAdded": ["get_radar_close_decisions"], "toolsRemoved": [], "toolsChangedByHash": ["get_agent_budget", "get_agent_coin_qualification", "get_public_agent_signal_log_detail", "get_radar_activity", "get_radar_deployment", "get_signal_log", "get_trade_conversation", "list_gate_blocks", "list_radar_deployments", "preview_radar_resolution", "propose_entry_decision", "reset_agent_drawdown_baseline"], "note": "get_radar_close_decisions is a new read-only audit of every radar close decision (90 days); get_agent_coin_qualification gains an optional `reading` input; preview_radar_resolution's description gains per-agent readings; the rest moved output schemas only."}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "None. compile_strategy_plan, apply_strategy_plan, derive_strategy_rule_view, generate_agent_grid, list_strategy_vocabulary and get_strategy_column_contract are byte-identical in their stored fields between 73.2.0 and 74.0.0.",
+ "toolArithmetic": "141 at 73.2.0 + 1 added (get_radar_close_decisions) - 0 removed = 142 live.",
+ "conclusion": "Across 61.2.0 -> 74.0.0 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated. get_radar_close_decisions is a useful new read for OMEGA's evaluation loop: the platform's own evidence for why each bar fired or not.",
+ "notMeasured": "Output schemas are not stored; the compile path still awaits its next compile receipt; the vendor pack is still stale (installed 31.2.32 = contract 61.3.0)."
+}
