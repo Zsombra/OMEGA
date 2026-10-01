@@ -1,0 +1,27 @@
+{
+ "_what": "Does BattleGrid 75.0.0 move the authoring vocabulary OMEGA extracted at 61.2.0? One drift separates it from the 74.1.0 record: 74.1.0 19ebac90 -> 75.0.0 32a55855 at 2026-10-01T03:46:30Z (a MAJOR bump, after a ~2 h outage). Measured 2026-10-01T03:48Z with scripts/compare_vocabulary.py over the manager's stored surface (system_state[\"surface_tools\"], observed 03:46:30Z). Read-only, no BattleGrid call. ANSWER: no. The metric, signal and section-key enums are identical in both directions.",
+ "measuredAt": "2026-10-01T03:48Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), saved as tests/fixtures/2026-10-01-surface-75.0.0/ in the manager repository (both fixtures read as UTF-8)",
+  "liveContractVersion": "75.0.0",
+  "liveBuildSha": "32a55855424105e12ebb77b15faaa4fc987fc5a5",
+  "liveObservedAt": "2026-10-01T03:46:30.245984+00:00",
+  "liveToolCount": 142,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 0
+ },
+ "drifts": [
+  {"at": "2026-10-01T03:46:30Z", "version": ["74.1.0", "75.0.0"], "build": ["19ebac90", "32a55855"], "toolsAdded": [], "toolsRemoved": [], "toolsChangedByHash": ["get_agent_coin_qualification", "get_radar_close_decisions", "get_signal_log", "list_gate_blocks", "preview_radar_resolution"], "note": "eight descriptions changed (apply_strategy_plan, commit_radar_deployment_draft, compile_strategy_plan, preview_radar_resolution, propose_entry_decision, rebind_intelligence_agent, restore_strategy: radar readability judged against each coin's market-data profile, reachReason INSTRUMENT; get_trade_conversation: v74.1.1 card rules); no input schema or annotation moved; output: BarFamily gains MARKET_STATS (official changelog v75)."}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "authoringToolsTouched": "Descriptions only: compile_strategy_plan, apply_strategy_plan, restore_strategy and rebind_intelligence_agent now name reachReason INSTRUMENT (the coin's market-data profile carries no such data, or none is published). Their input schemas and annotations are identical; list_strategy_vocabulary, get_strategy_column_contract, derive_strategy_rule_view and generate_agent_grid are byte-identical in their stored fields.",
+ "compilePathNote": "v75 is breaking behind unchanged schemas: a plan whose bound agent is Radar-deployed can now be refused at compile/restore/rebind when a radar-acted condition reads a kind of data the coin's published market-data profile lacks, even if the same body compiled at 74.1.1. PVM 15m's six deployed coins read reachReason None live (manager review 2026-10-01).",
+ "toolArithmetic": "142 at 74.1.0 + 0 added - 0 removed = 142 live.",
+ "conclusion": "Across 61.2.0 -> 75.0.0 none of the three authoring enums moved. OMEGA's 61.2.0 extraction is NOT invalidated.",
+ "notMeasured": "Output schemas are not stored; the compile path still awaits its next compile receipt; the vendor pack is one patch behind (installed 31.2.56, repo 31.2.57)."
+}
