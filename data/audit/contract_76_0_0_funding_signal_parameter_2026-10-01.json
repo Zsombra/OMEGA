@@ -1,0 +1,23 @@
+{
+ "_what": "Does BattleGrid 76.0.0 move what OMEGA extracted at 61.2.0? Two drifts: 75.0.0 32a55855 -> 76.0.0 ca292d2c at 2026-10-01T05:16:30Z (no tool hash moved) and build ca292d2c -> 028c4979 at 07:36:26Z. The stored surface is byte-identical to 75.0.0, so the name-level vocabulary (156/84/25) is unchanged. ANSWER: yes, for two signals' PARAMETERS, which no schema hash carries. Source: official changelog v76 (playbattlegrid/battlegrid-mcp main 6a7231d4, 05:07:29Z), not yet a live read - the platform was down from 08:46Z.",
+ "measuredAt": "2026-10-01T09:07Z",
+ "platformCallsMade": 0,
+ "changelogV76": {
+  "signals": ["funding_extreme_positive", "funding_extreme_negative"],
+  "retiredParameter": "thresholdPct (fraction of one hourly funding settlement)",
+  "newParameter": "thresholdAnnualizedPct (percent a year, bounds 1-43800, default 100)",
+  "refusal": "thresholdPct on either signal -> VALIDATION_ERROR at compile_strategy_plan, update_strategy_signal_rule, derive_strategy_rule_view, a strategy draft's SIGNAL_RULES axis",
+  "conversion": "x 8760 x 100",
+  "storedRulesMigrated": "retired default -> 100; others convert exactly",
+  "unaffected": "oi_surge keeps thresholdPct",
+  "planTokens": "compiled before the deploy are stale; compile again"
+ },
+ "omegaStale": {
+  "files": ["omega/scoring.py:186-187", "scripts/build_scoring.py:241-243", "data/contract/signals/_scoring.json", "data/derived/signal_module_map.json"],
+  "heldValue": "thresholdPct 0.0005 per hour against funding_rate (= 438 %/yr)",
+  "newDefaultEquivalent": "100 %/yr = ~0.000114 per hour",
+  "generatorImpact": "examples/build_section.py sets no signal parameters; historic research/audit compile bodies that set thresholdPct are records, not inputs"
+ },
+ "next": "When the platform is back: get_strategy_signal_definition for both signals (read-only), store the served definitions under data/contract/, rebuild the scoring mirror from them. Extract, never infer: do not hand-edit the mirror from the changelog's numbers.",
+ "conclusion": "OMEGA's 61.2.0 extraction stands for names; the scoring mirror for 2 of 84 signals is stale in parameter key and default."
+}
