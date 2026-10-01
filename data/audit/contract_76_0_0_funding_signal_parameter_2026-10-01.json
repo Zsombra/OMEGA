@@ -19,5 +19,6 @@
   "generatorImpact": "examples/build_section.py sets no signal parameters; historic research/audit compile bodies that set thresholdPct are records, not inputs"
  },
  "next": "When the platform is back: get_strategy_signal_definition for both signals (read-only), store the served definitions under data/contract/, rebuild the scoring mirror from them. Extract, never infer: do not hand-edit the mirror from the changelog's numbers.",
- "conclusion": "OMEGA's 61.2.0 extraction stands for names; the scoring mirror for 2 of 84 signals is stale in parameter key and default."
+ "done": "2026-10-01T09:10:12Z both definitions read live through the manager's read client (data/contract/signals/funding_extreme_76.0.0_20261001T091012Z.json): paramSchema requires thresholdAnnualizedPct (1-43800, additionalProperties false), defaultParams {thresholdAnnualizedPct: 100}, indicators funding_rate + funding_annualized_pct, scoring linear above the threshold reaching 1.00 at twice it. Mirror rebuilt from that: signal_module_map defaultParams, omega/scoring.py, scripts/build_scoring.py -> _scoring.json (funding_extreme_negative now verified, not an inferred mirror). The generator wires defaultParams into every compile body, so before this fix every OMEGA compile would have been refused at v76. Suite 1026 passed (+1 regression test).",
+ "conclusion":"OMEGA's 61.2.0 extraction stands for names; the scoring mirror for 2 of 84 signals is stale in parameter key and default."
 }

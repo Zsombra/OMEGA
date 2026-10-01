@@ -56,8 +56,8 @@
   "coverage": {
     "signals": 84,
     "byProvenance": {
-      "verified": 73,
-      "inferred_mirror": 10,
+      "verified": 74,
+      "inferred_mirror": 9,
       "documented_mismatch": 1
     },
     "bitExactAgainstLiveData": 29,
@@ -236,26 +236,35 @@
     },
     "funding_extreme_negative": {
       "family": "linear_below",
-      "provenance": "inferred_mirror",
-      "threshold": -0.0005,
+      "provenance": "verified",
+      "threshold": -100,
       "normaliser": "threshold",
-      "indicator": "funding_rate",
-      "mirrorOf": "funding_extreme_positive"
+      "indicator": "funding_annualized_pct",
+      "examples": [
+        [
+          -219.0,
+          1.0
+        ],
+        [
+          -109.5,
+          0.095
+        ]
+      ]
     },
     "funding_extreme_positive": {
       "family": "linear_above",
       "provenance": "verified",
-      "threshold": 0.0005,
+      "threshold": 100,
       "normaliser": "threshold",
-      "indicator": "funding_rate",
+      "indicator": "funding_annualized_pct",
       "examples": [
         [
-          0.001,
+          219.0,
           1.0
         ],
         [
-          0.0006,
-          0.2
+          109.5,
+          0.095
         ]
       ]
     },

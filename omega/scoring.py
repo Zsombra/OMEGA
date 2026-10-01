@@ -183,8 +183,9 @@ SCORERS: dict[str, Scorer] = {
     "ltf_trend_adx_ranging":  lambda v, p: linear_below(v["ltf_adx_value"], p.get("threshold", 20), p.get("threshold", 20)),
 
     # FUNDING / OPEN INTEREST
-    "funding_extreme_positive": lambda v, p: linear_above(v["funding_rate"], p.get("thresholdPct", 0.0005), p.get("thresholdPct", 0.0005)),
-    "funding_extreme_negative": lambda v, p: linear_below(v["funding_rate"], -p.get("thresholdPct", 0.0005), p.get("thresholdPct", 0.0005)),
+    # Contract 76.0.0: percent a year against the served funding_annualized_pct (the `ann` column)
+    "funding_extreme_positive": lambda v, p: linear_above(v["funding_annualized_pct"], p.get("thresholdAnnualizedPct", 100), p.get("thresholdAnnualizedPct", 100)),
+    "funding_extreme_negative": lambda v, p: linear_below(v["funding_annualized_pct"], -p.get("thresholdAnnualizedPct", 100), p.get("thresholdAnnualizedPct", 100)),
     "funding_rate_flipping":    lambda v, p: 0.6,
     "oi_surge": lambda v, p: linear_above(
         (v["open_interest"] - v["prev_open_interest"]) / v["prev_open_interest"],

@@ -1,0 +1,313 @@
+{
+ "readAt": "2026-10-01T09:10:12.096957+00:00",
+ "definitions": {
+  "funding_extreme_positive": {
+   "signal": {
+    "signalId": "funding_extreme_positive",
+    "module": "FUNDING",
+    "stance": "SHORT",
+    "kind": "standard",
+    "priceBasis": "CLOSED",
+    "display": {
+     "id": "funding_extreme_positive",
+     "module": "FUNDING",
+     "displayName": "Extreme Positive",
+     "description": "Funding rate at extreme positive levels — long crowding, reversal risk elevated"
+    },
+    "moduleDisplay": {
+     "module": "FUNDING",
+     "displayName": "Funding Rates",
+     "description": "Perpetual funding extremes and rate flips — derivatives-side positioning sentiment."
+    },
+    "dependencies": [
+     "PRIMARY"
+    ],
+    "info": {
+     "detects": "Perpetual funding rate is extremely positive — longs are paying shorts heavily, crowded long positioning.",
+     "fires": "Triggers when the funding rate carried out to a year (the ann column) is above thresholdAnnualizedPct. Score scales with how far above the threshold it sits, reaching 1.00 at twice the threshold.",
+     "exampleSetup": "thresholdAnnualizedPct = 100 (100% a year)",
+     "examples": [
+      {
+       "scenario": "rate = 0.00025 per hourly settlement (219% a year)",
+       "outcome": "fires, Bearish, score 1.00"
+      },
+      {
+       "scenario": "rate = 0.000125 per hourly settlement (109.5% a year)",
+       "outcome": "fires, Bearish, score 0.10"
+      },
+      {
+       "scenario": "rate = 0.0001 per hourly settlement (87.6% a year)",
+       "outcome": "does not fire"
+      }
+     ],
+     "bestFor": "Contrarian setups — extreme positive funding often precedes long squeezes.",
+     "watchOut": "During strong uptrends funding can stay extreme for many funding intervals; don't fade a strong trend on funding alone."
+    },
+    "paramSchemaJson": {
+     "type": "object",
+     "properties": {
+      "thresholdAnnualizedPct": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 43800,
+       "description": "Annualized funding-rate threshold in percent, the unit of the ann column; the signal fires above it. 100 means 100% a year. Example: 100."
+      }
+     },
+     "required": [
+      "thresholdAnnualizedPct"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "defaultParams": {
+     "thresholdAnnualizedPct": 100
+    },
+    "indicators": [
+     {
+      "key": "funding_rate",
+      "meta": {
+       "label": "Funding Rate",
+       "precision": 6,
+       "numericDomain": {
+        "type": "continuous",
+        "range": null
+       }
+      }
+     },
+     {
+      "key": "funding_annualized_pct",
+      "meta": {
+       "label": "Funding Annualized",
+       "unit": "%/yr",
+       "precision": 1,
+       "numericDomain": {
+        "type": "continuous",
+        "range": null
+       }
+      }
+     }
+    ],
+    "timeframeAvailability": null
+   }
+  },
+  "funding_extreme_negative": {
+   "signal": {
+    "signalId": "funding_extreme_negative",
+    "module": "FUNDING",
+    "stance": "LONG",
+    "kind": "standard",
+    "priceBasis": "CLOSED",
+    "display": {
+     "id": "funding_extreme_negative",
+     "module": "FUNDING",
+     "displayName": "Extreme Negative",
+     "description": "Funding rate at extreme negative levels — short crowding, squeeze risk elevated"
+    },
+    "moduleDisplay": {
+     "module": "FUNDING",
+     "displayName": "Funding Rates",
+     "description": "Perpetual funding extremes and rate flips — derivatives-side positioning sentiment."
+    },
+    "dependencies": [
+     "PRIMARY"
+    ],
+    "info": {
+     "detects": "Perpetual funding rate is extremely negative — shorts are paying longs heavily, crowded short positioning.",
+     "fires": "Triggers when the funding rate carried out to a year (the ann column) is below -thresholdAnnualizedPct. Score scales with how far below it sits, reaching 1.00 at twice the threshold.",
+     "exampleSetup": "thresholdAnnualizedPct = 100 (-100% a year)",
+     "examples": [
+      {
+       "scenario": "rate = -0.00025 per hourly settlement (-219% a year)",
+       "outcome": "fires, Bullish, score 1.00"
+      },
+      {
+       "scenario": "rate = -0.000125 per hourly settlement (-109.5% a year)",
+       "outcome": "fires, Bullish, score 0.10"
+      },
+      {
+       "scenario": "rate = -0.0001 per hourly settlement (-87.6% a year)",
+       "outcome": "does not fire"
+      }
+     ],
+     "bestFor": "Contrarian setups — extreme negative funding often precedes short squeezes.",
+     "watchOut": "In strong downtrends funding can stay extreme; pair with structural support or bullish divergence."
+    },
+    "paramSchemaJson": {
+     "type": "object",
+     "properties": {
+      "thresholdAnnualizedPct": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 43800,
+       "description": "Annualized funding-rate magnitude in percent, the unit of the ann column; the signal fires below its negative. 100 means -100% a year. Example: 100."
+      }
+     },
+     "required": [
+      "thresholdAnnualizedPct"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "defaultParams": {
+     "thresholdAnnualizedPct": 100
+    },
+    "indicators": [
+     {
+      "key": "funding_rate",
+      "meta": {
+       "label": "Funding Rate",
+       "precision": 6,
+       "numericDomain": {
+        "type": "continuous",
+        "range": null
+       }
+      }
+     },
+     {
+      "key": "funding_annualized_pct",
+      "meta": {
+       "label": "Funding Annualized",
+       "unit": "%/yr",
+       "precision": 1,
+       "numericDomain": {
+        "type": "continuous",
+        "range": null
+       }
+      }
+     }
+    ],
+    "timeframeAvailability": null
+   }
+  },
+  "oi_surge": {
+   "signal": {
+    "signalId": "oi_surge",
+    "module": "OPEN_INTEREST",
+    "stance": "NONE",
+    "kind": "standard",
+    "priceBasis": "CLOSED",
+    "display": {
+     "id": "oi_surge",
+     "module": "OPEN_INTEREST",
+     "displayName": "OI Surge",
+     "description": "Open interest rising sharply — new capital entering the market"
+    },
+    "moduleDisplay": {
+     "module": "OPEN_INTEREST",
+     "displayName": "Open Interest",
+     "description": "OI surges and OI/price divergences — capital flow into versus out of positions."
+    },
+    "dependencies": [
+     "PRIMARY"
+    ],
+    "info": {
+     "detects": "Open interest is increasing rapidly — fresh capital entering the market, conviction rising.",
+     "fires": "Triggers when (oi - prevOi) / prevOi > thresholdPct. Score scales with the percentage above threshold, reaching 1.00 at twice the threshold and capped there.",
+     "exampleSetup": "thresholdPct = 0.05 (5%)",
+     "examples": [
+      {
+       "scenario": "OI change = +7%",
+       "outcome": "fires, Neutral, score 0.40"
+      },
+      {
+       "scenario": "OI change = +15%",
+       "outcome": "fires, Neutral, score 1.00 (capped)"
+      },
+      {
+       "scenario": "OI change = +3%",
+       "outcome": "does not fire"
+      }
+     ],
+     "bestFor": "Validating that a move has real participation — OI surge + price move = real signal; OI flat + price move = thin tape.",
+     "watchOut": "Surges happen during both trend continuations and liquidation cascades. Pair with directional context."
+    },
+    "paramSchemaJson": {
+     "type": "object",
+     "properties": {
+      "thresholdPct": {
+       "type": "number",
+       "minimum": 0.005,
+       "maximum": 0.5,
+       "description": "Minimum open-interest increase as a decimal ratio; 0.05 represents 5%. Example: 0.05."
+      }
+     },
+     "required": [
+      "thresholdPct"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "defaultParams": {
+     "thresholdPct": 0.05
+    },
+    "indicators": [
+     {
+      "key": "open_interest",
+      "meta": {
+       "label": "Open Interest",
+       "precision": 0,
+       "numericDomain": {
+        "type": "continuous",
+        "range": null
+       }
+      }
+     },
+     {
+      "key": "prev_open_interest",
+      "meta": {
+       "label": "Prev Open Interest",
+       "precision": 0,
+       "numericDomain": {
+        "type": "continuous",
+        "range": null
+       }
+      }
+     }
+    ],
+    "timeframeAvailability": null
+   }
+  }
+ },
+ "list": [
+  {
+   "signalId": "funding_extreme_positive",
+   "module": "FUNDING",
+   "stance": "SHORT",
+   "kind": "standard",
+   "priceBasis": "CLOSED",
+   "display": {
+    "id": "funding_extreme_positive",
+    "module": "FUNDING",
+    "displayName": "Extreme Positive",
+    "description": "Funding rate at extreme positive levels — long crowding, reversal risk elevated"
+   }
+  },
+  {
+   "signalId": "funding_extreme_negative",
+   "module": "FUNDING",
+   "stance": "LONG",
+   "kind": "standard",
+   "priceBasis": "CLOSED",
+   "display": {
+    "id": "funding_extreme_negative",
+    "module": "FUNDING",
+    "displayName": "Extreme Negative",
+    "description": "Funding rate at extreme negative levels — short crowding, squeeze risk elevated"
+   }
+  },
+  {
+   "signalId": "oi_surge",
+   "module": "OPEN_INTEREST",
+   "stance": "NONE",
+   "kind": "standard",
+   "priceBasis": "CLOSED",
+   "display": {
+    "id": "oi_surge",
+    "module": "OPEN_INTEREST",
+    "displayName": "OI Surge",
+    "description": "Open interest rising sharply — new capital entering the market"
+   }
+  }
+ ],
+ "listMeta": {}
+}
