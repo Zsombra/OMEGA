@@ -238,10 +238,13 @@ add("ltf_trend_adx_ranging", "linear_below", threshold=20, normaliser="threshold
                   "ETH 4h LTF ADX 16.96850604 -> 0.15157469799999995 exact"])
 
 # --- FUNDING ----------------------------------------------------------------
-add("funding_extreme_positive", "linear_above", threshold=0.0005, normaliser="threshold",
-    indicator="funding_rate", examples=[(0.0010, 1.00), (0.0006, 0.20)])
-add("funding_extreme_negative", "linear_below", threshold=-0.0005, normaliser="threshold",
-    provenance=M, mirror_of="funding_extreme_positive", indicator="funding_rate")
+# Contract 76.0.0 (2026-10-01): the parameter is thresholdAnnualizedPct (percent a year, the `ann`
+# column, default 100), read against the funding_annualized_pct indicator; thresholdPct is refused.
+# Served examples: 219 %/yr -> 1.00, 109.5 %/yr -> "0.10" (0.095, rounded on display), 87.6 -> no fire.
+add("funding_extreme_positive", "linear_above", threshold=100, normaliser="threshold",
+    indicator="funding_annualized_pct", examples=[(219.0, 1.00), (109.5, 0.095)])
+add("funding_extreme_negative", "linear_below", threshold=-100, normaliser="threshold",
+    indicator="funding_annualized_pct", examples=[(-219.0, 1.00), (-109.5, 0.095)])
 add("funding_rate_flipping", "fixed", constant=0.6,
     indicator="funding_rate, prev_funding_rate")
 

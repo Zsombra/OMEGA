@@ -61,6 +61,16 @@ Three reads, and they are not interchangeable:
   four-member verdict as written: `NOT_ENFORCED` means the agent's own threshold switches the gate
   off, `UNMEASURABLE` means the input was missing and the gate fail-opened. Neither is a pass, and
   reporting either as "cleared" is the conflation the verdict vocabulary exists to prevent.
+- **A failing condition comes back as a KEY — resolve it.** `requiredConditions.failedKeys` names
+  gates like `LOCATION_OK`: an identifier, not an explanation. Read the agent's bound strategy with
+  `get_strategy` (the `strategyId` is on `get_intelligence_agent`), find the matching
+  `conditions[].conditionKey`, and say what that condition actually tests in the player's terms.
+  Quoting the key back at the player is the same defect as a raw enum on screen.
+- **Check `bindingState` before you present that definition as live.** `get_intelligence_agent`
+  carries it. At `BOUND`, the strategy's current revision is what the agent evaluates. At `SYNCING`
+  or `ORPHANED` it is not — the agent runs a materialized copy at its own `strategyRevision` — so
+  name the binding state beside the definition rather than letting current rules read as running
+  ones.
 - **Gate blocks link to their thought log** through `sourceThoughtLogId` — follow it with
   `get_agent_thought_log` when the block's reason needs the evaluation behind it.
 - `get_signal_performance` / `list_signal_logs` when the question is whether the signals fired, as
@@ -132,6 +142,10 @@ it is undetermined.
   player's intelligence credits and writes thought and activity records. It is the deployment
   flow's composition aid for tuning a draft — it is not a diagnostic read, and running it as one
   charges the player to answer a question the journals already answer.
+- **Never name a strategy write tool, even to forbid it.** Reading a rule is not authority to change
+  one: route a rule change by naming the `strategy-authoring` skill, as step 4 does. The authoring
+  tools are in a family this skill does not declare, and a skill body that names an unreachable tool
+  — including in a negative — fails the registry's reachability check.
 - Never diagnose from the agent's own prose or overlay text where a typed field exists.
 - Never present a gate-block count as a rate, a trend, or a percentage — report it as served.
 

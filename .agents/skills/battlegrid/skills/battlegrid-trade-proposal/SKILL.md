@@ -1,6 +1,6 @@
 ---
 name: battlegrid-trade-proposal
-description: Find and stage a trade for one of the player's agents, for the player to approve. Activate whenever the player asks which coins fit an agent right now, wants a trade found or proposed for an agent, asks the agent to evaluate a coin, or wants to approve or decline a proposal it made. The scan is the agent's own gates over every active coin; a proposal is QUEUED for the agent's next strategy-bar close and answered into the conversation when that bar is decided; approval is always the player's word.
+description: Find and stage a trade for one of the player's agents, for the player to approve. Activate whenever the player asks which coins fit an agent right now, which of their agents fits a coin, wants a trade found or proposed for an agent or on a coin, asks the agent to evaluate a coin, or wants to approve or decline a proposal it made. The scans are the agents' own gates — one agent over every active coin, or one coin over every one of the player's agents; a proposal is QUEUED for the agent's next strategy-bar close and answered into the conversation when that bar is decided; approval is always the player's word.
 ---
 
 # Trade Proposal
@@ -16,7 +16,23 @@ re-sorts a list, re-derives a verdict, or approves on the player's behalf.
   it is accepted, cancelled or expires. **Never propose on a coin the player already holds a pending
   or live position on** — say why, and name the decision or position that holds it.
 
-## 1. Which coins fit the agent right now
+## 1. When the player names a coin and not an agent — choose the agent
+
+- `scan_coin_agents` for the coin. The rows arrive server-ranked across the player's own agents:
+  `qualified` by score, then `rejected` with the first failing gate, then `unscorable` with the
+  reason, then `ineligible` with the refusal `propose_entry_decision` would give (`AGENT_NOT_ACTIVE`,
+  `MODEL_INACTIVE`, `AGENT_HALTED`). Read them **as written** — never re-sort or re-derive a verdict.
+- **Ask the top-ranked qualifying agent**, and name the other agents that qualified so the player can
+  choose one of them instead. One request per coin: the platform holds one pending request per coin
+  across all of the player's agents, so ask one agent, not each of them.
+- **When none qualifies, say so plainly.** Name each agent's blocking gate or ineligibility, and offer
+  the strategy doctor for the one closest to qualifying. Never propose through an agent the scan
+  reports rejected, unscorable or ineligible.
+- **When the player has no agent at all**, the scan is empty: say so, and the next step is building one
+  (a strategy first, when they have none).
+- A refused scan (`RATE_LIMITED`) is a refusal with its retry-after, never "nothing fits".
+
+## 2. Which coins fit the agent right now
 
 - `scan_agent_coins` for the agent. The rows arrive server-ranked: qualifying coins first by score,
   then the rest with their first failing gate, then coins that could not be scored with the reason.
@@ -29,16 +45,7 @@ re-sorts a list, re-derives a verdict, or approves on the player's behalf.
 - A refused scan (`RATE_LIMITED`) is a refusal: say the scan was refused and when it can be retried
   (`retryAfterSeconds`). Never say "nothing fits".
 
-## 2. Queue the request
-
-**In a conversation the Agent Toolbox hosts, this section does not apply: name the coin and stop.**
-The player presses **Request a trade** in the trade lane beside you and the same queued request is
-registered from there, free and without a model turn; your job is to say which coin is worth
-requesting and what the gates read, and to leave the press to them. `propose_entry_decision` and
-`cancel_entry_request` are refused from such a conversation as tool errors, so calling one spends an
-op of your budget and queues nothing. The refusal is **host-wide** — every tool that writes is
-refused there, which is why no other skill carries a paragraph of its own — and every read in this
-flow stays available.
+## 3. Queue the request
 
 - `propose_entry_decision` **only** on the coins the player named, or on the top qualifying row
   when they asked for the best fit. One coin per call.
@@ -50,14 +57,19 @@ flow stays available.
 - **One pending request per coin.** A second is refused with `CONFLICT` / `REQUEST_PENDING` — read
   the one that exists with `get_entry_request` rather than asking again.
 
-## 3. Tell the player what they are waiting for
+## 4. Tell the player what they are waiting for
 
 - `type: "queued"` is the normal answer. Read `request` back to them: the bar being decided
   (`barStart`), when the answer is due (`decidesBy`), and the deadline past which that bar can no
   longer be decided (`windowEndsAt`). `decidesBy` and `windowEndsAt` are different instants — a bar
   that has already settled is decided at the next sweep, seconds away.
-- Say where the answer will appear: in the agent's conversation, and — if it proposes a trade — in
-  `list_pending_approvals`. Nothing further is needed from the player until then.
+- Say where the answer will appear: on the delegation card in this conversation, and — if it
+  proposes a trade — in `list_pending_approvals`. Nothing further is needed from the player until
+  then; the card carries the answer to them when the bar closes.
+- When the player asks what the agent decided, read the request's conversation with
+  `get_trade_conversation({ conversationId })`, using the id the `queued` result carried. It serves
+  the whole transcript in stored order — the queued card, the agent's reasoning, its thesis and
+  setups, the recommendation, a no-trade with its reason and next coins, or a close answer.
 - `get_entry_request` re-reads a request still pending; `cancel_entry_request` withdraws it. Both
   are `NOT_FOUND` once it has been answered, cancelled or expired, and that is the honest record:
   the answer is in the conversation.
@@ -66,17 +78,16 @@ flow stays available.
   `topupAvailable` is true. A refused request (`RATE_LIMITED`) is a refusal with its retry-after.
   Never "nothing to do".
 - `type: "recommendation"` and `type: "no_trade"` arrive only as the **replay** of a request made
-  before the queued contract shipped. Report them as step 4 describes and do not expect them from a
+  before the queued contract shipped. Report them as step 5 describes and do not expect them from a
   fresh call.
 
-## 4. When the answer arrives — approve or decline only on the player's word
+## 5. When the answer arrives — approve or decline only on the player's word
 
-**In a conversation the Agent Toolbox hosts, the approval is not yours to send.** The decided close
-lands on the trade card in the lane beside you, carrying the player's own Accept and Decline;
-`accept_entry_decision` and `cancel_entry_decision` are refused there as tool errors, so calling one
-spends an op and moves nothing. Read the card back to them — the direction, the levels, the
-conviction, the expiry — and say what you would do, which is the whole of your part. What you have
-to work from is whatever the player attaches from a card: its rendered readings, nothing more.
+**On a web Commander surface the approval is the card's own.** The decided close lands on the
+delegation card in this conversation, carrying the player's Accept and Decline. `accept_entry_decision`
+and `cancel_entry_decision` remain yours for the external and Telegram doors, and on the web only on
+the player's explicit typed word — never inferred from interest, agreement, or a question about the
+trade.
 
 - A decided close produces one of: a PROPOSED decision awaiting approval; a no-trade with the
   reason and the next coins worth asking about; a close that did not qualify; a window that passed

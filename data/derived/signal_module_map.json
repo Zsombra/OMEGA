@@ -747,10 +747,10 @@
   "flow_perp_spot_bear_divergence": {},
   "flow_perp_spot_bull_divergence": {},
   "funding_extreme_negative": {
-   "thresholdPct": 0.0005
+   "thresholdAnnualizedPct": 100
   },
   "funding_extreme_positive": {
-   "thresholdPct": 0.0005
+   "thresholdAnnualizedPct": 100
   },
   "funding_rate_flipping": {},
   "htf_ma_aligned_bear": {},
@@ -881,7 +881,8 @@
  },
  "_defaultParamsNote": "Report-default signal params, taken verbatim from derive_strategy_rule_view and cross-checked against two live strategies (EL_ALAMEIN, MATH-C3).",
  "_renames": [
-  "2026-09-09: SWING_HIGH/SWING_LOW renamed to DONCHIAN_UPPER/DONCHIAN_LOWER at contract 53.0.0 - identical nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi / swingLo->donchianLo. The names below were updated; the measurement they record is unchanged because the underlying indicator is the same 20-bar channel."
+  "2026-09-09: SWING_HIGH/SWING_LOW renamed to DONCHIAN_UPPER/DONCHIAN_LOWER at contract 53.0.0 - identical nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi / swingLo->donchianLo. The names below were updated; the measurement they record is unchanged because the underlying indicator is the same 20-bar channel.",
+  "2026-10-01: funding_extreme_positive/negative take thresholdAnnualizedPct (percent a year, default 100) instead of thresholdPct (0.0005 per hourly settlement) at contract 76.0.0; thresholdPct is refused at compile. Defaults taken verbatim from get_strategy_signal_definition defaultParams read live 2026-10-01T09:10:12Z (data/contract/signals/funding_extreme_76.0.0_20261001T091012Z.json). oi_surge keeps thresholdPct."
  ],
  "_extensions": [
   "2026-09-09 (second pass, CAVEAT CLOSED): the single-transform pass carried a caveat - a metric feeding a module only through some OTHER transform would not have been seen. Every legal metric x transform cell was then probed: 663 cells, ZERO failures. Membership is NOT transform-dependent - for every metric, all its non-spread transforms return the same signal set - and the full probe reproduces this map exactly (83 feed a module, 61 feed none, zero disagreements either way). The 108 SPREAD cells are excluded from attribution on purpose: a spread column puts the base AND its operand in the report, so it cannot isolate the base, and subtracting the operand's own signals is not a fix - where base and operand feed the same module it removes the base's contribution too (measured: PPO x spread with operand ROC12 reads empty that way while PPO's four other transforms each return the same four relative-strength signals). Every metric has at least one non-spread cell, so nothing is attributed from a spread cell alone. Raw: data/audit/module_membership_full_2026-09-09.json."

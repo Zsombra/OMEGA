@@ -187,3 +187,23 @@ def test_divergence_magnitude_is_not_fixed_at_one():
         if sid in ("comparison_sector_divergence",):
             continue          # a peer ratio, not a divergence magnitude
         assert not score(sid, {}).computable, f"{sid} must still refuse to guess"
+
+
+def test_funding_extreme_defaults_match_the_served_76_definitions():
+    """Contract 76.0.0 retired thresholdPct on both funding_extreme signals (refused at compile) and the
+    generator wires the map's defaultParams into every compile body - so they must equal what was served."""
+    served = json.loads((ROOT / "data" / "contract" / "signals" /
+                         "funding_extreme_76.0.0_20261001T091012Z.json").read_text(encoding="utf-8"))
+    smap = json.loads((ROOT / "data" / "derived" / "signal_module_map.json").read_text(encoding="utf-8"))
+    for sid in ("funding_extreme_positive", "funding_extreme_negative"):
+        definition = served["definitions"][sid]["signal"]
+        assert smap["defaultParams"][sid] == definition["defaultParams"] == {"thresholdAnnualizedPct": 100}
+        assert "thresholdPct" not in definition["paramSchemaJson"]["properties"]
+        assert "funding_annualized_pct" in [i["key"] for i in definition["indicators"]]
+    # served examples: 219 %/yr scores 1.00 (raw 1.19, capped), 109.5 %/yr fires at ~0.10, 87.6 %/yr does
+    # not fire (raw below zero). The raw scorers are unclamped; clamp01 is the cap.
+    hi, mid, lo = ({"funding_annualized_pct": x} for x in (219.0, 109.5, 87.6))
+    assert clamp01(SCORERS["funding_extreme_positive"](hi, {})) == pytest.approx(1.0)
+    assert SCORERS["funding_extreme_positive"](mid, {}) == pytest.approx(0.095)
+    assert SCORERS["funding_extreme_positive"](lo, {}) < 0
+    assert clamp01(SCORERS["funding_extreme_negative"]({"funding_annualized_pct": -219.0}, {})) == pytest.approx(1.0)
