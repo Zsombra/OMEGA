@@ -51,7 +51,10 @@ Then read what exists:
 
 - `get_radar_deployment` (one coin) or `list_radar_deployments` (the fleet, plus the platform
   `radarPaused` kill-switch — if that is set, say so up front: nothing will fire whatever you
-  write).
+  write). A `SCANNING` card whose reason is `ENTRIES_PAUSED` is the platform's **entry pause**: new
+  entries are paused platform-wide while market data is missing across many coins. Say that up front
+  too — the radar takes no new entry on any coin until it lifts, which it does by itself once the
+  data is back, and nothing the player changes on a deployment clears it.
 - **For Radar, also read the player's draft of the coin** with `get_radar_deployment_draft` — or
   `list_radar_deployment_drafts` when no coin is named yet. The player may be part-way through a
   change in their radar builder. **If a draft exists, say so** — what it holds, and when and from
@@ -104,16 +107,61 @@ repeatedly while iterating is free and correct.
 Render the preview as a card and read it out. For **Radar**: the coin's `section` and any typed idle
 or blocked reason, then every row of `resolvesNow.onDuty` in the order served — each agent, the slot
 and priority that put it on duty, its regime reading at its own `regimeTimeframe` with conviction, its
-qualification verdict and its close clock — and, for a draft, `conditionReach`, which names each
-on-duty agent's required conditions. For **Arena**: which agent goes on duty, which slot matched and at
-what priority, the regime and conviction used, and the qualification verdict. **Render `section` as
-the server sends it — never re-derive it, and never pick, rank or drop rows yourself.** A non-null
-reason does not mean idle (`ON_DUTY_BUT_POSITION_BLOCKED` carries a reason and is not idle), so
-deciding the headline yourself gets it wrong. `enabledAfterCommit` says whether the policy will play
-once committed — a paused policy stays paused, and a first Arena deployment always plays.
+qualification verdict and its close clock — and `readings`, one entry per on-duty agent in the same
+order: what that agent reads on the coin right now (below). For **Arena**: which agent goes on duty,
+which slot matched and at what priority, the regime and conviction used, and the qualification
+verdict. **Render `section` as the server sends it — never re-derive it, and never pick, rank or drop
+rows yourself.** A non-null reason does not mean idle (`ON_DUTY_BUT_POSITION_BLOCKED` carries a reason
+and is not idle), so deciding the headline yourself gets it wrong. `enabledAfterCommit` says whether
+the policy will play once committed — a paused policy stays paused, and a first Arena deployment
+always plays. A Radar preview simulates a running platform, so it never reports the kill switch or an
+entry pause: those come from step 1's read.
 
 **If anything changes after a preview, re-preview.** A preview never vouches for what it did not
 resolve.
+
+**A Radar preview refuses an agent the scan cannot read on the coin.** Every slot agent, on duty now
+or not, must have every condition the radar acts on — its required conditions, the ones carrying a
+verdict, its exit conditions, and every condition they reference — readable by the radar scan on this
+coin. When one is not, the preview itself is refused, issues no certificate, and nothing can be
+committed: `CONDITION_UNREADABLE_BY_RADAR_SCAN`, whose `details.context.reachReason` says why
+(`INSTRUMENT` — the market-data profile of the coin, or of a benchmark section's own instrument, carries
+no such data, or the market-data service publishes no profile for it at all: the refusal names the kind
+of data the profile lacks, or says there is none; `AGENT_TIMEFRAME` — the agent has no such rung;
+`FEED` — the radar scan never reads that data for this agent), or
+`CONDITION_OPERAND_UNSERVED_IN_LANE` for a session-field scalar. Read the player the refusal as served:
+it names the agent, the condition, the column and the fixes — stop the radar acting on the condition,
+make it read a column the radar scan has on that coin, or take the agent off the coin. A commit
+re-checks the same rule, so a strategy edit landing after the preview can still refuse it.
+
+**`readings` is each on-duty agent's requirements, read now.** A `READ` entry carries the agent's
+`reading` — the same one `get_agent_coin_qualification` returns with `reading: true`, through the same
+resolver:
+
+- `reading.live` is the reading its qualification verdict was built from: the gates with their margins
+  (`qualification`); every entry-lane condition — required, direction-setting, and the ones they
+  reference — with its outcome and its clause values against their thresholds
+  (`conditions.entries[]`); the allocated signals with their attribution; and the data it lacked
+  (`missingData`). An `UNEVALUATED` entry is a condition this tick could not read, with its
+  `reachReason`. A pair the scan can never read was refused above, so every such cause is one the next
+  sweep can change — report it as the current reading, never as a reason the deployment will not
+  work. `anchorBarStatus` says which bar the conditions read (`live` while it is still forming), and
+  `scoredBarStart` names the bar the signals and gates were scored on. **A live reading decides
+  nothing**: the radar decides at the close, on the closed bar, so say what it reads right now, never
+  that it will fire.
+- `reading.lastClose` is the one decision the agent's on-duty row names as its last close: `RECORDED`
+  with that bar's close-decision record — the reading it was decided on, or why it was missed —
+  `PENDING` while that record is still being written, or `NONE` when the pair remembers no decision.
+  For the decisions before it, call `get_radar_close_decisions` (step 5).
+
+An `UNSCORABLE` entry is an on-duty agent the preview could not read on the coin, with
+`coinDataStopped` when the coin's data explains why; it never fails the preview. `readings` is null
+under a simulated regime: duty is simulated there, and every reading would judge the real one.
+
+There is no `conditionReach` list and no `blocksScanGate` flag (contract 74.0.0). A condition's reach
+reason is its `UNEVALUATED` entry's `reachReason` in
+`readings[].reading.live.reading.conditions.entries[]`, and whether the conditions hold the coin is the
+reading's own conditions gate, `qualification.gates.requiredConditions` — never a verdict of your own.
 
 ### 3. Confirm against the preview, then commit
 
@@ -176,16 +224,28 @@ eligible, what the policy was firing on, and that the slots are not recoverable.
 `pause_radar_deployment` for Radar and `pause_deployment_policy` for Arena. Offer that
 whenever the ask sounds like "pause", "stop for now", or "take it off duty for a while".
 
-### 5. "Why isn't it firing?" — state, then pattern, then rows
+### 5. "Why isn't it firing?" — state, then pattern, then the bar, then rows
 
-Three reads, cheapest first. Stop as soon as the player's question is answered.
+Four reads, cheapest first. Stop as soon as the player's question is answered.
 
 1. **`get_radar_deployment` → `resolvesNow`** for what is true **right now**: the coin's section and
    reason, and one `onDuty` row per agent — its blocked reason and since when, its qualification
    block, its cooldown, whether its edge is spent, its last fire and its close clock. A row whose last
    close reads `CLAIMED` qualified but lost the coin's one fire that pass to a higher-priority agent;
-   its edge is preserved and it fires at a later close only if it still qualifies there. Most "is it
-   working?" questions end here.
+   its edge is preserved and it fires at a later close only if it still qualifies there. A `SCANNING`
+   coin whose reason is `ENTRIES_PAUSED` is under the entry pause (step 1): its agents still decide and
+   record every close, and a close that qualifies is held — its fire refused, its edge preserved,
+   journaled and recorded as `EDGE_PRESERVED_ENTRIES_PAUSED` with `scanBlockReason` `ENTRIES_PAUSED` —
+   so it fires at a later close only if that close qualifies on its own data after the pause lifts. A
+   lower-priority agent behind that fire reads `CLAIMED` on the same bar: the coin's one fire went to
+   the agent the pause refused, not to a trade. That is the whole answer while the pause lasts; never
+   send the player to change an agent or a policy for it. Most "is it working?" questions end here.
+   When the question is what ONE on-duty agent of a scanning coin needs to fire — which condition
+   reads false, how far a gate sits from its threshold — drill into its row
+   with `get_agent_coin_qualification({ agentId, coinTickers: [<the coin's ticker>], reading: true })`
+   and read the verdict's `reading` as step 2 of the deploy flow describes it: `live` is what the
+   agent reads now, and `lastClose` is the decision its row names as its last close, with the reading
+   that bar was decided on.
 2. **`get_radar_activity_summary`** for everything else about "why is it quiet", in ONE call. It
    carries three parts and they answer three different questions, each on its own scope:
    - `groups` — which cause recurs and how often, over the window the response names. Quote the
@@ -205,10 +265,27 @@ Three reads, cheapest first. Stop as soon as the player's question is answered.
    "duty just changed" rather than reporting a contradiction. Joins and departures are journaled as
    `ON_DUTY_JOINED` / `ON_DUTY_LEFT`, one row per agent, and a lost coin as
    `EDGE_PRESERVED_COIN_CLAIMED`.
-3. **`get_radar_activity`** only for what step 2 cannot do: more rows than its ten, a FIRES-only
-   view, paging back through history, or ONE occurrence's full margins. Rows are lean by default —
-   pass `detail: 'FULL'` for the margin surface, and `includeCurve: true` only if something will
-   actually plot the points.
+3. **`get_radar_close_decisions`** when the question is about ONE close — "why didn't the 14:00 bar
+   fire?", "why did it fire there?", "what did it see at that close?". Every bar the close step
+   decided has one record, whether a policy's agent or a manual request's watch decided it: its
+   `outcome` (`FIRED`, `NOT_QUALIFIED`, `CLAIMED` or `MISSED`), the fire's `fireDisposition` as
+   arbitration settled it, and the `evidence` the bar was decided on — the closed-bar reading's gates
+   with their margins, every condition's outcome with its clause evidence, each condition the scan
+   could not evaluate with its reach reason, the allocated signals and `missingData` — or, for a
+   `MISSED` bar, the close step's own answer: the bar never settled, an input was not on its due bar,
+   or the window passed. An `outcome` of `FIRED` says the bar qualified and its agent was offered the
+   coin's fire; `fireDisposition` says what the fire came to — `FIRED` when a decision was enqueued,
+   `EDGE_PRESERVED_ENTRIES_PAUSED` beside `scanBlockReason` `ENTRIES_PAUSED` when the entry pause
+   refused it and nothing was traded. It is the only history of not-qualifying closes: the journal
+   writes no row for one, and `resolvesNow` keeps only each agent's last decision — the one
+   `reading.lastClose` (step 1) carries; this read holds every decision before it. Narrow with
+   `agentId`; page back by passing the oldest returned `bar.barStart` as `before`. A bar still
+   waiting inside its window has no record yet (`resolvesNow` shows its `closeDecision.state` as
+   `DEFERRED`), and records are kept 90 days.
+4. **`get_radar_activity`** only for what steps 2 and 3 cannot do: more rows than its ten, a
+   FIRES-only view, paging back through history, or ONE occurrence's full margins. Rows are lean by
+   default — pass `detail: 'FULL'` for the margin surface, and `includeCurve: true` only if something
+   will actually plot the points.
 
 **Neither of the first two substitutes for the other, and the reason is structural.** The journal is
 a TRANSITION log, not a state log: a gate that has blocked continuously without crossing again
@@ -216,13 +293,18 @@ inside the window produces no group in the rollup at all. It shows up in `resolv
 else. So an empty or quiet rollup NEVER means "nothing is blocking it" — check step 1 before saying
 anything of the sort.
 
-Two negatives, both checkable:
+Three negatives, all checkable:
 
 - **Never page journal rows in order to count causes yourself.** The counts are served. Re-deriving
   them spends the player's op budget on work the server already did and floods the transcript.
 - **Never sum counts across pages, and never report a windowed count as a lifetime one.** The
   rollup's counts span every matching row inside `windowStartAt`–`windowEndAt` — quote them with
   that window ("41 times in the last 7 days"), never as a total.
+- **Never explain one close from the live verdict or the journal.** A not-qualifying close writes no
+  journal row, and the live reading is not the reading the close was decided on — at the same moment
+  the two can sit on opposite sides of a gate. Read the bar's record — `reading.lastClose` for the
+  last decision a row names, `get_radar_close_decisions` for any other — and quote it as stored;
+  never recompute it.
 
 ## Preview-before-commit: enforced for both
 

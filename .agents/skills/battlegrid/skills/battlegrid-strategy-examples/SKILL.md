@@ -143,7 +143,10 @@ strategy timeframe, and at or below it the series as the frame carries it. At or
 timeframe the choice therefore sets only what the live lane shows — no bar is in progress at the
 anchor's own close — so Developing there is legal and changes no decision. A condition reading a
 developing bar is single-frame: it holds one close, carries no verdict and cannot take the `exit`
-role. The resolved answer for a column is served on `effectiveParameters.bars`.
+role. One exception overrides both the stored value and the default: a column reading a metric with
+no live value (itself, or a `spread` operand) reads completed bars at every rung, because the forming
+bar publishes nothing for it. The resolved answer for a column is served on
+`effectiveParameters.bars`, and it states that exception.
 
 **A higher-timeframe level is measured from the current strategy-bar price.** The distance to a `4h`
 Donchian band, and every candle label classifier (`MA_ALIGN`, `PRICE_ZONE`, `BB_TOUCH`), compares
@@ -158,8 +161,31 @@ market-wide reads with no session dimension, so they resolve everywhere. The fiv
 scalars (`fieldPlayers`, `fieldUpBias`, `fieldBiasDir`, `captConc`, `picksSpread`) describe a game
 session the agent is playing in, and **radar runs outside one** — so a radar deployment whose
 strategy reads one is refused outright (`CONDITION_OPERAND_UNSERVED_IN_LANE`), naming the scalars it
-can read instead. The refusal lands at DEPLOY rather than at save, because a strategy carries no lane
-of its own: the same strategy is legal, and reads those scalars correctly, on an arena agent.
+can read instead.
+
+**What the radar scan can read on a coin.** Beyond the lane, a condition the radar acts on — a
+required one, one carrying a verdict, an exit one, and every condition they reference — must be
+readable by the radar scan on each coin the radar acts on for the agent, or it would be decided unread.
+What a coin can be read for is its market-data profile: the kinds of data the market-data service
+publishes that it serves for that coin, never the coin's asset class. A refusal carries
+`CONDITION_UNREADABLE_BY_RADAR_SCAN` with its `reachReason`: `INSTRUMENT` when the profile of the coin —
+or of a benchmark section's own instrument — carries no such data, or the service publishes no profile
+for it at all (spot-tape columns on a coin no spot venue lists, TradFi or crypto alike; any market-data
+column on a ticker with no catalog row), `AGENT_TIMEFRAME` when the agent has no such rung on the
+enabled ladder, and `FEED` when the radar scan never reads that data for the agent (crowd reads:
+compose reads them, but only for a coin the scan has already admitted). An `INSTRUMENT` refusal names
+the kind of data the profile lacks, or says the coin has no profile. The fixes it names: take the
+condition's radar role away (neither required nor a verdict, or no exit role), read a column the radar
+scan has on that coin, or free the coin.
+
+**The refusal lands where an agent meets a coin**: at the radar deploy (its preview, the builder's
+Save and the draft commit); at a manual entry request, as `CONDITION_UNREADABLE_ON_COIN`;
+and, for an agent already deployed or holding an open position or a pending manual request, at a
+strategy save (`compile_strategy_plan`, `apply_strategy_plan`, `restore_strategy`) or a rebind. A save
+is checked only on behalf of those agents: a strategy carries no lane of its own, so one with no agent
+the radar acts on is never checked, and the same strategy is legal, and reads session-field scalars
+correctly, on an arena agent. A refused compile issues no plan token, so nothing can stage that
+content.
 
 **The exit role.** `exit: true` makes a settled TRUE reading close open positions its verdict
 opposes — UP exits SHORTs, DOWN exits LONGs, a NEITHER or `null` verdict exits both. Legal only over
@@ -277,11 +303,14 @@ smaller position, never more risk.
 trailingBufferPct, timeDecayEnabled, timeDecayGracePeriodMinutes, timeDecayIntervalMinutes,
 timeDecayTightenPct, timeDecayMaxTightenPct, timeDecayStaleThresholdTpProgressPct,
 decisionInvalidationExitEnabled }` — how the stop moves after entry, and when a position is
-closed for reasons other than its stop.
+closed for reasons other than its stop. The policy is stamped on each position when it opens: an
+edit applies to positions opened after it, and an open position keeps the policy it opened with.
 
-Validated bounds: break-even trigger 0.5–2R; trailing trigger 0–2R step 0.01 (0 = trail from
-entry), giveback 25–55%, buffer 0.01–1%; timeDecay grace ≥ interval, tighten 0.1–50% to max
-1–100%, stale threshold 0–100% of TP progress. Per-mechanism flags; no umbrella switch.
+Validated bounds: break-even trigger 0.5–2R step 0.01; trailing trigger 0–2R step 0.01 (0 = trail
+from entry), giveback 25–55% step 1, buffer 0.01–1% step 0.01; timeDecay grace 5–1440 min step 5,
+interval 5–480 min step 5, grace ≥ interval while time decay is armed, tighten 0.5–50% step 0.5,
+max tighten 1–100% step 1, stale threshold 0–100% of TP progress step 1. Per-mechanism flags; no
+umbrella switch.
 
 `decisionInvalidationExitEnabled` is the post-fill invalidation exit: a **closed**
 strategy-timeframe candle beyond the decision's invalidation level closes the position

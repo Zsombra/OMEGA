@@ -44,7 +44,7 @@ new longs / new shorts / short covering / long liquidation), `MARK spread ORACLE
 `CROWDED_LONGS` building block (`ann gte 25` + `oiChg gte 3` + `oiRegime is "new longs"`);
 `FADE_SHORT` verdict DOWN (ref + `RSI14 gte 65` + `chg24h gte 5`); mirrored `SQUEEZED_SHORTS`
 / `SQUEEZE_LONG` verdict UP. Rules: `funding_extreme_positive`/`_negative` 3 required
-`{"thresholdPct":0.001}` · `oi_surge` 2 `{"thresholdPct":0.03}` · `rsi_overbought` 2
+`{"thresholdAnnualizedPct":100}` · `oi_surge` 2 `{"thresholdPct":0.03}` · `rsi_overbought` 2
 `{"threshold":65}` · `rsi_oversold` 2 `{"threshold":35}` · `cvd_bear_divergence` 2 ·
 `cvd_bull_divergence` 2 · `mfi_overbought` 1 · `mfi_oversold` 1. Gates 0.6 / 1 / 0.5. Levels
 1.0–2.5 ATR, RR 1.5. PM: BE 0.8R, no trail, timeDecay ON (120/60, 10→40, stale 25).

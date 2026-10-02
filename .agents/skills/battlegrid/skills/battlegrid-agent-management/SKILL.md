@@ -25,8 +25,8 @@ step named beside it before doing anything else.
    configuration change to an agent the player is mid-edit on is staged, not committed. → steps 3
    and 4.
 3. **Mis-lever'd halt recovery.** *Cue: "why is it stopped", "start it again", any halted agent.*
-   There are three halt reasons and they do not share a lever. Offering a drawdown baseline reset
-   to a daily-loss halt is offering something that cannot work. → step 5.
+   The halt reason says why the agent stopped, not what clears it. Offering an exit the server's
+   resume verdict does not offer is offering something that cannot work. → step 5.
 4. **Driving strategy writes from this arc.** *Cue: the answer to an agent problem turns out to be
    "change the strategy".* You can SEE strategies here because you must name what you bind. That is
    not permission to author them. → the cross-skill rule below.
@@ -118,7 +118,16 @@ mid-edit in their form.** Then:
 - `discard_agent_draft` only on the player's word: call it with `confirm:false` first, tell them
   when the draft was last written and from which surface, ask, then confirm.
 
-With **no draft open**, the update verb below stands, confirm and all.
+**In a conversation the agent console hosts** — your context names the agent console and an agent
+id — the player's form is open on that agent whether or not a draft exists yet. Stage every change
+into that agent's draft, naming that id as `agentId`, create or edit alike: the create recipe's
+omitted id does not apply there, because the screen already holds the id the agent will be created
+at. Create, update, rebind and discard are refused there — the player's own Create, Save or Discard
+is the act. On an existing agent a strategy change is a recommendation the player picks in the
+Strategy step. An axis their form rewrote after your proposal — typed over or undone — is their
+answer: propose it again only on their word.
+
+With **no draft open**, the update verb below stands, confirm and all — outside the agent console.
 
 ### 4. Lifecycle verbs: read first, state the radius, then confirm
 
@@ -152,23 +161,33 @@ the reason, and name what would clear it (un-deploy via the radar/deployment too
 the positions resolve, wait for the session to settle). Never paraphrase the refusal into "it
 didn't work", and never retry it unchanged.
 
-### 5. Halt recovery: branch on the served halt reason
+### 5. Halt recovery: offer exactly the served verdict's exits
 
-`get_agent_budget` serves `haltReason`. There are exactly three, and the lever differs:
+`get_agent_budget` serves `haltReason` — why the agent stopped — and `haltResumeEligibility`, the
+server's resume verdict. **The verdict decides the recovery**; the reason only explains the stop.
 
-- **MANUAL** — the player halted it. `resume_intelligence_agent` lifts it unconditionally.
-- **DRAWDOWN_BREACH** — cumulative realized loss reached the drawdown stop. Two levers: raise
-  `maxCumulativeDrawdownUsd` through the update verb, **or** `reset_agent_drawdown_baseline`,
-  which acknowledges the loss and re-arms the stop from today (it erases no history and journals
-  the acknowledgement). Then resume.
-- **DAILY_LOSS** — realized loss for the day reached the daily limit. Two levers: raise
-  `maxDailyLossUsd` through the update verb, **or** wait for the UTC-day rollover, which clears it
-  automatically. **The baseline reset cannot clear a daily-loss halt — never offer it here.**
+- **`haltResumeEligibility` is null** — the agent is not halted. Every halt carries a verdict, one
+  the player set by hand included, and is recovered through it.
+- **`eligible: true`** — nothing is still breached, and a resume will succeed. Offer
+  `resume_intelligence_agent`.
+- **`eligible: false`** — `breachedStop` names the stop still breached, with `breachingFigureUsd`
+  against `limitUsd`. Present that stop and exactly the exits the verdict marks open:
+  - `canRaiseTriggeringStop` — raise that stop above the figure through the update verb
+    (`maxCumulativeDrawdownUsd` for the drawdown stop, `maxDailyLossUsd` for the daily loss limit);
+  - `canResetBaseline` — `reset_agent_drawdown_baseline`, which acknowledges the loss and re-arms
+    the drawdown stop from today (it erases no history and journals the acknowledgement);
+  - a `breachedStop` of `DAILY_LOSS` also clears at the UTC-day rollover.
 
-**A resume attempted while the breach still holds is refused by the server**, with the current
-figure against the limit. Surface those served figures and the applicable lever from the list
-above. Do not retry the resume, and do not reach for the reset to "get past" a refusal that names
-a different stop.
+  Then resume. An exit the verdict does not mark open is never offered.
+
+After any resume, read the response's `haltedAt`. The server re-checks every stop once the halt is
+cleared, so a set `haltedAt` means the agent was halted again at once: a loss settled, or a stop was
+lowered, while the resume ran. Read `get_agent_budget` again and present its `haltReason` and
+verdict; never report that agent as trading.
+
+**A resume attempted while a stop is still breached is refused by the server**, naming the same
+stop, figure and exits. Surface them as served. Do not retry the resume; after a raise or a reset,
+read the verdict again rather than assuming it cleared.
 
 ### 6. Risk limits are a whole object
 

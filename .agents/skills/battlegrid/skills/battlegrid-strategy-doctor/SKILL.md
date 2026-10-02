@@ -31,7 +31,10 @@ problem: the fix runs through the flow that owns it, with that flow's own confir
 
 Three reads, and they are not interchangeable:
 
-- **`get_agent_budget`** — the health read. `haltReason` (why it stopped, if it did),
+- **`get_agent_budget`** — the health read. `runStatus` (`blocked` / `paused` / `active` — the run-state
+  already ranked, so read it rather than re-deriving it from the fields below; a halt reads `paused` even
+  while its own `AGENT_HALTED` block stands), `haltReason` (why it stopped, if it did),
+  `haltResumeEligibility` (whether a resume would now succeed, and what still blocks it),
   `blockedReason` + `blockedSince` (the typed pipeline block currently standing, and since when),
   and `gauges` — four guardrail meters (dailyTrades, exposure, drawdown, dailyLoss), each with a
   server-computed `breached` flag. **Read `breached`; never compare fill against limit yourself.**
@@ -85,16 +88,22 @@ a diagnosis; "OPEN_POSITION_CONFLICT, 14 times, most recently 2h ago" is.
 
 ### 3. Halted agents, and healthy ones
 
-**If `haltReason` is set, name the branch that actually clears it:**
+**If the agent is halted, `haltReason` says why and `haltResumeEligibility` says what clears it.**
+Name the recovery from the verdict alone:
 
-- **MANUAL** — resume lifts it directly.
-- **DRAWDOWN_BREACH** — clears by raising `maxCumulativeDrawdownUsd` **or** by the drawdown
-  baseline reset, then resuming.
-- **DAILY_LOSS** — clears by raising `maxDailyLossUsd` **or** by the UTC-day rollover. **The
-  baseline reset cannot clear it. Never offer it here.**
+- **null** — the agent is not halted. A halt the player set by hand carries a verdict like any
+  other, and is recovered through it.
+- **`eligible: true`** — nothing is still breached; resuming will succeed.
+- **`eligible: false`** — name `breachedStop`, the stop still breached, with `breachingFigureUsd`
+  against `limitUsd`, and exactly the exits the verdict marks open: raising that stop above the
+  figure (`canRaiseTriggeringStop`), the drawdown baseline reset (`canResetBaseline`), and, when
+  `breachedStop` is `DAILY_LOSS`, the UTC-day rollover. Then resuming. An exit it does not mark
+  open is never offered.
 
-In every case, say that a resume attempted while the stop is still breached is **refused by the
-server**, with the current figure against the limit.
+Say that a resume attempted while a stop is still breached is **refused by the server**, naming the
+same stop, figure and exits. A resume the server accepts is followed by a re-check of every stop, so
+read the resume response's `haltedAt`: set means a loss settled, or a stop was lowered, while the
+resume ran and the agent was halted again at once; `get_agent_budget`'s `haltReason` names the stop.
 
 **If the reads are clean, say so.** An agent whose gauges are unbreached, whose blocks are ordinary
 no-trade verdicts, and whose deployment covers what the player expected, is working — report the

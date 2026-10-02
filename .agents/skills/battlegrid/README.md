@@ -24,6 +24,259 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
+## Contract history — v81 (the allocation's committed figure removed, the hub names Max exposure)
+
+**Breaking at v81: one output field removed and one renamed.** v81 is the contract on top of v80.
+
+### Removed output — the agent fund allocation
+
+- **`committedUsd` is gone from the allocation** that `get_agent_fund_allocation`,
+  `halt_intelligence_agent`, `resume_intelligence_agent` and `set_agent_per_trade_push` return. It
+  measured a custody ledger whose allocate and recall routes are retired. The figure that bounds an
+  entry is capital at risk, on `get_agent_budget`. A client reading `committedUsd` reads nothing at
+  v81.
+
+### Renamed output — `get_agents_hub`
+
+- **Each agent's `envelope` names the exposure ceiling `maxConcurrentExposureUsd`**, the trading
+  config's own name for it, where v80 called it `budgetUsd`. The value is unchanged. A client reading
+  `budgetUsd` reads nothing at v81.
+
+### Corrected reason behind an unchanged schema
+
+- **An agent entry refused because its Max exposure is fully committed is recorded as
+  `INSUFFICIENT_BALANCE`**, where it was recorded as `BELOW_EXCHANGE_MINIMUM` with a $0.00 risk
+  budget. Its detail names Max exposure and the capital at risk. It reaches `get_signal_log` and
+  `get_public_agent_signal_log_detail`.
+
+## Contract history — v79 (the agent's account reading, an exhausted budget, accept below the Balance floor)
+
+**Breaking at v79: the agent budget's account fields move into one object.**
+
+### Reshaped output — the agent budget
+
+- **`get_agent_budget` and `reset_agent_drawdown_baseline` replace `accountEquityUsd`,
+  `budgetOverSubscribed` and `openUnrealizedPnlUsd` with one `account` object** carrying the same three
+  fields, or `null` when the server holds no cached reading of the account. At v78 an unread account
+  read `0`, `false` and `0`, which looked like a real empty account. A client reading the three
+  top-level fields reads nothing at v79.
+
+### Widened enum
+
+- **The block reason gains `EXPOSURE_BUDGET_EXHAUSTED`** (owner-private): an agent whose capital at
+  risk has reached its Max exposure is blocked once at the account stage, where v78 blocked it per
+  coin as `EXCHANGE_MIN_NOTIONAL_UNREACHABLE`. It reaches every output that carries a block reason:
+  `list_gate_blocks`, `get_signal_log`, `get_public_agent_signal_log_detail`, `get_radar_activity`,
+  `get_radar_close_decisions`, `get_radar_deployment`, `list_radar_deployments`,
+  `preview_radar_resolution`, `get_agent_coin_qualification`, `get_trade_conversation` and
+  `propose_entry_decision`.
+
+### Refused behind an unchanged schema
+
+- **`accept_entry_decision` refuses with `CONFLICT` while your account equity is below the agent's
+  Balance floor (`balanceThresholdUsd`) or cannot be read.** The decision stays pending and can be
+  accepted once the equity is back at or above the floor.
+
+## Contract history — v78 (a new agent's risk policy from one seed)
+
+**Breaking at v78: `get_trading_config_catalog` serves a new agent's risk policy as one object.**
+
+### Reshaped output
+
+- **`tradingDefaults.defaults` replaces ten per-field seed values** — `defaultMaxDailyTrades`,
+  `defaultMaxLeverage`, `defaultSmallPct`, `defaultMediumPct`, `defaultLargePct`,
+  `defaultEntrySlippageBps`, `defaultMaxConcurrentExposureUsd`, `defaultBalanceThresholdUsd`,
+  `defaultMaxCumulativeDrawdownUsd` and `defaultMaxDailyLossUsd` — **with one `agentTradingConfig`**,
+  request-shaped, so it passes to `create_intelligence_agent` verbatim. A client reading the ten fields
+  reads nothing at v78.
+
+### Input schema
+
+- **`tradingConfig.maxLeverage` loses its published `minimum: 1`** on `create_intelligence_agent` and
+  `update_intelligence_agent`. Acceptance is unchanged: the platform's minimum leverage is the bound.
+
+### Wider input
+
+- **Both tools accept a strategy whose stored dials sit outside today's operator bounds.** An agent
+  write never re-judges a strategy dial.
+
+### Served values
+
+- **A `create_intelligence_agent` call without `tradingConfig` is seeded from the same object the
+  catalog serves**, never from column defaults, with Min order size from the platform minimum.
+
+## Contract history — v77 (agent risk rules: each loss stop on its own rail)
+
+**Breaking at v77: an agent's `tradingConfig` accepts less.** `create_intelligence_agent` and
+`update_intelligence_agent` refuse values v76 stored, and one loss stop moves to a different bound.
+
+### Rejected input — `tradingConfig`
+
+- **`maxLeverage` must be a whole number.** `1.5` was stored and executed at `1`; it is now refused.
+- **`maxSlippageBps` is at most `300`**, the entry slippage ceiling no fill could exceed anyway.
+- **USD fields and the three size presets take at most 2 decimals.**
+- **`maxDailyLossUsd` must be at or below `maxCumulativeDrawdownUsd`.**
+- **A body accepted at v76 can be refused at v77 without one byte of it changing.** Each refusal
+  names its field in a plain sentence, such as `Whole numbers only.` or
+  `Can’t exceed the drawdown stop ($20.00).`
+
+### Wider input — the drawdown stop
+
+- **`maxCumulativeDrawdownUsd` is bounded by the platform's drawdown maximum, not by
+  `maxConcurrentExposureUsd`.** Max exposure caps margin open at once; the drawdown stop caps loss
+  over time. A `$150` drawdown stop on a `$100` max exposure is accepted.
+
+### Wider output
+
+- **`get_trading_config_catalog` gains `maximumMaxCumulativeDrawdownUsd`**, the drawdown stop's
+  upper bound.
+- **The execution-failure reason gains `BELOW_AGENT_MIN_ORDER`** (owner-private) on `get_signal_log`
+  and `get_public_agent_signal_log_detail`: an order sized under the agent's own `minAllocationUsd`,
+  which was reported as `BELOW_EXCHANGE_MINIMUM`.
+
+### Served values
+
+- **`get_agent_budget`'s `tradesToday` counts entries filled since 00:00 UTC plus entries still
+  waiting to fill.** Refused and expired entries no longer count, and the cap is enforced where an
+  entry is created. `DAILY_LIMIT_RESERVED` is no longer emitted.
+- **A daily-loss halt whose drawdown stop is also breached becomes a drawdown halt** when the day
+  rolls over, rather than lifting.
+- **A capital-feasibility refusal names what clears it**: the `maxConcurrentExposureUsd` that would,
+  and, when one at or above the platform minimum would, a lower `minAllocationUsd`.
+
+## Contract history — v76 (the extreme funding signals in percent a year)
+
+**Breaking at v76: `funding_extreme_positive` and `funding_extreme_negative` take their threshold in
+percent a year.** Their parameter is `thresholdAnnualizedPct`, the unit of the strategy grammar's
+`ann` column, where it was `thresholdPct`, a fraction of one hourly funding settlement.
+
+### Rejected input — the retired `thresholdPct`
+
+- **Both signals take `thresholdAnnualizedPct`**, bounded 1–43,800 and defaulting to 100 — the
+  funding label's crypto `extreme` band, so `100` means 100% a year, and the negative signal fires
+  below -100%.
+- **`thresholdPct` on either signal is refused as `VALIDATION_ERROR`** wherever a rule's parameters
+  are authored: `compile_strategy_plan`, `update_strategy_signal_rule`, `derive_strategy_rule_view`
+  and a strategy draft's `SIGNAL_RULES` axis. `oi_surge` keeps its own `thresholdPct`.
+- **A body accepted at v75 can be refused at v76 without one byte of it changing.** A rate per hourly
+  settlement converts to percent a year by × 8,760 × 100: `0.0002` is `175.2`.
+
+### Stale plans
+
+- **A plan token compiled before the deploy fails as a stale plan** at `stage_strategy_plan` and
+  `apply_strategy_plan`, because the authoring catalog digest covers each signal's parameters,
+  defaults and explanation: compile again. The strategy preview's `vocabularyDigest` moves too.
+
+### Served values
+
+- **`get_strategy_signal_definition` and `list_strategy_signals` serve the new parameter**, its
+  default and its explanation.
+- **Each signal's indicator values gain `funding_annualized_pct`**, the annualized rate the signal
+  compared, beside `funding_rate`.
+- **Stored rules move to the new key after the deploy**: a rule at the retired default takes `100`,
+  and any other converts exactly. `get_coin_signal_preview` and every stored rule then score at the
+  new threshold.
+- **No schema hash moves.** Signal parameters are published as a JSON object on every input and
+  output, so the change is in the values accepted and served, and `toolCount` is unchanged.
+
+## Contract history — v75 (readability from each coin's data profile)
+
+**Breaking at v75: the seven tools v73 narrowed refuse by the coin's market-data profile, and one
+output vocabulary gains a member.** Which data a coin carries is now the profile the market-data
+service publishes for that coin, no longer the coin's asset class.
+
+### Rejected input — the seven tools v73 narrowed
+
+- **A condition reading a kind of data the coin's profile does not serve is refused as
+  `INSTRUMENT`**, on the coin or on a benchmark section's own instrument: a spot read on a crypto
+  coin no spot venue lists is refused as one on a TradFi coin always was.
+- **A coin the market-data service publishes no profile for refuses every condition that reads
+  market data**: a coin enabled since the service's last boot, a roster coin whose candle stream it
+  did not subscribe, a ticker with no catalog row.
+- **The tools, codes and `details.context` are v73's**: `preview_radar_resolution` (every kind,
+  issuing no `previewToken`); `commit_radar_deployment_draft`, `rebind_intelligence_agent`,
+  `compile_strategy_plan` and `restore_strategy` (`VALIDATION_ERROR` with
+  `CONDITION_UNREADABLE_BY_RADAR_SCAN`); `apply_strategy_plan`, which applies only what its compile
+  checked; and `propose_entry_decision` (`CONDITION_UNREADABLE_ON_COIN`).
+- **A body accepted at v74.1.1 can be refused at v75 without one byte of it changing.** A write whose
+  read of the published profiles fails is refused, never admitted unchecked.
+
+### Reclassified reason — `FEED` becomes `INSTRUMENT`
+
+- **A spot read for a ticker with no catalog row is `INSTRUMENT`, where it was `FEED`**, and an
+  uncatalogued benchmark refuses every market-data read, where only its spot reads refused before.
+- **The `INSTRUMENT` message names what the profile lacks**: "`<instrument>`'s market-data profile
+  carries no `<kind>` data", or "the market-data service publishes no data profile for
+  `<instrument>`, so it carries no market data", where it read "`<instrument>` has no spot tape".
+- **The readings v74 added report it as the sweep does**: `preview_radar_resolution`'s `readings`
+  and `get_agent_coin_qualification`'s `reading` mark a condition on a kind the coin's profile lacks
+  `INSTRUMENT`.
+
+### Wider output — `BarFamily` gains `MARKET_STATS`
+
+- **The market-stats snapshot is a per-bar value**: a decision reads the snapshot fetched inside the
+  `1m` bar ending at its close. A snapshot missing there is a per-bar shortfall, a `families` entry or
+  a MISSED close's `INPUTS_OFF_BAR` `lacking` entry naming `MARKET_STATS` at `1m` with its
+  `dueBarStart`, `ABSENT` or `GONE`, and the decision waits or misses as for any per-bar family.
+- **A decided close records no `MARKET_STATS` stale sample.** A reading at the latest values still
+  does, and its `boundMs` is the coin's market-stats freshness target, never below 300,000 ms.
+- **Five outputs publish the member**: `get_agent_coin_qualification`, `get_radar_close_decisions`,
+  `get_signal_log`, `list_gate_blocks` and `preview_radar_resolution`. No input takes the vocabulary.
+  A client that validates results against a cached output schema should list the tools again after
+  the server deploys.
+
+## Contract history — v74.1.1 (a same-agent request answered from what stopped the fire)
+
+**Not breaking: one answer corrected behind unchanged schemas.**
+
+- **A request on a pair your own radar policy decides with the same agent** is answered from that
+  policy's decision. When the policy's fire enqueued no trade decision and no admission gate refused
+  it — a coin cooldown, the hourly fire cap, post-close suppression, a decision already running on the
+  coin, a deduplicated fire, or a fire aborted at its re-read — the conversation gains the card the
+  request's own unfired fire gets: `close_claimed_by_radar` when another agent's fire holds the coin,
+  otherwise `close_refused` with the reading's score against its minimum. It gained
+  `close_fired_by_radar` before, though no trade was taken.
+- **Both cards are already in `get_trade_conversation`'s vocabulary**, so no served shape moves.
+
+## Contract history — v74.1 (missed-bar alerts and the entry pause)
+
+**Not breaking: four output vocabularies gain a member, and `propose_entry_decision` refuses while an
+entry pause is open.** While bars missed for lack of market data span many coins, the platform pauses
+every new entry the radar decides, a radar fire and a manual request alike, and the pause lifts by
+itself after a quiet period.
+
+### Refused while a pause is open — `propose_entry_decision`
+
+- **A request is refused after its own checks and before a watch is registered**, whatever the agent
+  or coin: `type: "error"` with `{ origin: "ENGINE", reasonCode: "ENTRIES_PAUSED" }`. The same
+  `idempotencyKey` replays the refusal for five minutes; ask again under a fresh key once the pause
+  lifts.
+- **A request queued before the pause** whose close qualifies while it is open gets the same ENGINE
+  error card in its conversation, and no decision is proposed. `accept_entry_decision` on a decision
+  already proposed, and every exit, run as without a pause.
+
+### Wider output — four vocabularies
+
+- **`TradeEvaluationAttemptReasonCode` gains `ENTRIES_PAUSED`**: the refusal's `reasonCode`,
+  `list_gate_blocks`' `reasonCode`, and the `scanBlockReason` of a refused fire's close record and
+  journal row.
+- **`TradingPipelineGateStage` gains `PLATFORM`**: a `list_gate_blocks` entry for each fire the pause
+  refused, with no coin, no detail and no decision record.
+- **`RadarFireDisposition` gains `EDGE_PRESERVED_ENTRIES_PAUSED`**: the refused fire keeps its edge,
+  so the pair fires at a later close only if that close qualifies on its own data. It is served on
+  `get_radar_activity` and `get_radar_activity_summary`, and as a close record's
+  `outcome.fireDisposition` beside `outcome.scanBlockReason: "ENTRIES_PAUSED"`, with
+  `outcome.outcome` staying `FIRED`.
+- **`RadarIdleReason` gains `ENTRIES_PAUSED`**: the `resolvesNow.reason` of every `SCANNING` card on
+  `get_radar_deployment` and `list_radar_deployments` while a pause is open. The section stays
+  `SCANNING`, because closes are still decided and recorded.
+
+### Answer corrected — a same-agent request
+
+- **When an admission gate refused your own policy's fire** — an entry pause, an account block, a
+  position already held on the coin — the request's conversation gains that block's ENGINE error card
+  instead of `close_fired_by_radar`.
+
 ## Contract history — v74 (preview `conditionReach` replaced by `readings`)
 
 **Breaking at v74: one required output field replaced on one tool, and an opt-in reading added to
