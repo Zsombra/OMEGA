@@ -1,0 +1,36 @@
+{
+ "_what": "Does BattleGrid 77.1.0 move what OMEGA extracted at 61.2.0 (with the 76.0.0 funding_extreme rebuild)? One drift separates it from the 76.x records: 76.1.0 d9cde5d0 -> 77.1.0 7c4bbe09 at 2026-10-02T04:07:19Z (a MAJOR bump). ANSWER: no, at the name level AND at the parameter level. This is the first drift record that reads every signal definition live instead of relying on the name comparison.",
+ "measuredAt": "2026-10-02T15:31Z",
+ "method": {
+  "liveSource": "battlegrid-manager system_state[\"surface_tools\"] (watch job capture), saved as tests/fixtures/2026-10-02-surface-77.1.0/ in the manager repository (read as UTF-8); plus 84 get_strategy_signal_definition reads through the manager's read client",
+  "liveContractVersion": "77.1.0",
+  "liveBuildSha": "7c4bbe09bcb63ba8960d39523807c77d55511d6c",
+  "liveObservedAt": "2026-10-02T15:17:20.949800+00:00",
+  "liveToolCount": 142,
+  "storedSource": "data/contract/ (this repo, _manifest.json servedContractVersion 61.2.0, extractedOn 2026-09-20) and data/derived/signal_module_map.json defaultParams (rebuilt for 76.0.0 on 2026-10-01)",
+  "storedCompileCapture": "data/contract/compile_strategy_plan/schema_20260918T083359Z.json",
+  "platformCallsMade": 86,
+  "platformCalls": "read-only: 1 tools/list, 84 get_strategy_signal_definition, 1 get_trading_config_catalog, at 2026-10-02T15:30:48Z"
+ },
+ "drifts": [
+  {"at": "2026-10-02T04:07:19Z", "version": ["76.1.0", "77.1.0"], "build": ["d9cde5d0", "7c4bbe09"], "toolsAdded": [], "toolsRemoved": [], "toolsChangedByHash": ["compile_strategy_plan", "create_intelligence_agent", "get_coin_signal_preview", "get_market_context", "get_public_agent_signal_log_detail", "get_signal_log", "get_trading_config_catalog", "preview_strategy_report", "update_intelligence_agent"], "note": "By stored field only create_intelligence_agent and update_intelligence_agent moved (tradingConfig: maxLeverage number -> integer, descriptions). The other seven moved in their output schema only. Official changelog v77 (main aca6dfbd): agent risk rules. There is no v77.1 entry."}
+ ],
+ "results": {
+  "metrics": {"live": 156, "stored": 156, "liveNotStored": [], "storedNotLive": []},
+  "signals": {"live": 84, "stored": 84, "liveNotStored": [], "storedNotLive": []},
+  "sectionKeys": {"live": 25, "stored": 25, "liveNotStored": [], "storedNotLive": []}
+ },
+ "parameterLevel": {
+  "capture": "data/contract/signals/definitions_77.1.0_20261002T153048Z.json",
+  "signalsRead": 84,
+  "readErrors": 0,
+  "servedDefaultParamsDifferentFromMirror": [],
+  "definitionsWhoseDefaultKeysDifferFromParamSchemaKeys": [],
+  "conclusion": "Every served defaultParams equals data/derived/signal_module_map.json defaultParams; no signal parameter was renamed, added or removed."
+ },
+ "authoringToolsTouched": "compile_strategy_plan and preview_strategy_report changed by hash with identical stored fields (input schema, annotations, description), so their output schemas moved. What moved is not documented and not recoverable: the manager stored no output schema before this review.",
+ "toolArithmetic": "142 at 76.1.0 + 0 added - 0 removed = 142 live.",
+ "conclusion": "Across 61.2.0 -> 77.1.0 none of the three authoring enums moved, and at 77.1.0 no signal parameter differs from the mirror. OMEGA's extraction is NOT invalidated.",
+ "notMeasured": "The compile path was not exercised (no compile was run), so an output-shape change in compile_strategy_plan that OMEGA's record mode depends on would not show here. Metric-level parameters (get_metric_construction_hints per metric) were not re-read. The vendor pack is behind (installed 31.2.56, npm 31.2.60).",
+ "ahead": "The changelog already documents v78 (get_trading_config_catalog serves one agentTradingConfig; maxLeverage loses its published minimum) and v79 (get_agent_budget account object; EXPOSURE_BUDGET_EXHAUSTED; accept_entry_decision refuses below the Balance floor). Neither names an authoring tool."
+}
