@@ -42,13 +42,12 @@ def _findings(metric, offset, contract):
 
 
 @pytest.mark.parametrize("metric", ["MA_ALIGN", "BB_TOUCH", "EMA_CROSS", "PRICE_ZONE"])
-def test_offset_on_a_candle_categorical_metric_warns(metric, contract):
-    # NB the code is OFFSET_NOT_HONOURED, not OFFSET_IGNORED. The latter already existed
-    # and means something else entirely - offset on a transform other than `value`, which
-    # the CONTRACT rules out. Two conditions sharing one code makes filtering by code a
-    # lie, and the first version of this check did exactly that.
+def test_offset_on_a_candle_categorical_metric_no_longer_warns_at_v94(metric, contract):
+    """Contract 94.0.0 fixed BG-13: "A candle label column at offset N reads bar t-N's label;
+    it used to read the latest" (vendor README, Contract history - v94). The 2026-08 proofs
+    below stay as the record of what v93 and earlier did; the warning is retired."""
     codes = [f.code for f in _findings(metric, 8, contract)]
-    assert "OFFSET_NOT_HONOURED" in codes, f"{metric} accepts a no-op offset without warning"
+    assert "OFFSET_NOT_HONOURED" not in codes
 
 
 @pytest.mark.parametrize("metric", ["CLOSE", "ADX", "DONCHIAN_UPPER", "STOCH_K", "MFI14"])

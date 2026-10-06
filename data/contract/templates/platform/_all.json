@@ -695,24 +695,21 @@
      "transformId": "trajectory",
      "timeframe": {
       "rel": "anchor"
-     },
-     "window": 1
+     }
     },
     {
      "metric": "BUY_TRADES",
      "transformId": "trajectory",
      "timeframe": {
       "rel": "anchor"
-     },
-     "window": 1
+     }
     },
     {
      "metric": "SELL_TRADES",
      "transformId": "trajectory",
      "timeframe": {
       "rel": "anchor"
-     },
-     "window": 1
+     }
     }
    ]
   },
@@ -1147,5 +1144,17 @@
   "at": "2026-09-09T08:03:07Z",
   "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
   "note": "contract 54.1.0. includeSupportResistance now names DONCHIAN_UPPER/DONCHIAN_LOWER where it named SWING_HIGH/SWING_LOW; the two metrics were renamed, not removed - same nativeOutput, timeframeMode and transform set, code swingHi->donchianHi and swingLo->donchianLo, label 'Swing high'->'20-bar high'."
- }
+ },
+ "_amended": [
+  {
+   "at": "2026-10-06",
+   "contractVersion": "95.0.0",
+   "what": "includeCvd BUY_PRESSURE/BUY_TRADES/SELL_TRADES trajectory: `window: 1` removed, as list_strategy_vocabulary serves them at 95.0.0 (v93: a trajectory reads at least two observations; the CVD buy columns render as window-4 trajectories)",
+   "columns": [
+    "BUY_PRESSURE",
+    "BUY_TRADES",
+    "SELL_TRADES"
+   ]
+  }
+ ]
 }
