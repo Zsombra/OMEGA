@@ -231,3 +231,44 @@ section separation. Every recipe column is checked legal against the composabili
 and confirmed to actually feed its module. The `squeeze-breakout` plan was submitted to the
 live `derive_strategy_rule_view`: **the connector returned exactly the 18 signals the
 generator predicted**, signal for signal.
+
+## At contract 91 (2026-10-06): the draft lifecycle
+
+Everything above about `wire()`, `wire_update()`, `operation`, `intentSummary`,
+`assumptions` and a compile dry run is history. Contract 85.0.0 removed
+`compile_strategy_plan` with no alias: a strategy is created and changed only through its
+draft, `get_strategy_draft` → `stage_strategy_draft {strategyId?, draftVersion, axes}` →
+`commit_strategy_draft` (README "Contract history — v85"). The input schemas are saved at
+[`schema_20261005T194629Z.json`](../data/contract/stage_strategy_draft/schema_20261005T194629Z.json)
+(91.0.0); the plan is [`2026-10-06-omega-draft-lifecycle-re-extraction.md`](plans/2026-10-06-omega-draft-lifecycle-re-extraction.md).
+
+| omega | what it is now |
+|---|---|
+| `plan(t).axes()` | the ten axes of a CREATE stage (no `strategyId`, `draftVersion: 0`), each written WHOLE: `IDENTITY`, `TIMEFRAME_PROFILE`, `REPORT`, `MARKET_READ`, `CONDITIONS`, `ENTRY`, `SETUP_GATES`, `TRADE_LEVEL_POLICY`, `POSITION_MANAGEMENT`, `SIGNAL_RULES` |
+| `plan(t).axes_update()` | the same without `ENTRY` — an axis a stage omits keeps the draft's value, so an existing strategy's entry is never touched (the 2026-08-29 rule) |
+| `plan(t).preview_request()` | the read-only dry run, `preview_strategy_report {coinSelection, source: {kind: "FIELDS", timeframe, sections, conditions, marketReadText}}` — it judges the report and the conditions, **not** rules, gates or dials; only a stage does, and a stage is a write |
+| `emit_plan(...)` | writes the stage request `{draftVersion: 0, axes}` plus `_`-prefixed local metadata, the preview body among it |
+| `scripts/preview_dry_run.py` | prints those bodies; `--live` is refused — omega holds no MCP client |
+
+What moved with it, each from the changelog or the schema:
+
+- **`ENTRY` is `{trigger: "ON_CANDLE_CLOSE"}` alone.** v85 refuses either dial on that
+  trigger; the server stamps the seeds.
+- **`SIGNAL_RULES` allocations are integers 0..3**, and `allocation` and `required` are
+  required on every row. The axis replaces only the rows for the signals it names; omega
+  still sends the dense 84.
+- **Whole axes send every dial.** Decision 1(a) emitted none; the v91 schema requires all
+  three `SETUP_GATES`, all three `TRADE_LEVEL_POLICY` and all thirteen `POSITION_MANAGEMENT`
+  fields. omega sends the 08-28 measured defaults, plus `decisionInvalidationExitEnabled:
+  true`, the value every record on disk carries. What a create draft seeds is unmeasured
+  (measurement M1 of the plan), and since v89 a create is judged at the operator bounds
+  configured now — so `SCHEMA_BOUNDS` (the retired compile's bounds) only warns.
+- **`coinSelection` is no part of a strategy**; it is an input of the preview only.
+- **`Thesis.exits`** names condition roles (`UP`, `CORE_DOWN`, …) whose v88 exit rule
+  `CLOSE_ON_<key>` is appended after the seven — see [09](09-conditions.md).
+- **The preflight** (`scripts/preflight.py`) walks a stage request axis by axis against a
+  fresh `stage_strategy_draft` capture; the read-back mirror is retired until a v91
+  read-back exists, because every `get_strategy` record on disk predates v84.
+
+Nothing here has been staged, previewed or committed. Measurements M1–M3 in the plan are
+each a platform call, and so each is the user's word.

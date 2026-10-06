@@ -404,3 +404,59 @@ that would ground one does not exist in this repo:
 Rows b, c and d would all be closed by one thing: a refreshed metric/transform extraction at
 the served contract. Until that exists, guessing at the refusal list would be inventing rules,
 which is the one thing this repo does not do.
+
+## At contract 91 (2026-10-06): a hold on every node, and exit rules
+
+The section above is the 61.0.1 grammar and stays as history. Two contracts reshaped the
+condition since; both are read from the README's contract history and the saved 91.0.0
+`CONDITIONS` axis ([`schema_20261005T194629Z.json`](../data/contract/stage_strategy_draft/schema_20261005T194629Z.json)).
+A condition is now exactly six keys, all required: `conditionKey, name, definition, verdict,
+required, exitSide`.
+
+**v84 — the hold moves onto each clause and group.** `closes` is refused. "Every clause and
+every group requires `hold: { atLeast, of }`, whole numbers of at least 1": `{1,1}` is one read
+(what `closes: 1` did), `{n,n}` is n closes in a row, `{1,n}` is within n closes, anything else
+at least m of n. A `conditionRef` carries none. There is no fixed 1–5 ceiling any more: each
+column serves `conditionHold {timeframe, maxWindow, maxAtLeast, refusal}`, and the builder
+judges the window, `atLeast` above `of`, and "a group hold over members that hold their own
+bars".
+
+**v88 — an exit rule names the side it closes.** `exit` is refused; `exitSide` is "nullable,
+never optional": `null` for an entry condition, `LONG` / `SHORT` / `BOTH` for an exit rule. An
+exit rule carries `verdict: null` and `required: false`, and an entry condition cannot reference
+one (`CONDITION_EXIT_RULE_CARRIES_VERDICT`, `CONDITION_EXIT_RULE_REQUIRED`,
+`CONDITION_ENTRY_REFERENCES_EXIT_RULE`). A stored `exit: true` condition was split by the
+platform: it keeps its verdict as an entry condition, and its strategy gains `CLOSE_ON_<key>`, a
+`conditionRef` to it closing the side its verdict opposed (`UP` → `SHORT`, `DOWN` → `LONG`,
+`NEITHER` or `null` → `BOTH`).
+
+**In omega:**
+
+```python
+num("RSI14_now", "gt", 50)                       # ... "hold": {"atLeast": 1, "of": 1}
+num("RSI14_now", "gt", 50, hold=held(3))         # 3 closes in a row
+condition("K", "n", all_of(a, b), hold=held(3))  # the CONDITION's hold: on the root, members at {1,1}
+exit_rule("STOP", "n", not_(ref("SETUP")), "LONG")
+close_on(setup)                                  # the v88 split: CLOSE_ON_SETUP, side from the verdict
+```
+
+`close_on` refuses a source key longer than 31 characters (the prefix would push the key past
+`^[A-Z][A-Z0-9_]{1,39}$`) instead of truncating it, and names the rule `Close on <key>` — the
+platform's migrated name is not published.
+
+`validate_conditions` checks the six keys (the three retired ones are errors naming the contract
+that retired them), `exitSide`, a schema-shaped `hold` on every clause and group and none on a
+ref, `atLeast ≤ of`, the group-over-held-members refusal, and the three v88 codes. The exit read
+rule now applies to exit rules (a `CLOSE_ON_<key>` reads its source's whole closure, so a split
+over an ambient header is refused offline), and the verdict read rule is unchanged.
+
+**What became a warning.** No v84+ vocabulary read is on disk, so the per-column `conditionHold`
+is unknown offline (measurement M2 of the plan). The 61.0.1 operand rule
+(`CONDITION_HOLD_OPERAND_ILLEGAL`: a hold above one read only over a confirmed, offset-0,
+at-or-above-anchor candle header) and the hold-over-references rule (`CONDITION_HOLD_ILLEGAL`)
+are therefore **warnings**, never errors — a clause is judged over the widest `of` on its path,
+so a `{1,1}` clause under a group holding 3 bars is read over 3. The four unmeasured cells in the
+table above are unchanged.
+
+The presets still hold one read everywhere and declare no exit; `Thesis.exits` opts a generated
+condition into its `CLOSE_ON_` rule (see [08](08-strategy-generation.md)).
