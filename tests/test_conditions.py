@@ -274,7 +274,9 @@ def test_trend_continuation_conditions_match_the_live_render():
 
 def test_token_estimate_is_labelled_approximate():
     text = plan(PRESETS["trend-continuation"]).cost().render()
-    assert "+/-" in text and "authoritative" in text
+    # v92 removed the preview's token count (tokenCountModel), so it is no longer "authoritative" on
+    # tokens; the estimate stays approximate and is labelled as having no platform cap.
+    assert "+/-" in text and "no platform token cap" in text
     assert TOKENS_PER_HEADER == 27
 
 

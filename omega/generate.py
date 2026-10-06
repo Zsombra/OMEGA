@@ -361,8 +361,9 @@ class StrategyPlan:
         c = self.cost()
         if c.breaches:
             out += [f"budget breach: {b}" for b in c.breaches]
-        headroom = c.budgets["estimatedTokens"] - c.estimated_tokens
-        out.append(f"token headroom: ~{headroom} of {c.budgets['estimatedTokens']}")
+        out.append(f"estimated agent tokens: ~{c.estimated_tokens} (what the agent reads; no platform token "
+                   f"cap since contract 92 - the preview is capped at "
+                   f"{load().shared['previewExecutionLimits']['maxResultChars']} result characters)")
 
         sim = self.simulate()
         if sim and not sim.would_route:

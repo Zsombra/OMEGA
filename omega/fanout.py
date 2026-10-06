@@ -172,8 +172,8 @@ class BudgetReport:
             f"columns             {self.columns:>5}",
             f"output headers      {self.headers:>5}   <- the real cost driver",
             f"distinct timeframes {len(self.distinct_timeframes):>5} / {b['distinctTimeframes']}  {self.distinct_timeframes}",
-            f"estimated tokens   ~{self.estimated_tokens:>5} / {b['estimatedTokens']}"
-            f"   (+/-{TOKEN_ESTIMATE_ERROR_PCT}%; preview_strategy_report is authoritative)",
+            f"estimated tokens   ~{self.estimated_tokens:>5}"
+            f"   (+/-{TOKEN_ESTIMATE_ERROR_PCT}%; what the agent reads - no platform token cap since contract 92)",
         ]
         if self.breaches:
             lines.append("")
@@ -219,11 +219,15 @@ def cost_report(report: Report, contract: Contract | None = None) -> BudgetRepor
         breaches.append(f"sections {len(report.sections)} > {b['sections']}")
     if len(timeframes) > b["distinctTimeframes"]:
         breaches.append(f"distinct timeframes {len(timeframes)} > {b['distinctTimeframes']}")
-    upper = tokens * (1 + TOKEN_ESTIMATE_ERROR_PCT / 100)
-    if upper > b["estimatedTokens"]:
-        breaches.append(
-            f"estimated tokens ~{tokens} (+/-{TOKEN_ESTIMATE_ERROR_PCT}%) may exceed "
-            f"{b['estimatedTokens']} - confirm with preview_strategy_report")
+    # Contract 92.0.0 retired budgets.estimatedTokens (the preview is capped in result characters now,
+    # previewExecutionLimits.maxResultChars). A budget file that still names a token cap - a record older
+    # than v92 - is honoured; the served one has none, so the estimate is information, never a breach.
+    if "estimatedTokens" in b:
+        upper = tokens * (1 + TOKEN_ESTIMATE_ERROR_PCT / 100)
+        if upper > b["estimatedTokens"]:
+            breaches.append(
+                f"estimated tokens ~{tokens} (+/-{TOKEN_ESTIMATE_ERROR_PCT}%) may exceed "
+                f"{b['estimatedTokens']} - confirm with preview_strategy_report")
 
     return BudgetReport(
         sections=len(report.sections), columns=columns, headers=headers,
