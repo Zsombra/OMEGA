@@ -97,7 +97,33 @@ write. A live run of either stays the user's call, as before.
 6. **Docs.** `docs/09-conditions.md` and `docs/08-strategy-generation.md` gain a short "at contract 91" section; the
    old text stays as history.
 
-## Owed measurements (each a platform call, so each is the user's word)
+## Measured 2026-10-06 05:55Z (M1-M3, on the user's word)
+
+Raw: `data/contract/stage_strategy_draft/m1_m3_live_20261006T055532Z.json` (14 calls, all OK; contract 91.0.0).
+Derived: `data/derived/condition_hold_ceilings_91.json` (190 headers).
+
+- **M1: OMEGA's whole create axes draw zero errors.** Staged into one create draft (probe `79d24a3f`, discarded,
+  read back null, never committed), the trend-continuation axes read `diagnostics.errors: []`. Since v89 the
+  diagnostics judge every dial at today's operator bounds, so the 08-28 defaults OMEGA sends are inside them.
+  `impact`: `operation: CREATE`, quota 16 of 25 used, name available.
+- **M1: a create draft seeds nothing visible.** After an IDENTITY-only stage the draft content holds IDENTITY alone,
+  with `VALIDATION_ERROR` "A new strategy needs a main timeframe: stage the TIMEFRAME_PROFILE axis." So sending
+  every axis whole on a create is required, not only safe. The question "what does the platform seed?" has no
+  readable answer before a commit.
+- **M1 surfaced a modelling gap (follow-up).** `diagnostics.mismatches` lists 12 `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT`:
+  12 of OMEGA's 24 weighted signals score on data the report does not show. These are the `htf_*`/`ltf_*` MA-align
+  and ADX signals at the `signalHigher`/`lower` rungs, and `ma_ema_*` at the EMA20 anchor. There are also 4
+  `REPORT_DATA_SIGNAL_OFF`, and a warning that Market Regime is shown but scores nothing. None refuses a commit.
+  OMEGA's membership model (`omega/membership.py`, extracted at 61.2.0) has no notion of a signal's data rung. A
+  rung-aware membership map is the next OMEGA slice.
+- **M2: the hold ceilings are served per header.** Ambient scalars (session field, market breadth, reference pairs)
+  read `maxWindow 1, maxAtLeast 1, NOT_REWINDABLE`. Report columns on a 1h anchor admit up to 50-716 bars (most
+  186-207), so the old 1..5 ceiling was the retired compile's, not the platform's.
+- **M3: all five presets' FIELDS previews accepted.** Every clause was evaluated with `hold`, `counts` and
+  `decidedBar` evidence; `missingConditionColumns` was empty on all five; the verdicts resolved
+  (trend-continuation on 4 coins: UP 1, NEITHER 3).
+
+## Owed measurements (each a platform call, so each is the user's word) - DONE 2026-10-06, above
 
 - **M1: the seeded dials of a create draft.** Whole axes force OMEGA to send every dial. Until a create draft's
   seeded `SETUP_GATES` / `TRADE_LEVEL_POLICY` / `POSITION_MANAGEMENT` are read, OMEGA sends its 08-28

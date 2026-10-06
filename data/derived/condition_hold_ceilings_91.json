@@ -1,0 +1,1799 @@
+{
+ "source": "data/contract/stage_strategy_draft/m1_m3_live_20261006T055532Z.json",
+ "contractVersion": "91.0.0",
+ "readAt": "2026-10-06T05:55:40.334675+00:00",
+ "note": "conditionHold per header as served (v84: read the window from here; there is no fixed 1-5 limit). Report-column ceilings depend on the anchor timeframe and the column; these are the 1h anchors of the five presets.",
+ "headers": {
+  "ADX_now": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "ADX_t1": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "ADX_t2": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "ADX_t3": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "ADX_trend": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "ATR_now": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "ATR_t1": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "ATR_t2": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "ATR_t3": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "ATR_trend": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "BBtouch": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "CVD_now": {
+   "timeframe": "1h",
+   "maxWindow": 206,
+   "maxAtLeast": 206,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "CVD_t1": {
+   "timeframe": "1h",
+   "maxWindow": 206,
+   "maxAtLeast": 206,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "CVD_t2": {
+   "timeframe": "1h",
+   "maxWindow": 206,
+   "maxAtLeast": 206,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "CVD_t3": {
+   "timeframe": "1h",
+   "maxWindow": 206,
+   "maxAtLeast": 206,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "CVD_trend": {
+   "timeframe": "1h",
+   "maxWindow": 206,
+   "maxAtLeast": 206,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "EMA5_EMA13_spread_now": {
+   "timeframe": "1h",
+   "maxWindow": 193,
+   "maxAtLeast": 193,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "EMA5_EMA13_spread_t1": {
+   "timeframe": "1h",
+   "maxWindow": 193,
+   "maxAtLeast": 193,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "EMA5_EMA13_spread_t2": {
+   "timeframe": "1h",
+   "maxWindow": 193,
+   "maxAtLeast": 193,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "EMA5_EMA13_spread_t3": {
+   "timeframe": "1h",
+   "maxWindow": 193,
+   "maxAtLeast": 193,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "EMA5_EMA13_spread_trend": {
+   "timeframe": "1h",
+   "maxWindow": 193,
+   "maxAtLeast": 193,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "MACD_cross": {
+   "timeframe": "1h",
+   "maxWindow": 139,
+   "maxAtLeast": 1,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "MACD_now": {
+   "timeframe": "1h",
+   "maxWindow": 159,
+   "maxAtLeast": 159,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "MACD_t1": {
+   "timeframe": "1h",
+   "maxWindow": 159,
+   "maxAtLeast": 159,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "MACD_t2": {
+   "timeframe": "1h",
+   "maxWindow": 159,
+   "maxAtLeast": 159,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "MACD_t3": {
+   "timeframe": "1h",
+   "maxWindow": 159,
+   "maxAtLeast": 159,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "MACD_trend": {
+   "timeframe": "1h",
+   "maxWindow": 159,
+   "maxAtLeast": 159,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "MAalign": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "OBV_now": {
+   "timeframe": "1h",
+   "maxWindow": 204,
+   "maxAtLeast": 204,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "OBV_t1": {
+   "timeframe": "1h",
+   "maxWindow": 204,
+   "maxAtLeast": 204,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "OBV_t2": {
+   "timeframe": "1h",
+   "maxWindow": 204,
+   "maxAtLeast": 204,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "OBV_t3": {
+   "timeframe": "1h",
+   "maxWindow": 204,
+   "maxAtLeast": 204,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "OBV_trend": {
+   "timeframe": "1h",
+   "maxWindow": 204,
+   "maxAtLeast": 204,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "OI_now": {
+   "timeframe": "1h",
+   "maxWindow": 716,
+   "maxAtLeast": 716,
+   "refusal": null,
+   "seenIn": [
+    "squeeze-breakout",
+    "flow-divergence"
+   ]
+  },
+  "OI_t1": {
+   "timeframe": "1h",
+   "maxWindow": 716,
+   "maxAtLeast": 716,
+   "refusal": null,
+   "seenIn": [
+    "squeeze-breakout",
+    "flow-divergence"
+   ]
+  },
+  "OI_t2": {
+   "timeframe": "1h",
+   "maxWindow": 716,
+   "maxAtLeast": 716,
+   "refusal": null,
+   "seenIn": [
+    "squeeze-breakout",
+    "flow-divergence"
+   ]
+  },
+  "OI_t3": {
+   "timeframe": "1h",
+   "maxWindow": 716,
+   "maxAtLeast": 716,
+   "refusal": null,
+   "seenIn": [
+    "squeeze-breakout",
+    "flow-divergence"
+   ]
+  },
+  "OI_trend": {
+   "timeframe": "1h",
+   "maxWindow": 716,
+   "maxAtLeast": 716,
+   "refusal": null,
+   "seenIn": [
+    "squeeze-breakout",
+    "flow-divergence"
+   ]
+  },
+  "RSI14_now": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "structure-reversal"
+   ]
+  },
+  "RSI14_t1": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "structure-reversal"
+   ]
+  },
+  "RSI14_t2": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "structure-reversal"
+   ]
+  },
+  "RSI14_t3": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "structure-reversal"
+   ]
+  },
+  "RSI14_trend": {
+   "timeframe": "1h",
+   "maxWindow": 192,
+   "maxAtLeast": 192,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "structure-reversal"
+   ]
+  },
+  "RSI14_zone": {
+   "timeframe": "1h",
+   "maxWindow": 172,
+   "maxAtLeast": 172,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "structure-reversal"
+   ]
+  },
+  "RVOL_now": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "RVOL_t1": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "RVOL_t2": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "RVOL_t3": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "RVOL_trend": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "trend-continuation",
+    "squeeze-breakout"
+   ]
+  },
+  "atrPct": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "bbWidthPct": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "buyPres_now": {
+   "timeframe": "1h",
+   "maxWindow": 207,
+   "maxAtLeast": 207,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "buyPres_t1": {
+   "timeframe": "1h",
+   "maxWindow": 207,
+   "maxAtLeast": 207,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "buyPres_t2": {
+   "timeframe": "1h",
+   "maxWindow": 207,
+   "maxAtLeast": 207,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "buyPres_trend": {
+   "timeframe": "1h",
+   "maxWindow": 207,
+   "maxAtLeast": 207,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "captConc_session": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "dist_SMA200": {
+   "timeframe": "1h",
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "HISTORY",
+   "seenIn": [
+    "trend-continuation"
+   ]
+  },
+  "dist_donchianHi": {
+   "timeframe": "1h",
+   "maxWindow": 166,
+   "maxAtLeast": 166,
+   "refusal": null,
+   "seenIn": [
+    "structure-reversal"
+   ]
+  },
+  "dist_donchianLo": {
+   "timeframe": "1h",
+   "maxWindow": 166,
+   "maxAtLeast": 166,
+   "refusal": null,
+   "seenIn": [
+    "structure-reversal"
+   ]
+  },
+  "fieldBiasDir_session": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "fieldPlayers_session": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "fieldUpBias_session": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgChg_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktAvgPpo_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktBreadth_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDispersion_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktDown_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoDown_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoNet_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktPpoUp_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktStretch_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktUp_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_all": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_commodities": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_crypto": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_defi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_indices": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_l1": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_memes": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_stocks": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "mktVolNet_tradfi": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "oiChg": {
+   "timeframe": "1h",
+   "maxWindow": 696,
+   "maxAtLeast": 696,
+   "refusal": null,
+   "seenIn": [
+    "squeeze-breakout",
+    "flow-divergence"
+   ]
+  },
+  "oiRegime": {
+   "timeframe": "1h",
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "squeeze-breakout",
+    "flow-divergence"
+   ]
+  },
+  "pctB_now": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "pctB_t1": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "pctB_t2": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "pctB_t3": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "pctB_trend": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "squeeze-breakout"
+   ]
+  },
+  "perpSpotFlow": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "flow-divergence"
+   ]
+  },
+  "picksSpread_session": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "rate": {
+   "timeframe": "1h",
+   "maxWindow": 696,
+   "maxAtLeast": 696,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence"
+   ]
+  },
+  "rateLbl": {
+   "timeframe": "1h",
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence"
+   ]
+  },
+  "rate_mean24": {
+   "timeframe": "1h",
+   "maxWindow": 696,
+   "maxAtLeast": 696,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "flow-divergence"
+   ]
+  },
+  "regMom": {
+   "timeframe": "4h",
+   "maxWindow": 50,
+   "maxAtLeast": 50,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "trend-continuation",
+    "squeeze-breakout",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "regTrend_now": {
+   "timeframe": "4h",
+   "maxWindow": 50,
+   "maxAtLeast": 50,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "trend-continuation",
+    "squeeze-breakout",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "regTrend_t1": {
+   "timeframe": "4h",
+   "maxWindow": 50,
+   "maxAtLeast": 50,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "trend-continuation",
+    "squeeze-breakout",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "regTrend_t2": {
+   "timeframe": "4h",
+   "maxWindow": 50,
+   "maxAtLeast": 50,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "trend-continuation",
+    "squeeze-breakout",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "regTrend_trend": {
+   "timeframe": "4h",
+   "maxWindow": 50,
+   "maxAtLeast": 50,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "trend-continuation",
+    "squeeze-breakout",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "regVol": {
+   "timeframe": "4h",
+   "maxWindow": 50,
+   "maxAtLeast": 50,
+   "refusal": null,
+   "seenIn": [
+    "mean-reversion",
+    "trend-continuation",
+    "squeeze-breakout",
+    "flow-divergence",
+    "structure-reversal"
+   ]
+  },
+  "spotCVD_now": {
+   "timeframe": "1h",
+   "maxWindow": 3,
+   "maxAtLeast": 3,
+   "refusal": null,
+   "seenIn": [
+    "flow-divergence"
+   ]
+  },
+  "spotCVD_t1": {
+   "timeframe": "1h",
+   "maxWindow": 3,
+   "maxAtLeast": 3,
+   "refusal": null,
+   "seenIn": [
+    "flow-divergence"
+   ]
+  },
+  "spotCVD_t2": {
+   "timeframe": "1h",
+   "maxWindow": 3,
+   "maxAtLeast": 3,
+   "refusal": null,
+   "seenIn": [
+    "flow-divergence"
+   ]
+  },
+  "spotCVD_t3": {
+   "timeframe": "1h",
+   "maxWindow": 3,
+   "maxAtLeast": 3,
+   "refusal": null,
+   "seenIn": [
+    "flow-divergence"
+   ]
+  },
+  "spotCVD_trend": {
+   "timeframe": "1h",
+   "maxWindow": 3,
+   "maxAtLeast": 3,
+   "refusal": null,
+   "seenIn": [
+    "flow-divergence"
+   ]
+  },
+  "usdcUsdtDev_market": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "usdtUsdDev_market": {
+   "timeframe": null,
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "vocabulary scalarFamilies"
+   ]
+  },
+  "zone": {
+   "timeframe": "1h",
+   "maxWindow": 186,
+   "maxAtLeast": 186,
+   "refusal": null,
+   "seenIn": [
+    "structure-reversal"
+   ]
+  },
+  "zones_count": {
+   "timeframe": "1h",
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "structure-reversal"
+   ]
+  },
+  "zones_resist_dist": {
+   "timeframe": "1h",
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "structure-reversal"
+   ]
+  },
+  "zones_support_dist": {
+   "timeframe": "1h",
+   "maxWindow": 1,
+   "maxAtLeast": 1,
+   "refusal": "NOT_REWINDABLE",
+   "seenIn": [
+    "structure-reversal"
+   ]
+  }
+ }
+}
