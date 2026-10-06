@@ -119,6 +119,28 @@ def test_null_section_key_is_accepted():
     assert not [f for f in validate_conditions(RSI_REPORT, conds) if f.severity == "error"]
 
 
+def test_a_malformed_member_hold_under_a_held_group_is_a_finding_not_a_crash():
+    """The review of 2026-10-06: a member hold that is not an object (here the integer 2)
+    under a group holding more than one bar raised AttributeError in the group check."""
+    cond = condition("X", "held", all_of(num("RSI14_now", "lt", 70), num("RSI14_now", "gt", 30)),
+                     verdict="UP")
+    cond["definition"]["hold"] = {"atLeast": 2, "of": 2}
+    cond["definition"]["members"][0]["hold"] = 2
+    errs = [f for f in validate_conditions(RSI_REPORT, [cond]) if f.severity == "error"]
+    assert any(f.path.endswith("members[0].hold") for f in errs)
+
+
+@pytest.mark.parametrize("missing", ["verdict", "required", "definition", "name"])
+def test_a_condition_missing_a_required_key_is_an_error(missing):
+    """The v91 CONDITIONS axis requires all six keys; `verdict` and `exitSide` are
+    nullable, never optional. A missing `verdict` passed (None is a legal verdict)."""
+    cond = condition("X", "fine", num("RSI14_now", "gt", 30), verdict="UP")
+    del cond[missing]
+    errs = [f for f in validate_conditions(RSI_REPORT, [cond]) if f.severity == "error"]
+    assert any(f.path == f".{missing}" and "required" in f.message for f in errs), \
+        [(f.path, f.message) for f in errs]
+
+
 # --- grammar --------------------------------------------------------------
 def test_group_ops_are_the_schema_ops():
     assert set(SURFACE["grammar"]["definitionKinds"]["group"]["op"]) == {"ALL", "ANY", "NOT", "N_OF"}

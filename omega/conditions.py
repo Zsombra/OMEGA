@@ -505,7 +505,10 @@ def _check_hold(defn: dict, key: str, path: str, out: list[ConditionFinding]) ->
 
 
 def _is_one_read(h: dict | None) -> bool:
-    return h is None or (h.get("atLeast"), h.get("of")) == HOLD_ONE
+    # A hold that is not an object is the node's own `_check_hold` finding; here it reads
+    # as one read so the group check reports nothing twice and never raises (the review of
+    # 2026-10-06: an integer member hold under a held group raised AttributeError).
+    return not isinstance(h, dict) or (h.get("atLeast"), h.get("of")) == HOLD_ONE
 
 
 def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
@@ -697,8 +700,17 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
         if not CONDITION_KEY.match(key):
             out.append(ConditionFinding("error", key, ".conditionKey",
                                         "must match ^[A-Z][A-Z0-9_]{1,39}$"))
+        # The v91 CONDITIONS axis requires all six keys; `verdict` and `exitSide` are
+        # nullable, never optional, so `cond.get(...)` reading None is not presence (the
+        # review of 2026-10-06: a missing verdict passed). exitSide has its own v88 message.
+        absent = [k for k in CONDITION_FIELDS if k != "exitSide" and k not in cond]
+        for k in absent:
+            out.append(ConditionFinding(
+                "error", key, f".{k}",
+                f"required by the v91 CONDITIONS axis (all of {list(CONDITION_FIELDS)}; "
+                f"verdict and exitSide are nullable, never optional)"))
         name = cond.get("name") or ""
-        if not 1 <= len(name) <= 80:
+        if "name" not in absent and not 1 <= len(name) <= 80:
             out.append(ConditionFinding("error", key, ".name", "must be 1-80 characters"))
         if cond.get("verdict") not in VERDICTS:
             out.append(ConditionFinding("error", key, ".verdict",

@@ -529,7 +529,8 @@ def test_every_preset_axes_walk_clean_and_the_update_too(name):
     preset's create axes and update axes."""
     axes, root = _v91()
     p = plan(PRESETS[name])
-    for body in (p.axes(), p.axes_update()):
+    # the update reads its untouched dials from the strategy (here: its own create axes)
+    for body in (p.axes(), p.axes_update(p.axes())):
         findings = P.diff_axes(body, axes, root)
         assert _fails(findings) == [], (name, _fails(findings))
         assert [f for f in findings if f.cls == "UNSUPPORTED"] == [], name

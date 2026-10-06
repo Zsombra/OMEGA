@@ -170,11 +170,18 @@ def test_custom_sections_carry_provenance_notes(name):
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_axes_are_the_ten_in_order_and_the_update_drops_only_entry(name):
+def test_axes_are_the_ten_in_order_and_the_update_drops_entry_and_unnamed_dials(name):
+    """A create stages all ten. An update without execution overrides stages neither ENTRY
+    nor the two dial axes (they keep the strategy's values), and SETUP_GATES' minAtrPct is
+    the strategy's own (tests/test_first_update.py pins the rule)."""
+    assert PRESETS[name].execution is None      # every preset runs on the platform's dials
     p = plan(PRESETS[name])
-    assert tuple(p.axes()) == AXES
-    assert tuple(p.axes_update()) == tuple(a for a in AXES if a != "ENTRY")
-    assert {k: v for k, v in p.axes().items() if k != "ENTRY"} == p.axes_update()
+    a = p.axes()
+    assert tuple(a) == AXES
+    u = p.axes_update({"SETUP_GATES": {**a["SETUP_GATES"], "minAtrPct": 0.8}})
+    dropped = {"ENTRY", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"}
+    assert tuple(u) == tuple(x for x in AXES if x not in dropped)
+    assert u["SETUP_GATES"]["minAtrPct"] == 0.8
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))

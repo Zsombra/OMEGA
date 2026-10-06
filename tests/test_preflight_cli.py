@@ -67,7 +67,8 @@ def test_run_passes_a_generated_create_and_gate_admits_then_expires(tmp_path, ca
 
 
 def test_an_update_stage_is_named_and_walks_clean(tmp_path, capsys):
-    axes = plan(PRESETS["trend-continuation"]).axes_update()
+    p = plan(PRESETS["trend-continuation"])
+    axes = p.axes_update(p.axes())      # the untouched dials read from the strategy
     body = _body(tmp_path, axes, strategyId="00000000-0000-4000-8000-000000000000", draftVersion=3)
     out = tmp_path / "receipt.json"
     assert _run(body, "--schema", _capture(tmp_path), "--out", out) == 0

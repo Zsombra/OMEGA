@@ -467,13 +467,44 @@ class StrategyPlan:
             "SIGNAL_RULES": {"rules": self._rules()},
         }
 
-    def axes_update(self) -> dict:
-        """The axes for staging this thesis into an EXISTING strategy's draft: axes()
-        without ENTRY. The old UPDATE rule stands - never touch an existing strategy's
-        entry axis; an axis omitted from a stage keeps the value the draft has (v85).
-        strategyId and draftVersion belong to the stage request, not to the axes."""
+    def axes_update(self, current: dict | None) -> dict:
+        """The axes for staging this thesis into an EXISTING strategy's draft. Never ENTRY
+        (the old UPDATE rule: never touch an existing strategy's entry axis; an axis omitted
+        from a stage keeps the value the draft has, v85). strategyId and draftVersion belong
+        to the stage request, not to the axes.
+
+        `current` is the strategy's axes as get_strategy_draft reads them (the held draft,
+        or the committed values when none is held). The 2026-08-29 UPDATE sent a dial only
+        when `thesis.execution` named it, so a tuned strategy kept its dials; a v91 axis is
+        staged WHOLE, so sending axes()'s 08-28 defaults would reset them (the review of
+        2026-10-06). So TRADE_LEVEL_POLICY and POSITION_MANAGEMENT are staged only when the
+        thesis names one of their dials, the rest of the axis read from `current`; and
+        SETUP_GATES - always staged, it carries the thesis's gate and required count - takes
+        minAtrPct from the thesis or from `current`. A dial found in neither raises: omega
+        never invents the value of a live strategy's dial."""
+        from .execution import POSITION_MANAGEMENT_DIALS, TRADE_LEVEL_DIALS
         out = self.axes()
         del out["ENTRY"]
+        named = self.thesis.execution or {}
+        current = current or {}
+
+        def complete(axis: str, dials: tuple[str, ...]) -> dict:
+            have = current.get(axis) or {}
+            missing = [d for d in dials if d not in named and d not in have]
+            if missing:
+                raise ValueError(
+                    f"{axis}: {missing} named neither by the thesis nor by the strategy's "
+                    f"current axes - read them with get_strategy_draft and pass them as "
+                    f"`current`; omega never invents a live strategy's dial")
+            return {d: named[d] if d in named else have[d] for d in dials}
+
+        out["SETUP_GATES"]["minAtrPct"] = complete("SETUP_GATES", ("minAtrPct",))["minAtrPct"]
+        for axis, dials in (("TRADE_LEVEL_POLICY", TRADE_LEVEL_DIALS),
+                            ("POSITION_MANAGEMENT", POSITION_MANAGEMENT_DIALS)):
+            if named.keys() & set(dials):
+                out[axis] = complete(axis, dials)
+            else:
+                del out[axis]
         return out
 
     def preview_request(self) -> dict:
