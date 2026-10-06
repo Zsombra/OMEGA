@@ -232,10 +232,10 @@ def test_section_keys_are_deterministic():
             == [s.sectionKey for s in plan(PRESETS["mean-reversion"]).report.sections])
 
 
-def test_wire_includes_conditions_and_market_read():
-    payload = plan(PRESETS["trend-continuation"]).wire()
-    assert len(payload["conditions"]) == 7
-    assert "{TC_UP}" in payload["marketReadText"]
+def test_axes_include_conditions_and_market_read():
+    payload = plan(PRESETS["trend-continuation"]).axes()
+    assert len(payload["CONDITIONS"]["conditions"]) == 7
+    assert "{TC_UP}" in payload["MARKET_READ"]["marketReadText"]
 
 
 # --- live-verified fixture ------------------------------------------------

@@ -9,9 +9,11 @@ Neither is a defect in omega. emit_plan stamps every plan "LOCAL ONLY, not submi
 the last mile was deliberately not built. These tests pin the size of it so the gap is a
 measured number rather than a vague intention.
 
-2026-08-28: the keyMismatch half of the gap CLOSED - wire() now emits the exact CREATE
-request body (schema re-verified live the same day). The execution-surface half (16
-parameters) stays pinned open below, awaiting the user's design decisions.
+2026-08-28: the keyMismatch half of the gap CLOSED - the generator emitted the exact
+compile CREATE body (schema re-verified live the same day). Contract 85.0.0 removed the
+compile; the generator now emits the ten axes of a CREATE stage_strategy_draft, pinned
+below against the saved 91.0.0 schema. The compile pins stay, as history, against the
+three named compile captures.
 """
 from __future__ import annotations
 
@@ -29,12 +31,10 @@ ROOT = Path(__file__).resolve().parents[1]
 GAP = json.loads((ROOT / "data/audit/write_surface_gap.json").read_text(encoding="utf-8"))
 FLOOR = json.loads((ROOT / "data/audit/lookback_floor.json").read_text(encoding="utf-8"))
 
-# Read from the live compile_strategy_plan CREATE schema on 2026-08-26; re-read
-# 2026-08-30 after the condition-clock deployment: `entry` is now published and
-# REQUIRED on CREATE (optional on UPDATE/RESTORE). Re-read 2026-09-04 (drift #5):
-# an optional top-level `decisionInvalidationExitEnabled` appeared alongside the
-# now-required conditions[].exit; omega accepts that the API accepts it and
-# deliberately does not emit it (semantics unmeasured).
+# The RETIRED compile CREATE surface, read from the live compile_strategy_plan schema on
+# 2026-08-26; re-read 2026-08-30 (`entry` published and REQUIRED on CREATE) and 2026-09-04
+# (an optional top-level `decisionInvalidationExitEnabled`). Kept to pin the three named
+# compile captures below; the tool itself was removed at contract 85.0.0.
 API_ACCEPTS = {
     "operation", "intentSummary", "assumptions", "coinSelection", "name", "timeframe",
     "sections", "conditions", "description", "tagline", "marketReadText", "rules",
@@ -54,14 +54,22 @@ def contract():
     return C.load()
 
 
+def _axis_schemas():
+    root = C.stage_schema()["stage_strategy_draft"]["inputSchema"]
+    return root["properties"]["request"]["properties"]["axes"]["properties"]
+
+
 @pytest.mark.parametrize("preset", sorted(PRESETS))
-def test_wire_is_a_complete_create_request(preset):
-    """CLOSED 2026-08-28 (was: 3 rejected keys, 4 missing required ones). wire() now
-    emits the exact CREATE body. The old pinned-gap form of this test is preserved in
-    git history at a233ec0."""
-    emitted = set(plan(PRESETS[preset]).wire())
-    assert emitted - API_ACCEPTS == set(), "wire() emits keys the API refuses"
-    assert API_REQUIRES - emitted == set(), "wire() omits keys the API requires"
+def test_axes_are_a_complete_create_stage(preset):
+    """Every axis a create sends is one the v91 schema declares, and each carries exactly
+    the keys its axis declares, every required one included (each axis is staged WHOLE)."""
+    schemas = _axis_schemas()
+    axes = plan(PRESETS[preset]).axes()
+    assert set(axes) == set(schemas)
+    for name, value in axes.items():
+        declared = set(schemas[name]["properties"])
+        assert set(value) - declared == set(), f"{name} emits keys the axis refuses"
+        assert set(schemas[name]["required"]) - set(value) == set(), f"{name} omits required keys"
 
 
 def test_plans_are_still_stamped_local_only():
@@ -72,32 +80,19 @@ def test_plans_are_still_stamped_local_only():
     assert "LOCAL ONLY, not submitted" in inspect.getsource(generate.emit_plan)
 
 
-def test_presets_still_emit_no_execution_parameters():
-    """CLOSED 2026-08-28 (was: the 16-parameter gap). Decision 1(a): presets emit none and
-    the critique states the measured defaults; overrides are explicit per-thesis. The
-    old pinned form is preserved in git history."""
-    from omega.execution import EXECUTION_PARAMS
-    emitted = set(plan(PRESETS["trend-continuation"]).wire())
-    assert not (EXECUTION_PARAMS & emitted)
-    assert EXECUTION_PARAMS < API_ACCEPTS
+def test_the_execution_surface_gap_stays_resolved():
+    """CLOSED 2026-08-28 (was: the 16-parameter gap). Since v85 the dials ride whole on
+    their axes (tests/test_execution.py); the gap record keeps its resolution."""
     assert "_resolved" in GAP["executionSurfaceNotModelled"]
 
 
-def test_rules_is_now_the_name():
-    w = plan(PRESETS["trend-continuation"]).wire()
-    assert "rules" in w and "signalRules" not in w
-    assert len(w["rules"]) == 84
-
-
-@pytest.mark.parametrize("preset", sorted(PRESETS))
-def test_wire_respects_api_bounds(preset):
-    w = plan(PRESETS[preset]).wire()
-    assert w["operation"] == "CREATE"
-    assert len(w["name"]) <= 50
-    assert 1 <= len(w["intentSummary"]) <= 2000
-    assert 1 <= len(w["assumptions"]) <= 20
-    assert all(1 <= len(a) <= 500 for a in w["assumptions"])
-    assert w["coinSelection"]["mode"] in ("ranked", "explicit")
+def test_signal_rules_carry_the_dense_84_named_by_the_schema_enum():
+    """`rules` is still the name (the read-back calls them `signalRules`); the axis enum
+    names exactly the 84 signals the repo's module map holds."""
+    rules = plan(PRESETS["trend-continuation"]).axes()["SIGNAL_RULES"]["rules"]
+    enum = _axis_schemas()["SIGNAL_RULES"]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"]
+    assert len(rules) == 84 == len(enum)
+    assert {r["signalId"] for r in rules} == set(enum)
 
 
 @pytest.mark.parametrize("preset", sorted(PRESETS))
@@ -106,11 +101,12 @@ def test_create_sections_carry_no_client_section_key(preset):
     client-supplied custom sectionKey - REPORT_CUSTOM_SECTION_NOT_OWNED, allowedDomain
     enum []. A strategy that does not exist yet owns no section identities; the server
     mints them (doc 16 already said so for the apply arm). omega's deterministic
-    custom:<uuid5> keys stay on the local Report for identity; they must never reach a
-    CREATE body. See data/audit/compile_dry_run_2026-08-28-refusal.json."""
-    for s in plan(PRESETS[preset]).wire()["sections"]:
+    custom:<uuid5> keys stay on the local Report for identity; they never reach a create
+    draft's REPORT axis either (acceptance there is unmeasured).
+    See data/audit/compile_dry_run_2026-08-28-refusal.json."""
+    for s in plan(PRESETS[preset]).axes()["REPORT"]["sections"]:
         if s["kind"] == "custom":
-            assert "sectionKey" not in s, "CREATE must not claim a section identity"
+            assert "sectionKey" not in s, "a create must not claim a section identity"
 
 
 def test_coin_selection_default_is_class_aware():
@@ -119,11 +115,12 @@ def test_coin_selection_default_is_class_aware():
     crypto-only module must not default to a universe where its columns render null,
     because null reads FALSE (trap 11). Limit capped to the measured BG-14 boundary,
     2026-08-28: a limit-30 default could never compile (395,404 > 256,000 measured);
-    the boundary is 4 (cap_boundary_2026-08-28.json). Old limit in git history."""
+    the boundary is 4 (cap_boundary_2026-08-28.json). Since v85 the selection is an
+    input of preview_strategy_report only."""
     from omega.generate import RANKED_LIMIT_MEASURED_MAX as CAP
-    assert plan(PRESETS["mean-reversion"]).wire()["coinSelection"] == {
+    assert plan(PRESETS["mean-reversion"]).preview_request()["coinSelection"] == {
         "mode": "ranked", "category": "CRYPTO", "limit": CAP}     # weights CVD
-    assert plan(PRESETS["trend-continuation"]).wire()["coinSelection"] == {
+    assert plan(PRESETS["trend-continuation"]).preview_request()["coinSelection"] == {
         "mode": "ranked", "category": "ALL", "limit": CAP}        # no crypto-only module
 
 
@@ -182,27 +179,19 @@ def test_api_pins_agree_with_the_named_schema_capture(capture):
     assert set(create["required"]) == API_REQUIRES
 
 
-def test_wire_entry_keys_match_the_live_schema_capture():
+def test_entry_keys_match_the_v91_entry_arm():
     """The regression this exists for: on 2026-09-09 contract 54.1.0 removed
-    `entry.levelSource`, which omega had emitted since 2026-08-30. Nothing in the suite
-    compared the emitted entry object against the schema's own entry properties, so the
-    tool would have kept sending a key the platform now refuses and the failure would
-    have surfaced as a rejected compile. It happened again on 60.0.0, which took
-    `confirmTf`, `closes` and `bandAtrMultiple` out of the entry object (captured
-    2026-09-18), so the capture this reads moved with it. Pin both directions against the
-    newest capture."""
-    from omega import preflight as P
-    definition = json.loads(SCHEMA_CAPTURE_2026_09_18.read_text(encoding="utf-8"))["response"]
-    arms, root = P.resolve_arms(definition)
-    entry_schema = P.deref(P.deref(arms["CREATE"], root)["properties"]["entry"], root)
-    allowed = set(entry_schema["properties"])
-    required = set(entry_schema.get("required", ()))
-    assert "levelSource" not in allowed, "capture predates the 54.1.0 removal - re-capture"
-    assert "confirmTf" not in allowed, "capture predates the 60.0.0 removal - re-capture"
+    `entry.levelSource`, and 60.0.0 took `confirmTf`, `closes` and `bandAtrMultiple` out of
+    the entry object, each time while omega still sent the key. v85 then made the entry a
+    union on `trigger` whose ON_CANDLE_CLOSE arm is `trigger` ALONE ("naming either dial is
+    refused"). Pin both directions against that arm of the saved 91.0.0 schema."""
+    arms = _axis_schemas()["ENTRY"]["properties"]["entry"]["anyOf"]
+    [close_arm] = [a for a in arms if "ON_CANDLE_CLOSE" in a["properties"]["trigger"]["enum"]]
+    assert set(close_arm["properties"]) == {"trigger"} and close_arm["additionalProperties"] is False
     for name in sorted(PRESETS):
-        emitted = set(plan(PRESETS[name]).wire()["entry"])
-        assert emitted - allowed == set(), f"{name}: entry emits keys the API refuses"
-        assert required - emitted == set(), f"{name}: entry omits keys the API requires"
+        emitted = plan(PRESETS[name]).axes()["ENTRY"]["entry"]
+        assert set(emitted) == set(close_arm["properties"]) == set(close_arm["required"]), name
+        assert emitted["trigger"] in close_arm["properties"]["trigger"]["enum"]
 
 
 # --- the v91 write surface: the strategy draft lifecycle -------------------------------

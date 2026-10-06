@@ -7,7 +7,7 @@ from __future__ import annotations
 from .execution import (CATALOG_BOUND_ENFORCED, CATALOG_BOUNDS,
                         PLATFORM_EXECUTION_DEFAULTS, SCHEMA_BOUNDS,
                         validate_execution)
-from .generate import (CADENCE_FOR_ANCHOR, MODULE_CLAUSES, MODULE_RECIPES,
+from .generate import (CADENCE_FOR_ANCHOR, EXIT_ROLES, MODULE_CLAUSES, MODULE_RECIPES,
                        RANKED_LIMIT_MEASURED_MAX, REGIME_TF_FOR_ANCHOR, Thesis)
 from .membership import _map
 from .validate import Finding
@@ -127,6 +127,11 @@ def validate_thesis(thesis: Thesis) -> list[Finding]:
             out.append(Finding("error", "THESIS_UNFEEDABLE_REQUIRED", f"required.{sid}",
                                f"{sid} is marked required but no weighted module "
                                f"feeds it - it could never fire"))
+    for role in thesis.exits:
+        if role not in EXIT_ROLES:
+            out.append(Finding("error", "THESIS_UNKNOWN_EXIT_ROLE", f"exits.{role}",
+                               f"{role!r} is not one of the generated condition roles "
+                               f"{list(EXIT_ROLES)} - plan() would refuse it"))
     out += validate_execution(thesis.execution or {})
     return out
 
@@ -136,7 +141,9 @@ def brief(p) -> str:
     to judge the thesis, zero live calls. p is a StrategyPlan."""
     t = p.thesis
     findings = validate_thesis(t)
-    w = p.wire()
+    w = p.axes()
+    rules = w["SIGNAL_RULES"]["rules"]
+    exits = [c for c in w["CONDITIONS"]["conditions"] if c["exitSide"]]
     lines = [
         f"{t.name}" + (f" - {t.tagline}" if t.tagline else ""),
         f"stance {t.stance} | anchor {t.anchor} "
@@ -154,8 +161,8 @@ def brief(p) -> str:
         "critique:",
         *[f"  {line}" for line in p.critique()],
         "",
-        f"wire body: {len(w['sections'])} sections, {len(w['rules'])} rules "
-        f"({sum(1 for r in w['rules'] if r['allocation'] > 0)} weighted), "
-        f"{len(w['conditions'])} conditions",
+        f"create draft axes: {len(w['REPORT']['sections'])} sections, {len(rules)} rules "
+        f"({sum(1 for r in rules if r['allocation'] > 0)} weighted), "
+        f"{len(w['CONDITIONS']['conditions'])} conditions ({len(exits)} exit rules)",
     ]
     return "\n".join(lines)

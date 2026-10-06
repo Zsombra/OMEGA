@@ -39,7 +39,7 @@ def test_the_linearity_prediction_failure_is_recorded():
 
 def test_ranked_defaults_now_fit_the_measured_boundary():
     for preset in PRESETS:
-        sel = plan(PRESETS[preset]).wire()["coinSelection"]
+        sel = plan(PRESETS[preset]).preview_request()["coinSelection"]
         if sel["mode"] == "ranked":
             assert sel["limit"] <= RANKED_LIMIT_MEASURED_MAX
 

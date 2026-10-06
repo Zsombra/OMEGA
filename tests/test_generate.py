@@ -8,7 +8,7 @@ import pytest
 
 from omega.contract import DERIVED_DIR, load
 from omega.generate import (
-    ENTRY_MIRROR, MODULE_RECIPES, PRESETS, Thesis, plan, plan_for_signals,
+    AXES, ENTRY_MIRROR, MODULE_RECIPES, PRESETS, Thesis, plan, plan_for_signals,
 )
 from omega.membership import signals_for
 from omega.types import Column
@@ -85,36 +85,43 @@ def test_squeeze_breakout_matches_the_live_connector():
     assert len(predicted) == 18
 
 
-def test_wire_payload_has_the_dense_84_entry_scorecard():
-    payload = plan(PRESETS["mean-reversion"]).wire()
-    rules = payload["rules"]
+def test_axes_carry_the_dense_84_entry_scorecard_with_integer_allocations():
+    axes = plan(PRESETS["mean-reversion"]).axes()
+    rules = axes["SIGNAL_RULES"]["rules"]
     assert len(rules) == 84
     assert len({r["signalId"] for r in rules}) == 84
-    assert payload["minAggregateScore"] == PRESETS["mean-reversion"].gate
+    assert axes["SETUP_GATES"]["minAggregateScore"] == PRESETS["mean-reversion"].gate
     # unallocated signals must be present at zero, matching real strategies
     zeros = [r for r in rules if r["allocation"] == 0]
     assert zeros and all(r["required"] is False for r in zeros)
+    # v91 SIGNAL_RULES: allocation is an integer 0..3, required with `required`
+    assert all(type(r["allocation"]) is int and 0 <= r["allocation"] <= 3 for r in rules)
+    assert all(list(r) == ["signalId", "allocation", "required", "params"] for r in rules)
 
 
-def test_wire_params_match_recorded_defaults():
-    payload = plan(PRESETS["mean-reversion"]).wire()
-    by_id = {r["signalId"]: r for r in payload["rules"]}
+def test_axes_params_match_recorded_defaults():
+    axes = plan(PRESETS["mean-reversion"]).axes()
+    by_id = {r["signalId"]: r for r in axes["SIGNAL_RULES"]["rules"]}
     assert by_id["rsi_oversold"]["params"] == {"threshold": 30}
     assert by_id["bollinger_lower_touch"]["params"] == {"pctBThreshold": 0.05}
     assert by_id["macd_bull_cross"]["params"] == {}
 
 
 def test_emit_plan_keeps_cadence_as_local_metadata(tmp_path):
-    """cadence/regimeTimeframe have no CREATE-request field (measured 2026-08-26,
-    re-verified 2026-08-28), so wire() no longer carries them - but the anchor-derived
-    values are still worth keeping. They ride on the emitted file as _-prefixed keys,
-    which never go to the API."""
+    """cadence/regimeTimeframe have no field on any axis (nor had they on the CREATE
+    request, measured 2026-08-26, re-verified 2026-08-28) - but the anchor-derived values
+    are still worth keeping. They ride on the emitted file as _-prefixed keys, which never
+    go to the API. The rest of the file is a CREATE stage_strategy_draft request."""
     from omega.generate import emit_plan
-    path = emit_plan(plan(PRESETS["mean-reversion"]), "t", out_dir=tmp_path)
+    p = plan(PRESETS["mean-reversion"])
+    path = emit_plan(p, "t", out_dir=tmp_path)
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
     assert payload["_cadence"] == "INTRADAY"
     assert payload["_regimeTimeframe"] == "4h"
     assert "cadence" not in payload and "regimeTimeframe" not in payload
+    assert {k for k in payload if not k.startswith("_")} == {"draftVersion", "axes"}
+    assert payload["draftVersion"] == 0 and payload["axes"] == p.axes()
+    assert payload["_previewRequest"] == p.preview_request()
 
 
 def test_backwards_planning_reaches_requested_signals():
@@ -149,46 +156,138 @@ def test_generator_output_is_ascii_safe():
         text.encode("cp1252")
 
 
-# --- the condition-clock migration surface (schema published 2026-08-30) ------
+# --- the v91 draft axes (contract 85.0.0 split the body; 84/88 reshaped conditions) ------
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
 def test_custom_sections_carry_provenance_notes(name):
-    """sections[].notes is REQUIRED by the compile schema (string 1-400 or null).
-    Plan decision 2026-08-29: emit a provenance string; null acceptance is
+    """notes is REQUIRED on a custom section (string 1-400 or null; the v91 REPORT axis
+    keeps it). Plan decision 2026-08-29: emit a provenance string; null acceptance is
     unmeasured."""
-    for s in plan(PRESETS[name]).wire()["sections"]:
+    for s in plan(PRESETS[name]).axes()["REPORT"]["sections"]:
         if s["kind"] == "custom":
             assert isinstance(s["notes"], str) and 1 <= len(s["notes"]) <= 400
             assert "omega.generate" in s["notes"]
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_wire_emits_the_platform_migration_entry(name):
-    """entry is REQUIRED on CREATE since 2026-08-30. Contract 60.0.0 shrank the entry
-    object to three keys and retired AT_SIGNAL; the platform migrated every stored
-    record to ENTRY_MIRROR, including the pre-60 record 824f4343 (AT_SIGNAL, six keys
-    -> data/contract/get_strategy/824f4343-..._20260918T084500Z.json) and the 60.x-authored
-    record 43d11467 (data/contract/get_strategy/43d11467-..._20260918T083500Z.json).
-    Mirrored, not interpreted."""
+def test_axes_are_the_ten_in_order_and_the_update_drops_only_entry(name):
     p = plan(PRESETS[name])
-    assert p.wire()["entry"] == ENTRY_MIRROR
+    assert tuple(p.axes()) == AXES
+    assert tuple(p.axes_update()) == tuple(a for a in AXES if a != "ENTRY")
+    assert {k: v for k, v in p.axes().items() if k != "ENTRY"} == p.axes_update()
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_wire_conditions_carry_the_six_v91_keys_as_entry_conditions(name):
+def test_entry_is_on_candle_close_alone(name):
+    """v85: "{ trigger: 'ON_CANDLE_CLOSE' } alone ... ON_CANDLE_CLOSE naming either dial
+    is refused, which the retired compile accepted; the server stamps the seed values".
+    The trigger itself is the one every stored record was migrated to at 60.0.0
+    (data/contract/get_strategy/824f4343-..._20260918T084500Z.json)."""
+    assert ENTRY_MIRROR == {"trigger": "ON_CANDLE_CLOSE"}
+    assert plan(PRESETS[name]).axes()["ENTRY"] == {"entry": ENTRY_MIRROR}
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_conditions_axis_carries_the_six_v91_keys_as_entry_conditions(name):
     """v84 moved the hold onto each clause and group (`closes` refused), v88 replaced
     `exit` with `exitSide` (nullable, never optional). No preset declares an exit, so every
     emitted condition is an entry condition, exitSide null; tests/test_conditions.py walks
     them through the saved 91.0.0 CONDITIONS axis."""
-    for c in plan(PRESETS[name]).wire()["conditions"]:
+    for c in plan(PRESETS[name]).axes()["CONDITIONS"]["conditions"]:
         assert list(c) == ["conditionKey", "name", "definition", "verdict",
                             "required", "exitSide"]
         assert c["exitSide"] is None
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_wire_does_not_emit_decisionInvalidationExitEnabled(name):
-    """The same schema declares an OPTIONAL top-level decisionInvalidationExitEnabled;
-    existing records read back true, but what a CREATE that omits it receives is
-    unmeasured, so emitting a value would be inference. Left out on purpose."""
-    assert "decisionInvalidationExitEnabled" not in plan(PRESETS[name]).wire()
+def test_whole_axes_send_every_dial_at_the_measured_defaults(name):
+    """Each axis is written WHOLE (v85) and the v91 schema REQUIRES every dial on its
+    axis, so a create sends all of them: the 08-28 measured defaults (M1 owed), and the
+    thirteenth POSITION_MANAGEMENT dial mirrored from every record on disk."""
+    from omega.execution import (PLATFORM_EXECUTION_DEFAULTS, POSITION_MANAGEMENT_DIALS,
+                                 TRADE_LEVEL_DIALS)
+    a = plan(PRESETS[name]).axes()
+    assert list(a["POSITION_MANAGEMENT"]) == list(POSITION_MANAGEMENT_DIALS)
+    assert a["POSITION_MANAGEMENT"]["decisionInvalidationExitEnabled"] is True
+    assert list(a["TRADE_LEVEL_POLICY"]) == list(TRADE_LEVEL_DIALS)
+    assert list(a["SETUP_GATES"]) == ["minAggregateScore", "minRequiredCount", "minAtrPct"]
+    sent = {**a["SETUP_GATES"], **a["TRADE_LEVEL_POLICY"], **a["POSITION_MANAGEMENT"]}
+    assert all(sent[k] == v for k, v in PLATFORM_EXECUTION_DEFAULTS.items())
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_axes_walk_clean_against_the_v91_stage_schema(name):
+    """Zero FAIL and zero UNSUPPORTED walking the whole CREATE stage request through the
+    saved 91.0.0 stage_strategy_draft input schema."""
+    from omega import preflight as P
+    from omega.contract import stage_schema
+    root = stage_schema()["stage_strategy_draft"]["inputSchema"]
+    findings = P.diff_schema({"request": {"draftVersion": 0, "axes": plan(PRESETS[name]).axes()}},
+                             root, root)
+    assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL"] == []
+    assert [f for f in findings if f.cls == "UNSUPPORTED"] == []
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_the_preview_request_is_a_fields_source_that_walks_clean(name):
+    """The dry run (v85): preview_strategy_report {coinSelection, source: {kind: FIELDS,
+    timeframe, sections, conditions, marketReadText}}. coinSelection is an input of the
+    preview only - no axis carries it."""
+    from omega import preflight as P
+    from omega.contract import stage_schema
+    p = plan(PRESETS[name])
+    body = p.preview_request()
+    a = p.axes()
+    assert body["coinSelection"] == p.thesis.resolved_coin_selection()
+    assert body["source"] == {"kind": "FIELDS", "timeframe": a["TIMEFRAME_PROFILE"]["timeframe"],
+                              "sections": a["REPORT"]["sections"],
+                              "conditions": a["CONDITIONS"]["conditions"],
+                              "marketReadText": a["MARKET_READ"]["marketReadText"]}
+    assert "coinSelection" not in json.dumps(a)
+    root = stage_schema()["preview_strategy_report"]["inputSchema"]
+    findings = P.diff_schema(body, root, root)
+    assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL"] == []
+    assert [f for f in findings if f.cls == "UNSUPPORTED"] == []
+
+
+def test_wire_and_wire_update_are_gone_not_aliased():
+    from omega.generate import StrategyPlan
+    assert not hasattr(StrategyPlan, "wire") and not hasattr(StrategyPlan, "wire_update")
+
+
+def test_render_carries_the_assumptions_that_no_longer_reach_the_platform():
+    text = plan(PRESETS["trend-continuation"]).render()
+    assert "assumptions:" in text and "local only" in text
+
+
+# --- exits: the v88 split, generated -----------------------------------------------
+
+EXITING = Thesis(name="Trend Continuation", tagline="t", description="d", gate=0.60,
+                 weights={"MOVING_AVERAGES": 3, "TREND_STRENGTH": 2, "MACD": 2, "VOLUME": 1},
+                 context=["REGIME"], exits=["CORE_UP", "UP"])
+
+
+def test_a_thesis_exit_role_appends_its_close_on_rule_after_the_seven():
+    conds = plan(EXITING).axes()["CONDITIONS"]["conditions"]
+    assert [c["conditionKey"] for c in conds][7:] == ["CLOSE_ON_TC_CORE_UP", "CLOSE_ON_TC_UP"]
+    by_key = {c["conditionKey"]: c for c in conds}
+    assert by_key["CLOSE_ON_TC_UP"]["exitSide"] == "SHORT"       # UP verdict -> closes shorts
+    assert by_key["CLOSE_ON_TC_CORE_UP"]["exitSide"] == "BOTH"   # null verdict -> both sides
+    assert by_key["TC_UP"]["exitSide"] is None and by_key["TC_UP"]["verdict"] == "UP"
+    # an exit rule never reaches the market read
+    assert "CLOSE_ON" not in plan(EXITING).market_read_text
+
+
+def test_the_generated_exit_rules_are_judged_by_the_exit_read_rule():
+    """CLOSE_ON_TC_UP reads TC_UP's whole closure, which includes the ambient tape and the
+    stablecoin pairs - not moved by a completed bar (CONDITION_EXIT_READ_ILLEGAL). The
+    core's closure is the report's own candle columns, so its rule is clean."""
+    errs = [f for f in plan(EXITING).condition_findings() if f.severity == "error"]
+    assert {f.condition_key for f in errs} == {"CLOSE_ON_TC_UP"}
+    assert all("CONDITION_EXIT_READ_ILLEGAL" in f.message for f in errs)
+
+
+def test_an_unknown_exit_role_is_refused():
+    from dataclasses import replace
+    with pytest.raises(ValueError):
+        plan(replace(EXITING, exits=["SIDEWAYS"]))

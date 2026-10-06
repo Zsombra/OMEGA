@@ -20,9 +20,9 @@ import uuid
 
 from .aggregate import Signal, aggregate
 from .conditions import (
-    all_of, condition, crowd_leaning_down, crowd_leaning_up, is_, market_read_text,
-    n_of, num, ref, stables_at_par, tape_bearish, tape_bullish, validate_conditions,
-    validate_market_read,
+    all_of, close_on, condition, crowd_leaning_down, crowd_leaning_up, is_,
+    market_read_text, n_of, num, ref, stables_at_par, tape_bearish, tape_bullish,
+    validate_conditions, validate_market_read,
 )
 from .contract import DERIVED_DIR, load
 from .fanout import cost_report, outputs_for
@@ -214,9 +214,15 @@ class Thesis:
     context: list[str] = field(default_factory=list)    # modules included but weighted 0
     # API coinSelection object; None means "derive one from the modules"
     coin_selection: dict | None = None
-    # Explicit execution-parameter overrides (API field names); None/empty means emit
-    # nothing and run on the MEASURED platform defaults (Decision 1a, 2026-08-28).
+    # Explicit execution-parameter overrides (API field names); None/empty means the
+    # MEASURED platform defaults (Decision 1a, 2026-08-28) - since v85 sent whole on their
+    # axes, see omega/execution.py.
     execution: dict | None = None
+    # Condition ROLES (EXIT_ROLES: "UP", "CORE_DOWN", ...) whose entry condition is also an
+    # exit: each gains the v88 split, an exit rule CLOSE_ON_<key> closing the side its
+    # verdict opposes (omega.conditions.close_on). Empty: every condition is an entry
+    # condition, exitSide null - what every pre-v88 generated condition (exit: false) was.
+    exits: list[str] = field(default_factory=list)
 
     @property
     def modules(self) -> list[str]:
@@ -282,12 +288,22 @@ PRESETS: dict[str, Thesis] = {
     ),
 }
 
-# The entry axis, contract 60.0.0/61.0.1. Mirrored, not interpreted: the platform migrated the pre-60 record
-# 824f4343 (AT_SIGNAL, six keys) to exactly this (data/contract/get_strategy/824f4343-..._20260918T084500Z.json),
-# and both 60.x-authored records carry it. ON_CANDLE_CLOSE takes the entry AT the qualifying close, at market;
-# 0 and 4 are the inert values for a non-level trigger ("levelOffsetAtrMultiple != 0 and validForBars != 4 are
-# refused under a non-level trigger", vendor pack 31.2.28). The level triggers rest orders omega has not measured.
-ENTRY_MIRROR: dict = {"trigger": "ON_CANDLE_CLOSE", "levelOffsetAtrMultiple": 0, "validForBars": 4}
+# The ENTRY axis, contract 85.0.0+. ON_CANDLE_CLOSE takes the entry AT the qualifying close, at market (the
+# trigger every stored record was migrated to at 60.0.0, data/contract/get_strategy/824f4343-..._20260918T084500Z.json).
+# v85 made `entry` "a union discriminated by trigger: { trigger: 'ON_CANDLE_CLOSE' } alone ... ON_CANDLE_CLOSE
+# naming either dial is refused, which the retired compile accepted; the server stamps the seed values"
+# (README "Contract history - v85"; the v91 schema's first ENTRY arm is additionalProperties:false over
+# `trigger` only). The 61.0.1 three-key form {.., levelOffsetAtrMultiple: 0, validForBars: 4} is in git history.
+# The level triggers rest orders omega has not measured.
+ENTRY_MIRROR: dict = {"trigger": "ON_CANDLE_CLOSE"}
+
+# The ten axes of stage_strategy_draft at 91.0.0, in the order its description lists them. Each is written
+# WHOLE except SIGNAL_RULES, whose rows replace only the drafted rows for the same signalId.
+AXES = ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
+        "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES")
+
+# The seven roles _build_conditions emits (key = <prefix>_<role>); Thesis.exits names some of them.
+EXIT_ROLES = ("RISK_ON", "CTX_UP", "CTX_DOWN", "CORE_UP", "CORE_DOWN", "UP", "DOWN")
 
 
 @dataclass
@@ -378,86 +394,103 @@ class StrategyPlan:
 
     # -- output -----------------------------------------------------------
     def _assumptions(self) -> list[str]:
-        """The API's required `assumptions` array: each string <=500 chars, list <=20."""
+        """What this plan assumes, for render() only. The compile's `assumptions` and
+        `intentSummary` went with compile_strategy_plan at v85 ("the draft is the intent"),
+        so nothing here reaches the platform."""
         sel = self.thesis.resolved_coin_selection()
         how = ("explicit thesis override" if self.thesis.coin_selection is not None else
                "default - class-aware: CRYPTO when the thesis weights a crypto-only "
                "module (CVD, FLOW_DIVERGENCE), else ALL")
         execution = (f"execution overrides set: {sorted(self.thesis.execution)}"
                      if self.thesis.execution else
-                     "no execution parameters set - the MEASURED platform defaults "
-                     "apply (see omega/execution.py)")
+                     "no execution overrides - the 08-28 MEASURED platform defaults are "
+                     "sent whole on their axes (see omega/execution.py; M1 is owed)")
         return [
-            f"coinSelection {sel} ({how})",
+            f"preview coinSelection {sel} ({how})",
             "signal params are the platform defaults captured in the signal map",
             execution,
-            "dry-run: compiled for viability only, never applied",
+            "local only: never staged into a draft, never committed",
         ]
 
-    def wire(self) -> dict:
-        """The exact compile_strategy_plan CREATE request body, dense 84-entry scorecard
-        included. Shape verified against the live schema on 2026-08-28."""
+    def _sections(self) -> list[dict]:
+        # Measured 2026-08-28: a CREATE refused ANY client-supplied custom sectionKey
+        # (REPORT_CUSTOM_SECTION_NOT_OWNED, allowedDomain enum []) - the server mints them.
+        # The v91 REPORT axis still declares sectionKey optional on a custom section; a
+        # create draft's acceptance of one is unmeasured, so omega keeps not sending it.
+        # Our deterministic keys stay on the local Report; platform sections keep theirs,
+        # which IS the section's identity.
+        return [
+            {k: v for k, v in s.items() if not (s.get("kind") == "custom" and k == "sectionKey")}
+            for s in self.report.wire()
+        ]
+
+    def _rules(self) -> list[dict]:
+        """The dense 84-row scorecard. `allocation` is an INTEGER 0..3 and required on the
+        v91 SIGNAL_RULES axis, as is `required`; unallocated signals ride at 0."""
         m = _map()
         defaults = m["defaultParams"]
         allocated = {r.signalId: r for r in self.rules}
         all_signals = sorted({s for v in m["moduleSignals"].values() for s in v})
-        # Measured 2026-08-28: CREATE refuses ANY client-supplied custom sectionKey
-        # (REPORT_CUSTOM_SECTION_NOT_OWNED, allowedDomain enum []) - the server mints
-        # them. Our deterministic keys stay on the local Report; platform sections keep
-        # theirs, which IS the section's identity.
-        sections = [
-            {k: v for k, v in s.items() if not (s.get("kind") == "custom" and k == "sectionKey")}
-            for s in self.report.wire()
+        return [
+            {
+                "signalId": s,
+                "allocation": int(allocated[s].allocation) if s in allocated else 0,
+                "required": bool(allocated[s].required) if s in allocated else False,
+                "params": defaults.get(s, {}),
+            }
+            for s in all_signals
         ]
-        out = {
-            "operation": "CREATE",
-            "intentSummary": (f"{self.thesis.name}: {self.thesis.description} "
-                              f"Stance {self.thesis.stance}, gate {self.thesis.gate}. "
-                              f"Generated by omega.generate; compile dry-run only.")[:2000],
-            "assumptions": self._assumptions(),
-            "coinSelection": self.thesis.resolved_coin_selection(),
-            "name": self.thesis.name,
-            "tagline": self.thesis.tagline,
-            "description": self.thesis.description,
-            "timeframe": self.thesis.anchor,
-            "sections": sections,
-            "conditions": self.conditions,
-            "marketReadText": self.market_read_text,
-            "rules": [
-                {
-                    "signalId": s,
-                    "allocation": allocated[s].allocation if s in allocated else 0,
-                    "required": bool(allocated[s].required) if s in allocated else False,
-                    "params": defaults.get(s, {}),
-                }
-                for s in all_signals
-            ],
-            "minAggregateScore": self.thesis.gate,
-            "minRequiredCount": sum(1 for r in self.rules if r.required),
-            # REQUIRED on CREATE since the schema published it (2026-08-30). See git history
-            # (368bad6 and earlier) for the six- and seven-key forms this superseded as the
-            # entry object was migrated across contracts 52.0.0-60.0.0; ENTRY_MIRROR above
-            # carries the current evidence and reasoning.
-            "entry": dict(ENTRY_MIRROR),
+
+    def axes(self) -> dict:
+        """The `axes` of a CREATE stage_strategy_draft request (no strategyId,
+        draftVersion 0): all ten axes, each WHOLE, keyed and shaped by the v91 schema
+        (data/contract/stage_strategy_draft/schema_20261005T194629Z.json). The flat
+        compile body this replaces - and its operation, intentSummary, assumptions and
+        coinSelection, which v85 dropped - is in git history."""
+        from .execution import (PLATFORM_EXECUTION_DEFAULTS, POSITION_MANAGEMENT_DIALS,
+                                POSITION_MANAGEMENT_MIRROR, TRADE_LEVEL_DIALS)
+        t = self.thesis
+        # validated in critique(); keys are the API's own field names
+        eff = {**PLATFORM_EXECUTION_DEFAULTS, **POSITION_MANAGEMENT_MIRROR, **(t.execution or {})}
+        return {
+            "IDENTITY": {"name": t.name, "description": t.description, "tagline": t.tagline},
+            "TIMEFRAME_PROFILE": {"timeframe": t.anchor},
+            "REPORT": {"sections": self._sections()},
+            "MARKET_READ": {"marketReadText": self.market_read_text},
+            "CONDITIONS": {"conditions": self.conditions},
+            "ENTRY": {"entry": dict(ENTRY_MIRROR)},
+            "SETUP_GATES": {"minAggregateScore": t.gate,
+                            "minRequiredCount": sum(1 for r in self.rules if r.required),
+                            "minAtrPct": eff["minAtrPct"]},
+            "TRADE_LEVEL_POLICY": {k: eff[k] for k in TRADE_LEVEL_DIALS},
+            "POSITION_MANAGEMENT": {k: eff[k] for k in POSITION_MANAGEMENT_DIALS},
+            "SIGNAL_RULES": {"rules": self._rules()},
         }
-        if self.thesis.execution:
-            out.update(self.thesis.execution)   # validated in critique(); keys are API fields
+
+    def axes_update(self) -> dict:
+        """The axes for staging this thesis into an EXISTING strategy's draft: axes()
+        without ENTRY. The old UPDATE rule stands - never touch an existing strategy's
+        entry axis; an axis omitted from a stage keeps the value the draft has (v85).
+        strategyId and draftVersion belong to the stage request, not to the axes."""
+        out = self.axes()
+        del out["ENTRY"]
         return out
 
-    def wire_update(self, strategy_id: str, expected_revision: int) -> dict:
-        """The exact compile_strategy_plan UPDATE request body: the full CREATE body
-        re-targeted at an existing strategy (design 2026-08-29 - the Thesis is the
-        single source of truth; the server computes the diff)."""
-        if expected_revision < 1:
-            raise ValueError(f"expectedRevision must be >= 1, got {expected_revision}")
-        out = self.wire()
-        out["operation"] = "UPDATE"
-        out["strategyId"] = strategy_id
-        out["expectedRevision"] = expected_revision
-        # entry is optional on UPDATE and its semantics are unmeasured - never
-        # touch an existing strategy's entry axis (omitted = left as is).
-        del out["entry"]
-        return out
+    def preview_request(self) -> dict:
+        """The read-only dry run: a preview_strategy_report body with a FIELDS source
+        (v85). It judges the report and the conditions with the v84/v88 grammar - NOT
+        signal rules, gates or dials; only a stage does, and a stage is a write.
+        coinSelection lives here only since v85: it is no part of a strategy."""
+        return {
+            "coinSelection": self.thesis.resolved_coin_selection(),
+            "source": {
+                "kind": "FIELDS",
+                "timeframe": self.thesis.anchor,
+                "sections": self._sections(),
+                "conditions": self.conditions,
+                "marketReadText": self.market_read_text,
+            },
+        }
 
     def render(self) -> str:
         c, mem, sim = self.cost(), self.membership(), self.simulate()
@@ -479,11 +512,14 @@ class StrategyPlan:
             lines += ["", f"conditions        {len(self.conditions):>3}"]
             for cond in self.conditions:
                 v = cond.get("verdict") or "-"
+                if cond.get("exitSide"):
+                    v = f"x{cond['exitSide']}"       # an exit rule: the side it closes
                 lines.append(f"  {cond['conditionKey']:<16} {v:<8} {cond['name']}")
         if sim:
             lines += ["", f"all-signals-at-0.75 -> aggregate {sim.aggregate_score_percent}% "
                           f"vs gate {sim.gate_percent}% -> "
                           f"{'ROUTES' if sim.would_route else 'held'}"]
+        lines += ["", "assumptions:"] + [f"  - {x}" for x in self._assumptions()]
         lines += ["", "critique:"] + [f"  - {x}" for x in self.critique()]
         return "\n".join(lines)
 
@@ -569,6 +605,11 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
         {P}_CORE_DOWN  ...
         {P}_UP         ALL(CORE_UP, CTX_UP, RISK_ON)      -> verdict UP
         {P}_DOWN       ALL(CORE_DOWN, CTX_DOWN, RISK_ON)  -> verdict DOWN
+
+    Every clause and group holds one read, {1,1}: what `closes: 1` meant before v84, and
+    a hold above it is unmeasured for these readings. Every one of the seven is an entry
+    condition (exitSide null); each role named in thesis.exits then gains its v88 split,
+    CLOSE_ON_{P}_{role}, appended after the seven (omega.conditions.close_on).
     """
     directional = [m for m in thesis.weights if "up" in MODULE_CLAUSES.get(m, {})]
     filters = [m for m in thesis.weights if "filter" in MODULE_CLAUSES.get(m, {})]
@@ -606,6 +647,11 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
                    ref(f"{prefix}_CTX_{verdict}"),
                    ref(f"{prefix}_RISK_ON")),
             verdict=verdict))
+    by_role = {c["conditionKey"][len(prefix) + 1:]: c for c in out}
+    for role in thesis.exits:
+        if role not in by_role:
+            raise ValueError(f"exit role {role!r} is not one of {EXIT_ROLES}")
+        out.append(close_on(by_role[role]))
     return out
 
 
@@ -634,12 +680,16 @@ def emit_plan(plan_obj: StrategyPlan, name: str, *, out_dir=None) -> str:
     target = out_dir or (ROOT / "out")
     target.mkdir(parents=True, exist_ok=True)
     path = target / f"{name}.strategy.json"
-    payload = plan_obj.wire()
+    # The request of a CREATE stage_strategy_draft (v85: no strategyId opens a new create
+    # draft; draftVersion 0 when there is no draft), plus local metadata.
+    payload: dict = {"draftVersion": 0, "axes": plan_obj.axes()}
     payload["_generatedBy"] = "omega.generate - LOCAL ONLY, not submitted"
     payload["_critique"] = plan_obj.critique()
-    # cadence/regimeTimeframe have no field in the CREATE request; keep them as local
-    # metadata. Underscore keys never go to the API - strip every "_"-prefixed key
-    # before any submission.
+    payload["_assumptions"] = plan_obj._assumptions()
+    payload["_previewRequest"] = plan_obj.preview_request()
+    # cadence/regimeTimeframe have no field on any axis; keep them as local metadata.
+    # Underscore keys never go to the API - strip every "_"-prefixed key before any
+    # submission.
     payload["_cadence"] = CADENCE_FOR_ANCHOR[plan_obj.thesis.anchor]
     payload["_regimeTimeframe"] = REGIME_TF_FOR_ANCHOR[plan_obj.thesis.anchor]
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
