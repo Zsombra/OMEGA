@@ -1,280 +1,186 @@
-"""End-to-end CLI in tmp_path: recipe text, run -> receipt, gate exit codes."""
+"""End-to-end CLI in tmp_path at contract 91: recipe text, run -> receipt, gate exit codes.
+
+The capture is the saved 91.0.0 stage_strategy_draft definition wrapped in the capture
+envelope a session writes; the body is a generated CREATE stage request. The compile-era
+CLI (and its V5 / read-back replays) is in the repository history; its receipts stay
+under data/audit/compile_preflight_*.json."""
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
-import sys
 from pathlib import Path
 
 import pytest
+
+from omega.contract import stage_schema
+from omega.generate import PRESETS, emit_plan, plan
 
 ROOT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location("preflight_cli", ROOT / "scripts" / "preflight.py")
 cli = importlib.util.module_from_spec(spec); spec.loader.exec_module(cli)  # type: ignore[union-attr]
 
-MINI = json.loads((ROOT / "tests/fixtures/preflight/schema_walker_min.json").read_text(encoding="utf-8"))
-V5 = json.loads((ROOT / "data/research/2026-08-29-deep-tail-fade/compile_body_deep_tail_fade_v5.json").read_text(encoding="utf-8"))
-PRESTATE = json.loads((ROOT / "data/audit/first_generated_update_2026-08-29.json").read_text(encoding="utf-8"))["probes"]["preState"]["strategy"]
+CAPTURED_AT = "2026-10-06T09:00:00Z"
 
 
-def _captures(tmp_path):
-    """A schema capture whose fingerprint enums are REPLACED by the repo's real sets, so the
-    fingerprint passes; still the walker miniature otherwise."""
-    schema = json.loads(json.dumps(MINI))
-    arm = schema["parameters"]["properties"]["request"]["anyOf"][0]["properties"]
-    arm["rules"]["items"]["properties"]["signalId"]["enum"] = sorted(cli.repo_signal_ids())
-    arm["sections"]["items"]["anyOf"][0]["properties"]["sectionKey"]["enum"] = sorted(cli.repo_template_keys())
-    arm["timeframe"]["enum"] = cli.repo_timeframes()
-    arm["entry"]["properties"]["trigger"]["enum"] = ["AT_SIGNAL", "ON_CANDLE_CLOSE", "STOP_THROUGH_LEVEL", "ON_RETEST"]
-    arm["entry"]["properties"]["levelSource"]["enum"] = ["SWING_HIGH", "SWING_LOW", "BOLLINGER_UPPER", "BOLLINGER_LOWER"]
-    arm["sections"]["items"]["anyOf"][1]["properties"]["columns"]["items"]["properties"]["metric"] = {"type": "string"}
-    arm["sections"]["items"]["anyOf"][1]["properties"]["columns"]["items"]["additionalProperties"] = True
-    arm["conditions"]["items"]["properties"]["definition"] = {"type": "object"}
-    for k in V5:                      # the miniature models a subset; admit the body's other top-level keys permissively
-        arm.setdefault(k, {})
-    sp = tmp_path / "schema_20260904T085500Z.json"
-    sp.write_text(json.dumps({"capturedAt": "2026-09-04T08:55:00Z", "how": "ToolSearch (test)", "request": None,
-                              "response": schema}), encoding="utf-8")
-    rec = json.loads(json.dumps(PRESTATE))
-    rec["conditions"] = [dict(c, exit=False, clock="LIVE", closes=1) for c in rec["conditions"]]
-    rec["entry"] = {"trigger": "AT_SIGNAL", "confirmTf": "1h", "closes": 1, "bandAtrMultiple": 1,
-                    "levelSource": "SWING_HIGH", "levelOffsetAtrMultiple": 0, "validForBars": 4}
-    rp = tmp_path / "6a8bca67-45a3-428e-85ba-71ec2cd2218e_20260904T085800Z.json"
-    rp.write_text(json.dumps({"capturedAt": "2026-09-04T08:58:00Z", "how": "get_strategy (test)",
-                              "request": {"strategyId": rec["id"], "includeInactive": True},
-                              "response": {"strategy": rec}}), encoding="utf-8")
-    return sp, rp
+def _capture(tmp_path, definition=None, name="schema_20261006T090000Z.json") -> Path:
+    definition = definition if definition is not None else copy.deepcopy(stage_schema()["stage_strategy_draft"])
+    sp = tmp_path / name
+    sp.write_text(json.dumps({"capturedAt": CAPTURED_AT, "how": "ToolSearch (test)", "request": None,
+                              "response": definition}), encoding="utf-8")
+    return sp
 
 
-def test_recipe_prints_numbered_steps_with_the_capture_paths(tmp_path, capsys):
-    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
-    assert cli.main(["recipe", str(body), "--reference", "b9438519-8223-4ef1-a3c3-6f4592bb823d"]) == 0
+def _body(tmp_path, axes=None, name="body.json", **extra) -> Path:
+    req = {"draftVersion": 0, "axes": axes if axes is not None else plan(PRESETS["trend-continuation"]).axes()}
+    req.update(extra)
+    bp = tmp_path / name
+    bp.write_text(json.dumps({"request": req}), encoding="utf-8")
+    return bp
+
+
+def _run(*args) -> int:
+    return cli.main(["run", *map(str, args), "--now", "2026-10-06T09:05:00Z"])
+
+
+def test_recipe_prints_numbered_steps_with_the_capture_path(tmp_path, capsys):
+    assert cli.main(["recipe", str(_body(tmp_path))]) == 0
     out = capsys.readouterr().out
-    assert "ToolSearch" in out and "get_strategy" in out and "data/contract/compile_strategy_plan/" in out
-    assert "includeInactive" in out and "6 KB" in out and "never" in out.lower()
+    assert "ToolSearch" in out and "stage_strategy_draft" in out
+    assert "data/contract/stage_strategy_draft/" in out
+    assert "CREATE stage, 10 axes, 7 conditions" in out
+    assert "6 KB" in out and "never" in out.lower() and "read-back" in out
     assert "YYYY-MM-DDTHH:MM:SSZ" in out and "fractional seconds" in out.lower()
+    assert "compile_strategy_plan" not in out
 
 
-def test_run_fails_the_v5_body_on_missing_exit_and_gate_refuses(tmp_path, capsys):
-    sp, rp = _captures(tmp_path)
-    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
-    out = tmp_path / "receipt.json"
-    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                   "--now", "2026-09-04T09:00:00Z"])
-    assert rc == 1
-    receipt = json.loads(out.read_text(encoding="utf-8"))
-    assert receipt["verdict"] == "FAIL"
-    paths = {f["path"] for f in receipt["findings"] if f["verdict"] == "FAIL"}
-    assert "conditions[0].exit" in paths and "conditions[*].exit" in paths
-    assert cli.main(["gate", str(out), "--body", str(body), "--now", "2026-09-04T09:01:00Z"]) == 1
-
-
-def test_run_passes_once_exit_is_mirrored_and_gate_admits_then_expires(tmp_path, capsys):
-    sp, rp = _captures(tmp_path)
-    fixed = json.loads(json.dumps(V5))
-    for c in fixed["conditions"]:
-        c["exit"] = False
-    body = tmp_path / "body.json"; body.write_text(json.dumps(fixed), encoding="utf-8")
-    out = tmp_path / "receipt.json"
-    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                   "--now", "2026-09-04T09:00:00Z"])
+def test_run_passes_a_generated_create_and_gate_admits_then_expires(tmp_path, capsys):
+    sp, body, out = _capture(tmp_path), _body(tmp_path), tmp_path / "receipt.json"
+    rc = _run(body, "--schema", sp, "--out", out)
     printed = capsys.readouterr().out
-    assert rc == 0 and "PREFLIGHT PASS" in printed and "runtime validator" in printed
-    assert cli.main(["gate", str(out), "--body", str(body), "--now", "2026-09-04T09:30:00Z"]) == 0
-    assert cli.main(["gate", str(out), "--body", str(body), "--now", "2026-09-04T11:00:00Z"]) == 1
+    assert rc == 0 and "PREFLIGHT PASS" in printed and "ref none (read-back retired)" in printed
+    receipt = json.loads(out.read_text(encoding="utf-8"))
+    assert receipt["body"]["operation"] == "CREATE" and receipt["captures"]["readback"] is None
+    assert receipt["captures"]["schema"]["fingerprint"] == "ok"
+    assert cli.main(["gate", str(out), "--body", str(body), "--now", "2026-10-06T09:30:00Z"]) == 0
+    assert cli.main(["gate", str(out), "--body", str(body), "--now", "2026-10-06T11:00:00Z"]) == 1
+
+
+def test_an_update_stage_is_named_and_walks_clean(tmp_path, capsys):
+    axes = plan(PRESETS["trend-continuation"]).axes_update()
+    body = _body(tmp_path, axes, strategyId="00000000-0000-4000-8000-000000000000", draftVersion=3)
+    out = tmp_path / "receipt.json"
+    assert _run(body, "--schema", _capture(tmp_path), "--out", out) == 0
+    assert json.loads(out.read_text(encoding="utf-8"))["body"]["operation"] == "UPDATE"
+
+
+def test_run_fails_a_body_carrying_the_retired_condition_keys_and_gate_refuses(tmp_path, capsys):
+    axes = plan(PRESETS["trend-continuation"]).axes()
+    for c in axes["CONDITIONS"]["conditions"]:
+        c["exit"] = False                   # v88: refused as an unknown key
+        del c["exitSide"]                   # v88: required, nullable
+    body, out = _body(tmp_path, axes), tmp_path / "receipt.json"
+    assert _run(body, "--schema", _capture(tmp_path), "--out", out) == 1
+    receipt = json.loads(out.read_text(encoding="utf-8"))
+    paths = {(f["cls"], f["path"]) for f in receipt["findings"] if f["verdict"] == "FAIL"}
+    assert ("UNDECLARED", "axes.CONDITIONS.conditions[0].exit") in paths
+    assert ("MISSING_REQUIRED", "axes.CONDITIONS.conditions[0].exitSide") in paths
+    assert receipt["gateLine"] is None and "PREFLIGHT PASS" not in out.read_text(encoding="utf-8")
+    assert cli.main(["gate", str(out), "--body", str(body), "--now", "2026-10-06T09:06:00Z"]) == 1
 
 
 def test_run_refuses_a_transcription_suspect_schema(tmp_path, capsys):
-    sp, rp = _captures(tmp_path)
-    doc = json.loads(sp.read_text(encoding="utf-8"))
-    doc["response"]["parameters"]["properties"]["request"]["anyOf"][0]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"].pop()
-    sp.write_text(json.dumps(doc), encoding="utf-8")
-    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
+    definition = copy.deepcopy(stage_schema()["stage_strategy_draft"])
+    axes = definition["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
+    axes["SIGNAL_RULES"]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"].pop()
     out = tmp_path / "receipt.json"
-    assert cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                     "--now", "2026-09-04T09:00:00Z"]) == 1
+    assert _run(_body(tmp_path), "--schema", _capture(tmp_path, definition), "--out", out) == 1
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert any(f["cls"] == "TRANSCRIPTION_SUSPECT" for f in receipt["findings"])
+    assert receipt["captures"]["schema"]["fingerprint"] == "suspect"
 
 
-def test_run_refuses_a_capture_missing_how_or_request(tmp_path):
-    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
-    out = tmp_path / "receipt.json"
-
-    sp, rp = _captures(tmp_path)
-    doc = json.loads(sp.read_text(encoding="utf-8"))
-    del doc["how"]
+def test_run_refuses_a_capture_missing_how(tmp_path):
+    sp = _capture(tmp_path)
+    doc = json.loads(sp.read_text(encoding="utf-8")); del doc["how"]
     sp.write_text(json.dumps(doc), encoding="utf-8")
     with pytest.raises(SystemExit) as excinfo:
-        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                  "--now", "2026-09-04T09:00:00Z"])
+        _run(_body(tmp_path), "--schema", sp, "--out", tmp_path / "r.json")
     assert "how" in str(excinfo.value)
 
-    sp, rp = _captures(tmp_path)
-    doc = json.loads(rp.read_text(encoding="utf-8"))
-    del doc["request"]
-    rp.write_text(json.dumps(doc), encoding="utf-8")
-    with pytest.raises(SystemExit) as excinfo:
-        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                  "--now", "2026-09-04T09:00:00Z"])
-    assert "request" in str(excinfo.value)
 
-    # a schema capture with "request": null (already the case in _captures()) is accepted
-    sp, rp = _captures(tmp_path)
-    assert json.loads(sp.read_text(encoding="utf-8"))["request"] is None
-    fixed = json.loads(json.dumps(V5))
-    for c in fixed["conditions"]:
-        c["exit"] = False
-    fixed_body = tmp_path / "fixed_body.json"; fixed_body.write_text(json.dumps(fixed), encoding="utf-8")
-    rc = cli.main(["run", str(fixed_body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                   "--now", "2026-09-04T09:00:00Z"])
-    assert rc == 0
+def test_run_takes_no_readback(tmp_path):
+    with pytest.raises(SystemExit):
+        _run(_body(tmp_path), "--schema", _capture(tmp_path), "--readback", "x.json")
 
 
-def test_run_fail_receipt_has_no_gate_line_on_disk(tmp_path, capsys):
-    """The receipt JSON written for a FAIL run must carry gateLine: null and must not spell
-    out the string 'PREFLIGHT PASS' anywhere in the file - a FAIL run used to precompute and
-    store a PASS-worded gate line anyway."""
-    sp, rp = _captures(tmp_path)
-    body = tmp_path / "body.json"; body.write_text(json.dumps(V5), encoding="utf-8")
+def test_an_emitted_plan_file_is_a_body_and_its_metadata_is_stripped(tmp_path, capsys):
+    """emit_plan writes the stage request plus "_"-prefixed local metadata; the walk and
+    the sha see only what goes to the API."""
+    path = Path(emit_plan(plan(PRESETS["mean-reversion"]), "mr", out_dir=tmp_path))
+    assert cli._load_body(str(path)) == {"draftVersion": 0, "axes": plan(PRESETS["mean-reversion"]).axes()}
+    assert _run(path, "--schema", _capture(tmp_path), "--out", tmp_path / "r.json") == 0
+
+
+def test_previous_schema_adds_changelog_info_only(tmp_path, capsys):
+    prev = copy.deepcopy(stage_schema()["stage_strategy_draft"])
+    ax = prev["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
+    ax["TIMEFRAME_PROFILE"]["properties"]["timeframe"]["enum"].remove("1w")
     out = tmp_path / "receipt.json"
-    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                   "--now", "2026-09-04T09:00:00Z"])
-    assert rc == 1
-    raw = out.read_text(encoding="utf-8")
-    receipt = json.loads(raw)
-    assert receipt["verdict"] == "FAIL"
-    assert receipt["gateLine"] is None
-    assert "PREFLIGHT PASS" not in raw
-
-
-def test_run_falls_back_to_the_record_id_and_records_meta_fingerprints(tmp_path, capsys):
-    sp, rp = _captures(tmp_path)
-    doc = json.loads(rp.read_text(encoding="utf-8"))
-    doc["request"] = {}
-    rp.write_text(json.dumps(doc), encoding="utf-8")
-
-    fixed = json.loads(json.dumps(V5))
-    for c in fixed["conditions"]:
-        c["exit"] = False
-    body = tmp_path / "body.json"; body.write_text(json.dumps(fixed), encoding="utf-8")
-    out = tmp_path / "receipt.json"
-    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                   "--now", "2026-09-04T09:00:00Z"])
-    assert rc == 0
-    receipt = json.loads(out.read_text(encoding="utf-8"))
-    assert receipt["captures"]["readback"]["strategyId"] == "6a8bca67-45a3-428e-85ba-71ec2cd2218e"
-    assert receipt["captures"]["readback"]["fingerprint"] == "ok"
-    assert receipt["captures"]["schema"]["fingerprint"] == "ok"
-
-    sp2, rp2 = _captures(tmp_path)
-    doc2 = json.loads(rp2.read_text(encoding="utf-8"))
-    doc2["request"] = {}
-    rp2.write_text(json.dumps(doc2), encoding="utf-8")
-    doc3 = json.loads(sp2.read_text(encoding="utf-8"))
-    doc3["response"]["parameters"]["properties"]["request"]["anyOf"][0]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"].pop()
-    sp2.write_text(json.dumps(doc3), encoding="utf-8")
-    out2 = tmp_path / "receipt2.json"
-    rc2 = cli.main(["run", str(body), "--schema", str(sp2), "--readback", str(rp2), "--out", str(out2),
-                    "--now", "2026-09-04T09:00:00Z"])
-    assert rc2 == 1
-    receipt2 = json.loads(out2.read_text(encoding="utf-8"))
-    assert receipt2["captures"]["schema"]["fingerprint"] == "suspect"
-    assert receipt2["captures"]["readback"]["fingerprint"] == "ok"
-
-
-def _fixed_body(tmp_path, name="body.json"):
-    fixed = json.loads(json.dumps(V5))
-    for c in fixed["conditions"]:
-        c["exit"] = False
-    body = tmp_path / name
-    body.write_text(json.dumps(fixed), encoding="utf-8")
-    return body
+    assert _run(_body(tmp_path), "--schema", _capture(tmp_path), "--previous-schema",
+                _capture(tmp_path, prev, "prev.json"), "--out", out) == 0
+    log = [f for f in json.loads(out.read_text(encoding="utf-8"))["findings"] if f["cls"] == "CHANGELOG"]
+    assert log and all(f["verdict"] == "INFO" for f in log)
+    assert any("1w" in f["detail"] for f in log)
 
 
 def test_run_refuses_to_overwrite_an_existing_receipt_without_force(tmp_path, capsys):
     """A same-day default receipt path (or any repeated --out) used to be silently
     overwritten, so a FAIL run followed by a PASS run on the same day destroyed the FAIL
     evidence. `run` must refuse a pre-existing receipt path unless --force is given."""
-    sp, rp = _captures(tmp_path)
-    body = _fixed_body(tmp_path)
-    out = tmp_path / "receipt.json"
-    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                   "--now", "2026-09-04T09:00:00Z"])
-    assert rc == 0 and out.exists()
-    first_contents = out.read_text(encoding="utf-8")
-
+    sp, body, out = _capture(tmp_path), _body(tmp_path), tmp_path / "receipt.json"
+    assert _run(body, "--schema", sp, "--out", out) == 0
+    first = out.read_text(encoding="utf-8")
     with pytest.raises(SystemExit) as excinfo:
-        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                  "--now", "2026-09-04T09:05:00Z"])
+        _run(body, "--schema", sp, "--out", out)
     assert str(out) in str(excinfo.value) or "force" in str(excinfo.value).lower()
-    assert out.read_text(encoding="utf-8") == first_contents        # untouched by the refusal
-
-    rc2 = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                    "--now", "2026-09-04T09:05:00Z", "--force"])
-    assert rc2 == 0
+    assert out.read_text(encoding="utf-8") == first
+    assert _run(body, "--schema", sp, "--out", out, "--force") == 0
 
 
 def test_run_default_receipt_path_appends_the_slug(tmp_path, monkeypatch):
-    sp, rp = _captures(tmp_path)
-    body = _fixed_body(tmp_path)
     monkeypatch.setattr(cli, "AUDIT_DIR", tmp_path)
-    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp),
-                   "--now", "2026-09-04T09:00:00Z", "--slug", "test-slug"])
-    assert rc == 0
-    assert (tmp_path / "compile_preflight_2026-09-04-test-slug.json").exists()
+    assert _run(_body(tmp_path), "--schema", _capture(tmp_path), "--slug", "test-slug") == 0
+    assert (tmp_path / "stage_preflight_2026-10-06-test-slug.json").exists()
 
 
 def test_run_rejects_a_path_escaping_slug_before_touching_any_file(tmp_path, monkeypatch):
-    """--slug is spliced straight into the default receipt filename
-    (compile_preflight_<date>-<slug>.json); an unvalidated value like '../../escaped' could
-    write outside data/audit/. It must be rejected before any file - including the
-    receipt - is written."""
-    sp, rp = _captures(tmp_path)
-    body = _fixed_body(tmp_path)
+    """--slug is spliced straight into the default receipt filename; an unvalidated value
+    like '../../escaped' could write outside data/audit/. It must be rejected before any
+    file - including the receipt - is written."""
     audit_dir = tmp_path / "audit"
     monkeypatch.setattr(cli, "AUDIT_DIR", audit_dir)
-    escaped = audit_dir / "compile_preflight_2026-09-04-../../escaped.json"
     with pytest.raises(SystemExit) as excinfo:
-        cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp),
-                  "--now", "2026-09-04T09:00:00Z", "--slug", "../../escaped"])
+        _run(_body(tmp_path), "--schema", _capture(tmp_path), "--slug", "../../escaped")
     assert "--slug" in str(excinfo.value)
-    assert not escaped.exists()
     assert not audit_dir.exists()
 
 
-def test_run_writes_a_gate_line_into_the_receipt_and_gate_prints_the_disclaimer_note_on_pass(tmp_path, capsys):
-    """(1) The receipt's gateLine must reflect the actual --out path (so it can be copied
-    straight from the JSON). (2) `gate` on a PASS must print the same 'note: <DISCLAIMER>'
-    line `run` already prints on PASS - the house rule is verbatim on every PASS, not just
-    the first one."""
-    sp, rp = _captures(tmp_path)
-    body = _fixed_body(tmp_path)
-    out = tmp_path / "receipt.json"
-    rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(out),
-                   "--now", "2026-09-04T09:00:00Z"])
-    assert rc == 0
+def test_gate_prints_the_disclaimer_note_on_pass(tmp_path, capsys):
+    sp, body, out = _capture(tmp_path), _body(tmp_path), tmp_path / "receipt.json"
+    assert _run(body, "--schema", sp, "--out", out) == 0
     receipt = json.loads(out.read_text(encoding="utf-8"))
     assert receipt["gateLine"].startswith("PREFLIGHT PASS") and str(out) in receipt["gateLine"]
-
     capsys.readouterr()
-    rc2 = cli.main(["gate", str(out), "--body", str(body), "--now", "2026-09-04T09:05:00Z"])
-    printed = capsys.readouterr().out
-    assert rc2 == 0 and "runtime validator" in printed
+    assert cli.main(["gate", str(out), "--body", str(body), "--now", "2026-10-06T09:10:00Z"]) == 0
+    assert "runtime validator" in capsys.readouterr().out
 
 
-def test_receipt_gate_line_records_a_repo_relative_path_under_the_repo(tmp_path, monkeypatch):
+def test_receipt_gate_line_records_a_repo_relative_path_under_the_repo(tmp_path):
     """A committed receipt must not embed the machine's absolute path (2026-09-05 live run)."""
-    sp, rp = _captures(tmp_path)
-    fixed = json.loads(json.dumps(V5))
-    for c in fixed["conditions"]:
-        c["exit"] = False
-    body = tmp_path / "body.json"; body.write_text(json.dumps(fixed), encoding="utf-8")
     inside = ROOT / "data" / "audit" / "_tmp_test_receipt_do_not_commit.json"
     try:
-        rc = cli.main(["run", str(body), "--schema", str(sp), "--readback", str(rp), "--out", str(inside),
-                       "--now", "2026-09-04T09:00:00Z"])
-        assert rc == 0
+        assert _run(_body(tmp_path), "--schema", _capture(tmp_path), "--out", inside) == 0
         receipt = json.loads(inside.read_text(encoding="utf-8"))
         assert "data/audit/_tmp_test_receipt_do_not_commit.json" in receipt["gateLine"]
         assert str(ROOT) not in receipt["gateLine"]

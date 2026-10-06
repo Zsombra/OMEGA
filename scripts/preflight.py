@@ -1,12 +1,13 @@
-"""Schema-drift preflight CLI (design: docs/superpowers/specs/2026-09-04-schema-drift-preflight-design.md).
+"""Schema-drift preflight CLI (design: docs/superpowers/specs/2026-09-04-schema-drift-preflight-design.md),
+at contract 91: the body is a stage_strategy_draft request, walked axis by axis.
 
-  recipe <body.json> --reference <strategyId>
+  recipe <body.json>
       Print the numbered, read-only session procedure for THIS body: which definition to
-      load, which record to read back, exactly where to save each verbatim capture.
-  run <body.json> --schema <capture> --readback <capture> [--previous-schema <capture>]
-      [--expires-minutes 60] [--out data/audit/compile_preflight_<date>[-<slug>].json]
+      load and exactly where to save the verbatim capture.
+  run <body.json> --schema <capture> [--previous-schema <capture>]
+      [--expires-minutes 60] [--out data/audit/stage_preflight_<date>[-<slug>].json]
       [--slug <slug>] [--force] [--now <ISO Z>]
-      Diff the body against both captures; write the receipt; print the gate line.
+      Walk the body against the capture; write the receipt; print the gate line.
       Refuses to overwrite an existing receipt at the resolved path unless --force is
       given (a FAIL run must not be silently destroyed by a later PASS run on the same
       day). Exit 0 on PASS, 1 on FAIL.
@@ -14,8 +15,17 @@
       Exit 0 only if the receipt is PASS, the body sha matches, it has not expired and
       it is not voided.
 
-This script never calls the connector. The captures are agent transcriptions of read-only
-calls; `run` checks their fidelity before it trusts them.
+The body file is a stage request - {"request": {draftVersion, axes, strategyId?}} or the
+request object itself, as omega.generate.emit_plan writes it; top-level "_"-prefixed keys
+are local metadata and are stripped before the walk and the sha.
+
+compile_strategy_plan was removed at contract 85.0.0, and the read-back mirror is retired
+until a v91 read-back is captured (every get_strategy record on disk predates v84 and
+carries `closes`/`exit`): `run` takes no --readback (plan 2026-10-06, Work step 4). The
+compile-era receipts under data/audit/compile_preflight_*.json stay as history.
+
+This script never calls the connector. The capture is an agent transcription of a
+read-only definition load; `run` checks its fidelity before it trusts it.
 """
 from __future__ import annotations
 
@@ -30,10 +40,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from omega import preflight as P  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-CAPTURE_SCHEMA_DIR = ROOT / "data" / "contract" / "compile_strategy_plan"
-CAPTURE_READBACK_DIR = ROOT / "data" / "contract" / "get_strategy"
+CAPTURE_SCHEMA_DIR = ROOT / "data" / "contract" / "stage_strategy_draft"
 AUDIT_DIR = ROOT / "data" / "audit"
-TOOL = "mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__compile_strategy_plan"
+TOOL = "mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__stage_strategy_draft"
 _SLUG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$")
 
 
@@ -52,8 +61,11 @@ def repo_timeframes() -> list[str]:
 
 
 def _load_body(path: str) -> dict:
+    """The stage request object. emit_plan's local metadata ("_"-prefixed keys) never goes
+    to the API, so it is no part of what is walked or hashed."""
     doc = json.loads(Path(path).read_text(encoding="utf-8"))
-    return doc.get("request", doc) if isinstance(doc, dict) else doc
+    req = doc.get("request", doc) if isinstance(doc, dict) else doc
+    return {k: v for k, v in req.items() if not k.startswith("_")} if isinstance(req, dict) else req
 
 
 def _load_capture(path: str) -> tuple[dict, dict]:
@@ -69,41 +81,44 @@ def _now(arg: str | None) -> datetime:
     return P.parse_iso(arg) if arg else datetime.now(timezone.utc).replace(microsecond=0)
 
 
+def _operation(body: dict) -> str:
+    """v85: a stage with no strategyId opens a NEW create draft."""
+    return "UPDATE" if body.get("strategyId") else "CREATE"
+
+
 def cmd_recipe(a) -> int:
     body = _load_body(a.body)
+    axes = body.get("axes", {}) if isinstance(body, dict) else {}
+    conds = (axes.get("CONDITIONS") or {}).get("conditions", [])
     stamp = "<YYYYMMDDTHHMMSSZ, the UTC time of the fetch>"
     print(f"""Schema-drift preflight - read-only session procedure for {a.body}
-(operation {body.get('operation', '?')}, {len(body.get('conditions', []))} conditions). Nothing below writes to the platform.
+({_operation(body)} stage, {len(axes)} axes, {len(conds)} conditions). Nothing below writes to the platform.
 
-1. Load the compile definition (a definition load, NOT a call):
+1. Load the stage_strategy_draft definition (a definition load, NOT a call):
      ToolSearch  select:{TOOL}   max_results 1
    Save the returned definition VERBATIM to
      {CAPTURE_SCHEMA_DIR.relative_to(ROOT).as_posix()}/schema_{stamp}.json
    as {{"capturedAt": "<YYYY-MM-DDTHH:MM:SSZ, fractional seconds accepted>", "how": "ToolSearch select:<tool>", "request": null, "response": <the definition>}}.
-   The definition is ~21 KB. If one Write fails or truncates, write it in <= 6 KB chunks and
+   The definition is ~19 KB compact (~36 KB indented; measured on the saved 91.0.0 copy). If one Write fails or truncates, write it in <= 6 KB chunks and
    concatenate, and say so in "how". Never edit, reorder or repair the text.
 
-2. Read back the reference record (read-only: the 2026-09-04 and 2026-09-05 read-backs of
-   b9438519 left its revision at 2 and updatedAt at 2026-08-30T04:41:44Z; whether a read
-   touches the strategy quota is not separately measured, but quota counts strategies):
-     get_strategy  {{"strategyId": "{a.reference}", "includeInactive": true}}
-   Save the response VERBATIM to
-     {CAPTURE_READBACK_DIR.relative_to(ROOT).as_posix()}/{a.reference}_{stamp}.json
-   as {{"capturedAt": "<YYYY-MM-DDTHH:MM:SSZ, fractional seconds accepted>", "how": "get_strategy", "request": {{...the call...}}, "response": <the response>}}.
+2. No read-back: the get_strategy mirror is retired until a v91 read-back is captured (every
+   record on disk predates contract 84 and carries `closes`/`exit`).
 
-3. Run the diff:
-     python scripts/preflight.py run {a.body} --schema <step 1 file> --readback <step 2 file>
-   It checks the captures' fidelity first (signalId enum == 84 ids, 25 platform section keys,
-   13 timeframes; record id, 84 signalRules), then diffs, writes the receipt under
-   data/audit/, and prints the gate line.
+3. Run the walk:
+     python scripts/preflight.py run {a.body} --schema <step 1 file>
+   It checks the capture's fidelity first (the ten axes; signalId enum == 84 ids, 25 platform
+   section keys, 13 timeframes), then walks every axis, writes the receipt under data/audit/,
+   and prints the gate line.
 
-4. On FAIL: stop. For each MISSING_* finding, mirror the record's value in omega in its own
-   commit with tests; if no record carries the field, the user chooses and the receipt
-   records it as user-chosen. Re-run step 3 (captures reusable within the expiry window).
+4. On FAIL: stop. For each MISSING_* finding, mirror the value from the changelog or a record
+   in omega in its own commit with tests; if neither carries it, the user chooses and the
+   receipt records it as user-chosen. Re-run step 3 (the capture is reusable within the expiry
+   window).
 
-5. On PASS: quote the printed gate line in the plan's authorization checkbox, then request
-   the doc 20 section 5 authorization sentence from the user exactly as before. The preflight
-   changes nothing about who authorizes the compile.""")
+5. On PASS: quote the printed gate line in the plan's authorization checkbox, then ask the
+   user for the stage. A stage is a WRITE into the player's draft and a commit publishes it;
+   the preflight changes nothing about who authorizes either.""")
     return 0
 
 
@@ -121,33 +136,26 @@ def cmd_run(a) -> int:
         raise SystemExit(f"--slug {a.slug!r}: use letters, digits, '-' or '_' (max 40)")
     body = _load_body(a.body)
     schema_doc, definition = _load_capture(a.schema)
-    readback_doc, record = _load_capture(a.readback)
     now = _now(a.now)
-    operation = body.get("operation", "CREATE")
-    arms, root = P.resolve_arms(definition)
-    if operation not in arms:
-        raise SystemExit(f"operation {operation!r} has no arm in the captured definition ({sorted(arms)})")
-    arm = arms[operation]
-    schema_fp = P.fingerprint_schema(arm, root, signal_ids=repo_signal_ids(),
-                                     template_keys=repo_template_keys(), timeframes=repo_timeframes())
-    strategy_id = (readback_doc.get("request") or {}).get("strategyId") or P.record_request_view(record).get("id")
-    readback_fp = P.fingerprint_readback(record, strategy_id)
-    findings: list[P.Finding] = schema_fp + readback_fp
-    if not findings:
-        findings += P.diff_schema(body, arm, root)
-        findings += P.diff_record(body, record, arm, root)
-        findings += P.mirror_findings(body, record)
+    operation = _operation(body)
+    request_schema, root = P.resolve_request(definition)
+    axis_schemas, _ = P.resolve_axes(definition)
+    findings: list[P.Finding] = P.fingerprint_axes(
+        axis_schemas, root, signal_ids=repo_signal_ids(), template_keys=repo_template_keys(),
+        timeframes=repo_timeframes())
+    schema_fp_ok = not findings
+    if schema_fp_ok:
+        findings += P.diff_schema(body, request_schema, root)
         if a.previous_schema:
             _, prev_def = _load_capture(a.previous_schema)
-            prev_arms, prev_root = P.resolve_arms(prev_def)
-            if operation in prev_arms:
-                findings += P.changelog(P.schema_index(prev_arms[operation], prev_root), P.schema_index(arm, root))
-    rec = P.record_request_view(record)
+            prev_request, prev_root = P.resolve_request(prev_def)
+            findings += P.changelog(P.schema_index(prev_request, prev_root),
+                                    P.schema_index(request_schema, root))
     if a.out:
         out = Path(a.out)
     else:
         slug = f"-{a.slug}" if getattr(a, "slug", None) else ""
-        out = AUDIT_DIR / f"compile_preflight_{now.strftime('%Y-%m-%d')}{slug}.json"
+        out = AUDIT_DIR / f"stage_preflight_{now.strftime('%Y-%m-%d')}{slug}.json"
     if out.exists() and not getattr(a, "force", False):
         raise SystemExit(f"{out} already exists; refusing to silently overwrite a previous "
                          "receipt (a FAIL followed by a PASS on the same day would destroy the "
@@ -156,12 +164,12 @@ def cmd_run(a) -> int:
     receipt = P.build_receipt(
         body=body, body_path=a.body, operation=operation,
         schema_meta={"path": a.schema, "capturedAt": schema_doc["capturedAt"],
-                     "fingerprint": "ok" if not schema_fp else "suspect"},
-        readback_meta={"path": a.readback, "capturedAt": readback_doc["capturedAt"], "strategyId": strategy_id,
-                       "revision": rec.get("revision"), "fingerprint": "ok" if not readback_fp else "suspect"},
+                     "fingerprint": "ok" if schema_fp_ok else "suspect"},
+        readback_meta=None,
         findings=findings, now=now, expires_minutes=a.expires_minutes, receipt_path=_repo_relative(out),
-        unmeasured=["the runtime validator (only a compile observes it)",
+        unmeasured=["the builder's judgement (a stage's diagnostics observe it; a stage is a write)",
                     "whether additionalProperties:false is enforced (schema-derived, not measured)",
+                    "the operator bounds a create is judged at since v89 (served in diagnostics)",
                     "semantics of any field first seen in this capture"])
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(receipt, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -172,7 +180,7 @@ def cmd_run(a) -> int:
         print(P.gate_line(receipt, _repo_relative(out)))
         print(f"note: {P.DISCLAIMER}")
         return 0
-    print("PREFLIGHT FAIL - stop; mirror from a record, never invent (see the recipe, step 4)")
+    print("PREFLIGHT FAIL - stop; mirror from the changelog or a record, never invent (see the recipe, step 4)")
     return 1
 
 
@@ -193,10 +201,10 @@ def main(argv: list[str] | None = None) -> int:
             stream.reconfigure(encoding="utf-8", errors="replace")
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("recipe"); r.add_argument("body"); r.add_argument("--reference", required=True)
+    r = sub.add_parser("recipe"); r.add_argument("body")
     r.set_defaults(fn=cmd_recipe)
     u = sub.add_parser("run"); u.add_argument("body"); u.add_argument("--schema", required=True)
-    u.add_argument("--readback", required=True); u.add_argument("--previous-schema")
+    u.add_argument("--previous-schema")
     u.add_argument("--expires-minutes", type=int, default=60); u.add_argument("--out"); u.add_argument("--now")
     u.add_argument("--slug"); u.add_argument("--force", action="store_true")
     u.set_defaults(fn=cmd_run)

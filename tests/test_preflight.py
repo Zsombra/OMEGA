@@ -123,9 +123,11 @@ def test_walker_reports_a_non_positive_multiple_of_as_unsupported_not_crash():
     assert ("MISSING_REQUIRED", "entry.validForBars") in _fails(findings)
 
 
-def test_mirror_fields_are_the_61_shapes():
+def test_mirror_fields_are_the_91_shapes():
+    """v84 took `closes` off the condition (the hold is compared node by node), v88 took
+    `exit` (its successor is `exitSide`)."""
     assert P.MIRROR_ENTRY_FIELDS == ("trigger", "levelOffsetAtrMultiple", "validForBars")
-    assert P.MIRROR_CONDITION_FIELDS == ("closes", "exit")
+    assert P.MIRROR_CONDITION_FIELDS == ("exitSide",)
 
 
 def test_walker_flags_missing_required_at_nested_paths():
@@ -447,23 +449,149 @@ def test_mirror_is_quiet_when_values_match_and_ignores_confirmTf():
     assert P.mirror_findings(body, rec) == []
 
 
+# A v91-shaped record, built by hand: no v91 read-back is on disk (the mirror is retired
+# from the CLI until one is captured). Shapes from the README: every strategy read returns
+# `hold` on each clause and group (v84) and `exitSide` on every condition (v88).
+ONE = {"atLeast": 1, "of": 1}
+V91_RECORD = {"entry": {"trigger": "ON_RETEST", "levelOffsetAtrMultiple": 0, "validForBars": 4},
+              "conditions": [{"conditionKey": "A_ONE", "exitSide": None, "definition": {
+                  "kind": "group", "op": "ALL", "hold": ONE, "members": [
+                      {"kind": "clause", "column": {"sectionKey": None, "header": "H"},
+                       "op": "gt", "value": 1, "hold": ONE},
+                      {"kind": "conditionRef", "conditionKey": "B_TWO"}]}}]}
+
+
+def _axes_body(entry, conditions):
+    return {"draftVersion": 0, "axes": {"ENTRY": {"entry": entry},
+                                        "CONDITIONS": {"conditions": conditions}}}
+
+
+def test_mirror_reads_the_axes_and_is_quiet_when_values_match():
+    body = _axes_body(dict(V91_RECORD["entry"]), [dict(V91_RECORD["conditions"][0])])
+    assert P.mirror_findings(body, V91_RECORD) == []
+    assert P.mirror_findings(body["axes"], V91_RECORD) == []
+
+
 def test_mirror_warns_never_fails_on_a_differing_mirror_value():
-    rec = _migrated_record()
-    body = {"entry": dict(MIRROR_ENTRY, validForBars=6),
-            "conditions": [{"closes": 2, "exit": False}]}
-    finds = P.mirror_findings(body, rec)
+    cond = json.loads(json.dumps(V91_RECORD["conditions"][0]))
+    cond["exitSide"] = "LONG"
+    cond["definition"]["members"][0]["hold"] = {"atLeast": 2, "of": 2}
+    body = _axes_body(dict(V91_RECORD["entry"], validForBars=6), [cond])
+    finds = P.mirror_findings(body, V91_RECORD)
     assert {(f.cls, f.path, f.verdict) for f in finds} == {
-        ("MIRROR", "entry.validForBars", "WARN"), ("MIRROR", "conditions[0].closes", "WARN")}
+        ("MIRROR", "entry.validForBars", "WARN"), ("MIRROR", "conditions[0].exitSide", "WARN"),
+        ("MIRROR", "conditions[0].definition.members[0].hold", "WARN")}
+
+
+def test_mirror_against_a_pre_v84_record_says_nothing_about_conditions():
+    """The reason the read-back mirror is retired: a pre-v84 record carries `closes` and
+    `exit`, neither `exitSide` nor a per-node `hold`, so it has nothing to compare."""
+    body = _axes_body({"trigger": "ON_CANDLE_CLOSE"}, [dict(V91_RECORD["conditions"][0], exitSide="BOTH")])
+    assert [f for f in P.mirror_findings(body, _migrated_record()) if f.path.startswith("conditions")] == []
 
 
 def test_mirror_findings_handles_a_list_valued_body_condition_field_without_raising():
     """`c[k] not in seen` raises TypeError when `c[k]` is a list/dict (unhashable) -
     a body condition can legally carry a list-valued field. Must compare by value, not by
     set membership, and still report the mismatch."""
-    rec = _migrated_record()
-    body = {"entry": dict(MIRROR_ENTRY), "conditions": [{"closes": [1, 2], "exit": False}]}
-    finds = P.mirror_findings(body, rec)          # must not raise
-    assert ("MIRROR", "conditions[0].closes", "WARN") in {(f.cls, f.path, f.verdict) for f in finds}
+    body = _axes_body(dict(V91_RECORD["entry"]), [{"exitSide": ["LONG"]}])
+    finds = P.mirror_findings(body, V91_RECORD)          # must not raise
+    assert ("MIRROR", "conditions[0].exitSide", "WARN") in {(f.cls, f.path, f.verdict) for f in finds}
+
+
+# --- the v91 stage schema: axes, nested unions, fingerprint -------------------------
+
+from omega.contract import stage_schema                         # noqa: E402
+from omega.generate import PRESETS, plan                         # noqa: E402
+
+
+def _v91():
+    return P.resolve_axes(stage_schema())
+
+
+def test_resolve_axes_reads_every_capture_shape():
+    """The saved multi-tool file, a manager surface entry ({inputSchema}) and a ToolSearch
+    definition ({parameters}) resolve to the same ten axes."""
+    saved = stage_schema()
+    entry = saved["stage_strategy_draft"]
+    toolsearch = {"name": "x", "parameters": entry["inputSchema"]}
+    for d in (saved, entry, toolsearch):
+        axes, root = P.resolve_axes(d)
+        assert set(axes) == set(P.AXES_91)
+        assert root is entry["inputSchema"]
+    with pytest.raises(P.UnsupportedSchema):
+        P.resolve_axes({"name": "x"})
+
+
+@pytest.mark.parametrize("name", sorted(PRESETS))
+def test_every_preset_axes_walk_clean_and_the_update_too(name):
+    """The gate this exists for, at 91.0.0: zero FAIL and zero UNSUPPORTED for every
+    preset's create axes and update axes."""
+    axes, root = _v91()
+    p = plan(PRESETS[name])
+    for body in (p.axes(), p.axes_update()):
+        findings = P.diff_axes(body, axes, root)
+        assert _fails(findings) == [], (name, _fails(findings))
+        assert [f for f in findings if f.cls == "UNSUPPORTED"] == [], name
+
+
+def test_diff_axes_flags_an_undeclared_axis_and_ignores_an_omitted_one():
+    axes, root = _v91()
+    body = {"ORIGIN": {}, "TIMEFRAME_PROFILE": {"timeframe": "1h"}}
+    assert _fails(P.diff_axes(body, axes, root)) == [("UNDECLARED", "axes.ORIGIN")]
+
+
+def test_the_walker_descends_nested_unions_to_the_arm_the_clause_means():
+    """The 91.0.0 definition nests anyOf three deep and its four clause arms share kind
+    "clause". Before the walker looped over nested anyOf it validated no clause at all;
+    before it matched arms by const/enum it walked an `is` clause against the numeric arm."""
+    from omega.conditions import condition, in_, is_, num, ref, all_of
+    axes, root = _v91()
+    bare = is_("H", "x")
+    del bare["hold"]
+    held_ref = dict(ref("QQ"), hold=ONE)
+    cond = condition("AB", "n", all_of(num("H", "gt", 1), in_("H", ["a"]), bare, held_ref))
+    fails = _fails(P.diff_axes({"CONDITIONS": {"conditions": [cond]}}, axes, root))
+    assert fails == [("MISSING_REQUIRED", "axes.CONDITIONS.conditions[0].definition.members[2].hold"),
+                     ("UNDECLARED", "axes.CONDITIONS.conditions[0].definition.members[3].hold")]
+
+
+def test_the_entry_union_is_told_apart_by_its_trigger():
+    axes, root = _v91()
+    level = {"trigger": "ON_RETEST", "levelOffsetAtrMultiple": 0.5, "validForBars": 3}
+    assert _fails(P.diff_axes({"ENTRY": {"entry": level}}, axes, root)) == []
+    dialled = {"trigger": "ON_CANDLE_CLOSE", "levelOffsetAtrMultiple": 0, "validForBars": 4}
+    assert _fails(P.diff_axes({"ENTRY": {"entry": dialled}}, axes, root)), \
+        "v85: ON_CANDLE_CLOSE naming either dial is refused"
+    del level["validForBars"]
+    assert _fails(P.diff_axes({"ENTRY": {"entry": level}}, axes, root)) == [
+        ("MISSING_REQUIRED", "axes.ENTRY.entry.validForBars")]
+
+
+def test_the_walker_flags_the_retired_condition_keys():
+    from omega.conditions import condition, num
+    axes, root = _v91()
+    cond = dict(condition("AB", "n", num("H", "gt", 1)), exit=False, closes=1)
+    del cond["exitSide"]
+    fails = set(_fails(P.diff_axes({"CONDITIONS": {"conditions": [cond]}}, axes, root)))
+    assert {("UNDECLARED", "axes.CONDITIONS.conditions[0].exit"),
+            ("UNDECLARED", "axes.CONDITIONS.conditions[0].closes"),
+            ("MISSING_REQUIRED", "axes.CONDITIONS.conditions[0].exitSide")} <= fails
+
+
+def test_fingerprint_axes_passes_the_saved_schema_and_flags_a_truncated_enum():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("preflight_cli_fp", ROOT / "scripts" / "preflight.py")
+    cli = importlib.util.module_from_spec(spec); spec.loader.exec_module(cli)  # type: ignore[union-attr]
+    kw = dict(signal_ids=cli.repo_signal_ids(), template_keys=cli.repo_template_keys(),
+              timeframes=cli.repo_timeframes())
+    axes, root = _v91()
+    assert P.fingerprint_axes(axes, root, **kw) == []
+    short = dict(kw, signal_ids=kw["signal_ids"] | {"made_up_signal"})
+    [f] = P.fingerprint_axes(axes, root, **short)
+    assert f.cls == "TRANSCRIPTION_SUSPECT" and "SIGNAL_RULES" in f.path and f.verdict == "FAIL"
+    missing = {k: v for k, v in axes.items() if k != "ENTRY"}
+    assert any(f.path == "axes" for f in P.fingerprint_axes(missing, root, **kw))
 
 
 def test_schema_index_and_changelog_see_enum_growth_and_new_optional_keys():
@@ -559,6 +687,16 @@ def test_verdict_fails_only_on_fail_class_findings():
     assert P.verdict([]) == "PASS"
     assert P.verdict([P.Finding("MIRROR", "entry.closes", "d", "WARN"), P.Finding("INFO", "id", "d", "INFO")]) == "PASS"
     assert P.verdict([P.Finding("ENUM", "entry.trigger", "d", "FAIL")]) == "FAIL"
+
+
+def test_a_receipt_without_a_readback_expires_from_the_schema_capture_alone():
+    body = _good_body()
+    r = P.build_receipt(body=body, body_path="x.json", operation="CREATE", schema_meta=SCHEMA_META,
+                        readback_meta=None, findings=[], now=NOW)
+    assert r["captures"]["readback"] is None
+    assert r["expiresAt"] == "2026-09-04T09:55:00Z"
+    assert "ref none (read-back retired)" in r["gateLine"]
+    assert P.gate_check(r, body, NOW) == (True, "PASS")
 
 
 def test_receipt_carries_sha_expiry_disclaimer_and_findings():
