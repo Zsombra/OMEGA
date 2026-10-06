@@ -55,37 +55,63 @@ def _map() -> dict:
 
 
 @lru_cache(maxsize=1)
-def _scoring_inputs() -> dict:
+def _signal_data() -> dict[str, list[dict]]:
+    """The (metric, rung) data each signal scores on, as BattleGrid's own draft diagnostics
+    list it (the rung probe of 2026-10-06, contract 91.0.0: 83 of 84 signals). It replaces
+    the 2026-08-28 partial map, data/derived/scoring_inputs_measured.json (12 of 84, kept
+    as history)."""
     return json.loads(
-        (DERIVED_DIR / "scoring_inputs_measured.json").read_text(encoding="utf-8"))["pairs"]
+        (DERIVED_DIR / "signal_data_rungs_91.json").read_text(encoding="utf-8"))["signals"]
 
 
 def scoring_gaps(report, rules) -> list:
-    """Warn when an allocated signal's MEASURED scoring input is not rendered.
-    PARTIAL map (12 of 84 measured); an anchor column satisfies only the anchor rung -
-    the 2026-08-28 compile proved rel:anchor does not cover signalHigher/lower."""
+    """Warn when a weighted signal scores on data the report does not show - BattleGrid's
+    `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT`, predicted offline. It does not refuse a commit; it
+    means the agent's model is shown none of what drives that part of the score.
+
+    Matching, as measured (M1, 2026-10-06): an `anchor` rung is shown by a rel:anchor column
+    whose metric - or one of its spread `inputs` - is the metric, whatever the transform.
+    `lower` and `signalHigher` are UNMEASURED against any report column (the 2026-08-28
+    compile proved only that rel:anchor does not cover them), so they always warn and say
+    so. Platform sections are not expanded: their rendering against these rungs is
+    unmeasured. A signal the map does not list (comparison_btc_decorrelation) is silent."""
     from .validate import Finding
+
+    @dataclass(frozen=True)
+    class ScoringGap(Finding):
+        missing: frozenset = frozenset()
 
     def _rel(tf):
         # Column.timeframe validates from {"rel": "anchor"} dicts; handle both the
         # dict and the pydantic-model representation without caring which it is.
         return tf.get("rel") if isinstance(tf, dict) else getattr(tf, "rel", None)
 
-    inputs = _scoring_inputs()
-    anchored = {c.metric for s in report.sections if getattr(s, "columns", None)
-                for c in s.columns if _rel(c.timeframe) == "anchor"}
+    def _metric(x):
+        return x.get("metric") if isinstance(x, dict) else getattr(x, "metric", None)
+
+    anchored: set[str] = set()
+    for s in report.sections:
+        for c in getattr(s, "columns", None) or []:
+            if _rel(c.timeframe) == "anchor":
+                anchored.add(c.metric)
+                anchored.update(_metric(i) for i in (getattr(c, "inputs", None) or []))
+    data = _signal_data()
     out = []
     for r in rules:
-        if r.allocation <= 0 or r.signalId not in inputs:
+        if r.allocation <= 0 or r.signalId not in data:
             continue
-        want = inputs[r.signalId]
-        if want["rung"] == "anchor" and want["metric"] in anchored:
+        missing = frozenset((d["metric"], d["rung"]) for d in data[r.signalId]
+                            if not (d["rung"] == "anchor" and d["metric"] in anchored))
+        if not missing:
             continue
-        out.append(Finding(
+        unmeasured = sorted({rung for _, rung in missing if rung != "anchor"})
+        why = (f"; a report column at the {'/'.join(unmeasured)} rung is UNMEASURED against "
+               f"it, so no column can be counted" if unmeasured else "")
+        out.append(ScoringGap(
             "warning", "SCORING_INPUT_NOT_RENDERED", f"rules.{r.signalId}",
-            f"{r.signalId} scores on {want['metric']} @ {want['rung']}, which the "
-            f"report does not render (measured 2026-08-28; whether a rel:regime/lower "
-            f"column satisfies a non-anchor rung is unmeasured)"))
+            f"{r.signalId} scores on {', '.join(f'{m} @ {g}' for m, g in sorted(missing))}, "
+            f"which the report does not show (BattleGrid ACTIVE_SIGNAL_DATA_NOT_IN_REPORT, "
+            f"map measured 2026-10-06){why}", missing=missing))
     return out
 
 

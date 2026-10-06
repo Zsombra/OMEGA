@@ -1,0 +1,633 @@
+{
+ "source": "data/contract/stage_strategy_draft/rung_probe_20261006T080516Z.json",
+ "contractVersion": "91.0.0",
+ "how": "diagnostics.mismatches ACTIVE_SIGNAL_DATA_NOT_IN_REPORT of a draft with every signal on and a report holding only the Price Action platform section: the data each signal scores on, by rung.",
+ "matchingMeasured": {
+  "anchor": "satisfied by a report column whose metric (or a spread input) is the metric at {rel: anchor} (M1 2026-10-06: SMA200 distance, MACD/ADX trajectory, and EMA13 via an EMA5 spread input)",
+  "transform": "any transform satisfies (M1 evidence above)",
+  "lower": "UNMEASURED - no report column at a lower timeframe has been staged against it",
+  "signalHigher": "UNMEASURED - no report column above the anchor has been staged against it"
+ },
+ "notListed": {
+  "signals": [
+   "comparison_btc_decorrelation"
+  ],
+  "why": "no ACTIVE_SIGNAL_DATA_NOT_IN_REPORT for these: the Price Action section shows their data, or they score on none (not separated by this probe)"
+ },
+ "signals": {
+  "bollinger_cci_overbought": [
+   {
+    "metric": "CCI20",
+    "rung": "anchor"
+   }
+  ],
+  "bollinger_cci_oversold": [
+   {
+    "metric": "CCI20",
+    "rung": "anchor"
+   }
+  ],
+  "bollinger_lower_touch": [
+   {
+    "metric": "BB_TOUCH",
+    "rung": "anchor"
+   }
+  ],
+  "bollinger_squeeze": [
+   {
+    "metric": "BB_WIDTH",
+    "rung": "anchor"
+   }
+  ],
+  "bollinger_upper_touch": [
+   {
+    "metric": "BB_TOUCH",
+    "rung": "anchor"
+   }
+  ],
+  "comparison_sector_divergence": [
+   {
+    "metric": "EMA13",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA20",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA5",
+    "rung": "anchor"
+   }
+  ],
+  "comparison_sector_momentum": [
+   {
+    "metric": "EMA13",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA20",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA5",
+    "rung": "anchor"
+   }
+  ],
+  "cvd_bear_divergence": [
+   {
+    "metric": "CVD",
+    "rung": "anchor"
+   }
+  ],
+  "cvd_bearish": [
+   {
+    "metric": "CVD",
+    "rung": "anchor"
+   }
+  ],
+  "cvd_bull_divergence": [
+   {
+    "metric": "CVD",
+    "rung": "anchor"
+   }
+  ],
+  "cvd_bullish": [
+   {
+    "metric": "CVD",
+    "rung": "anchor"
+   }
+  ],
+  "flow_perp_spot_bear_divergence": [
+   {
+    "metric": "PERP_SPOT_FLOW",
+    "rung": "anchor"
+   }
+  ],
+  "flow_perp_spot_bull_divergence": [
+   {
+    "metric": "PERP_SPOT_FLOW",
+    "rung": "anchor"
+   }
+  ],
+  "funding_extreme_negative": [
+   {
+    "metric": "FUNDING_ANN",
+    "rung": "anchor"
+   }
+  ],
+  "funding_extreme_positive": [
+   {
+    "metric": "FUNDING_ANN",
+    "rung": "anchor"
+   }
+  ],
+  "funding_rate_flipping": [
+   {
+    "metric": "FUNDING_RATE",
+    "rung": "anchor"
+   }
+  ],
+  "htf_ma_aligned_bear": [
+   {
+    "metric": "MA_ALIGN",
+    "rung": "signalHigher"
+   }
+  ],
+  "htf_ma_aligned_bull": [
+   {
+    "metric": "MA_ALIGN",
+    "rung": "signalHigher"
+   }
+  ],
+  "htf_rsi_overbought": [
+   {
+    "metric": "RSI14",
+    "rung": "signalHigher"
+   }
+  ],
+  "htf_rsi_oversold": [
+   {
+    "metric": "RSI14",
+    "rung": "signalHigher"
+   }
+  ],
+  "htf_trend_adx_ranging": [
+   {
+    "metric": "ADX",
+    "rung": "signalHigher"
+   }
+  ],
+  "htf_trend_adx_trending": [
+   {
+    "metric": "ADX",
+    "rung": "signalHigher"
+   }
+  ],
+  "ltf_ma_aligned_bear": [
+   {
+    "metric": "MA_ALIGN",
+    "rung": "lower"
+   }
+  ],
+  "ltf_ma_aligned_bull": [
+   {
+    "metric": "MA_ALIGN",
+    "rung": "lower"
+   }
+  ],
+  "ltf_rsi_overbought": [
+   {
+    "metric": "RSI14",
+    "rung": "lower"
+   }
+  ],
+  "ltf_rsi_oversold": [
+   {
+    "metric": "RSI14",
+    "rung": "lower"
+   }
+  ],
+  "ltf_trend_adx_ranging": [
+   {
+    "metric": "ADX",
+    "rung": "lower"
+   }
+  ],
+  "ltf_trend_adx_trending": [
+   {
+    "metric": "ADX",
+    "rung": "lower"
+   }
+  ],
+  "ma_ema_aligned_bear": [
+   {
+    "metric": "EMA13",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA20",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA5",
+    "rung": "anchor"
+   }
+  ],
+  "ma_ema_aligned_bull": [
+   {
+    "metric": "EMA13",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA20",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA5",
+    "rung": "anchor"
+   }
+  ],
+  "ma_ema_bear_cross": [
+   {
+    "metric": "EMA_CROSS",
+    "rung": "anchor"
+   }
+  ],
+  "ma_ema_bull_cross": [
+   {
+    "metric": "EMA_CROSS",
+    "rung": "anchor"
+   }
+  ],
+  "ma_sma200_above": [
+   {
+    "metric": "SMA200",
+    "rung": "anchor"
+   }
+  ],
+  "ma_sma200_below": [
+   {
+    "metric": "SMA200",
+    "rung": "anchor"
+   }
+  ],
+  "macd_bear_cross": [
+   {
+    "metric": "MACD",
+    "rung": "anchor"
+   }
+  ],
+  "macd_bear_divergence": [
+   {
+    "metric": "MACD",
+    "rung": "anchor"
+   }
+  ],
+  "macd_bull_cross": [
+   {
+    "metric": "MACD",
+    "rung": "anchor"
+   }
+  ],
+  "macd_bull_divergence": [
+   {
+    "metric": "MACD",
+    "rung": "anchor"
+   }
+  ],
+  "mfi_bear_divergence": [
+   {
+    "metric": "MFI14",
+    "rung": "anchor"
+   }
+  ],
+  "mfi_bull_divergence": [
+   {
+    "metric": "MFI14",
+    "rung": "anchor"
+   }
+  ],
+  "mfi_overbought": [
+   {
+    "metric": "MFI14",
+    "rung": "anchor"
+   }
+  ],
+  "mfi_oversold": [
+   {
+    "metric": "MFI14",
+    "rung": "anchor"
+   }
+  ],
+  "mfi_sustained_bearish": [
+   {
+    "metric": "MFI14",
+    "rung": "anchor"
+   }
+  ],
+  "mfi_sustained_bullish": [
+   {
+    "metric": "MFI14",
+    "rung": "anchor"
+   }
+  ],
+  "mtf_aligned_bear": [
+   {
+    "metric": "EMA13",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA20",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA5",
+    "rung": "anchor"
+   },
+   {
+    "metric": "MA_ALIGN",
+    "rung": "lower"
+   },
+   {
+    "metric": "MA_ALIGN",
+    "rung": "signalHigher"
+   }
+  ],
+  "mtf_aligned_bull": [
+   {
+    "metric": "EMA13",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA20",
+    "rung": "anchor"
+   },
+   {
+    "metric": "EMA5",
+    "rung": "anchor"
+   },
+   {
+    "metric": "MA_ALIGN",
+    "rung": "lower"
+   },
+   {
+    "metric": "MA_ALIGN",
+    "rung": "signalHigher"
+   }
+  ],
+  "mtf_pullback_long": [
+   {
+    "metric": "RSI14",
+    "rung": "lower"
+   },
+   {
+    "metric": "MA_ALIGN",
+    "rung": "signalHigher"
+   }
+  ],
+  "mtf_pullback_short": [
+   {
+    "metric": "RSI14",
+    "rung": "lower"
+   },
+   {
+    "metric": "MA_ALIGN",
+    "rung": "signalHigher"
+   }
+  ],
+  "oi_divergence_bear": [
+   {
+    "metric": "OI",
+    "rung": "anchor"
+   }
+  ],
+  "oi_divergence_bull": [
+   {
+    "metric": "OI",
+    "rung": "anchor"
+   }
+  ],
+  "oi_surge": [
+   {
+    "metric": "OI",
+    "rung": "anchor"
+   }
+  ],
+  "regime_alignment": [
+   {
+    "metric": "REGIME_MOM",
+    "rung": "anchor"
+   },
+   {
+    "metric": "REGIME_TREND",
+    "rung": "anchor"
+   },
+   {
+    "metric": "REGIME_VOL",
+    "rung": "anchor"
+   }
+  ],
+  "regime_divergence": [
+   {
+    "metric": "REGIME_MOM",
+    "rung": "anchor"
+   },
+   {
+    "metric": "REGIME_TREND",
+    "rung": "anchor"
+   }
+  ],
+  "regime_trend_shift": [
+   {
+    "metric": "REGIME_TREND",
+    "rung": "anchor"
+   }
+  ],
+  "regime_volatility_shift": [
+   {
+    "metric": "REGIME_VOL",
+    "rung": "anchor"
+   }
+  ],
+  "rel_ppo_bear_cross": [
+   {
+    "metric": "PPO",
+    "rung": "anchor"
+   }
+  ],
+  "rel_ppo_bull_cross": [
+   {
+    "metric": "PPO",
+    "rung": "anchor"
+   }
+  ],
+  "rel_roc_negative": [
+   {
+    "metric": "ROC12",
+    "rung": "anchor"
+   }
+  ],
+  "rel_roc_positive": [
+   {
+    "metric": "ROC12",
+    "rung": "anchor"
+   }
+  ],
+  "rsi_bear_divergence": [
+   {
+    "metric": "RSI14",
+    "rung": "anchor"
+   }
+  ],
+  "rsi_bull_divergence": [
+   {
+    "metric": "RSI14",
+    "rung": "anchor"
+   }
+  ],
+  "rsi_overbought": [
+   {
+    "metric": "RSI14",
+    "rung": "anchor"
+   }
+  ],
+  "rsi_oversold": [
+   {
+    "metric": "RSI14",
+    "rung": "anchor"
+   }
+  ],
+  "sr_at_resistance": [
+   {
+    "metric": "DONCHIAN_LOWER",
+    "rung": "anchor"
+   },
+   {
+    "metric": "DONCHIAN_UPPER",
+    "rung": "anchor"
+   }
+  ],
+  "sr_at_support": [
+   {
+    "metric": "DONCHIAN_LOWER",
+    "rung": "anchor"
+   },
+   {
+    "metric": "DONCHIAN_UPPER",
+    "rung": "anchor"
+   }
+  ],
+  "sr_resistance_break": [
+   {
+    "metric": "DONCHIAN_LOWER",
+    "rung": "anchor"
+   },
+   {
+    "metric": "DONCHIAN_UPPER",
+    "rung": "anchor"
+   }
+  ],
+  "sr_support_break": [
+   {
+    "metric": "DONCHIAN_LOWER",
+    "rung": "anchor"
+   },
+   {
+    "metric": "DONCHIAN_UPPER",
+    "rung": "anchor"
+   }
+  ],
+  "stoch_bear_cross": [
+   {
+    "metric": "STOCH_D",
+    "rung": "anchor"
+   },
+   {
+    "metric": "STOCH_K",
+    "rung": "anchor"
+   }
+  ],
+  "stoch_bull_cross": [
+   {
+    "metric": "STOCH_D",
+    "rung": "anchor"
+   },
+   {
+    "metric": "STOCH_K",
+    "rung": "anchor"
+   }
+  ],
+  "stoch_overbought": [
+   {
+    "metric": "STOCH_D",
+    "rung": "anchor"
+   },
+   {
+    "metric": "STOCH_K",
+    "rung": "anchor"
+   }
+  ],
+  "stoch_oversold": [
+   {
+    "metric": "STOCH_D",
+    "rung": "anchor"
+   },
+   {
+    "metric": "STOCH_K",
+    "rung": "anchor"
+   }
+  ],
+  "structure_fvg_approach": [
+   {
+    "metric": "STRUCT_ZONES",
+    "rung": "signalHigher"
+   }
+  ],
+  "structure_ob_approach": [
+   {
+    "metric": "STRUCT_ZONES",
+    "rung": "signalHigher"
+   }
+  ],
+  "structure_zone_cluster": [
+   {
+    "metric": "STRUCT_ZONES",
+    "rung": "signalHigher"
+   }
+  ],
+  "structure_zone_confluence": [
+   {
+    "metric": "STRUCT_ZONES",
+    "rung": "signalHigher"
+   }
+  ],
+  "trend_adx_ranging": [
+   {
+    "metric": "ADX",
+    "rung": "anchor"
+   }
+  ],
+  "trend_adx_trending": [
+   {
+    "metric": "ADX",
+    "rung": "anchor"
+   }
+  ],
+  "volatility_atr_contracting": [
+   {
+    "metric": "ATR",
+    "rung": "anchor"
+   }
+  ],
+  "volatility_atr_expanding": [
+   {
+    "metric": "ATR",
+    "rung": "anchor"
+   }
+  ],
+  "volume_dry_up": [
+   {
+    "metric": "RVOL",
+    "rung": "anchor"
+   }
+  ],
+  "volume_obv_bear_divergence": [
+   {
+    "metric": "OBV",
+    "rung": "anchor"
+   }
+  ],
+  "volume_obv_bull_divergence": [
+   {
+    "metric": "OBV",
+    "rung": "anchor"
+   }
+  ],
+  "volume_surge": [
+   {
+    "metric": "RVOL",
+    "rung": "anchor"
+   }
+  ]
+ }
+}

@@ -1,0 +1,5974 @@
+{
+ "startedAt": "2026-10-06T08:05:22.153512+00:00",
+ "calls": [
+  {
+   "label": "drafts before",
+   "tool": "list_strategy_drafts",
+   "args": {
+    "request": {}
+   },
+   "at": "2026-10-06T08:05:22.153536+00:00",
+   "ok": true,
+   "bytes": 34,
+   "answer": {
+    "drafts": [],
+    "nextCursor": null
+   },
+   "latencyS": 13.21
+  },
+  {
+   "label": "stage all signals on",
+   "tool": "stage_strategy_draft",
+   "args": {
+    "request": {
+     "draftVersion": 0,
+     "axes": {
+      "IDENTITY": {
+       "name": "OMEGA rung probe - discard me",
+       "tagline": "measurement probe",
+       "description": "OMEGA: every signal on, to read which data each scores on; never committed"
+      },
+      "TIMEFRAME_PROFILE": {
+       "timeframe": "1h"
+      },
+      "REPORT": {
+       "sections": [
+        {
+         "kind": "platform",
+         "sectionKey": "includePriceAction"
+        }
+       ]
+      },
+      "SIGNAL_RULES": {
+       "rules": [
+        {
+         "signalId": "bollinger_cci_overbought",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 100
+         }
+        },
+        {
+         "signalId": "bollinger_cci_oversold",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": -100
+         }
+        },
+        {
+         "signalId": "bollinger_lower_touch",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "pctBThreshold": 0.05
+         }
+        },
+        {
+         "signalId": "bollinger_squeeze",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "bandwidthPct": 0.04
+         }
+        },
+        {
+         "signalId": "bollinger_upper_touch",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "pctBThreshold": 0.95
+         }
+        },
+        {
+         "signalId": "comparison_btc_decorrelation",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "maxCorrelation": 0.3
+         }
+        },
+        {
+         "signalId": "comparison_sector_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "minPeerFraction": 0.5
+         }
+        },
+        {
+         "signalId": "comparison_sector_momentum",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "minPeerFraction": 0.6
+         }
+        },
+        {
+         "signalId": "cvd_bear_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "cvd_bearish",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "cvd_bull_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "cvd_bullish",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "flow_perp_spot_bear_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "flow_perp_spot_bull_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "funding_extreme_negative",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "thresholdAnnualizedPct": 100
+         }
+        },
+        {
+         "signalId": "funding_extreme_positive",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "thresholdAnnualizedPct": 100
+         }
+        },
+        {
+         "signalId": "funding_rate_flipping",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "htf_ma_aligned_bear",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "htf_ma_aligned_bull",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "htf_rsi_overbought",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 70
+         }
+        },
+        {
+         "signalId": "htf_rsi_oversold",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 30
+         }
+        },
+        {
+         "signalId": "htf_trend_adx_ranging",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 20
+         }
+        },
+        {
+         "signalId": "htf_trend_adx_trending",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 25
+         }
+        },
+        {
+         "signalId": "ltf_ma_aligned_bear",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "ltf_ma_aligned_bull",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "ltf_rsi_overbought",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 70
+         }
+        },
+        {
+         "signalId": "ltf_rsi_oversold",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 30
+         }
+        },
+        {
+         "signalId": "ltf_trend_adx_ranging",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 20
+         }
+        },
+        {
+         "signalId": "ltf_trend_adx_trending",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 25
+         }
+        },
+        {
+         "signalId": "ma_ema_aligned_bear",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "ma_ema_aligned_bull",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "ma_ema_bear_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "ma_ema_bull_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "ma_sma200_above",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "ma_sma200_below",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "macd_bear_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "macd_bear_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "macd_bull_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "macd_bull_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mfi_bear_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mfi_bull_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mfi_overbought",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 80
+         }
+        },
+        {
+         "signalId": "mfi_oversold",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 20
+         }
+        },
+        {
+         "signalId": "mfi_sustained_bearish",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mfi_sustained_bullish",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mtf_aligned_bear",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mtf_aligned_bull",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mtf_pullback_long",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "mtf_pullback_short",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "oi_divergence_bear",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "oi_divergence_bull",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "oi_surge",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "thresholdPct": 0.05
+         }
+        },
+        {
+         "signalId": "regime_alignment",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "regime_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "regime_trend_shift",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "regime_volatility_shift",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "rel_ppo_bear_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "rel_ppo_bull_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "rel_roc_negative",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "rel_roc_positive",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "rsi_bear_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "rsi_bull_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "rsi_overbought",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 70
+         }
+        },
+        {
+         "signalId": "rsi_oversold",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 30
+         }
+        },
+        {
+         "signalId": "sr_at_resistance",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "proximityPct": 0.005
+         }
+        },
+        {
+         "signalId": "sr_at_support",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "proximityPct": 0.005
+         }
+        },
+        {
+         "signalId": "sr_resistance_break",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "sr_support_break",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "stoch_bear_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "zoneThreshold": 70
+         }
+        },
+        {
+         "signalId": "stoch_bull_cross",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "zoneThreshold": 30
+         }
+        },
+        {
+         "signalId": "stoch_overbought",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 80
+         }
+        },
+        {
+         "signalId": "stoch_oversold",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 20
+         }
+        },
+        {
+         "signalId": "structure_fvg_approach",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "proximityPct": 1
+         }
+        },
+        {
+         "signalId": "structure_ob_approach",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "proximityPct": 1
+         }
+        },
+        {
+         "signalId": "structure_zone_cluster",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "rangePct": 2
+         }
+        },
+        {
+         "signalId": "structure_zone_confluence",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "alignmentPct": 0.5
+         }
+        },
+        {
+         "signalId": "trend_adx_ranging",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 20
+         }
+        },
+        {
+         "signalId": "trend_adx_trending",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "threshold": 25
+         }
+        },
+        {
+         "signalId": "volatility_atr_contracting",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "multiplier": 0.7
+         }
+        },
+        {
+         "signalId": "volatility_atr_expanding",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "multiplier": 1.5
+         }
+        },
+        {
+         "signalId": "volume_dry_up",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "multiplier": 0.5
+         }
+        },
+        {
+         "signalId": "volume_obv_bear_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "volume_obv_bull_divergence",
+         "allocation": 1,
+         "required": false,
+         "params": {}
+        },
+        {
+         "signalId": "volume_surge",
+         "allocation": 1,
+         "required": false,
+         "params": {
+          "multiplier": 2
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   "at": "2026-10-06T08:05:35.361997+00:00",
+   "ok": true,
+   "bytes": 28907,
+   "answer": {
+    "strategyId": "396130de-af27-4c0e-b75e-2aa9f382639e",
+    "version": 1,
+    "stagedAxes": [
+     "IDENTITY",
+     "TIMEFRAME_PROFILE",
+     "REPORT",
+     "SIGNAL_RULES"
+    ],
+    "axesMeta": {
+     "IDENTITY": {
+      "version": 1,
+      "source": "mcp",
+      "updatedAt": "2026-10-06T08:05:26.690Z"
+     },
+     "TIMEFRAME_PROFILE": {
+      "version": 1,
+      "source": "mcp",
+      "updatedAt": "2026-10-06T08:05:26.690Z"
+     },
+     "REPORT": {
+      "version": 1,
+      "source": "mcp",
+      "updatedAt": "2026-10-06T08:05:26.690Z"
+     },
+     "SIGNAL_RULES": {
+      "version": 1,
+      "source": "mcp",
+      "updatedAt": "2026-10-06T08:05:26.690Z"
+     }
+    },
+    "diagnostics": {
+     "errors": [],
+     "warnings": [
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Bollinger Bands module is not in this report, but 5 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Sector & BTC Comparison module is not in this report, but 3 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Confluence module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Cumulative Volume Delta module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Perp/Spot Flow Divergence module is not in this report, but 2 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Funding Rates module is not in this report, but 3 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The MACD module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The MFI module is not in this report, but 6 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Moving Averages module is not in this report, but 10 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Open Interest module is not in this report, but 3 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Price Structure module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Market Regime module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Relative Strength module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The RSI module is not in this report, but 8 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Stochastic module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Support & Resistance module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Trend Strength module is not in this report, but 6 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Volatility module is not in this report, but 2 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Volume module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      }
+     ],
+     "mismatches": [
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_cci_overbought",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "CCI20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_cci_overbought' scores on data the report does not show: CCI20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_cci_oversold",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "CCI20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_cci_oversold' scores on data the report does not show: CCI20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_lower_touch",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "BB_TOUCH",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_lower_touch' scores on data the report does not show: BB_TOUCH @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_squeeze",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "BB_WIDTH",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_squeeze' scores on data the report does not show: BB_WIDTH @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_upper_touch",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "BB_TOUCH",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_upper_touch' scores on data the report does not show: BB_TOUCH @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "comparison_sector_divergence",
+       "module": "COMPARISON",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'comparison_sector_divergence' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "comparison_sector_momentum",
+       "module": "COMPARISON",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'comparison_sector_momentum' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bear_divergence",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bear_divergence' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bearish",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bearish' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bull_divergence",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bull_divergence' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bullish",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bullish' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "flow_perp_spot_bear_divergence",
+       "module": "FLOW_DIVERGENCE",
+       "data": [
+        {
+         "metric": "PERP_SPOT_FLOW",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'flow_perp_spot_bear_divergence' scores on data the report does not show: PERP_SPOT_FLOW @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "flow_perp_spot_bull_divergence",
+       "module": "FLOW_DIVERGENCE",
+       "data": [
+        {
+         "metric": "PERP_SPOT_FLOW",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'flow_perp_spot_bull_divergence' scores on data the report does not show: PERP_SPOT_FLOW @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "funding_extreme_negative",
+       "module": "FUNDING",
+       "data": [
+        {
+         "metric": "FUNDING_ANN",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'funding_extreme_negative' scores on data the report does not show: FUNDING_ANN @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "funding_extreme_positive",
+       "module": "FUNDING",
+       "data": [
+        {
+         "metric": "FUNDING_ANN",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'funding_extreme_positive' scores on data the report does not show: FUNDING_ANN @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "funding_rate_flipping",
+       "module": "FUNDING",
+       "data": [
+        {
+         "metric": "FUNDING_RATE",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'funding_rate_flipping' scores on data the report does not show: FUNDING_RATE @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_ma_aligned_bear",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_ma_aligned_bull",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_rsi_overbought",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_rsi_overbought' scores on data the report does not show: RSI14 @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_rsi_oversold",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_rsi_oversold' scores on data the report does not show: RSI14 @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_trend_adx_ranging",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_trend_adx_ranging' scores on data the report does not show: ADX @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_trend_adx_trending",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_trend_adx_trending' scores on data the report does not show: ADX @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_ma_aligned_bear",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_ma_aligned_bull",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_rsi_overbought",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_rsi_overbought' scores on data the report does not show: RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_rsi_oversold",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_rsi_oversold' scores on data the report does not show: RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_trend_adx_ranging",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_trend_adx_ranging' scores on data the report does not show: ADX @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_trend_adx_trending",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_trend_adx_trending' scores on data the report does not show: ADX @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_aligned_bear",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_aligned_bear' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_aligned_bull",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_aligned_bull' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_bear_cross",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA_CROSS",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_bear_cross' scores on data the report does not show: EMA_CROSS @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_bull_cross",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA_CROSS",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_bull_cross' scores on data the report does not show: EMA_CROSS @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_sma200_above",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "SMA200",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_sma200_above' scores on data the report does not show: SMA200 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_sma200_below",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "SMA200",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_sma200_below' scores on data the report does not show: SMA200 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bear_cross",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bear_cross' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bear_divergence",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bear_divergence' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bull_cross",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bull_cross' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bull_divergence",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bull_divergence' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_bear_divergence",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_bear_divergence' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_bull_divergence",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_bull_divergence' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_overbought",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_overbought' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_oversold",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_oversold' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_sustained_bearish",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_sustained_bearish' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_sustained_bullish",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_sustained_bullish' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_aligned_bear",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        },
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        },
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'mtf_aligned_bear' scores on data the report does not show: MA_ALIGN @ lower, EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor, MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_aligned_bull",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        },
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        },
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'mtf_aligned_bull' scores on data the report does not show: MA_ALIGN @ lower, EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor, MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_pullback_long",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        },
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'mtf_pullback_long' scores on data the report does not show: MA_ALIGN @ signalHigher, RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_pullback_short",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        },
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'mtf_pullback_short' scores on data the report does not show: MA_ALIGN @ signalHigher, RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "oi_divergence_bear",
+       "module": "OPEN_INTEREST",
+       "data": [
+        {
+         "metric": "OI",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'oi_divergence_bear' scores on data the report does not show: OI @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "oi_divergence_bull",
+       "module": "OPEN_INTEREST",
+       "data": [
+        {
+         "metric": "OI",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'oi_divergence_bull' scores on data the report does not show: OI @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "oi_surge",
+       "module": "OPEN_INTEREST",
+       "data": [
+        {
+         "metric": "OI",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'oi_surge' scores on data the report does not show: OI @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_alignment",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_TREND",
+         "rung": "anchor"
+        },
+        {
+         "metric": "REGIME_VOL",
+         "rung": "anchor"
+        },
+        {
+         "metric": "REGIME_MOM",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_alignment' scores on data the report does not show: REGIME_TREND @ anchor, REGIME_VOL @ anchor, REGIME_MOM @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_divergence",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_TREND",
+         "rung": "anchor"
+        },
+        {
+         "metric": "REGIME_MOM",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_divergence' scores on data the report does not show: REGIME_TREND @ anchor, REGIME_MOM @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_trend_shift",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_TREND",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_trend_shift' scores on data the report does not show: REGIME_TREND @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_volatility_shift",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_VOL",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_volatility_shift' scores on data the report does not show: REGIME_VOL @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_ppo_bear_cross",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "PPO",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_ppo_bear_cross' scores on data the report does not show: PPO @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_ppo_bull_cross",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "PPO",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_ppo_bull_cross' scores on data the report does not show: PPO @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_roc_negative",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "ROC12",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_roc_negative' scores on data the report does not show: ROC12 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_roc_positive",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "ROC12",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_roc_positive' scores on data the report does not show: ROC12 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_bear_divergence",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_bear_divergence' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_bull_divergence",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_bull_divergence' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_overbought",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_overbought' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_oversold",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_oversold' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_at_resistance",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_at_resistance' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_at_support",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_at_support' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_resistance_break",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_resistance_break' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_support_break",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_support_break' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_bear_cross",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_bear_cross' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_bull_cross",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_bull_cross' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_overbought",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_overbought' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_oversold",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_oversold' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_fvg_approach",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_fvg_approach' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_ob_approach",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_ob_approach' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_zone_cluster",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_zone_cluster' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_zone_confluence",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_zone_confluence' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "trend_adx_ranging",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'trend_adx_ranging' scores on data the report does not show: ADX @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "trend_adx_trending",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'trend_adx_trending' scores on data the report does not show: ADX @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volatility_atr_contracting",
+       "module": "VOLATILITY",
+       "data": [
+        {
+         "metric": "ATR",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volatility_atr_contracting' scores on data the report does not show: ATR @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volatility_atr_expanding",
+       "module": "VOLATILITY",
+       "data": [
+        {
+         "metric": "ATR",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volatility_atr_expanding' scores on data the report does not show: ATR @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_dry_up",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "RVOL",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_dry_up' scores on data the report does not show: RVOL @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_obv_bear_divergence",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "OBV",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_obv_bear_divergence' scores on data the report does not show: OBV @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_obv_bull_divergence",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "OBV",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_obv_bull_divergence' scores on data the report does not show: OBV @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_surge",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "RVOL",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_surge' scores on data the report does not show: RVOL @ anchor."
+      }
+     ]
+    }
+   },
+   "latencyS": 7.39
+  },
+  {
+   "label": "read",
+   "tool": "get_strategy_draft",
+   "args": {
+    "request": {
+     "strategyId": "396130de-af27-4c0e-b75e-2aa9f382639e"
+    }
+   },
+   "at": "2026-10-06T08:05:42.753559+00:00",
+   "ok": true,
+   "bytes": 66268,
+   "answer": {
+    "draft": {
+     "strategyId": "396130de-af27-4c0e-b75e-2aa9f382639e",
+     "content": {
+      "IDENTITY": {
+       "name": "OMEGA rung probe - discard me",
+       "tagline": "measurement probe",
+       "description": "OMEGA: every signal on, to read which data each scores on; never committed"
+      },
+      "TIMEFRAME_PROFILE": {
+       "timeframe": "1h"
+      },
+      "REPORT": {
+       "sections": [
+        {
+         "kind": "platform",
+         "sectionKey": "includePriceAction"
+        }
+       ]
+      },
+      "SIGNAL_RULES": {
+       "rules": [
+        {
+         "params": {
+          "threshold": 100
+         },
+         "required": false,
+         "signalId": "bollinger_cci_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": -100
+         },
+         "required": false,
+         "signalId": "bollinger_cci_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "pctBThreshold": 0.05
+         },
+         "required": false,
+         "signalId": "bollinger_lower_touch",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "bandwidthPct": 0.04
+         },
+         "required": false,
+         "signalId": "bollinger_squeeze",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "pctBThreshold": 0.95
+         },
+         "required": false,
+         "signalId": "bollinger_upper_touch",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "maxCorrelation": 0.3
+         },
+         "required": false,
+         "signalId": "comparison_btc_decorrelation",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "minPeerFraction": 0.5
+         },
+         "required": false,
+         "signalId": "comparison_sector_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "minPeerFraction": 0.6
+         },
+         "required": false,
+         "signalId": "comparison_sector_momentum",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bearish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bullish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "flow_perp_spot_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "flow_perp_spot_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "thresholdAnnualizedPct": 100
+         },
+         "required": false,
+         "signalId": "funding_extreme_negative",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "thresholdAnnualizedPct": 100
+         },
+         "required": false,
+         "signalId": "funding_extreme_positive",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "funding_rate_flipping",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "htf_ma_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "htf_ma_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 70
+         },
+         "required": false,
+         "signalId": "htf_rsi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 30
+         },
+         "required": false,
+         "signalId": "htf_rsi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "htf_trend_adx_ranging",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 25
+         },
+         "required": false,
+         "signalId": "htf_trend_adx_trending",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ltf_ma_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ltf_ma_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 70
+         },
+         "required": false,
+         "signalId": "ltf_rsi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 30
+         },
+         "required": false,
+         "signalId": "ltf_rsi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "ltf_trend_adx_ranging",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 25
+         },
+         "required": false,
+         "signalId": "ltf_trend_adx_trending",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_sma200_above",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_sma200_below",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 80
+         },
+         "required": false,
+         "signalId": "mfi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "mfi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_sustained_bearish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_sustained_bullish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_pullback_long",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_pullback_short",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "oi_divergence_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "oi_divergence_bull",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "thresholdPct": 0.05
+         },
+         "required": false,
+         "signalId": "oi_surge",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_alignment",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_trend_shift",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_volatility_shift",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_ppo_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_ppo_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_roc_negative",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_roc_positive",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rsi_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rsi_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 70
+         },
+         "required": false,
+         "signalId": "rsi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 30
+         },
+         "required": false,
+         "signalId": "rsi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 0.005
+         },
+         "required": false,
+         "signalId": "sr_at_resistance",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 0.005
+         },
+         "required": false,
+         "signalId": "sr_at_support",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "sr_resistance_break",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "sr_support_break",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "zoneThreshold": 70
+         },
+         "required": false,
+         "signalId": "stoch_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "zoneThreshold": 30
+         },
+         "required": false,
+         "signalId": "stoch_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 80
+         },
+         "required": false,
+         "signalId": "stoch_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "stoch_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 1
+         },
+         "required": false,
+         "signalId": "structure_fvg_approach",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 1
+         },
+         "required": false,
+         "signalId": "structure_ob_approach",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "rangePct": 2
+         },
+         "required": false,
+         "signalId": "structure_zone_cluster",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "alignmentPct": 0.5
+         },
+         "required": false,
+         "signalId": "structure_zone_confluence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "trend_adx_ranging",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 25
+         },
+         "required": false,
+         "signalId": "trend_adx_trending",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 0.7
+         },
+         "required": false,
+         "signalId": "volatility_atr_contracting",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 1.5
+         },
+         "required": false,
+         "signalId": "volatility_atr_expanding",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 0.5
+         },
+         "required": false,
+         "signalId": "volume_dry_up",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "volume_obv_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "volume_obv_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 2
+         },
+         "required": false,
+         "signalId": "volume_surge",
+         "allocation": 1
+        }
+       ]
+      }
+     },
+     "axesMeta": {
+      "IDENTITY": {
+       "version": 1,
+       "source": "mcp",
+       "updatedAt": "2026-10-06T08:05:26.690Z"
+      },
+      "TIMEFRAME_PROFILE": {
+       "version": 1,
+       "source": "mcp",
+       "updatedAt": "2026-10-06T08:05:26.690Z"
+      },
+      "REPORT": {
+       "version": 1,
+       "source": "mcp",
+       "updatedAt": "2026-10-06T08:05:26.690Z"
+      },
+      "SIGNAL_RULES": {
+       "version": 1,
+       "source": "mcp",
+       "updatedAt": "2026-10-06T08:05:26.690Z"
+      }
+     },
+     "version": 1,
+     "baseRevision": null,
+     "baseMoved": false,
+     "lastSource": "mcp",
+     "updatedAt": "2026-10-06T08:05:26.690Z"
+    },
+    "draftVersion": 1,
+    "committedRevision": null,
+    "diff": [
+     {
+      "axis": "REPORT",
+      "live": null,
+      "draft": {
+       "sections": [
+        {
+         "kind": "platform",
+         "sectionKey": "includePriceAction"
+        }
+       ]
+      },
+      "changes": [
+       {
+        "field": "sections[0].kind",
+        "live": null,
+        "draft": "platform"
+       },
+       {
+        "field": "sections[0].sectionKey",
+        "live": null,
+        "draft": "includePriceAction"
+       }
+      ]
+     },
+     {
+      "axis": "IDENTITY",
+      "live": null,
+      "draft": {
+       "name": "OMEGA rung probe - discard me",
+       "tagline": "measurement probe",
+       "description": "OMEGA: every signal on, to read which data each scores on; never committed"
+      },
+      "changes": [
+       {
+        "field": "name",
+        "live": null,
+        "draft": "OMEGA rung probe - discard me"
+       },
+       {
+        "field": "tagline",
+        "live": null,
+        "draft": "measurement probe"
+       },
+       {
+        "field": "description",
+        "live": null,
+        "draft": "OMEGA: every signal on, to read which data each scores on; never committed"
+       }
+      ]
+     },
+     {
+      "axis": "SIGNAL_RULES",
+      "live": null,
+      "draft": {
+       "rules": [
+        {
+         "params": {
+          "threshold": 100
+         },
+         "required": false,
+         "signalId": "bollinger_cci_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": -100
+         },
+         "required": false,
+         "signalId": "bollinger_cci_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "pctBThreshold": 0.05
+         },
+         "required": false,
+         "signalId": "bollinger_lower_touch",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "bandwidthPct": 0.04
+         },
+         "required": false,
+         "signalId": "bollinger_squeeze",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "pctBThreshold": 0.95
+         },
+         "required": false,
+         "signalId": "bollinger_upper_touch",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "maxCorrelation": 0.3
+         },
+         "required": false,
+         "signalId": "comparison_btc_decorrelation",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "minPeerFraction": 0.5
+         },
+         "required": false,
+         "signalId": "comparison_sector_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "minPeerFraction": 0.6
+         },
+         "required": false,
+         "signalId": "comparison_sector_momentum",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bearish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "cvd_bullish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "flow_perp_spot_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "flow_perp_spot_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "thresholdAnnualizedPct": 100
+         },
+         "required": false,
+         "signalId": "funding_extreme_negative",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "thresholdAnnualizedPct": 100
+         },
+         "required": false,
+         "signalId": "funding_extreme_positive",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "funding_rate_flipping",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "htf_ma_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "htf_ma_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 70
+         },
+         "required": false,
+         "signalId": "htf_rsi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 30
+         },
+         "required": false,
+         "signalId": "htf_rsi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "htf_trend_adx_ranging",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 25
+         },
+         "required": false,
+         "signalId": "htf_trend_adx_trending",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ltf_ma_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ltf_ma_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 70
+         },
+         "required": false,
+         "signalId": "ltf_rsi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 30
+         },
+         "required": false,
+         "signalId": "ltf_rsi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "ltf_trend_adx_ranging",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 25
+         },
+         "required": false,
+         "signalId": "ltf_trend_adx_trending",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_ema_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_sma200_above",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "ma_sma200_below",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "macd_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 80
+         },
+         "required": false,
+         "signalId": "mfi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "mfi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_sustained_bearish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mfi_sustained_bullish",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_aligned_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_aligned_bull",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_pullback_long",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "mtf_pullback_short",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "oi_divergence_bear",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "oi_divergence_bull",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "thresholdPct": 0.05
+         },
+         "required": false,
+         "signalId": "oi_surge",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_alignment",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_trend_shift",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "regime_volatility_shift",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_ppo_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_ppo_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_roc_negative",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rel_roc_positive",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rsi_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "rsi_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 70
+         },
+         "required": false,
+         "signalId": "rsi_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 30
+         },
+         "required": false,
+         "signalId": "rsi_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 0.005
+         },
+         "required": false,
+         "signalId": "sr_at_resistance",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 0.005
+         },
+         "required": false,
+         "signalId": "sr_at_support",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "sr_resistance_break",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "sr_support_break",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "zoneThreshold": 70
+         },
+         "required": false,
+         "signalId": "stoch_bear_cross",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "zoneThreshold": 30
+         },
+         "required": false,
+         "signalId": "stoch_bull_cross",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 80
+         },
+         "required": false,
+         "signalId": "stoch_overbought",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "stoch_oversold",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 1
+         },
+         "required": false,
+         "signalId": "structure_fvg_approach",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "proximityPct": 1
+         },
+         "required": false,
+         "signalId": "structure_ob_approach",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "rangePct": 2
+         },
+         "required": false,
+         "signalId": "structure_zone_cluster",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "alignmentPct": 0.5
+         },
+         "required": false,
+         "signalId": "structure_zone_confluence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 20
+         },
+         "required": false,
+         "signalId": "trend_adx_ranging",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "threshold": 25
+         },
+         "required": false,
+         "signalId": "trend_adx_trending",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 0.7
+         },
+         "required": false,
+         "signalId": "volatility_atr_contracting",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 1.5
+         },
+         "required": false,
+         "signalId": "volatility_atr_expanding",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 0.5
+         },
+         "required": false,
+         "signalId": "volume_dry_up",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "volume_obv_bear_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {},
+         "required": false,
+         "signalId": "volume_obv_bull_divergence",
+         "allocation": 1
+        },
+        {
+         "params": {
+          "multiplier": 2
+         },
+         "required": false,
+         "signalId": "volume_surge",
+         "allocation": 1
+        }
+       ]
+      },
+      "changes": [
+       {
+        "field": "rules[0].params.threshold",
+        "live": null,
+        "draft": 100
+       },
+       {
+        "field": "rules[0].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[0].signalId",
+        "live": null,
+        "draft": "bollinger_cci_overbought"
+       },
+       {
+        "field": "rules[0].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[1].params.threshold",
+        "live": null,
+        "draft": -100
+       },
+       {
+        "field": "rules[1].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[1].signalId",
+        "live": null,
+        "draft": "bollinger_cci_oversold"
+       },
+       {
+        "field": "rules[1].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[2].params.pctBThreshold",
+        "live": null,
+        "draft": 0.05
+       },
+       {
+        "field": "rules[2].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[2].signalId",
+        "live": null,
+        "draft": "bollinger_lower_touch"
+       },
+       {
+        "field": "rules[2].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[3].params.bandwidthPct",
+        "live": null,
+        "draft": 0.04
+       },
+       {
+        "field": "rules[3].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[3].signalId",
+        "live": null,
+        "draft": "bollinger_squeeze"
+       },
+       {
+        "field": "rules[3].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[4].params.pctBThreshold",
+        "live": null,
+        "draft": 0.95
+       },
+       {
+        "field": "rules[4].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[4].signalId",
+        "live": null,
+        "draft": "bollinger_upper_touch"
+       },
+       {
+        "field": "rules[4].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[5].params.maxCorrelation",
+        "live": null,
+        "draft": 0.3
+       },
+       {
+        "field": "rules[5].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[5].signalId",
+        "live": null,
+        "draft": "comparison_btc_decorrelation"
+       },
+       {
+        "field": "rules[5].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[6].params.minPeerFraction",
+        "live": null,
+        "draft": 0.5
+       },
+       {
+        "field": "rules[6].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[6].signalId",
+        "live": null,
+        "draft": "comparison_sector_divergence"
+       },
+       {
+        "field": "rules[6].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[7].params.minPeerFraction",
+        "live": null,
+        "draft": 0.6
+       },
+       {
+        "field": "rules[7].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[7].signalId",
+        "live": null,
+        "draft": "comparison_sector_momentum"
+       },
+       {
+        "field": "rules[7].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[8].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[8].signalId",
+        "live": null,
+        "draft": "cvd_bear_divergence"
+       },
+       {
+        "field": "rules[8].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[9].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[9].signalId",
+        "live": null,
+        "draft": "cvd_bearish"
+       },
+       {
+        "field": "rules[9].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[10].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[10].signalId",
+        "live": null,
+        "draft": "cvd_bull_divergence"
+       },
+       {
+        "field": "rules[10].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[11].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[11].signalId",
+        "live": null,
+        "draft": "cvd_bullish"
+       },
+       {
+        "field": "rules[11].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[12].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[12].signalId",
+        "live": null,
+        "draft": "flow_perp_spot_bear_divergence"
+       },
+       {
+        "field": "rules[12].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[13].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[13].signalId",
+        "live": null,
+        "draft": "flow_perp_spot_bull_divergence"
+       },
+       {
+        "field": "rules[13].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[14].params.thresholdAnnualizedPct",
+        "live": null,
+        "draft": 100
+       },
+       {
+        "field": "rules[14].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[14].signalId",
+        "live": null,
+        "draft": "funding_extreme_negative"
+       },
+       {
+        "field": "rules[14].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[15].params.thresholdAnnualizedPct",
+        "live": null,
+        "draft": 100
+       },
+       {
+        "field": "rules[15].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[15].signalId",
+        "live": null,
+        "draft": "funding_extreme_positive"
+       },
+       {
+        "field": "rules[15].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[16].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[16].signalId",
+        "live": null,
+        "draft": "funding_rate_flipping"
+       },
+       {
+        "field": "rules[16].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[17].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[17].signalId",
+        "live": null,
+        "draft": "htf_ma_aligned_bear"
+       },
+       {
+        "field": "rules[17].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[18].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[18].signalId",
+        "live": null,
+        "draft": "htf_ma_aligned_bull"
+       },
+       {
+        "field": "rules[18].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[19].params.threshold",
+        "live": null,
+        "draft": 70
+       },
+       {
+        "field": "rules[19].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[19].signalId",
+        "live": null,
+        "draft": "htf_rsi_overbought"
+       },
+       {
+        "field": "rules[19].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[20].params.threshold",
+        "live": null,
+        "draft": 30
+       },
+       {
+        "field": "rules[20].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[20].signalId",
+        "live": null,
+        "draft": "htf_rsi_oversold"
+       },
+       {
+        "field": "rules[20].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[21].params.threshold",
+        "live": null,
+        "draft": 20
+       },
+       {
+        "field": "rules[21].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[21].signalId",
+        "live": null,
+        "draft": "htf_trend_adx_ranging"
+       },
+       {
+        "field": "rules[21].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[22].params.threshold",
+        "live": null,
+        "draft": 25
+       },
+       {
+        "field": "rules[22].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[22].signalId",
+        "live": null,
+        "draft": "htf_trend_adx_trending"
+       },
+       {
+        "field": "rules[22].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[23].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[23].signalId",
+        "live": null,
+        "draft": "ltf_ma_aligned_bear"
+       },
+       {
+        "field": "rules[23].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[24].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[24].signalId",
+        "live": null,
+        "draft": "ltf_ma_aligned_bull"
+       },
+       {
+        "field": "rules[24].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[25].params.threshold",
+        "live": null,
+        "draft": 70
+       },
+       {
+        "field": "rules[25].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[25].signalId",
+        "live": null,
+        "draft": "ltf_rsi_overbought"
+       },
+       {
+        "field": "rules[25].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[26].params.threshold",
+        "live": null,
+        "draft": 30
+       },
+       {
+        "field": "rules[26].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[26].signalId",
+        "live": null,
+        "draft": "ltf_rsi_oversold"
+       },
+       {
+        "field": "rules[26].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[27].params.threshold",
+        "live": null,
+        "draft": 20
+       },
+       {
+        "field": "rules[27].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[27].signalId",
+        "live": null,
+        "draft": "ltf_trend_adx_ranging"
+       },
+       {
+        "field": "rules[27].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[28].params.threshold",
+        "live": null,
+        "draft": 25
+       },
+       {
+        "field": "rules[28].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[28].signalId",
+        "live": null,
+        "draft": "ltf_trend_adx_trending"
+       },
+       {
+        "field": "rules[28].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[29].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[29].signalId",
+        "live": null,
+        "draft": "ma_ema_aligned_bear"
+       },
+       {
+        "field": "rules[29].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[30].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[30].signalId",
+        "live": null,
+        "draft": "ma_ema_aligned_bull"
+       },
+       {
+        "field": "rules[30].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[31].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[31].signalId",
+        "live": null,
+        "draft": "ma_ema_bear_cross"
+       },
+       {
+        "field": "rules[31].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[32].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[32].signalId",
+        "live": null,
+        "draft": "ma_ema_bull_cross"
+       },
+       {
+        "field": "rules[32].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[33].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[33].signalId",
+        "live": null,
+        "draft": "ma_sma200_above"
+       },
+       {
+        "field": "rules[33].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[34].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[34].signalId",
+        "live": null,
+        "draft": "ma_sma200_below"
+       },
+       {
+        "field": "rules[34].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[35].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[35].signalId",
+        "live": null,
+        "draft": "macd_bear_cross"
+       },
+       {
+        "field": "rules[35].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[36].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[36].signalId",
+        "live": null,
+        "draft": "macd_bear_divergence"
+       },
+       {
+        "field": "rules[36].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[37].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[37].signalId",
+        "live": null,
+        "draft": "macd_bull_cross"
+       },
+       {
+        "field": "rules[37].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[38].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[38].signalId",
+        "live": null,
+        "draft": "macd_bull_divergence"
+       },
+       {
+        "field": "rules[38].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[39].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[39].signalId",
+        "live": null,
+        "draft": "mfi_bear_divergence"
+       },
+       {
+        "field": "rules[39].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[40].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[40].signalId",
+        "live": null,
+        "draft": "mfi_bull_divergence"
+       },
+       {
+        "field": "rules[40].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[41].params.threshold",
+        "live": null,
+        "draft": 80
+       },
+       {
+        "field": "rules[41].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[41].signalId",
+        "live": null,
+        "draft": "mfi_overbought"
+       },
+       {
+        "field": "rules[41].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[42].params.threshold",
+        "live": null,
+        "draft": 20
+       },
+       {
+        "field": "rules[42].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[42].signalId",
+        "live": null,
+        "draft": "mfi_oversold"
+       },
+       {
+        "field": "rules[42].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[43].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[43].signalId",
+        "live": null,
+        "draft": "mfi_sustained_bearish"
+       },
+       {
+        "field": "rules[43].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[44].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[44].signalId",
+        "live": null,
+        "draft": "mfi_sustained_bullish"
+       },
+       {
+        "field": "rules[44].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[45].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[45].signalId",
+        "live": null,
+        "draft": "mtf_aligned_bear"
+       },
+       {
+        "field": "rules[45].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[46].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[46].signalId",
+        "live": null,
+        "draft": "mtf_aligned_bull"
+       },
+       {
+        "field": "rules[46].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[47].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[47].signalId",
+        "live": null,
+        "draft": "mtf_pullback_long"
+       },
+       {
+        "field": "rules[47].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[48].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[48].signalId",
+        "live": null,
+        "draft": "mtf_pullback_short"
+       },
+       {
+        "field": "rules[48].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[49].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[49].signalId",
+        "live": null,
+        "draft": "oi_divergence_bear"
+       },
+       {
+        "field": "rules[49].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[50].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[50].signalId",
+        "live": null,
+        "draft": "oi_divergence_bull"
+       },
+       {
+        "field": "rules[50].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[51].params.thresholdPct",
+        "live": null,
+        "draft": 0.05
+       },
+       {
+        "field": "rules[51].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[51].signalId",
+        "live": null,
+        "draft": "oi_surge"
+       },
+       {
+        "field": "rules[51].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[52].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[52].signalId",
+        "live": null,
+        "draft": "regime_alignment"
+       },
+       {
+        "field": "rules[52].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[53].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[53].signalId",
+        "live": null,
+        "draft": "regime_divergence"
+       },
+       {
+        "field": "rules[53].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[54].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[54].signalId",
+        "live": null,
+        "draft": "regime_trend_shift"
+       },
+       {
+        "field": "rules[54].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[55].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[55].signalId",
+        "live": null,
+        "draft": "regime_volatility_shift"
+       },
+       {
+        "field": "rules[55].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[56].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[56].signalId",
+        "live": null,
+        "draft": "rel_ppo_bear_cross"
+       },
+       {
+        "field": "rules[56].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[57].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[57].signalId",
+        "live": null,
+        "draft": "rel_ppo_bull_cross"
+       },
+       {
+        "field": "rules[57].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[58].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[58].signalId",
+        "live": null,
+        "draft": "rel_roc_negative"
+       },
+       {
+        "field": "rules[58].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[59].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[59].signalId",
+        "live": null,
+        "draft": "rel_roc_positive"
+       },
+       {
+        "field": "rules[59].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[60].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[60].signalId",
+        "live": null,
+        "draft": "rsi_bear_divergence"
+       },
+       {
+        "field": "rules[60].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[61].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[61].signalId",
+        "live": null,
+        "draft": "rsi_bull_divergence"
+       },
+       {
+        "field": "rules[61].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[62].params.threshold",
+        "live": null,
+        "draft": 70
+       },
+       {
+        "field": "rules[62].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[62].signalId",
+        "live": null,
+        "draft": "rsi_overbought"
+       },
+       {
+        "field": "rules[62].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[63].params.threshold",
+        "live": null,
+        "draft": 30
+       },
+       {
+        "field": "rules[63].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[63].signalId",
+        "live": null,
+        "draft": "rsi_oversold"
+       },
+       {
+        "field": "rules[63].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[64].params.proximityPct",
+        "live": null,
+        "draft": 0.005
+       },
+       {
+        "field": "rules[64].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[64].signalId",
+        "live": null,
+        "draft": "sr_at_resistance"
+       },
+       {
+        "field": "rules[64].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[65].params.proximityPct",
+        "live": null,
+        "draft": 0.005
+       },
+       {
+        "field": "rules[65].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[65].signalId",
+        "live": null,
+        "draft": "sr_at_support"
+       },
+       {
+        "field": "rules[65].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[66].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[66].signalId",
+        "live": null,
+        "draft": "sr_resistance_break"
+       },
+       {
+        "field": "rules[66].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[67].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[67].signalId",
+        "live": null,
+        "draft": "sr_support_break"
+       },
+       {
+        "field": "rules[67].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[68].params.zoneThreshold",
+        "live": null,
+        "draft": 70
+       },
+       {
+        "field": "rules[68].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[68].signalId",
+        "live": null,
+        "draft": "stoch_bear_cross"
+       },
+       {
+        "field": "rules[68].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[69].params.zoneThreshold",
+        "live": null,
+        "draft": 30
+       },
+       {
+        "field": "rules[69].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[69].signalId",
+        "live": null,
+        "draft": "stoch_bull_cross"
+       },
+       {
+        "field": "rules[69].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[70].params.threshold",
+        "live": null,
+        "draft": 80
+       },
+       {
+        "field": "rules[70].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[70].signalId",
+        "live": null,
+        "draft": "stoch_overbought"
+       },
+       {
+        "field": "rules[70].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[71].params.threshold",
+        "live": null,
+        "draft": 20
+       },
+       {
+        "field": "rules[71].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[71].signalId",
+        "live": null,
+        "draft": "stoch_oversold"
+       },
+       {
+        "field": "rules[71].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[72].params.proximityPct",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[72].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[72].signalId",
+        "live": null,
+        "draft": "structure_fvg_approach"
+       },
+       {
+        "field": "rules[72].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[73].params.proximityPct",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[73].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[73].signalId",
+        "live": null,
+        "draft": "structure_ob_approach"
+       },
+       {
+        "field": "rules[73].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[74].params.rangePct",
+        "live": null,
+        "draft": 2
+       },
+       {
+        "field": "rules[74].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[74].signalId",
+        "live": null,
+        "draft": "structure_zone_cluster"
+       },
+       {
+        "field": "rules[74].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[75].params.alignmentPct",
+        "live": null,
+        "draft": 0.5
+       },
+       {
+        "field": "rules[75].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[75].signalId",
+        "live": null,
+        "draft": "structure_zone_confluence"
+       },
+       {
+        "field": "rules[75].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[76].params.threshold",
+        "live": null,
+        "draft": 20
+       },
+       {
+        "field": "rules[76].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[76].signalId",
+        "live": null,
+        "draft": "trend_adx_ranging"
+       },
+       {
+        "field": "rules[76].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[77].params.threshold",
+        "live": null,
+        "draft": 25
+       },
+       {
+        "field": "rules[77].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[77].signalId",
+        "live": null,
+        "draft": "trend_adx_trending"
+       },
+       {
+        "field": "rules[77].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[78].params.multiplier",
+        "live": null,
+        "draft": 0.7
+       },
+       {
+        "field": "rules[78].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[78].signalId",
+        "live": null,
+        "draft": "volatility_atr_contracting"
+       },
+       {
+        "field": "rules[78].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[79].params.multiplier",
+        "live": null,
+        "draft": 1.5
+       },
+       {
+        "field": "rules[79].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[79].signalId",
+        "live": null,
+        "draft": "volatility_atr_expanding"
+       },
+       {
+        "field": "rules[79].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[80].params.multiplier",
+        "live": null,
+        "draft": 0.5
+       },
+       {
+        "field": "rules[80].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[80].signalId",
+        "live": null,
+        "draft": "volume_dry_up"
+       },
+       {
+        "field": "rules[80].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[81].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[81].signalId",
+        "live": null,
+        "draft": "volume_obv_bear_divergence"
+       },
+       {
+        "field": "rules[81].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[82].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[82].signalId",
+        "live": null,
+        "draft": "volume_obv_bull_divergence"
+       },
+       {
+        "field": "rules[82].allocation",
+        "live": null,
+        "draft": 1
+       },
+       {
+        "field": "rules[83].params.multiplier",
+        "live": null,
+        "draft": 2
+       },
+       {
+        "field": "rules[83].required",
+        "live": null,
+        "draft": false
+       },
+       {
+        "field": "rules[83].signalId",
+        "live": null,
+        "draft": "volume_surge"
+       },
+       {
+        "field": "rules[83].allocation",
+        "live": null,
+        "draft": 1
+       }
+      ]
+     },
+     {
+      "axis": "TIMEFRAME_PROFILE",
+      "live": null,
+      "draft": {
+       "timeframe": "1h"
+      },
+      "changes": [
+       {
+        "field": "timeframe",
+        "live": null,
+        "draft": "1h"
+       }
+      ]
+     }
+    ],
+    "diagnostics": {
+     "errors": [],
+     "warnings": [
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Bollinger Bands module is not in this report, but 5 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Sector & BTC Comparison module is not in this report, but 3 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Confluence module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Cumulative Volume Delta module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Perp/Spot Flow Divergence module is not in this report, but 2 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Funding Rates module is not in this report, but 3 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The MACD module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The MFI module is not in this report, but 6 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Moving Averages module is not in this report, but 10 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Open Interest module is not in this report, but 3 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Price Structure module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Market Regime module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Relative Strength module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The RSI module is not in this report, but 8 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Stochastic module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Support & Resistance module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Trend Strength module is not in this report, but 6 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Volatility module is not in this report, but 2 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      },
+      {
+       "code": "MODULE_WEIGHTED_OUTSIDE_REPORT",
+       "field": null,
+       "message": "The Volume module is not in this report, but 4 of its signals still score — membership never gates evaluation, so those weights still count.",
+       "details": null
+      }
+     ],
+     "mismatches": [
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_cci_overbought",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "CCI20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_cci_overbought' scores on data the report does not show: CCI20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_cci_oversold",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "CCI20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_cci_oversold' scores on data the report does not show: CCI20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_lower_touch",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "BB_TOUCH",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_lower_touch' scores on data the report does not show: BB_TOUCH @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_squeeze",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "BB_WIDTH",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_squeeze' scores on data the report does not show: BB_WIDTH @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "bollinger_upper_touch",
+       "module": "BOLLINGER",
+       "data": [
+        {
+         "metric": "BB_TOUCH",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'bollinger_upper_touch' scores on data the report does not show: BB_TOUCH @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "comparison_sector_divergence",
+       "module": "COMPARISON",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'comparison_sector_divergence' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "comparison_sector_momentum",
+       "module": "COMPARISON",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'comparison_sector_momentum' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bear_divergence",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bear_divergence' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bearish",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bearish' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bull_divergence",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bull_divergence' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "cvd_bullish",
+       "module": "CVD",
+       "data": [
+        {
+         "metric": "CVD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'cvd_bullish' scores on data the report does not show: CVD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "flow_perp_spot_bear_divergence",
+       "module": "FLOW_DIVERGENCE",
+       "data": [
+        {
+         "metric": "PERP_SPOT_FLOW",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'flow_perp_spot_bear_divergence' scores on data the report does not show: PERP_SPOT_FLOW @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "flow_perp_spot_bull_divergence",
+       "module": "FLOW_DIVERGENCE",
+       "data": [
+        {
+         "metric": "PERP_SPOT_FLOW",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'flow_perp_spot_bull_divergence' scores on data the report does not show: PERP_SPOT_FLOW @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "funding_extreme_negative",
+       "module": "FUNDING",
+       "data": [
+        {
+         "metric": "FUNDING_ANN",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'funding_extreme_negative' scores on data the report does not show: FUNDING_ANN @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "funding_extreme_positive",
+       "module": "FUNDING",
+       "data": [
+        {
+         "metric": "FUNDING_ANN",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'funding_extreme_positive' scores on data the report does not show: FUNDING_ANN @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "funding_rate_flipping",
+       "module": "FUNDING",
+       "data": [
+        {
+         "metric": "FUNDING_RATE",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'funding_rate_flipping' scores on data the report does not show: FUNDING_RATE @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_ma_aligned_bear",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_ma_aligned_bull",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_rsi_overbought",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_rsi_overbought' scores on data the report does not show: RSI14 @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_rsi_oversold",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_rsi_oversold' scores on data the report does not show: RSI14 @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_trend_adx_ranging",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_trend_adx_ranging' scores on data the report does not show: ADX @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "htf_trend_adx_trending",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'htf_trend_adx_trending' scores on data the report does not show: ADX @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_ma_aligned_bear",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_ma_aligned_bull",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_rsi_overbought",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_rsi_overbought' scores on data the report does not show: RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_rsi_oversold",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_rsi_oversold' scores on data the report does not show: RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_trend_adx_ranging",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_trend_adx_ranging' scores on data the report does not show: ADX @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ltf_trend_adx_trending",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'ltf_trend_adx_trending' scores on data the report does not show: ADX @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_aligned_bear",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_aligned_bear' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_aligned_bull",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_aligned_bull' scores on data the report does not show: EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_bear_cross",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA_CROSS",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_bear_cross' scores on data the report does not show: EMA_CROSS @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_ema_bull_cross",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "EMA_CROSS",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_ema_bull_cross' scores on data the report does not show: EMA_CROSS @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_sma200_above",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "SMA200",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_sma200_above' scores on data the report does not show: SMA200 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "ma_sma200_below",
+       "module": "MOVING_AVERAGES",
+       "data": [
+        {
+         "metric": "SMA200",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'ma_sma200_below' scores on data the report does not show: SMA200 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bear_cross",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bear_cross' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bear_divergence",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bear_divergence' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bull_cross",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bull_cross' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "macd_bull_divergence",
+       "module": "MACD",
+       "data": [
+        {
+         "metric": "MACD",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'macd_bull_divergence' scores on data the report does not show: MACD @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_bear_divergence",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_bear_divergence' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_bull_divergence",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_bull_divergence' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_overbought",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_overbought' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_oversold",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_oversold' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_sustained_bearish",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_sustained_bearish' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mfi_sustained_bullish",
+       "module": "MFI",
+       "data": [
+        {
+         "metric": "MFI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'mfi_sustained_bullish' scores on data the report does not show: MFI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_aligned_bear",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        },
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        },
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'mtf_aligned_bear' scores on data the report does not show: MA_ALIGN @ lower, EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor, MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_aligned_bull",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "lower"
+        },
+        {
+         "metric": "EMA5",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA13",
+         "rung": "anchor"
+        },
+        {
+         "metric": "EMA20",
+         "rung": "anchor"
+        },
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'mtf_aligned_bull' scores on data the report does not show: MA_ALIGN @ lower, EMA5 @ anchor, EMA13 @ anchor, EMA20 @ anchor, MA_ALIGN @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_pullback_long",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        },
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'mtf_pullback_long' scores on data the report does not show: MA_ALIGN @ signalHigher, RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "mtf_pullback_short",
+       "module": "CONFLUENCE",
+       "data": [
+        {
+         "metric": "MA_ALIGN",
+         "rung": "signalHigher"
+        },
+        {
+         "metric": "RSI14",
+         "rung": "lower"
+        }
+       ],
+       "message": "Active signal 'mtf_pullback_short' scores on data the report does not show: MA_ALIGN @ signalHigher, RSI14 @ lower."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "oi_divergence_bear",
+       "module": "OPEN_INTEREST",
+       "data": [
+        {
+         "metric": "OI",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'oi_divergence_bear' scores on data the report does not show: OI @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "oi_divergence_bull",
+       "module": "OPEN_INTEREST",
+       "data": [
+        {
+         "metric": "OI",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'oi_divergence_bull' scores on data the report does not show: OI @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "oi_surge",
+       "module": "OPEN_INTEREST",
+       "data": [
+        {
+         "metric": "OI",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'oi_surge' scores on data the report does not show: OI @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_alignment",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_TREND",
+         "rung": "anchor"
+        },
+        {
+         "metric": "REGIME_VOL",
+         "rung": "anchor"
+        },
+        {
+         "metric": "REGIME_MOM",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_alignment' scores on data the report does not show: REGIME_TREND @ anchor, REGIME_VOL @ anchor, REGIME_MOM @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_divergence",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_TREND",
+         "rung": "anchor"
+        },
+        {
+         "metric": "REGIME_MOM",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_divergence' scores on data the report does not show: REGIME_TREND @ anchor, REGIME_MOM @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_trend_shift",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_TREND",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_trend_shift' scores on data the report does not show: REGIME_TREND @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "regime_volatility_shift",
+       "module": "REGIME",
+       "data": [
+        {
+         "metric": "REGIME_VOL",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'regime_volatility_shift' scores on data the report does not show: REGIME_VOL @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_ppo_bear_cross",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "PPO",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_ppo_bear_cross' scores on data the report does not show: PPO @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_ppo_bull_cross",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "PPO",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_ppo_bull_cross' scores on data the report does not show: PPO @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_roc_negative",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "ROC12",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_roc_negative' scores on data the report does not show: ROC12 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rel_roc_positive",
+       "module": "RELATIVE_STRENGTH",
+       "data": [
+        {
+         "metric": "ROC12",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rel_roc_positive' scores on data the report does not show: ROC12 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_bear_divergence",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_bear_divergence' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_bull_divergence",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_bull_divergence' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_overbought",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_overbought' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "rsi_oversold",
+       "module": "RSI",
+       "data": [
+        {
+         "metric": "RSI14",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'rsi_oversold' scores on data the report does not show: RSI14 @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_at_resistance",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_at_resistance' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_at_support",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_at_support' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_resistance_break",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_resistance_break' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "sr_support_break",
+       "module": "SUPPORT_RESISTANCE",
+       "data": [
+        {
+         "metric": "DONCHIAN_UPPER",
+         "rung": "anchor"
+        },
+        {
+         "metric": "DONCHIAN_LOWER",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'sr_support_break' scores on data the report does not show: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_bear_cross",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_bear_cross' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_bull_cross",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_bull_cross' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_overbought",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_overbought' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "stoch_oversold",
+       "module": "STOCHASTIC",
+       "data": [
+        {
+         "metric": "STOCH_K",
+         "rung": "anchor"
+        },
+        {
+         "metric": "STOCH_D",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'stoch_oversold' scores on data the report does not show: STOCH_K @ anchor, STOCH_D @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_fvg_approach",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_fvg_approach' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_ob_approach",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_ob_approach' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_zone_cluster",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_zone_cluster' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "structure_zone_confluence",
+       "module": "PRICE_STRUCTURE",
+       "data": [
+        {
+         "metric": "STRUCT_ZONES",
+         "rung": "signalHigher"
+        }
+       ],
+       "message": "Active signal 'structure_zone_confluence' scores on data the report does not show: STRUCT_ZONES @ signalHigher."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "trend_adx_ranging",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'trend_adx_ranging' scores on data the report does not show: ADX @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "trend_adx_trending",
+       "module": "TREND_STRENGTH",
+       "data": [
+        {
+         "metric": "ADX",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'trend_adx_trending' scores on data the report does not show: ADX @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volatility_atr_contracting",
+       "module": "VOLATILITY",
+       "data": [
+        {
+         "metric": "ATR",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volatility_atr_contracting' scores on data the report does not show: ATR @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volatility_atr_expanding",
+       "module": "VOLATILITY",
+       "data": [
+        {
+         "metric": "ATR",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volatility_atr_expanding' scores on data the report does not show: ATR @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_dry_up",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "RVOL",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_dry_up' scores on data the report does not show: RVOL @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_obv_bear_divergence",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "OBV",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_obv_bear_divergence' scores on data the report does not show: OBV @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_obv_bull_divergence",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "OBV",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_obv_bull_divergence' scores on data the report does not show: OBV @ anchor."
+      },
+      {
+       "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+       "signalId": "volume_surge",
+       "module": "VOLUME",
+       "data": [
+        {
+         "metric": "RVOL",
+         "rung": "anchor"
+        }
+       ],
+       "message": "Active signal 'volume_surge' scores on data the report does not show: RVOL @ anchor."
+      }
+     ]
+    },
+    "impact": {
+     "boundAgentCount": 0,
+     "openPositionCount": 0,
+     "timeframeChanged": false,
+     "operation": "CREATE",
+     "admission": {
+      "quota": {
+       "used": 16,
+       "limit": 25,
+       "remaining": 9
+      },
+      "nameAvailable": true
+     },
+     "capital": []
+    }
+   },
+   "latencyS": 4.24
+  },
+  {
+   "label": "discard",
+   "tool": "discard_strategy_draft",
+   "args": {
+    "request": {
+     "strategyId": "396130de-af27-4c0e-b75e-2aa9f382639e",
+     "draftVersion": 1
+    }
+   },
+   "at": "2026-10-06T08:05:46.989178+00:00",
+   "ok": true,
+   "bytes": 73,
+   "answer": {
+    "strategyId": "396130de-af27-4c0e-b75e-2aa9f382639e",
+    "discarded": true
+   },
+   "latencyS": 4.99
+  },
+  {
+   "label": "read after discard",
+   "tool": "get_strategy_draft",
+   "args": {
+    "request": {
+     "strategyId": "396130de-af27-4c0e-b75e-2aa9f382639e"
+    }
+   },
+   "at": "2026-10-06T08:05:51.983212+00:00",
+   "ok": true,
+   "bytes": 154,
+   "answer": {
+    "draft": null,
+    "draftVersion": 0,
+    "committedRevision": null,
+    "diff": [],
+    "diagnostics": {
+     "errors": [],
+     "warnings": [],
+     "mismatches": []
+    },
+    "impact": null
+   },
+   "latencyS": 4.01
+  },
+  {
+   "label": "drafts after",
+   "tool": "list_strategy_drafts",
+   "args": {
+    "request": {}
+   },
+   "at": "2026-10-06T08:05:55.989816+00:00",
+   "ok": true,
+   "bytes": 34,
+   "answer": {
+    "drafts": [],
+    "nextCursor": null
+   },
+   "latencyS": 2.29
+  }
+ ],
+ "endedAt": "2026-10-06T08:05:58.277870+00:00",
+ "how": "battlegrid-manager api container, the manager's read client with the strategy-draft tools added (commit_strategy_draft NOT allowed); the user's word 2026-10-06 (the rung probe); contract 91.0.0 build 7026bafd. One create draft: IDENTITY, TIMEFRAME_PROFILE 1h, REPORT = Price Action only, all 84 signals at allocation 1. Probe draft 396130de discarded and read back null."
+}
