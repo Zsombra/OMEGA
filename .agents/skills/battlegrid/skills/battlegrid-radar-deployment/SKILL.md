@@ -122,7 +122,7 @@ resolve.
 
 **A Radar preview refuses an agent the scan cannot read on the coin.** Every slot agent, on duty now
 or not, must have every condition the radar acts on — its required conditions, the ones carrying a
-verdict, its exit conditions, and every condition they reference — readable by the radar scan on this
+verdict, its exit rules, and every condition they reference — readable by the radar scan on this
 coin. When one is not, the preview itself is refused, issues no certificate, and nothing can be
 committed: `CONDITION_UNREADABLE_BY_RADAR_SCAN`, whose `details.context.reachReason` says why
 (`INSTRUMENT` — the market-data profile of the coin, or of a benchmark section's own instrument, carries

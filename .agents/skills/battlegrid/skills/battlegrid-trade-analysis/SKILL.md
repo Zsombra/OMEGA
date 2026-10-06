@@ -14,7 +14,7 @@ Start with where the money is, always, even when the question is narrower — a 
 means nothing without the whole.
 
 - `get_account_state` for the account total.
-- `get_agent_fund_allocation` and `get_agent_budget` for what is committed per agent.
+- `get_agent_budget` for each agent's capital at risk, and `get_agent_fund_allocation` for its funding envelope.
 
 Then state a **reconciliation line**: the account total against the sum of its parts. If they
 agree, say they agree. **If they do not, state the gap as a gap** — name the amount and say you

@@ -5,7 +5,7 @@ coin-selection and discovery shapes an author reaches for while writing a payloa
 
 **Shapes are binding. Tokens are illustrations** — re-discover every metric, transform and parameter
 against the live tools (`list_strategy_categories`, `list_strategy_vocabulary`,
-`get_metric_construction_hints`, `get_strategy_column_contract`) before compiling. A recipe is a
+`get_metric_construction_hints`, `get_strategy_column_contract`) before staging. A recipe is a
 worked shape, never a substitute for discovery.
 
 Read `## Header grammar` and `## Conditions` in the skill body first: how a column's header is
@@ -89,7 +89,8 @@ thing a crowded-positioning playbook trades against.
 
 ## Coin selection
 
-`coinSelection` is required on every compile and is discriminated on `mode`:
+`coinSelection` is required on every `preview_strategy_report` call — it is the cohort the preview
+renders over, never strategy state — and is discriminated on `mode`:
 
 ```json
 { "mode": "ranked", "limit": 25, "category": "DEFI" }

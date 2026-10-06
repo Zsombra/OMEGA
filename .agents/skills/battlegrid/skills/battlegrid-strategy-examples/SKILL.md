@@ -5,8 +5,8 @@ description: Full-surface composition patterns for the strategy studio — valid
 
 # Strategy Studio — full-power composition patterns
 
-`strategy-authoring` owns the flow (evidence → locked spec → discover → compile → review →
-apply). This skill owns **what to compose**: a default build — a few platform sections, no
+`strategy-authoring` owns the flow (evidence → locked spec → discover → stage → review →
+commit). This skill owns **what to compose**: a default build — a few platform sections, no
 conditions, untouched weights — wastes the studio. The playbooks below are compiled in CI, so their
 shapes are binding in the sense that matters — they are checked, not merely asserted. Loose tokens
 elsewhere in this file are not covered by that gate, and vocabulary moves with deploys, so discovery
@@ -17,14 +17,15 @@ them.
 
 ## The full-power checklist
 
-Before compiling a CREATE, every "no" here is a decision to state, not an omission:
+Before committing a CREATE, every "no" here is a decision to state, not an omission:
 
 1. At least one **custom section** whose columns encode the thesis — not only platform modules.
 2. **Conditions** encode the entry logic: building blocks (`verdict: null`) + verdict carriers,
    and at least one `required: true` condition vetoing obvious disqualifiers **before any
    billing or LLM call**.
 3. **Every signal meant to score is named in `rules`** with a deliberate tier — unnamed signals
-   keep server defaults (typically Off). Verify in the compiled scorecard, never assume.
+   keep server defaults (Off on a CREATE). Verify against the rule rows the draft read serves,
+   never assume.
 4. **Gates** (`minAggregateScore`, `minRequiredCount`, `minAtrPct`) are computed against the
    chosen weight budget, not guessed.
 5. **Trade levels + position management** match the setup's geometry and holding period.
@@ -66,9 +67,10 @@ standard market-leader regime gate. Platform `sectionKey`s are their literal key
 (`includeMtfConfluence`). Custom `sectionKey`s are the **server's** to issue, and which of the two
 things you do depends on the operation: on a **CREATE, omit `sectionKey` entirely** — supplying one
 is refused, since a new strategy owns no custom sections yet; on an **UPDATE or RESTORE, send back
-the keys `get_strategy` returned** for the sections you are keeping. Either way you never invent
-one. To section-qualify a duplicated header, read the key from a preview's `conditionColumns` or
-from the qualified candidates a `CONDITION_COLUMN_AMBIGUOUS` refusal offers.
+the keys `get_strategy` returned** for the sections you are keeping, and omit it on a section you
+add. Either way you never invent one. To section-qualify a duplicated header, read the key from a
+preview's `conditionColumns` or from the qualified candidates a `CONDITION_COLUMN_AMBIGUOUS`
+refusal offers.
 
 **Event columns print only on their event.** `MACD_cross` and `EMA5_13` (Bullish/Bearish) carry a
 value on the crossing bar and are null on every other one, which reads as UNRESOLVED. Use an event
@@ -86,12 +88,16 @@ against a literal; neither of those shapes is what a previous-session level need
 
 ## Conditions
 
-`{ conditionKey, name, definition, verdict, required, exit, closes }` — all seven
-required, no defaults. A `clock` key is REFUSED: the per-condition evidence clock was retired in
-contract `61.0.0`. Clauses: numeric/rank headers take `lt|lte|gte|gt|between`;
+`{ conditionKey, name, definition, verdict, required, exitSide }` — all six
+required, no defaults. A `clock` key is REFUSED (the per-condition evidence clock was retired in
+contract `61.0.0`), so is a condition-level `closes` key — the hold lives on each clause and each
+group (contract `84.0.0`) — and so is a boolean `exit` key: the side an exit closes is its own
+`exitSide` (contract `88.0.0`). Clauses: numeric/rank headers take `lt|lte|gte|gt|between`;
 classification/direction headers take `is|in` with the served vocabulary. Groups:
-`ALL | ANY | NOT | N_OF` (with `n`), depth ≤ 2. `conditionRef` composes named conditions (no
-cycles; forward refs legal). `sectionKey: null` is sugar for a report-unique header only.
+`ALL | ANY | NOT | N_OF` (with `n`), depth ≤ 2. Every clause and every group carries a required
+`hold: { atLeast, of }` — `{ "atLeast": 1, "of": 1 }` is a single read; a clause or group without
+`hold` is refused (`CONDITION_HOLD_INVALID`). `conditionRef` composes named conditions (no
+cycles; forward refs legal) and carries no hold of its own. `sectionKey: null` is sugar for a report-unique header only.
 Verdicts: resolution is taken over the DISTINCT verdicts of the carriers that read TRUE. One
 distinct verdict decides, and the first carrier in declaration order carrying it is named as the
 decider — so order breaks ties between carriers that AGREE. Carriers that DISAGREE resolve
@@ -121,19 +127,55 @@ bar a condition reads is decided by the surface asking — a decision (the radar
 compose that takes the trade, the exit sweep) reads completed strategy bars; a display read shows the
 forming one and decides nothing — and by each candle column's own Confirmed / Developing selector.
 
-**The hold count.** `closes` is how many consecutive COMPLETED strategy bars must read TRUE (1–5). A
-hold counts the same completed bars whichever surface asks, so a held condition reads them on the
-display lane too. Above `1` it is legal **only** where a completed bar changes the reading: over a
-header resolved from this coin's own candle series, at offset 0, at or above the strategy timeframe,
-read Confirmed. Everything else is refused (`CONDITION_HOLD_OPERAND_ILLEGAL`) — perp-payload scalars,
-published rolling changes, ranks, zone entities, MDS regime labels, enrichment metrics, session
-scalars, a non-zero offset, a column BELOW the strategy timeframe (the retained lower series cannot
-reach an earlier strategy close), and a developing read (the bar in progress exists on the newest
-frame only). A hold also needs a clause of the condition's OWN
-(`CONDITION_HOLD_ILLEGAL`): a referenced condition is resolved once and contributes the same answer
-to every frame, so a hold that moves with the bar only through a reference would count reads that
-never happened. **Worked liquidity floor:** `LIQUID_FLOOR` holds one close because `vol24hUsd` is a
-bundle scalar. Reach for a split to keep a condition's MEANING separable, not to buy it a hold.
+**Hold — how many closes a clause counts.** A clause's `hold: { atLeast, of }` reads TRUE when the
+clause read TRUE on at least `atLeast` of its newest `of` COMPLETED bars — counted on the clause's
+OWN column timeframe, not the strategy's: a `4h` column on a `1h` strategy held 3 reads three `4h`
+bars. The editor calls the control **Hold** and offers four modes:
+
+| Mode | Hold | Reads as |
+|---|---|---|
+| Once | `{ 1, 1 }` | a single read of the bar being decided |
+| In a row | `{ n, n }` | "3 closes in a row" |
+| Within | `{ 1, n }` | "within 5 closes" |
+| At least | `{ m, n }` | "at least 2 of 5 closes" |
+
+A hold counts the same completed bars whichever surface asks. Each bar is read or unreadable; an
+unreadable bar is never replaced by an older one, and the count decides as soon as the bars read
+decide it (TRUE once `atLeast` bars read TRUE, FALSE once the rest can no longer reach it), else
+UNRESOLVED.
+
+What a header admits is SERVED, never guessed: every column in the strategy's report catalog
+(`preview_strategy_report` → `conditionColumns[].outputs[].conditionHold`, and each scalar metric in
+the vocabulary) carries `{ timeframe, maxWindow, maxAtLeast, refusal }` — the timeframe it counts,
+the largest `of`, the largest `atLeast`, and, when it admits only Once, why. `maxWindow` is the
+history the store keeps for that column, less the column's own lookback and warm-up. A hold past
+the served domain is refused (`CONDITION_HOLD_ILLEGAL`, the domain in `allowedDomain`). The reasons
+a header admits only Once:
+
+- `NOT_REWINDABLE` — the value is stored for the current bar only (session and universe scalars,
+  ranks, zone entities, enrichment metrics, published rolling changes). **Worked liquidity floor:**
+  `LIQUID_FLOOR` holds Once because `vol24hUsd` is a bundle scalar.
+- `DEVELOPING` — the column reads the bar still forming. **Developing columns cannot be held**; set
+  the column Confirmed to count closes.
+- `OFFSET` — the column already reads an earlier bar; remove the offset to count closes.
+- `BAR_STATE` — the header describes only the bar being decided.
+- `HISTORY` — not enough history is stored on that timeframe to count more than one close.
+
+Candle columns (at, above or below the strategy timeframe), the regime (counted on the regime rung),
+and the funding and open-interest histories (on the coarser of the strategy timeframe and their own
+hourly cadence) can all be held. **A crossover is an event**: it fires on the bar a state changes,
+so its `maxAtLeast` is 1 — hold a cross "within n closes", never "in a row".
+
+**Group hold — closes counted together.** A group's `hold` counts its members' joint reading on the
+same bar: the group's own outcome, its members folded by its operator, must read TRUE on at least
+`atLeast` of its newest `of` bars, counted on its finest member's timeframe. The phrases add
+"together": "together on 3 closes in a row", "together within 5 closes", "together on at least 2 of
+5 closes". Inside a group holding more than Once, every member holds Once and none is a
+`conditionRef` — each read is counted by exactly one hold — so a row holding its own closes, a
+reference, or a held group inside is refused, naming the member. A conjunction that needs a
+crossover to be TRUE (`ALL(cross, x)`) admits "within" only. Reach for a split to keep a condition's
+MEANING separable; a reference carries its condition's one answer for the bar being decided and is
+never counted across closes.
 
 **Confirmed / Developing, per candle column.** Every transform whose home is the coin's candle series
 carries `bars`: `"closed"` is Confirmed — the newest bar completed at the strategy close — and
@@ -142,18 +184,18 @@ it completes. Left unset the default is a rule, not a value: Confirmed for a col
 strategy timeframe, and at or below it the series as the frame carries it. At or below the strategy
 timeframe the choice therefore sets only what the live lane shows — no bar is in progress at the
 anchor's own close — so Developing there is legal and changes no decision. A condition reading a
-developing bar is single-frame: it holds one close, carries no verdict and cannot take the `exit`
-role. One exception overrides both the stored value and the default: a column reading a metric with
+developing bar is single-frame: its clause holds Once (a Developing column cannot be held), it
+carries no verdict and it cannot be an exit rule. One exception overrides both the stored value and the default: a column reading a metric with
 no live value (itself, or a `spread` operand) reads completed bars at every rung, because the forming
 bar publishes nothing for it. The resolved answer for a column is served on
 `effectiveParameters.bars`, and it states that exception.
 
 **A higher-timeframe level is measured from the current strategy-bar price.** The distance to a `4h`
 Donchian band, and every candle label classifier (`MA_ALIGN`, `PRICE_ZONE`, `BB_TOUCH`), compares
-against the frame's current price — the strategy bar's close under a decision, the live mark on
-display — not against the higher-timeframe bar's own close, which is up to one higher-timeframe bar
-stale. A distance CHAINED into a series transform keeps every slot on its own bar's close, so one
-series carries one reference basis.
+against the frame's current price, `LAST` — the strategy bar's close under a decision, the last
+traded price on display — not against the higher-timeframe bar's own close, which is up to one
+higher-timeframe bar stale. A distance CHAINED into a series transform keeps every slot on its own
+bar's close, so one series carries one reference basis.
 
 **The lane a strategy is deployed to.** Report-level scalars split by LANE, and the split is not a
 quality of the header — it is which reader runs. Market breadth and the reference pairs are ordinary
@@ -164,7 +206,7 @@ strategy reads one is refused outright (`CONDITION_OPERAND_UNSERVED_IN_LANE`), n
 can read instead.
 
 **What the radar scan can read on a coin.** Beyond the lane, a condition the radar acts on — a
-required one, one carrying a verdict, an exit one, and every condition they reference — must be
+required one, one carrying a verdict, an exit rule, and every condition they reference — must be
 readable by the radar scan on each coin the radar acts on for the agent, or it would be decided unread.
 What a coin can be read for is its market-data profile: the kinds of data the market-data service
 publishes that it serves for that coin, never the coin's asset class. A refusal carries
@@ -175,25 +217,35 @@ column on a ticker with no catalog row), `AGENT_TIMEFRAME` when the agent has no
 enabled ladder, and `FEED` when the radar scan never reads that data for the agent (crowd reads:
 compose reads them, but only for a coin the scan has already admitted). An `INSTRUMENT` refusal names
 the kind of data the profile lacks, or says the coin has no profile. The fixes it names: take the
-condition's radar role away (neither required nor a verdict, or no exit role), read a column the radar
+condition's radar role away (neither required nor a verdict, or, for an exit rule, its exit role), read a column the radar
 scan has on that coin, or free the coin.
 
 **The refusal lands where an agent meets a coin**: at the radar deploy (its preview, the builder's
 Save and the draft commit); at a manual entry request, as `CONDITION_UNREADABLE_ON_COIN`;
-and, for an agent already deployed or holding an open position or a pending manual request, at a
-strategy save (`compile_strategy_plan`, `apply_strategy_plan`, `restore_strategy`) or a rebind. A save
-is checked only on behalf of those agents: a strategy carries no lane of its own, so one with no agent
-the radar acts on is never checked, and the same strategy is legal, and reads session-field scalars
-correctly, on an arena agent. A refused compile issues no plan token, so nothing can stage that
-content.
+and, for an agent already deployed or holding a pending manual request, at a
+strategy commit (`commit_strategy_draft`, the builder's Save, `restore_strategy`) or a rebind (the
+agent draft's STRATEGY_BINDING commit). A commit is checked only on behalf of those agents: a
+strategy carries no lane of its own, so one with no agent the radar acts on is never checked, and
+the same strategy is legal, and reads session-field scalars correctly, on an arena agent. A draft
+may hold such content — staging never refuses a draft for being invalid — but its commit is
+refused, so it never reaches the agents.
 
-**The exit role.** `exit: true` makes a settled TRUE reading close open positions its verdict
-opposes — UP exits SHORTs, DOWN exits LONGs, a NEITHER or `null` verdict exits both. Legal only over
-a closure every operand of which a completed bar MOVES (`CONDITION_EXIT_READ_ILLEGAL`), which rules
-out a developing read — a bar in progress is the forming bar, and an exit fired on one is an intrabar
-exit — and rules out a frame-inert operand, which could never fire. Orthogonal to `required` — the
-two act on disjoint lifecycles, pre-entry versus open — so a condition may carry both, either, or
-neither.
+**Exit rules.** A condition is an entry condition (`exitSide: null`) or an exit rule, never both.
+An exit rule's `exitSide` names the side it closes — `LONG`, `SHORT` or `BOTH` — and it has two
+effects: a settled TRUE on a completed bar closes the agent's open position on that side, and while it
+reads TRUE that side is not offered for entry (a scan qualification or a compose refusal under
+`CONDITION_EXIT_RULE_CLOSES_DIRECTION`, after any verdict refusal of the same side). No verdict chooses
+the side: an exit rule carries `verdict: null` and `required: false` (`CONDITION_EXIT_RULE_CARRIES_VERDICT`,
+`CONDITION_EXIT_RULE_REQUIRED`). An entry condition cannot reference an exit rule
+(`CONDITION_ENTRY_REFERENCES_EXIT_RULE`), so editing an exit rule never changes what the agent enters;
+an exit rule may reference anything, so "exit when the entry setup stops holding" is an exit rule
+whose definition is `NOT` a `conditionRef` to the entry condition. An exit rule is legal only over a
+closure every operand of which a completed bar MOVES (`CONDITION_EXIT_READ_ILLEGAL`), which rules out
+a developing read — a bar in progress is the forming bar, and an exit fired on one is an intrabar
+exit — and rules out a frame-inert operand, which could never fire. A position stamps the exit rules
+it opened under, with the report and timeframes they read: an exit-rule edit applies to positions
+opened after it, and an open position keeps the exit rules it opened with, so an open position never
+refuses a commit or a rebind.
 
 **A state column is not a flip event.** `ST_DIR` reads the same on every bar of a trend, so
 `ST_DIR is "bullish"` is a regime filter and never an entry signal. The flip needs an event column
@@ -208,11 +260,15 @@ anchor, or the author gates on something that admits most bars.
 
 ## Entry
 
-`{ trigger, levelOffsetAtrMultiple, validForBars }` — all three required on every CREATE, no
-defaults. This axis is replaced WHOLE on save, so an omitted key would silently revert an author's
-discipline rather than be refused. There is no level-source key: the level a level trigger rests at
-is DERIVED from the trigger and the trade's direction, never named. There is no confirm-timeframe
-key either: the bar whose close decides an entry is the strategy's OWN timeframe.
+`{ trigger, levelOffsetAtrMultiple, validForBars }` — the axis's keys, and the trigger decides
+which of them you send. `ON_CANDLE_CLOSE` is sent ALONE, as `{ "trigger": "ON_CANDLE_CLOSE" }`: a
+`levelOffsetAtrMultiple` or `validForBars` beside it is refused as an unrecognized key. A level
+trigger — `STOP_THROUGH_LEVEL` or `ON_RETEST` — sends both of them, no defaults. The axis is staged
+WHOLE, so a level trigger missing one is refused rather than half-kept. It is not required on every
+CREATE: a CREATE that stages no entry takes the platform's seed entry, so stage it whenever the
+setup names one. There is no level-source key: the level a level trigger rests at is DERIVED from
+the trigger and the trade's direction, never named. There is no confirm-timeframe key either: the
+bar whose close decides an entry is the strategy's OWN timeframe.
 
 **Every trigger is decided at the close of the strategy's own bar — there are three, and the close
 is the only entry clock.** The newest completed bar is read on the closed basis — every one-close
@@ -220,7 +276,7 @@ condition resolves on that bar and the scorecard reads its close — and a readi
 fires at that close. A bar that does not qualify decides nothing and is not revisited. The fill lands
 at the next tick, and the platform refuses it if the market has already run past its own drift budget
 from that close. A fourth value, `AT_SIGNAL`, is readable on strategies authored before this contract
-and is REFUSED on every save; there is no live-reading entry to author.
+and is REFUSED on every stage and save; there is no live-reading entry to author.
 
 - `ON_CANDLE_CLOSE` — the entry is taken AT the qualifying close, at market.
 - `STOP_THROUGH_LEVEL` — at the qualifying close a TRIGGER order rests past the Donchian channel's
@@ -232,8 +288,8 @@ and is REFUSED on every save; there is no live-reading entry to author.
   short) by the offset, waiting for a return to it. Not filling is a correct outcome, not a
   failure; no unrecovered break in memory means no setup, never a fallback level.
 
-**A multi-bar hold belongs to the CONDITION that needs it.** Declare that condition's own `closes` —
-the entry axis counts no bars, and there is no displacement band: the
+**A multi-bar hold belongs to the CLAUSE (or group) that needs it.** Declare that clause's own
+`hold` — "3 closes in a row", "within 5 closes" — the entry axis counts no bars, and there is no displacement band: the
 platform's entry-deviation gate measures the live mark against the decided close and refuses a fill
 that drifted past the budget in either direction.
 
@@ -246,10 +302,11 @@ correct side of the mark when the order is placed — a buy stop above it, a buy
 mirror for a sell — or the entry is refused rather than filled at the market; there is no limit on
 how far from the mark a level may rest.
 
-**The legality matrix runs one way.** All three keys are always present, so the question is never
-"is it set" but "is it set to something that MEANS anything under this trigger".
-`levelOffsetAtrMultiple` ≠ 0 and `validForBars` ≠ 4 are refused under a non-level trigger. Leave a
-dial at its inert value rather than setting one the platform will ignore.
+**The trigger decides the shape, so there is no inert dial to leave.** Under `ON_CANDLE_CLOSE` the
+two parameters do not exist on the input — the server stores its seed values for them — while a
+read (`get_strategy`) still shows all three keys. Switching a level trigger back to
+`ON_CANDLE_CLOSE` is staging `{ "trigger": "ON_CANDLE_CLOSE" }` alone; never copy the read's
+parameters back beside it.
 
 ## Report sections
 
@@ -262,7 +319,9 @@ author's value silently. On a CREATE, omit `sectionKey` — it is derived from t
 ## Signal rules
 
 `{ signalId, allocation, required, params }` — one entry per signal you want scoring.
-`allocation` is the tier (0–3) and `params` replaces canonical defaults only when present.
+`allocation` is the tier (0–3) and `params` replaces canonical defaults only when present. Staged
+into the draft's SIGNAL_RULES axis, every row is complete — `allocation` and `required` on each —
+and replaces the drafted row for its signal while every other row is kept.
 
 ## Signal weights and gate math
 
@@ -276,7 +335,7 @@ Weights are relative — build a pyramid: 1–2 Critical (thesis, usually `requi
 Important (independent confirmation, different modules), 1–3 Normal (context), rest Off so
 noise cannot dilute the average. Gate check: with 3/2/2/1 weights, Critical + one Important at
 score 1.0 → (3+2)/8 = 0.625, so a 0.6 gate means "thesis plus one confirmation".
-`simulate_aggregate_score` does this arithmetic from compiled values at review time.
+`simulate_aggregate_score` does this arithmetic from the draft's values at review time.
 `required: true` counts the signal toward `minRequiredCount` when triggered; at
 `allocation: 0` it is rejected (contract 34). `params` replace canonical defaults only when
 present — read `get_strategy_signal_definition({ signalId, timeframe })` before tuning (e.g.

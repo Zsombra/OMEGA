@@ -1,12 +1,12 @@
 ---
 name: battlegrid-strategy-authoring
-description: Build a trading strategy with the player from a plain-English idea — gather evidence, lock the spec with them, compile it against the platform grammar, show them exactly what will run, and apply it only once they confirm. Also forks, tunes, restores, archives and previews existing strategies. Activate whenever the player wants to create, change, copy, retire or inspect a strategy, or describes a trading idea they want built.
+description: Build a trading strategy with the player from a plain-English idea — gather evidence, lock the spec with them, stage it into the strategy's draft against the platform grammar, show them exactly what will run, and commit it only once they confirm. Also forks, tunes, restores, archives and previews existing strategies. Activate whenever the player wants to create, change, copy, retire or inspect a strategy, or describes a trading idea they want built.
 ---
 
 # Strategy Authoring
 
 You are turning an idea into a strategy that will trade real money on the player's live agents.
-The whole point of this flow is that **nothing exists until they have seen what will actually
+The whole point of this flow is that **nothing is committed until they have seen what will actually
 run and said yes to it.**
 
 ## The three failures this flow exists to prevent
@@ -15,11 +15,12 @@ All three come from real authoring sessions, and all three were discovered only 
 was already built. None of them is allowed to happen here.
 
 1. **Built ≠ picked.** The player selected a "≥ +10%" trigger and a +5% trigger was implemented.
-   Nobody noticed until the results looked wrong. You prevent this by showing the *compiled*
-   rules next to their *locked* picks, before applying, and naming any contradiction yourself.
+   Nobody noticed until the results looked wrong. You prevent this by showing the *drafted* rules,
+   as the server's own draft read serves them, next to their *locked* picks, before committing, and
+   naming any contradiction yourself.
 2. **Silent zero-trigger.** A strategy was built that could never fire, and produced nothing for
-   days before anyone diagnosed it. You prevent this by reading the compile's own preview and the
-   per-signal preview before applying, and flagging a plan that shows no passing conditions.
+   days before anyone diagnosed it. You prevent this by reading the draft's own report preview and
+   the per-signal preview before committing, and flagging a draft that shows no passing conditions.
 
 3. **Silent substitution.** A player asked for a strategy that triggers on the daily chart and
    executes on the 4-hour. The grammar carries no such semantics. Instead of saying so, the flow
@@ -29,8 +30,8 @@ was already built. None of them is allowed to happen here.
    learn otherwise.** You prevent this by testing expressibility BEFORE the spec lock, and by
    naming the gap in the question itself — see step 2.
 
-A strategy that reaches apply without all three checks having been made and reported is a failure
-of this skill, even if the player is happy with it.
+A strategy that reaches a commit without all three checks having been made and reported is a
+failure of this skill, even if the player is happy with it.
 
 ## Sequence
 
@@ -53,16 +54,17 @@ later step, so the player pays for the same payload twice and keeps paying for i
 detail you did not keep, scroll back rather than re-fetching.
 
 **Drafts are carved out of that rule.** A draft is the player's unsaved work, and another surface —
-their builder, another device, an earlier plan you staged — can change it while you work. Read it
+their builder, another device, an earlier stage of yours — can change it while you work. Read it
 again whenever you are about to act on it.
 
 **Start from what they are already part-way through.**
 
 - Holding no strategy id? Call `list_strategy_drafts` first. If a draft comes back, say what it is,
   when it was last touched and which surface touched it, and offer to continue it — never start a
-  second edit beside one the player has open.
+  second edit beside one the player has open. A draft whose strategy does not exist yet is a new
+  strategy they began; continuing it means staging into its id.
 - Holding an id? Call `get_strategy_draft` before you propose anything. A draft means the player is
-  mid-edit.
+  mid-edit, and the `draftVersion` it returns (0 when there is none) is what your first stage names.
 
 ### 2. Lock the spec before you build anything
 
@@ -108,17 +110,25 @@ conversation. A field you remember from another strategy is not discovery.
 question you would otherwise guess — and a refusal you would otherwise earn:
 
 - **A CREATE omits `sectionKey`.** It is derived from the section itself, so the same submitted
-  section at the same position yields the same key on every compile. Minting a `custom:<uuid>`
-  yourself on a CREATE is refused with a hint telling you to omit `sectionKey` on CREATE; on an
-  UPDATE, send back the key the compile returned. This is the one composition field whose right
-  answer is "leave it out".
-- **The `entry` axis is required on every CREATE**, all three keys, no defaults — `trigger`,
-  `levelOffsetAtrMultiple`, `validForBars`. Every trigger is decided at the close of the strategy's
-  OWN bar, so there is no confirm-timeframe key; for the level triggers the level itself is derived
-  from the trigger and the trade's direction, never named. A multi-bar hold belongs to the condition
-  that needs it (its own `closes`, counted in completed strategy bars), not to this axis. The
-  `strategy-examples` skill carries the vocabulary, the hold's legality and the per-column
-  Confirmed / Developing read; a CREATE without it is refused outright.
+  section at the same position yields the same key on every validation — each stage's diagnostics
+  and the commit alike. Minting a `custom:<uuid>` yourself on a CREATE is refused with a hint
+  telling you to omit `sectionKey` on CREATE; on an UPDATE, send back the key the strategy's REPORT
+  carries for each section you keep — from `get_strategy`, or from the draft's REPORT when it holds
+  one — and omit it on a section you add. This is the one composition field whose right answer is
+  "leave it out".
+- **The `entry` axis is a union keyed by its trigger.** `ON_CANDLE_CLOSE` is sent alone —
+  `{ "entry": { "trigger": "ON_CANDLE_CLOSE" } }` — and a `levelOffsetAtrMultiple` or
+  `validForBars` beside it is refused as an unrecognized key. A level trigger (`STOP_THROUGH_LEVEL`,
+  `ON_RETEST`) sends both of them, with no defaults. A CREATE that stages no entry takes the
+  platform's seed entry, so the axis is not required on every CREATE — stage it whenever the locked
+  spec names an entry. Every trigger is decided at the close of the strategy's OWN bar, so there is
+  no confirm-timeframe key; for the level triggers the level itself is derived from the trigger and
+  the trade's direction, never named. A multi-bar hold belongs to the clause or group that needs
+  it — its own `hold: { atLeast, of }`, which the editor calls **Hold** (Once, In a row, Within, At
+  least), counted in completed bars of the column's own timeframe — not to this axis. Every clause
+  and group carries `hold`; `{ "atLeast": 1, "of": 1 }` is Once. The `strategy-examples` skill
+  carries the vocabulary, the served hold domain (a crossover is held "within" only; a Developing
+  column cannot be held) and the per-column Confirmed / Developing read.
 - `get_strategy_column_contract` → `outputs[].conditionOperators`. An empty array means that
   rendered header has no comparison semantics and cannot appear in a condition clause at all.
   Legality is per rendered header, not per column: a trajectory's slot header and its `_trend`
@@ -133,203 +143,235 @@ position-management presets, worked desk-grade playbooks — activate `strategy-
 teaches what to compose; this skill stays the authority on the flow.
 
 `derive_strategy_rule_view` belongs here, at composition time, and only here: it reports report
-membership and registry-default allocations for a draft. It does **not** return a compiled plan's
-values, so it can never stand in for the review in step 5.
+membership and registry-default allocations for sections and rows you are about to stage. It reads
+no draft and no strategy, so it can never stand in for the review in step 5.
 
-`simulate_aggregate_score` does **not** belong here. It is a review tool (step 5) and running it
-now answers a question about your draft, not about the plan the player will be asked to approve.
+`simulate_aggregate_score` does **not** belong here. It is a review tool (step 5), and running it
+now answers a question about rows you have not staged, not about the draft the player will be
+asked to approve.
 
-### 4. Compile, and iterate on the diagnostics
+### 4. Stage, and iterate on the diagnostics
 
-**An UPDATE carries only the axes that change.** The server preserves every axis you omit and
-every signal you do not name, and it re-derives the complete post-state, the dense scorecard and
-the diff itself. Restating the whole post-state is never required, changes nothing about the
-result, and the player pays for every byte of it on this call and on every later step of the
-conversation. Send the axes you are changing; send no other axis.
+**Every change goes through the strategy's draft.** `stage_strategy_draft` takes, inside its
+`request`, the `strategyId`, the `draftVersion` your last read returned (0 when there was none) and
+the `axes` you propose. It writes those axes into the player's draft — attributed to you, landing in
+their builder as unsaved changes — and commits nothing. Each stage returns the draft's new
+`version`: that is the `draftVersion` your next stage names. Stage each change once, and never fire
+two stages in parallel against one draft.
 
-**Three fields are not axes, and every compile requires all three:** `intentSummary`,
-`assumptions` and `coinSelection`. They describe *this call*, not the strategy, so "send no other
-axis" never reaches them — omitting one is a typed error, not a saving.
+**A new strategy is a create draft.** Omit `strategyId` and send `draftVersion: 0` on the first
+stage; the response carries the id minted for it, which every later call names. A create needs
+IDENTITY (`{ name, description, tagline }`) and TIMEFRAME_PROFILE (`{ timeframe }`). A create with
+no REPORT starts from the platform's starting report (Price Action, RSI, MACD and Moving Averages),
+one with no ENTRY takes the seed entry, and the rule rows you stage overlay a creation seed in
+which every signal is Off.
 
-`coinSelection` is the cohort the report preview renders over, so the player can read the plan
-against live values. It is non-authoritative, never persisted, and **not recoverable from
-`get_strategy`**: it is not strategy state, and no strategy has one. Do not go looking for it —
-choose it. For a single-gate edit, a short explicit list of the tickers the change is about is
-right; for a broad change, a `ranked` cohort is. Any reasonable cohort is correct, and searching
-for "the strategy's" cohort is a search that cannot end.
+**An UPDATE carries only the axes that change.** Axes you omit keep the values the draft has, and
+an axis the draft does not hold is the committed strategy's. Each axis you send is written WHOLE —
+a REPORT is the complete section list, CONDITIONS the complete set — except SIGNAL_RULES, whose
+rows replace the drafted rows for the same `signalId` and keep every other one. Restating an axis
+you are not changing is never required, changes nothing about the result, and the player pays for
+every byte of it on this call and on every later step of the conversation. Send the axes you are
+changing; send no other axis.
 
-`compile_strategy_plan` changes no strategy, agent or revision, and a failed compile has cost the
-player nothing. It is not read-only, though: a successful compile parks the plan it approved in
-server-side custody so its own apply can read it back. Compile once per reviewed payload — do not
-retry a compile that succeeded, and never fire two in parallel for the same edit.
+**A rule row is complete.** Every staged row carries `signalId`, `allocation` and `required`;
+`params` only when the thresholds change, and omitting it keeps the stored ones byte-identically.
+"Raise volume_surge to Critical" is one row with `allocation: 3` and `required` exactly as it
+stands now — read it from the draft's SIGNAL_RULES row when the draft holds one, otherwise from
+`get_strategy`. Never set `required` from memory, and never change it unless the player asked about
+the Required flag: a wrong value there is how a scoring signal silently becomes a mandatory trade
+gate. Stage no row for a signal you are not changing.
 
-On a typed authoring error, the response names the offending path, the value it received and the
-domain it allows. Fix the payload and recompile. On advisory `mismatches[]` or a `viability` that
-is not viable, do the same.
+**Read the diagnostics every stage returns.** Past its checks of shape — an undeclared key, a
+parameter beside `ON_CANDLE_CLOSE`, a coin that names nothing — a stage refuses nothing for being
+incomplete or invalid, because the draft is the player's unsaved work. The stage's `diagnostics`
+are where you learn what the commit would do:
 
-**Stop after three consecutive autonomous recompiles.** A fourth means you are guessing — show
-the player the diagnostics and ask. Never present a plan for confirmation while it still carries
+- `errors` — the refusals the commit would raise, each with its `field` and `details` naming the
+  `path`, the value it received and the `allowedDomain` it accepts. Fix the axis and stage again.
+- `warnings` and `mismatches` — observations that never refuse. `NO_SIGNAL_ACTIVE` means the
+  strategy scores nothing and will never route a trade; a mismatch means the report and the
+  weights disagree. Fix each one, or carry it into the review as something to explain.
+
+An empty `errors` is not a promise: the strategy quota, the name and capital feasibility are
+decided only by the commit itself.
+
+**Stop after three consecutive autonomous restages.** A fourth means you are guessing — show the
+player the diagnostics and ask. Never present a draft for confirmation while it still carries
 diagnostics you have not explained to them.
 
-### 5. Review — show the compiled truth, not your summary of it
+**When a stage is refused**, nothing was written:
 
-Everything here comes from the compile response you just received. Render:
+- **`DRAFT_AXIS_CONTESTED`** names the axes the player's own hand changed after the version you
+  named. Their edit is newer than your proposal: read the draft, tell them so, and propose again
+  only when they ask. Never re-send the same values.
+- **`DRAFT_VERSION_MOVED`** — the version you named is one the draft never reached: it was read from
+  a draft since committed or discarded. Read it again and propose against what the player now has.
 
-- **What will actually run.** `approvedPlan.postState.signalRules`, `approvedPlan.diff` and the
-  review columns — the rules as the server will execute them — beside the picks they locked in
-  step 2. **If any compiled rule or diff entry contradicts a locked pick, say so in words before
-  you ask for anything.** Do not make them spot it.
-- **Whether it can fire.** `reviewContext.reportPreview` is the server's own preview, rendered
-  over this compiled draft against live market. Support it with `get_coin_signal_preview` on the
-  locked universe's main coin(s).
-- **A routing what-if**, optionally, via `simulate_aggregate_score` — **after the compile, never
-  before it.** This is a calculator, not a verdict: it computes over whatever inputs you hand it,
-  so a draft-fed simulation reports on something the player is not being asked to approve. Feed it
-  the compiled values — the gate from `approvedPlan.postState.minAggregateScore`, the allocations
-  from `approvedPlan.postState.signalRules`, the per-signal scores from the preview you just read
-  — and show those inputs beside its output so a copy slip is visible on the card itself.
+Never raise the number to get past either refusal.
+
+### 5. Review — show the drafted truth, not your summary of it
+
+Once the stage's diagnostics carry nothing you cannot explain, read the draft with
+`get_strategy_draft`. Everything here comes from that read:
+
+- **What will actually run.** Its `diff` — every drafted axis with its `live` and drafted value
+  and the field-level `changes` between them, the drafted signal-rule rows among them — beside the
+  picks they locked in step 2. **If any drafted row or diff entry contradicts a locked pick, say so
+  in words before you ask for anything.** Do not make them spot it.
+- **All of what the commit publishes.** The diff names every axis the draft holds, including
+  unsaved work the player had in it before you staged. Read that list out in the confirmation as
+  the commit's own: the player is approving all of it, not only what you proposed.
+- **Whether it can fire.** `preview_strategy_report` with
+  `source: { "kind": "DRAFT", strategyId, draftVersion }`, at the version the read returned,
+  renders the draft against live market composed exactly as its commit would compose it. Support it
+  with `get_coin_signal_preview` on the locked universe's main coin(s). The preview's
+  `coinSelection` is its cohort, never strategy state: no strategy has one and `get_strategy` will
+  not return one, so choose it — a short explicit list of the tickers the change is about for a
+  single-gate edit, a `ranked` cohort for a broad one. Any reasonable cohort is correct.
+- **A routing what-if**, optionally, via `simulate_aggregate_score` — **after the draft read, never
+  before it.** This is a calculator, not a verdict: it computes over whatever inputs you hand it.
+  Feed it what the commit would carry — the gate and the allocations as the read serves them (the
+  drafted value where the draft holds the axis, the committed one where it does not) and the
+  per-signal scores from the preview you just read — and show those inputs beside its output so a
+  copy slip is visible on the card itself.
 
 **Flag before confirming** if the preview shows no passing conditions, the coin preview shows
-zero triggered signals, or the simulation reports `wouldRoute: false`. Any one of those means the
-plan probably never fires — ask whether to revise rather than presenting it as healthy.
+zero triggered signals, the simulation reports `wouldRoute: false`, or the diagnostics warn
+`NO_SIGNAL_ACTIVE`. Any one of those means the strategy probably never fires — ask whether to
+revise rather than presenting it as healthy.
 
-State the blast radius too: the bound-agent count and the open-position observation the compile
-returned, as numbers, not buried in prose.
+**State the impact as numbers, not buried in prose.** The read's `impact` carries:
+
+- `operation` — CREATE, UPDATE or RESTORE. A RESTORE is a draft over an archived strategy: say
+  that committing it also restores the strategy and moves its bound agents, by count, from
+  ORPHANED to BOUND.
+- `boundAgentCount`, `openPositionCount` and `timeframeChanged`. A change to signal rules reaches
+  every bound agent the moment it commits — say so.
+- `admission` — for a create draft or an archived strategy, the quota and whether the name is
+  free. It is advisory: the commit decides.
+- `capital` — each bound agent the drafted stop band would leave unable to place an order, with its
+  smallest order against the order floor. Name every one.
 
 There is no backtest here and no expected-frequency figure. Do not imply one. What you have is a
 point-in-time reading, and you say so.
 
-### 6. Stage or apply
+### 6. Commit — only on the player's explicit pick
 
-**A draft decides which of the two you are doing.**
+**In a conversation the Strategy Builder hosts**, each stage is already on the player's rail as
+attributed unsaved changes, and their own Create, Save or Restore is one way to commit it. Report
+that the change is staged and name the axes; offer to commit it yourself only through the same
+confirmation as below.
 
-- **The player holds a draft for this strategy** → call `stage_strategy_plan` with the compile's
-  `planToken` and nothing else. The plan's own changed values land in their draft as proposed
-  changes, and *their* save is the consent. Committing instead would end a session they are in the
-  middle of. Staging does not spend the plan: the same token still applies while it lives.
-- **They hold none** → compile → confirm → apply, as below.
+One `ask_user` confirmation carrying the diff, the impact and the remaining warnings, offering
+Commit / Revise / Cancel.
 
-When you compile over a draft, the diff names **every** axis the plan would commit, including
-unsaved work the draft already carried before your compile. Read that list out in the
-confirmation as the plan's own: the player is approving all of it, not only what you proposed.
+On **Commit**, call `commit_strategy_draft` with the `strategyId` and exactly two numbers from the
+`get_strategy_draft` read the confirmation showed, and nothing else:
 
-If a staging call is refused as contested, it names the axes the player's own hand changed after
-your compile. Do not retry it and do not work around it — compile again so the new plan absorbs
-those edits, then stage that one. The same holds when it is refused because the strategy committed
-a newer revision after your compile: compile again against what is committed now.
+- `draftVersion` — that read's `draftVersion`
+- `expectedRevision` — that read's `committedRevision`, which is `null` for a strategy not
+  created yet
 
-**Offer to discard a draft only on the player's explicit word**, never on your own judgement that
-it looks stale, and never batched into another act. State when it was last touched and which
-surface touched it, ask, and call `discard_strategy_draft` with `confirm: true` only if they say
-so. The unsaved values are gone afterwards and there is no other copy.
+Never reconstruct either from prose or memory, and never take them from a stage response: the
+player approved one read, and the commit names that read. It publishes exactly that draft over
+exactly that revision, through the same committer the builder's Save runs.
 
-**In a conversation the Strategy Builder hosts, the apply half does not apply: compile and stop.**
-The compiled plan lands on the player's rail as unsaved changes and their Review & save is the one
-consent. Report that it is staged, name the axes, and present no apply confirmation — the server
-refuses `apply_strategy_plan` from such a conversation as a tool error, so calling it spends an op
-of your budget and commits nothing.
-
-One confirmation carrying the plan's own `confirmationSummary`, offering Apply / Revise / Cancel.
-
-On **Apply**, call `apply_strategy_plan` with two values and nothing else:
-
-- the compile's `planToken`
-- `confirm: true`
-
-There is no `plan` member, and one is rejected as an unrecognized key. The server keeps the plan your
-compile approved and reads it back, so **nothing is copied from the compile response** — the whole
-class of mis-transcription is gone rather than guarded against.
-
-`planToken` is opaque: forward it byte-for-byte exactly as received. Never retype, abbreviate or
-reconstruct it. A mangled token addresses no approved plan and is refused with the real one intact.
-
-On **Revise**, return to step 4. On **Cancel**, stop and let the token lapse.
+On **Revise**, return to step 4. On **Cancel**, stop: the draft stays as staged and nothing is
+committed.
 
 If the player types free text while the confirm form is open, that is **not** consent and not a
-cancellation. Answer what they said, then present the same plan's confirmation again, unchanged.
-Prose never triggers an apply. The same holds for an answer typed into the form's own
+cancellation. Answer what they said, then present the same read's confirmation again, unchanged.
+Prose never triggers a commit. The same holds for an answer typed into the form's own
 answer-in-your-own-words box: it is the player's words in an answer slot, not a confirming pick,
 so treat it exactly as you would free text in the chat.
 
-Do not pre-check expiry, digests, ownership, viability or quota before calling. The server is the
-only authority on all of them; your job is to react to what it returns.
+Do not pre-check ownership, viability, quota or the name before calling. The server is the only
+authority on all of them; your job is to react to what it returns.
+
+**Report the change from the receipt.** The commit returns the committed `strategy` and, when
+signal rules moved, `ruleChanges` with the server's own `before` and `after` for each edited
+signal. State those. Never describe a prior value from memory or from an earlier read — the
+receipt is the only record that cannot be stale.
+
+**Offer to discard a draft only on the player's explicit word**, never on your own judgement that
+it looks stale, and never batched into another act. `get_strategy_draft` is the read of what a
+discard destroys: say what the draft holds, when it was last touched and which surface touched it,
+ask, and only if they say so call `discard_strategy_draft` with the `strategyId` and the
+`draftVersion` you read. There is no dry run and no confirmation parameter — the version is the
+fence, and a draft written since your read is refused with `DRAFT_VERSION_MOVED` and nothing is
+removed. The unsaved values are gone afterwards and there is no other copy.
 
 ### 7. Lifecycle
 
-`fork_strategy`, `update_strategy_signal_rule`, `restore_strategy`, `archive_strategy` and
-`preview_strategy_report` are part of this flow.
+`fork_strategy`, `restore_strategy`, `archive_strategy`, `discard_strategy_draft` and
+`preview_strategy_report` are part of this flow. Every change to a strategy's content — a single
+tuned rule included — is a staged draft committed with `commit_strategy_draft`; none of the other
+verbs writes content.
 
-**In a builder-hosted conversation, three of those are refused at execution** —
-`update_strategy_signal_rule`, `restore_strategy` and `archive_strategy`, alongside
-`apply_strategy_plan` — because each commits a revision of the open strategy around the player's
-save. `fork_strategy` stays available: it writes a DIFFERENT strategy, which is not the one the
-builder owns. `preview_strategy_report` and every read stay available.
+- **Tuning a single rule** is one SIGNAL_RULES row staged (step 4), read, confirmed and committed.
+  State how many agents are bound, and that the change reaches every one of them immediately.
+- **Forking** — `fork_strategy` takes the `strategyId`, the exact `sourceRevision` to copy and an
+  optional `name`, and returns a NEW create draft's `strategyId` and `draftVersion`. **No strategy
+  exists yet.** Read the draft with `get_strategy_draft` — every authored axis equals the source
+  revision's, and ORIGIN names the source — stage any change into it, review it as above, and on the
+  player's word commit it with `expectedRevision: null`. Forking spends no strategy slot; the
+  commit does, and a full quota or a name already in use is refused there.
+- **Archiving** — `archive_strategy` with the `strategyId` and the `expectedRevision` you read.
+  State how many agents are bound, that their configuration stays byte-identical, that open
+  positions are unaffected and that the player's draft is kept.
+- **Restoring** — `restore_strategy` with the `strategyId` and `expectedRevision` brings back
+  unchanged, already-viable content and keeps the player's draft. Content that is not viable is
+  refused with `REPAIR_REQUIRED` and stays archived: stage the repair into the strategy's draft and
+  commit it — that commit restores it, and its read says `operation: RESTORE`.
 
-Before any destructive one, state the blast radius from the server's own fields and confirm it
-with the player:
+**Your `ask_user` is the approval, and the server does not repeat it.** No strategy verb takes a
+confirmation flag. So never call `commit_strategy_draft`, `archive_strategy`, `restore_strategy` or
+`discard_strategy_draft` on a turn where the player has not made an explicit confirming pick —
+never because you judged the change safe. Free text typed while a confirmation is open is not
+consent: answer it, then present the same confirmation again. That covers words typed into the
+form's own answer box as well as words sent in chat — a confirming pick is one of the options you
+offered, and nothing else is.
 
-- **Archiving** — how many agents are bound, and that their configuration stays byte-identical
-  and open positions are unaffected.
-- **Tuning a single rule** — how many agents are bound, and that the change reaches every one of
-  them immediately.
+## When the server refuses
 
-**Never tune or restore around a draft.** `update_strategy_signal_rule` and `restore_strategy` are
-REFUSED while the player holds a draft of the strategy — check `get_strategy_draft` first. For a
-tune, compile the one-rule change and `stage_strategy_plan` it, so it lands in their form; for a
-restore, ask them to save or discard their draft first. The refusal is the server's, so do not
-retry the call.
+Each refusal is a specific typed code, and a refusal of a draft's stage or commit names its next
+act in `details.nextAct` — `get_draft` or `stage`; a moved or contested draft names `get_draft`
+from any tool. Read it and take the cheapest correct step — never retry the same call blindly.
 
-**Your `ask_user` is the explanation, not the mechanism.** For single-rule tuning the server
-independently requires `confirm:true` whenever the strategy has bound agents, so stating the radius
-and calling anyway is refused, not committed. Send `confirm:true` only on a turn where the player
-made an explicit confirming pick — never because you judged the edit safe. Free text typed while a
-confirmation is open is not consent: answer it, then present the same confirmation again. That
-covers words typed into the form's own answer box as well as words sent in chat — a confirming pick
-is one of the options you offered, and nothing else is.
-
-**Send only the fields you were asked to change.** `allocation`, `required` and `params` are each
-optional and each preserves on omission. "Raise volume_surge to Critical" is
-`{ signalId, allocation: 3 }` — nothing else. Do not read the current rule merely to restate a value
-you are not changing, and never supply `required` unless the player asked about the Required flag.
-Restating a remembered value is how a scoring signal silently becomes a mandatory trade gate.
-
-**Report the change from the response.** The success payload carries `ruleChanges` with the server's
-own `before` and `after` for the edited signal. State those. Never describe the prior value from
-memory or from an earlier read — the response is the only record that cannot be stale.
-
-## When apply is refused
-
-Each of these is a specific typed code. Read it and take the cheapest correct step — never retry
-the same call blindly.
-
-- **`TOKEN_EXPIRED`** — a plan token lives five minutes and a human-paced review often outlives
-  it. Recompile, present the review again, and **ask for confirmation again.** Never apply a
-  recompiled plan on your own judgement that it matches the one they already approved; they
-  approve the plan that will actually be applied.
-- **`PLAN_APPROVAL_NOT_FOUND`** — no approved plan answers to this token. It was already applied, it
-  lapsed, or it was never issued; these are deliberately one code, because the recovery is the same
-  in each case. **Read the committed state first** with `get_strategy` — if the change is already
-  there, the apply succeeded and this is a duplicate confirmation, so report success rather than
-  rebuilding. Otherwise recompile, re-present, re-confirm.
-- **A refusal that is not about the token at all** — quota, a name collision, a bound agent that
-  moved, a shifted catalog. The approved plan **survives** these: clear the cause and confirm again
-  with the same token while it still lives. Recompiling works too, but costs the player a second
-  review they did not need.
-- **A single-rule tuning refused for missing confirmation** — the strategy has bound agents and the
-  server will not write without `confirm:true`. The refusal names the count. Present *that* count to
-  the player and re-issue the identical call only after an explicit confirming pick. **Never add
-  `confirm:true` and retry on your own judgement** — the refusal exists precisely because the
-  decision is not yours, and a retry that supplies it unasked is the defect this rule was written
-  for. Nothing was written, so there is no partial state to reconcile.
-- **`TOKEN_BINDING_MISMATCH` while the token is still fresh** — there is nothing left to mis-copy,
-  so this is real drift: a bound agent moved, the catalog changed, or the signing key rotated. Do
-  not resubmit. Recompile, re-present, re-confirm.
-- **An apply whose outcome you never saw** (interrupted or timed out) — read the committed state
-  first with `get_strategy` or `list_strategies`. If it committed, report success. **Never
-  re-apply and never recompile over an unverified outcome** — a blind retry duplicates the
-  strategy or dies on the name check.
-- **A run that ended on a budget guard mid-build** — when they nudge you, recompile and re-enter
-  at the review. Never apply a plan compiled in a run that was cut short; treat it as stale.
+- **`DRAFT_VERSION_MOVED`** (`nextAct: get_draft`) — the draft changed after your read: the
+  player's form saved an edit, another surface staged, or a human-paced review outlived it. Read
+  it again, present the new diff and impact, and **ask for confirmation again.** Never commit a
+  newer version on your own judgement that it matches the one they already approved; they approve
+  the draft that will actually be committed.
+- **`CONFLICT`** (`nextAct: get_draft`) — the strategy committed a newer revision after your read;
+  the details carry `expectedRevision` and `actualRevision`. The same recovery: read, re-present,
+  re-confirm.
+- **A commit already in progress** (`nextAct: get_draft`) — a commit of this draft version is in
+  flight or was interrupted. Read the draft: if its version moved, the commit landed, so read the
+  strategy and report it; otherwise commit again once the refusal's wait has passed, or stage again.
+- **A validation error** (`nextAct: stage`) — the error the diagnostics named, with its own
+  `field` and `details`. Nothing was written. Return to step 4: fix the axis, stage, read, and
+  confirm again.
+- **A refusal with no `nextAct`** — the strategy quota (`FORBIDDEN`), a name already in use,
+  `REPAIR_REQUIRED`, viability, or a `CONFLICT` whose `details.reason` is `RADAR_DEPLOYMENT_MOVED`. The draft is
+  untouched. Clear the cause with the player — a rename is an IDENTITY stage, which makes a new
+  version to read and confirm — then commit the draft they confirmed. A moved radar deployment is
+  a race, not a decision: read and commit again.
+- **A commit whose outcome you never saw** (interrupted or timed out) — send the same commit again
+  first: the server replays the original receipt for the same draft version, so a commit that
+  landed is reported once and never doubled. If that retry is refused as moved, verify the
+  committed state with `get_strategy` or `list_strategies` and reconcile with the player before
+  anything else. **Never stage or commit anything new over an unverified outcome.**
+- **A run that ended on a budget guard mid-build** — when they nudge you, read the draft again
+  with `get_strategy_draft` and re-enter at the review with the version and revision you just read.
+  Never trust a draft version, diagnostics or a confirmation from a run that was cut short.
+- **An unknown coin** — a `benchmarkTicker` in a staged REPORT, a `coinSelection` ticker or the
+  `marketReadLensTicker` that names no catalogued coin is refused as a validation error naming that
+  field (`Unknown coin symbol: '<input>'`), with nothing written. Symbols are case-insensitive and
+  exchange symbols resolve (`btc`, `kPEPE`, `xyz:BRENTOIL` all reach their coin, and the draft
+  stores the canonical ticker), so the refusal means the coin is not tracked: never retry with
+  another casing — ask the player which coin they meant.
 
 ## When the grammar cannot express the ask
 
@@ -345,19 +387,20 @@ make that concrete, and all three have to hold:
 
 - the gap is named in the **question you put to the player**, not only in prose around it
 - the nearest expressible option says what it gives up
-- nothing is compiled for the original ask, because there is nothing to compile
+- nothing is staged for the original ask, because there is nothing to stage
 
-## Keep the strategy small enough to apply
+## Keep each stage within the draft cap
 
-Apply carries only a token, so a large authored surface no longer blocks it. The compiled plan is
-still capped at 256,000 UTF-8 bytes, which compile enforces and reports; splitting a build into a
-lean strategy plus follow-up edits is now a choice about reviewability, not a workaround for a limit
-apply used to impose.
+The axes one stage carries are capped at 256,000 UTF-8 bytes — the same cap the builder's own
+draft write enforces — and a stage past it is refused at the boundary naming the cap, with nothing
+written. Splitting a build into a lean strategy plus follow-up edits is also a choice about
+reviewability: each commit is one diff the player can read.
 
 ## Reporting discipline
 
 - Report numbers exactly as the tools return them. Never recompute or re-derive.
-- Compile changes no strategy, agent or revision — it does park the plan its own apply will read.
-  Apply is the only write to the strategy itself. Say which one you are about to do.
+- A stage changes the player's draft and nothing else — no strategy, agent or revision. A commit is
+  the write that reaches the strategy and every agent bound to it. Say which one you are about to
+  do.
 - A tool that fails is reported as failed. Never fill a gap with a plausible value.
 - Be concise. They are deciding whether to point real money at this.

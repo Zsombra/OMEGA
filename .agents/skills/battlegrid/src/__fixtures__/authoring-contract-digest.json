@@ -2,7 +2,7 @@
   "digestVersion": 1,
   "server": {
     "name": "battlegrid",
-    "contractVersion": "76.0.0"
+    "contractVersion": "88.1.0"
   },
   "axes": {
     "create": [
@@ -42,10 +42,9 @@
       "validForBars"
     ],
     "condition": [
-      "closes",
       "conditionKey",
       "definition",
-      "exit",
+      "exitSide",
       "name",
       "required",
       "verdict"
@@ -107,7 +106,6 @@
     ]
   },
   "bounds": {
-    "conditionMaxCloses": 5,
     "entryMaxLevelOffsetAtrMultiple": 2,
     "entryMaxValidForBars": 24
   },
@@ -116,11 +114,6 @@
       "min": 0.5,
       "max": 2,
       "step": 0.01
-    },
-    "condition.closes": {
-      "min": 1,
-      "max": 5,
-      "step": 1
     },
     "entry.levelOffsetAtrMultiple": {
       "min": 0,

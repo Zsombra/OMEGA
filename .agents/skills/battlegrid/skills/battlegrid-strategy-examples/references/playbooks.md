@@ -103,8 +103,8 @@ giveback 30 buffer 0.15; timeDecay ON aggressive (45/15, 15→60, stale 30).
 
 Discover → confirm headers (`get_strategy_column_contract`, or one `preview_strategy_report`
 whose `conditionColumns` lists every addressable header with operators and vocabulary) →
-calibrate literals against the previewed live values → compile once → review the compiled
-scorecard, condition outcomes, verdict tally, and `marketReadMarkers` (fix `unknown` /
-`ambiguous` markers) → apply per the strategy-authoring flow. Coin selection is call context,
-not strategy state: explicit tickers for focused work, `ranked` (with an optional category) for
-scanning books.
+calibrate literals against the previewed live values → stage the draft and fix what its
+diagnostics name → read it back and review the drafted rule rows, then the draft's own report
+preview — condition outcomes, verdict tally, and `marketReadMarkers` (fix `unknown` / `ambiguous`
+markers) → commit per the strategy-authoring flow. Coin selection is call context, not strategy
+state: explicit tickers for focused work, `ranked` (with an optional category) for scanning books.
