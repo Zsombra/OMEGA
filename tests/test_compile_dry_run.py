@@ -67,9 +67,12 @@ def test_attempt_1_pinned_the_section_ownership_rule():
 def test_attempt_2_pinned_the_preview_byte_cap():
     msg = RECORD["responseVerbatim"]["message"]
     assert "395404 > 256000" in msg and "mcp_result_bytes" in msg
-    # The plan itself was 20x under the cap - the cap bit the PREVIEW, not the plan.
+    # The plan itself was 20x under the cap - the cap bit the PREVIEW, not the plan. The
+    # measured body is the recorded 12,210 bytes; today's body is larger by the v84 `hold`
+    # on every clause and group (~0.9 KB) and still an order of magnitude under the cap.
+    assert "12,210 bytes" in RECORD["attempts"]["2"] and 12_210 < 256_000 // 20
     body = json.dumps(request()["request"], separators=(",", ":")).encode("utf-8")
-    assert len(body) < 256_000 // 20
+    assert len(body) < 256_000 // 10
 
 
 def test_the_fix_reached_the_wire():

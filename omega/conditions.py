@@ -32,13 +32,38 @@ GROUP_OPS = ("ALL", "ANY", "NOT", "N_OF")
 NUMERIC_OPS = ("lt", "lte", "gte", "gt")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
 CARRIER_VERDICTS = ("UP", "DOWN", "NEITHER")
-# The per-condition clock was RETIRED in contract 61.0.0 (2026-09-17) and the compile
-# schema refuses the key outright: conditions[] is additionalProperties:false over
-# [conditionKey, name, definition, verdict, required, exit, closes]
-# (data/contract/compile_strategy_plan/schema_20260918T083359Z.json, captured 2026-09-18).
-# What survives is `closes`: the HOLD, how many consecutive COMPLETED strategy bars must
-# read TRUE. The schema bounds it to an integer 1..5, multipleOf 1.
-HOLD_MIN, HOLD_MAX = 1, 5
+# Contract 91.0.0 (data/contract/stage_strategy_draft/schema_20261005T194629Z.json, the
+# CONDITIONS axis): a condition is additionalProperties:false over exactly these six keys,
+# all required. v84 removed `closes` (the hold moved onto each clause and group), v88
+# removed `exit` (an exit rule is its own condition and names the side it closes), and
+# 61.0.0 had already retired `clock`. Each of the three is now refused as an unknown key.
+CONDITION_FIELDS = ("conditionKey", "name", "definition", "verdict", "required", "exitSide")
+RETIRED_CONDITION_FIELDS = {
+    "clock": "clock was retired in contract 61.0.0 and is refused as an unknown key",
+    "closes": ("closes was removed at contract 84.0.0 and is refused as an unknown key; "
+               "the hold is `hold: {atLeast, of}` on each clause and group"),
+    "exit": ("exit was removed at contract 88.0.0 and is refused as an unknown key; an exit "
+             "rule is its own condition with exitSide LONG|SHORT|BOTH (see close_on)"),
+}
+# v88: "Every condition requires exitSide: LONG, SHORT or BOTH for an exit rule, null for
+# an entry condition. It is nullable, never optional."
+EXIT_SIDES = ("LONG", "SHORT", "BOTH")
+# v88, the platform's own migration of a stored `exit: true` condition: "its strategy
+# gains an exit rule CLOSE_ON_<conditionKey>, a conditionRef to it closing the side its
+# verdict opposed (UP -> SHORT, DOWN -> LONG, NEITHER -> BOTH)", and "both sides for a
+# NEITHER or null verdict" (README "Contract history - v88").
+EXIT_RULE_PREFIX = "CLOSE_ON_"
+SIDE_CLOSED_BY_VERDICT = {"UP": "SHORT", "DOWN": "LONG", "NEITHER": "BOTH", None: "BOTH"}
+# v84: "Every clause and every group requires hold: {atLeast, of}, whole numbers of at
+# least 1. {atLeast: 1, of: 1} is one read (what every v83 condition did), {n, n} is
+# 'n closes in a row', {1, n} is 'within n closes', and anything else is 'at least m of n
+# closes'." The 1..5 ceiling of the retired compile schema (HOLD_MIN/HOLD_MAX) is gone:
+# each column admits up to conditionHold.maxWindow / maxAtLeast, served by
+# preview_strategy_report and list_strategy_vocabulary at v84+. No v84+ vocabulary read is
+# on disk, so omega checks only the schema (>= 1) and the builder's atLeast <= of; the
+# builder judges the window (plan 2026-10-06, measurement M2).
+HOLD_ONE = (1, 1)
+HOLD_KEYS = ("atLeast", "of")
 
 
 OBSERVED_VOCAB = DERIVED_DIR.parent / "contract" / "columns" / "_observed_vocabulary.json"
@@ -102,82 +127,169 @@ def ambient_headers() -> dict[str, dict]:
 
 
 # --- builders -------------------------------------------------------------
+def _is_count(v: object) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool) and v >= 1
+
+
+def hold_of(hold: tuple[int, int]) -> dict:
+    """`(atLeast, of)` -> the v84 wire object `{"atLeast": m, "of": n}`.
+
+    The schema publishes both as integers >= 1; "atLeast above of" is a builder refusal
+    (v84: "a typed remediation error"), refused here too rather than shipped. No ceiling:
+    the window a header admits is served per column (conditionHold.maxWindow) and judged
+    by the builder."""
+    try:
+        at_least, of = hold
+    except (TypeError, ValueError):
+        raise ValueError(f"hold must be a pair (atLeast, of), got {hold!r}") from None
+    if not _is_count(at_least) or not _is_count(of):
+        raise ValueError(f"hold atLeast and of must be integers >= 1 (schema), got {hold!r}")
+    if at_least > of:
+        raise ValueError(f"hold atLeast {at_least} is above of {of} (v84: refused by the builder)")
+    return {"atLeast": at_least, "of": of}
+
+
+def held(n: int) -> tuple[int, int]:
+    """`(n, n)`: "n closes in a row" (v84). held(1) is one read, the pre-v84 `closes: 1`."""
+    return (n, n)
+
+
 def col(header: str, section_key: str | None = None) -> dict:
     return {"sectionKey": section_key, "header": header}
 
 
-def num(header: str, op: str, value: float, *, section_key: str | None = None) -> dict:
+# Every clause and group builder emits its own `hold`, defaulting to one read. The keys
+# follow the schema's `required` order for each arm (kind, column, op, <operand>, hold).
+def num(header: str, op: str, value: float, *, section_key: str | None = None,
+        hold: tuple[int, int] = HOLD_ONE) -> dict:
     if op not in NUMERIC_OPS:
         raise ValueError(f"{op!r} is not one of {NUMERIC_OPS}")
-    return {"kind": "clause", "column": col(header, section_key), "op": op, "value": value}
+    return {"kind": "clause", "column": col(header, section_key), "op": op, "value": value,
+            "hold": hold_of(hold)}
 
 
-def between(header: str, low: float, high: float, *, section_key: str | None = None) -> dict:
+def between(header: str, low: float, high: float, *, section_key: str | None = None,
+            hold: tuple[int, int] = HOLD_ONE) -> dict:
     return {"kind": "clause", "column": col(header, section_key), "op": "between",
-            "low": low, "high": high}
+            "low": low, "high": high, "hold": hold_of(hold)}
 
 
-def is_(header: str, label: str, *, section_key: str | None = None) -> dict:
-    return {"kind": "clause", "column": col(header, section_key), "op": "is", "label": label}
+def is_(header: str, label: str, *, section_key: str | None = None,
+        hold: tuple[int, int] = HOLD_ONE) -> dict:
+    return {"kind": "clause", "column": col(header, section_key), "op": "is", "label": label,
+            "hold": hold_of(hold)}
 
 
-def in_(header: str, labels: list[str], *, section_key: str | None = None) -> dict:
-    return {"kind": "clause", "column": col(header, section_key), "op": "in", "labels": labels}
+def in_(header: str, labels: list[str], *, section_key: str | None = None,
+        hold: tuple[int, int] = HOLD_ONE) -> dict:
+    return {"kind": "clause", "column": col(header, section_key), "op": "in", "labels": labels,
+            "hold": hold_of(hold)}
 
 
 def ref(condition_key: str) -> dict:
+    """A conditionRef carries no hold: the schema's ref arm is additionalProperties:false
+    over exactly kind and conditionKey (v91 CONDITIONS axis)."""
     return {"kind": "conditionRef", "conditionKey": condition_key}
 
 
-def group(op: str, members: list[dict], n: int | None = None) -> dict:
+def group(op: str, members: list[dict], n: int | None = None, *,
+          hold: tuple[int, int] = HOLD_ONE) -> dict:
     if op not in GROUP_OPS:
         raise ValueError(f"{op!r} is not one of {GROUP_OPS}")
     if op == "N_OF" and n is None:
         raise ValueError("N_OF requires n")
-    out: dict[str, Any] = {"kind": "group", "op": op, "members": members}
+    out: dict[str, Any] = {"kind": "group", "op": op, "hold": hold_of(hold), "members": members}
     if n is not None:
         out["n"] = n
     return out
 
 
-def all_of(*members: dict) -> dict:
-    return group("ALL", list(members))
+def all_of(*members: dict, hold: tuple[int, int] = HOLD_ONE) -> dict:
+    return group("ALL", list(members), hold=hold)
 
 
-def any_of(*members: dict) -> dict:
-    return group("ANY", list(members))
+def any_of(*members: dict, hold: tuple[int, int] = HOLD_ONE) -> dict:
+    return group("ANY", list(members), hold=hold)
 
 
-def not_(member: dict) -> dict:
-    return group("NOT", [member])
+def not_(member: dict, *, hold: tuple[int, int] = HOLD_ONE) -> dict:
+    return group("NOT", [member], hold=hold)
 
 
-def n_of(n: int, *members: dict) -> dict:
-    return group("N_OF", list(members), n=n)
+def n_of(n: int, *members: dict, hold: tuple[int, int] = HOLD_ONE) -> dict:
+    return group("N_OF", list(members), n=n, hold=hold)
+
+
+def _nested_holds(defn: dict) -> list[dict]:
+    """The `hold` of every clause and group strictly below `defn` (refs carry none)."""
+    out: list[dict] = []
+    for member in (defn.get("members") or []) if isinstance(defn, dict) else []:
+        if isinstance(member, dict) and member.get("kind") in ("clause", "group"):
+            out.append(member.get("hold"))
+            out.extend(_nested_holds(member))
+    return out
 
 
 def condition(key: str, name: str, definition: dict, *,
               verdict: str | None = None, required: bool = False,
-              exit: bool = False, closes: int = 1) -> dict:
-    """One wire-shaped condition, contract 61.0.1: exactly the seven keys the platform reads back
-    (data/contract/get_strategy/43d11467-637c-42b1-b88b-8a71ed8c32c3_20260918T083500Z.json), in that
-    order. `closes` is the hold: how many consecutive COMPLETED strategy bars must read TRUE (1..5).
-    The per-condition clock was retired in 61.0.0 and a `clock` key is refused (vendor pack 31.2.28,
-    strategy-examples § Conditions) - it is not a keyword here, so passing it raises TypeError.
+              exit_side: str | None = None, hold: tuple[int, int] | None = None) -> dict:
+    """One condition in the v91 shape: exactly the six keys the CONDITIONS axis declares, in
+    its `required` order (conditionKey, name, definition, verdict, required, exitSide).
 
-    exit is REQUIRED since the schema re-read of 2026-09-04 (drift instance #5, caught offline):
-    both records then in existence read back exit=false on every condition with no revision bump
-    (drift5_exit_rediscovery_2026-09-04.json). 61.0.1 published what exit=true does - a settled TRUE
-    reading closes positions its verdict opposes - and the read rule that goes with it, mirrored in
-    validate_conditions; authoring still defaults to False."""
-    if not isinstance(exit, bool):
-        raise ValueError(f"exit must be a bool (required by the compile schema since "
-                         f"2026-09-04), got {exit!r}")
-    if not isinstance(closes, int) or isinstance(closes, bool) \
-            or not HOLD_MIN <= closes <= HOLD_MAX:
-        raise ValueError(f"closes must be an int {HOLD_MIN}..{HOLD_MAX}, got {closes!r}")
+    `exit_side` is v88's `exitSide`: None for an entry condition, LONG / SHORT / BOTH for
+    an exit rule (prefer exit_rule() or close_on() for those). The retired `exit`,
+    `closes` and `clock` are not keywords here, so passing any of them raises TypeError.
+
+    `hold`, when given, is the CONDITION's hold and omega places it on the definition's
+    root node (plan 2026-10-06 § Conditions); every nested clause and group must then read
+    one bar, because the builder refuses "a group hold over members that hold their own
+    bars" (v84). A root conditionRef cannot carry a hold, so a hold over one is refused -
+    wrap the reference in a group if a held reading of it is what you mean."""
+    if exit_side is not None and exit_side not in EXIT_SIDES:
+        raise ValueError(f"exit_side must be one of {EXIT_SIDES} or None (v88), got {exit_side!r}")
+    if hold is not None:
+        if definition.get("kind") == "conditionRef":
+            raise ValueError(f"{key}: a conditionRef carries no hold (v84); the hold goes on a "
+                             f"clause or group")
+        if any(h != hold_of(HOLD_ONE) for h in _nested_holds(definition)):
+            raise ValueError(f"{key}: the condition's hold goes on the root node; every nested "
+                             f"clause and group must read {hold_of(HOLD_ONE)}")
+        definition = {**definition, "hold": hold_of(hold)}
     return {"conditionKey": key, "name": name, "definition": definition,
-            "verdict": verdict, "required": required, "exit": exit, "closes": closes}
+            "verdict": verdict, "required": required, "exitSide": exit_side}
+
+
+def exit_rule(key: str, name: str, definition: dict, side: str) -> dict:
+    """A v88 exit rule: it closes exactly `side` when it settles TRUE on a completed bar,
+    and "carries verdict: null and required: false" (CONDITION_EXIT_RULE_CARRIES_VERDICT,
+    CONDITION_EXIT_RULE_REQUIRED). While it reads TRUE that side is not offered for entry."""
+    if side not in EXIT_SIDES:
+        raise ValueError(f"an exit rule names the side it closes, one of {EXIT_SIDES}; got {side!r}")
+    return condition(key, name, definition, verdict=None, required=False, exit_side=side)
+
+
+def close_on(cond: dict, *, name: str | None = None) -> dict:
+    """The exit rule v88 split a stored `exit: true` condition into, for `cond`.
+
+    The split is TWO conditions: `cond` itself stays an entry condition (it keeps its
+    verdict, exitSide null) and this function returns the second, `CLOSE_ON_<key>` - a
+    conditionRef to `cond`, verdict null, required false, closing the side its verdict
+    opposes (UP -> SHORT, DOWN -> LONG, NEITHER or null -> BOTH). The key must still match
+    ^[A-Z][A-Z0-9_]{1,39}$, so a source key longer than 31 characters is an error, never
+    truncated. The platform's migrated name is not published; omega names the rule
+    "Close on <key>" (at most 49 characters, inside the 80 cap) unless `name` is given."""
+    if cond.get("exitSide") is not None:
+        raise ValueError(f"{cond.get('conditionKey')!r} is already an exit rule "
+                         f"(exitSide {cond.get('exitSide')!r}); only an entry condition is split")
+    source = cond["conditionKey"]
+    key = f"{EXIT_RULE_PREFIX}{source}"
+    if not CONDITION_KEY.match(key):
+        raise ValueError(f"{key!r} does not match ^[A-Z][A-Z0-9_]{{1,39}}$ ({len(key)} characters): "
+                         f"the source key {source!r} is too long for the {EXIT_RULE_PREFIX!r} prefix")
+    verdict = cond.get("verdict")
+    if verdict not in SIDE_CLOSED_BY_VERDICT:
+        raise ValueError(f"{source}: verdict {verdict!r} is not one of {VERDICTS}")
+    return exit_rule(key, name or f"Close on {source}", ref(source), SIDE_CLOSED_BY_VERDICT[verdict])
 
 
 # --- ambient clause library -----------------------------------------------
@@ -326,12 +438,15 @@ def report_headers(report: Report) -> dict[str, dict]:
 class _Mode:
     """What the current condition needs checked at each of its OWN clauses.
 
+    `window` is the widest `of` on this node's path from the definition root: a clause
+    under a group that holds 3 bars is read on 3 bars even at its own {1,1}.
+
     The verdict and exit read rules are NOT here: both are stated over the closure
     (what the condition reads directly plus everything reached through conditionRef,
     transitively), so they are checked once per condition against the collected
     closure rather than node by node.
     """
-    closes: int = HOLD_MIN
+    window: int = 1
 
 
 def _holdable(spec: dict) -> bool:
@@ -340,6 +455,12 @@ def _holdable(spec: dict) -> bool:
     "Above 1 it is legal only where a completed bar changes the reading: over a header
     resolved from this coin's own candle series, at offset 0, at or above the strategy
     timeframe, read Confirmed." (vendor pack 31.2.28 § Conditions)
+
+    That sentence is the 61.0.1 rule. Since v84 each column serves its own
+    `conditionHold {timeframe, maxWindow, maxAtLeast, refusal}` (refusals NOT_REWINDABLE,
+    DEVELOPING, OFFSET, BAR_STATE, HISTORY) and the builder judges the window, so this
+    offline test now only WARNS (plan 2026-10-06: kept "as a warning ... never as an
+    error") until a v84+ vocabulary read is on disk (measurement M2).
 
     `candle` already carries the "at offset 0" clause of that sentence, which is why the
     exit rule reads `moved` instead: its own sentence never mentions offset.
@@ -352,6 +473,39 @@ def _holdable(spec: dict) -> bool:
     return (bool(spec.get("candle"))
             and not spec.get("below_anchor")
             and not spec.get("developing"))
+
+
+def _check_hold(defn: dict, key: str, path: str, out: list[ConditionFinding]) -> dict | None:
+    """The node's `hold` if it is schema-shaped, else None after reporting why.
+
+    v84: "Every clause and every group requires hold: {atLeast, of}, whole numbers of at
+    least 1 ... A clause or group without hold is refused." The schema object is
+    additionalProperties:false over the two keys. atLeast above `of` is the builder's
+    refusal, mirrored as an error."""
+    h = defn.get("hold")
+    where = f"{path}.hold"
+    if h is None:
+        out.append(ConditionFinding(
+            "error", key, where,
+            "every clause and group requires hold {atLeast, of} since contract 84.0.0 "
+            "({atLeast: 1, of: 1} is one read)"))
+        return None
+    if not isinstance(h, dict) or set(h) != set(HOLD_KEYS) \
+            or not all(_is_count(h[k]) for k in HOLD_KEYS):
+        out.append(ConditionFinding(
+            "error", key, where,
+            f"must be exactly {{atLeast, of}}, both integers >= 1 (v91 schema), got {h!r}"))
+        return None
+    if h["atLeast"] > h["of"]:
+        out.append(ConditionFinding(
+            "error", key, where,
+            f"atLeast {h['atLeast']} is above of {h['of']} - refused by the builder (v84)"))
+        return None
+    return h
+
+
+def _is_one_read(h: dict | None) -> bool:
+    return h is None or (h.get("atLeast"), h.get("of")) == HOLD_ONE
 
 
 def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
@@ -367,6 +521,11 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
 
     if kind == "conditionRef":
         target = defn.get("conditionKey", "")
+        if "hold" in defn:
+            out.append(ConditionFinding(
+                "error", key, f"{path}.hold",
+                "a conditionRef carries no hold: the schema's ref arm is "
+                "additionalProperties:false over kind and conditionKey (v84/v91)"))
         if target == key:
             out.append(ConditionFinding("error", key, path, "condition references itself"))
         elif target not in known_keys:
@@ -375,6 +534,7 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
         return 0
 
     if kind == "group":
+        h = _check_hold(defn, key, path, out)
         op, members = defn.get("op"), defn.get("members") or []
         if op not in GROUP_OPS:
             out.append(ConditionFinding("error", key, path, f"group op {op!r} not in {GROUP_OPS}"))
@@ -393,17 +553,40 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             elif n == len(members):
                 out.append(ConditionFinding("warning", key, path,
                                             f"N_OF n={n} equals member count; ALL says this more plainly"))
+        if not _is_one_read(h):
+            # v84: "a group hold over members that hold their own bars is a typed
+            # remediation error" - a group above {1,1} needs its members at {1,1}.
+            for i, member in enumerate(members):
+                if isinstance(member, dict) and member.get("kind") in ("clause", "group") \
+                        and not _is_one_read(member.get("hold")):
+                    out.append(ConditionFinding(
+                        "error", key, f"{path}.members[{i}].hold",
+                        f"a group holding {h} over a member that holds its own bars "
+                        f"({member.get('hold')}) is refused by the builder (v84); hold the "
+                        f"members at {{1,1}} or drop the group hold"))
+        inner = _Mode(window=max(mode.window, h["of"] if h else 1))
         total = 0
         for i, member in enumerate(members):
             total += _walk(member, key, f"{path}.members[{i}]", headers, known_keys,
-                           out, depth + 1, mode)
+                           out, depth + 1, inner)
+        if not _is_one_read(h) and total == 0:
+            # The 61.0.1 CONDITION_HOLD_ILLEGAL sentence: a referenced condition "is
+            # resolved once and contributes the same answer to every bar". Pre-v84
+            # evidence; a v84+ group hold over refs alone is unmeasured, so a warning.
+            out.append(ConditionFinding(
+                "warning", key, f"{path}.hold",
+                f"a group hold of {h} over conditionRefs alone: at 61.0.1 a referenced "
+                f"condition contributed the same answer to every bar "
+                f"(CONDITION_HOLD_ILLEGAL); unmeasured at v84+, the builder judges it"))
         return total
 
     if kind != "clause":
         out.append(ConditionFinding("error", key, path, f"unknown definition kind {kind!r}"))
         return 0
 
-    # --- a clause: header must exist, operator must be offered, literal must fit
+    # --- a clause: hold, header must exist, operator must be offered, literal must fit
+    h = _check_hold(defn, key, path, out)
+    window = max(mode.window, h["of"] if h else 1)
     header = (defn.get("column") or {}).get("header", "")
     spec = headers.get(header)
     if spec is None:
@@ -413,13 +596,14 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"(nor ambient). Add a column that emits it, or fix the name."))
         return 1
 
-    if mode.closes > HOLD_MIN and not _holdable(spec):
+    if window > 1 and not _holdable(spec):
         out.append(ConditionFinding(
-            "error", key, path,
-            f"{header!r} cannot hold {mode.closes} closes: a hold above 1 is legal only "
-            f"over a header resolved from this coin's own candle series at offset 0, at "
-            f"or above the strategy timeframe, read Confirmed "
-            f"(CONDITION_HOLD_OPERAND_ILLEGAL, vendor pack 31.2.28, contract 61.0.1)"))
+            "warning", key, path,
+            f"{header!r} is read over {window} bars: at 61.0.1 a hold above 1 was legal "
+            f"only over a header resolved from this coin's own candle series at offset 0, "
+            f"at or above the strategy timeframe, read Confirmed "
+            f"(CONDITION_HOLD_OPERAND_ILLEGAL, vendor pack 31.2.28). Since v84 the column's "
+            f"conditionHold decides and the builder judges it; no v84+ read is on disk"))
 
     declared = (defn.get("column") or {}).get("sectionKey")
     if declared is not None and spec["sectionKey"] is not None and declared != spec["sectionKey"]:
@@ -503,6 +687,9 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
 
     defn_by_key = {x.get("conditionKey", ""): (x.get("definition") or {})
                    for x in conditions}
+    # v88: "an entry condition cannot reference an exit rule" - the set it may not name
+    exit_keys = {x.get("conditionKey", "") for x in conditions
+                 if x.get("exitSide") in EXIT_SIDES}
 
     clause_cap = c.budgets["conditionClauses"]
     for cond in conditions:
@@ -516,52 +703,60 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
         if cond.get("verdict") not in VERDICTS:
             out.append(ConditionFinding("error", key, ".verdict",
                                         f"must be one of {VERDICTS}"))
-        # exit is REQUIRED by the compile schema (re-read 2026-09-04, drift #5);
-        # the platform's migration default is false on every existing condition
-        if not isinstance(cond.get("exit"), bool):
+        # The v91 CONDITIONS axis is additionalProperties:false over the six keys. The
+        # three retired keys get the reason they went; anything else is just undeclared.
+        for k in cond:
+            if k in RETIRED_CONDITION_FIELDS:
+                out.append(ConditionFinding("error", key, f".{k}", RETIRED_CONDITION_FIELDS[k]))
+            elif k not in CONDITION_FIELDS:
+                out.append(ConditionFinding(
+                    "error", key, f".{k}",
+                    f"not declared by the v91 CONDITIONS axis (additionalProperties:false "
+                    f"over {list(CONDITION_FIELDS)})"))
+        # v88: exitSide is "nullable, never optional; a condition without it is refused"
+        side = cond.get("exitSide")
+        if "exitSide" not in cond:
             out.append(ConditionFinding(
-                "error", key, ".exit",
-                f"must be a bool (required by the compile schema since 2026-09-04; "
-                f"platform migration default false), got {cond.get('exit')!r}"))
-        # The per-condition clock was retired in 61.0.0 and the compile schema is
-        # additionalProperties:false over the seven keys, so a surviving `clock` is
-        # not a stale default - it is a refused payload.
-        if "clock" in cond:
+                "error", key, ".exitSide",
+                "required since contract 88.0.0: null for an entry condition, LONG / SHORT / "
+                "BOTH for an exit rule (nullable, never optional)"))
+        elif side is not None and side not in EXIT_SIDES:
+            out.append(ConditionFinding("error", key, ".exitSide",
+                                        f"must be one of {EXIT_SIDES} or null, got {side!r}"))
+        is_exit = side in EXIT_SIDES
+        # The three typed builder refusals v88 added (README "Contract history - v88").
+        if is_exit and cond.get("verdict") is not None:
             out.append(ConditionFinding(
-                "error", key, ".clock",
-                "clock was retired in contract 61.0.0 and is refused by the compile "
-                "schema; drop the key (the hold is `closes`)"))
-        # closes is REQUIRED by the compile schema: integer, minimum 1, maximum 5,
-        # multipleOf 1 (schema_20260918T083359Z.json)
-        closes = cond.get("closes")
-        if not isinstance(closes, int) or isinstance(closes, bool) \
-                or not HOLD_MIN <= closes <= HOLD_MAX:
+                "error", key, ".verdict",
+                f"an exit rule carries verdict: null, got {cond.get('verdict')!r} "
+                f"(CONDITION_EXIT_RULE_CARRIES_VERDICT)"))
+        if is_exit and cond.get("required") is not False:
             out.append(ConditionFinding(
-                "error", key, ".closes",
-                f"must be an int {HOLD_MIN}..{HOLD_MAX} (the compile schema declares "
-                f"integer, minimum 1, maximum 5, multipleOf 1; "
-                f"schema_20260918T083359Z.json), got {closes!r}"))
-            closes = HOLD_MIN   # keep walking; clause-level hold findings suppressed
+                "error", key, ".required",
+                f"an exit rule carries required: false, got {cond.get('required')!r} "
+                f"(CONDITION_EXIT_RULE_REQUIRED)"))
+        if not is_exit:
+            named: set[str] = set()
+            _reference_edges(cond.get("definition") or {}, named)
+            for target in sorted(named & exit_keys):
+                out.append(ConditionFinding(
+                    "error", key, ".definition",
+                    f"an entry condition cannot reference the exit rule {target!r} "
+                    f"(CONDITION_ENTRY_REFERENCES_EXIT_RULE); an exit rule may reference "
+                    f"anything, not the other way round"))
         clauses = _walk(cond.get("definition") or {}, key, ".definition", headers,
-                        known, out, 0, _Mode(closes=closes))
+                        known, out, 0, _Mode())
         if clauses > clause_cap:
             out.append(ConditionFinding("error", key, ".definition",
                                         f"{clauses} clauses exceeds the budget of {clause_cap}"))
-        # A hold needs a clause of the condition's OWN: conditionRef contributes an
-        # answer resolved once, not one that moves with the bar.
-        if closes > HOLD_MIN and clauses == 0:
-            out.append(ConditionFinding(
-                "error", key, ".definition",
-                f"a hold of {closes} closes needs a clause of the condition's own; a "
-                f"referenced condition is resolved once and contributes the same answer "
-                f"to every bar (CONDITION_HOLD_ILLEGAL)"))
 
         # The two CLOSURE rules. "The closure is what the condition reads directly plus
         # everything reached through conditionRef, transitively: a referenced condition
         # contributes what IT reads, so moving the clause into a building block does not
-        # launder it." (vendor pack 31.2.28 § Conditions)
+        # launder it." (vendor pack 31.2.28 § Conditions). Since v88 the exit role is the
+        # exit rule's: a CLOSE_ON_<key> rule reads its source's whole closure.
         carrier = cond.get("verdict") in CARRIER_VERDICTS
-        exits = cond.get("exit") is True
+        exits = is_exit
         if carrier or exits:
             for owner, cpath, header in _closure_clauses(key, defn_by_key):
                 spec = headers.get(header)
@@ -582,7 +777,7 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
                     out.append(ConditionFinding(
                         "error", key, where,
                         f"{header!r} is not moved by a completed bar (or is a developing "
-                        f"read); exit: true needs a closure every operand of which a "
+                        f"read); an exit rule needs a closure every operand of which a "
                         f"completed bar moves (CONDITION_EXIT_READ_ILLEGAL)"))
     return out
 

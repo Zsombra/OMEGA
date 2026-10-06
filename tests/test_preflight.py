@@ -128,22 +128,6 @@ def test_mirror_fields_are_the_61_shapes():
     assert P.MIRROR_CONDITION_FIELDS == ("closes", "exit")
 
 
-def test_every_preset_body_passes_the_preflight_against_the_2026_09_18_captures():
-    """The gate this plan exists for: zero FAIL and zero UNSUPPORTED against the committed 61.0.1 capture and the
-    09-18 read-back, for every preset."""
-    from omega.generate import PRESETS, plan
-    schema = json.loads((ROOT / "data/contract/compile_strategy_plan/schema_20260918T083359Z.json").read_text(encoding="utf-8"))["response"]
-    arms, root = P.resolve_arms(schema)
-    record = json.loads((ROOT / "data/contract/get_strategy/43d11467-637c-42b1-b88b-8a71ed8c32c3_20260918T083500Z.json").read_text(encoding="utf-8"))["response"]
-    for name in sorted(PRESETS):
-        body = plan(PRESETS[name]).wire()
-        findings = P.diff_schema(body, arms["CREATE"], root) + P.diff_record(body, record, arms["CREATE"], root) \
-            + P.mirror_findings(body, record)
-        assert _fails(findings) == [], (name, _fails(findings))
-        assert [f for f in findings if f.cls == "UNSUPPORTED"] == [], name
-        assert [f for f in findings if f.cls == "MIRROR"] == [], name
-
-
 def test_walker_flags_missing_required_at_nested_paths():
     arm, root = _create_arm()
     body = _good_body()

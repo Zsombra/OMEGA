@@ -175,24 +175,15 @@ def test_wire_emits_the_platform_migration_entry(name):
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_wire_conditions_carry_the_seven_keys_with_a_one_close_hold(name):
-    """61.0.0 retired the per-condition clock (seven-key condition shape, contract
-    61.0.1). Every emitted condition holds one completed strategy bar - a hold
-    above 1 is unmeasured for the presets."""
+def test_wire_conditions_carry_the_six_v91_keys_as_entry_conditions(name):
+    """v84 moved the hold onto each clause and group (`closes` refused), v88 replaced
+    `exit` with `exitSide` (nullable, never optional). No preset declares an exit, so every
+    emitted condition is an entry condition, exitSide null; tests/test_conditions.py walks
+    them through the saved 91.0.0 CONDITIONS axis."""
     for c in plan(PRESETS[name]).wire()["conditions"]:
         assert list(c) == ["conditionKey", "name", "definition", "verdict",
-                            "required", "exit", "closes"]
-        assert c["closes"] == 1
-
-
-@pytest.mark.parametrize("name", sorted(PRESETS))
-def test_wire_conditions_all_carry_exit_false(name):
-    """Drift instance #5 (2026-09-04, caught offline): conditions[].exit is REQUIRED
-    by the published compile schema; both existing records read back exit=false on
-    every condition (drift5_exit_rediscovery_2026-09-04.json). Mirrored, not
-    interpreted: exit=true semantics are unmeasured."""
-    for c in plan(PRESETS[name]).wire()["conditions"]:
-        assert c["exit"] is False
+                            "required", "exitSide"]
+        assert c["exitSide"] is None
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
