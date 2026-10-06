@@ -57,6 +57,27 @@
   "scripts/probe_module_membership_full.py"
  ],
  "_manifestRefreshedAt": "2026-09-20T21:10:00Z",
+ "writeSurface": {
+  "_what": "The WRITE surface omega authors against, separate from the 61.2.0 metric/transform/vocabulary extraction above (which this note does not refresh). Since contract 85.0.0 compile_strategy_plan no longer exists (no alias) and a strategy changes only through its draft: get_strategy_draft -> stage_strategy_draft -> commit_strategy_draft (.agents/skills/battlegrid/README.md, 'Contract history - v85').",
+  "servedContractVersion": "91.0.0",
+  "buildSha": "c8a39a0c1104ccc6a3aa51085845c14ae0c6c0fd",
+  "schema": "data/contract/stage_strategy_draft/schema_20261005T194629Z.json",
+  "tools": [
+   "stage_strategy_draft",
+   "get_strategy_draft",
+   "commit_strategy_draft",
+   "discard_strategy_draft",
+   "list_strategy_drafts",
+   "preview_strategy_report"
+  ],
+  "readFrom": "battlegrid-manager system_state.surface_tools (watch), observed 2026-10-05T19:46:29Z - input schemas only, no platform call by omega",
+  "plan": "docs/plans/2026-10-06-omega-draft-lifecycle-re-extraction.md",
+  "notedAt": "2026-10-06"
+ },
+ "retired": {
+  "data/contract/compile_strategy_plan/": "Captures of the compile_strategy_plan definition (2026-09-05, 09-09, 09-18; contracts 51-era to 61.0.1). The tool was removed at contract 85.0.0. Kept as history and as the record the old receipts name; never read as the current write surface.",
+  "data/contract/get_strategy/": "Pre-v84 read-backs (2026-09-05, 2026-09-18). Their conditions carry `closes` (removed at v84) and `exit` (removed at v88), so they cannot be a mirror for a v91 body. Kept as history; never read as current until a v91 read-back is captured."
+ },
  "accountStateAtExtraction": {
   "privateStrategyQuota": {
    "used": 24,

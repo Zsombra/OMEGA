@@ -203,3 +203,40 @@ def test_wire_entry_keys_match_the_live_schema_capture():
         emitted = set(plan(PRESETS[name]).wire()["entry"])
         assert emitted - allowed == set(), f"{name}: entry emits keys the API refuses"
         assert required - emitted == set(), f"{name}: entry omits keys the API requires"
+
+
+# --- the v91 write surface: the strategy draft lifecycle -------------------------------
+#
+# v85 retired compile_strategy_plan with no alias (README "Contract history — v85"); a
+# strategy changes only through get_strategy_draft -> stage_strategy_draft ->
+# commit_strategy_draft. The input schemas of the six draft tools at contract 91.0.0 are
+# saved verbatim from battlegrid-manager's stored surface; the manifest names that file and
+# retires the two pre-v84 capture directories (plan 2026-10-06, Work step 1).
+
+V91_TOOLS = {"stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft",
+             "discard_strategy_draft", "list_strategy_drafts", "preview_strategy_report"}
+V91_AXES = {"IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
+            "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES"}
+
+
+def test_manifest_names_the_v91_draft_schema_and_retires_the_compile_captures():
+    manifest = json.loads((ROOT / "data/contract/_manifest.json").read_text(encoding="utf-8"))
+    ws = manifest["writeSurface"]
+    assert ws["servedContractVersion"] == "91.0.0"
+    assert ws["schema"] == "data/contract/stage_strategy_draft/schema_20261005T194629Z.json"
+    assert (ROOT / ws["schema"]).is_file()
+    retired = manifest["retired"]
+    assert set(retired) == {"data/contract/compile_strategy_plan/", "data/contract/get_strategy/"}
+    for path in retired:                         # kept on disk, never deleted
+        assert any((ROOT / path).glob("*.json")), path
+    # the metric/transform extraction is a separate snapshot and keeps its own version
+    assert manifest["servedContractVersion"] == "61.2.0"
+
+
+def test_the_named_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
+    doc = C.stage_schema()
+    assert doc["contractVersion"] == "91.0.0"
+    assert V91_TOOLS <= set(doc)
+    axes = doc["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]["axes"]
+    assert set(axes["properties"]) == V91_AXES
+    assert axes["additionalProperties"] is False
