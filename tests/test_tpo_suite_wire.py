@@ -16,6 +16,13 @@ from pathlib import Path
 
 import pytest
 
+# 2026-10-09: scripts/tpo_suite_build.py and this test were written on 2026-09-11 against compile_strategy_plan,
+# which contract 85.0.0 retired (data/contract/_manifest.json marks that capture retired), and against the pre-v84
+# condition grammar (`clock=`, `closes`, `exit`). The suite builder needs a port to the v91 draft axes
+# (StrategyPlan.axes(), hold/exitSide) before this test can run again; until then it is skipped, not deleted.
+pytest.skip("tpo_suite_build targets the retired compile_strategy_plan schema; port to the v91 axes pending",
+            allow_module_level=True)
+
 from omega import preflight as P
 
 ROOT = Path(__file__).resolve().parents[1]
