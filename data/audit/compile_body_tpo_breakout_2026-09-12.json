@@ -1,0 +1,329 @@
+{
+ "operation": "CREATE",
+ "intentSummary": "Create the TPO compression breakout: a narrow prior-session value area is a coiled auction, and a close accepted outside it is the breakout. Two required, direction-neutral gates - the prior value area is in the bottom quartile of width, and the close has broken out of it - block compose-trade otherwise. UP when the close is accepted above the prior value high, DOWN when below, NEITHER while coiled or when value is wide. Prior-session columns only. Weights, gates, levels and trailing mirror the vendor's validated volatility-compression breakout playbook; no signal is required.",
+ "assumptions": [
+  "Measured 2026-09-12 over 36 CRYPTO instruments: prior value-area width min 1.16, p25 2.32, median 3.00, p75 4.63, max 10.36 percent. NARROW is the bottom quartile, 2.3 percent. Yesterday's p25 was 2.06. The threshold moves day to day; it is one instant and will be re-derived from forward logging.",
+  "Measured 2026-09-12: at width <= 2.3, 9 of 36 are narrow and 6 of those are outside prior value (ETH LTC BNB above; WLFI LINK TRUMP below). So both gates pass on 6 of 36 at creation - rarer than the rotation book by design, breakouts are rarer than rotations.",
+  "Measured: spread(M,O) = (M - O)/O in percent, positive meaning M sits above O. So a close ABOVE the prior VAH reads pTpoVAH_close_spread < 0; the 0.05 percent edge is one 5-bps bin of acceptance.",
+  "Measured 2026-09-12 on 3d720de3 rev 3: a required, verdict-null condition blocks compose-trade for long and short alike. Both gates here use that pattern; direction comes from the verdict ladder.",
+  "Weights, gates (0.55 / 0 / 0.8), levels (0.75-1.75 ATR, RR 2) and trailing (BE 1R, trail 1.2R, giveback 35, buffer 0.3) MIRROR the vendor's CI-validated Playbook 1. That playbook is a 4h swing; this runs on the 1h anchor because the prior-session levels are timeless. Not invented, but the anchor differs and the fit is unmeasured.",
+  "Playbook 1 marks bollinger_squeeze and volume_surge required. Here every signal is required:false because the TPO gates already gate and this project measured signal families silent for whole days; a required signal on a silent day would block every trade rather than the flat ones.",
+  "Not claimed: that a close one bin outside prior value is acceptance rather than a probe. TPO has no history and OHLC no intrabar sequence; ON_CANDLE_CLOSE is the only confirmation the platform expresses.",
+  "Scope: CREATE only. No agent bound, nothing deployed, no funds allocated. Quota was 10 of 25."
+ ],
+ "coinSelection": {
+  "mode": "explicit",
+  "tickers": [
+   "ETH",
+   "LTC",
+   "BNB",
+   "WLFI",
+   "LINK",
+   "TRUMP"
+  ]
+ },
+ "name": "OMEGA-TEST: TPO Compression Breakout",
+ "tagline": "A narrow prior value area is a coil; a close accepted outside it is the break",
+ "description": "A narrow prior-session value area is a coiled auction. Two required gates - width in the bottom quartile, and a close accepted outside the area - block anything else before the agent is billed. UP above the prior value high, DOWN below the prior value low, NEITHER while coiled or when value is wide. Prior-session columns only, live all day. Weights, levels and trailing mirror the vendor's validated volatility-compression breakout playbook.",
+ "timeframe": "1h",
+ "sections": [
+  {
+   "kind": "custom",
+   "title": "TPO compression breakout",
+   "benchmarkTicker": null,
+   "notes": "Positive spread means the first metric sits above the second.",
+   "columns": [
+    {
+     "metric": "PRIOR_TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "PRIOR_TPO_VAL"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAL",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_VAH",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "PRIOR_TPO_POC",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE"
+      }
+     ]
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RVOL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  }
+ ],
+ "conditions": [
+  {
+   "conditionKey": "BREAK_ABOVE_NARROW_VALUE",
+   "name": "Narrow prior value and the close accepted above its high",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "NARROW_PRIOR_VALUE"
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAH_close_spread"
+      },
+      "op": "lte",
+      "value": -0.05
+     }
+    ]
+   },
+   "verdict": "UP",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "BREAK_BELOW_NARROW_VALUE",
+   "name": "Narrow prior value and the close accepted below its low",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "NARROW_PRIOR_VALUE"
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAL_close_spread"
+      },
+      "op": "gte",
+      "value": 0.05
+     }
+    ]
+   },
+   "verdict": "DOWN",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "COILED_INSIDE_NARROW",
+   "name": "Narrow prior value, close still inside it: coiled, not broken",
+   "definition": {
+    "kind": "group",
+    "op": "ALL",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "NARROW_PRIOR_VALUE"
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAL_close_spread"
+      },
+      "op": "lt",
+      "value": 0.05
+     },
+     {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAH_close_spread"
+      },
+      "op": "gt",
+      "value": -0.05
+     }
+    ]
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "WIDE_PRIOR_VALUE",
+   "name": "Prior value area not narrow: no compression to break",
+   "definition": {
+    "kind": "group",
+    "op": "NOT",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "NARROW_PRIOR_VALUE"
+     }
+    ]
+   },
+   "verdict": "NEITHER",
+   "required": false,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "NARROW_PRIOR_VALUE",
+   "name": "Prior value-area width in the bottom quartile of the universe",
+   "definition": {
+    "kind": "clause",
+    "column": {
+     "sectionKey": null,
+     "header": "pTpoVAH_pTpoVAL_spread"
+    },
+    "op": "lte",
+    "value": 2.3
+   },
+   "verdict": null,
+   "required": true,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  },
+  {
+   "conditionKey": "BROKEN_OUT",
+   "name": "The close has broken out of the narrow prior value area, either side",
+   "definition": {
+    "kind": "group",
+    "op": "ANY",
+    "members": [
+     {
+      "kind": "conditionRef",
+      "conditionKey": "BREAK_ABOVE_NARROW_VALUE"
+     },
+     {
+      "kind": "conditionRef",
+      "conditionKey": "BREAK_BELOW_NARROW_VALUE"
+     }
+    ]
+   },
+   "verdict": null,
+   "required": true,
+   "exit": false,
+   "clock": "LIVE",
+   "closes": 1
+  }
+ ],
+ "entry": {
+  "trigger": "ON_CANDLE_CLOSE",
+  "confirmTf": "1h",
+  "closes": 1,
+  "bandAtrMultiple": 0.5,
+  "levelOffsetAtrMultiple": 0,
+  "validForBars": 4
+ },
+ "rules": [
+  {
+   "signalId": "bollinger_squeeze",
+   "allocation": 3,
+   "required": false
+  },
+  {
+   "signalId": "volume_surge",
+   "allocation": 2,
+   "required": false,
+   "params": {
+    "multiplier": 1.5
+   }
+  },
+  {
+   "signalId": "volatility_atr_expanding",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "sr_resistance_break",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "sr_support_break",
+   "allocation": 2,
+   "required": false
+  },
+  {
+   "signalId": "bollinger_upper_touch",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "bollinger_lower_touch",
+   "allocation": 1,
+   "required": false
+  },
+  {
+   "signalId": "trend_adx_ranging",
+   "allocation": 1,
+   "required": false
+  }
+ ],
+ "minAggregateScore": 0.55,
+ "minRequiredCount": 0,
+ "minAtrPct": 0.8,
+ "minStopLossAtrMultiple": 0.75,
+ "maxStopLossAtrMultiple": 1.75,
+ "minRiskRewardRatio": 2.0,
+ "breakEvenEnabled": true,
+ "breakEvenTriggerR": 1.0,
+ "trailingEnabled": true,
+ "trailingTriggerR": 1.2,
+ "trailingGivebackPct": 35,
+ "trailingBufferPct": 0.3,
+ "timeDecayEnabled": false
+}

@@ -1,0 +1,283 @@
+{
+ "_what": "Re-pull 2026-09-12: every field on which the candle endpoint now disagrees with what it served earlier (old = the latest prior source that held the bar; new = this pull). Written by verify_repull.py; nothing here was interpreted.",
+ "when": "2026-09-12",
+ "comparison_pool_sources": [
+  "candles.json",
+  "repulls/2026-08-30/candles.json",
+  "repulls/2026-09-02/candles.json",
+  "repulls/2026-09-04/candles.json",
+  "repulls/2026-09-05/candles.json",
+  "repulls/2026-09-09/candles.json"
+ ],
+ "summary": {
+  "bars_changed": 3,
+  "fields_changed": {
+   "close": 3,
+   "volume": 3,
+   "high": 2
+  },
+  "volume_direction": {
+   "up": 3,
+   "down": 0
+  },
+  "price_tolerance": 0.01,
+  "price_tolerance_breached": [],
+  "young_bar_price_restatements_over_tolerance": 0,
+  "young_bar_rule": "bars < 6h old when their earlier source served them are reported, not failed (amendment 2026-09-05)"
+ },
+ "per_series": {
+  "AIXBT_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "BTC_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "BTC_4h": {
+   "overlap_bars": 84,
+   "new_bars": 16,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 1,
+   "first_changed_bar": "2026-09-09T04:00:00.000Z",
+   "bars_matched_before_first_change": 83,
+   "fields_changed": {
+    "close": 1,
+    "volume": 1
+   },
+   "max_relative_change": {
+    "close": 8.832361773538245e-05,
+    "volume": 0.25071716389464394
+   }
+  },
+  "CAKE_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "ETH_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "ETH_4h": {
+   "overlap_bars": 84,
+   "new_bars": 16,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 1,
+   "first_changed_bar": "2026-09-09T04:00:00.000Z",
+   "bars_matched_before_first_change": 83,
+   "fields_changed": {
+    "high": 1,
+    "close": 1,
+    "volume": 1
+   },
+   "max_relative_change": {
+    "high": 0.001233487187649357,
+    "close": 0.00383969282457418,
+    "volume": 0.6398842533037191
+   }
+  },
+  "HYPE_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "LDO_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "MELANIA_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "MET_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "MOODENG_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "PEPE_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "POPCAT_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "SOL_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  },
+  "SOL_4h": {
+   "overlap_bars": 84,
+   "new_bars": 16,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 1,
+   "first_changed_bar": "2026-09-09T04:00:00.000Z",
+   "bars_matched_before_first_change": 83,
+   "fields_changed": {
+    "high": 1,
+    "close": 1,
+    "volume": 1
+   },
+   "max_relative_change": {
+    "high": 0.0019096724911677918,
+    "close": 0.0008617387973956666,
+    "volume": 0.3783657756306984
+   }
+  },
+  "TRUMP_1h": {
+   "overlap_bars": 33,
+   "new_bars": 67,
+   "gaps": 0,
+   "dupes": 0,
+   "bars_changed": 0,
+   "first_changed_bar": null,
+   "bars_matched_before_first_change": 0,
+   "fields_changed": {},
+   "max_relative_change": {}
+  }
+ },
+ "differences_verbatim": [
+  {
+   "series": "BTC_4h",
+   "timestamp": "2026-09-09T04:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-09/candles.json",
+   "fields": {
+    "close": {
+     "old": 79254,
+     "new": 79261
+    },
+    "volume": {
+     "old": 3129.28121,
+     "new": 3913.84572
+    }
+   }
+  },
+  {
+   "series": "ETH_4h",
+   "timestamp": "2026-09-09T04:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-09/candles.json",
+   "fields": {
+    "high": {
+     "old": 2513.2,
+     "new": 2516.3
+    },
+    "close": {
+     "old": 2500.2,
+     "new": 2509.8
+    },
+    "volume": {
+     "old": 36205.785,
+     "new": 59373.2967
+    }
+   }
+  },
+  {
+   "series": "SOL_4h",
+   "timestamp": "2026-09-09T04:00:00.000Z",
+   "previously_served_by": "repulls/2026-09-09/candles.json",
+   "fields": {
+    "high": {
+     "old": 104.73,
+     "new": 104.93
+    },
+    "close": {
+     "old": 104.44,
+     "new": 104.53
+    },
+    "volume": {
+     "old": 185931.14,
+     "new": 256281.12
+    }
+   }
+  }
+ ]
+}

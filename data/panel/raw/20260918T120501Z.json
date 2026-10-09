@@ -1,0 +1,1960 @@
+{
+  "renderedSections": [
+    {
+      "sectionKey": "custom:b3c8612a-98c4-8960-8be9-6df26630da55",
+      "section": {
+        "title": "TPO PANEL",
+        "text": "read-only forward panel; columns only, no conditions pTpoPOC: the price bin that held the most time in the previous completed UTC session. pTpoVAH: the upper edge of the previous completed UTC session's 70% value area. pTpoVAL: the lower edge of the previous completed UTC session's 70% value area. dist_pTpoPOC: % from current price to pTpoPOC. dist_pTpoVAH: % from current price to pTpoVAH. dist_pTpoVAL: % from current price to pTpoVAL. pTpoVAL_open_spread: % gap pTpoVAL vs open. pTpoVAH_open_spread: % gap pTpoVAH vs open. pTpoVAL_close_spread: % gap pTpoVAL vs close. pTpoVAH_close_spread: % gap pTpoVAH vs close. pTpoPOC_close_spread: % gap pTpoPOC vs close. pTpoVAL_low_spread: % gap pTpoVAL vs low. pTpoVAH_high_spread: % gap pTpoVAH vs high. pTpoVAH_pTpoVAL_spread: % gap pTpoVAH vs pTpoVAL. tpoPOC: the price bin holding the most time in the current UTC session, over 5-bps bins — a point-in-time read at its own fold, absent for the session's first 60 minutes. tpoPOC_pTpoPOC_spread: % gap tpoPOC vs pTpoPOC. tpoVAH: the upper edge of the 70% value area around the current UTC session's point of control — a point-in-time read at its own fold, absent for the session's first 60 minutes. tpoVAH_tpoVAL_spread: % gap tpoVAH vs tpoVAL. tpoShape: where the point of control sits inside the current UTC session's value area, p-shape at or above 0.67 of its span and b-shape at or below the mirror — a point-in-time read at its own fold (p-shape / b-shape / balanced).\n\n| coin | pTpoPOC | pTpoVAH | pTpoVAL | dist_pTpoPOC | dist_pTpoVAH | dist_pTpoVAL | pTpoVAL_open_spread | pTpoVAH_open_spread | pTpoVAL_close_spread | pTpoVAH_close_spread | pTpoPOC_close_spread | pTpoVAL_low_spread | pTpoVAH_high_spread | pTpoVAH_pTpoVAL_spread | tpoPOC_pTpoPOC_spread | tpoVAH_tpoVAL_spread | tpoShape |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| AAVE | $128.61 | $129.62 | $122.40 | +5.29% | +4.47% | +10.63% | -9.28% | -3.92% | -9.55% | -4.21% | -4.96% | -9.17% | -4.21% | +5.90% | +4.74% | +2.27% | balanced |\n| AIXBT | $0.0196 | $0.0197 | $0.0193 | +3.81% | +3.16% | +5.30% | -4.75% | -2.77% | -5.03% | -3.06% | -3.67% | -4.75% | -3.06% | +2.07% | +3.38% | +2.26% | balanced |\n| APT | $0.5805 | $0.5857 | $0.5633 | +17.54% | +16.48% | +21.12% | -17.41% | -14.13% | -17.38% | -14.09% | -14.86% | -17.21% | -14.61% | +3.98% | +15.00% | +4.38% | balanced |\n| AVAX | $7.59 | $7.62 | $7.53 | +4.93% | +4.46% | +5.71% | -5.21% | -4.08% | -5.38% | -4.25% | -4.68% | -5.12% | -4.25% | +1.19% | +4.65% | +2.13% | balanced |\n| BNB | $725.62 | $729.97 | $723.44 | +3.36% | +2.74% | +3.67% | -3.50% | -2.63% | -3.54% | -2.67% | -3.25% | -3.38% | -2.67% | +0.90% | +3.87% | +0.94% | balanced |\n| BTC | $76465.68 | $76656.13 | $76313.32 | +2.12% | +1.86% | +2.32% | -2.21% | -1.77% | -2.27% | -1.83% | -2.07% | -2.16% | -1.83% | +0.45% | +1.33% | +1.34% | b-shape |\n| CAKE | $2.40 | $2.48 | $2.35 | +3.49% | +0.06% | +5.47% | -5.25% | -0.13% | -5.19% | -0.06% | -3.37% | -5.03% | -0.81% | +5.41% | +3.78% | +2.62% | balanced |\n| CRV | $0.3188 | $0.3264 | $0.3124 | +4.50% | +2.09% | +6.64% | -6.50% | -2.32% | -6.23% | -2.04% | -4.30% | -5.76% | -2.33% | +4.46% | +5.85% | +3.26% | balanced |\n| DOGE | $0.0817 | $0.0818 | $0.0809 | +4.55% | +4.45% | +5.65% | -5.29% | -4.20% | -5.33% | -4.24% | -4.34% | -5.12% | -4.26% | +1.15% | +3.28% | +2.77% | b-shape |\n| ENA | $0.1512 | $0.1541 | $0.1504 | +8.29% | +6.25% | +8.88% | -8.37% | -6.11% | -8.15% | -5.88% | -7.65% | -7.85% | -6.11% | +2.47% | +8.14% | +4.97% | balanced |\n| ETH | $2447.32 | $2463.03 | $2430.39 | +2.56% | +1.91% | +3.28% | -3.08% | -1.78% | -3.17% | -1.87% | -2.50% | -2.98% | -1.87% | +1.34% | +1.54% | +1.83% | balanced |\n| FARTCOIN | $0.1447 | $0.1471 | $0.1431 | +4.63% | +2.97% | +5.83% | -5.59% | -2.96% | -5.36% | -2.72% | -4.27% | -5.28% | -2.96% | +2.79% | +4.64% | +1.98% | b-shape |\n| GRAM | $1.34 | $1.35 | $1.32 | +2.06% | +1.41% | +3.63% | -3.57% | -1.46% | -3.54% | -1.43% | -2.05% | -3.46% | -1.46% | +2.19% | +1.31% | +1.54% | balanced |\n| HYPE | $79.27 | $82.51 | $78.52 | +13.65% | +9.18% | +14.72% | -12.62% | -8.18% | -12.61% | -8.17% | -11.79% | -12.50% | -8.24% | +5.08% | +9.40% | +3.95% | balanced |\n| JUP | $0.2266 | $0.2293 | $0.2162 | +12.54% | +11.20% | +17.95% | -15.81% | -10.70% | -15.21% | -10.06% | -11.14% | -15.17% | -10.78% | +6.07% | +12.57% | +2.97% | balanced |\n| LDO | $0.3546 | $0.3586 | $0.3513 | +8.63% | +7.41% | +9.65% | -8.40% | -6.49% | -8.58% | -6.67% | -7.72% | -8.29% | -6.74% | +2.08% | +9.47% | +3.68% | p-shape |\n| LINK | $11.35 | $11.41 | $11.15 | +4.41% | +3.85% | +6.27% | -5.85% | -3.66% | -5.74% | -3.55% | -4.06% | -5.70% | -3.66% | +2.33% | +4.26% | +1.80% | balanced |\n| LTC | $53.93 | $54.04 | $52.64 | +2.42% | +2.22% | +4.93% | -4.71% | -2.19% | -4.59% | -2.06% | -2.25% | -4.59% | -2.21% | +2.65% | +0.90% | +1.74% | b-shape |\n| MELANIA | $0.0966 | $0.0970 | $0.0963 | +4.51% | +4.09% | +4.88% | -4.31% | -3.59% | -4.67% | -3.95% | -4.34% | -4.31% | -3.98% | +0.75% | +4.21% | +1.32% | p-shape |\n| MET | $0.2076 | $0.2215 | $0.2052 | +20.64% | +13.08% | +22.05% | -17.64% | -11.10% | -18.04% | -11.53% | -17.08% | -17.45% | -11.53% | +7.94% | +19.50% | +5.71% | b-shape |\n| MOODENG | $0.0411 | $0.0426 | $0.0402 | +3.24% | -0.46% | +5.43% | -4.97% | +0.65% | -5.02% | +0.60% | -3.01% | -4.87% | +0.50% | +5.91% | +4.78% | +2.30% | p-shape |\n| PENGU | $0.0072 | $0.0073 | $0.0072 | +5.43% | +4.37% | +6.41% | -6.01% | -4.18% | -5.96% | -4.13% | -5.09% | -5.87% | -4.20% | +1.95% | +3.63% | +2.33% | b-shape |\n| PEPE | $0.0036 | $0.0037 | $0.0035 | +2.31% | +0.23% | +6.46% | -5.99% | -0.15% | -5.87% | -0.02% | -2.04% | -5.77% | -0.15% | +6.21% | +1.09% | +1.59% | b-shape |\n| POPCAT | $0.0453 | $0.0457 | $0.0451 | +3.82% | +3.06% | +4.33% | -4.20% | -3.02% | -4.12% | -2.94% | -3.65% | -4.12% | -3.02% | +1.23% | +3.91% | +1.52% | p-shape |\n| PUMP | $0.0040 | $0.0040 | $0.0038 | +5.22% | +4.65% | +9.31% | -8.70% | -4.63% | -8.50% | -4.42% | -4.94% | -8.41% | -4.67% | +4.46% | +6.71% | +5.25% | balanced |\n| PURR | $0.1105 | $0.1121 | $0.1068 | +14.27% | +12.58% | +18.19% | -14.89% | -10.65% | -15.17% | -10.95% | -12.26% | -14.34% | -11.32% | +4.98% | +13.01% | +14.17% | balanced |\n| SHIB | $0.0050 | $0.0051 | $0.0050 | +6.80% | +4.73% | +8.79% | -7.89% | -4.32% | -7.91% | -4.34% | -6.19% | -7.84% | -4.35% | +3.88% | +6.07% | +2.42% | b-shape |\n| SNX | $0.2082 | $0.2090 | $0.2059 | +5.78% | +5.36% | +6.95% | -6.47% | -5.06% | -6.49% | -5.09% | -5.46% | -6.37% | -5.09% | +1.51% | +5.17% | +1.81% | balanced |\n| SOL | $101.15 | $101.59 | $99.77 | +4.62% | +4.16% | +6.07% | -5.65% | -3.92% | -5.61% | -3.88% | -4.30% | -5.52% | -3.97% | +1.83% | +4.61% | +2.14% | balanced |\n| SUI | $0.7331 | $0.7378 | $0.7203 | +8.17% | +7.49% | +10.10% | -9.12% | -6.91% | -8.96% | -6.75% | -7.34% | -8.92% | -6.91% | +2.43% | +6.70% | +3.21% | b-shape |\n| TRUMP | $1.95 | $1.96 | $1.94 | +3.91% | +3.66% | +4.79% | -4.58% | -3.54% | -4.47% | -3.43% | -3.66% | -4.36% | -3.54% | +1.10% | +4.62% | +2.03% | p-shape |\n| UNI | $7.65 | $7.86 | $6.86 | +14.42% | +11.44% | +27.61% | -21.11% | -9.67% | -21.41% | -10.01% | -12.35% | -20.47% | -10.01% | +14.51% | +11.22% | +8.76% | b-shape |\n| WIF | $0.1856 | $0.1869 | $0.1836 | +3.98% | +3.27% | +5.12% | -4.68% | -2.97% | -4.81% | -3.10% | -3.76% | -4.68% | -3.13% | +1.80% | +3.34% | +2.15% | b-shape |\n| WLFI | $0.0589 | $0.0594 | $0.0581 | -1.72% | -2.53% | -0.29% | +0.22% | +2.52% | +0.31% | +2.62% | +1.77% | +0.31% | +2.52% | +2.30% | -0.79% | +0.85% | p-shape |\n| XRP | $1.30 | $1.30 | $1.29 | +2.28% | +1.62% | +2.43% | -2.32% | -1.53% | -2.27% | -1.49% | -2.12% | -2.12% | -1.53% | +0.80% | +1.97% | +1.48% | b-shape |\n| ZEC | $1361.14 | $1464.79 | $1327.70 | +7.32% | -0.27% | +10.02% | -8.87% | +0.53% | -8.94% | +0.46% | -6.65% | -8.75% | +0.25% | +10.32% | +9.31% | +2.91% | balanced |"
+      },
+      "structure": null,
+      "authoredNote": "read-only forward panel; columns only, no conditions"
+    }
+  ],
+  "resolvedCoinTickers": [
+    "AAVE",
+    "AIXBT",
+    "APT",
+    "AVAX",
+    "BNB",
+    "BTC",
+    "CAKE",
+    "CRV",
+    "DOGE",
+    "ENA",
+    "ETH",
+    "FARTCOIN",
+    "GRAM",
+    "HYPE",
+    "JUP",
+    "LDO",
+    "LINK",
+    "LTC",
+    "MELANIA",
+    "MET",
+    "MOODENG",
+    "PENGU",
+    "PEPE",
+    "POPCAT",
+    "PUMP",
+    "PURR",
+    "SHIB",
+    "SNX",
+    "SOL",
+    "SUI",
+    "TRUMP",
+    "UNI",
+    "WIF",
+    "WLFI",
+    "XRP",
+    "ZEC"
+  ],
+  "tokenCountModel": "o200k_base",
+  "budgetUsage": {
+    "sections": {
+      "used": 1,
+      "cap": 32
+    },
+    "sectionColumns": {
+      "used": 17,
+      "cap": 32
+    },
+    "columnLookback": {
+      "used": 24,
+      "cap": 32
+    },
+    "distinctTimeframes": {
+      "used": 1,
+      "cap": 8
+    },
+    "estimatedTokens": {
+      "used": 4320,
+      "cap": 32000
+    },
+    "reportNoteChars": {
+      "used": 52,
+      "cap": 3200
+    }
+  },
+  "conditionOutcomes": [],
+  "conditionColumns": [
+    {
+      "sectionKey": "custom:b3c8612a-98c4-8960-8be9-6df26630da55",
+      "title": "TPO PANEL",
+      "benchmarkTicker": null,
+      "outputs": [
+        {
+          "header": "pTpoPOC",
+          "meaning": "pTpoPOC: latest value.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoPOC",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAH",
+          "meaning": "pTpoVAH: latest value.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAH",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAL",
+          "meaning": "pTpoVAL: latest value.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAL",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "dist_pTpoPOC",
+          "meaning": "dist_pTpoPOC: % from current price to pTpoPOC.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "dist_pTpoPOC",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "dist_pTpoVAH",
+          "meaning": "dist_pTpoVAH: % from current price to pTpoVAH.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "dist_pTpoVAH",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "dist_pTpoVAL",
+          "meaning": "dist_pTpoVAL: % from current price to pTpoVAL.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "dist_pTpoVAL",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAL_open_spread",
+          "meaning": "pTpoVAL_open_spread: % gap pTpoVAL vs open.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAL_open_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAH_open_spread",
+          "meaning": "pTpoVAH_open_spread: % gap pTpoVAH vs open.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAH_open_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAL_close_spread",
+          "meaning": "pTpoVAL_close_spread: % gap pTpoVAL vs close.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAL_close_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAH_close_spread",
+          "meaning": "pTpoVAH_close_spread: % gap pTpoVAH vs close.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAH_close_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoPOC_close_spread",
+          "meaning": "pTpoPOC_close_spread: % gap pTpoPOC vs close.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoPOC_close_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAL_low_spread",
+          "meaning": "pTpoVAL_low_spread: % gap pTpoVAL vs low.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAL_low_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAH_high_spread",
+          "meaning": "pTpoVAH_high_spread: % gap pTpoVAH vs high.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAH_high_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "pTpoVAH_pTpoVAL_spread",
+          "meaning": "pTpoVAH_pTpoVAL_spread: % gap pTpoVAH vs pTpoVAL.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "pTpoVAH_pTpoVAL_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "tpoPOC_pTpoPOC_spread",
+          "meaning": "tpoPOC_pTpoPOC_spread: % gap tpoPOC vs pTpoPOC.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "tpoPOC_pTpoPOC_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "tpoVAH_tpoVAL_spread",
+          "meaning": "tpoVAH_tpoVAL_spread: % gap tpoVAH vs tpoVAL.",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "tpoVAH_tpoVAL_spread",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "tpoShape",
+          "meaning": "tpoShape: latest value.",
+          "conditionOperators": [
+            "is",
+            "in"
+          ],
+          "conditionVocabulary": [
+            "p-shape",
+            "b-shape",
+            "balanced"
+          ],
+          "markerToken": "tpoShape",
+          "closesReadable": false,
+          "developingRead": false
+        }
+      ]
+    },
+    {
+      "sectionKey": "session-field",
+      "title": "Session Field",
+      "benchmarkTicker": null,
+      "outputs": [
+        {
+          "header": "fieldPlayers_session",
+          "meaning": "players in this session",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "fieldPlayers_session",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "fieldUpBias_session",
+          "meaning": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "fieldUpBias_session",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "fieldBiasDir_session",
+          "meaning": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+          "conditionOperators": [
+            "is",
+            "in"
+          ],
+          "conditionVocabulary": [
+            "UP",
+            "DOWN"
+          ],
+          "markerToken": "fieldBiasDir_session",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "captConc_session",
+          "meaning": "share of captain picks landing on the single most-captained coin (%)",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "captConc_session",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "picksSpread_session",
+          "meaning": "distinct coins picked, over distinct coins available",
+          "conditionOperators": [],
+          "conditionVocabulary": [],
+          "markerToken": "picksSpread_session",
+          "closesReadable": false,
+          "developingRead": false
+        }
+      ]
+    },
+    {
+      "sectionKey": "market-breadth",
+      "title": "Market Breadth",
+      "benchmarkTicker": null,
+      "outputs": [
+        {
+          "header": "mktUp_all",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_crypto",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_l1",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_memes",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_defi",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_tradfi",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_stocks",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_indices",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktUp_commodities",
+          "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktUp_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_all",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_crypto",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_l1",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_memes",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_defi",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_tradfi",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_stocks",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_indices",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDown_commodities",
+          "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDown_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_all",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_crypto",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_l1",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_memes",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_defi",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_tradfi",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_stocks",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_indices",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktBreadth_commodities",
+          "meaning": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktBreadth_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_all",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_crypto",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_l1",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_memes",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_defi",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_tradfi",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_stocks",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_indices",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgChg_commodities",
+          "meaning": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgChg_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_all",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_crypto",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_l1",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_memes",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_defi",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_tradfi",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_stocks",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_indices",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktDispersion_commodities",
+          "meaning": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktDispersion_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_all",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_crypto",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_l1",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_memes",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_defi",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_tradfi",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_stocks",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_indices",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoUp_commodities",
+          "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoUp_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_all",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_crypto",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_l1",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_memes",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_defi",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_tradfi",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_stocks",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_indices",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoDown_commodities",
+          "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoDown_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_all",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_crypto",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_l1",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_memes",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_defi",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_tradfi",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_stocks",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_indices",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktPpoNet_commodities",
+          "meaning": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktPpoNet_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_all",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_crypto",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_l1",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_memes",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_defi",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_tradfi",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_stocks",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_indices",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktAvgPpo_commodities",
+          "meaning": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktAvgPpo_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_all",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_crypto",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_l1",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_memes",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_defi",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_tradfi",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_stocks",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_indices",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktVolNet_commodities",
+          "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktVolNet_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_all",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_all",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_crypto",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_crypto",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_l1",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_l1",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_memes",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_memes",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_defi",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_defi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_tradfi",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_tradfi",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_stocks",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_stocks",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_indices",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_indices",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "mktStretch_commodities",
+          "meaning": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "mktStretch_commodities",
+          "closesReadable": false,
+          "developingRead": false
+        }
+      ]
+    },
+    {
+      "sectionKey": "reference-pairs",
+      "title": "Reference Pairs",
+      "benchmarkTicker": null,
+      "outputs": [
+        {
+          "header": "usdtUsdDev_market",
+          "meaning": "USDT/USD deviation from par (%), signed, from Coinbase’s USDT-USD spot tape quoted in USD; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "usdtUsdDev_market",
+          "closesReadable": false,
+          "developingRead": false
+        },
+        {
+          "header": "usdcUsdtDev_market",
+          "meaning": "USDC/USDT deviation from par (%), signed, from Binance’s USDCUSDT spot tape quoted in USDT; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "markerToken": "usdcUsdtDev_market",
+          "closesReadable": false,
+          "developingRead": false
+        }
+      ]
+    }
+  ],
+  "conditionVerdictTally": {
+    "UP": 0,
+    "DOWN": 0,
+    "NEITHER": 0,
+    "UNRESOLVED": 0
+  },
+  "markerConditions": [],
+  "marketReadPreview": null,
+  "marketReadMarkers": [],
+  "conditionsTableText": null,
+  "tradeConditionsBlockText": null
+}

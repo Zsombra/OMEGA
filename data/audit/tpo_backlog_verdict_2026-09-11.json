@@ -1,0 +1,68 @@
+{
+ "_what": "Verdict on the thirteen uncreated TPO strategies: seven built-but-uncompiled payloads (S1-S7) and six never-built archetypes (A-F). Audited by 8 agents across three adversarial lenses, then every surviving recommendation was checked against LIVE data. NONE was built. This record exists because the reasons are the output.",
+ "capturedAt": "2026-09-11T02:23Z",
+ "outcome": "0 of 13 created. The audit recommended one build and one conditional build; BOTH premises were falsified by live measurement taken after the audit finished.",
+ "theAuditResult": {
+  "refused": 11,
+  "recommendedBuild": "Archetype B, Prior Value Rejection Fade - justified NOT by its TPO thesis but by its scorecard: the entire mean-reversion signal family sits at allocation 0 on the only live router, so weighting it would give a disjoint signal basis and, because the aggregate is a weighted mean over TRIGGERED signals only, would move both numerator and denominator.",
+  "conditionalBuild": "Archetype F, Cross-Asset Value Dislocation - ranked 3 for two compile-path facts no preview can buy.",
+  "refusalReasonsWorthKeeping": {
+   "S1": "It IS the live 56c08ef6 - its 6 columns are a strict subset of the deployed 8 and its three conditions appear in rev 3 verbatim.",
+   "S2": "Its only non-redundant content is the re-entry pair, which has never evaluated TRUE. Open and close were both below prior value on every coin sampled, so the UP leg cannot fire.",
+   "S3": "Its one reliably-firing condition (POC_AHEAD_UP, 6 of 6) carries verdict null and is inert by construction; its only directional conditions are S2's dead pair.",
+   "S4": "Already applied to the live strategy and superseded by rev 3's two-sided width pair.",
+   "S5": "The instrument fires and the thesis does not: RSI_HELD_DOWN_2C was TRUE with closesHeld 2/2 on 6 of 6 coins while its geometry member was FALSE every time.",
+   "S6": "The event asks one 1h bar to travel 4x-24x its own median range across the prior POC and return. 0 of 6 coins straddled, 0 of 24 reconstructed BTC bars. OHLC also carries no intrabar sequence.",
+   "S7": "All seven conditions carry verdict NEITHER, so there is no direction for a reorder to unmask - it reproduces 56c08ef6's annotation-only failure mode exactly.",
+   "A": "Both bases are current-session, so FALSE both ways for the first 60 UTC minutes.",
+   "C": "Incoherent on this venue, not merely unmeasured: an initial balance is an opening-auction range and 24/7 perps have none.",
+   "D": "The unobserved half is proximity to a value edge, and every proximity tolerance measured on this platform has been dead.",
+   "E": "3d720de3 already carries all three tpoShape label conditions with the correct label key, so it cannot teach anything new."
+  }
+ },
+ "criticCorrectionsAccepted": [
+  "F should be REFUSED, not ranked. Its own precondition is already answered - 34 of 36 coins on BTC's side of prior value means about 2 dislocated candidates, which by the plan's own rule is a refusal.",
+  "A, S2 and S6 are mislabelled. They rest on 6-coin instantaneous snapshots from a single day. Under ASSUME NOTHING the correct label is UNOBSERVED - RE-PROBE, not REFUSED. Absence of observation is not measurement.",
+  "B's byte arithmetic quoted 245,538 against a 262,144 cap from a DERIVED 2.150 scale factor on a fitted intercept. Stating it to the byte is false precision on an unmeasured quantity.",
+  "The binding constraint is not the 16 free quota slots - slots are cheap. It is that 11 of 13 candidates have no measured content. 'We have not created them' is not a reason to create them."
+ ],
+ "twoPremisesFALSIFIEDByLiveMeasUREMENT": [
+  {
+   "item": "R0 - the free UPDATE to live 56c08ef6, premised on re-banding Donchian confluence conditions that 'never fire'",
+   "premise": "A 0.5 percent same-level band on pTpoVAL_donchianLo_spread never fires, because measured separation ran 2.31 to 12.19 percent across 12 coins on 2026-09-10.",
+   "measurement": "preview_strategy_report on the LIVE 56c08ef6 rev 3, 2026-09-11T02:2xZ, 6 coins. VALUE_LOW_IS_SUPPORT TRUE on BNB and BTC and decidedBy on both. VALUE_HIGH_IS_RESISTANCE TRUE on 6 of 6 and decidedBy on DOGE, SOL and XRP. Tally 3 UP / 3 DOWN.",
+   "verdict": "FALSIFIED. The bands fire and decide 5 of 6 verdicts. BTC's separation was 2.31 percent yesterday and is inside 0.5 percent today. The original claim was mine, the audit inherited it, and it was a one-instant snapshot presented as a distribution. The re-band was NOT performed - it would have fixed a non-problem and broken the conditions currently carrying the verdicts."
+  },
+  {
+   "item": "B - the one build the audit recommended",
+   "premise": "Weighting the mean-reversion signal family gives a disjoint router, because that family is at allocation 0 on 3d720de3.",
+   "blockingCheckPassed": "Confirmed at 2026-09-11T02:2xZ: all 22 mean-reversion signals are still at allocation 0 on 3d720de3, whose weighted set is trend/flow only.",
+   "measurement": "get_coin_signal_preview at 1h on BTC ETH SOL BNB XRP DOGE. ZERO of the 22 mean-reversion signals triggered on ANY of the six. Yesterday bollinger_cci_oversold fired 6 of 6 (scores 43/21/49/66/100/69) and bollinger_lower_touch 5 of 6 at 100.",
+   "verdict": "FALSIFIED. Because the aggregate is a weighted mean over TRIGGERED signals only, a card built on a silent family produces no aggregate and can never clear a gate. B would have been a dead strategy on the day it was created."
+  }
+ ],
+ "theMetaFinding": {
+  "claim": "Both signal firing and TPO level separation are unstable day to day, by large margins. Any threshold or gate calibrated from one snapshot is unreliable.",
+  "evidence": [
+   "bollinger_cci_oversold: 6 of 6 coins firing on 2026-09-10, 0 of 6 on 2026-09-11.",
+   "bollinger_lower_touch: 5 of 6 at score 100, then 0 of 6.",
+   "structure_fvg_approach: 0.707 and 0.935, then 0.392 and 0.451 twenty-four hours later.",
+   "pTpoVAL_donchianLo_spread on BTC: 2.31 percent separation, then inside 0.5 percent a day later.",
+   "3d720de3 aggregate on BTC: 69 then 77; XRP 87 then 93; ETH 61 then 51."
+  ],
+  "consequence": "This is the argument for the panel logger that is still unscheduled. Every threshold in this project - 6.42, 2.14, 4.25, 2.05, 5.05, the 0.65 gate - was set from a single instant. The only defence is a real distribution over time, and the data is unrecoverable after the fact because get_coin_candles has no start-time parameter."
+ },
+ "theLiveStrategyIsHEALTHY": {
+  "strategyId": "3d720de3-6d36-4ef8-ae74-87bd8b6025bd",
+  "checkedAt": "2026-09-11T02:22:55Z",
+  "result": "7 of 8 coins still qualify, and scores IMPROVED: BTC 77 (was 69), SOL 82 (78), BNB 70, XRP 93 (87), AVAX 94 (87), LINK 100 (69), DOGE 93 (94). ETH remains the only rejection at 51, down from 61.",
+  "why": "Its curated card weights trend and flow, and the tape is still bearish on 5 of 6 coins. The family that went silent is mean-reversion, which 3d720de3 does not weight. The gate is discriminating rather than blocking."
+ },
+ "whatWasActuallyDone": [
+  "Repaired scripts/tpo_suite_build.py so it stops emitting CREATE-illegal payloads: sectionKey None, a new ordered() that sorts UP/DOWN then verdict-null then NEITHER, universe 36 to 8. Verified on the emitted files, not just the source.",
+  "Measured the live 56c08ef6 for the first time - it had never been previewed - and found it emitting 3 UP / 3 DOWN driven by the Donchian bridge.",
+  "Confirmed the live 3d720de3 still qualifies 7 of 8.",
+  "Created NOTHING. Quota unchanged at 9 of 25."
+ ],
+ "ifThisIsRevisited": "The honest next step is not another strategy. It is the panel logger on a schedule, so the next threshold comes from a distribution instead of an instant. B becomes buildable the moment the mean-reversion family is observed firing again - the blocking check is one get_coin_signal_preview sweep. A, S2 and S6 need re-probing over days, not re-designing."
+}

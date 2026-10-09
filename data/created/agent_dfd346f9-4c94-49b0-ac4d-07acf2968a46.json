@@ -1,0 +1,117 @@
+{
+ "_what": "Agent created 2026-09-12 under the user's instruction 'for the new strategies, we actually create new agents'. Creation is the bind; nothing deployed, nothing assigned, no funds allocated. Config mirrors PVM Alpha 8e2f362e revision 4.",
+ "createResponse": {
+  "agent": {
+   "id": "dfd346f9-4c94-49b0-ac4d-07acf2968a46",
+   "userId": "bb334a1e-2ac2-4956-8dea-7c7cf01097b9",
+   "scope": "PRIVATE",
+   "systemKey": null,
+   "isSystemDefault": false,
+   "capabilities": {
+    "canEdit": true,
+    "canDelete": true,
+    "canArchive": true,
+    "canEditOverlay": true
+   },
+   "displayName": "BRK Alpha",
+   "status": "ACTIVE",
+   "behavior": {
+    "risk": "CONSERVATIVE",
+    "outlook": "REALIST",
+    "conviction": "MEASURED"
+   },
+   "contextSources": {
+    "includePriceAction": false,
+    "includeSubTimeframe": false,
+    "includeRsi": false,
+    "includeMacd": false,
+    "includeVolume": false,
+    "includeVolatility": false,
+    "includeBollingerBands": false,
+    "includeMovingAverages": false,
+    "includeStochastic": false,
+    "includeFundingRates": false,
+    "includeOpenInterest": false,
+    "includeRelativeStrength": false,
+    "includeSupportResistance": false,
+    "includeTrendStrength": false,
+    "includeMfi": false,
+    "includeHigherTimeframe": false,
+    "includeRegimeContext": false,
+    "includeStructureZones": false,
+    "includeCrowdIntelligence": false,
+    "includeCvd": false,
+    "includeCvdCrowdConvergence": false,
+    "includeMtfConfluence": false,
+    "includePerpSpotFlow": false,
+    "includeMarketBreadth": false,
+    "includeReferencePairs": false
+   },
+   "overlayText": "",
+   "createdAt": "2026-09-12T03:43:34.400Z",
+   "updatedAt": "2026-09-12T03:43:34.400Z",
+   "performance": {
+    "gameStats": {
+     "gamesPlayed": 0,
+     "winRate": null,
+     "winRatePercent": null,
+     "avgAccuracy": null,
+     "avgAccuracyPercent": null,
+     "gameEarnings": 0,
+     "earningsSparkline": []
+    },
+    "tradeStats": {
+     "trades": 0,
+     "open": 0,
+     "winLoss": {
+      "wins": 0,
+      "losses": 0
+     },
+     "avgPnl": null,
+     "pnlSparkline": []
+    }
+   },
+   "hasActiveAssignments": false,
+   "modelId": "z-ai/glm-5.3",
+   "modelDisplayName": "GLM-5.3",
+   "modelImageUrl": null,
+   "provider": null,
+   "avatarUrl": "https://imagedelivery.net/oG_Y6vTq3A-rEh8TpOycaA/cbc992eb-b274-4c09-2df7-349e3b353900/public",
+   "last24hCostUsd": 0,
+   "activeGameCount": 0,
+   "tradingConfig": {
+    "minAllocationUsd": 10,
+    "maxDailyTrades": 6,
+    "balanceThresholdUsd": 15,
+    "maxLeverage": 1,
+    "maxSlippageBps": 300,
+    "maxConcurrentExposureUsd": 30,
+    "maxCumulativeDrawdownUsd": 10,
+    "maxDailyLossUsd": 5,
+    "positionSizePresets": {
+     "smallPct": 35,
+     "mediumPct": 45,
+     "largePct": 55
+    },
+    "strategyTimeframe": "1h",
+    "regimeTimeframe": "4h"
+   },
+   "strategyId": "430f9037-ead7-4a50-9fb5-0618163251bc",
+   "strategyRevision": 2,
+   "strategyName": "OMEGA-TEST: TPO Compression Breakout",
+   "bindingState": "BOUND",
+   "revision": 1
+  },
+  "slotUsage": {
+   "level": 36,
+   "rank": {
+    "name": "COMMANDER",
+    "tier": 3,
+    "displayName": "Commander III"
+   },
+   "limit": 24,
+   "used": 9,
+   "remaining": 15
+  }
+ }
+}

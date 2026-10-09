@@ -1,0 +1,65 @@
+{
+ "_what": "56c08ef6 revisions 2 and 3, applied 2026-09-10. Adds the TPO-to-Donchian bridge columns, makes six conditions verdict-bearing, and fixes an order-dependence bug discovered between the two applies.",
+ "strategyId": "56c08ef6-480b-4293-8136-81beed2161cf",
+ "revisions": [
+  {
+   "revision": 2,
+   "at": "2026-09-10T17:18:24.777Z",
+   "changedAxes": ["REPORT", "CONDITIONS"],
+   "what": "8 columns (6 original + 2 Donchian bridge), 9 conditions, universe 36 -> 10.",
+   "outcome": "BROKEN IN PRACTICE: rendered 0 UP / 0 DOWN / 10 NEITHER despite BELOW_VALUE_NO_STRUCTURE being TRUE on all ten."
+  },
+  {
+   "revision": 3,
+   "at": "2026-09-10T17:21:49.364Z",
+   "changedAxes": ["CONDITIONS"],
+   "what": "Conditions array reordered: directional first, NEITHER location tags last. Nothing else changed.",
+   "outcome": "Emits DOWN. Verified on BTC/ETH/SOL/DOGE: 4 DOWN, decidedBy BELOW_VALUE_NO_STRUCTURE."
+  }
+ ],
+ "measuredThisSession": [
+  {
+   "finding": "VERDICT RESOLUTION IS FIRST-TRUE-WINS IN ARRAY ORDER.",
+   "evidence": "Identical nine conditions, identical thresholds, identical columns, differing ONLY in array order. Order A (NEITHER tags first): 0 UP / 0 DOWN / 10 NEITHER. Order B (directional first): 0 UP / 4 DOWN / 0 NEITHER, decidedBy BELOW_VALUE_NO_STRUCTURE on every coin.",
+   "consequence": "Any NEITHER-verdict condition placed ahead of a directional one SILENTLY MASKS it. The conditions table still renders every row TRUE/FALSE correctly, so the masking is invisible unless you read the Verdict column. This is a new trap, not previously recorded anywhere in the repo."
+  },
+  {
+   "finding": "A caller-supplied sectionKey IS ACCEPTED on UPDATE.",
+   "evidence": "custom:88da7c5c-ccc9-8a32-8956-e06263f6201b was supplied and retained, 8 columns, across two applies.",
+   "consequence": "Completes the pair: CREATE REFUSES a caller-supplied sectionKey (REPORT_CUSTOM_SECTION_NOT_OWNED), UPDATE accepts it. docs/09 was corrected earlier today for the CREATE half; this settles the UPDATE half."
+  },
+  {
+   "finding": "The 256 KB compile report-preview cap binds on coins x columns x conditions, not on ranked mode alone.",
+   "evidence": "Same payload at 36 tickers: 'mcp_result_bytes limit exceeded: 433118 > 256000'. At 16 tickers: '281848 > 256000'. At 10: compiled. Two points imply about 7.5 KB per coin on about 161 KB fixed overhead.",
+   "consequence": "Wider than the BG-14 ranked-limit-4 bracket the README records. An explicit 36-ticker universe that compiled fine at 6 columns / 3 conditions is refused at 8 columns / 9 conditions. Universe had to drop 36 -> 10."
+  },
+  {
+   "finding": "compile_strategy_plan assumptions[] entries cap at 500 characters.",
+   "evidence": "MCP error -32602 too_big, maximum 500, path request.assumptions.2."
+  },
+  {
+   "finding": "The server emits REPORT_DATA_SIGNAL_OFF mismatches.",
+   "evidence": "'Signal sr_at_support is Off while the report shows the data it scores on: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor.' Raised for both sr_at_support and sr_at_resistance after the Donchian bridge columns were added.",
+   "consequence": "A useful free diagnostic: the compiler tells you when your report carries data a weighted signal could score on while that signal sits at allocation 0."
+  }
+ ],
+ "substantiveMarketFinding": {
+  "claim": "The prior-session value-area low and the Donchian support are NOT the same level on this cohort.",
+  "measured": "pTpoVAL_donchianLo_spread at 2026-09-10T17:19Z across BTC ETH SOL BNB XRP DOGE LINK AVAX HYPE PEPE: 2.31, 3.43, 4.36, 4.67, 4.96, 5.21, 5.36, 8.00, 8.01, 12.19 percent. Median about 5. Not one inside the 0.5 percent tolerance.",
+  "soWhat": "The design premise - that the volume-profile edge and the structure level coincide, so a TPO read can qualify an sr_at_support firing - is false most of the time here. This is the first thing the TPO work has established about the MARKET rather than about the platform. N=10, one instant."
+ },
+ "honestLimitations": [
+  "STILL CANNOT ROUTE. All 84 signalRules remain at allocation 0 and minAggregateScore stays 0.99. changedAxes never included SETUP_GATES on either apply. The 33.56 USDC remains untouchable through this path.",
+  "THE DOWN VERDICT IS THE BASE STATE, NOT AN EDGE. BELOW_VALUE_NO_STRUCTURE is TRUE whenever price is below prior value and the bridge tolerance does not fire - which, per the measurement above, is essentially always. A verdict that fires on everything discriminates nothing.",
+  "THE 0.5 PERCENT BRIDGE TOLERANCE IS WRONG BY AN ORDER OF MAGNITUDE and was deliberately NOT re-fitted. Re-fitting it to ten observations at one instant would repeat exactly the error this project exists to avoid. The column is live and logging; set it from a real distribution.",
+  "THE PROPOSED ENGINE WAS NOT APPLIED. Three independent adversarial reviews of a six-rule Bollinger/divergence/FVG scorecard all returned REJECT. The decisive argument: no TPO metric feeds any of the 84 signals, so that engine would route on Bollinger bands while the TPO half stayed decoration, and no outcome could distinguish 'value location works' from 'value location is decoration'.",
+  "UNIVERSE IS NOW 10, DOWN FROM 36, forced by the byte cap. The read-only panel logger still covers all 36 because preview is not subject to that cap.",
+  "THE STRATEGY DESCRIPTION IS NOW PARTLY STALE: it still describes only the above/inside/below tagging and undersells the two new bridge columns. It remains accurate on the load-bearing claim - that the strategy cannot score or route."
+ ],
+ "agentImpact": {
+  "boundAgentCount": 1,
+  "propagatedAgentCount": 1,
+  "openPositionCount": 0,
+  "note": "TPO Alpha 786c327c received both revisions immediately. It still has assignments [] and the strategy still cannot route, so nothing became spendable."
+ }
+}

@@ -1,0 +1,869 @@
+{
+ "strategy": {
+  "id": "430f9037-ead7-4a50-9fb5-0618163251bc",
+  "ownerUserId": "bb334a1e-2ac2-4956-8dea-7c7cf01097b9",
+  "scope": "PRIVATE",
+  "systemKey": null,
+  "name": "OMEGA-TEST: TPO Compression Breakout",
+  "description": "A narrow prior-session value area is a coiled auction. Two required gates - width in the bottom quartile, and a close accepted outside the area - block anything else before the agent is billed. UP above the prior value high, DOWN below the prior value low, NEITHER while coiled or when value is wide. Prior-session columns only, live all day. Weights, levels and trailing mirror the vendor's validated volatility-compression breakout playbook.",
+  "tagline": "A narrow prior value area is a coil; a close accepted outside it is the break",
+  "visibility": "UNLISTED",
+  "timeframe": "1h",
+  "cadence": "INTRADAY",
+  "regimeTimeframe": "4h",
+  "marketReadText": "",
+  "sections": [
+   {
+    "kind": "custom",
+    "sectionKey": "custom:97039457-d08c-8aff-8d2e-1517c7645cff",
+    "title": "TPO compression breakout",
+    "benchmarkTicker": null,
+    "notes": "Positive spread means the first metric sits above the second.",
+    "columns": [
+     {
+      "metric": "PRIOR_TPO_VAH",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "PRIOR_TPO_VAL"
+       }
+      ]
+     },
+     {
+      "metric": "PRIOR_TPO_VAL",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ]
+     },
+     {
+      "metric": "PRIOR_TPO_VAH",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ]
+     },
+     {
+      "metric": "PRIOR_TPO_POC",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ]
+     },
+     {
+      "metric": "ATR_PCT",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "BB_WIDTH_PCT",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "RVOL",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    ]
+   }
+  ],
+  "conditions": [
+   {
+    "conditionKey": "BREAK_ABOVE_NARROW_VALUE",
+    "name": "Narrow prior value and the close accepted above its high",
+    "definition": {
+     "kind": "group",
+     "op": "ALL",
+     "members": [
+      {
+       "kind": "conditionRef",
+       "conditionKey": "NARROW_PRIOR_VALUE"
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": "custom:97039457-d08c-8aff-8d2e-1517c7645cff",
+        "header": "pTpoVAH_close_spread"
+       },
+       "op": "lte",
+       "value": -0.05
+      }
+     ]
+    },
+    "verdict": "UP",
+    "required": false,
+    "exit": false,
+    "clock": "LIVE",
+    "closes": 1
+   },
+   {
+    "conditionKey": "BREAK_BELOW_NARROW_VALUE",
+    "name": "Narrow prior value and the close accepted below its low",
+    "definition": {
+     "kind": "group",
+     "op": "ALL",
+     "members": [
+      {
+       "kind": "conditionRef",
+       "conditionKey": "NARROW_PRIOR_VALUE"
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": "custom:97039457-d08c-8aff-8d2e-1517c7645cff",
+        "header": "pTpoVAL_close_spread"
+       },
+       "op": "gte",
+       "value": 0.05
+      }
+     ]
+    },
+    "verdict": "DOWN",
+    "required": false,
+    "exit": false,
+    "clock": "LIVE",
+    "closes": 1
+   },
+   {
+    "conditionKey": "COILED_INSIDE_NARROW",
+    "name": "Narrow prior value, close still inside it: coiled, not broken",
+    "definition": {
+     "kind": "group",
+     "op": "ALL",
+     "members": [
+      {
+       "kind": "conditionRef",
+       "conditionKey": "NARROW_PRIOR_VALUE"
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": "custom:97039457-d08c-8aff-8d2e-1517c7645cff",
+        "header": "pTpoVAL_close_spread"
+       },
+       "op": "lt",
+       "value": 0.05
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": "custom:97039457-d08c-8aff-8d2e-1517c7645cff",
+        "header": "pTpoVAH_close_spread"
+       },
+       "op": "gt",
+       "value": -0.05
+      }
+     ]
+    },
+    "verdict": "NEITHER",
+    "required": false,
+    "exit": false,
+    "clock": "LIVE",
+    "closes": 1
+   },
+   {
+    "conditionKey": "WIDE_PRIOR_VALUE",
+    "name": "Prior value area not narrow: no compression to break",
+    "definition": {
+     "kind": "group",
+     "op": "NOT",
+     "members": [
+      {
+       "kind": "conditionRef",
+       "conditionKey": "NARROW_PRIOR_VALUE"
+      }
+     ]
+    },
+    "verdict": "NEITHER",
+    "required": false,
+    "exit": false,
+    "clock": "LIVE",
+    "closes": 1
+   },
+   {
+    "conditionKey": "NARROW_PRIOR_VALUE",
+    "name": "Prior value-area width in the bottom quartile of the universe",
+    "definition": {
+     "kind": "clause",
+     "column": {
+      "sectionKey": "custom:97039457-d08c-8aff-8d2e-1517c7645cff",
+      "header": "pTpoVAH_pTpoVAL_spread"
+     },
+     "op": "lte",
+     "value": 2.3
+    },
+    "verdict": null,
+    "required": true,
+    "exit": false,
+    "clock": "LIVE",
+    "closes": 1
+   },
+   {
+    "conditionKey": "BROKEN_OUT",
+    "name": "The close has broken out of the narrow prior value area, either side",
+    "definition": {
+     "kind": "group",
+     "op": "ANY",
+     "members": [
+      {
+       "kind": "conditionRef",
+       "conditionKey": "BREAK_ABOVE_NARROW_VALUE"
+      },
+      {
+       "kind": "conditionRef",
+       "conditionKey": "BREAK_BELOW_NARROW_VALUE"
+      }
+     ]
+    },
+    "verdict": null,
+    "required": true,
+    "exit": false,
+    "clock": "LIVE",
+    "closes": 1
+   }
+  ],
+  "entry": {
+   "trigger": "ON_CANDLE_CLOSE",
+   "confirmTf": "1h",
+   "closes": 1,
+   "bandAtrMultiple": 0.5,
+   "levelOffsetAtrMultiple": 0,
+   "validForBars": 4
+  },
+  "signalRules": [
+   {
+    "signalId": "bollinger_cci_overbought",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 100
+    }
+   },
+   {
+    "signalId": "bollinger_cci_oversold",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": -100
+    }
+   },
+   {
+    "signalId": "bollinger_lower_touch",
+    "allocation": 1,
+    "required": false,
+    "params": {
+     "pctBThreshold": 0.05
+    }
+   },
+   {
+    "signalId": "bollinger_squeeze",
+    "allocation": 3,
+    "required": false,
+    "params": {
+     "bandwidthPct": 0.04
+    }
+   },
+   {
+    "signalId": "bollinger_upper_touch",
+    "allocation": 1,
+    "required": false,
+    "params": {
+     "pctBThreshold": 0.95
+    }
+   },
+   {
+    "signalId": "comparison_btc_decorrelation",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "maxCorrelation": 0.3
+    }
+   },
+   {
+    "signalId": "comparison_sector_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "minPeerFraction": 0.5
+    }
+   },
+   {
+    "signalId": "comparison_sector_momentum",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "minPeerFraction": 0.6
+    }
+   },
+   {
+    "signalId": "cvd_bear_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "cvd_bearish",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "cvd_bull_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "cvd_bullish",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "flow_perp_spot_bear_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "flow_perp_spot_bull_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "funding_extreme_negative",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "thresholdPct": 0.0005
+    }
+   },
+   {
+    "signalId": "funding_extreme_positive",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "thresholdPct": 0.0005
+    }
+   },
+   {
+    "signalId": "funding_rate_flipping",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "htf_ma_aligned_bear",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "htf_ma_aligned_bull",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "htf_rsi_overbought",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 70
+    }
+   },
+   {
+    "signalId": "htf_rsi_oversold",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 30
+    }
+   },
+   {
+    "signalId": "htf_trend_adx_ranging",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 20
+    }
+   },
+   {
+    "signalId": "htf_trend_adx_trending",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 25
+    }
+   },
+   {
+    "signalId": "ltf_ma_aligned_bear",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "ltf_ma_aligned_bull",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "ltf_rsi_overbought",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 70
+    }
+   },
+   {
+    "signalId": "ltf_rsi_oversold",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 30
+    }
+   },
+   {
+    "signalId": "ltf_trend_adx_ranging",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 20
+    }
+   },
+   {
+    "signalId": "ltf_trend_adx_trending",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 25
+    }
+   },
+   {
+    "signalId": "ma_ema_aligned_bear",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "ma_ema_aligned_bull",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "ma_ema_bear_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "ma_ema_bull_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "ma_sma200_above",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "ma_sma200_below",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "macd_bear_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "macd_bear_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "macd_bull_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "macd_bull_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mfi_bear_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mfi_bull_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mfi_overbought",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 80
+    }
+   },
+   {
+    "signalId": "mfi_oversold",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 20
+    }
+   },
+   {
+    "signalId": "mfi_sustained_bearish",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mfi_sustained_bullish",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mtf_aligned_bear",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mtf_aligned_bull",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mtf_pullback_long",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "mtf_pullback_short",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "oi_divergence_bear",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "oi_divergence_bull",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "oi_surge",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "thresholdPct": 0.05
+    }
+   },
+   {
+    "signalId": "regime_alignment",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "regime_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "regime_trend_shift",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "regime_volatility_shift",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "rel_ppo_bear_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "rel_ppo_bull_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "rel_roc_negative",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "rel_roc_positive",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "rsi_bear_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "rsi_bull_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "rsi_overbought",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 70
+    }
+   },
+   {
+    "signalId": "rsi_oversold",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 30
+    }
+   },
+   {
+    "signalId": "sr_at_resistance",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "proximityPct": 0.005
+    }
+   },
+   {
+    "signalId": "sr_at_support",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "proximityPct": 0.005
+    }
+   },
+   {
+    "signalId": "sr_resistance_break",
+    "allocation": 2,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "sr_support_break",
+    "allocation": 2,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "stoch_bear_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "zoneThreshold": 70
+    }
+   },
+   {
+    "signalId": "stoch_bull_cross",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "zoneThreshold": 30
+    }
+   },
+   {
+    "signalId": "stoch_overbought",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 80
+    }
+   },
+   {
+    "signalId": "stoch_oversold",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 20
+    }
+   },
+   {
+    "signalId": "structure_fvg_approach",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "proximityPct": 1
+    }
+   },
+   {
+    "signalId": "structure_ob_approach",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "proximityPct": 1
+    }
+   },
+   {
+    "signalId": "structure_zone_cluster",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "rangePct": 2
+    }
+   },
+   {
+    "signalId": "structure_zone_confluence",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "alignmentPct": 0.5
+    }
+   },
+   {
+    "signalId": "trend_adx_ranging",
+    "allocation": 1,
+    "required": false,
+    "params": {
+     "threshold": 20
+    }
+   },
+   {
+    "signalId": "trend_adx_trending",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "threshold": 25
+    }
+   },
+   {
+    "signalId": "volatility_atr_contracting",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "multiplier": 0.7
+    }
+   },
+   {
+    "signalId": "volatility_atr_expanding",
+    "allocation": 2,
+    "required": false,
+    "params": {
+     "multiplier": 1.5
+    }
+   },
+   {
+    "signalId": "volume_dry_up",
+    "allocation": 0,
+    "required": false,
+    "params": {
+     "multiplier": 0.5
+    }
+   },
+   {
+    "signalId": "volume_obv_bear_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "volume_obv_bull_divergence",
+    "allocation": 0,
+    "required": false,
+    "params": {}
+   },
+   {
+    "signalId": "volume_surge",
+    "allocation": 2,
+    "required": false,
+    "params": {
+     "multiplier": 1.5
+    }
+   }
+  ],
+  "minAggregateScore": 0.55,
+  "minRequiredCount": 0,
+  "minAtrPct": 0.8,
+  "minStopLossAtrMultiple": 0.75,
+  "maxStopLossAtrMultiple": 1.75,
+  "minRiskRewardRatio": 2,
+  "breakEvenEnabled": true,
+  "breakEvenTriggerR": 1,
+  "trailingEnabled": true,
+  "trailingTriggerR": 1.2,
+  "trailingGivebackPct": 35,
+  "trailingBufferPct": 0.3,
+  "timeDecayEnabled": false,
+  "timeDecayGracePeriodMinutes": 60,
+  "timeDecayIntervalMinutes": 15,
+  "timeDecayTightenPct": 5,
+  "timeDecayMaxTightenPct": 50,
+  "timeDecayStaleThresholdTpProgressPct": 25,
+  "decisionInvalidationExitEnabled": true,
+  "forkedFromStrategyId": null,
+  "revision": 1,
+  "isActive": true,
+  "boundAgentCount": 0,
+  "openPositionCount": 0,
+  "createdAt": "2026-09-11T19:33:06.393Z",
+  "updatedAt": "2026-09-11T19:33:06.393Z"
+ }
+}

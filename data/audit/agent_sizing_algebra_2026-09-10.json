@@ -1,0 +1,55 @@
+{
+ "_what": "How agent position sizing actually behaves on BattleGrid, measured 2026-09-10 against a real 53.57 USDC wallet with one live position. Written because an assistant leverage recommendation was wrong and the measurement that corrected it is worth keeping.",
+ "capturedAt": "2026-09-10T20:12Z",
+ "agentId": "8e2f362e-62ff-4c36-8e66-3ff185b3f03c",
+ "theMeasurement": {
+  "claim": "feasibilityAdvisory.smallestOrderUsd equals maxConcurrentExposureUsd x maxLeverage. positionSizePresets.smallPct does NOT enter it.",
+  "observations": [
+   {"ceiling": 25, "leverage": 1, "smallPct": 45, "smallestOrderUsd": 25},
+   {"ceiling": 40, "leverage": 3, "smallPct": 10, "smallestOrderUsd": 120},
+   {"ceiling": 30, "leverage": 1, "smallPct": 35, "smallestOrderUsd": 30}
+  ],
+  "confidence": "Three points, exact fit on all three. The relationship is asserted for these ranges only."
+ },
+ "theConsequence": {
+  "algebra": "To hold N concurrent positions you need ceiling >= N x smallestOrderUsd = N x ceiling x leverage, which reduces to N <= 1 / leverage.",
+  "soWhat": "At leverage 1 the config algebra permits ONE position. At leverage 3 it permits less than one. LEVERAGE MAKES CONCURRENCY WORSE, not better.",
+  "theErrorThisCorrects": "The assistant recommended 3x leverage on the reasoning that the 10 USD exchange floor applies to NOTIONAL, so leverage would let a position reach it with a third of the margin and thereby free capital for more positions. That reasoning was wrong for this platform: raising leverage raised the minimum order size proportionally."
+ },
+ "theOtherConstraint": {
+  "rule": "(smallPct/100) x ceiling x floor(maxLeverage) >= max(10, minAllocationUsd), enforced at config time.",
+  "minimumAllocationUsdIsAFloor": "10, from get_trading_config_catalog. It cannot be set lower, so the right-hand side is never below 10.",
+  "tension": "A LOW smallPct forces a HIGH ceiling x leverage product to satisfy the constraint - and smallestOrderUsd tracks that same product. So asking for small percentage positions mechanically produces LARGE minimum orders. The two rules pull against each other."
+ },
+ "whatActuallyBlockedTheTrades": {
+  "sequence": [
+   {"at": "2026-09-10T19:42:20Z", "coin": "BTC", "status": "EXECUTED", "positionSizePct": 1, "notionalUsd": 21.617},
+   {"at": "2026-09-10T19:45:40Z", "coin": "MOODENG", "status": "FAILED", "positionSizePct": 45},
+   {"at": "2026-09-10T19:49:01Z", "coin": "ZEC", "status": "FAILED", "positionSizePct": 45},
+   {"at": "2026-09-10T19:54:37Z", "coin": "MOODENG", "status": "FAILED", "positionSizePct": 45}
+  ],
+  "diagnosis": "BTC consumed 22.29 of a 25 ceiling, leaving headroom 2.71 against an orderFloorUsd of 10. No further order of any size could fit. All three failures are that, not a bad signal - every one produced a complete bearish thesis and cleared the 0.65 gate (ZEC 86 percent, MOODENG 100 percent composite).",
+  "notTheCause": "The correlation with the smallPct 1 -> 45 change is coincidental in timing. With 2.71 of headroom against a 10 USD floor, an order at ANY size fails.",
+  "whereTheReasonIsNOTRecorded": "list_gate_blocks showed only one unrelated OPEN_POSITION_CONFLICT. get_agent_journal carried the theses but no error. get_entry_decision carries no error field. The platform does not surface an order-rejection reason on any readable surface - the diagnosis above is arithmetic, not a quoted message."
+ },
+ "unresolved": [
+  "The positionSizePct to notional mapping. positionSizePct 1 produced a 21.617 USD notional, which is not 1 percent of any quantity on this account. Reference-fleet fills contradict each other at the same preset: HYPE 32.45 USD and APT 0.32 USD both at 2 percent MEDIUM.",
+  "Whether maxConcurrentExposureUsd is denominated in NOTIONAL or MARGIN. The only fill was at leverage 1, where the two are identical, so it settles nothing.",
+  "maxDailyTrades appears not to gate evaluation. tradesToday read 4 against a cap of 2, and decisions 3 and 4 were still evaluated, each burning about 100 seconds of model time."
+ ],
+ "practicalConclusion": "At a 53 USDC wallet against a 10 USD exchange floor, this platform's config algebra permits roughly one open position at a time. The route to more concurrent trades is more capital, not more leverage. The daily-loss stop is the control that actually bounds risk; the ceiling mostly decides position count.",
+ "configLeftInPlace": {
+  "agentRevision": 4,
+  "maxConcurrentExposureUsd": 30,
+  "maxLeverage": 1,
+  "positionSizePresets": {"smallPct": 35, "mediumPct": 45, "largePct": 55},
+  "maxDailyTrades": 6,
+  "maxDailyLossUsd": 5,
+  "maxCumulativeDrawdownUsd": 10,
+  "minAllocationUsd": 10,
+  "balanceThresholdUsd": 15,
+  "maxSlippageBps": 300,
+  "smallestOrderUsd": 30,
+  "why": "Ceiling 30 sits above the 22.29 currently at risk so the budget is not over-subscribed, leverage 1 keeps the minimum order at 30 rather than inflating it, and the 5 USD daily stop caps a bad day at about 9 percent of the wallet."
+ }
+}

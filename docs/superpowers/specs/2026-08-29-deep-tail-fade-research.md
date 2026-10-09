@@ -384,3 +384,53 @@ Pool: base + runs 1–4. 81 new 1h bars per coin — more than twice run 4's 38.
   is now further away, not that the thesis is established.
 - **Next pull due ≤ 2026-09-12** (three days), hard limit ≈ 2026-09-13T08:00Z for the 100-bar
   window to reach back to run 5's last bar (2026-09-09T06:00Z). Write `raw/_pulled_at.json`.
+
+### Run 6 addendum — 2026-09-12, pulled 02:28:29–02:30:31Z
+
+Pulled on the due date, ~30 h inside the hard limit, 16 calls through the `mcporter` CLI
+(`repulls/pull_repull.py`), which had to be restored minutes earlier after npx evicted its cache
+entry — the credential store was untouched and the same server and account answered. The window
+overlaps run 5 by 33 bars on every 1h series, so nothing was lost. Verbatim raw files:
+`repulls/2026-09-12/raw/`.
+
+- **Integrity:** 0 gaps, 0 dupes; **67 new 1h bars** per coin (16 new 4h bars). Three bars
+  restated, all on SOL 4h from 2026-09-09T04:00Z (close ×3, high ×2, volume ×3 all upward);
+  largest price move 1.91e-3, far under the 1 % gate. No young-bar price restatement over
+  tolerance. Record: `data/audit/candle_restatement_2026-09-12.json`.
+- **THE cell, cumulative (new-only, base-calibrated, >90th):** **n=300, 61.0 % ±5.5, +15.7 bps**
+  (POLICY=first 60.7 % / +15.5). Cumulative hit trajectory 66.7 → 58.6 → 55.2 → 57.4 → 61.2 → 61.0; cumulative edge +36.7 →
+  +1.8 → +3.0 → −0.7 → +19.5 → +15.7. The confidence interval has narrowed to ±5.5 on 300 events.
+- **This window (`WINDOW=last`, the reading that decides under (D)):** **n=90, 60.0 % ±10.1,
+  +6.4 bps** — hit passed (>55 %) and edge passed (>0). **Under reading (D): NOT triggered.** No
+  chain was active after run 5, and a window that fails on neither criterion opens none, so
+  **no chain is active** going into run 7. The window edge is the smallest positive reading in the
+  study (+6.4 against +58.4 last window); the ±10.1 interval on 90 events comfortably contains it.
+- **Supplementary settled view (SETTLED=6):** cumulative n=294, 61.9 % ±5.6, **+18.7 bps** —
+  agrees with the unsettled cumulative within 3 bps, as in run 5. Settled *window*: n=84,
+  63.1 % ±10.3, **+16.3 bps** — firmer than the unsettled +6.4, i.e. the six youngest bars per
+  coin dragged this window's edge down rather than up. The opposite of run 4's pattern.
+- **Moderate stretch (>75th), new-only, all coins:** n=815, 58.5 % ±3.4, **+11.5 bps** — the
+  largest sample in the study, positive for the second run.
+- **Per-coin split at the cell (cumulative hits/events):** CAKE 51/93, MET 23/44, AIXBT 19/27,
+  MOODENG 16/27, PEPE 16/25, LDO 13/23, BTC 11/15, ETH 10/15, TRUMP 8/9, HYPE 6/6, MELANIA 5/7,
+  SOL 4/7, POPCAT 1/2. **Majors n=37:** 67.6 % ±15.1, +16.0. **BTC+ETH, the created strategy's
+  universe: n=30**, 70.0 % ±16.4, +12.6 — thirty events now, the interval still sixteen points
+  wide.
+- **Concentration eased but did not go away.** CAKE supplies 14 of this window's 90 cell events
+  (16 %) against 36 % last window, and 93 of the 300 cumulative (31 %, down from 37 %). MET is
+  the window's largest contributor at 23/90 and hits only 8 of them — the window's alt edge of
+  +2.3 bps on 73 events is essentially flat, and the window's positive number is carried by the
+  majors (+23.8 on 17).
+- **Funding sign mix (67 new hours per coin):** BTC **13/67 negative**, ETH **13/67**, SOL
+  **26/67** — the second consecutive window with a real block of negative-funding hours, and the
+  first with ETH in it. The FUNDING-leg confound test is more testable than it was and **has
+  still not been run**.
+- **Honest summary.** Six windows, no failure trigger, and the cumulative cell has now sat
+  between 55 % and 61 % on every reading since run 2 with the edge positive on five of six. The
+  window that decides came in positive but thin (+6.4 on 90), and its alt half is flat. Two
+  things this run adds that the thesis should not lean on: the majors carried the window, and
+  the majors are 37 events. The two standing caveats stand — the pooled cell is alt evidence
+  concentrated in two coins, and the strategy's own universe has thirty events with a
+  sixteen-point interval. Six windows is closer to convergence than five; it is not there.
+- **Next pull due ≤ 2026-09-15** (three days), hard limit ≈ 2026-09-16T05:00Z for the 100-bar
+  window to reach back to run 6's last bar (2026-09-12T01:00Z). Write `raw/_pulled_at.json`.

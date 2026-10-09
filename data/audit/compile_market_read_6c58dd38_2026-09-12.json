@@ -1,0 +1,4531 @@
+{
+ "approvedPlan": {
+  "operation": "UPDATE",
+  "postState": {
+   "id": "6c58dd38-9d27-4a80-98c4-3a88513eb2db",
+   "scope": "PRIVATE",
+   "systemKey": null,
+   "name": "OMEGA-TEST: TPO Rotation to POC",
+   "description": "Inside the prior session's value area, price tends to rotate toward the prior point of control. Two required gates - inside prior value, and at least 0.25% of room to the prior POC - block anything else before the agent is billed. UP when the prior POC is above the close, DOWN when below. Prior-session columns only, so it is live all day. Routing weights and trade management mirror the vendor's validated 1h intraday fade playbook.",
+   "tagline": "Fade the edge of prior value back toward the prior point of control",
+   "visibility": "UNLISTED",
+   "timeframe": "1h",
+   "cadence": "INTRADAY",
+   "regimeTimeframe": "4h",
+   "marketReadText": "Standing orders. This book fades the edge of the prior session value area back toward the prior point of control. Trade only when {INSIDE_PRIOR_VALUE} reads TRUE and {ROOM_TO_POC} reads TRUE; both are required gates and the platform blocks the trade otherwise. Direction is the verdict: LONG only when {ROTATE_UP_TO_POC} reads TRUE (the prior POC sits above the close by {pTpoPOC_close_spread}); SHORT only when {ROTATE_DOWN_TO_POC} reads TRUE. Never take the side opposite the verdict. The first target is the prior POC; the full target is the far edge of prior value. Prior value is {pTpoVAH_pTpoVAL_spread} wide, and a rotation across a narrow area is worth less than across a wide one. {AT_PRIOR_POC} TRUE means there is no room: stand aside. {OUTSIDE_PRIOR_VALUE} TRUE is not this book's setup: stand aside. Prefer setups where the oscillator side agrees with the verdict: an oversold reading for a long, an overbought one for a short. Size within the presets; do not scale in.",
+   "sections": [
+    {
+     "kind": "custom",
+     "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+     "title": "TPO rotation to prior POC",
+     "benchmarkTicker": null,
+     "notes": "Positive spread means the first metric sits above the second.",
+     "columns": [
+      {
+       "metric": "PRIOR_TPO_VAL",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_VAH",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_POC",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_VAH",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "PRIOR_TPO_VAL"
+        }
+       ]
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "CCI20",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "BB_TOUCH",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "CVD",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "MFI14",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "DONCHIAN_UPPER",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "DONCHIAN_LOWER",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "STOCH_K",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "STOCH_D",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "ADX",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "conditions": [
+    {
+     "conditionKey": "ROTATE_UP_TO_POC",
+     "name": "Inside prior value, prior POC above the close: rotate up",
+     "definition": {
+      "kind": "group",
+      "op": "ALL",
+      "members": [
+       {
+        "kind": "conditionRef",
+        "conditionKey": "INSIDE_PRIOR_VALUE"
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread"
+        },
+        "op": "gte",
+        "value": 0.25
+       }
+      ]
+     },
+     "verdict": "UP",
+     "required": false,
+     "exit": false,
+     "clock": "LIVE",
+     "closes": 1
+    },
+    {
+     "conditionKey": "ROTATE_DOWN_TO_POC",
+     "name": "Inside prior value, prior POC below the close: rotate down",
+     "definition": {
+      "kind": "group",
+      "op": "ALL",
+      "members": [
+       {
+        "kind": "conditionRef",
+        "conditionKey": "INSIDE_PRIOR_VALUE"
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread"
+        },
+        "op": "lte",
+        "value": -0.25
+       }
+      ]
+     },
+     "verdict": "DOWN",
+     "required": false,
+     "exit": false,
+     "clock": "LIVE",
+     "closes": 1
+    },
+    {
+     "conditionKey": "AT_PRIOR_POC",
+     "name": "Inside prior value but sitting on the prior POC: no room",
+     "definition": {
+      "kind": "group",
+      "op": "ALL",
+      "members": [
+       {
+        "kind": "conditionRef",
+        "conditionKey": "INSIDE_PRIOR_VALUE"
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread"
+        },
+        "op": "between",
+        "low": -0.25,
+        "high": 0.25
+       }
+      ]
+     },
+     "verdict": "NEITHER",
+     "required": false,
+     "exit": false,
+     "clock": "LIVE",
+     "closes": 1
+    },
+    {
+     "conditionKey": "OUTSIDE_PRIOR_VALUE",
+     "name": "Close outside the prior value area: not a rotation setup",
+     "definition": {
+      "kind": "group",
+      "op": "NOT",
+      "members": [
+       {
+        "kind": "conditionRef",
+        "conditionKey": "INSIDE_PRIOR_VALUE"
+       }
+      ]
+     },
+     "verdict": "NEITHER",
+     "required": false,
+     "exit": false,
+     "clock": "LIVE",
+     "closes": 1
+    },
+    {
+     "conditionKey": "INSIDE_PRIOR_VALUE",
+     "name": "Close inside the prior session value area",
+     "definition": {
+      "kind": "group",
+      "op": "ALL",
+      "members": [
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAL_close_spread"
+        },
+        "op": "lt",
+        "value": 0
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAH_close_spread"
+        },
+        "op": "gt",
+        "value": 0
+       }
+      ]
+     },
+     "verdict": null,
+     "required": true,
+     "exit": false,
+     "clock": "LIVE",
+     "closes": 1
+    },
+    {
+     "conditionKey": "ROOM_TO_POC",
+     "name": "At least 0.25% of room between the close and the prior POC",
+     "definition": {
+      "kind": "group",
+      "op": "ANY",
+      "members": [
+       {
+        "kind": "conditionRef",
+        "conditionKey": "ROTATE_UP_TO_POC"
+       },
+       {
+        "kind": "conditionRef",
+        "conditionKey": "ROTATE_DOWN_TO_POC"
+       }
+      ]
+     },
+     "verdict": null,
+     "required": true,
+     "exit": false,
+     "clock": "LIVE",
+     "closes": 1
+    }
+   ],
+   "entry": {
+    "trigger": "ON_CANDLE_CLOSE",
+    "confirmTf": "1h",
+    "closes": 1,
+    "bandAtrMultiple": 0.5,
+    "levelOffsetAtrMultiple": 0,
+    "validForBars": 4
+   },
+   "signalRules": [
+    {
+     "signalId": "bollinger_cci_overbought",
+     "allocation": 1,
+     "required": false,
+     "params": {
+      "threshold": 100
+     }
+    },
+    {
+     "signalId": "bollinger_cci_oversold",
+     "allocation": 1,
+     "required": false,
+     "params": {
+      "threshold": -100
+     }
+    },
+    {
+     "signalId": "bollinger_lower_touch",
+     "allocation": 2,
+     "required": false,
+     "params": {
+      "pctBThreshold": 0.05
+     }
+    },
+    {
+     "signalId": "bollinger_squeeze",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "bandwidthPct": 0.04
+     }
+    },
+    {
+     "signalId": "bollinger_upper_touch",
+     "allocation": 2,
+     "required": false,
+     "params": {
+      "pctBThreshold": 0.95
+     }
+    },
+    {
+     "signalId": "comparison_btc_decorrelation",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "maxCorrelation": 0.3
+     }
+    },
+    {
+     "signalId": "comparison_sector_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "minPeerFraction": 0.5
+     }
+    },
+    {
+     "signalId": "comparison_sector_momentum",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "minPeerFraction": 0.6
+     }
+    },
+    {
+     "signalId": "cvd_bear_divergence",
+     "allocation": 2,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "cvd_bearish",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "cvd_bull_divergence",
+     "allocation": 2,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "cvd_bullish",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "flow_perp_spot_bear_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "flow_perp_spot_bull_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "funding_extreme_negative",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "thresholdPct": 0.0005
+     }
+    },
+    {
+     "signalId": "funding_extreme_positive",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "thresholdPct": 0.0005
+     }
+    },
+    {
+     "signalId": "funding_rate_flipping",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "htf_ma_aligned_bear",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "htf_ma_aligned_bull",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "htf_rsi_overbought",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 70
+     }
+    },
+    {
+     "signalId": "htf_rsi_oversold",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 30
+     }
+    },
+    {
+     "signalId": "htf_trend_adx_ranging",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 20
+     }
+    },
+    {
+     "signalId": "htf_trend_adx_trending",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 25
+     }
+    },
+    {
+     "signalId": "ltf_ma_aligned_bear",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "ltf_ma_aligned_bull",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "ltf_rsi_overbought",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 70
+     }
+    },
+    {
+     "signalId": "ltf_rsi_oversold",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 30
+     }
+    },
+    {
+     "signalId": "ltf_trend_adx_ranging",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 20
+     }
+    },
+    {
+     "signalId": "ltf_trend_adx_trending",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 25
+     }
+    },
+    {
+     "signalId": "ma_ema_aligned_bear",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "ma_ema_aligned_bull",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "ma_ema_bear_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "ma_ema_bull_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "ma_sma200_above",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "ma_sma200_below",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "macd_bear_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "macd_bear_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "macd_bull_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "macd_bull_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mfi_bear_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mfi_bull_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mfi_overbought",
+     "allocation": 1,
+     "required": false,
+     "params": {
+      "threshold": 80
+     }
+    },
+    {
+     "signalId": "mfi_oversold",
+     "allocation": 1,
+     "required": false,
+     "params": {
+      "threshold": 20
+     }
+    },
+    {
+     "signalId": "mfi_sustained_bearish",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mfi_sustained_bullish",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mtf_aligned_bear",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mtf_aligned_bull",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mtf_pullback_long",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "mtf_pullback_short",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "oi_divergence_bear",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "oi_divergence_bull",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "oi_surge",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "thresholdPct": 0.05
+     }
+    },
+    {
+     "signalId": "regime_alignment",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "regime_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "regime_trend_shift",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "regime_volatility_shift",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "rel_ppo_bear_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "rel_ppo_bull_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "rel_roc_negative",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "rel_roc_positive",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "rsi_bear_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "rsi_bull_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "rsi_overbought",
+     "allocation": 2,
+     "required": false,
+     "params": {
+      "threshold": 65
+     }
+    },
+    {
+     "signalId": "rsi_oversold",
+     "allocation": 2,
+     "required": false,
+     "params": {
+      "threshold": 35
+     }
+    },
+    {
+     "signalId": "sr_at_resistance",
+     "allocation": 2,
+     "required": false,
+     "params": {
+      "proximityPct": 0.005
+     }
+    },
+    {
+     "signalId": "sr_at_support",
+     "allocation": 2,
+     "required": false,
+     "params": {
+      "proximityPct": 0.005
+     }
+    },
+    {
+     "signalId": "sr_resistance_break",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "sr_support_break",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "stoch_bear_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "zoneThreshold": 70
+     }
+    },
+    {
+     "signalId": "stoch_bull_cross",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "zoneThreshold": 30
+     }
+    },
+    {
+     "signalId": "stoch_overbought",
+     "allocation": 1,
+     "required": false,
+     "params": {
+      "threshold": 80
+     }
+    },
+    {
+     "signalId": "stoch_oversold",
+     "allocation": 1,
+     "required": false,
+     "params": {
+      "threshold": 20
+     }
+    },
+    {
+     "signalId": "structure_fvg_approach",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "proximityPct": 1
+     }
+    },
+    {
+     "signalId": "structure_ob_approach",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "proximityPct": 1
+     }
+    },
+    {
+     "signalId": "structure_zone_cluster",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "rangePct": 2
+     }
+    },
+    {
+     "signalId": "structure_zone_confluence",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "alignmentPct": 0.5
+     }
+    },
+    {
+     "signalId": "trend_adx_ranging",
+     "allocation": 1,
+     "required": false,
+     "params": {
+      "threshold": 20
+     }
+    },
+    {
+     "signalId": "trend_adx_trending",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "threshold": 25
+     }
+    },
+    {
+     "signalId": "volatility_atr_contracting",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "multiplier": 0.7
+     }
+    },
+    {
+     "signalId": "volatility_atr_expanding",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "multiplier": 1.5
+     }
+    },
+    {
+     "signalId": "volume_dry_up",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "multiplier": 0.5
+     }
+    },
+    {
+     "signalId": "volume_obv_bear_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "volume_obv_bull_divergence",
+     "allocation": 0,
+     "required": false,
+     "params": {}
+    },
+    {
+     "signalId": "volume_surge",
+     "allocation": 0,
+     "required": false,
+     "params": {
+      "multiplier": 2
+     }
+    }
+   ],
+   "minAggregateScore": 0.55,
+   "minRequiredCount": 0,
+   "minAtrPct": 0.5,
+   "minStopLossAtrMultiple": 1,
+   "maxStopLossAtrMultiple": 2.5,
+   "minRiskRewardRatio": 1.5,
+   "breakEvenEnabled": true,
+   "breakEvenTriggerR": 0.8,
+   "trailingEnabled": false,
+   "trailingTriggerR": 1,
+   "trailingGivebackPct": 45,
+   "trailingBufferPct": 0.25,
+   "timeDecayEnabled": true,
+   "timeDecayGracePeriodMinutes": 120,
+   "timeDecayIntervalMinutes": 60,
+   "timeDecayTightenPct": 10,
+   "timeDecayMaxTightenPct": 40,
+   "timeDecayStaleThresholdTpProgressPct": 25,
+   "decisionInvalidationExitEnabled": true,
+   "forkedFromStrategyId": null,
+   "isActive": true
+  },
+  "proposedRevision": 3,
+  "explicitRuleOverrides": [],
+  "viability": {
+   "viable": true,
+   "minRequiredCount": 0,
+   "enabledRequiredCount": 0,
+   "evaluableRequiredCount": 0,
+   "requiredSignalAssessments": [],
+   "unavailableRequiredSignals": []
+  },
+  "mismatches": [
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "cvd_bearish",
+    "module": "CVD",
+    "data": [
+     {
+      "metric": "CVD",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'cvd_bearish' is Off while the report shows the data it scores on: CVD @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "cvd_bullish",
+    "module": "CVD",
+    "data": [
+     {
+      "metric": "CVD",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'cvd_bullish' is Off while the report shows the data it scores on: CVD @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "mfi_bear_divergence",
+    "module": "MFI",
+    "data": [
+     {
+      "metric": "MFI14",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'mfi_bear_divergence' is Off while the report shows the data it scores on: MFI14 @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "mfi_bull_divergence",
+    "module": "MFI",
+    "data": [
+     {
+      "metric": "MFI14",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'mfi_bull_divergence' is Off while the report shows the data it scores on: MFI14 @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "mfi_sustained_bearish",
+    "module": "MFI",
+    "data": [
+     {
+      "metric": "MFI14",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'mfi_sustained_bearish' is Off while the report shows the data it scores on: MFI14 @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "mfi_sustained_bullish",
+    "module": "MFI",
+    "data": [
+     {
+      "metric": "MFI14",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'mfi_sustained_bullish' is Off while the report shows the data it scores on: MFI14 @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "rsi_bear_divergence",
+    "module": "RSI",
+    "data": [
+     {
+      "metric": "RSI14",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'rsi_bear_divergence' is Off while the report shows the data it scores on: RSI14 @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "rsi_bull_divergence",
+    "module": "RSI",
+    "data": [
+     {
+      "metric": "RSI14",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'rsi_bull_divergence' is Off while the report shows the data it scores on: RSI14 @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "sr_resistance_break",
+    "module": "SUPPORT_RESISTANCE",
+    "data": [
+     {
+      "metric": "DONCHIAN_UPPER",
+      "rung": "anchor"
+     },
+     {
+      "metric": "DONCHIAN_LOWER",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'sr_resistance_break' is Off while the report shows the data it scores on: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "sr_support_break",
+    "module": "SUPPORT_RESISTANCE",
+    "data": [
+     {
+      "metric": "DONCHIAN_UPPER",
+      "rung": "anchor"
+     },
+     {
+      "metric": "DONCHIAN_LOWER",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'sr_support_break' is Off while the report shows the data it scores on: DONCHIAN_UPPER @ anchor, DONCHIAN_LOWER @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "stoch_bear_cross",
+    "module": "STOCHASTIC",
+    "data": [
+     {
+      "metric": "STOCH_K",
+      "rung": "anchor"
+     },
+     {
+      "metric": "STOCH_D",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'stoch_bear_cross' is Off while the report shows the data it scores on: STOCH_K @ anchor, STOCH_D @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "stoch_bull_cross",
+    "module": "STOCHASTIC",
+    "data": [
+     {
+      "metric": "STOCH_K",
+      "rung": "anchor"
+     },
+     {
+      "metric": "STOCH_D",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'stoch_bull_cross' is Off while the report shows the data it scores on: STOCH_K @ anchor, STOCH_D @ anchor."
+   },
+   {
+    "code": "REPORT_DATA_SIGNAL_OFF",
+    "signalId": "trend_adx_trending",
+    "module": "TREND_STRENGTH",
+    "data": [
+     {
+      "metric": "ADX",
+      "rung": "anchor"
+     }
+    ],
+    "message": "Signal 'trend_adx_trending' is Off while the report shows the data it scores on: ADX @ anchor."
+   }
+  ],
+  "diff": {
+   "changedAxes": [
+    "MARKET_READ"
+   ],
+   "identity": null,
+   "timeframeProfile": null,
+   "report": null,
+   "marketRead": {
+    "before": {
+     "marketReadText": ""
+    },
+    "after": {
+     "marketReadText": "Standing orders. This book fades the edge of the prior session value area back toward the prior point of control. Trade only when {INSIDE_PRIOR_VALUE} reads TRUE and {ROOM_TO_POC} reads TRUE; both are required gates and the platform blocks the trade otherwise. Direction is the verdict: LONG only when {ROTATE_UP_TO_POC} reads TRUE (the prior POC sits above the close by {pTpoPOC_close_spread}); SHORT only when {ROTATE_DOWN_TO_POC} reads TRUE. Never take the side opposite the verdict. The first target is the prior POC; the full target is the far edge of prior value. Prior value is {pTpoVAH_pTpoVAL_spread} wide, and a rotation across a narrow area is worth less than across a wide one. {AT_PRIOR_POC} TRUE means there is no room: stand aside. {OUTSIDE_PRIOR_VALUE} TRUE is not this book's setup: stand aside. Prefer setups where the oscillator side agrees with the verdict: an oversold reading for a long, an overbought one for a short. Size within the presets; do not scale in."
+    }
+   },
+   "conditions": null,
+   "entry": null,
+   "setupGates": null,
+   "tradeLevelPolicy": null,
+   "positionManagement": null,
+   "signalRules": null,
+   "lifecycle": null
+  },
+  "authoringCatalogDigest": "d6475ce59be19307d3017a990c84e4827e4569eae01246c489cb3f3fb8d5636f",
+  "expiresAt": "2026-09-12T05:44:14.395Z",
+  "creationSeed": null,
+  "expectedRevision": 2,
+  "bindingImpact": {
+   "boundAgentCount": 1,
+   "materializationFenceDigest": "2ca4b251c91532fe1cd15e43b39ac6de331e45902c4206ecef687107c267ac50"
+  }
+ },
+ "reviewContext": {
+  "intentSummary": "Add the market read: standing orders to the agent, with live markers for every required gate, every verdict carrier and the key TPO levels, so the TPO verdict becomes an instruction rather than one row among many. Only the marketReadText axis changes.",
+  "assumptions": [
+   "Markers are the strategy's own conditionKeys and rendered column headers; the compile's marketReadMarkers report is checked before apply and any unknown or ambiguous marker stops the run.",
+   "Measured 2026-09-11: UPDATE merges; sending only marketReadText leaves report, conditions, weights, gates and entry untouched.",
+   "Scope: revision only. No binding change, no deployment, no fund allocation."
+  ],
+  "serverAssumptions": [
+   "Rendered market values are a point-in-time preview and are not mutation authority.",
+   "Open-position count is timestamped awareness and does not block configuration changes."
+  ],
+  "coinSelection": {
+   "mode": "explicit",
+   "tickers": [
+    "DOGE",
+    "XRP",
+    "HYPE",
+    "SOL"
+   ]
+  },
+  "resolvedCoinTickers": [
+   "DOGE",
+   "XRP",
+   "HYPE",
+   "SOL"
+  ],
+  "columns": [
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 0,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "PRIOR_TPO_VAL",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ]
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": null,
+      "side": null,
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "pTpoVAL_close_spread",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "percent",
+        "precision": 2
+       },
+       "nullable": true,
+       "meaning": "pTpoVAL_close_spread: % gap pTpoVAL vs close.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "PRIOR_TPO_VAL",
+      "CLOSE"
+     ],
+     "calculationSummary": "Measure the signed percentage gap between the base and one operand metric.",
+     "formula": "output = (pTpoVAL - close) / close \u00d7 100",
+     "glossary": {
+      "pTpoVAL_close_spread": "pTpoVAL_close_spread: % gap pTpoVAL vs close."
+     },
+     "nullBehavior": "Returns null when either operand is null or the second operand is zero.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": null,
+      "timeframeMode": "timeless",
+      "requiresAnchorTimeframe": false
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 1,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "PRIOR_TPO_VAH",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ]
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": null,
+      "side": null,
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "pTpoVAH_close_spread",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "percent",
+        "precision": 2
+       },
+       "nullable": true,
+       "meaning": "pTpoVAH_close_spread: % gap pTpoVAH vs close.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "PRIOR_TPO_VAH",
+      "CLOSE"
+     ],
+     "calculationSummary": "Measure the signed percentage gap between the base and one operand metric.",
+     "formula": "output = (pTpoVAH - close) / close \u00d7 100",
+     "glossary": {
+      "pTpoVAH_close_spread": "pTpoVAH_close_spread: % gap pTpoVAH vs close."
+     },
+     "nullBehavior": "Returns null when either operand is null or the second operand is zero.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": null,
+      "timeframeMode": "timeless",
+      "requiresAnchorTimeframe": false
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 2,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "PRIOR_TPO_POC",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ]
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": null,
+      "side": null,
+      "inputs": [
+       {
+        "metric": "CLOSE"
+       }
+      ],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "pTpoPOC_close_spread",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "percent",
+        "precision": 2
+       },
+       "nullable": true,
+       "meaning": "pTpoPOC_close_spread: % gap pTpoPOC vs close.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "PRIOR_TPO_POC",
+      "CLOSE"
+     ],
+     "calculationSummary": "Measure the signed percentage gap between the base and one operand metric.",
+     "formula": "output = (pTpoPOC - close) / close \u00d7 100",
+     "glossary": {
+      "pTpoPOC_close_spread": "pTpoPOC_close_spread: % gap pTpoPOC vs close."
+     },
+     "nullBehavior": "Returns null when either operand is null or the second operand is zero.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": null,
+      "timeframeMode": "timeless",
+      "requiresAnchorTimeframe": false
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 3,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "PRIOR_TPO_VAH",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "inputs": [
+       {
+        "metric": "PRIOR_TPO_VAL"
+       }
+      ]
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": null,
+      "side": null,
+      "inputs": [
+       {
+        "metric": "PRIOR_TPO_VAL"
+       }
+      ],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "pTpoVAH_pTpoVAL_spread",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "percent",
+        "precision": 2
+       },
+       "nullable": true,
+       "meaning": "pTpoVAH_pTpoVAL_spread: % gap pTpoVAH vs pTpoVAL.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "PRIOR_TPO_VAH",
+      "PRIOR_TPO_VAL"
+     ],
+     "calculationSummary": "Measure the signed percentage gap between the base and one operand metric.",
+     "formula": "output = (pTpoVAH - pTpoVAL) / pTpoVAL \u00d7 100",
+     "glossary": {
+      "pTpoVAH_pTpoVAL_spread": "pTpoVAH_pTpoVAL_spread: % gap pTpoVAH vs pTpoVAL."
+     },
+     "nullBehavior": "Returns null when either operand is null or the second operand is zero.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": null,
+      "timeframeMode": "timeless",
+      "requiresAnchorTimeframe": false
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 4,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "RSI14",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "RSI14",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "oscillator",
+        "precision": 1,
+        "range": {
+         "min": 0,
+         "max": 100
+        }
+       },
+       "nullable": true,
+       "meaning": "RSI14: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "RSI14"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = RSI14[t - 0]",
+     "glossary": {
+      "RSI14": "RSI14: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 5,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "CCI20",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "CCI",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "oscillator",
+        "precision": 1
+       },
+       "nullable": true,
+       "meaning": "CCI: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "CCI20"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = CCI[t - 0]",
+     "glossary": {
+      "CCI": "CCI: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 6,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "BB_TOUCH",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "BBtouch",
+       "outputType": {
+        "kind": "classification",
+        "vocab": [
+         "upper",
+         "lower",
+         "none"
+        ]
+       },
+       "nullable": true,
+       "meaning": "BBtouch: latest value.",
+       "conditionOperators": [
+        "is",
+        "in"
+       ],
+       "conditionVocabulary": [
+        "upper",
+        "lower",
+        "none"
+       ]
+      }
+     ],
+     "operandOrder": [
+      "BB_TOUCH"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = BBtouch[t - 0]",
+     "glossary": {
+      "BBtouch": "BBtouch: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 7,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "CVD",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "CVD",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "signedPrice",
+        "precision": 0
+       },
+       "nullable": true,
+       "meaning": "CVD: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "CVD"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = CVD[t - 0]",
+     "glossary": {
+      "CVD": "CVD: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 8,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "MFI14",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "MFI14",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "oscillator",
+        "precision": 1,
+        "range": {
+         "min": 0,
+         "max": 100
+        }
+       },
+       "nullable": true,
+       "meaning": "MFI14: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "MFI14"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = MFI14[t - 0]",
+     "glossary": {
+      "MFI14": "MFI14: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 9,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "DONCHIAN_UPPER",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "donchianHi",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+       },
+       "nullable": true,
+       "meaning": "donchianHi: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "DONCHIAN_UPPER"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = donchianHi[t - 0]",
+     "glossary": {
+      "donchianHi": "donchianHi: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 10,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "DONCHIAN_LOWER",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "donchianLo",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+       },
+       "nullable": true,
+       "meaning": "donchianLo: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "DONCHIAN_LOWER"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = donchianLo[t - 0]",
+     "glossary": {
+      "donchianLo": "donchianLo: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 11,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "STOCH_K",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "K",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "oscillator",
+        "precision": 0,
+        "range": {
+         "min": 0,
+         "max": 100
+        }
+       },
+       "nullable": true,
+       "meaning": "K: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "STOCH_K"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = K[t - 0]",
+     "glossary": {
+      "K": "K: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 12,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "STOCH_D",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "D",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "oscillator",
+        "precision": 0,
+        "range": {
+         "min": 0,
+         "max": 100
+        }
+       },
+       "nullable": true,
+       "meaning": "D: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "STOCH_D"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = D[t - 0]",
+     "glossary": {
+      "D": "D: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   },
+   {
+    "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+    "columnIndex": 13,
+    "contract": {
+     "normalizedColumn": {
+      "metric": "ADX",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "offset": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": 0,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": null,
+      "ordering": null
+     },
+     "outputs": [
+      {
+       "header": "ADX",
+       "outputType": {
+        "kind": "numeric",
+        "unit": "oscillator",
+        "precision": 1,
+        "range": {
+         "min": 0,
+         "max": 100
+        }
+       },
+       "nullable": true,
+       "meaning": "ADX: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": []
+      }
+     ],
+     "operandOrder": [
+      "ADX"
+     ],
+     "calculationSummary": "Select one value at the requested offset.",
+     "formula": "output = ADX[t - 0]",
+     "glossary": {
+      "ADX": "ADX: latest value."
+     },
+     "nullBehavior": "Returns null when the requested slot is absent or the source value is null.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "\u2014"
+    }
+   }
+  ],
+  "reportPreview": {
+   "renderedSections": [
+    {
+     "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+     "section": {
+      "title": "TPO rotation to prior POC",
+      "text": "Positive spread means the first metric sits above the second. pTpoVAL: the lower edge of the previous completed UTC session's 70% value area. pTpoVAL_close_spread: % gap pTpoVAL vs close. pTpoVAH: the upper edge of the previous completed UTC session's 70% value area. pTpoVAH_close_spread: % gap pTpoVAH vs close. pTpoPOC: the price bin that held the most time in the previous completed UTC session. pTpoPOC_close_spread: % gap pTpoPOC vs close. pTpoVAH_pTpoVAL_spread: % gap pTpoVAH vs pTpoVAL. RSI14: 14-period relative strength index (0\u2013100). CCI: 20-period commodity channel index (\u00b1100 reference). BBtouch: price contact with a Bollinger band (upper / lower / none). CVD: cumulative volume delta accumulated since the daily 00:00-UTC anchor. MFI14: 14-period money flow index (volume-weighted RSI, 0\u2013100). donchianHi: the highest high of the last 20 closed bars \u2014 the Donchian channel's upper edge. donchianLo: the lowest low of the last 20 closed bars \u2014 the Donchian channel's lower edge. K: stochastic %K (14,3,3). D: stochastic %D \u2014 the %K signal line. ADX: 14-period average directional index (trend strength, 0\u2013100).\n\n| coin | pTpoVAL_close_spread | pTpoVAH_close_spread | pTpoPOC_close_spread | pTpoVAH_pTpoVAL_spread | RSI14 | CCI | BBtouch | CVD | MFI14 | donchianHi | donchianLo | K | D | ADX |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| DOGE | -1.52% | +0.74% | -0.44% | +2.29% | 49.3 | -18.9 | none | +90949 | 29.2 | $0.0882 | $0.0823 | 27 | 24 | 20.0 |\n| HYPE | -0.19% | +3.60% | +0.96% | +3.80% | 40.6 | -91.0 | none | -49584 | 18.3 | $83.77 | $78.33 | 5 | 6 | 30.3 |\n| SOL | -3.03% | +0.52% | -2.30% | +3.65% | 51.4 | 0.9 | none | -96060 | 32.6 | $105.83 | $98.00 | 36 | 33 | 19.8 |\n| XRP | -1.88% | +1.00% | -0.95% | +2.94% | 51.5 | 7.9 | none | -215799 | 25.9 | $1.43 | $1.32 | 32 | 27 | 20.1 |"
+     },
+     "structure": null,
+     "authoredNote": "Positive spread means the first metric sits above the second."
+    }
+   ],
+   "resolvedCoinTickers": [
+    "DOGE",
+    "HYPE",
+    "SOL",
+    "XRP"
+   ],
+   "tokenCountModel": "o200k_base",
+   "budgetUsage": {
+    "sections": {
+     "used": 1,
+     "cap": 32
+    },
+    "sectionColumns": {
+     "used": 14,
+     "cap": 32
+    },
+    "columnLookback": {
+     "used": 24,
+     "cap": 32
+    },
+    "distinctTimeframes": {
+     "used": 1,
+     "cap": 8
+    },
+    "estimatedTokens": {
+     "used": 716,
+     "cap": 32000
+    },
+    "reportNoteChars": {
+     "used": 61,
+     "cap": 3200
+    }
+   },
+   "conditionOutcomes": [
+    {
+     "ticker": "DOGE",
+     "outcomes": [
+      {
+       "conditionKey": "ROTATE_UP_TO_POC",
+       "name": "Inside prior value, prior POC above the close: rotate up",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "gte",
+         "operand": "-0.44",
+         "literal": "0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROTATE_DOWN_TO_POC",
+       "name": "Inside prior value, prior POC below the close: rotate down",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "lte",
+         "operand": "-0.44",
+         "literal": "-0.25",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "AT_PRIOR_POC",
+       "name": "Inside prior value but sitting on the prior POC: no room",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "between",
+         "operand": "-0.44",
+         "literal": "-0.25 \u2026 0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "OUTSIDE_PRIOR_VALUE",
+       "name": "Close outside the prior value area: not a rotation setup",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "INSIDE_PRIOR_VALUE",
+       "name": "Close inside the prior session value area",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAL_close_spread",
+         "op": "lt",
+         "operand": "-1.52",
+         "literal": "0",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAH_close_spread",
+         "op": "gt",
+         "operand": "0.74",
+         "literal": "0",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROOM_TO_POC",
+       "name": "At least 0.25% of room between the close and the prior POC",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_UP_TO_POC",
+         "outcome": "FALSE"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_DOWN_TO_POC",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      }
+     ],
+     "verdict": "DOWN",
+     "decidedBy": "ROTATE_DOWN_TO_POC"
+    },
+    {
+     "ticker": "HYPE",
+     "outcomes": [
+      {
+       "conditionKey": "ROTATE_UP_TO_POC",
+       "name": "Inside prior value, prior POC above the close: rotate up",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "gte",
+         "operand": "0.96",
+         "literal": "0.25",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROTATE_DOWN_TO_POC",
+       "name": "Inside prior value, prior POC below the close: rotate down",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "lte",
+         "operand": "0.96",
+         "literal": "-0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "AT_PRIOR_POC",
+       "name": "Inside prior value but sitting on the prior POC: no room",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "between",
+         "operand": "0.96",
+         "literal": "-0.25 \u2026 0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "OUTSIDE_PRIOR_VALUE",
+       "name": "Close outside the prior value area: not a rotation setup",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "INSIDE_PRIOR_VALUE",
+       "name": "Close inside the prior session value area",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAL_close_spread",
+         "op": "lt",
+         "operand": "-0.19",
+         "literal": "0",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAH_close_spread",
+         "op": "gt",
+         "operand": "3.60",
+         "literal": "0",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROOM_TO_POC",
+       "name": "At least 0.25% of room between the close and the prior POC",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_UP_TO_POC",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_DOWN_TO_POC",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      }
+     ],
+     "verdict": "UP",
+     "decidedBy": "ROTATE_UP_TO_POC"
+    },
+    {
+     "ticker": "SOL",
+     "outcomes": [
+      {
+       "conditionKey": "ROTATE_UP_TO_POC",
+       "name": "Inside prior value, prior POC above the close: rotate up",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "gte",
+         "operand": "-2.30",
+         "literal": "0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROTATE_DOWN_TO_POC",
+       "name": "Inside prior value, prior POC below the close: rotate down",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "lte",
+         "operand": "-2.30",
+         "literal": "-0.25",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "AT_PRIOR_POC",
+       "name": "Inside prior value but sitting on the prior POC: no room",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "between",
+         "operand": "-2.30",
+         "literal": "-0.25 \u2026 0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "OUTSIDE_PRIOR_VALUE",
+       "name": "Close outside the prior value area: not a rotation setup",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "INSIDE_PRIOR_VALUE",
+       "name": "Close inside the prior session value area",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAL_close_spread",
+         "op": "lt",
+         "operand": "-3.03",
+         "literal": "0",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAH_close_spread",
+         "op": "gt",
+         "operand": "0.52",
+         "literal": "0",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROOM_TO_POC",
+       "name": "At least 0.25% of room between the close and the prior POC",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_UP_TO_POC",
+         "outcome": "FALSE"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_DOWN_TO_POC",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      }
+     ],
+     "verdict": "DOWN",
+     "decidedBy": "ROTATE_DOWN_TO_POC"
+    },
+    {
+     "ticker": "XRP",
+     "outcomes": [
+      {
+       "conditionKey": "ROTATE_UP_TO_POC",
+       "name": "Inside prior value, prior POC above the close: rotate up",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "gte",
+         "operand": "-0.95",
+         "literal": "0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROTATE_DOWN_TO_POC",
+       "name": "Inside prior value, prior POC below the close: rotate down",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "lte",
+         "operand": "-0.95",
+         "literal": "-0.25",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "AT_PRIOR_POC",
+       "name": "Inside prior value but sitting on the prior POC: no room",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoPOC_close_spread",
+         "op": "between",
+         "operand": "-0.95",
+         "literal": "-0.25 \u2026 0.25",
+         "outcome": "FALSE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "OUTSIDE_PRIOR_VALUE",
+       "name": "Close outside the prior value area: not a rotation setup",
+       "outcome": "FALSE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "INSIDE_PRIOR_VALUE",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "INSIDE_PRIOR_VALUE",
+       "name": "Close inside the prior session value area",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAL_close_spread",
+         "op": "lt",
+         "operand": "-1.88",
+         "literal": "0",
+         "outcome": "TRUE"
+        },
+        {
+         "kind": "clause",
+         "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+         "header": "pTpoVAH_close_spread",
+         "op": "gt",
+         "operand": "1.00",
+         "literal": "0",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      },
+      {
+       "conditionKey": "ROOM_TO_POC",
+       "name": "At least 0.25% of room between the close and the prior POC",
+       "outcome": "TRUE",
+       "evidence": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_UP_TO_POC",
+         "outcome": "FALSE"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "ROTATE_DOWN_TO_POC",
+         "outcome": "TRUE"
+        }
+       ],
+       "counts": null,
+       "provisional": true,
+       "closeClock": null
+      }
+     ],
+     "verdict": "DOWN",
+     "decidedBy": "ROTATE_DOWN_TO_POC"
+    }
+   ],
+   "conditionColumns": [
+    {
+     "sectionKey": "custom:f56b9e15-78a6-8870-8f81-aa66e7ae78eb",
+     "title": "TPO rotation to prior POC",
+     "benchmarkTicker": null,
+     "outputs": [
+      {
+       "header": "pTpoVAL_close_spread",
+       "meaning": "pTpoVAL_close_spread: % gap pTpoVAL vs close.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "pTpoVAL_close_spread",
+       "closeClockReadable": false
+      },
+      {
+       "header": "pTpoVAH_close_spread",
+       "meaning": "pTpoVAH_close_spread: % gap pTpoVAH vs close.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "pTpoVAH_close_spread",
+       "closeClockReadable": false
+      },
+      {
+       "header": "pTpoPOC_close_spread",
+       "meaning": "pTpoPOC_close_spread: % gap pTpoPOC vs close.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "pTpoPOC_close_spread",
+       "closeClockReadable": false
+      },
+      {
+       "header": "pTpoVAH_pTpoVAL_spread",
+       "meaning": "pTpoVAH_pTpoVAL_spread: % gap pTpoVAH vs pTpoVAL.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "pTpoVAH_pTpoVAL_spread",
+       "closeClockReadable": false
+      },
+      {
+       "header": "RSI14",
+       "meaning": "RSI14: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "RSI14",
+       "closeClockReadable": true
+      },
+      {
+       "header": "CCI",
+       "meaning": "CCI: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "CCI",
+       "closeClockReadable": true
+      },
+      {
+       "header": "BBtouch",
+       "meaning": "BBtouch: latest value.",
+       "conditionOperators": [
+        "is",
+        "in"
+       ],
+       "conditionVocabulary": [
+        "upper",
+        "lower",
+        "none"
+       ],
+       "markerToken": "BBtouch",
+       "closeClockReadable": true
+      },
+      {
+       "header": "CVD",
+       "meaning": "CVD: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "CVD",
+       "closeClockReadable": true
+      },
+      {
+       "header": "MFI14",
+       "meaning": "MFI14: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "MFI14",
+       "closeClockReadable": true
+      },
+      {
+       "header": "donchianHi",
+       "meaning": "donchianHi: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "donchianHi",
+       "closeClockReadable": true
+      },
+      {
+       "header": "donchianLo",
+       "meaning": "donchianLo: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "donchianLo",
+       "closeClockReadable": true
+      },
+      {
+       "header": "K",
+       "meaning": "K: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "K",
+       "closeClockReadable": true
+      },
+      {
+       "header": "D",
+       "meaning": "D: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "D",
+       "closeClockReadable": true
+      },
+      {
+       "header": "ADX",
+       "meaning": "ADX: latest value.",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "ADX",
+       "closeClockReadable": true
+      }
+     ]
+    },
+    {
+     "sectionKey": "session-field",
+     "title": "Session Field",
+     "benchmarkTicker": null,
+     "outputs": [
+      {
+       "header": "fieldPlayers_session",
+       "meaning": "players in this session",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "fieldPlayers_session",
+       "closeClockReadable": false
+      },
+      {
+       "header": "fieldUpBias_session",
+       "meaning": "share of the field\u2019s directional picks that are up (%); absent when no bias has been measured",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "fieldUpBias_session",
+       "closeClockReadable": false
+      },
+      {
+       "header": "fieldBiasDir_session",
+       "meaning": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+       "conditionOperators": [
+        "is",
+        "in"
+       ],
+       "conditionVocabulary": [
+        "UP",
+        "DOWN"
+       ],
+       "markerToken": "fieldBiasDir_session",
+       "closeClockReadable": false
+      },
+      {
+       "header": "captConc_session",
+       "meaning": "share of captain picks landing on the single most-captained coin (%)",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "captConc_session",
+       "closeClockReadable": false
+      },
+      {
+       "header": "picksSpread_session",
+       "meaning": "distinct coins picked, over distinct coins available",
+       "conditionOperators": [],
+       "conditionVocabulary": [],
+       "markerToken": "picksSpread_session",
+       "closeClockReadable": false
+      }
+     ]
+    },
+    {
+     "sectionKey": "market-breadth",
+     "title": "Market Breadth",
+     "benchmarkTicker": null,
+     "outputs": [
+      {
+       "header": "mktUp_all",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_crypto",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_l1",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_memes",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_defi",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_tradfi",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_stocks",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_indices",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktUp_commodities",
+       "meaning": "share of the scope's coins that closed up (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktUp_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_all",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_crypto",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_l1",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_memes",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_defi",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_tradfi",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_stocks",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_indices",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDown_commodities",
+       "meaning": "share of the scope's coins that closed down (%), over the universe it was measured across",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDown_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_all",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_crypto",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_l1",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_memes",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_defi",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_tradfi",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_stocks",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_indices",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktBreadth_commodities",
+       "meaning": "net breadth \u2014 the up share minus the down share (%), signed; negative is a broadly red field",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktBreadth_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_all",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_crypto",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_l1",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_memes",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_defi",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_tradfi",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_stocks",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_indices",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgChg_commodities",
+       "meaning": "mean close-change across the scope (%), signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgChg_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_all",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_crypto",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_l1",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_memes",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_defi",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_tradfi",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_stocks",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_indices",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktDispersion_commodities",
+       "meaning": "spread of close-change across the scope (%, standard deviation) \u2014 how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktDispersion_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_all",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_crypto",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_l1",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_memes",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_defi",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_tradfi",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_stocks",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_indices",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoUp_commodities",
+       "meaning": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoUp_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_all",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_crypto",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_l1",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_memes",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_defi",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_tradfi",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_stocks",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_indices",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoDown_commodities",
+       "meaning": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoDown_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_all",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_crypto",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_l1",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_memes",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_defi",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_tradfi",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_stocks",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_indices",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktPpoNet_commodities",
+       "meaning": "net momentum breadth \u2014 the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktPpoNet_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_all",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_crypto",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_l1",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_memes",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_defi",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_tradfi",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_stocks",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_indices",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktAvgPpo_commodities",
+       "meaning": "mean PPO histogram across the scope, signed",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktAvgPpo_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_all",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_crypto",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_l1",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_memes",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_defi",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_tradfi",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_stocks",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_indices",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktVolNet_commodities",
+       "meaning": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) \u2014 how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktVolNet_commodities",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_all",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_all",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_crypto",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_crypto",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_l1",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_l1",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_memes",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_memes",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_defi",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_defi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_tradfi",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_tradfi",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_stocks",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_stocks",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_indices",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_indices",
+       "closeClockReadable": false
+      },
+      {
+       "header": "mktStretch_commodities",
+       "meaning": "mean RSI(14) across the scope \u2014 how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "mktStretch_commodities",
+       "closeClockReadable": false
+      }
+     ]
+    },
+    {
+     "sectionKey": "reference-pairs",
+     "title": "Reference Pairs",
+     "benchmarkTicker": null,
+     "outputs": [
+      {
+       "header": "usdtUsdDev_market",
+       "meaning": "USDT/USD deviation from par (%), signed, from Coinbase\u2019s USDT-USD spot tape quoted in USD; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "usdtUsdDev_market",
+       "closeClockReadable": false
+      },
+      {
+       "header": "usdcUsdtDev_market",
+       "meaning": "USDC/USDT deviation from par (%), signed, from Binance\u2019s USDCUSDT spot tape quoted in USDT; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+       "conditionOperators": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+       ],
+       "conditionVocabulary": [],
+       "markerToken": "usdcUsdtDev_market",
+       "closeClockReadable": false
+      }
+     ]
+    }
+   ],
+   "conditionVerdictTally": {
+    "UP": 1,
+    "DOWN": 3,
+    "NEITHER": 0,
+    "UNRESOLVED": 0
+   },
+   "markerConditions": [
+    {
+     "conditionKey": "ROTATE_UP_TO_POC",
+     "markerToken": "ROTATE_UP_TO_POC",
+     "unreferenceableReason": null
+    },
+    {
+     "conditionKey": "ROTATE_DOWN_TO_POC",
+     "markerToken": "ROTATE_DOWN_TO_POC",
+     "unreferenceableReason": null
+    },
+    {
+     "conditionKey": "AT_PRIOR_POC",
+     "markerToken": "AT_PRIOR_POC",
+     "unreferenceableReason": null
+    },
+    {
+     "conditionKey": "OUTSIDE_PRIOR_VALUE",
+     "markerToken": "OUTSIDE_PRIOR_VALUE",
+     "unreferenceableReason": null
+    },
+    {
+     "conditionKey": "INSIDE_PRIOR_VALUE",
+     "markerToken": "INSIDE_PRIOR_VALUE",
+     "unreferenceableReason": null
+    },
+    {
+     "conditionKey": "ROOM_TO_POC",
+     "markerToken": "ROOM_TO_POC",
+     "unreferenceableReason": null
+    }
+   ],
+   "marketReadPreview": {
+    "gridText": "Standing orders. This book fades the edge of the prior session value area back toward the prior point of control. Trade only when INSIDE_PRIOR_VALUE reads TRUE and ROOM_TO_POC reads TRUE; both are required gates and the platform blocks the trade otherwise. Direction is the verdict: LONG only when ROTATE_UP_TO_POC reads TRUE (the prior POC sits above the close by pTpoPOC_close_spread); SHORT only when ROTATE_DOWN_TO_POC reads TRUE. Never take the side opposite the verdict. The first target is the prior POC; the full target is the far edge of prior value. Prior value is pTpoVAH_pTpoVAL_spread wide, and a rotation across a narrow area is worth less than across a wide one. AT_PRIOR_POC TRUE means there is no room: stand aside. OUTSIDE_PRIOR_VALUE TRUE is not this book's setup: stand aside. Prefer setups where the oscillator side agrees with the verdict: an oversold reading for a long, an overbought one for a short. Size within the presets; do not scale in.",
+    "tradeText": null,
+    "lensTicker": null
+   },
+   "marketReadMarkers": [
+    {
+     "token": "INSIDE_PRIOR_VALUE",
+     "index": 130,
+     "end": 150,
+     "status": "condition",
+     "resolvedName": "INSIDE_PRIOR_VALUE",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    },
+    {
+     "token": "ROOM_TO_POC",
+     "index": 166,
+     "end": 179,
+     "status": "condition",
+     "resolvedName": "ROOM_TO_POC",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    },
+    {
+     "token": "ROTATE_UP_TO_POC",
+     "index": 302,
+     "end": 320,
+     "status": "condition",
+     "resolvedName": "ROTATE_UP_TO_POC",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    },
+    {
+     "token": "pTpoPOC_close_spread",
+     "index": 371,
+     "end": 393,
+     "status": "column",
+     "resolvedName": "pTpoPOC_close_spread",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    },
+    {
+     "token": "ROTATE_DOWN_TO_POC",
+     "index": 412,
+     "end": 432,
+     "status": "condition",
+     "resolvedName": "ROTATE_DOWN_TO_POC",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    },
+    {
+     "token": "pTpoVAH_pTpoVAL_spread",
+     "index": 585,
+     "end": 609,
+     "status": "column",
+     "resolvedName": "pTpoVAH_pTpoVAL_spread",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    },
+    {
+     "token": "AT_PRIOR_POC",
+     "index": 690,
+     "end": 704,
+     "status": "condition",
+     "resolvedName": "AT_PRIOR_POC",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    },
+    {
+     "token": "OUTSIDE_PRIOR_VALUE",
+     "index": 747,
+     "end": 768,
+     "status": "condition",
+     "resolvedName": "OUTSIDE_PRIOR_VALUE",
+     "resolvedValue": null,
+     "qualifiedForms": []
+    }
+   ],
+   "conditionsTableText": "| coin | ROTATE_UP_TO_POC | ROTATE_DOWN_TO_POC | AT_PRIOR_POC | OUTSIDE_PRIOR_VALUE | INSIDE_PRIOR_VALUE | ROOM_TO_POC | Verdict |\n|---|---|---|---|---|---|---|---|\n| DOGE | FALSE | TRUE | FALSE | FALSE | TRUE | TRUE | Down |\n| HYPE | TRUE | FALSE | FALSE | FALSE | TRUE | TRUE | Up |\n| SOL | FALSE | TRUE | FALSE | FALSE | TRUE | TRUE | Down |\n| XRP | FALSE | TRUE | FALSE | FALSE | TRUE | TRUE | Down |\n\nConditions are deterministic reads of your report columns, resolved server-side at prompt-build time. They are advisory: they may make you more selective, never less \u2014 they do not gate, score, or qualify anything. TRUE / FALSE / UNRESOLVED are three distinct states; UNRESOLVED means an input was missing, not that the read was false. A value marked (provisional) came from the live forming bar and can still change before that bar closes.",
+   "tradeConditionsBlockText": null
+  },
+  "previewedAt": "2026-09-12T05:39:14.393Z",
+  "openPositions": {
+   "count": 0,
+   "observedAt": "2026-09-12T05:39:14.393Z"
+  },
+  "provisionalAdmission": null,
+  "confirmationSummary": "UPDATE strategy 'OMEGA-TEST: TPO Rotation to POC' as revision 3; changed axes: MARKET_READ; 1 bound agent(s) and 0 open position(s) observed."
+ },
+ "planToken": {
+  "length": 765,
+  "note": "never committed"
+ }
+}

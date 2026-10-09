@@ -1,0 +1,90 @@
+{
+ "_what": "Applied impacts of the advisory-column fix, 2026-09-12 ~01:49-01:50Z, via the MCP connector (the mcporter CLI had vanished from the npx cache; the connector was live). Compile responses with the token replaced by its length are the sibling compile_advisory_fix_*.json files.",
+ "applied": [
+  {
+   "strategyId": "6c58dd38-9d27-4a80-98c4-3a88513eb2db",
+   "previousRevision": 1,
+   "committedRevision": 2,
+   "changedAxes": [
+    "REPORT"
+   ],
+   "columns": 14,
+   "added": [
+    "CCI20",
+    "BB_TOUCH",
+    "CVD",
+    "MFI14",
+    "DONCHIAN_UPPER",
+    "DONCHIAN_LOWER",
+    "STOCH_K",
+    "STOCH_D",
+    "ADX"
+   ],
+   "boundAgentCount": 0,
+   "propagatedAgentCount": 0,
+   "openPositionCount": 0,
+   "advisoriesRemaining": {
+    "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT": 0,
+    "other": [
+     "REPORT_DATA_SIGNAL_OFF"
+    ]
+   }
+  },
+  {
+   "strategyId": "430f9037-ead7-4a50-9fb5-0618163251bc",
+   "previousRevision": 1,
+   "committedRevision": 2,
+   "changedAxes": [
+    "REPORT"
+   ],
+   "columns": 13,
+   "added": [
+    "BB_TOUCH",
+    "BB_WIDTH",
+    "DONCHIAN_UPPER",
+    "DONCHIAN_LOWER",
+    "ADX",
+    "ATR"
+   ],
+   "boundAgentCount": 0,
+   "propagatedAgentCount": 0,
+   "openPositionCount": 0,
+   "advisoriesRemaining": {
+    "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT": 0,
+    "other": [
+     "REPORT_DATA_SIGNAL_OFF"
+    ]
+   }
+  },
+  {
+   "strategyId": "3d720de3-6d36-4ef8-ae74-87bd8b6025bd",
+   "previousRevision": 3,
+   "committedRevision": 4,
+   "changedAxes": [
+    "REPORT"
+   ],
+   "columns": 19,
+   "added": [
+    "EMA5",
+    "EMA13",
+    "EMA20",
+    "CVD",
+    "FUNDING_RATE",
+    "MA_ALIGN@regime",
+    "MFI14",
+    "OI"
+   ],
+   "boundAgentCount": 1,
+   "propagatedAgentCount": 1,
+   "openPositionCount": 0,
+   "advisoriesRemaining": {
+    "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT": 0,
+    "other": [
+     "REPORT_DATA_SIGNAL_OFF"
+    ]
+   },
+   "note": "MA_ALIGN at rel regime cleared the signalHigher advisory - the vendor's ladder-successor definition holds; measured, not assumed. 12 weighted signals, TPO_HAS_DIRECTION required and the 0.65 gate read back unchanged."
+  }
+ ],
+ "leftAlone": "REPORT_DATA_SIGNAL_OFF is the inverse advisory - data present, signal at allocation 0 (rsi divergences on the rotation book, volume_dry_up on the breakout). Changing weights is not what this fix was for."
+}
