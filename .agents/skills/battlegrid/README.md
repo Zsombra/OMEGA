@@ -24,6 +24,753 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
+## Contract history — v91 (every data block an agent reads is one JSON object)
+
+**Breaking at v91: one output field is removed, and the published text that is the agent's prompt carries JSON.**
+v91 is the contract on top of v90. Every data block BattleGrid's trading agents read — the strategy's resolved
+conditions, fact sections, and the trade-decision blocks — is one JSON object naming itself with `id` and `title`.
+Instructions stay prose under their `## Title`. The tools that show you the prompt therefore show that JSON.
+
+### Removed output — something you read is gone
+
+- **`promptDataSerialization`** leaves `get_signal_log`'s owner detail. There is one serialization, so a trade
+  record stores none. `reportSections` and `missingData` are unchanged, and a trade recorded before capture still
+  serves both as `null`.
+
+### Reshaped output — the same fields, carrying JSON
+
+- **`preview_strategy_report.conditionsTableText`** is the conditions glossary as a `## Strategy Conditions
+  Glossary` instruction, then the conditions register as one JSON line: `surface: "GRID"`, and `coins[]` each with
+  `outcomes` keyed by condition and `verdict` by display name (`null` when the strategy declares no verdict). It was a
+  markdown table followed by the glossary.
+- **`preview_strategy_report.tradeConditionsBlockText`** is the trade glossary, a blank line, then the target coin's
+  register as one JSON line: `surface: "TRADE"`, `verdict` as `{ name, description }`, and `conditions[]` each with
+  `outcome`, `required`, `provisional`, `counts`, `exitRule` and the evaluator's `evidence`. It was a
+  `## STRATEGY CONDITIONS` heading, a table and evidence bullets.
+- **A fact section's text is its JSON**, `{ id, title, facts, glossary }` with `facts` keyed by label, in
+  `get_market_context.sections[].content`, `get_context_source_full_preview.content`,
+  `preview_strategy_report.renderedSections[].section.text`, and the `get_signal_log` report of trades recorded
+  from v91 on. The session field is a fact section. A table section's text is still its markdown.
+- **`get_agent_prompt_context_preview.promptSections[].content`** is each section as the agent reads it: a data
+  section's JSON, a table's included, and an instruction's prose.
+
+### Widened enum
+
+- **`get_agent_prompt_context_preview.promptSections[].kind`** gains `strategy-conditions-glossary`, the instruction
+  read before the conditions register. The market-context reads exclude it, as they exclude the register.
+
+Something read at v90 is gone or reshaped at v91 — hence the MAJOR.
+
+## Contract history — v90 (Arena and radar deployments join the draft lifecycle)
+
+**Breaking at v90: input is refused and reshaped, output is reshaped, five error codes are removed.** v90 is the
+contract on top of v89. The Arena and radar deployment drafts now run the same five-tool lifecycle as agents and
+strategies, and the preview token is retired: a deployment commits on the draft version and the revision you read.
+
+### Rejected input — something you send is no longer accepted
+
+- **`previewToken` and `confirm`** leave `commit_deployment_policy_draft`, `commit_radar_deployment_draft`,
+  `resume_deployment_policy` and `resume_radar_deployment`.
+- **`confirm`** leaves `delete_deployment_policy`, `delete_radar_deployment`, `discard_deployment_policy_draft` and
+  `discard_radar_deployment_draft`.
+- Every input is strict, so a call naming either key is refused as an unrecognised key.
+
+### Reshaped input
+
+- **The commits** take `{ request: { presetId | coinId, draftVersion, expectedRevision } }`: exactly the
+  `draftVersion` and `committedRevision` the kind's `get_*_draft` returned (`expectedRevision: null` for a first
+  deployment).
+- **The resumes** take `{ presetId | coinId, expectedPolicyId, expectedRevision }`: the `policyId` and `revision` a
+  `COMMITTED` preview returned. Any other deployment or revision is a `CONFLICT`, and nothing is armed.
+- **`delete_radar_deployment`** gains `expectedPolicyId` beside `expectedRevision`, as `delete_deployment_policy`
+  already took. A delete naming a policy since removed and redeployed matches nothing.
+- **The discards** take `{ request: { presetId | coinId, draftVersion } }` with no dry run. A draft that moved, or
+  none, is `DRAFT_VERSION_MOVED`.
+
+### Reshaped output — something you read has a new shape
+
+- **`stage_deployment_policy_draft` and `stage_radar_deployment_draft`** gain `diagnostics`.
+- **`get_deployment_policy_draft` and `get_radar_deployment_draft`** answer the lifecycle read
+  `{ draft, draftVersion, committedRevision, diff, diagnostics, impact }`, where they answered `{ draft }`. `impact`
+  is the resolution the commit would arm and whether it plays (`enabledAfterCommit`), plus a radar first
+  deployment's coin-cap reading (`admission`); it is null when a diagnostic refuses.
+- **The commits** answer `{ presetId | coinId, revision, draftVersion }`. The radar commit answered `{ revision }`.
+- **The discards** answer `discarded: true`, never `false`.
+- **`preview_deployment_resolution` and `preview_radar_resolution`** lose `previewToken` and gain `policyId` and
+  `revision`: the deployment the preview resolved over, null for `SLOTS` and a first deployment.
+
+### Removed error codes
+
+`TOKEN_EXPIRED`, `TOKEN_BINDING_MISMATCH`, `INVALID_TOKEN_SIGNATURE`, `INVALID_TOKEN_FORMAT` and `INVALID_TOKEN_CLAIMS`
+leave the error vocabulary and every draft diagnostic's code enum — so the stage and get outputs of the agent and
+strategy drafts move too.
+
+### Behaviour behind the new schemas
+
+- **A retried commit replays its receipt.** Both commits are destructive and idempotent on
+  `<presetId | coinId>:<draftVersion>`, as the agent and strategy commits are.
+- **Refusals name the next act.** A moved draft or revision carries `details.nextAct: "get_draft"`; a refusal the
+  draft can repair (`INVALID_DEPLOYMENT_POLICY`, or the radar's `VALIDATION_ERROR`) carries `"stage"`; a retired arena
+  carries none and names the remedy.
+- **A revision conflict names the revision that won** in `details.actualRevision`, null when no deployment remains.
+- **A `DRAFT` preview at a version the draft is not at** is `DRAFT_VERSION_MOVED`.
+- **A draft whose arena or coin can no longer be deployed is still served**, with the refusal in its diagnostics and
+  a null impact, so you can show it and discard it.
+- **A radar resume of a policy already trading** answers its revision and changes nothing.
+- **The radar per-user coin cap is `FORBIDDEN`**, with no `nextAct`, where it was `VALIDATION_ERROR`.
+
+Something accepted at v89 is refused at v90 — hence the MAJOR.
+
+## Contract history — v89 (a new strategy is held to today's operator bounds)
+
+**Breaking at v89: acceptance narrows behind unchanged schemas.** v89 is the contract on top of v88.1.
+
+### Narrowed acceptance — `commit_strategy_draft`, `preview_strategy_report` (`DRAFT` source)
+
+- **A create judges every dial of the new strategy at the operator bounds configured now.** That includes a dial
+  the author typed, one a fork copied from its source, and one left at the creation default. The operator bounds
+  are the platform's ATR %, stop-loss ATR-multiple and risk:reward limits.
+- At v88.1 a create judged only the dials that differed from the fork's source or the creation default. So a copied
+  dial outside a bound tightened since the source stored it was committed.
+- At v89 `commit_strategy_draft` (`expectedRevision: null`) refuses that create with `VALIDATION_ERROR`, naming the
+  dial and the bound, for example `minAtrPct (0.1) must be >= 0.15`. Nothing is created and the draft is unchanged:
+  stage the dial inside the bound and commit again.
+- `preview_strategy_report` with `source: { kind: "DRAFT", … }` composes the draft exactly as the commit does, so it
+  refuses the same draft with the same error where v88.1 rendered it.
+- `stage_strategy_draft` and `get_strategy_draft` report the error in their diagnostics before the commit.
+- `fork_strategy`'s description now says this, so its description hash moves.
+
+### Behaviour behind unchanged schemas
+
+- **An edit still judges only what it moves.** An update or a restore carries a dial it leaves unchanged, so a stored
+  value outside a since-tightened bound stays readable and saveable on its own strategy.
+- **The platform keeps its defaults creatable.** An operator cannot set a bound that would put a creation default
+  outside it, so a create that leaves a dial untouched is never refused for a value the platform seeded.
+
+Something accepted at v88.1 is refused at v89 — hence the MAJOR.
+
+## Contract history — v88.1 (an open position keeps the exit rules it opened under)
+
+**Additive at v88.1: acceptance widens and one served value narrows; no input or output schema
+changes.** v88.1 is the contract on top of v88.
+
+### Widened acceptance — `commit_strategy_draft`, `restore_strategy`, `commit_agent_draft`
+
+- **An open position no longer refuses a strategy commit, a restore or a rebind.** At v88 a write that
+  would leave an exit rule unreadable on a coin a bound agent held an open position on was refused with
+  `CONDITION_UNREADABLE_BY_RADAR_SCAN` or `CONDITION_OPERAND_UNSERVED_IN_LANE`. At v88.1 it commits. A radar
+  slot's coin and a pending manual request's coin are still checked, and refused exactly as before.
+- The three tools' descriptions now say this, so their description hashes move.
+
+### Narrowed served value — the readability refusal's `coinRole`
+
+- The refusal's error context serves `coinRole` as `SLOT` or `MANUAL_REQUEST` only. `OPEN_POSITION` is no
+  longer emitted. A client switching on it loses a member it can no longer receive.
+
+### Behaviour behind unchanged schemas
+
+- **An open position keeps what it opened with.** An agent position records the exit rules it opened
+  under, with the report and timeframes they read, and its exit rules are evaluated from that record for
+  the life of the trade. An exit-rule, exit-policy or level edit reaches only positions opened after it;
+  a revision, rebind, SYSTEM update or timeframe change after the open never reaches an open trade.
+
+Nothing accepted at v88 is refused at v88.1.
+
+## Contract history — v88 (an exit rule names the side it closes)
+
+**Breaking at v88: a condition body accepted at v87 is refused, and condition and chart output is
+reshaped.** v88 is the contract on top of v87.
+
+A condition is an entry condition or an exit rule, never both. An exit rule names the side it closes,
+where `exit: true` read that side from the condition's verdict.
+
+### Rejected input — `stage_strategy_draft`, `preview_strategy_report`
+
+- **A condition no longer carries `exit`.** A condition entry naming it is refused with the unknown-key
+  error, on the `CONDITIONS` axis of `stage_strategy_draft` and in the conditions of
+  `preview_strategy_report`'s `source: { kind: 'FIELDS', … }`.
+- **Every condition requires `exitSide`**: `LONG`, `SHORT` or `BOTH` for an exit rule, `null` for an
+  entry condition. It is nullable, never optional; a condition without it is refused.
+- **An exit rule carries `verdict: null` and `required: false`, and an entry condition cannot reference
+  an exit rule.** The builder refuses each with a typed remediation error —
+  `CONDITION_EXIT_RULE_CARRIES_VERDICT`, `CONDITION_EXIT_RULE_REQUIRED`,
+  `CONDITION_ENTRY_REFERENCES_EXIT_RULE` — in a staged draft's `diagnostics`, and as the refusal of its
+  `commit_strategy_draft`. An exit rule may reference anything: "exit when the entry setup stops holding"
+  is an exit rule whose definition is `NOT` a `conditionRef` to the entry condition.
+
+### Reshaped output
+
+- **Every condition a strategy read or commit returns carries `exitSide` and no `exit`**:
+  `get_strategy`, `archive_strategy`, `restore_strategy` and `commit_strategy_draft`.
+- **`get_agent_coin_qualification`'s chart names the side each exit rule closes.** Every served level
+  gains `referrers`, `{ conditionKey, conditionName, exitSide }` for each of its set's declared
+  conditions that reach it. Every series clause referrer and every `conditionsWithoutLevels` entry gains
+  `exitSide`, `null` on every entry-set referrer. The `ENTRY` set no longer lists exit rules; they are
+  listed under `EXIT`.
+
+### Widened enums
+
+- **`CONDITION_EXIT_RULE_CLOSES_DIRECTION`** joins the qualification gate code, the trade evaluation
+  attempt reason, the trade gate reason and the trade screen reason. It can appear in the output of
+  `get_agent_coin_qualification`, `scan_agent_coins`, `scan_coin_agents`, `list_gate_blocks`,
+  `get_signal_log`, `get_public_agent_signal_log_detail`, `get_radar_activity`,
+  `get_radar_activity_summary`, `get_radar_close_decisions`, `get_radar_deployment`,
+  `list_radar_deployments`, `preview_radar_resolution`, `propose_entry_decision`,
+  `get_trade_conversation`, `get_agent_budget` and `reset_agent_drawdown_baseline`. A gate block under it
+  names the refusing exit rule in `decidedBy`.
+- **`BLOCKED_BY_CONDITION_EXIT_RULE`** joins the radar evaluation outcome, on `get_radar_activity` and
+  `get_radar_activity_summary`.
+
+A client switching exhaustively on any of them meets a member it has not seen.
+
+### Behaviour
+
+- **An exit rule closes exactly the side it names.** A settled TRUE on a completed bar closes the
+  agent's open position on that side. No verdict chooses it; `exit: true` closed the side its verdict
+  opposed, and both sides for a `NEITHER` or `null` verdict.
+- **While an exit rule reads TRUE, its side is not offered for entry.** Scan qualification and compose
+  refuse that side under `CONDITION_EXIT_RULE_CLOSES_DIRECTION`, after any verdict refusal of the same
+  side.
+- **A stored `exit: true` condition is split and closes what it closed.** It keeps its verdict as an
+  entry condition, and its strategy gains an exit rule `CLOSE_ON_<conditionKey>`, a `conditionRef` to
+  it closing the side its verdict opposed (`UP` → `SHORT`, `DOWN` → `LONG`, `NEITHER` → `BOTH`). A
+  strategy read returns both.
+- **Unchanged names keep their place.** `list_strategies`' `conditionTally.exit` now counts exit rules,
+  and a decision record's condition `declaration` keeps `exit: boolean`, true for an exit rule.
+
+A strict client that rejects unknown keys fails to parse every condition and every chart level at v88;
+list the tools again after the server deploys.
+
+## Contract history — v87 (a fork's create resolves its source again)
+
+**Breaking at v87: a fork's create can now be refused where it committed.** v87 is the contract on top of
+v86. No schema, description or tool changes.
+
+### Narrowed acceptance
+
+A create draft that `fork_strategy` opened is committed by `commit_strategy_draft` with
+`expectedRevision: null`, or by the builder's Create. That create now resolves the strategy it copied
+again. It uses only the source id and revision in the draft's `ORIGIN`, by the same rule the fork applied:
+
+- **A source that moved past the forked revision** refuses the create with `CONFLICT` and **no
+  `details.nextAct`**. Reading the draft again cannot cure it; the message says to discard the draft and
+  fork again. `get_strategy_draft` and `stage_strategy_draft` report the same refusal in the draft's
+  diagnostics.
+- **A source you can no longer see** — archived, or neither yours nor SYSTEM — answers `NOT_FOUND`.
+
+### Widened acceptance
+
+- **Neither `fork_strategy` nor the create reads the source's stored revision snapshot.** A strategy whose
+  stored snapshot predates the current shape — every SYSTEM template among them — now forks and creates
+  from its live state, where both were refused.
+
+## Contract history — v86 (a refusal hint belongs to the operation that can act on it)
+
+**Breaking at v86: refusals on most tools lose `details.nextAct`, two refusals change code, and one
+draft read is reshaped.** v86 is the contract on top of v85.
+
+### Narrowed refusal details
+
+- **`details.nextAct` follows the refusal's meaning.** `DRAFT_VERSION_MOVED` and `DRAFT_AXIS_CONTESTED`
+  still carry `get_draft` from every tool. A revision `CONFLICT` and the in-flight commit refusal
+  (`get_draft`) and a validation refusal (`stage`) now carry a hint only from `stage_<kind>_draft` and
+  `commit_<kind>_draft` of the strategy and agent kinds.
+- **Removed from every other tool's validation refusal and revision `CONFLICT`**: `submit_market_grid`,
+  `fork_strategy`, `archive_strategy`, `restore_strategy`, and the arena and radar commit, pause, resume
+  and delete tools, and from the malformed-cursor refusal of `list_agent_drafts` and
+  `list_strategy_drafts`. The arena and radar `commit_*_draft` stale-revision refusals lose `get_draft`
+  too. A client that branched on `nextAct` from those tools reads the code instead.
+
+### Changed error codes
+
+- **The strategy active-quota refusal is `FORBIDDEN`**, as the agent slot quota is, where it was
+  `VALIDATION_ERROR` with `nextAct: 'stage'`: on `commit_strategy_draft` and `restore_strategy`.
+- **A create naming an id that is already the caller's strategy or agent is `DRAFT_VERSION_MOVED`**,
+  carrying the caller's draft version at that id, where it was `NOT_FOUND`. An agent create naming a
+  SYSTEM agent is `FORBIDDEN`, where it was `NOT_FOUND`.
+- **The moved-draft refusals end "Read the draft again and show the player what it now holds before
+  committing."**, where they said to commit what it now holds. Read the draft again and show the player
+  before committing; never commit the re-read draft on your own.
+
+### Reshaped output
+
+- **`get_agent_draft.impact` is a union on `operation`**: `{ operation: 'CREATE', capital }` for a create
+  draft, where it was `null`, and `{ operation: 'UPDATE', deployedPresetCount, openPositionCount,
+  radarArmedCoinCount, capital, rebind }` for an edit draft, where the counts sat at the top level. A
+  create draft's `capital` reads its trading configuration — drafted, or the platform's seed — over the
+  bound strategy's band, as the commit's capital check reads it.
+
+### Widened read
+
+- **`get_strategy` with `includeInactive: true`** serves your own strategy in any state, and otherwise
+  the visible set the default read serves — every SYSTEM strategy among it — where it answered
+  `NOT_FOUND` for anything but an owned PRIVATE strategy. Another user's PRIVATE strategy is still
+  `NOT_FOUND`.
+
+### Behaviour behind unchanged schemas
+
+- **The stage and commit descriptions** state the draft content cap (256,000 UTF-8 bytes) and its
+  refusal, what a commit reaches — it closes no position, and the one refusal an open position can cause
+  — and that a moved draft is shown to the player before any commit.
+- **A stage's `DRAFT_VERSION_MOVED`** fires only for a version the draft never reached — read from a draft
+  since committed or discarded. A stage naming an older version than the draft holds is composed over the
+  newer draft.
+
+A strict client re-reads the `get_agent_draft` output schema; list the tools again after the server
+deploys.
+
+## Contract history — v85 (agents and strategies change only through their drafts)
+
+**Breaking at v85: seven tools are retired, and a surviving tool refuses an input it accepted at v84.**
+v85 is the contract on top of v84.
+
+Every agent and strategy is now created and changed the same way: stage the change into the
+entity's draft, read the draft back with its diff, diagnostics and impact, and commit exactly the
+draft version and the live revision that read returned.
+
+### Removed tools
+
+- **`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`, `update_strategy_signal_rule`,
+  `create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent`** are gone, with
+  no alias; a call gets an unknown-tool error. The replacements: `get_strategy_draft` →
+  `stage_strategy_draft` → `commit_strategy_draft` for a strategy (a signal rule is a row of the draft's
+  `SIGNAL_RULES` axis), and `stage_agent_draft` → `get_agent_draft` → `commit_agent_draft` for an agent
+  (a rebind is the draft's `STRATEGY_BINDING` axis).
+
+### Added tools
+
+- **`stage_strategy_draft { strategyId?, draftVersion, axes }`**, **`commit_strategy_draft`** and
+  **`commit_agent_draft`** (`{ <id>, draftVersion, expectedRevision }`, `expectedRevision` null for a
+  create). A commit publishes exactly the draft version and the live revision the caller read, is
+  idempotent on `{ id, draftVersion }`, and returns the kind's committer response plus the draft's
+  `draftVersion` after its clear (null when the commit emptied it).
+
+### Rejected input
+
+- **`archive_strategy` no longer takes `confirm`.** A request carrying it is refused with the
+  unknown-key error — a break on a surviving tool.
+- **`discard_agent_draft` and `discard_strategy_draft` take `draftVersion`** (the version
+  `get_<kind>_draft` returned) in place of `confirm`; `confirm` is refused as an unknown key, and a
+  version the draft moved past is refused `DRAFT_VERSION_MOVED`.
+- **`preview_strategy_report` takes `{ coinSelection, source }`.** The report fields move under
+  `source: { kind: 'FIELDS', … }`, and `source: { kind: 'DRAFT', strategyId, draftVersion }` previews the
+  owner's draft as a commit would compose it. A body with the fields at the top level is refused.
+- **A strategy's ENTRY axis is a union discriminated by `trigger`**: `{ trigger: 'ON_CANDLE_CLOSE' }`
+  alone, or a level trigger with `levelOffsetAtrMultiple` and `validForBars`. `ON_CANDLE_CLOSE` naming
+  either dial is refused, which the retired compile accepted; the server stamps the seed values.
+
+### Widened input
+
+- **`stage_agent_draft` accepts `STRATEGY_BINDING` on an edit draft**, where v84 refused it: a staged
+  binding commits as the agent's rebind. Its TRADING_CONFIG axis now describes each size preset as the
+  risk budget lost at the hard stop.
+
+### Reshaped output
+
+- **`fork_strategy` returns `{ strategyId, draftVersion }`** — the create draft it wrote, holding a copy
+  of the source — in place of `{ strategy }`. No strategy exists until that draft commits.
+- **`get_agent_draft` and `get_strategy_draft` gain `draftVersion`** (0 when no draft is held, beside a
+  null `draft`), **`committedRevision`, a per-axis `diff` against live, `diagnostics` and `impact`.**
+- **`stage_agent_draft` gains `diagnostics`**, the composed draft's errors and warnings.
+- **`discard_agent_draft` and `discard_strategy_draft` return `discarded: true` only**; a discard that
+  finds nothing is refused rather than answered `false`.
+
+### Widened enum
+
+- **Strategy draft axes gain `ORIGIN`**, the create-only axis a fork writes, on `list_strategy_drafts`
+  and every strategy draft read. A client switching exhaustively on a strategy draft axis must add the
+  branch.
+- **Error codes gain `DRAFT_VERSION_MOVED`** (details `draftVersion`, null when no draft is held) **and
+  `DRAFT_AXIS_CONTESTED`** (details `contestedAxes` and `draftVersion`), both 409.
+- **Refusal details gain `nextAct`.** Every draft-specific refusal, the revision `CONFLICT` and the
+  in-flight commit refusal carry `nextAct: 'get_draft'`; a commit's validation refusal carries
+  `nextAct: 'stage'`; every other refusal carries none. `details.expectedRevision` widens to
+  `number | null`.
+
+### Removed error code
+
+- **`PLAN_APPROVAL_NOT_FOUND`**, with the plan path that raised it.
+
+### Behaviour behind unchanged schemas
+
+- **`archive_strategy` and `restore_strategy` no longer refuse around the owner's unsaved draft**: they
+  re-base it onto the revision they write. `restore_strategy`'s description drops the compile route — a
+  repair is staged into the draft and committed, which restores the strategy.
+- **The `author-strategy` prompt** reads "Discover, stage, review, and commit a BattleGrid strategy
+  through its draft".
+- **The server's manifest records a description hash per tool** (manifest format 4), and the tool count
+  moves 142 → 138.
+
+A strict client that rejects unknown keys fails to parse `fork_strategy` and the draft reads at v85;
+list the tools again after the server deploys.
+
+## Contract history — v84 (the hold moves from the condition to each clause and group)
+
+**Breaking at v84: a condition body accepted at v83 is refused, and condition evidence is reshaped.**
+v84 is the contract on top of v83.
+
+How many completed bars a reading must hold is no longer one number on the condition. Each clause
+holds its own reading, counted on its own column's timeframe, and a group can hold its members'
+same-bar reading.
+
+### Rejected input — `compile_strategy_plan`, `apply_strategy_plan`
+
+- **A condition no longer carries `closes`.** A condition entry naming it is refused with the
+  unknown-key error, in a plan body and in every normalized post-state and strategy draft those tools
+  carry.
+- **Every clause and every group requires `hold: { atLeast, of }`**, whole numbers of at least 1.
+  `{ "atLeast": 1, "of": 1 }` is one read (what every v83 condition did), `{n, n}` is "n closes in a
+  row", `{1, n}` is "within n closes", and anything else is "at least m of n closes". A clause or group
+  without `hold` is refused. A plan staged under v83 must be recompiled.
+- **What a header admits is refused by the builder, never by the schema.** `atLeast` above `of`, a
+  window above the header's maximum, or a group hold over members that hold their own bars is a typed
+  remediation error.
+
+### Replaced output — `preview_strategy_report`, `list_strategy_vocabulary`
+
+- **`closesReadable: boolean` is replaced by `conditionHold: { timeframe, maxWindow, maxAtLeast,
+  refusal }`** on each report condition column and each scalar metric. It names the timeframe a
+  clause counts on, the largest `of` and `atLeast` it admits (`maxAtLeast` is 1 for a cross or other
+  event, so an event can only be held "within n closes"), and why it admits one bar when it does:
+  `NOT_REWINDABLE`, `DEVELOPING`, `OFFSET`, `BAR_STATE` or `HISTORY`. Read the window from here
+  rather than assuming a ceiling; there is no longer a fixed 1–5 limit.
+
+### Reshaped output — condition evidence
+
+- **Every clause-evidence entry gains `hold`, `counts` and `decidedBar`**, on `preview_strategy_report`,
+  `list_gate_blocks`, `get_radar_close_decisions`, `get_agent_coin_qualification`,
+  `preview_radar_resolution` and `get_signal_log`. `counts` is `{ trueCount, total, unresolvedCount }`
+  over the clause's own bars. `decidedBar` is `{ timeframe, closesBack }`, the bar its operand was read
+  on, or `null` when the hold that counts it reads one bar.
+- **A condition outcome loses `hold`** (`closesHeld`, `closesRequired`, `liveOutcome`, `nextCloseAt`):
+  the counted outcome is the clause's own, on its evidence. A decision record's condition
+  `declaration` loses `closes`.
+- **Every strategy read returns `hold` on each clause and group** and no `closes` on the condition.
+
+### Widened enum — the evidence union
+
+- **The evidence union gains a `group` arm**, `{ kind: 'group', op, hold, counts, decidedBar, outcome,
+  memberCount }`, emitted only for a group holding more than one bar, just before the `memberCount`
+  entries that belong to it. A client switching exhaustively on `kind` must add the branch. A strategy
+  without group holds serves no new arm.
+
+A strict client that rejects unknown keys fails to parse condition evidence at v84; list the tools
+again after the server deploys.
+
+## Contract history — v70.1 (budget run-state)
+
+**Additive at v70.1: one output field added to the risk budget.**
+
+### Added output — `get_agent_budget`, `reset_agent_drawdown_baseline`
+
+- **`budget.runStatus`** is your run-state for the agent: `blocked`, `paused` or `active`, already
+  ranked by the server. `blocked` means the admission gate is refusing the agent for a reason other
+  than its halt (`blockedReason` names it). A halted agent reads `paused`, even while its own
+  `AGENT_HALTED` block stands. Read it rather than re-deriving it from `blockedReason` and `haltedAt`.
+- A client that ignores the field is unaffected. A client that validates results against a cached,
+  closed output schema should list the tools again after the server deploys.
+
+## Contract history — v83 (a model's vendor is its vendor slug)
+
+**Breaking at v83: four output fields renamed and retyped, one aggregation regrouped.** v83 is the
+contract on top of v82.
+
+Wherever a model's vendor is published, it is now the router vendor slug of the model's id — the part
+before the `/` (`anthropic`, `z-ai`, `moonshotai`, …). It is never the BYOK provider enum, and never the
+catalogue's display label, which sometimes named a hosting provider rather than the model's maker.
+
+### Reshaped output — the agent
+
+- **Every agent loses `provider` and gains `modelVendorSlug: string`**, on `list_intelligence_agents`,
+  `get_intelligence_agent`, `create_intelligence_agent`, `update_intelligence_agent`,
+  `rebind_intelligence_agent`, `archive_intelligence_agent` and `activate_intelligence_agent`.
+  `provider` was the BYOK enum and was `null` for every agent; `modelVendorSlug` is never null. A
+  client reading `provider` reads nothing at v83.
+
+### Renamed output — `list_approved_models`
+
+- **Each model's `provider` is renamed `vendorSlug`**, and its value changes: the vendor slug
+  (`z-ai`) where v82 served a display label that could name a host (`StreamLake`).
+
+### Renamed output, regrouped rows — `get_agent_explorer`
+
+- **Each `modelVendors[]` row's `provider` / `providerImageUrl` are renamed `vendorSlug` /
+  `vendorImageUrl`.**
+- **Rows group by vendor slug**, so every model one vendor makes shares a row whatever its display
+  label: three GLM labels that were three rows at v82 are one `z-ai` row at v83. Counts and sums add;
+  each mean is the merged total over the merged trade count.
+
+### Renamed output — the `ownerView` LLM-call envelope
+
+- **The envelope's `provider` is renamed `modelVendorSlug`**, on `get_agent_journal`, `get_signal_log`,
+  `get_agent_game_history`, `get_user_agent_game_history`, `get_public_agent_signal_log_detail` and
+  `get_public_agent_game_history`. It is `null` exactly when `modelDisplayName` is — a call whose model
+  has left the catalogue.
+
+## Contract history — v82 (approved models lose their pin flag)
+
+**Breaking at v82: one output field removed.** v82 is the contract on top of v81.
+
+### Removed output — `list_approved_models`
+
+- **`pinProvider` is gone from every model** `list_approved_models` returns. A model is now served
+  only by an ordered list of verified hosts that the server keeps to itself, so a pin flag no longer
+  describes anything. There is no alias. A client that reads `pinProvider` reads nothing at v82, and
+  a strict client that requires it fails to parse the response.
+
+## Contract history — v81 (the allocation's committed figure removed, the hub names Max exposure)
+
+**Breaking at v81: one output field removed and one renamed.** v81 is the contract on top of v80.
+
+### Removed output — the agent fund allocation
+
+- **`committedUsd` is gone from the allocation** that `get_agent_fund_allocation`,
+  `halt_intelligence_agent`, `resume_intelligence_agent` and `set_agent_per_trade_push` return. It
+  measured a custody ledger whose allocate and recall routes are retired. The figure that bounds an
+  entry is capital at risk, on `get_agent_budget`. A client reading `committedUsd` reads nothing at
+  v81.
+
+### Renamed output — `get_agents_hub`
+
+- **Each agent's `envelope` names the exposure ceiling `maxConcurrentExposureUsd`**, the trading
+  config's own name for it, where v80 called it `budgetUsd`. The value is unchanged. A client reading
+  `budgetUsd` reads nothing at v81.
+
+### Corrected reason behind an unchanged schema
+
+- **An agent entry refused because its Max exposure is fully committed is recorded as
+  `INSUFFICIENT_BALANCE`**, where it was recorded as `BELOW_EXCHANGE_MINIMUM` with a $0.00 risk
+  budget. Its detail names Max exposure and the capital at risk. It reaches `get_signal_log` and
+  `get_public_agent_signal_log_detail`.
+
+## Contract history — v79 (the agent's account reading, an exhausted budget, accept below the Balance floor)
+
+**Breaking at v79: the agent budget's account fields move into one object.**
+
+### Reshaped output — the agent budget
+
+- **`get_agent_budget` and `reset_agent_drawdown_baseline` replace `accountEquityUsd`,
+  `budgetOverSubscribed` and `openUnrealizedPnlUsd` with one `account` object** carrying the same three
+  fields, or `null` when the server holds no cached reading of the account. At v78 an unread account
+  read `0`, `false` and `0`, which looked like a real empty account. A client reading the three
+  top-level fields reads nothing at v79.
+
+### Widened enum
+
+- **The block reason gains `EXPOSURE_BUDGET_EXHAUSTED`** (owner-private): an agent whose capital at
+  risk has reached its Max exposure is blocked once at the account stage, where v78 blocked it per
+  coin as `EXCHANGE_MIN_NOTIONAL_UNREACHABLE`. It reaches every output that carries a block reason:
+  `list_gate_blocks`, `get_signal_log`, `get_public_agent_signal_log_detail`, `get_radar_activity`,
+  `get_radar_close_decisions`, `get_radar_deployment`, `list_radar_deployments`,
+  `preview_radar_resolution`, `get_agent_coin_qualification`, `get_trade_conversation` and
+  `propose_entry_decision`.
+
+### Refused behind an unchanged schema
+
+- **`accept_entry_decision` refuses with `CONFLICT` while your account equity is below the agent's
+  Balance floor (`balanceThresholdUsd`) or cannot be read.** The decision stays pending and can be
+  accepted once the equity is back at or above the floor.
+
+## Contract history — v78 (a new agent's risk policy from one seed)
+
+**Breaking at v78: `get_trading_config_catalog` serves a new agent's risk policy as one object.**
+
+### Reshaped output
+
+- **`tradingDefaults.defaults` replaces ten per-field seed values** — `defaultMaxDailyTrades`,
+  `defaultMaxLeverage`, `defaultSmallPct`, `defaultMediumPct`, `defaultLargePct`,
+  `defaultEntrySlippageBps`, `defaultMaxConcurrentExposureUsd`, `defaultBalanceThresholdUsd`,
+  `defaultMaxCumulativeDrawdownUsd` and `defaultMaxDailyLossUsd` — **with one `agentTradingConfig`**,
+  request-shaped, so it passes to `create_intelligence_agent` verbatim. A client reading the ten fields
+  reads nothing at v78.
+
+### Input schema
+
+- **`tradingConfig.maxLeverage` loses its published `minimum: 1`** on `create_intelligence_agent` and
+  `update_intelligence_agent`. Acceptance is unchanged: the platform's minimum leverage is the bound.
+
+### Wider input
+
+- **Both tools accept a strategy whose stored dials sit outside today's operator bounds.** An agent
+  write never re-judges a strategy dial.
+
+### Served values
+
+- **A `create_intelligence_agent` call without `tradingConfig` is seeded from the same object the
+  catalog serves**, never from column defaults, with Min order size from the platform minimum.
+
+## Contract history — v77 (agent risk rules: each loss stop on its own rail)
+
+**Breaking at v77: an agent's `tradingConfig` accepts less.** `create_intelligence_agent` and
+`update_intelligence_agent` refuse values v76 stored, and one loss stop moves to a different bound.
+
+### Rejected input — `tradingConfig`
+
+- **`maxLeverage` must be a whole number.** `1.5` was stored and executed at `1`; it is now refused.
+- **`maxSlippageBps` is at most `300`**, the entry slippage ceiling no fill could exceed anyway.
+- **USD fields and the three size presets take at most 2 decimals.**
+- **`maxDailyLossUsd` must be at or below `maxCumulativeDrawdownUsd`.**
+- **A body accepted at v76 can be refused at v77 without one byte of it changing.** Each refusal
+  names its field in a plain sentence, such as `Whole numbers only.` or
+  `Can’t exceed the drawdown stop ($20.00).`
+
+### Wider input — the drawdown stop
+
+- **`maxCumulativeDrawdownUsd` is bounded by the platform's drawdown maximum, not by
+  `maxConcurrentExposureUsd`.** Max exposure caps margin open at once; the drawdown stop caps loss
+  over time. A `$150` drawdown stop on a `$100` max exposure is accepted.
+
+### Wider output
+
+- **`get_trading_config_catalog` gains `maximumMaxCumulativeDrawdownUsd`**, the drawdown stop's
+  upper bound.
+- **The execution-failure reason gains `BELOW_AGENT_MIN_ORDER`** (owner-private) on `get_signal_log`
+  and `get_public_agent_signal_log_detail`: an order sized under the agent's own `minAllocationUsd`,
+  which was reported as `BELOW_EXCHANGE_MINIMUM`.
+
+### Served values
+
+- **`get_agent_budget`'s `tradesToday` counts entries filled since 00:00 UTC plus entries still
+  waiting to fill.** Refused and expired entries no longer count, and the cap is enforced where an
+  entry is created. `DAILY_LIMIT_RESERVED` is no longer emitted.
+- **A daily-loss halt whose drawdown stop is also breached becomes a drawdown halt** when the day
+  rolls over, rather than lifting.
+- **A capital-feasibility refusal names what clears it**: the `maxConcurrentExposureUsd` that would,
+  and, when one at or above the platform minimum would, a lower `minAllocationUsd`.
+
+## Contract history — v76 (the extreme funding signals in percent a year)
+
+**Breaking at v76: `funding_extreme_positive` and `funding_extreme_negative` take their threshold in
+percent a year.** Their parameter is `thresholdAnnualizedPct`, the unit of the strategy grammar's
+`ann` column, where it was `thresholdPct`, a fraction of one hourly funding settlement.
+
+### Rejected input — the retired `thresholdPct`
+
+- **Both signals take `thresholdAnnualizedPct`**, bounded 1–43,800 and defaulting to 100 — the
+  funding label's crypto `extreme` band, so `100` means 100% a year, and the negative signal fires
+  below -100%.
+- **`thresholdPct` on either signal is refused as `VALIDATION_ERROR`** wherever a rule's parameters
+  are authored: `compile_strategy_plan`, `update_strategy_signal_rule`, `derive_strategy_rule_view`
+  and a strategy draft's `SIGNAL_RULES` axis. `oi_surge` keeps its own `thresholdPct`.
+- **A body accepted at v75 can be refused at v76 without one byte of it changing.** A rate per hourly
+  settlement converts to percent a year by × 8,760 × 100: `0.0002` is `175.2`.
+
+### Stale plans
+
+- **A plan token compiled before the deploy fails as a stale plan** at `stage_strategy_plan` and
+  `apply_strategy_plan`, because the authoring catalog digest covers each signal's parameters,
+  defaults and explanation: compile again. The strategy preview's `vocabularyDigest` moves too.
+
+### Served values
+
+- **`get_strategy_signal_definition` and `list_strategy_signals` serve the new parameter**, its
+  default and its explanation.
+- **Each signal's indicator values gain `funding_annualized_pct`**, the annualized rate the signal
+  compared, beside `funding_rate`.
+- **Stored rules move to the new key after the deploy**: a rule at the retired default takes `100`,
+  and any other converts exactly. `get_coin_signal_preview` and every stored rule then score at the
+  new threshold.
+- **No schema hash moves.** Signal parameters are published as a JSON object on every input and
+  output, so the change is in the values accepted and served, and `toolCount` is unchanged.
+
+## Contract history — v75 (readability from each coin's data profile)
+
+**Breaking at v75: the seven tools v73 narrowed refuse by the coin's market-data profile, and one
+output vocabulary gains a member.** Which data a coin carries is now the profile the market-data
+service publishes for that coin, no longer the coin's asset class.
+
+### Rejected input — the seven tools v73 narrowed
+
+- **A condition reading a kind of data the coin's profile does not serve is refused as
+  `INSTRUMENT`**, on the coin or on a benchmark section's own instrument: a spot read on a crypto
+  coin no spot venue lists is refused as one on a TradFi coin always was.
+- **A coin the market-data service publishes no profile for refuses every condition that reads
+  market data**: a coin enabled since the service's last boot, a roster coin whose candle stream it
+  did not subscribe, a ticker with no catalog row.
+- **The tools, codes and `details.context` are v73's**: `preview_radar_resolution` (every kind,
+  issuing no `previewToken`); `commit_radar_deployment_draft`, `rebind_intelligence_agent`,
+  `compile_strategy_plan` and `restore_strategy` (`VALIDATION_ERROR` with
+  `CONDITION_UNREADABLE_BY_RADAR_SCAN`); `apply_strategy_plan`, which applies only what its compile
+  checked; and `propose_entry_decision` (`CONDITION_UNREADABLE_ON_COIN`).
+- **A body accepted at v74.1.1 can be refused at v75 without one byte of it changing.** A write whose
+  read of the published profiles fails is refused, never admitted unchecked.
+
+### Reclassified reason — `FEED` becomes `INSTRUMENT`
+
+- **A spot read for a ticker with no catalog row is `INSTRUMENT`, where it was `FEED`**, and an
+  uncatalogued benchmark refuses every market-data read, where only its spot reads refused before.
+- **The `INSTRUMENT` message names what the profile lacks**: "`<instrument>`'s market-data profile
+  carries no `<kind>` data", or "the market-data service publishes no data profile for
+  `<instrument>`, so it carries no market data", where it read "`<instrument>` has no spot tape".
+- **The readings v74 added report it as the sweep does**: `preview_radar_resolution`'s `readings`
+  and `get_agent_coin_qualification`'s `reading` mark a condition on a kind the coin's profile lacks
+  `INSTRUMENT`.
+
+### Wider output — `BarFamily` gains `MARKET_STATS`
+
+- **The market-stats snapshot is a per-bar value**: a decision reads the snapshot fetched inside the
+  `1m` bar ending at its close. A snapshot missing there is a per-bar shortfall, a `families` entry or
+  a MISSED close's `INPUTS_OFF_BAR` `lacking` entry naming `MARKET_STATS` at `1m` with its
+  `dueBarStart`, `ABSENT` or `GONE`, and the decision waits or misses as for any per-bar family.
+- **A decided close records no `MARKET_STATS` stale sample.** A reading at the latest values still
+  does, and its `boundMs` is the coin's market-stats freshness target, never below 300,000 ms.
+- **Five outputs publish the member**: `get_agent_coin_qualification`, `get_radar_close_decisions`,
+  `get_signal_log`, `list_gate_blocks` and `preview_radar_resolution`. No input takes the vocabulary.
+  A client that validates results against a cached output schema should list the tools again after
+  the server deploys.
+
+## Contract history — v74.1.1 (a same-agent request answered from what stopped the fire)
+
+**Not breaking: one answer corrected behind unchanged schemas.**
+
+- **A request on a pair your own radar policy decides with the same agent** is answered from that
+  policy's decision. When the policy's fire enqueued no trade decision and no admission gate refused
+  it — a coin cooldown, the hourly fire cap, post-close suppression, a decision already running on the
+  coin, a deduplicated fire, or a fire aborted at its re-read — the conversation gains the card the
+  request's own unfired fire gets: `close_claimed_by_radar` when another agent's fire holds the coin,
+  otherwise `close_refused` with the reading's score against its minimum. It gained
+  `close_fired_by_radar` before, though no trade was taken.
+- **Both cards are already in `get_trade_conversation`'s vocabulary**, so no served shape moves.
+
+## Contract history — v74.1 (missed-bar alerts and the entry pause)
+
+**Not breaking: four output vocabularies gain a member, and `propose_entry_decision` refuses while an
+entry pause is open.** While bars missed for lack of market data span many coins, the platform pauses
+every new entry the radar decides, a radar fire and a manual request alike, and the pause lifts by
+itself after a quiet period.
+
+### Refused while a pause is open — `propose_entry_decision`
+
+- **A request is refused after its own checks and before a watch is registered**, whatever the agent
+  or coin: `type: "error"` with `{ origin: "ENGINE", reasonCode: "ENTRIES_PAUSED" }`. The same
+  `idempotencyKey` replays the refusal for five minutes; ask again under a fresh key once the pause
+  lifts.
+- **A request queued before the pause** whose close qualifies while it is open gets the same ENGINE
+  error card in its conversation, and no decision is proposed. `accept_entry_decision` on a decision
+  already proposed, and every exit, run as without a pause.
+
+### Wider output — four vocabularies
+
+- **`TradeEvaluationAttemptReasonCode` gains `ENTRIES_PAUSED`**: the refusal's `reasonCode`,
+  `list_gate_blocks`' `reasonCode`, and the `scanBlockReason` of a refused fire's close record and
+  journal row.
+- **`TradingPipelineGateStage` gains `PLATFORM`**: a `list_gate_blocks` entry for each fire the pause
+  refused, with no coin, no detail and no decision record.
+- **`RadarFireDisposition` gains `EDGE_PRESERVED_ENTRIES_PAUSED`**: the refused fire keeps its edge,
+  so the pair fires at a later close only if that close qualifies on its own data. It is served on
+  `get_radar_activity` and `get_radar_activity_summary`, and as a close record's
+  `outcome.fireDisposition` beside `outcome.scanBlockReason: "ENTRIES_PAUSED"`, with
+  `outcome.outcome` staying `FIRED`.
+- **`RadarIdleReason` gains `ENTRIES_PAUSED`**: the `resolvesNow.reason` of every `SCANNING` card on
+  `get_radar_deployment` and `list_radar_deployments` while a pause is open. The section stays
+  `SCANNING`, because closes are still decided and recorded.
+
+### Answer corrected — a same-agent request
+
+- **When an admission gate refused your own policy's fire** — an entry pause, an account block, a
+  position already held on the coin — the request's conversation gains that block's ENGINE error card
+  instead of `close_fired_by_radar`.
+
 ## Contract history — v74 (preview `conditionReach` replaced by `readings`)
 
 **Breaking at v74: one required output field replaced on one tool, and an opt-in reading added to
@@ -706,7 +1453,8 @@ preview names it.
 
 - **`scalarFamilies` is where the vocabulary went.** Every report-level scalar family with its
   section, and one entry per METRIC carrying its gloss, legal condition operators, closed label
-  vocabulary, read contract (`closesReadable` / `developingRead`) and the scopes it is measured at.
+  vocabulary, read contract (`closesReadable` / `developingRead`; v84 replaces `closesReadable` with
+  `conditionHold`) and the scopes it is measured at.
   One gloss per metric with its scopes named against it, never one per pair.
 
 - **Served whole under every category.** A scalar describes the report, not a metric family, so it
@@ -1709,8 +2457,8 @@ Retained for authors upgrading from 4.x. Everything below still describes the cu
 
 The v3 authoring contract below is unchanged and still current:
 
-- **Strict authoring envelopes.** `get_strategy_section_template`, `update_strategy_signal_rule`, `compile_strategy_plan`, and `apply_strategy_plan` publish one strict server-owned object, `{ request: canonicalPayload }`. In multi-account mode the proxy adds `account` **only** as a sibling of `request`, producing exactly `{ account, request }`; on a call it strips only `account` and forwards the unchanged `{ request }`. It never descends into, flattens, or reconstructs the nested request.
-- **`create_strategy` is retired.** Direct strategy creation no longer exists. Author strategies with the compile → review → apply workflow below, and bind them to agents at agent-creation time (`create_intelligence_agent({ …, strategyId })`). There is no alias, shim, or flat-payload fallback.
+- **Strict authoring envelopes.** `get_strategy_section_template` and every draft lifecycle tool (`stage_<kind>_draft`, `get_<kind>_draft`, `commit_<kind>_draft`, `discard_<kind>_draft`, `list_<kind>_drafts`) publish one strict server-owned object, `{ request: canonicalPayload }`. In multi-account mode the proxy adds `account` **only** as a sibling of `request`, producing exactly `{ account, request }`; on a call it strips only `account` and forwards the unchanged `{ request }`. It never descends into, flattens, or reconstructs the nested request.
+- **`create_strategy` is retired.** Direct strategy creation no longer exists. Author strategies through the strategy draft lifecycle below, and bind an agent to one through its draft's `STRATEGY_BINDING` axis. There is no alias, shim, or flat-payload fallback.
 - **Rediscover after deployment.** Publishing the package does **not** refresh a running proxy's cached capability snapshot. After the server cutover, restart/reconnect the proxy process and re-run `tools/list`, `prompts/list`, and `resources/list`.
 
 > Earlier majors: **v1.x** single/multi-account stdio proxy; **v2.0.0** moved the default `BATTLEGRID_API_URL` to the `/mcp` suffix; **v3.0.0** the strategy-authoring major; **v4.0.0** made `conditions` and `conditionVerdicts` required on the apply post-state; **v5.0.0** fused the conditions/verdicts split (section above). **v6.0.0** through **v11.0.0** were never published as separate package versions — they are absorbed by the v11 cutover at the top. See [Rediscovery & versioning](#rediscovery--versioning).
@@ -1882,7 +2630,7 @@ For the strict authoring tools, the multi-account input is exactly `{ account, r
 
 ```json
 {
-  "name": "compile_strategy_plan",
+  "name": "commit_strategy_draft",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -1892,11 +2640,14 @@ For the strict authoring tools, the multi-account input is exactly `{ account, r
         "description": "Which BattleGrid account to use for this action"
       },
       "request": {
-        "oneOf": [
-          { "properties": { "operation": { "const": "CREATE" } } },
-          { "properties": { "operation": { "const": "UPDATE" } } },
-          { "properties": { "operation": { "const": "RESTORE" } } }
-        ]
+        "type": "object",
+        "properties": {
+          "strategyId": { "type": "string", "format": "uuid" },
+          "draftVersion": { "type": "integer", "minimum": 1 },
+          "expectedRevision": { "anyOf": [{ "type": "integer", "minimum": 1 }, { "type": "null" }] }
+        },
+        "required": ["strategyId", "draftVersion", "expectedRevision"],
+        "additionalProperties": false
       }
     },
     "required": ["account", "request"],
@@ -1919,24 +2670,19 @@ Each account supports one active key at a time. Generating a new key automatical
 
 For paid games and autonomous wagering, enable **Server-Signed Wagers** in the MCP tab (`mcp:wager` scope). Strategy discovery and non-financial configuration writes only need `mcp:read`.
 
-## Strategy authoring (compile → review → apply)
+## Strategy and agent authoring (stage → read → commit)
 
-Strategies are authored through one strict, whole-plan workflow. **Compilation changes no strategy, agent or revision; `apply_strategy_plan` is the only write to the strategy itself** — but compile is not read-only either: it parks the plan its own apply reads, and each call mints a distinct record and token, so compile once per reviewed payload and never retry or parallelise it. Always review the exact returned plan before confirming.
+Strategies and intelligence agents change only through their drafts, with one tool family per kind (`<kind>` is `strategy` or `agent`): `stage_<kind>_draft`, `get_<kind>_draft`, `commit_<kind>_draft`, `discard_<kind>_draft` and `list_<kind>_drafts`. **A stage writes the player's unsaved draft and commits nothing; `commit_<kind>_draft` is the only write to the entity itself**, and it publishes exactly the draft the caller read.
 
-1. **Choose the operation and revision.** `list_strategies` (add `includeInactive:true` when preparing a RESTORE) and `get_strategy` return the current `revision`; thread it into the next revisioned call.
+1. **Choose the entity.** `list_strategies` (add `includeInactive:true` when repairing an archived strategy) and `get_strategy`, or `list_intelligence_agents` and `get_intelligence_agent`. `fork_strategy({ strategyId, sourceRevision })` copies a visible revision into a new create draft and returns its `strategyId` and `draftVersion`; it creates nothing.
 2. **Discover the report vocabulary live.** Walk `list_strategy_categories` → `list_strategy_vocabulary` → `get_metric_construction_hints` → `get_strategy_column_contract`, and use `get_strategy_section_template` / `preview_strategy_report`. Do not guess metric, transform, parameter, template, or enabled-timeframe facts — they are server-discovered.
-3. **Compile one complete plan.** Call `compile_strategy_plan({ request })` where the nested request is exactly one strict branch plus a bounded `coinSelection`, `intentSummary`, and `assumptions`:
-   - **CREATE** supplies the full new strategy.
-   - **UPDATE** supplies at least one changed axis and `expectedRevision`.
-   - **RESTORE** targets an owned inactive revision (with any repair axes).
-4. **Review before confirming.** Inspect the returned `approvedPlan` (complete post-state, proposed revision, diff, bound-agent impact, expiry) and `reviewContext` (column contracts, point-in-time report preview, open positions, quota/name admission). The plan token expires after five minutes; recompile after expiry or drift.
-5. **Apply the plan the server already holds.** After explicit user approval, call `apply_strategy_plan({ request: { planToken, confirm: true } })`. **There is no `plan` member** — one is rejected as an unknown key. The server keeps the plan its own compile approved and reads it back, so nothing is copied out of the compile response and nothing can be mistyped or truncated in transit. Forward `planToken` byte-for-byte exactly as received: it is an opaque signed value, never retyped, paraphrased or rebuilt from memory, and a mangled one addresses no approved plan and is refused. `PLAN_APPROVAL_NOT_FOUND` means no approved plan answers to this token — already applied, lapsed, or never issued — and the recovery is to compile again; so is `TOKEN_EXPIRED` once the five minutes run out. Any other refusal (quota, name collision, a bound agent that changed, a moved catalog) **leaves the plan applicable**: clear the cause and confirm again with the same token while it lives. Changed configuration propagates to every bound agent immediately.
+3. **Read the draft.** `get_<kind>_draft({ request: { <id> } })` returns the draft (or `null`), its `draftVersion` (0 when none is held), the live `committedRevision` (null for an entity not created yet), a per-axis `diff` against live, `diagnostics` and `impact`.
+4. **Stage the change.** `stage_<kind>_draft({ request: { <id>?, draftVersion, axes } })` names the version you read. Each axis is whole, except a strategy's `SIGNAL_RULES`, whose rows replace the drafted rows for the same signals and keep every other one. Omit the id to open a new create draft; the response carries the minted id. A stage that has written never refuses: the composed draft's errors and warnings come back as `diagnostics`. It is refused only when the version is one the draft never reached (`DRAFT_VERSION_MOVED`) or when the player's own form changed an axis you are staging after that version (`DRAFT_AXIS_CONTESTED`, naming `contestedAxes`).
+5. **Review with the player, then commit.** Read the draft again, show the player its diff and impact, and on their explicit word call `commit_<kind>_draft({ request: { <id>, draftVersion, expectedRevision } })` with exactly the two numbers that read returned — `expectedRevision: null` creates the entity at revision 1. A draft that moved is refused `DRAFT_VERSION_MOVED`, a moved revision `CONFLICT`, and an invalid draft with the same code its diagnostics carried; nothing is written. Each refusal's `details.nextAct` says what to do next (`get_draft` or `stage`). The commit is idempotent on `{ id, draftVersion }`: a retried commit replays its outcome. Changed strategy configuration propagates to every bound agent immediately; committing a draft of an archived strategy restores it.
 
-   The authored axes — including normalized `sections` and `conditions`, each condition carrying its own required, nullable `verdict` — belong on the **compile** request. Every derived field (`diff`, `viability`, `mismatches`, `signalRules`, `creationSeed`, `proposedRevision`, `bindingImpact`, `authoringCatalogDigest`, `reviewContext`) is re-derived server-side and rejected as an unknown key if resubmitted, and `conditionVerdicts` is rejected with a message naming its replacement — the verdict belongs on the condition.
+`discard_<kind>_draft({ request: { <id>, draftVersion } })` removes the draft at the version you read and never one that moved since. `preview_strategy_report({ coinSelection, source: { kind: 'DRAFT', strategyId, draftVersion } })` previews a draft as a commit would compose it. In multi-account mode the lifecycle tools use the `{ account, request }` sibling envelope; `preview_strategy_report` keeps its own flat input and takes `account` beside `coinSelection` and `source`.
 
-`update_strategy_signal_rule({ request })` is the thin, focused one-rule edit. In multi-account mode every one of these calls uses the `{ account, request }` sibling envelope.
-
-**Strategy-bound agents.** Bind a strategy to an intelligence agent at creation time — `create_intelligence_agent({ …, strategyId })` (discover `strategyId` via `list_strategies`). Rebinding via `update_intelligence_agent` requires `confirm:true`. There is no direct `create_strategy` operation.
+**Strategy-bound agents.** An agent binds to a strategy through its draft's `STRATEGY_BINDING` axis — on a create draft, or on an edit draft as a rebind that commits through the same `commit_agent_draft` (discover `strategyId` via `list_strategies`). The plan tools, `update_strategy_signal_rule` and the direct agent writers are retired, and so is `create_strategy`.
 
 ## Capabilities
 
@@ -2100,7 +2846,7 @@ you reach over MCP:
 | `battlegrid-arena-play` | Enter Market Grid sessions: find an open session, read its coin pool and live market context, compose a grid with real per-coin reasoning or have an agent generate it, submit, then read results and the reasoning journal |
 | `battlegrid-market-analysis` | Read the current crypto market — regime, funding and open interest, leaders and laggards, a deep-dive on any named coin — and close with the levels worth watching |
 | `battlegrid-radar-deployment` | Put agents on standing duty: per-coin Radar policies that fire on confirmed regime flips, and per-preset Arena deployment policies, previewed before they are written and un-deployed with the blast radius stated |
-| `battlegrid-strategy-authoring` | Build a strategy from a plain-English idea: gather evidence, lock the spec, compile against the platform grammar, review exactly what will run, apply only on confirmation. Also fork, tune, restore, archive, preview |
+| `battlegrid-strategy-authoring` | Build a strategy from a plain-English idea: gather evidence, lock the spec, stage it into the strategy's draft, review the diff, diagnostics and impact, commit only on confirmation. Also fork, tune, restore, archive, preview |
 | `battlegrid-strategy-doctor` | Diagnose an agent that is not doing what was expected — why it has not traded, why it stopped, whether it is healthy — from typed fields, then rank the fixes with the exact lever each needs |
 | `battlegrid-strategy-examples` | Full-surface composition patterns: custom report sections and header grammar, benchmark sections, condition trees with verdicts and enforcement gates, tiered signal weights and the aggregate gate math, routing gates, ATR trade levels, position management, plus validated desk-grade playbooks and TradingView process ports |
 | `battlegrid-trade-analysis` | Read your own trading position: where the money is, whether each agent is doing its job, what is open and how close it sits to its protections, and whether the automation is actually running |

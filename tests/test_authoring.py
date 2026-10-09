@@ -97,6 +97,19 @@ def test_unfeedable_required_signal_is_an_error():
     assert "THESIS_UNFEEDABLE_REQUIRED" in _codes(t)
 
 
+def test_an_unknown_exit_role_is_an_error():
+    t = replace(PRESETS["trend-continuation"], exits=["SIDEWAYS"])
+    assert "THESIS_UNKNOWN_EXIT_ROLE" in _codes(t)
+    assert "THESIS_UNKNOWN_EXIT_ROLE" not in _codes(replace(t, exits=["CORE_UP"]))
+
+
+def test_the_brief_counts_exit_rules():
+    from omega.authoring import brief
+    from omega.generate import plan
+    t = replace(PRESETS["trend-continuation"], exits=["CORE_UP"])
+    assert "8 conditions (1 exit rules)" in brief(plan(t))
+
+
 def test_execution_findings_flow_through():
     t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 9})
     assert "EXECUTION_OUTSIDE_CATALOG_BOUND" in _codes(t)

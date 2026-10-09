@@ -23,8 +23,35 @@ PLATFORM_EXECUTION_DEFAULTS: dict = {
 }
 EXECUTION_PARAMS = frozenset(PLATFORM_EXECUTION_DEFAULTS)
 
-# Bounds the compile schema publishes, as (minimum, maximum); `None` on an edge is an open
-# bound the schema does not declare. Params absent here are unbounded in the schema.
+# Contract 85.0.0 split the flat body into axes, each staged WHOLE (README "Contract
+# history - v85"; the v91 schema data/contract/stage_strategy_draft/schema_20261005T194629Z.json
+# lists every key below as `required` on its axis). A create therefore sends every dial,
+# where the retired compile let omega send none (Decision 1(a)): until a create draft's
+# seeded values are read (plan 2026-10-06, measurement M1) omega sends the 08-28 measured
+# defaults above. The tuples are in each axis's `required` order.
+SETUP_GATE_DIALS = ("minAtrPct",)             # + minAggregateScore, minRequiredCount (thesis)
+TRADE_LEVEL_DIALS = ("minStopLossAtrMultiple", "maxStopLossAtrMultiple", "minRiskRewardRatio")
+POSITION_MANAGEMENT_DIALS = (
+    "breakEvenEnabled", "breakEvenTriggerR", "trailingEnabled", "trailingTriggerR",
+    "trailingGivebackPct", "trailingBufferPct", "timeDecayEnabled",
+    "timeDecayGracePeriodMinutes", "timeDecayIntervalMinutes", "timeDecayTightenPct",
+    "timeDecayMaxTightenPct", "timeDecayStaleThresholdTpProgressPct",
+    "decisionInvalidationExitEnabled",
+)
+# The thirteenth POSITION_MANAGEMENT dial is not one of the 16 measured on 08-28: the
+# compile declared it OPTIONAL and omega never sent it. The axis REQUIRES it. Every record
+# on disk reads true - b9438519 (2026-09-05) and the two 09-18 read-backs 43d11467 and
+# 824f4343 under data/contract/get_strategy/, plus both records in
+# data/audit/drift5_exit_rediscovery_2026-09-04.json - so true is mirrored, not chosen.
+# What a create draft seeds for it is part of M1.
+POSITION_MANAGEMENT_MIRROR: dict = {"decisionInvalidationExitEnabled": True}
+
+# Bounds the RETIRED compile schema published, as (minimum, maximum); `None` on an edge is
+# an open bound the schema did not declare. Since contract 85.0.0 this is a record of a
+# retired schema, never a gate (plan 2026-10-06): the v91 axis schemas declare NO numeric
+# bound on any dial, and since v89 "a create judges every dial of the new strategy at the
+# operator bounds configured now" - in the draft's diagnostics and at commit
+# (README "Contract history - v89"). A value outside these edges is a warning.
 # First measured 2026-08-28; re-measured against the committed contract 61.0.1 capture
 # data/contract/compile_strategy_plan/schema_20260918T083359Z.json, which
 # omega.preflight.changelog diffs against the 09-09 capture as exactly five moves:
@@ -72,9 +99,11 @@ def validate_execution(overrides: dict) -> list[Finding]:
             # maxStopLossAtrMultiple has a maximum of 3 and no minimum). Skip the open
             # edge, still enforce the closed one.
             if (lo is not None and v < lo) or (hi is not None and v > hi):
-                out.append(Finding("error", "EXECUTION_OUT_OF_BOUNDS", f"execution.{k}",
-                                   f"{k}={v} outside the schema bound "
-                                   f"{'-inf' if lo is None else lo}-{'inf' if hi is None else hi}"))
+                out.append(Finding("warning", "EXECUTION_OUT_OF_BOUNDS", f"execution.{k}",
+                                   f"{k}={v} outside the retired 61.0.1 compile schema's bound "
+                                   f"{'-inf' if lo is None else lo}-{'inf' if hi is None else hi}; "
+                                   f"the v91 axes declare none, and since v89 the operator "
+                                   f"bounds in the draft's diagnostics decide"))
         if k in CATALOG_BOUNDS and isinstance(v, (int, float)):
             lo, hi = CATALOG_BOUNDS[k]
             if not (lo <= v <= hi):

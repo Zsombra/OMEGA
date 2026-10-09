@@ -252,26 +252,32 @@ def validate_column(
                     f"bundle, so the relation is a single scalar with no series to "
                     f"build. Use a candle-backed operand, or drop the chain."))
 
-    # --- offset that does nothing (BG-13) -----------------------------------
-    # `offset` is accepted, validates, and CONSUMES columnLookback budget - then is
-    # silently ignored by every candle-backed CATEGORICAL metric. Measured 2026-08-26
-    # across 78 coins at a 4h anchor: close, ADX, swingHi, swingLo, STOCH_K, MFI14 and
-    # BB_PCT_B all moved between offset 0 and 8; MA_ALIGN, BB_TOUCH, EMA_CROSS and
-    # PRICE_ZONE were identical on all 78. AMD is the proof - at offset 8 its close sits
-    # at 35% of its own swing range and PRICE_ZONE still answers "near high", which is
-    # the offset-0 answer. The inputs are right there in the same render and the
-    # classifier is not using them. See data/audit/offset_ignored.json.
-    if column.offset and m.timeframe_mode == "candle" and m.vocab:
-        # NOT `OFFSET_IGNORED` - that code already means something else in this file
-        # (offset on a transform other than `value`, which the CONTRACT rules out). This
-        # is the platform accepting offset on a legal `value` column and not honouring it.
-        # Two different conditions must not share one code, or filtering by code is a lie.
+    # --- offset that did nothing (BG-13), fixed at contract 94.0.0 --------------
+    # Measured 2026-08-26 across 78 coins at a 4h anchor: MA_ALIGN, BB_TOUCH, EMA_CROSS
+    # and PRICE_ZONE ignored `offset` and answered for NOW (data/audit/offset_ignored.json,
+    # the AMD proof). v94: "A candle label column at offset N reads bar t-N's label; it
+    # used to read the latest" (vendor README, Contract history - v94), so the
+    # OFFSET_NOT_HONOURED warning is retired; the record and its tests stay as history.
+
+    # --- an offset on a timeless metric (v94) ---------------------------------
+    # "A value column over a timeless metric ... with offset above 0 is refused at
+    # construction (VALIDATION_ERROR, authoring code REPORT_COLUMN_CONSTRUCTION_FAILED)
+    # ... a timeless metric has no earlier bar." It used to be accepted and ignored.
+    if column.offset and tid == "value" and m.is_timeless:
         out.append(Finding(
-            "warning", "OFFSET_NOT_HONOURED", f"{path}.offset",
-            f"{m.metric} is a candle-backed CATEGORICAL metric: it accepts offset"
-            f"={column.offset}, spends {column.offset} of the columnLookback budget, and "
-            f"returns the value for NOW anyway. Read its numeric inputs at the offset and "
-            f"classify them yourself, or drop the offset."))
+            "error", "TIMELESS_OFFSET_REFUSED", f"{path}.offset",
+            f"{m.metric} is timeless (no earlier bar): an offset above 0 is refused at "
+            f"construction since contract 94.0.0 - drop it"))
+
+    # --- a trajectory of one observation (v93) --------------------------------
+    # "A custom column { transformId: "trajectory", window: 1 }, plain or as the chained
+    # outer of distance x trajectory, for any metric" is refused: it compared a reading
+    # with itself and read `flat` for every coin on every bar.
+    if column.window is not None and column.window < 2 and "trajectory" in (tid, column.chainedTransformId):
+        out.append(Finding(
+            "error", "TRAJECTORY_WINDOW_BELOW_TWO", f"{path}.window",
+            f"a trajectory reads at least two observations since contract 93.0.0; window="
+            f"{column.window} is refused (REPORT_COLUMN_CONSTRUCTION_FAILED)"))
 
     # --- window / offset / bars --------------------------------------------
     lookback = c.budgets["columnLookback"]

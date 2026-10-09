@@ -30,18 +30,22 @@ Run these in order. Skip a step only when the player's question makes it irrelev
    indicator modules ACROSS a set of coins (comparing RSI, funding or volatility over the leaders,
    over a category, over the session pool), use `preview_strategy_report`: one table per module with
    coins as rows, the schema preamble emitted once instead of per coin, and a server-reported token
-   budget. Ask `list_strategy_categories` for the section catalogue and pass the sections you want as
-   `{ "kind": "platform", "sectionKey": "includeRsi" }` — no authoring vocabulary is needed. Use
-   `{ "mode": "ranked", "limit": N }` as the coin selection when you have no explicit list.
-   Looping a per-coin tool over N coins costs several times this and returns the same values.
+   budget. Ask `list_strategy_categories` for the section catalogue and pass the sections you want,
+   each as `{ "kind": "platform", "sectionKey": "includeRsi" }`, inside
+   `source: { "kind": "FIELDS", "timeframe": …, "sections": [ … ] }` — no authoring vocabulary is
+   needed. Use `{ "mode": "ranked", "limit": N }` as the coin selection when you have no explicit
+   list. Looping a per-coin tool over N coins costs several times this and returns the same values.
 4. **Coin deep-dive**, when the player named a coin or when one dominates the read: the SAME
-   `preview_strategy_report` call as step 3, with `{ "kind": "tickers", "tickers": ["SOL"] }` as the
+   `preview_strategy_report` call as step 3, with `{ "mode": "explicit", "tickers": ["SOL"] }` as the
    coin selection and the funding / open-interest / positioning sections chosen — one coin is a
    one-row report, not a different tool. Then `get_coin_candles` for the price action. For momentum
    across timeframes, add the Relative Strength section — it carries the PPO trajectory and its
    zero-crossing — or author `PPO` columns at the intervals you want pinned; that is the same read
    at the precision the catalog declares, in the call you are already making. Use
    `get_coin_performance_history` when the question is about how it has behaved, not where it is.
+   Coin symbols are case-insensitive and exchange symbols are accepted (`btc`, `kPEPE`,
+   `xyz:BRENTOIL`); a symbol that names no tracked coin is rejected with an error naming the field,
+   never answered as an empty read — say the coin is not tracked rather than retrying it.
 4b. **How much of the FIELD is moving, not just this coin.** Add the Market Breadth module
    (`{ "kind": "platform", "sectionKey": "includeMarketBreadth" }`) for the two-axis read: how much
    of the tracked universe closed up, and how much of it carries positive momentum. It reports per

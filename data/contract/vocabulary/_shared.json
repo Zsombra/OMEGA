@@ -103,11 +103,10 @@
   "strategyConditions": 16,
   "conditionClauses": 16,
   "conditionFrameReads": 256,
-  "estimatedTokens": 32000,
   "reportNoteChars": 3200
  },
  "previewExecutionLimits": {
-  "maxResultBytes": 256000,
+  "maxResultChars": 150000,
   "deadlineMs": 15000
  },
  "timeframes": [
@@ -147,5 +146,12 @@
    "budgets",
    "transforms"
   ]
- }
+ },
+ "_amended": [
+  {
+   "at": "2026-10-06",
+   "contractVersion": "95.0.0",
+   "what": "budgets and previewExecutionLimits as list_strategy_vocabulary served them at 95.0.0 (read 2026-10-06 ~22:45Z): v92 dropped budgets.estimatedTokens and renamed maxResultBytes to maxResultChars (now 150000)"
+  }
+ ]
 }

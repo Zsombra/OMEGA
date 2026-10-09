@@ -1,13 +1,19 @@
 """Schema-drift preflight (design: docs/superpowers/specs/2026-09-04-schema-drift-preflight-design.md).
 
-omega CANNOT CALL MCP TOOLS (omega/probe.py:3). The session saves two verbatim captures -
-the compile_strategy_plan tool definition (a ToolSearch definition load, not a call) and
-one get_strategy read-back - and hands them here as dicts. This module diffs a wire body
-against both and returns findings; scripts/preflight.py does the file I/O and prints the
+omega CANNOT CALL MCP TOOLS (omega/probe.py:3). The session saves a verbatim capture of
+the stage_strategy_draft tool definition (a ToolSearch definition load, not a call) and
+hands it here as a dict. This module walks a stage request - each axis against its own
+schema - and returns findings; scripts/preflight.py does the file I/O and prints the
 receipt. Nothing here decides a value for a missing field: a FAIL names the field and a
 human mirrors it from a record, exactly as was done for drift instances #3, #4 and #5.
 
-The walker covers only the JSON-Schema subset the compile definition uses: properties /
+Contract 85.0.0 removed compile_strategy_plan: the body is now the `axes` of a stage
+(plan 2026-10-06, Work step 4). resolve_arms, diff_record and fingerprint_readback stay for
+the RETIRED compile captures and pre-v84 read-backs (data/contract/_manifest.json
+`retired`); the read-back mirror is retired until a v91 read-back is captured, because a
+pre-v84 record carries `closes` and `exit`, which no v91 body may.
+
+The walker covers only the JSON-Schema subset the definitions use: properties /
 required / additionalProperties:false / enum / const / type / minimum / maximum /
 exclusiveMinimum / exclusiveMaximum / multipleOf / minLength / maxLength / minItems /
 maxItems / items / anyOf (discriminated by a const on operation|kind|mode, else by type) /
@@ -24,8 +30,9 @@ from dataclasses import dataclass
 CLASSES = ("UNDECLARED", "MISSING_REQUIRED", "MISSING_VS_RECORD", "ENUM", "BOUNDS",
            "UNSUPPORTED", "MIRROR", "CHANGELOG", "TRANSCRIPTION_SUSPECT", "INFO")
 VERDICTS = ("FAIL", "WARN", "INFO")
-DISCLAIMER = ("covers the published schema and the reference record only; "
-              "the runtime validator is not observed by this check")
+DISCLAIMER = ("covers the published schema only (the read-back mirror is retired until a v91 "
+              "read-back is captured); the builder's diagnostics and the runtime validator are "
+              "not observed by this check")
 
 
 class UnsupportedSchema(ValueError):
@@ -65,9 +72,59 @@ def deref(node: dict, root: dict) -> dict:
     return node
 
 
+STAGE_TOOL = "stage_strategy_draft"
+
+
+def _input_root(definition: dict) -> dict:
+    """The input schema every local $ref of a tool definition is relative to. Three
+    capture shapes are read: a ToolSearch definition ({..., "parameters": schema}), a
+    battlegrid-manager surface entry ({..., "inputSchema": schema}), and the saved
+    multi-tool file (data/contract/stage_strategy_draft/schema_*.json, keyed by tool)."""
+    if STAGE_TOOL in definition and isinstance(definition[STAGE_TOOL], dict):
+        definition = definition[STAGE_TOOL]
+    for key in ("parameters", "inputSchema"):
+        if isinstance(definition.get(key), dict):
+            return definition[key]
+    raise UnsupportedSchema("definition carries neither `parameters` nor `inputSchema`")
+
+
+def resolve_request(definition: dict) -> tuple[dict, dict]:
+    """The `request` object schema of a stage_strategy_draft definition, plus its root."""
+    root = _input_root(definition)
+    return deref(root["properties"]["request"], root), root
+
+
+def resolve_axes(definition: dict) -> tuple[dict[str, dict], dict]:
+    """The axis schemas of a stage_strategy_draft definition, keyed by axis name (ten at
+    91.0.0), plus the root every local $ref is relative to. This replaces resolve_arms:
+    v85 split the flat CREATE/UPDATE body into axes, each staged WHOLE."""
+    request, root = resolve_request(definition)
+    axes = deref(request.get("properties", {}).get("axes", {}), root)
+    props = axes.get("properties")
+    if not isinstance(props, dict) or not props:
+        raise UnsupportedSchema("stage request without an axes object")
+    return {name: deref(node, root) for name, node in props.items()}, root
+
+
+def diff_axes(axes: dict, axis_schemas: dict[str, dict], root: dict) -> list[Finding]:
+    """Walk each staged axis against its own schema (paths `axes.<AXIS>...`). An axis the
+    definition does not declare is UNDECLARED (the axes object is additionalProperties:false
+    at 91.0.0); an axis the body omits is not a finding - "axes you omit keep their values"."""
+    out: list[Finding] = []
+    for name, value in axes.items():
+        path = f"axes.{name}"
+        if name not in axis_schemas:
+            out.append(Finding("UNDECLARED", path, "not an axis of the published stage schema "
+                               f"({sorted(axis_schemas)})", "FAIL"))
+            continue
+        _walk(value, axis_schemas[name], root, path, out)
+    return out
+
+
 def resolve_arms(definition: dict) -> tuple[dict[str, dict], dict]:
-    """The operation arms of a compile_strategy_plan definition, keyed by the
-    `operation` const, plus the root every local $ref is relative to."""
+    """The operation arms of a RETIRED compile_strategy_plan definition, keyed by the
+    `operation` const, plus the root every local $ref is relative to. Read only for the
+    compile captures kept as history; a v91 body is walked with resolve_axes."""
     root = definition["parameters"]
     request = deref(root["properties"]["request"], root)
     branches = request.get("anyOf", [request])
@@ -114,9 +171,53 @@ def _type_ok(t: str | None, v: object) -> bool:
             "integer": isinstance(v, int) and not isinstance(v, bool)}.get(t, True)
 
 
-def _pick_branch(value: object, branches: list, root: dict) -> dict | None:
+def _fits(value: dict, b: dict, root: dict, relaxed: bool = False) -> bool:
+    """True when `value` satisfies branch `b` at its own level: a matching discriminator
+    const, every required key, no undeclared key under additionalProperties:false, and
+    every top-level enum/const property it carries. A branch that is itself an anyOf fits
+    when one of its branches does.
+
+    Needed at 91.0.0: the CONDITIONS clause union is FOUR arms sharing kind "clause"
+    (told apart by `op`), and the ENTRY union is told apart by the `trigger` enum - the
+    first-const / first-required rules below would walk an `is` clause against the
+    numeric arm, or a level trigger against the ON_CANDLE_CLOSE arm.
+
+    `relaxed` drops only the required-key test and keeps the undeclared-key and const/enum
+    ones:
+    the branch a value MEANS (an `is` clause that forgot its hold is still an `is`
+    clause), so the walk reports the missing key there rather than a pile of noise
+    against the first arm sharing its kind."""
+    if "anyOf" in b and "properties" not in b:
+        return _pick_branch(value, b["anyOf"], root, strict=True, relaxed=relaxed) is not None
+    if b.get("type", "object") != "object":
+        return False
+    props = b.get("properties", {})
+    if not relaxed and not all(k in value for k in b.get("required", [])):
+        return False
+    if b.get("additionalProperties") is False and any(k not in props for k in value):
+        return False
+    for k, v in value.items():
+        if k in props:
+            s = deref(props[k], root)
+            if ("const" in s and v != s["const"]) or ("enum" in s and v not in s["enum"]):
+                return False
+    return True
+
+
+def _pick_branch(value: object, branches: list, root: dict, strict: bool = False,
+                 relaxed: bool = False) -> dict | None:
     cands = [deref(b, root) for b in branches]
     if isinstance(value, dict):
+        for b in cands:                                   # the first branch the value fits
+            if _fits(value, b, root, relaxed):
+                return b
+        if strict:
+            return None
+        for b in cands:                                   # the branch it means (consts/enums)
+            if _fits(value, b, root, relaxed=True):
+                return b
+        # No exact fit: fall back to the discriminator, then the required keys, so the walk
+        # still descends and names the specific finding rather than one opaque mismatch.
         for b in cands:
             props = b.get("properties", {})
             for disc in ("operation", "kind", "mode"):
@@ -155,14 +256,17 @@ def _check_unknown_keywords(schema: dict, path: str, out: list[Finding]) -> None
 def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]) -> None:
     schema = deref(schema, root)
     _check_unknown_keywords(schema, path, out)
-    if "anyOf" in schema:
+    # A loop, not an `if`: the 91.0.0 condition definition nests anyOf three deep (group |
+    # (ref | (four clause arms))). Taking one level and walking the inner anyOf as a plain
+    # object left every clause unvalidated with no finding at all - a silent skip.
+    while "anyOf" in schema:
         branch = _pick_branch(value, schema["anyOf"], root)
         if branch is None:
             # RULING: an unmatched anyOf branch leaves the subtree unvalidated - FAIL, not
             # WARN, unlike the WARN-and-keep-walking UNSUPPORTED cases below.
             out.append(Finding("UNSUPPORTED", path, "no anyOf branch matches the value", "FAIL"))
             return
-        schema = branch
+        schema = deref(branch, root)
         _check_unknown_keywords(schema, path, out)
     if "const" in schema and value != schema["const"]:
         out.append(Finding("ENUM", path, f"{value!r} is not the declared const {schema['const']!r}", "FAIL"))
@@ -396,31 +500,68 @@ def diff_record(body: dict, record: dict, arm: dict, root: dict) -> list[Finding
 #     anchor omega chooses rather than mirrors.
 #   `clock` - retired from `conditions[]` by contract 61.0.0 and REFUSED on input
 #     (captured 2026-09-18; the seven-key condition shape).
+#   `closes` - removed from `conditions[]` by contract 84.0.0; the hold is now `hold` on
+#     each clause and group, compared node by node below (`_holds`).
+#   `exit` - removed from `conditions[]` by contract 88.0.0 for `exitSide`.
+# The levelOffsetAtrMultiple / validForBars pair stays named: a level trigger carries both
+# (v85), and the entry mirror compares only keys present on both sides.
 MIRROR_ENTRY_FIELDS = ("trigger", "levelOffsetAtrMultiple", "validForBars")
-MIRROR_CONDITION_FIELDS = ("closes", "exit")
+MIRROR_CONDITION_FIELDS = ("exitSide",)
+
+
+def _holds(defn: object, path: str) -> list[tuple[str, dict]]:
+    """(path, hold) for every clause and group in a definition; refs carry none."""
+    if not isinstance(defn, dict):
+        return []
+    out: list[tuple[str, dict]] = []
+    if defn.get("kind") in ("clause", "group") and isinstance(defn.get("hold"), dict):
+        out.append((f"{path}.hold", defn["hold"]))
+    for i, member in enumerate(defn.get("members") or []):
+        out.extend(_holds(member, f"{path}.members[{i}]"))
+    return out
 
 
 def mirror_findings(body: dict, record: dict) -> list[Finding]:
-    """WARN when a hardcoded mirror differs from what the reference record carries."""
+    """WARN when a hardcoded mirror differs from what the reference record carries.
+
+    `body` is a stage request or its `axes` (the ENTRY and CONDITIONS axes are read), or a
+    flat body with top-level `entry` / `conditions`. RETIRED from the CLI until a v91
+    read-back is captured: no record on disk carries `exitSide` or a per-node `hold`, so
+    against one of them this reports nothing for the conditions, by construction."""
     rec = record_request_view(record)
+    axes = body.get("axes", body)
     out: list[Finding] = []
-    be, re_ = body.get("entry"), rec.get("entry")
+    be = (axes.get("ENTRY") or {}).get("entry") if "ENTRY" in axes else body.get("entry")
+    re_ = rec.get("entry")
     if isinstance(be, dict) and isinstance(re_, dict):
         for k in MIRROR_ENTRY_FIELDS:
             if k in be and k in re_ and be[k] != re_[k]:
                 out.append(Finding("MIRROR", _join("entry", k),
                                    f"body {be[k]!r} vs record {re_[k]!r} - the user decides whether to re-mirror", "WARN"))
+    bconds = ((axes.get("CONDITIONS") or {}).get("conditions") if "CONDITIONS" in axes
+              else body.get("conditions")) or []
     rconds = [c for c in rec.get("conditions", []) if isinstance(c, dict)]
     for k in MIRROR_CONDITION_FIELDS:
         seen = {c[k] if not isinstance(c.get(k), (list, dict)) else None for c in rconds if k in c}
         if not seen:
             continue
-        for i, c in enumerate(body.get("conditions", [])):
+        for i, c in enumerate(bconds):
             # compare by value, not set membership: c[k] may be a list/dict and thus
             # unhashable, which `c[k] not in seen` (a set) would raise TypeError on
             if isinstance(c, dict) and k in c and not any(c[k] == s for s in seen):
                 out.append(Finding("MIRROR", f"conditions[{i}].{k}",
                                    f"body {c[k]!r}; the record's conditions carry {sorted(map(repr, seen))}", "WARN"))
+    # the per-node hold check: every hold the body sends should be one the record carries
+    rec_holds = [h for c in rconds for _, h in _holds(c.get("definition"), "")]
+    if rec_holds:
+        for i, c in enumerate(bconds):
+            if not isinstance(c, dict):
+                continue
+            for path, h in _holds(c.get("definition"), f"conditions[{i}].definition"):
+                if not any(h == r for r in rec_holds):
+                    out.append(Finding("MIRROR", path,
+                                       f"body hold {h!r}; the record's nodes carry "
+                                       f"{sorted({repr(r) for r in rec_holds})}", "WARN"))
     return out
 
 
@@ -533,6 +674,43 @@ def fingerprint_schema(arm: dict, root: dict, *, signal_ids: set[str], template_
     return out
 
 
+AXES_91 = ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
+           "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES")
+
+
+def fingerprint_axes(axis_schemas: dict[str, dict], root: dict, *, signal_ids: set[str],
+                     template_keys: set[str], timeframes: list[str]) -> list[Finding]:
+    """Fidelity of a transcribed stage_strategy_draft capture against data the repo holds
+    independently - the fingerprint_schema checks, at their v91 homes (SIGNAL_RULES,
+    REPORT, TIMEFRAME_PROFILE) - plus the ten axes the 91.0.0 schema declares."""
+    out: list[Finding] = []
+    if set(axis_schemas) != set(AXES_91):
+        out.append(Finding("TRANSCRIPTION_SUSPECT", "axes",
+                           f"axes {sorted(axis_schemas)} are not the ten of 91.0.0; either "
+                           "mistranscribed, or the platform's axis set moved - read the "
+                           "changelog and re-capture before trusting the walk", "FAIL"))
+    checks = (
+        ("axes.SIGNAL_RULES.rules[].signalId",
+         _enum_at(axis_schemas.get("SIGNAL_RULES", {}), root, "rules", "[]", "signalId"), signal_ids),
+        ("axes.REPORT.sections[].platform.sectionKey",
+         _enum_at(axis_schemas.get("REPORT", {}), root, "sections", "[]", "anyOf:platform", "sectionKey"),
+         template_keys),
+        ("axes.TIMEFRAME_PROFILE.timeframe",
+         _enum_at(axis_schemas.get("TIMEFRAME_PROFILE", {}), root, "timeframe"), set(timeframes)),
+    )
+    for path, got, want in checks:
+        if got is None:
+            out.append(Finding("TRANSCRIPTION_SUSPECT", path, "enum not found in the capture", "FAIL"))
+        elif set(got) != set(want) or len(got) != len(set(got)):
+            out.append(Finding("TRANSCRIPTION_SUSPECT", path,
+                               f"enum has {len(got)} values, repo data has {len(want)}; "
+                               f"missing {sorted(set(want) - set(got))[:5]} extra {sorted(set(got) - set(want))[:5]}; "
+                               "either mistranscribed, or the platform's set grew/shrank since the repo data "
+                               "was captured - verify with a second read-back before refreshing data/derived "
+                               "or data/contract", "FAIL"))
+    return out
+
+
 def fingerprint_readback(record: dict, strategy_id: str) -> list[Finding]:
     rec = record_request_view(record)
     out: list[Finding] = []
@@ -587,17 +765,25 @@ def parse_iso(s: str) -> datetime:
 _parse_iso = parse_iso  # kept for existing internal callers
 
 
-def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: dict, readback_meta: dict,
-                  findings: list[Finding], now: datetime, expires_minutes: int = 60,
-                  unmeasured: list[str] | None = None, receipt_path: str = "<receipt>") -> dict:
-    oldest = min(_parse_iso(schema_meta["capturedAt"]), _parse_iso(readback_meta["capturedAt"]))
+def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: dict,
+                  readback_meta: dict | None, findings: list[Finding], now: datetime,
+                  expires_minutes: int = 60, unmeasured: list[str] | None = None,
+                  receipt_path: str = "<receipt>") -> dict:
+    """`readback_meta` is None since v85: the read-back mirror is retired until a v91
+    read-back is captured, and the expiry then runs from the schema capture alone."""
+    captured = [_parse_iso(schema_meta["capturedAt"])]
+    if readback_meta is not None:
+        captured.append(_parse_iso(readback_meta["capturedAt"]))
+    oldest = min(captured)
     receipt = {
-        "_what": "Schema-drift preflight receipt: the wire body diffed against a fresh compile "
-                 "definition capture and a fresh read-back. A PASS is a precondition of the compile "
-                 "authorization, not the authorization. Nothing here was interpreted.",
+        "_what": "Schema-drift preflight receipt: the body walked against a fresh tool "
+                 "definition capture (since v85 the stage_strategy_draft axes; the read-back "
+                 "mirror is retired until a v91 read-back exists). A PASS is a precondition of "
+                 "the authorization, not the authorization. Nothing here was interpreted.",
         "when": now.strftime(_ISO),
         "body": {"path": body_path, "sha256": body_sha256(body), "operation": operation},
-        "captures": {"schema": dict(schema_meta), "readback": dict(readback_meta)},
+        "captures": {"schema": dict(schema_meta),
+                     "readback": dict(readback_meta) if readback_meta is not None else None},
         "findings": [f.__dict__ for f in findings],
         "verdict": verdict(findings),
         "expiresAt": (oldest + timedelta(minutes=expires_minutes)).strftime(_ISO),
@@ -611,8 +797,9 @@ def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: di
 
 def gate_line(receipt: dict, receipt_path: str = "<receipt>") -> str:
     rb = receipt["captures"]["readback"]
+    ref = f"ref {rb['strategyId']} rev {rb['revision']}" if rb else "ref none (read-back retired)"
     return (f"{GATE_LINE_PREFIX} · {receipt_path} · body {receipt['body']['sha256'][:8]} · "
-            f"schema {receipt['captures']['schema']['capturedAt']} · ref {rb['strategyId']} rev {rb['revision']} · "
+            f"schema {receipt['captures']['schema']['capturedAt']} · {ref} · "
             f"expires {receipt['expiresAt']}")
 
 

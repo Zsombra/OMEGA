@@ -70,12 +70,18 @@ re-sorts a list, re-derives a verdict, or approves on the player's behalf.
   `get_trade_conversation({ conversationId })`, using the id the `queued` result carried. It serves
   the whole transcript in stored order — the queued card, the agent's reasoning, its thesis and
   setups, the recommendation, a no-trade with its reason and next coins, or a close answer.
-- `get_entry_request` re-reads a request still pending; `cancel_entry_request` withdraws it. Both
-  are `NOT_FOUND` once it has been answered, cancelled or expired, and that is the honest record:
+- `get_entry_request` re-reads a request until it is answered — including while its close has fired
+  and the decision is being composed. `cancel_entry_request` withdraws it only while it still awaits
+  its close; once the close has fired it is `NOT_FOUND`, and the answer arrives in the conversation.
+  Both are `NOT_FOUND` once it has been answered, cancelled or expired, and that is the honest record:
   the answer is in the conversation.
 - `type: "error"` — the block, with its remedy: `OPEN_POSITION_CONFLICT` means a position already
   holds the slot (see step 0) and nothing was queued; `LLM_CREDITS_EXHAUSTED` means top up when
-  `topupAvailable` is true. A refused request (`RATE_LIMITED`) is a refusal with its retry-after.
+  `topupAvailable` is true; `ENTRIES_PAUSED` means the platform has paused new entries while market
+  data is missing across many coins, and nothing was queued. The pause is platform-wide, not the
+  agent's or the coin's, so never retry it through another agent or on another coin. It lifts by
+  itself once the data is back: ask again then, under a fresh `idempotencyKey` — the same key only
+  replays this refusal. A refused request (`RATE_LIMITED`) is a refusal with its retry-after.
   Never "nothing to do".
 - `type: "recommendation"` and `type: "no_trade"` arrive only as the **replay** of a request made
   before the queued contract shipped. Report them as step 5 describes and do not expect them from a
@@ -90,8 +96,20 @@ the player's explicit typed word — never inferred from interest, agreement, or
 trade.
 
 - A decided close produces one of: a PROPOSED decision awaiting approval; a no-trade with the
-  reason and the next coins worth asking about; a close that did not qualify; a window that passed
-  with no sweep; or a bar the agent's own radar deployment decided first and traded in full.
+  reason and the next coins worth asking about; a refusal, `close_refused`, which names the gate that
+  failed when the close did not qualify and none when it qualified and the radar's own gates stopped
+  its fire; a window that passed with no sweep; a bar the agent's own radar deployment decided first;
+  or an error carrying the engine's block, with nothing proposed, when admission refused the
+  qualifying close's fire — `ENTRIES_PAUSED` while new entries are paused, an account block, a
+  position already held.
+- A bar the agent's own radar deployment decided first is reported from that deployment's decision,
+  never decided again. It arrives as `close_fired_by_radar` — a trade taken in full — only when the
+  deployment's fire enqueued a trade decision. Otherwise it arrives as what stopped that fire, and
+  none of these is a trade: a fire admission refused arrives as the engine's block, exactly as when
+  the refused fire was the request's own; a fire the radar's own gates stopped — its coin cooldown,
+  its hourly cap, post-close suppression, a decision already running on the coin — arrives as
+  `close_refused` with no gate, because the close qualified and nothing was entered; and a close
+  whose coin another agent's fire took arrives as `close_claimed_by_radar`.
 - On a proposal, state the direction, the entry, stop and take-profit levels, the position size,
   the **`convictionPercent`**, and the expiry (`expiresAt`). No conviction floor is applied on this
   surface: the conviction is the agent's own reading, and the player judges it.

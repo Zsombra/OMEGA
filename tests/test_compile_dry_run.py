@@ -13,8 +13,7 @@ Two calls, the plan's hard cap, each on a materially different payload:
 
 Neither refusal was the schema-derived keyMismatch this dry-run set out to test: the
 reshaped CREATE body itself drew no unrecognized_keys and no missing-required either
-time. These tests pin the records so drift in wire() or a quiet edit to the audit files
-fails loudly.
+time. These tests pin the records so a quiet edit to the audit files fails loudly.
 
 Later the same day, with the user's explicit go-ahead for one more call, the SAME plan
 was compiled with an explicit 3-ticker selection - the only fields changed from the
@@ -22,6 +21,12 @@ refused payload were coinSelection and its assumption string - and came back
 **viable: true**: the first generated plan ever to compile viable. That record
 (compile_dry_run_2026-08-28-small.json) is pinned below too. The token was left to
 expire; apply_strategy_plan was never called.
+
+compile_strategy_plan was removed at contract 85.0.0 (no alias). The records stay pinned
+as history; the generator no longer emits a compile body, so the tests that compared the
+records against the CURRENT body are retired (see the repository history), and the
+harness that built the body is now scripts/preview_dry_run.py
+(tests/test_preview_dry_run.py).
 """
 from __future__ import annotations
 
@@ -30,7 +35,7 @@ from collections import Counter
 from pathlib import Path
 
 from omega.generate import CADENCE_FOR_ANCHOR, PRESETS, REGIME_TF_FOR_ANCHOR, plan
-from scripts.compile_dry_run import PRESET, SMALL_TICKERS, request
+from scripts.preview_dry_run import PRESET, SMALL_TICKERS
 
 ROOT = Path(__file__).resolve().parents[1]
 RECORD = json.loads(
@@ -47,12 +52,11 @@ def test_the_record_exists_and_is_interpreted():
         assert "FILL IN" not in rec["_interpretation"]
 
 
-def test_request_keys_match_current_wire_output():
-    """If wire() gains or loses a top-level key, the recorded measurement no longer
-    describes the current generator - this failing is the reminder to re-measure.
-    Re-measured 2026-08-30: the condition-clock deployment made `entry` REQUIRED on
-    CREATE, so wire() gained exactly that key; the 2026-08-28 record stays frozen."""
-    assert sorted(RECORD["requestKeys"] + ["entry"]) == sorted(request()["request"].keys())
+def test_the_recorded_request_was_a_compile_create_body():
+    """Frozen: the 2026-08-28 record describes a compile body (operation, intentSummary,
+    assumptions, coinSelection at the top level) - a shape the platform has not accepted
+    since v85. Compare it to nothing current."""
+    assert {"operation", "intentSummary", "assumptions", "coinSelection"} <= set(RECORD["requestKeys"])
     assert RECORD["preset"] == PRESET
 
 
@@ -67,15 +71,16 @@ def test_attempt_1_pinned_the_section_ownership_rule():
 def test_attempt_2_pinned_the_preview_byte_cap():
     msg = RECORD["responseVerbatim"]["message"]
     assert "395404 > 256000" in msg and "mcp_result_bytes" in msg
-    # The plan itself was 20x under the cap - the cap bit the PREVIEW, not the plan.
-    body = json.dumps(request()["request"], separators=(",", ":")).encode("utf-8")
-    assert len(body) < 256_000 // 20
+    # The plan itself was 20x under the cap - the cap bit the PREVIEW, not the plan. The
+    # measured body is the recorded 12,210 bytes.
+    assert "12,210 bytes" in RECORD["attempts"]["2"] and 12_210 < 256_000 // 20
 
 
-def test_the_fix_reached_the_wire():
-    """Attempt 2 got past section validation because wire() stopped emitting the keys."""
+def test_the_fix_reached_the_report_axis():
+    """Attempt 2 got past section validation because the body stopped carrying custom
+    sectionKeys; the v91 REPORT axis of a create still carries none."""
     for preset in PRESETS:
-        for s in plan(PRESETS[preset]).wire()["sections"]:
+        for s in plan(PRESETS[preset]).axes()["REPORT"]["sections"]:
             if s["kind"] == "custom":
                 assert "sectionKey" not in s
 
@@ -90,9 +95,7 @@ def test_the_small_selection_compile_is_viable():
     assert "FILL IN" not in SMALL["_interpretation"]
 
 
-def test_small_request_keys_match_current_wire():
-    # +entry: required on CREATE since the condition-clock deployment (2026-08-30)
-    assert sorted(SMALL["requestKeys"] + ["entry"]) == sorted(request(small=True)["request"].keys())
+def test_the_small_selection_is_the_harness_tickers():
     assert SMALL["coinSelection"] == {"mode": "explicit", "tickers": SMALL_TICKERS}
     assert SMALL["responseVerbatim"]["reviewContext"]["resolvedCoinTickers"] == SMALL_TICKERS
 
@@ -200,32 +203,3 @@ def test_the_cadence_prediction_outcome_is_pinned():
     assert TF4H["predictionStatedBeforeMeasuring"]["cadence"].startswith("INTRADAY")
     assert ps["cadence"] == CADENCE_FOR_ANCHOR["4h"] == "SWING"
     assert ps["regimeTimeframe"] == REGIME_TF_FOR_ANCHOR["4h"] == "1d"
-
-
-# --- the 2026-08-28 measurement-campaign harness --------------------------------
-
-def test_probe_changes_exactly_one_field_from_the_small_body():
-    from scripts.compile_dry_run import probe
-    base = request(small=True)["request"]
-    p = probe("timeframe", "2h")["request"]
-    assert {k for k in set(base) | set(p) if base.get(k) != p.get(k)} == {"timeframe"}
-    assert p["timeframe"] == "2h"
-
-
-def test_probe_full_base_is_the_ranked_body():
-    from scripts.compile_dry_run import probe
-    base = request()["request"]
-    sel = {"mode": "ranked", "category": "ALL", "limit": 19}
-    p = probe("coinSelection", sel, base="full")["request"]
-    assert {k for k in set(base) | set(p) if base.get(k) != p.get(k)} == {"coinSelection"}
-    assert p["coinSelection"] == sel
-
-
-def test_redact_replaces_the_token_with_length_and_sha256():
-    import hashlib
-    from scripts.compile_dry_run import _redact
-    resp = {"planToken": "tok123", "other": 1}
-    _redact(resp)
-    assert resp["planToken"]["length"] == 6
-    assert resp["planToken"]["sha256"] == hashlib.sha256(b"tok123").hexdigest()
-    assert resp["other"] == 1

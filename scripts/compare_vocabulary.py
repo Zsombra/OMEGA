@@ -16,10 +16,16 @@ is typed by hand: each live enum is read from the schema the platform serves, an
 stored enum from the extraction this repo authors against.
 - metric: `get_metric_construction_hints` `properties.metric.enum`, against the
   `data/contract/metrics/<METRIC>.json` files;
-- signalId: the first `signalId` enum in `update_strategy_signal_rule`, against the keys
-  of `data/contract/signals/_scoring.json["signals"]`;
-- sectionKey: the first `sectionKey` enum in `compile_strategy_plan`, against the same
-  enum in the newest `data/contract/compile_strategy_plan/schema_*.json` capture.
+- signalId: the `signalId` enum on `stage_strategy_draft`'s SIGNAL_RULES axis, against the
+  keys of `data/contract/signals/_scoring.json["signals"]`;
+- sectionKey: the `sectionKey` enum on `stage_strategy_draft`'s REPORT axis, against the
+  same enum in the newest `data/contract/stage_strategy_draft/schema_*.json` capture.
+
+Contract 85.0.0 removed compile_strategy_plan and update_strategy_signal_rule with no
+alias (README "Contract history - v85": "a signal rule is a row of the draft's SIGNAL_RULES
+axis"), so both enums are read off the stage tool's axes now; the compile captures are
+retired (data/contract/_manifest.json). The 2026-09-26..10-02 records under data/audit/
+were made by the compile-era form of this script, which is in the repository history.
 """
 from __future__ import annotations
 
@@ -28,7 +34,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from omega.preflight import resolve_axes  # noqa: E402
+
 CONTRACT = ROOT / "data" / "contract"
+STAGE_TOOL = "stage_strategy_draft"
 
 
 def first_enum(node, prop: str) -> list | None:
@@ -55,12 +65,19 @@ def _input_schema(tools: dict, name: str) -> dict:
     return tools[name].get("inputSchema") or {}
 
 
+def _axes(definition: dict) -> dict[str, dict]:
+    axes, _root = resolve_axes(definition)
+    return axes
+
+
 def live_enums(surface: dict) -> dict[str, set[str]]:
     tools = {t["name"]: t for t in surface["tools"]}
+    _input_schema(tools, STAGE_TOOL)                    # refuses a surface without the tool
+    axes = _axes(tools[STAGE_TOOL])
     found = {
         "metrics": first_enum(_input_schema(tools, "get_metric_construction_hints"), "metric"),
-        "signals": first_enum(_input_schema(tools, "update_strategy_signal_rule"), "signalId"),
-        "sectionKeys": first_enum(_input_schema(tools, "compile_strategy_plan"), "sectionKey"),
+        "signals": first_enum(axes.get("SIGNAL_RULES", {}), "signalId"),
+        "sectionKeys": first_enum(axes.get("REPORT", {}), "sectionKey"),
     }
     missing = [k for k, v in found.items() if not v]
     if missing:
@@ -69,20 +86,23 @@ def live_enums(surface: dict) -> dict[str, set[str]]:
     return {k: set(v) for k, v in found.items()}
 
 
-def newest_compile_capture(contract: Path = CONTRACT) -> Path:
-    captures = sorted((contract / "compile_strategy_plan").glob("schema_*.json"))
+def newest_stage_capture(contract: Path = CONTRACT) -> Path:
+    captures = sorted((contract / STAGE_TOOL).glob("schema_*.json"))
     if not captures:
-        raise FileNotFoundError("no compile_strategy_plan/schema_*.json capture in the extraction")
+        raise FileNotFoundError(f"no {STAGE_TOOL}/schema_*.json capture in the extraction")
     return captures[-1]
 
 
 def stored_enums(contract: Path = CONTRACT) -> dict[str, set[str]]:
-    capture = json.loads(newest_compile_capture(contract).read_text(encoding="utf-8"))
+    doc = json.loads(newest_stage_capture(contract).read_text(encoding="utf-8"))
+    # a session capture is an envelope ({capturedAt, how, request, response}); the saved
+    # manager-surface file is keyed by tool - resolve_axes reads either
+    capture = doc["response"] if isinstance(doc.get("response"), dict) else doc
     scoring = json.loads((contract / "signals" / "_scoring.json").read_text(encoding="utf-8"))
     return {
         "metrics": {p.stem for p in (contract / "metrics").glob("*.json") if not p.name.startswith("_")},
         "signals": set(scoring["signals"]),
-        "sectionKeys": set(first_enum(capture, "sectionKey") or []),
+        "sectionKeys": set(first_enum(_axes(capture).get("REPORT", {}), "sectionKey") or []),
     }
 
 
@@ -100,7 +120,7 @@ def main(argv: list[str]) -> int:
     results = compare(live_enums(surface), stored_enums())
     print(json.dumps({"contractVersion": surface.get("contractVersion"), "buildSha": surface.get("buildSha"),
                       "observedAt": surface.get("observedAt"), "liveToolCount": len(surface["tools"]),
-                      "storedCompileCapture": newest_compile_capture().relative_to(ROOT).as_posix(),
+                      "storedStageCapture": newest_stage_capture().relative_to(ROOT).as_posix(),
                       "results": results}, indent=1))
     moved = any(r["liveNotStored"] or r["storedNotLive"] for r in results.values())
     return 1 if moved else 0

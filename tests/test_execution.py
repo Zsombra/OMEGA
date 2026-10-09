@@ -1,4 +1,4 @@
-"""Decision 1(a), recorded 2026-08-28: omega emits NO execution parameters by default and
+"""Decision 1(a), recorded 2026-08-28: omega emitted NO execution parameters by default and
 says exactly what the platform will therefore do - the defaults are measured, not
 invented (execution_surface_ownership_2026-08-28.json + the Task 3/4 probes)."""
 from dataclasses import replace
@@ -16,16 +16,35 @@ def test_the_defaults_are_the_measured_ones():
     assert PLATFORM_EXECUTION_DEFAULTS["breakEvenTriggerR"] == 1.08
 
 
-def test_presets_emit_no_execution_parameters():
+def _dials(axes: dict) -> dict:
+    return {**axes["SETUP_GATES"], **axes["TRADE_LEVEL_POLICY"], **axes["POSITION_MANAGEMENT"]}
+
+
+def test_presets_send_every_dial_at_the_measured_defaults():
+    """Decision 1(a) emitted NO execution parameter on the compile. Since v85 every axis
+    is staged WHOLE and the v91 schema requires each dial on its axis, so a create sends
+    all 16 - at the measured defaults, until M1 reads a create draft's seeds."""
     for preset in PRESETS:
-        assert not EXECUTION_PARAMS & set(plan(PRESETS[preset]).wire())
+        dials = _dials(plan(PRESETS[preset]).axes())
+        assert EXECUTION_PARAMS <= set(dials)
+        assert {k: dials[k] for k in EXECUTION_PARAMS} == PLATFORM_EXECUTION_DEFAULTS
 
 
-def test_an_explicit_override_reaches_the_wire():
+def test_an_explicit_override_reaches_its_axis():
     t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})
-    w = plan(t).wire()
-    assert w["minRiskRewardRatio"] == 2.0
-    assert EXECUTION_PARAMS & set(w) == {"minRiskRewardRatio"}
+    a = plan(t).axes()
+    assert a["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] == 2.0
+    moved = {k for k, v in _dials(a).items()
+             if k in PLATFORM_EXECUTION_DEFAULTS and v != PLATFORM_EXECUTION_DEFAULTS[k]}
+    assert moved == {"minRiskRewardRatio"}
+
+
+def test_every_dial_has_exactly_one_axis():
+    from omega.execution import (POSITION_MANAGEMENT_DIALS, POSITION_MANAGEMENT_MIRROR,
+                                 SETUP_GATE_DIALS, TRADE_LEVEL_DIALS)
+    placed = list(SETUP_GATE_DIALS) + list(TRADE_LEVEL_DIALS) + list(POSITION_MANAGEMENT_DIALS)
+    assert len(placed) == len(set(placed))
+    assert set(placed) == EXECUTION_PARAMS | set(POSITION_MANAGEMENT_MIRROR)
 
 
 def test_schema_bounds_are_the_ones_the_2026_09_18_capture_declares():
@@ -82,18 +101,30 @@ def test_the_platform_defaults_sit_inside_the_schema_bounds():
 def test_an_open_lower_bound_still_validates_the_upper_edge():
     """maxStopLossAtrMultiple is (None, 3) in 61.0.1 - a maximum with no minimum. The open
     edge must not silence the closed one, and must not raise."""
-    assert any(f.code == "EXECUTION_OUT_OF_BOUNDS" and f.severity == "error"
+    assert any(f.code == "EXECUTION_OUT_OF_BOUNDS"
                for f in validate_execution({"maxStopLossAtrMultiple": 3.5}))
     assert not [f for f in validate_execution({"maxStopLossAtrMultiple": 0.5})
-                if f.severity == "error"]
+                if f.code == "EXECUTION_OUT_OF_BOUNDS"]
+
+
+def test_the_retired_schema_bounds_warn_and_never_gate():
+    """Plan 2026-10-06: SCHEMA_BOUNDS "becomes a record of a retired schema, never a gate".
+    The v91 axis schemas declare no bound on any dial, and since v89 a create is judged at
+    the operator bounds configured now, in the draft's diagnostics and at commit."""
+    from omega.contract import stage_schema
+    axes = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
+    for axis in ("SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"):
+        for name, node in axes[axis]["properties"].items():
+            assert not {"minimum", "maximum", "multipleOf"} & set(node), (axis, name)
+    lo, hi = SCHEMA_BOUNDS["breakEvenTriggerR"]
+    found = [f for f in validate_execution({"breakEvenTriggerR": hi + 1})
+             if f.code == "EXECUTION_OUT_OF_BOUNDS"]
+    assert found and all(f.severity == "warning" for f in found)
 
 
 def test_override_validation():
-    assert any(f.code == "EXECUTION_UNKNOWN_PARAM"
+    assert any(f.code == "EXECUTION_UNKNOWN_PARAM" and f.severity == "error"
                for f in validate_execution({"minRiskReward": 2}))       # typo'd key
-    lo, hi = SCHEMA_BOUNDS["breakEvenTriggerR"]
-    assert any(f.code == "EXECUTION_OUT_OF_BOUNDS" and f.severity == "error"
-               for f in validate_execution({"breakEvenTriggerR": hi + 1}))
     assert not [f for f in validate_execution({"breakEvenTriggerR": 1.5})
                 if f.severity == "error"]
 

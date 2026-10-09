@@ -51,7 +51,7 @@ const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 interface ContractDigest {
   readonly axes: Readonly<Record<string, readonly string[]>>;
   readonly domains: Readonly<Record<string, readonly string[]>>;
-  readonly bounds: { readonly conditionMaxCloses: number; readonly entryMaxCloses: number };
+  readonly bounds: Readonly<Record<string, number>>;
   readonly metricKeys: readonly string[];
 }
 
@@ -194,14 +194,6 @@ describe('published skill states the live authoring contract', () => {
     const conditions = sectionBody(skill, AXIS_HEADING.condition);
     expect(digest.domains.conditionVerdict.filter((member) => !conditions.includes(member))).toEqual([]);
   });
-
-  it('states the closes ceiling its constant carries', () => {
-    // `closes` is meaningless without its ceiling, and the ceiling is a number rendered in prose
-    // rather than a set — so the check is the rendered range, built from the constant.
-    expect(sectionBody(skill, AXIS_HEADING.condition)).toContain(
-      `1–${digest.bounds.conditionMaxCloses}`,
-    );
-  });
 });
 
 describe('published skill states no unverifiable vocabulary absence', () => {
@@ -236,10 +228,7 @@ describe('the contract check fails on the drift it was written for', () => {
   // A gate never seen to reject anything is not evidence that it works.
   it('reports the keys the pre-contract-44 recipe omitted', () => {
     const stale = '\n## X\n\n`{ conditionKey, name, definition, verdict, required }` — five.\n';
-    expect(missingFrom(digest.axes.condition, braceListKeys(stale, '## X')).sort()).toEqual([
-      'closes',
-      'exit',
-    ]);
+    expect(missingFrom(digest.axes.condition, braceListKeys(stale, '## X')).sort()).toEqual(['exitSide']);
   });
 
   it('reports a claimed-absent key the catalog now serves', () => {

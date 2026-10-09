@@ -9,8 +9,10 @@ The player configured an agent, pointed real money at it, and something did not 
 to find out what, from the fields that actually say so — and then to say what would change it, in
 terms of levers that exist.
 
-Everything here is a **read**. You have no write path, and you do not acquire one by finding a
-problem: the fix runs through the flow that owns it, with that flow's own confirms.
+Everything you do here is a **read**. You have no write path, and you do not acquire one by finding
+a problem: the fix runs through the flow that owns it, with that flow's own confirms. The agent's
+draft tools are visible in this skill so that a risk-limit improvement can name its lever exactly
+(step 4) — never so that you call them from this arc.
 
 ## The five failures this flow exists to prevent
 
@@ -31,7 +33,10 @@ problem: the fix runs through the flow that owns it, with that flow's own confir
 
 Three reads, and they are not interchangeable:
 
-- **`get_agent_budget`** — the health read. `haltReason` (why it stopped, if it did),
+- **`get_agent_budget`** — the health read. `runStatus` (`blocked` / `paused` / `active` — the run-state
+  already ranked, so read it rather than re-deriving it from the fields below; a halt reads `paused` even
+  while its own `AGENT_HALTED` block stands), `haltReason` (why it stopped, if it did),
+  `haltResumeEligibility` (whether a resume would now succeed, and what still blocks it),
   `blockedReason` + `blockedSince` (the typed pipeline block currently standing, and since when),
   and `gauges` — four guardrail meters (dailyTrades, exposure, drawdown, dailyLoss), each with a
   server-computed `breached` flag. **Read `breached`; never compare fill against limit yourself.**
@@ -85,16 +90,22 @@ a diagnosis; "OPEN_POSITION_CONFLICT, 14 times, most recently 2h ago" is.
 
 ### 3. Halted agents, and healthy ones
 
-**If `haltReason` is set, name the branch that actually clears it:**
+**If the agent is halted, `haltReason` says why and `haltResumeEligibility` says what clears it.**
+Name the recovery from the verdict alone:
 
-- **MANUAL** — resume lifts it directly.
-- **DRAWDOWN_BREACH** — clears by raising `maxCumulativeDrawdownUsd` **or** by the drawdown
-  baseline reset, then resuming.
-- **DAILY_LOSS** — clears by raising `maxDailyLossUsd` **or** by the UTC-day rollover. **The
-  baseline reset cannot clear it. Never offer it here.**
+- **null** — the agent is not halted. A halt the player set by hand carries a verdict like any
+  other, and is recovered through it.
+- **`eligible: true`** — nothing is still breached; resuming will succeed.
+- **`eligible: false`** — name `breachedStop`, the stop still breached, with `breachingFigureUsd`
+  against `limitUsd`, and exactly the exits the verdict marks open: raising that stop above the
+  figure (`canRaiseTriggeringStop`), the drawdown baseline reset (`canResetBaseline`), and, when
+  `breachedStop` is `DAILY_LOSS`, the UTC-day rollover. Then resuming. An exit it does not mark
+  open is never offered.
 
-In every case, say that a resume attempted while the stop is still breached is **refused by the
-server**, with the current figure against the limit.
+Say that a resume attempted while a stop is still breached is **refused by the server**, naming the
+same stop, figure and exits. A resume the server accepts is followed by a re-check of every stop, so
+read the resume response's `haltedAt`: set means a loss settled, or a stop was lowered, while the
+resume ran and the agent was halted again at once; `get_agent_budget`'s `haltReason` names the stop.
 
 **If the reads are clean, say so.** An agent whose gauges are unbreached, whose blocks are ordinary
 no-trade verdicts, and whose deployment covers what the player expected, is working — report the
@@ -105,11 +116,14 @@ recommend.
 
 Present a ranked list. **Each item names the concrete thing that would apply it:**
 
-- a **strategy-rule** change → the `strategy-authoring` skill (its compile → review → confirm →
-  apply arc);
+- a **strategy-rule** change → the `strategy-authoring` skill, whose arc stages the change into
+  the strategy's draft, reads it back with its diff and impact, and commits only on the player's
+  confirming pick;
 - a **deployment or radar policy** change → the `radar-deployment` skill's tools, named;
-- a **risk-limit or budget** change → `agent-management`'s update verb, and note that it is a
-  **whole-object** write: the current limits are read and the complete object written back;
+- a **risk-limit or budget** change → `agent-management`'s draft: the complete TRADING_CONFIG
+  axis — a **whole-object** write, the current limits read and the complete object written back —
+  staged with `stage_agent_draft` and committed with `commit_agent_draft` once that flow's
+  confirmation is answered;
 - a **halt recovery** → the specific lever from step 3.
 
 An improvement with **no lever on this platform** is labelled as such, explicitly, and never
@@ -146,6 +160,10 @@ it is undetermined.
   one: route a rule change by naming the `strategy-authoring` skill, as step 4 does. The authoring
   tools are in a family this skill does not declare, and a skill body that names an unreachable tool
   — including in a negative — fails the registry's reachability check.
+- **Never call the agent's draft tools from this arc.** Step 4 names `stage_agent_draft` and
+  `commit_agent_draft` as the lever a risk-limit change takes; applying it activates
+  `agent-management`, whose arc stages the change, reads the draft back, states the radius and asks
+  before anything is committed.
 - Never diagnose from the agent's own prose or overlay text where a typed field exists.
 - Never present a gate-block count as a rate, a trend, or a percentage — report it as served.
 

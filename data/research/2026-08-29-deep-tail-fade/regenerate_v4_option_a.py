@@ -13,6 +13,17 @@ so only a compile can measure it.
 
 Run from the repo root: python data/research/2026-08-29-deep-tail-fade/regenerate_v4_option_a.py
 """
+import sys as _sys
+
+# RETIRED 2026-10-06. This rebuilt a compile_strategy_plan CREATE body with
+# StrategyPlan.wire(); contract 85.0.0 removed the compile and omega removed wire() (no
+# alias). The bodies beside this file are frozen records that tests read as fixtures, so a
+# re-run must never overwrite them with a different shape. A v91 equivalent is
+# plan(thesis).axes() / .preview_request() (docs/plans/2026-10-06-omega-draft-lifecycle-re-extraction.md).
+if __name__ == "__main__":
+    _sys.exit("retired: compile_strategy_plan was removed at contract 85.0.0 and "
+              "StrategyPlan.wire() with it; the compile bodies here are frozen records")
+
 import json
 import os
 import sys
@@ -41,7 +52,7 @@ errors += [str(f) for f in p.validation().errors]
 print("plan errors:", "none" if not errors else errors)
 
 b = brief(p)
-body = p.wire()
+body = p.wire()  # removed 2026-10-06; unreachable behind the guard above
 
 with open(os.path.join(HERE, "compile_body_deep_tail_fade_v4.json"), "w", encoding="utf-8") as f:
     json.dump(body, f, indent=2, ensure_ascii=False)

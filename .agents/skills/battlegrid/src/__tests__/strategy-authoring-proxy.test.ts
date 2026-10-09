@@ -6,14 +6,14 @@
  * place of the remote BattleGrid server. They prove — at the protocol level,
  * not via helper-function unit tests — that the proxy:
  *
- *   - publishes the four authoring tools as exactly `{ account, request }` in
+ *   - publishes the enveloped authoring tools as exactly `{ account, request }` in
  *     multi-account mode, preserving the server-owned nested `request`
  *     (unions, discriminators, required fields, bounds, additionalProperties);
  *   - publishes the server-native `{ request }` unchanged in single-account mode;
  *   - strips ONLY the outer `account` on a call and forwards the unchanged
  *     `{ request }` with the routed Bearer token;
- *   - covers CREATE, UPDATE, and RESTORE compile branches plus section-template,
- *     focused-rule-update, and apply;
+ *   - covers the strategy draft lifecycle — stage (into an existing strategy's draft
+ *     and into a new create draft), get, commit, and discard — plus section-template;
  *   - never reconstructs flat legacy payloads into the envelope;
  *   - does not expose or reintroduce the retired `create_strategy` operation;
  *   - preserves structured content and JSON-text results consistently.
@@ -28,85 +28,113 @@ import { createProxyServer, type AccountIdentity } from '../index.js';
 
 type JsonSchema = Record<string, unknown>;
 
-const COIN_SELECTION_SCHEMA: JsonSchema = {
-  oneOf: [
-    {
-      type: 'object',
-      properties: {
-        mode: { const: 'ranked' },
-        limit: { type: 'integer', minimum: 1, maximum: 20 },
-      },
-      required: ['mode', 'limit'],
-      additionalProperties: false,
+const UUID_SCHEMA: JsonSchema = { type: 'string', format: 'uuid' };
+
+// A strategy's ENTRY axis — a union discriminated by `trigger` (contract 85.0.0): the close trigger
+// alone, or a level trigger with its two dials.
+const ENTRY_AXIS_SCHEMA: JsonSchema = {
+  type: 'object',
+  properties: {
+    entry: {
+      anyOf: [
+        {
+          type: 'object',
+          properties: { trigger: { type: 'string', const: 'ON_CANDLE_CLOSE' } },
+          required: ['trigger'],
+          additionalProperties: false,
+        },
+        {
+          type: 'object',
+          properties: {
+            trigger: { type: 'string', enum: ['STOP_THROUGH_LEVEL', 'ON_RETEST'] },
+            levelOffsetAtrMultiple: { type: 'number' },
+            validForBars: { type: 'integer', minimum: 1 },
+          },
+          required: ['trigger', 'levelOffsetAtrMultiple', 'validForBars'],
+          additionalProperties: false,
+        },
+      ],
     },
-    {
-      type: 'object',
-      properties: {
-        mode: { const: 'explicit' },
-        tickers: { type: 'array', items: { type: 'string' }, minItems: 1, maxItems: 30 },
-      },
-      required: ['mode', 'tickers'],
-      additionalProperties: false,
-    },
-  ],
+  },
+  required: ['entry'],
+  additionalProperties: false,
 };
 
-const AUTHORING_CONTEXT_PROPS: JsonSchema = {
-  intentSummary: { type: 'string', minLength: 1, maxLength: 2000 },
-  assumptions: { type: 'array', items: { type: 'string' } },
-  coinSelection: COIN_SELECTION_SCHEMA,
+// stage_strategy_draft request — the version read, and the proposed axes, each optional.
+const STAGE_REQUEST_SCHEMA: JsonSchema = {
+  type: 'object',
+  properties: {
+    strategyId: UUID_SCHEMA,
+    draftVersion: { type: 'integer', minimum: 0 },
+    axes: {
+      type: 'object',
+      properties: {
+        IDENTITY: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', minLength: 1, maxLength: 50 },
+            description: { type: 'string', maxLength: 500 },
+            tagline: { type: 'string', maxLength: 80 },
+          },
+          required: ['name', 'description', 'tagline'],
+          additionalProperties: false,
+        },
+        TIMEFRAME_PROFILE: {
+          type: 'object',
+          properties: { timeframe: { type: 'string' } },
+          required: ['timeframe'],
+          additionalProperties: false,
+        },
+        REPORT: {
+          type: 'object',
+          properties: { sections: { type: 'array' } },
+          required: ['sections'],
+          additionalProperties: false,
+        },
+        ENTRY: ENTRY_AXIS_SCHEMA,
+        SIGNAL_RULES: {
+          type: 'object',
+          properties: { rules: { type: 'array' } },
+          required: ['rules'],
+          additionalProperties: false,
+        },
+      },
+      additionalProperties: false,
+    },
+  },
+  required: ['draftVersion', 'axes'],
+  additionalProperties: false,
 };
 
-// compile_strategy_plan request — strict CREATE / UPDATE / RESTORE discriminated union.
-const COMPILE_REQUEST_SCHEMA: JsonSchema = {
-  oneOf: [
-    {
-      type: 'object',
-      properties: {
-        operation: { const: 'CREATE' },
-        ...AUTHORING_CONTEXT_PROPS,
-        name: { type: 'string', minLength: 1, maxLength: 50 },
-        description: { type: 'string', maxLength: 500 },
-        timeframe: { type: 'string' },
-        regimeAutoDerive: { type: 'boolean' },
-        sections: { type: 'array' },
-      },
-      required: [
-        'operation', 'intentSummary', 'assumptions', 'coinSelection',
-        'name', 'timeframe', 'regimeAutoDerive', 'sections',
-      ],
-      additionalProperties: false,
-    },
-    {
-      type: 'object',
-      properties: {
-        operation: { const: 'UPDATE' },
-        ...AUTHORING_CONTEXT_PROPS,
-        strategyId: { type: 'string', format: 'uuid' },
-        expectedRevision: { type: 'integer', minimum: 1 },
-        rules: { type: 'array' },
-      },
-      required: [
-        'operation', 'intentSummary', 'assumptions', 'coinSelection',
-        'strategyId', 'expectedRevision',
-      ],
-      additionalProperties: false,
-    },
-    {
-      type: 'object',
-      properties: {
-        operation: { const: 'RESTORE' },
-        ...AUTHORING_CONTEXT_PROPS,
-        strategyId: { type: 'string', format: 'uuid' },
-        expectedRevision: { type: 'integer', minimum: 1 },
-      },
-      required: [
-        'operation', 'intentSummary', 'assumptions', 'coinSelection',
-        'strategyId', 'expectedRevision',
-      ],
-      additionalProperties: false,
-    },
-  ],
+// get_strategy_draft request — the id alone.
+const GET_DRAFT_REQUEST_SCHEMA: JsonSchema = {
+  type: 'object',
+  properties: { strategyId: UUID_SCHEMA },
+  required: ['strategyId'],
+  additionalProperties: false,
+};
+
+// commit_strategy_draft request — exactly the two numbers the draft read returned.
+const COMMIT_REQUEST_SCHEMA: JsonSchema = {
+  type: 'object',
+  properties: {
+    strategyId: UUID_SCHEMA,
+    draftVersion: { type: 'integer', minimum: 1 },
+    expectedRevision: { anyOf: [{ type: 'integer', minimum: 1 }, { type: 'null' }] },
+  },
+  required: ['strategyId', 'draftVersion', 'expectedRevision'],
+  additionalProperties: false,
+};
+
+// discard_strategy_draft request — the version read, nothing else.
+const DISCARD_REQUEST_SCHEMA: JsonSchema = {
+  type: 'object',
+  properties: {
+    strategyId: UUID_SCHEMA,
+    draftVersion: { type: 'integer', minimum: 1 },
+  },
+  required: ['strategyId', 'draftVersion'],
+  additionalProperties: false,
 };
 
 // get_strategy_section_template request — platform / custom discriminated union.
@@ -125,34 +153,6 @@ const TEMPLATE_REQUEST_SCHEMA: JsonSchema = {
       additionalProperties: false,
     },
   ],
-};
-
-// update_strategy_signal_rule request — one focused rule edit.
-const RULE_UPDATE_REQUEST_SCHEMA: JsonSchema = {
-  type: 'object',
-  properties: {
-    strategyId: { type: 'string', format: 'uuid' },
-    expectedRevision: { type: 'integer', minimum: 1 },
-    signalId: { type: 'string' },
-    allocation: { type: 'integer', minimum: 0, maximum: 3 },
-    required: { type: 'boolean' },
-    params: { type: 'object' },
-  },
-  required: ['strategyId', 'expectedRevision', 'signalId', 'allocation', 'required'],
-  additionalProperties: false,
-};
-
-// apply_strategy_plan request — the credential-bound token and the confirmation, nothing else.
-// The server holds the plan its own compile approved and reads it back (contract 33.0.0), so this
-// fixture carries no plan member; `additionalProperties: false` is what rejects one upstream.
-const APPLY_REQUEST_SCHEMA: JsonSchema = {
-  type: 'object',
-  properties: {
-    planToken: { type: 'string', minLength: 1, maxLength: 4096 },
-    confirm: { const: true },
-  },
-  required: ['planToken', 'confirm'],
-  additionalProperties: false,
 };
 
 /** Strict server publication envelope: `{ request: canonicalPayload }`. */
@@ -180,16 +180,18 @@ const GET_ACCOUNT_STATE_SCHEMA: JsonSchema = {
 
 const ENVELOPE_TOOL_NAMES = [
   'get_strategy_section_template',
-  'update_strategy_signal_rule',
-  'compile_strategy_plan',
-  'apply_strategy_plan',
+  'stage_strategy_draft',
+  'get_strategy_draft',
+  'commit_strategy_draft',
+  'discard_strategy_draft',
 ] as const;
 
 const ENVELOPE_SCHEMAS: Record<string, JsonSchema> = {
   get_strategy_section_template: TEMPLATE_REQUEST_SCHEMA,
-  update_strategy_signal_rule: RULE_UPDATE_REQUEST_SCHEMA,
-  compile_strategy_plan: COMPILE_REQUEST_SCHEMA,
-  apply_strategy_plan: APPLY_REQUEST_SCHEMA,
+  stage_strategy_draft: STAGE_REQUEST_SCHEMA,
+  get_strategy_draft: GET_DRAFT_REQUEST_SCHEMA,
+  commit_strategy_draft: COMMIT_REQUEST_SCHEMA,
+  discard_strategy_draft: DISCARD_REQUEST_SCHEMA,
 };
 
 interface ToolShape {
@@ -202,13 +204,14 @@ const SERVER_TOOLS: ToolShape[] = [
   { name: 'list_strategies', description: 'List strategies.', inputSchema: LIST_STRATEGIES_SCHEMA },
   { name: 'get_account_state', description: 'Get account state.', inputSchema: GET_ACCOUNT_STATE_SCHEMA },
   { name: 'get_strategy_section_template', description: 'Get one section template.', inputSchema: requestEnvelope(TEMPLATE_REQUEST_SCHEMA) },
-  { name: 'update_strategy_signal_rule', description: 'Update one signal rule.', inputSchema: requestEnvelope(RULE_UPDATE_REQUEST_SCHEMA) },
-  { name: 'compile_strategy_plan', description: 'Compile a CREATE/UPDATE/RESTORE plan.', inputSchema: requestEnvelope(COMPILE_REQUEST_SCHEMA) },
-  { name: 'apply_strategy_plan', description: 'Apply an approved plan.', inputSchema: requestEnvelope(APPLY_REQUEST_SCHEMA) },
+  { name: 'stage_strategy_draft', description: 'Stage axes into a strategy draft.', inputSchema: requestEnvelope(STAGE_REQUEST_SCHEMA) },
+  { name: 'get_strategy_draft', description: 'Read a strategy draft with its diff.', inputSchema: requestEnvelope(GET_DRAFT_REQUEST_SCHEMA) },
+  { name: 'commit_strategy_draft', description: 'Commit the draft version read.', inputSchema: requestEnvelope(COMMIT_REQUEST_SCHEMA) },
+  { name: 'discard_strategy_draft', description: 'Discard the draft version read.', inputSchema: requestEnvelope(DISCARD_REQUEST_SCHEMA) },
 ];
 
 const SERVER_PROMPTS = [
-  { name: 'author-strategy', description: 'Compile → review → apply a strategy plan.' },
+  { name: 'author-strategy', description: 'Discover, stage, review, and commit a BattleGrid strategy through its draft' },
   { name: 'play-market-grid', description: 'Play a Market Grid game.' },
 ];
 
@@ -226,57 +229,49 @@ const RETIRED_TOOLS = [
   'repair_strategy',
   'get_rule_suggestions',
   'apply_rule_suggestions',
+  'compile_strategy_plan',
+  'stage_strategy_plan',
+  'apply_strategy_plan',
+  'update_strategy_signal_rule',
+  'create_intelligence_agent',
+  'update_intelligence_agent',
+  'rebind_intelligence_agent',
 ];
 
 // --- Request payload fixtures (client-side call arguments) ---
 
 const STRATEGY_ID = '11111111-2222-4333-8444-555555555555';
 
-const CREATE_REQUEST = {
-  operation: 'CREATE',
-  intentSummary: 'Author a momentum strategy.',
-  assumptions: ['Use canonical RSI context.'],
-  coinSelection: { mode: 'explicit', tickers: ['BTC'] },
-  name: 'Protocol momentum',
-  description: 'Compiled through the live MCP dispatcher.',
-  timeframe: '1h',
-  regimeAutoDerive: true,
-  sections: [{ kind: 'platform', sectionKey: 'includeRsi' }],
+// A stage into an existing strategy's draft, at the version its read returned.
+const STAGE_EDIT_REQUEST = {
+  strategyId: STRATEGY_ID,
+  draftVersion: 3,
+  axes: {
+    ENTRY: { entry: { trigger: 'ON_RETEST', levelOffsetAtrMultiple: 0.25, validForBars: 3 } },
+    SIGNAL_RULES: { rules: [{ signalId: 'RSI_OVERSOLD', allocation: 3, required: false, params: {} }] },
+  },
 } as const;
 
-const UPDATE_REQUEST = {
-  operation: 'UPDATE',
-  intentSummary: 'Raise one RSI allocation.',
-  assumptions: [],
-  coinSelection: { mode: 'explicit', tickers: ['BTC'] },
-  strategyId: STRATEGY_ID,
-  expectedRevision: 7,
-  rules: [{ signalId: 'RSI_OVERSOLD', allocation: 3, required: false }],
-} as const;
-
-const RESTORE_REQUEST = {
-  operation: 'RESTORE',
-  intentSummary: 'Restore the viable inactive revision.',
-  assumptions: [],
-  coinSelection: { mode: 'explicit', tickers: ['BTC'] },
-  strategyId: STRATEGY_ID,
-  expectedRevision: 7,
+// A stage that opens a new create draft: no id, no draft read.
+const STAGE_CREATE_REQUEST = {
+  draftVersion: 0,
+  axes: {
+    IDENTITY: { name: 'Protocol momentum', description: 'Staged through the live MCP dispatcher.', tagline: '' },
+    TIMEFRAME_PROFILE: { timeframe: '1h' },
+    REPORT: { sections: [{ kind: 'platform', sectionKey: 'includeRsi' }] },
+  },
 } as const;
 
 const TEMPLATE_REQUEST = { kind: 'platform', sectionKey: 'includeRsi' } as const;
 
-const RULE_UPDATE_REQUEST = {
-  strategyId: STRATEGY_ID,
-  expectedRevision: 1,
-  signalId: 'RSI_OVERSOLD',
-  allocation: 2,
-  required: false,
-} as const;
+const GET_DRAFT_REQUEST = { strategyId: STRATEGY_ID } as const;
 
-const APPLY_REQUEST = {
-  planToken: 'plan_tok_abcdef',
-  confirm: true,
-} as const;
+const COMMIT_REQUEST = { strategyId: STRATEGY_ID, draftVersion: 4, expectedRevision: 7 } as const;
+
+// A create commits at expectedRevision null — the null must survive the proxy as null.
+const COMMIT_CREATE_REQUEST = { strategyId: STRATEGY_ID, draftVersion: 2, expectedRevision: null } as const;
+
+const DISCARD_REQUEST = { strategyId: STRATEGY_ID, draftVersion: 4 } as const;
 
 // --- Fake upstream ---
 
@@ -429,22 +424,27 @@ describe('multi-account discovery — strict { account, request }', () => {
     }
   });
 
-  it('preserves the compile discriminator union (CREATE/UPDATE/RESTORE) unchanged inside request', async () => {
+  it('preserves the ENTRY trigger union unchanged inside the staged axes', async () => {
     const { client } = await setup(['alice', 'bob']);
     const tools = await toolMap(client);
-    const request = (tools.get('compile_strategy_plan')!.inputSchema.properties as Record<string, JsonSchema>).request;
+    const request = (tools.get('stage_strategy_draft')!.inputSchema.properties as Record<string, JsonSchema>).request;
+    const axes = (request.properties as Record<string, JsonSchema>).axes;
+    const entryAxis = (axes.properties as Record<string, JsonSchema>).ENTRY;
+    const entry = (entryAxis.properties as Record<string, JsonSchema>).entry;
 
-    const branches = request.oneOf as JsonSchema[];
-    expect(branches).toHaveLength(3);
-    const operations = branches.map(b => ((b.properties as Record<string, JsonSchema>).operation as JsonSchema).const);
-    expect(operations).toEqual(['CREATE', 'UPDATE', 'RESTORE']);
+    const branches = entry.anyOf as JsonSchema[];
+    expect(branches).toHaveLength(2);
+    const triggers = branches.map(b => (b.properties as Record<string, JsonSchema>).trigger);
+    expect(triggers).toEqual([
+      { type: 'string', const: 'ON_CANDLE_CLOSE' },
+      { type: 'string', enum: ['STOP_THROUGH_LEVEL', 'ON_RETEST'] },
+    ]);
     for (const branch of branches) {
       expect(branch.additionalProperties).toBe(false);
       expect(Array.isArray(branch.required)).toBe(true);
     }
     // A representative nested bound survives untouched.
-    const updateBranch = branches[1];
-    expect(((updateBranch.properties as Record<string, JsonSchema>).expectedRevision as JsonSchema).minimum).toBe(1);
+    expect(((branches[1].properties as Record<string, JsonSchema>).validForBars as JsonSchema).minimum).toBe(1);
   });
 
   it('injects account as the sole addition on flat (non-enveloped) tools too', async () => {
@@ -488,17 +488,17 @@ describe('single-account discovery — server-native { request }', () => {
 });
 
 describe('exact forwarding — strip only account, forward unchanged { request }', () => {
-  const cases: { tool: string; request: Record<string, unknown> }[] = [
-    { tool: 'compile_strategy_plan', request: { ...CREATE_REQUEST } },
-    { tool: 'compile_strategy_plan', request: { ...UPDATE_REQUEST } },
-    { tool: 'compile_strategy_plan', request: { ...RESTORE_REQUEST } },
-    { tool: 'get_strategy_section_template', request: { ...TEMPLATE_REQUEST } },
-    { tool: 'update_strategy_signal_rule', request: { ...RULE_UPDATE_REQUEST } },
-    { tool: 'apply_strategy_plan', request: { ...APPLY_REQUEST } },
+  const cases: { label: string; tool: string; request: Record<string, unknown> }[] = [
+    { label: 'stage_strategy_draft (edit)', tool: 'stage_strategy_draft', request: { ...STAGE_EDIT_REQUEST } },
+    { label: 'stage_strategy_draft (create)', tool: 'stage_strategy_draft', request: { ...STAGE_CREATE_REQUEST } },
+    { label: 'get_strategy_draft', tool: 'get_strategy_draft', request: { ...GET_DRAFT_REQUEST } },
+    { label: 'commit_strategy_draft (edit)', tool: 'commit_strategy_draft', request: { ...COMMIT_REQUEST } },
+    { label: 'commit_strategy_draft (create)', tool: 'commit_strategy_draft', request: { ...COMMIT_CREATE_REQUEST } },
+    { label: 'discard_strategy_draft', tool: 'discard_strategy_draft', request: { ...DISCARD_REQUEST } },
+    { label: 'get_strategy_section_template', tool: 'get_strategy_section_template', request: { ...TEMPLATE_REQUEST } },
   ];
 
-  for (const { tool, request } of cases) {
-    const label = 'operation' in request ? `${tool} (${request.operation})` : tool;
+  for (const { label, tool, request } of cases) {
     it(`routes ${label} to the selected account and forwards { request } verbatim`, async () => {
       const { client, calls } = await setup(['alice', 'bob']);
 
@@ -520,22 +520,22 @@ describe('exact forwarding — strip only account, forward unchanged { request }
 
   it('routes to the primary account when it is selected', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    await client.callTool({ name: 'compile_strategy_plan', arguments: { account: 'alice', request: { ...CREATE_REQUEST } } });
+    await client.callTool({ name: 'stage_strategy_draft', arguments: { account: 'alice', request: { ...STAGE_CREATE_REQUEST } } });
     expect(calls).toHaveLength(1);
     expect(calls[0].apiKey).toBe('bg_live_alice');
-    expect(calls[0].arguments).toEqual({ request: { ...CREATE_REQUEST } });
+    expect(calls[0].arguments).toEqual({ request: { ...STAGE_CREATE_REQUEST } });
   });
 
   it('rejects a missing account without contacting the upstream server', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    const result = await client.callTool({ name: 'compile_strategy_plan', arguments: { request: { ...CREATE_REQUEST } } });
+    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { request: { ...STAGE_CREATE_REQUEST } } });
     expect(result.isError).toBe(true);
     expect(calls).toHaveLength(0);
   });
 
   it('rejects an unknown account without contacting the upstream server', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    const result = await client.callTool({ name: 'compile_strategy_plan', arguments: { account: 'carol', request: { ...CREATE_REQUEST } } });
+    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { account: 'carol', request: { ...STAGE_CREATE_REQUEST } } });
     expect(result.isError).toBe(true);
     expect(calls).toHaveLength(0);
   });
@@ -544,25 +544,25 @@ describe('exact forwarding — strip only account, forward unchanged { request }
 describe('single-account forwarding', () => {
   it('forwards the server-native { request } with no account field', async () => {
     const { client, calls } = await setup(['solo']);
-    const result = await client.callTool({ name: 'compile_strategy_plan', arguments: { request: { ...CREATE_REQUEST } } });
+    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { request: { ...STAGE_CREATE_REQUEST } } });
 
     expect(calls).toHaveLength(1);
     expect(calls[0].apiKey).toBe('bg_live_solo');
-    expect(calls[0].arguments).toEqual({ request: { ...CREATE_REQUEST } });
-    expect(result.structuredContent).toMatchObject({ tool: 'compile_strategy_plan', marker: 'structured-ok' });
+    expect(calls[0].arguments).toEqual({ request: { ...STAGE_CREATE_REQUEST } });
+    expect(result.structuredContent).toMatchObject({ tool: 'stage_strategy_draft', marker: 'structured-ok' });
   });
 });
 
 describe('no reconstruction of flat legacy payloads', () => {
-  it('forwards a flat legacy compile payload verbatim and lets the server reject it', async () => {
+  it('forwards a flat stage payload verbatim and lets the server reject it', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    // A client that still sends the retired flat shape (no { request } wrapper).
-    const legacyFlat = { account: 'alice', operation: 'CREATE', name: 'Legacy', timeframe: '1h' };
-    const result = await client.callTool({ name: 'compile_strategy_plan', arguments: legacyFlat });
+    // A client that sends the request fields flat (no { request } wrapper).
+    const legacyFlat = { account: 'alice', draftVersion: 0, axes: { TIMEFRAME_PROFILE: { timeframe: '1h' } } };
+    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: legacyFlat });
 
     // Proxy stripped only account; it did NOT wrap the rest into { request }.
     expect(calls).toHaveLength(1);
-    expect(calls[0].arguments).toEqual({ operation: 'CREATE', name: 'Legacy', timeframe: '1h' });
+    expect(calls[0].arguments).toEqual({ draftVersion: 0, axes: { TIMEFRAME_PROFILE: { timeframe: '1h' } } });
     expect(calls[0].arguments).not.toHaveProperty('request');
     // Server enforces the closed-world root and rejects it.
     expect(result.isError).toBe(true);

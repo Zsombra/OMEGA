@@ -20,6 +20,18 @@ def _load(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+@lru_cache(maxsize=1)
+def stage_schema() -> dict:
+    """The input schemas of the six strategy-draft tools at the contract the manifest's
+    `writeSurface` names (91.0.0 as of 2026-10-06): stage/get/commit/discard/list
+    strategy drafts and preview_strategy_report. The path is read from the manifest, never
+    hard-coded here, so a re-capture moves one pointer. compile_strategy_plan/ and the
+    pre-v84 get_strategy/ records are `retired` in the same manifest - history, not the
+    write surface (plan 2026-10-06, Work step 1)."""
+    manifest = _load(CONTRACT_DIR / "_manifest.json")
+    return _load(ROOT / manifest["writeSurface"]["schema"])
+
+
 @dataclass(frozen=True)
 class Metric:
     """One metric's authoring contract."""
