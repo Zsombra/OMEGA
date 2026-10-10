@@ -1,0 +1,243 @@
+{
+  "_source": {
+    "repo": "battlegrid-manager",
+    "path": "tests/fixtures/2026-10-09-strategy-first-live/action_62_update_stage.json",
+    "jsonPath": "response.review.diagnostics (byte-identical to response.stage.diagnostics)",
+    "actionId": 62,
+    "kind": "STAGE_STRATEGY",
+    "performedAt": "2026-10-10T06:33:40.06051+00:00",
+    "verifiedAt": "2026-10-10T06:34:17.560711+00:00",
+    "strategyId": "7534b2ee-5cd9-4f0b-81a0-c5dbf0a51278",
+    "stagedDraftVersion": 3,
+    "committedRevision": 1,
+    "verifyNote": "get_strategy_draft: the draft stands at version 3 (lastSource mcp); diagnostics: 0 errors, 1 warning(s), 16 mismatch(es); the review is stored - `manager strategy commit 62` proposes its commit"
+  },
+  "_what": "UPDATE stage of plan(PRESETS[\"trend-continuation\"]).axes_update(current) into strategy 7534b2ee (committedRevision 1); the same REPORT and SIGNAL_RULES as the create, so the same 17 diagnostics",
+  "_counts": {
+    "errors": 0,
+    "mismatches": 16,
+    "warnings": 1,
+    "byCode": {
+      "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT": 12,
+      "REPORT_DATA_SIGNAL_OFF": 4
+    }
+  },
+  "_copiedBy": "OMEGA feat/recipes-close-rung-gap, 2026-10-10: the measured mismatch list the recipes are closed against (docs/11-signal-scoring.md, 2026-10-10 note)",
+  "diagnostics": {
+    "errors": [],
+    "mismatches": [
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "MA_ALIGN",
+            "rung": "signalHigher"
+          }
+        ],
+        "message": "Active signal 'htf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ signalHigher.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "htf_ma_aligned_bear"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "MA_ALIGN",
+            "rung": "signalHigher"
+          }
+        ],
+        "message": "Active signal 'htf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ signalHigher.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "htf_ma_aligned_bull"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "ADX",
+            "rung": "signalHigher"
+          }
+        ],
+        "message": "Active signal 'htf_trend_adx_ranging' scores on data the report does not show: ADX @ signalHigher.",
+        "module": "TREND_STRENGTH",
+        "signalId": "htf_trend_adx_ranging"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "ADX",
+            "rung": "signalHigher"
+          }
+        ],
+        "message": "Active signal 'htf_trend_adx_trending' scores on data the report does not show: ADX @ signalHigher.",
+        "module": "TREND_STRENGTH",
+        "signalId": "htf_trend_adx_trending"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "MA_ALIGN",
+            "rung": "lower"
+          }
+        ],
+        "message": "Active signal 'ltf_ma_aligned_bear' scores on data the report does not show: MA_ALIGN @ lower.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "ltf_ma_aligned_bear"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "MA_ALIGN",
+            "rung": "lower"
+          }
+        ],
+        "message": "Active signal 'ltf_ma_aligned_bull' scores on data the report does not show: MA_ALIGN @ lower.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "ltf_ma_aligned_bull"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "ADX",
+            "rung": "lower"
+          }
+        ],
+        "message": "Active signal 'ltf_trend_adx_ranging' scores on data the report does not show: ADX @ lower.",
+        "module": "TREND_STRENGTH",
+        "signalId": "ltf_trend_adx_ranging"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "ADX",
+            "rung": "lower"
+          }
+        ],
+        "message": "Active signal 'ltf_trend_adx_trending' scores on data the report does not show: ADX @ lower.",
+        "module": "TREND_STRENGTH",
+        "signalId": "ltf_trend_adx_trending"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "EMA20",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Active signal 'ma_ema_aligned_bear' scores on data the report does not show: EMA20 @ anchor.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "ma_ema_aligned_bear"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "EMA20",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Active signal 'ma_ema_aligned_bull' scores on data the report does not show: EMA20 @ anchor.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "ma_ema_aligned_bull"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "EMA_CROSS",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Active signal 'ma_ema_bear_cross' scores on data the report does not show: EMA_CROSS @ anchor.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "ma_ema_bear_cross"
+      },
+      {
+        "code": "ACTIVE_SIGNAL_DATA_NOT_IN_REPORT",
+        "data": [
+          {
+            "metric": "EMA_CROSS",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Active signal 'ma_ema_bull_cross' scores on data the report does not show: EMA_CROSS @ anchor.",
+        "module": "MOVING_AVERAGES",
+        "signalId": "ma_ema_bull_cross"
+      },
+      {
+        "code": "REPORT_DATA_SIGNAL_OFF",
+        "data": [
+          {
+            "metric": "REGIME_TREND",
+            "rung": "anchor"
+          },
+          {
+            "metric": "REGIME_VOL",
+            "rung": "anchor"
+          },
+          {
+            "metric": "REGIME_MOM",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Signal 'regime_alignment' is Off while the report shows the data it scores on: REGIME_TREND @ anchor, REGIME_VOL @ anchor, REGIME_MOM @ anchor.",
+        "module": "REGIME",
+        "signalId": "regime_alignment"
+      },
+      {
+        "code": "REPORT_DATA_SIGNAL_OFF",
+        "data": [
+          {
+            "metric": "REGIME_TREND",
+            "rung": "anchor"
+          },
+          {
+            "metric": "REGIME_MOM",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Signal 'regime_divergence' is Off while the report shows the data it scores on: REGIME_TREND @ anchor, REGIME_MOM @ anchor.",
+        "module": "REGIME",
+        "signalId": "regime_divergence"
+      },
+      {
+        "code": "REPORT_DATA_SIGNAL_OFF",
+        "data": [
+          {
+            "metric": "REGIME_TREND",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Signal 'regime_trend_shift' is Off while the report shows the data it scores on: REGIME_TREND @ anchor.",
+        "module": "REGIME",
+        "signalId": "regime_trend_shift"
+      },
+      {
+        "code": "REPORT_DATA_SIGNAL_OFF",
+        "data": [
+          {
+            "metric": "REGIME_VOL",
+            "rung": "anchor"
+          }
+        ],
+        "message": "Signal 'regime_volatility_shift' is Off while the report shows the data it scores on: REGIME_VOL @ anchor.",
+        "module": "REGIME",
+        "signalId": "regime_volatility_shift"
+      }
+    ],
+    "warnings": [
+      {
+        "code": "MODULE_IN_REPORT_SCORES_NOTHING",
+        "details": null,
+        "field": null,
+        "message": "The Market Regime module is in this report, but all 4 of its signals are Off — it is shown to the model and scores nothing."
+      }
+    ]
+  }
+}
