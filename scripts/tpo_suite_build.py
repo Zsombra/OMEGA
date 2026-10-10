@@ -1,41 +1,50 @@
-"""Build the TPO strategy suite S1-S7: a design record AND a wire body per strategy.
+"""Build the TPO strategy suite S1-S7: a design record, a stage request and a preview body per strategy.
 
 PREPARE, NEVER EXECUTE (docs/20, decision P4).
-    This script makes ZERO live calls and writes NOTHING to the platform. It emits
-    JSON files to out/tpo_suite/. Compiling, applying and binding are separate,
+    This script makes ZERO live calls and writes NOTHING to the platform. It emits JSON files
+    to out/tpo_suite/. Staging, previewing, committing and binding are separate,
     human-initiated acts, each per-instance authorised.
 
-TWO FILES PER STRATEGY, BECAUSE ONE FILE CANNOT BE BOTH (measured 2026-09-11)
-    <id>.json       the DESIGN RECORD: thesis, what it teaches, null exposure, threshold
-                    provenance, predicted headers, offline validation. Human-facing.
-    <id>.wire.json  the exact compile_strategy_plan CREATE request body and nothing
-                    else. This is what the preflight diffs and what a compile is sent.
-    Until 2026-09-11 this script emitted only the first file and called it
-    "submit-ready". Run through scripts/preflight.py against a fresh schema capture it
-    FAILED on every strategy: five required wire fields missing (operation,
-    intentSummary, assumptions, timeframe, entry) and ten undeclared annotation keys.
-    It had passed omega's offline validation with zero errors, which is the trap named
-    at SK below - offline validation is this repo's MODEL of the contract, not the
-    server. The assumption that the payloads were compile-ready had never been RUN.
+THREE FILES PER STRATEGY, BECAUSE ONE FILE CANNOT BE ALL OF THEM (measured 2026-09-11)
+    <id>.json          the DESIGN RECORD: thesis, what it teaches, null exposure, threshold
+                       provenance, predicted headers, offline validation, the v91 mappings this
+                       port applied. Human-facing. NEVER sent.
+    <id>.stage.json    `{draftVersion: 0, axes}` - the `request` of a CREATE stage_strategy_draft
+                       (no strategyId: v85 "omit strategyId to open a NEW create draft"). The
+                       ten axes are exactly what omega.generate.StrategyPlan.axes() returns, so
+                       the manager stages them as it stages a generated plan.
+    <id>.preview.json  the read-only dry run: preview_strategy_report {coinSelection, source:
+                       {kind: FIELDS, timeframe, sections, conditions, marketReadText}} (v85),
+                       the shape StrategyPlan.preview_request() returns.
+    Until 2026-09-11 this script emitted only the first file and called it "submit-ready"; run
+    through scripts/preflight.py it FAILED on every strategy (five required fields missing, ten
+    undeclared keys). Offline validation is this repo's MODEL of the contract, not the server -
+    which is why tests/test_tpo_suite_wire.py walks every axis against the saved schema.
+
+PORTED 2026-10-10 FROM THE RETIRED COMPILE BODY TO THE v91 DRAFT LIFECYCLE
+    The 2026-09-11 version emitted the flat compile_strategy_plan CREATE body (contract 54.1.0).
+    Contract 85.0.0 retired that tool; v84 moved the hold onto every clause and group; v88 made
+    `exitSide` a required key; v91 is the saved schema. Each mapping is listed on the design
+    record under `v91Mappings`, per member, and in V91_MAPPINGS below. The theses - the market
+    reads and the condition logic - are the 2026-09-10/11 ones, unchanged.
 
 EVERY NUMBER'S PROVENANCE IS RECORDED
-    Each condition carries a thresholdBasis string. There are exactly two honest
-    categories and this file uses only those: MEASURED (cite the measurement) or
-    INVENTED (say so). Nothing is dressed up.
+    Each threshold carries a basis string. There are exactly two honest categories and this file
+    uses only those: MEASURED (cite the measurement) or INVENTED (say so).
 
 WHY THE COIN LIST IS EXPLICIT AND NOT RANKED
-    preview_strategy_report accepts ranked limit 50 - the panel logger uses it. The
-    COMPILE path does not: the measured BG-14 ceiling is ranked limit 4 (README,
-    2026-08-28), so a realistic ranked universe cannot compile. Explicit lists are the
-    only way to carry breadth into a saved strategy. The schema cap is 50 but the 256 KB
-    report-preview cap binds far earlier - see COINS below. We carry 8.
+    coinSelection is no part of a strategy since v85: it is an input of preview_strategy_report
+    only. The preview is capped at previewExecutionLimits.maxResultChars (150,000 at v92), and
+    the retired compile's 256 KB cap refused 36 and 16 tickers on this report shape (below).
+    Eight explicit tickers carry breadth with headroom.
 
 NOT ALL OF THESE ARE WORTH CREATING, AND THIS FILE DOES NOT DECIDE THAT
-    S1 and S7 emit only NEITHER verdicts, so neither can produce a direction. S2's
-    re-entry geometry (bar opened outside prior value, closed inside) has been observed
-    firing ZERO times across two days of probing, and S3 and S5 both lean on it. None of
-    the seven carries a rules array, so all seven are annotation-only and cannot route at
-    any gate. Emitting a legal payload is not the same as it being worth a quota slot.
+    S1 and S7 emit only NEITHER verdicts, so neither can produce a direction. S2's re-entry
+    geometry (bar opened outside prior value, closed inside) was observed firing ZERO times
+    across two days of probing, and S3 and S5 both lean on it. None of the seven weights a
+    signal, so all seven are annotation-only and cannot route at any gate. And since 56.1.0 a
+    NEITHER carrier reading TRUE beside an UP or DOWN carrier resolves the coin NEITHER (see
+    ordered()). Emitting a legal payload is not the same as it being worth a quota slot.
 
 USAGE
     python scripts/tpo_suite_build.py
@@ -45,12 +54,15 @@ from __future__ import annotations
 import json
 import os
 import sys
+from dataclasses import dataclass
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from omega.conditions import (  # noqa: E402
-    all_of, between, condition, in_, num, ref, report_headers, validate_conditions,
+    all_of, between, condition, held, in_, market_read_text, num, ref, report_headers,
+    validate_conditions, validate_market_read,
 )
+from omega.generate import ENTRY_MIRROR, StrategyPlan, Thesis  # noqa: E402
 from omega.types import Column, CustomSection, Report  # noqa: E402
 from omega.validate import validate_report  # noqa: E402
 
@@ -62,19 +74,13 @@ OUT = os.path.join(ROOT, "out", "tpo_suite")
 # MEASURED 2026-09-10 on a real CREATE: a caller-supplied sectionKey is REFUSED with
 #   REPORT_CUSTOM_SECTION_NOT_OWNED
 #   "Custom section 'custom:7b0d4a1e-...' does not belong to this strategy."
-#   rule: omit sectionKey on a new custom section - the server derives it from the section
-# which is coherent - on a CREATE the section does not exist yet, so it cannot be owned.
-# It IS accepted on UPDATE, where the section exists (also measured, same day).
-#
-# Setting SK to None fixes both halves at once: CustomSection.wire() drops sectionKey via
-# exclude_none, and every condition clause carries sectionKey null, which the server
-# resolves to the key it mints (verified - all conditions read back carrying
-# custom:88da7c5c-... after being submitted as null).
-#
-# An earlier version of this file hardcoded custom:7b0d4a1e-... Every payload it emitted
-# would have been refused on submission. They all passed omega offline validation with
-# zero errors, which is exactly the trap: offline validation is this repo's MODEL of the
-# contract, not the server.
+# The server mints the key at commit. The v91 REPORT axis still declares `sectionKey` optional
+# on a custom section and a create draft's acceptance of one is unmeasured, so a CREATE keeps
+# not sending it (omega.generate.StrategyPlan._sections drops it; SK None drops it here too).
+# Every clause carries `column.sectionKey: null`, which the server resolves to the key it mints
+# (verified 2026-09-10: all conditions read back carrying custom:88da7c5c-... after being
+# submitted as null). An UPDATE of an existing strategy carries the live keys forward
+# (StrategyPlan.axes_update, 2026-10-10); this file builds CREATEs only.
 SK = None
 
 ANCHOR = "1h"
@@ -90,31 +96,30 @@ BIN = 0.05
 WIDTH_P25 = 2.06
 # RSI midline for the persistence leg. INVENTED.
 RSI_MID = 50.0
+# The persistence leg's hold: two closes in a row. The 2026-09-11 body said `closes: 2` on the
+# condition (with the CLOSE clock); v84 says `hold: {atLeast: 2, of: 2}` on the clause.
+HELD_CLOSES = 2
 
 # 36 CRYPTO tickers observed in the 2026-09-10T12:21Z ranked panel pull.
-# UNIVERSE. 36 tickers is MEASURED REFUSED.
-#
-# The 256 KB compile report-preview cap binds on coins x columns x conditions, not on
-# ranked mode alone as the README records. Measured on one identical payload:
+# UNIVERSE. 36 tickers is MEASURED REFUSED - on the retired compile's 256 KB report-preview cap:
 #   36 tickers -> "mcp_result_bytes limit exceeded: 433118 > 256000"  REFUSED
 #   16 tickers -> "281848 > 256000"                                    REFUSED
 #   10 tickers ->  compiled
-# Fitting those two refusals: about 7563 bytes per coin on about 160832 fixed overhead,
-# against a 262144 cap. So the ceiling is roughly (262144 - 160832) / 7563 = 13 coins at
-# 8 columns / 9 conditions, and fewer as the column x condition grid grows.
-#
-# COINS_ALL is kept so the full cohort is not silently lost - the read-only panel logger
-# still covers all 36 through preview, which is NOT subject to this cap.
+# Fitting those two refusals: about 7563 bytes per coin on about 160832 fixed overhead against
+# a 262144 cap, so roughly 13 coins at 8 columns / 9 conditions. The v91 preview has its own
+# cap (previewExecutionLimits.maxResultChars 150,000 at v92, omega.contract.load().shared);
+# what it admits for this report shape is UNMEASURED. COINS_ALL is kept so the full cohort is
+# not silently lost - the read-only panel logger still covers all 36 through preview.
 COINS_ALL = [
     "AAVE", "AIXBT", "APT", "AVAX", "BNB", "BTC", "CAKE", "CRV", "DOGE", "ENA",
     "ETH", "FARTCOIN", "GRAM", "HYPE", "JUP", "LDO", "LINK", "LTC", "MELANIA",
     "MET", "MOODENG", "PENGU", "PEPE", "POPCAT", "PUMP", "PURR", "SHIB", "SNX",
     "SOL", "SUI", "TRUMP", "UNI", "WIF", "WLFI", "XRP", "ZEC",
 ]
-# The eight carried into a compile: the liquid majors plus the two memes that actually
-# produced ENTER decisions on the live agent (MOODENG, DOGE). Eight leaves headroom even
-# at 9 columns.
+# The eight carried into a preview: the liquid majors plus the two memes that actually
+# produced ENTER decisions on the live agent (MOODENG, DOGE).
 COINS = ["BTC", "ETH", "SOL", "BNB", "XRP", "LINK", "DOGE", "MOODENG"]
+COIN_SELECTION = {"mode": "explicit", "tickers": COINS}
 
 
 def c(metric, transform, operand=None, **kw):
@@ -141,6 +146,9 @@ SPINE = [
 #   spread = (base - operand) / operand * 100
 #   POSITIVE  =>  the BASE LEVEL sits ABOVE the operand.
 # So pTpoVAL_close_spread > 0 means the close is BELOW prior VAL.
+#
+# Every clause and group below reads one bar, hold {atLeast 1, of 1} - the builders' default,
+# and what the 2026-09-11 body's `closes: 1` meant (v84). Only HELD holds more.
 
 LOC = [
     condition("ABOVE_PRIOR_VALUE", "Close above the prior value area",
@@ -180,22 +188,26 @@ WIDE = condition("WIDE_ENOUGH", "Prior value area wide enough to be worth rotati
                  num("pTpoVAH_pTpoVAL_spread", "gte", WIDTH_P25, section_key=SK),
                  verdict=None)
 
-# The persistence leg. TPO cannot carry it: closes>1 needs the CLOSE clock and the
-# CLOSE clock is refused on every TPO header. RSI14 is used because it is the ONE
-# candle metric measured end to end this session - header `RSI14`,
-# closeClockReadable true, and closes:2 returning closeClock {closesHeld:2,
-# closesRequired:2, nextCloseAt}. An earlier draft named close_EMA21_spread, a
-# header nobody had rendered; that is exactly the assumption this file exists to
-# avoid.
+# The persistence leg. It reads RSI14 and not a TPO header because on 54.1.0 (2026-09-11) a
+# hold above one bar was refused on every TPO header, while RSI14 was the ONE candle metric
+# measured end to end (header `RSI14`, closes:2 returning closesHeld 2 / closesRequired 2).
+# At v91 the hold is `hold: {atLeast: 2, of: 2}` on the clause - "2 closes in a row" (v84) -
+# placed by condition(hold=) on the definition's root, which for a single clause IS the clause.
+# The clock is gone (retired 61.0.0). What a 1h RSI14 `value` column admits as conditionHold
+# is UNMEASURED: the 2026-10-06 M2 read has RSI14_now (trajectory) at maxWindow 192 and no
+# `RSI14` row; the builder judges it (omega warns only when the header is not candle-moved).
 HELD = [
     condition("RSI_HELD_UP_2C", "Momentum above the midline for two closed bars",
               num("RSI14", "gt", RSI_MID, section_key=SK),
-              verdict=None, clock="CLOSE", closes=2),
+              verdict=None, hold=held(HELD_CLOSES)),
     condition("RSI_HELD_DOWN_2C", "Momentum below the midline for two closed bars",
               num("RSI14", "lt", RSI_MID, section_key=SK),
-              verdict=None, clock="CLOSE", closes=2),
+              verdict=None, hold=held(HELD_CLOSES)),
 ]
 
+# The join reads one bar: a group hold here would be "a group hold over members that hold their
+# own bars", which v84 refuses - so the two-bar hold lives on RSI_HELD_*, reached by conditionRef
+# (a ref carries no hold of its own), and this ALL reads the two building blocks once.
 CONFIRMED = [
     condition("REENTRY_CONFIRMED_UP", "Re-entered value and momentum held two closes",
               all_of(ref("VALUE_REENTRY_UP"), ref("RSI_HELD_UP_2C")), verdict="UP"),
@@ -231,23 +243,40 @@ DEVELOPING = [
               in_("tpoShape", ["b-shape"], section_key=SK), verdict="NEITHER"),
 ]
 
+
 def ordered(conds):
-    """Sort conditions so a directional verdict can never be masked.
+    """Sort conditions directional-first: UP/DOWN, then verdict-null building blocks, then
+    NEITHER tags. sorted() is stable, so order within a rank is preserved.
 
-    MEASURED 2026-09-10: verdict resolution is FIRST-TRUE-WINS in array order. The same
-    nine conditions, same thresholds, same columns, differing ONLY in array order returned
-    0 UP / 0 DOWN / 10 NEITHER in one order and 0 UP / 4 DOWN / 0 NEITHER in the other,
-    with decidedBy naming the directional condition. A NEITHER condition placed ahead of a
-    directional one SILENTLY MASKS it, and the rendered conditions table still shows every
-    row's TRUE/FALSE correctly, so the masking is invisible unless you read the Verdict
-    column. That is how strategy 56c08ef6 revision 2 shipped emitting nothing.
+    WHY IT WAS LOAD-BEARING. MEASURED 2026-09-10 on 54.1.0: verdict resolution was
+    FIRST-TRUE-WINS in array order - the same nine conditions, differing ONLY in array order,
+    returned 0 UP / 0 DOWN / 10 NEITHER in one order and 0 UP / 4 DOWN / 0 NEITHER in the
+    other. A NEITHER condition placed ahead of a directional one SILENTLY masked it; that is how
+    strategy 56c08ef6 revision 2 shipped emitting nothing.
 
-    UP/DOWN first, then verdict-null building blocks, then NEITHER tags last. Whether a
-    verdict-null condition can also mask is UNMEASURED, so it sits in the middle rather
-    than being assumed harmless. sorted() is stable, so order within a rank is preserved.
+    WHY IT NO LONGER IS. Contract 56.1.0 (2026-09-14; vendor pack strategy-examples SKILL.md
+    "Verdicts") resolves over the DISTINCT verdicts of the carriers that read TRUE: one distinct
+    verdict decides and "the first carrier in declaration order carrying it is named as the
+    decider"; carriers that DISAGREE resolve NEITHER, and "declaration order never picks a side
+    between them". So the order now names the decider among AGREEING carriers and nothing else.
+    What it cannot fix: every LOC tag is a NEITHER CARRIER, and a re-entry (closed back inside
+    value) is TRUE together with INSIDE_PRIOR_VALUE, so {UP, NEITHER} disagree and S2-S5
+    resolve NEITHER whenever their directional leg fires. That is a 56.1.0 semantics change in
+    the suite's design, NOT a v91 grammar mapping; it is recorded on every design record
+    (`verdictResolutionNote`) and left to the author - this port changes no condition's logic.
     """
     rank = {"UP": 0, "DOWN": 0, None: 1, "NEITHER": 2}
     return sorted(conds, key=lambda c: rank.get(c.get("verdict"), 1))
+
+
+VERDICT_RESOLUTION_NOTE = (
+    "Contract 56.1.0 (2026-09-14) resolves a coin over the DISTINCT verdicts of the carriers that "
+    "read TRUE; disagreeing carriers resolve NEITHER and declaration order never picks a side. "
+    "Every LOC tag here is a NEITHER carrier and a re-entry is TRUE together with "
+    "INSIDE_PRIOR_VALUE, so a directional leg firing beside it resolves NEITHER. The 2026-09-10 "
+    "first-true-wins measurement that justified ordered() is superseded; ordered() now only names "
+    "the decider among agreeing carriers. Unmeasured on 56.1.0+ for this suite; the author decides "
+    "whether the LOC tags should carry verdict null instead. This port changed no condition.")
 
 
 SUITE = [
@@ -272,9 +301,11 @@ SUITE = [
          teaches="The only never-null TPO regime read available.",
          null="ZERO."),
     dict(id="S5", name="Confirmed Re-Entry",
-         thesis="Re-entry that survived two closed bars of momentum, joined by conditionRef across clocks.",
+         # 2026-09-11 wording: "joined by conditionRef across clocks". The clock was retired at
+         # 61.0.0; the read is the same - the two-bar hold sits on the RSI leg, reached by ref.
+         thesis="Re-entry that survived two closed bars of momentum, joined by conditionRef to a two-bar hold.",
          extra=[c("RSI14", "value")], conds=ordered(LOC + REENTRY + HELD + CONFIRMED),
-         teaches="The split-clock composition, and the only leg in the suite that can persist.",
+         teaches="The held-leg composition, and the only leg in the suite that can persist.",
          null="RSI14 warm-up only - null until 14 anchor bars exist."),
     dict(id="S6", name="POC Cross-Recross",
          thesis="One bar that crossed the prior POC and closed back on its original side.",
@@ -297,119 +328,180 @@ SUITE = [
 ]
 
 
-# --- the entry block: MIRRORED from a record, never invented ---------------------
-# `entry` is REQUIRED on CREATE. omega/preflight.py MIRROR_ENTRY_FIELDS warns when a
-# hardcoded value differs from the reference record, and the recipe's rule for a
-# missing field is "mirror the record's value, never invent". These six are read back
-# VERBATIM from 56c08ef6 (rev 4) and 3d720de3 (rev 2) on 2026-09-11 - identical on both.
-# confirmTf is the thesis anchor by design (Step 0 amendment, 2026-08-30).
-# NOTE omega/generate.py still hardcodes trigger AT_SIGNAL / bandAtrMultiple 1, mirrored
-# from 6a8bca67 in August. Both records bound to TPO strategies now carry the values
-# below; that is a live mirror drift in generate.py, recorded here rather than fixed
-# here because generate.py's mirror has its own tests and its own reference record.
-ENTRY_MIRROR = {"trigger": "ON_CANDLE_CLOSE", "confirmTf": ANCHOR, "closes": 1,
-                "bandAtrMultiple": 0.5, "levelOffsetAtrMultiple": 0, "validForBars": 4}
-ENTRY_MIRROR_SOURCE = "get_strategy 56c08ef6-480b-4293-8136-81beed2161cf rev 4, 2026-09-11T06:39:51Z"
+# --- the entry axis: MIRRORED, never invented ------------------------------------
+# `ENTRY` is `{trigger: "ON_CANDLE_CLOSE"}` alone - omega.generate.ENTRY_MIRROR. v85: "a union
+# discriminated by trigger ... ON_CANDLE_CLOSE naming either dial is refused, which the retired
+# compile accepted; the server stamps the seed values". The six-key block this file mirrored
+# from 56c08ef6 rev 4 on 2026-09-11 (trigger, confirmTf, closes, bandAtrMultiple,
+# levelOffsetAtrMultiple, validForBars) lost three keys at 60.0.0 and the remaining two dials
+# at v85; it is in git history and on no live record's write path.
+ENTRY_MIRROR_SOURCE = ("omega.generate.ENTRY_MIRROR - v85 ENTRY axis, trigger ON_CANDLE_CLOSE alone "
+                       "(data/contract/stage_strategy_draft/schema_20261005T194629Z.json); the six-key "
+                       "56c08ef6 rev-4 mirror of 2026-09-11 is history")
 
-# Routing gate, mirrored from the same record. No strategy here carries a rules array
-# (all nine TPO metrics feed zero of the 84 signal modules - 663-cell probe, 0 failures),
-# so none can produce an aggregate and none can qualify a coin at ANY gate. 0.99 states
-# that honestly on the record instead of leaving a platform default we have not measured.
+# Routing gate, mirrored from the 2026-09-11 reference record (56c08ef6 rev 4). No strategy here
+# weights a signal (all nine TPO metrics feed zero of the 84 signal modules - 663-cell probe,
+# 0 failures), so none can produce an aggregate and none can qualify a coin at ANY gate. 0.99
+# states that honestly on the record instead of leaving a default we have not measured. At v91
+# it is Thesis.gate -> SETUP_GATES.minAggregateScore; minRequiredCount is the count of required
+# rules (none) and minAtrPct the 08-28 measured platform default, both via StrategyPlan.axes().
 GATE_MIRROR = {"minAggregateScore": 0.99, "minRequiredCount": 0}
 
-# The CREATE arm's string caps, read from the live compile schema (byte-identical to the
-# 2026-09-09 capture, sha256 bb5961fd..., re-verified 2026-09-11). Enforced here so a
-# too-long field fails offline instead of at the server.
-CAPS = {"name": 50, "tagline": 80, "description": 500, "intentSummary": 2000,
-        "assumption": 500, "assumptions": 20}
+# The IDENTITY strings' local ceilings. The v91 IDENTITY axis declares NO length bound (name,
+# description, tagline are plain strings); these are the retired compile's caps, kept so the
+# strings stay inside what the platform is known to have accepted - a longer string's acceptance
+# is unmeasured. intentSummary and assumptions went with the compile (v85: "the draft is the
+# intent"); their text lives on the design record only.
+CAPS = {"name": 50, "tagline": 80, "description": 500}
 
 STANDING_ASSUMPTIONS = [
     "Measured: all nine TPO metrics feed zero of the 84 signal modules (663-cell probe, "
-    "zero failures). This strategy carries no rules array, so it has no aggregate and "
-    "cannot qualify a coin at any gate. Its conditions are advisory and reach an agent "
-    "only as prompt context.",
+    "zero failures). This strategy weights no signal, so it has no aggregate and cannot "
+    "qualify a coin at any gate. Its conditions are advisory and reach an agent only as "
+    "prompt context (and as the verdict that binds entry direction since 56.1.0).",
     "Measured: spread(M,O) = (M - O)/O in percent, positive meaning M sits above O. Proven "
     "by arithmetic on BTC 2026-09-11 (close 76845.00 vs pTpoVAL 76488.38 -> -0.46%). Every "
     "sign in the conditions is read against that convention.",
-    "Measured: TPO has no history by any route - offset inert, chaining refused with an "
-    "empty candidate list, CLOSE clock refused. Every column is a current read.",
-    "Measured: verdicts resolve first-true-wins in array order. Conditions are sorted "
-    "directional-first (ordered()) so a NEITHER cannot shadow an UP or DOWN.",
-    "Scope: dry-run body. Compile only; nothing applied, bound or deployed by this file.",
+    "Measured 2026-09-10 on 54.1.0: TPO has no history by any route - offset inert, chaining "
+    "refused with an empty candidate list, a hold above one bar refused on every TPO header. "
+    "Every TPO column is a current read. At v91 the per-column conditionHold of the TPO "
+    "headers is unmeasured (the 2026-10-06 M2 read covered the five presets' headers only).",
+    VERDICT_RESOLUTION_NOTE,
+    "Scope: stage request and preview body. Nothing staged, previewed, committed, bound or "
+    "deployed by this file.",
 ]
+
+# The v91 mappings this port applied to the 2026-09-11 compile body, one line each, every one
+# from the README contract history or the saved schema (plan 2026-10-06). `common` applies to
+# every member; `held` only to a member carrying HELD (S5). No member carried `exit: true`, so
+# no condition gained a CLOSE_ON_ exit rule (the v88 split).
+V91_MAPPINGS = {
+    "common": [
+        "v85: the flat compile_strategy_plan CREATE body became the ten axes of a stage_strategy_draft "
+        "CREATE request {draftVersion: 0, axes} - IDENTITY {name, tagline, description}, "
+        "TIMEFRAME_PROFILE {timeframe}, REPORT {sections}, MARKET_READ, CONDITIONS, ENTRY, "
+        "SETUP_GATES, TRADE_LEVEL_POLICY, POSITION_MANAGEMENT, SIGNAL_RULES - each written WHOLE, "
+        "built by omega.generate.StrategyPlan.axes().",
+        "v85: operation, intentSummary and assumptions are gone ('the draft is the intent'); their "
+        "text stays on this design record and is never sent.",
+        "v85: coinSelection is no part of a strategy; it moved to the preview_strategy_report body "
+        "(<id>.preview.json), whose source is {kind: FIELDS, timeframe, sections, conditions, "
+        "marketReadText}.",
+        "v84: `closes: 1` on every condition became `hold: {atLeast: 1, of: 1}` on every clause and "
+        "every group (one read); a conditionRef carries no hold.",
+        "v88: `exit: false` on every condition became `exitSide: null` (an entry condition); no "
+        "condition carried exit: true, so no CLOSE_ON_<key> exit rule arises.",
+        "61.0.0 / v84: `clock` is gone from every condition (retired at 61.0.0, refused as an unknown "
+        "key); nothing replaces it on a one-read condition.",
+        "60.0.0 / v85: the six-key entry mirror became ENTRY {entry: {trigger: ON_CANDLE_CLOSE}} alone "
+        "(omega.generate.ENTRY_MIRROR); naming a dial on that trigger is refused.",
+        "v85 whole axes: SETUP_GATES carries the 0.99 / 0 gate mirror plus minAtrPct, and "
+        "TRADE_LEVEL_POLICY / POSITION_MANAGEMENT / SIGNAL_RULES (84 rows at allocation 0) carry "
+        "omega's measured 08-28 defaults - the compile body sent none of these (Decision 1a); the "
+        "axes require them.",
+        "MARKET_READ is a required axis: marketReadText is composed by omega.conditions.market_read_text "
+        "over every condition (the compile body sent none). Advisory text; it changes no condition.",
+    ],
+    "held": [
+        "v84: `clock: CLOSE, closes: 2` on RSI_HELD_UP_2C / RSI_HELD_DOWN_2C became "
+        "`hold: {atLeast: 2, of: 2}` ('2 closes in a row') on the RSI14 clause - the condition's "
+        "hold on its definition's root, which for a single clause is the clause; the clock is gone.",
+        "v84: REENTRY_CONFIRMED_* keep `hold: {1, 1}` on their ALL group - a group hold over "
+        "members that hold their own bars is refused, so the two-bar hold lives on the referenced "
+        "RSI leg and the join reads once. Thesis wording 'across clocks' -> 'to a two-bar hold'.",
+    ],
+}
 
 
 def _cap(text: str, key: str) -> str:
-    return text[:CAPS[key]]
+    """Cut to the cap on a word boundary (a mid-word cut is what the 2026-09-11 tagline shipped)."""
+    cap = CAPS[key]
+    if len(text) <= cap:
+        return text
+    cut = text[:cap]
+    return cut[:cut.rfind(" ")].rstrip(" ,;") if " " in cut else cut
 
 
-def wire(s: dict, report: Report) -> dict:
-    """The exact compile_strategy_plan CREATE request body for one suite entry - the
-    shape omega.generate.StrategyPlan.wire() proved live on 2026-08-28, minus the rules
-    array (annotation-only by construction), with entry and gate MIRRORED from the
-    reference record rather than invented. Every key here is declared by the CREATE arm;
-    nothing else is emitted, because the arm is additionalProperties:false."""
-    # Measured 2026-08-28 and again 2026-09-10: CREATE refuses ANY client-supplied custom
-    # sectionKey (REPORT_CUSTOM_SECTION_NOT_OWNED). The server mints it. SK is None so
-    # CustomSection.wire() already drops it; the filter makes that explicit and durable.
-    sections = [{k: v for k, v in sec.items() if not (sec.get("kind") == "custom" and k == "sectionKey")}
-                for sec in report.wire()]
-    thresholds = [
-        "Threshold BIN %s%%: MEASURED - the vendor bins price at 5 bps, so anything finer "
-        "measures quantisation rather than structure." % BIN,
-        "Threshold WIDTH_P25 %s%%: MEASURED as the p25 of prior value-area width across 36 "
-        "CRYPTO coins at 2026-09-10T12:21Z. ONE SNAPSHOT, not a calibration." % WIDTH_P25,
-        "Threshold RSI_MID %s: INVENTED. No measurement supports it." % RSI_MID,
-    ]
-    assumptions = ([("Null exposure: " + s["null"])[:CAPS["assumption"]],
-                    ("What this strategy is meant to teach: " + s["teaches"])[:CAPS["assumption"]]]
-                   + thresholds + STANDING_ASSUMPTIONS)[:CAPS["assumptions"]]
-    for a in assumptions:
-        assert len(a) <= CAPS["assumption"], "assumption over cap: %r" % a[:60]
-    return {
-        "operation": "CREATE",
-        "intentSummary": _cap("%s. %s Teaches: %s Built by scripts/tpo_suite_build.py; "
-                              "compile dry-run only, nothing applied."
-                              % (s["name"], s["thesis"], s["teaches"]), "intentSummary"),
-        "assumptions": assumptions,
-        "coinSelection": {"mode": "explicit", "tickers": COINS},
-        "name": _cap("OMEGA-TEST: " + s["name"], "name"),
-        "tagline": _cap(s["thesis"], "tagline"),
-        "description": _cap(s["thesis"] + " " + s["teaches"], "description"),
-        "timeframe": ANCHOR,
-        "sections": sections,
-        "conditions": s["conds"],
-        "entry": dict(ENTRY_MIRROR),
-        **GATE_MIRROR,
-    }
+def _carries_hold_above_one(conds: list[dict]) -> bool:
+    def walk(d):
+        if not isinstance(d, dict):
+            return False
+        h = d.get("hold")
+        if isinstance(h, dict) and (h.get("atLeast"), h.get("of")) != (1, 1):
+            return True
+        return any(walk(m) for m in d.get("members") or [])
+    return any(walk(x.get("definition")) for x in conds)
 
 
-def build():
-    """Validate every suite entry offline and return (design_record, wire_body, nerr)
-    triples. Pure: no files, no network. main() does the writing."""
-    out = []
+def thesis_for(s: dict) -> Thesis:
+    """The omega Thesis that carries one suite member's identity, anchor, gate and universe
+    into StrategyPlan.axes() / preview_request(). weights is empty on purpose: the suite
+    weights no signal (SIGNAL_RULES rides at allocation 0 on all 84), and no module recipe
+    adds a column - the report is the SPINE plus the member's extras, built in build()."""
+    return Thesis(
+        name=_cap("OMEGA-TEST: " + s["name"], "name"),
+        tagline=_cap(s["thesis"], "tagline"),
+        description=_cap(s["thesis"] + " " + s["teaches"], "description"),
+        anchor=ANCHOR,
+        gate=GATE_MIRROR["minAggregateScore"],
+        coin_selection=dict(COIN_SELECTION),
+    )
+
+
+@dataclass
+class Built:
+    spec: dict
+    section: CustomSection
+    plan: StrategyPlan
+    design: dict
+    axes: dict
+    preview: dict
+    report_errors: list
+    condition_errors: list
+    warnings: list
+
+    @property
+    def errors(self) -> int:
+        return len(self.report_errors) + len(self.condition_errors)
+
+
+def build() -> list[Built]:
+    """Validate every suite entry offline and return one Built per member. Pure: no files, no
+    network. main() does the writing."""
+    out: list[Built] = []
     for s in SUITE:
         section = CustomSection(
             title=("TPO " + s["name"])[:60], sectionKey=SK, benchmarkTicker=None,
             notes=(s["thesis"])[:400], columns=SPINE + s["extra"],
         )
         report = Report(anchor=ANCHOR, sections=[section])
+        text = market_read_text(
+            "%s. %s Every condition below is advisory: TPO feeds no signal module." % (s["name"], s["thesis"]),
+            s["conds"])
+        plan = StrategyPlan(thesis=thesis_for(s), report=report, rules=[],
+                            conditions=s["conds"], market_read_text=text)
         vr = validate_report(report)
         rep_errs = [f for f in vr.findings if f.severity == "error"]
-        cf = validate_conditions(report, s["conds"])
+        cf = validate_conditions(report, s["conds"]) + validate_market_read(text, s["conds"], report)
         cond_errs = [f for f in cf if f.severity == "error"]
         warns = [f for f in cf if f.severity == "warning"]
+        mappings = list(V91_MAPPINGS["common"])
+        if _carries_hold_above_one(s["conds"]):
+            mappings += V91_MAPPINGS["held"]
         design = {
-            "_what": "DESIGN RECORD for a TPO strategy - human-facing provenance. NOT a wire "
-                     "body: the compile request is the sibling <id>.wire.json. NOT compiled, "
-                     "NOT applied, NOT bound.",
-            "_provenance": "scripts/tpo_suite_build.py, contract 54.1.0, measured 2026-09-10/11",
+            "_what": "DESIGN RECORD for a TPO strategy - human-facing provenance. NOT a request body: "
+                     "the CREATE stage request is the sibling <id>.stage.json and the read-only preview "
+                     "body <id>.preview.json. NOT staged, NOT previewed, NOT committed, NOT bound.",
+            "_provenance": "scripts/tpo_suite_build.py; designed on contract 54.1.0 (measured 2026-09-10/11), "
+                           "ported 2026-10-10 to the 91.0.0 draft lifecycle "
+                           "(data/contract/stage_strategy_draft/schema_20261005T194629Z.json)",
             "id": s["id"], "name": s["name"], "thesis": s["thesis"],
             "teaches": s["teaches"], "nullExposure": s["null"],
             "anchor": ANCHOR,
-            "coinSelection": {"mode": "explicit", "tickers": COINS},
+            "coinSelection": dict(COIN_SELECTION),
             "sections": report.wire(),
             "conditions": s["conds"],
+            "marketReadText": text,
             "predictedHeaders": sorted(report_headers(report).keys()),
             "thresholds": {
                 "BIN": {"value": BIN, "basis": "MEASURED - vendor bins price at 5 bps"},
@@ -417,14 +509,30 @@ def build():
                               "basis": "MEASURED - p25 of 36 CRYPTO coins at 2026-09-10T12:21Z. "
                                        "ONE SNAPSHOT, not a calibration."},
                 "RSI_MID": {"value": RSI_MID, "basis": "INVENTED"},
+                "HELD_CLOSES": {"value": HELD_CLOSES,
+                                "basis": "the 2026-09-11 design's closes: 2, now hold {2, 2} (v84); "
+                                         "the 1h RSI14 conditionHold ceiling is unmeasured"},
             },
-            "entryMirror": {"values": ENTRY_MIRROR, "source": ENTRY_MIRROR_SOURCE},
+            "entryMirror": {"values": dict(ENTRY_MIRROR), "source": ENTRY_MIRROR_SOURCE},
+            "gateMirror": dict(GATE_MIRROR),
+            "assumptions": [("Null exposure: " + s["null"]),
+                            ("What this strategy is meant to teach: " + s["teaches"])] + STANDING_ASSUMPTIONS,
+            "v91Mappings": mappings,
+            "verdictResolutionNote": VERDICT_RESOLUTION_NOTE,
             "validation": {"reportErrors": [str(f) for f in rep_errs],
                            "conditionErrors": [str(f) for f in cond_errs],
                            "warnings": [str(f) for f in warns]},
         }
-        out.append((s, section, design, wire(s, report), rep_errs, cond_errs, warns))
+        out.append(Built(spec=s, section=section, plan=plan, design=design,
+                         axes=plan.axes(), preview=plan.preview_request(),
+                         report_errors=rep_errs, condition_errors=cond_errs, warnings=warns))
     return out
+
+
+def stage_request(b: Built) -> dict:
+    """The `request` of a CREATE stage_strategy_draft: no strategyId, draftVersion 0, the ten
+    axes whole. A stage is a WRITE into the player's draft; writing this file is not making it."""
+    return {"draftVersion": 0, "axes": b.axes}
 
 
 def main():
@@ -433,38 +541,43 @@ def main():
     print("%-4s %-22s %5s %5s %6s  %s" % ("id", "name", "cols", "conds", "errors", "status"))
     print("-" * 78)
     manifest = []
-    for s, section, design, body, rep_errs, cond_errs, warns in build():
-        nerr = len(rep_errs) + len(cond_errs)
-        total_err += nerr
-        status = "OK" if nerr == 0 else "BLOCKED"
+    for b in build():
+        s = b.spec
+        total_err += b.errors
+        status = "OK" if b.errors == 0 else "BLOCKED"
         print("%-4s %-22s %5d %5d %6d  %s" % (
-            s["id"], s["name"], len(section.columns), len(s["conds"]), nerr, status))
-        for f in rep_errs:
+            s["id"], s["name"], len(b.section.columns), len(s["conds"]), b.errors, status))
+        for f in b.report_errors:
             print("      [report error] %s" % (f,))
-        for f in cond_errs:
+        for f in b.condition_errors:
             print("      %s" % (f,))
-        for f in warns:
+        for f in b.warnings:
             print("      %s" % (f,))
 
         with open(os.path.join(OUT, s["id"] + ".json"), "w", encoding="utf-8") as f:
-            json.dump(design, f, indent=1)
-        with open(os.path.join(OUT, s["id"] + ".wire.json"), "w", encoding="utf-8") as f:
-            json.dump(body, f, indent=1)
+            json.dump(b.design, f, indent=1)
+        with open(os.path.join(OUT, s["id"] + ".stage.json"), "w", encoding="utf-8") as f:
+            json.dump(stage_request(b), f, indent=1)
+        with open(os.path.join(OUT, s["id"] + ".preview.json"), "w", encoding="utf-8") as f:
+            json.dump(b.preview, f, indent=1)
         manifest.append({"id": s["id"], "name": s["name"], "design": s["id"] + ".json",
-                         "wire": s["id"] + ".wire.json",
-                         "columns": len(section.columns), "conditions": len(s["conds"]),
-                         "errors": nerr})
+                         "stage": s["id"] + ".stage.json", "preview": s["id"] + ".preview.json",
+                         "columns": len(b.section.columns), "conditions": len(s["conds"]),
+                         "errors": b.errors})
 
     with open(os.path.join(OUT, "_manifest.json"), "w", encoding="utf-8") as f:
         json.dump({"suite": manifest, "anchor": ANCHOR, "sectionKey": SK,
-                   "coins": COINS, "entryMirror": ENTRY_MIRROR, "entryMirrorSource": ENTRY_MIRROR_SOURCE,
+                   "coinSelection": COIN_SELECTION,
+                   "entryMirror": dict(ENTRY_MIRROR), "entryMirrorSource": ENTRY_MIRROR_SOURCE,
+                   "contract": "91.0.0 (schema_20261005T194629Z.json)",
                    "totalErrors": total_err}, f, indent=1)
 
     print("-" * 78)
-    print("payloads -> %s  (<id>.json = design record, <id>.wire.json = compile body)" % OUT)
+    print("payloads -> %s  (<id>.json = design record, <id>.stage.json = CREATE stage request, "
+          "<id>.preview.json = preview body)" % OUT)
     print("total errors: %d" % total_err)
     if total_err:
-        print("BLOCKED - payloads with errors are written but must not be compiled.")
+        print("BLOCKED - payloads with errors are written but must not be staged or previewed.")
     return 1 if total_err else 0
 
 
