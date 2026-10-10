@@ -394,20 +394,15 @@ def validate_report(report: Report, *, contract: Contract | None = None) -> Vali
     for i, section in enumerate(report.sections):
         out.extend(validate_section(section, path=f"report.sections[{i}]", contract=c))
 
-    # distinct timeframe budget
+    # distinct timeframe budget (the regime rung counts, fanout.column_timeframe)
+    from .fanout import column_timeframe
     seen: set[str] = set()
     for section in report.sections:
         if isinstance(section, CustomSection):
             for col in section.columns:
                 if col.metric not in c.metrics:
                     continue
-                m = c.metric(col.metric)
-                if m.is_timeless:
-                    continue
-                tf = section.timeframe
-                if tf is None:
-                    rel = getattr(col.timeframe, "rel", None)
-                    tf = c.resolve_timeframe(rel, report.anchor) if rel else getattr(col.timeframe, "abs", None)
+                tf = column_timeframe(col, section, report.anchor, c)
                 if tf:
                     seen.add(tf)
     tf_limit = c.budgets["distinctTimeframes"]

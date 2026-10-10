@@ -347,3 +347,43 @@ def test_a_context_module_is_still_honoured_and_now_warns():
     assert [w.code for w in got["warnings"]] == ["MODULE_IN_REPORT_SCORES_NOTHING"]
     scoring = [x for x in p.critique() if x.startswith("scoring ")]
     assert len(scoring) == 9 and sum("weight it or drop the column" in x for x in scoring) == 4
+
+
+# --- the regime rung is a distinct timeframe (step 4) ----------------------------------------
+
+def test_the_regime_rung_counts_as_a_distinct_timeframe():
+    """The 2026-08-24 preview of anchor + lower + regime columns at 1h read
+    distinctTimeframes.used 3 (_renders_tfvariants.json), though the authoring contract resolves
+    `regime` to null (it binds from the strategy's regimeTimeframe). cost_report and
+    validate_report counted 2; both now count the rung."""
+    from omega.fanout import cost_report
+    from omega.types import Column, CustomSection, Report
+    from omega.validate import validate_report
+    variants = json.loads((ROOT / "data/contract/columns/_renders_tfvariants.json").read_text(encoding="utf-8"))
+    assert variants["response"]["budgetUsage"]["distinctTimeframes"]["used"] == 3
+    cols = [Column.model_validate(c) for c in variants["request"]["sections"][0]["columns"]]
+    report = Report(anchor=variants["request"]["timeframe"], sections=[
+        CustomSection(title="omega tf variants", benchmarkTicker=None, columns=cols)])
+    assert cost_report(report).distinct_timeframes == ["15m", "1h", "regime"]
+    assert validate_report(report).ok
+    # the three rung-widened presets spend three of the eight; the other two spend one
+    spent = {name: plan(PRESETS[name]).cost().distinct_timeframes for name in PRESETS}
+    assert spent == {"mean-reversion": ["15m", "1h", "regime"], "trend-continuation": ["15m", "1h", "regime"],
+                     "structure-reversal": ["15m", "1h", "regime"],
+                     "squeeze-breakout": ["1h"], "flow-divergence": ["1h"]}
+
+
+def test_nine_distinct_timeframes_including_the_regime_rung_breach_the_budget_of_eight():
+    from omega.fanout import cost_report
+    from omega.types import Column, CustomSection, Report
+    from omega.validate import validate_report
+    abs_tfs = ["1m", "3m", "5m", "30m", "2h", "4h", "8h"]            # 7 pinned + anchor 1h + regime = 9
+    cols = [Column.model_validate({"metric": "RSI14", "transformId": "value", "timeframe": {"abs": t}})
+            for t in abs_tfs]
+    cols += [Column.model_validate({"metric": "RSI14", "transformId": "value", "timeframe": {"rel": r}})
+             for r in ("anchor", "regime")]
+    report = Report(anchor="1h", sections=[CustomSection(title="t", benchmarkTicker=None, columns=cols)])
+    assert len(cost_report(report).distinct_timeframes) == 9
+    assert any("distinct timeframes 9 > 8" in b for b in cost_report(report).breaches)
+    # (the abs-pinned columns also share a header, so DUPLICATE_HEADER fires alongside)
+    assert "DISTINCT_TIMEFRAMES_EXCEEDED" in {f.code for f in validate_report(report).errors}
