@@ -94,7 +94,8 @@ Thesis(
     name="Mean Reversion at Extremes",
     gate=0.65,
     weights={"BOLLINGER": 3, "RSI": 2, "CVD": 2, "FUNDING": 1, "VOLATILITY": 1},
-    context=["REGIME"],   # included as reading material, weighted 0
+    context=["REGIME"],   # reading material, weighted 0 - BattleGrid lists each of its signals
+                          # as REPORT_DATA_SIGNAL_OFF; no preset carries one since 2026-10-10 (11)
 )
 ```
 

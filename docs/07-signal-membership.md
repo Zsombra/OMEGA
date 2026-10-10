@@ -44,6 +44,12 @@ account for from the column list.
 **Membership is a union.** No probe showed a conjunctive requirement. Metrics never combine
 to unlock something neither unlocks alone.
 
+> **2026-10-10.** Membership says which signals a report can *feed*; it says nothing about
+> whether the agent is shown the data a weighted signal *scores on*. That is BattleGrid's
+> `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT`, per (metric, rung), predicted by
+> `omega.membership.scoring_gaps` and closed for every preset in
+> [11 · Signal Scoring](11-signal-scoring.md#2026-10-10-the-recipes-show-every-weighted-signals-data).
+
 ## The map
 
 | Module | Signals | Satisfied by any one of |
