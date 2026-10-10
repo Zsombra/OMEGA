@@ -12,6 +12,13 @@ record say anything the receipt does not.
 Two prose blocks are the exceptions, and both name their source: what the preflight
 refused BEFORE the fix (that run's receipts were not kept; the counts are the plan's
 measured-facts table) and what this plan did not resolve.
+
+RETIRED 2026-10-10 (compile path only): this wrote data/contract/_drift_2026-09-18.json from a
+receipt over two compile_strategy_plan captures; contract 85.0.0 retired that tool and
+scripts/preflight.py now walks stage_strategy_draft axes, so no new receipt feeds this. Kept as
+the writer of that record, unchanged. NOT_RESOLVED[1] (the TPO branch's pre-60 entry mirror)
+was resolved by the 2026-10-10 port of scripts/tpo_suite_build.py to the v91 axes; the record
+stays as written on 2026-09-18.
 """
 from __future__ import annotations
 
