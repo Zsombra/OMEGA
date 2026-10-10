@@ -91,3 +91,80 @@ def test_the_vocabulary_puts_the_rung_on_the_column_not_the_section():
     mtf = c.platform_templates["includeMtfConfluence"]["columns"]
     assert {(x["metric"], x["timeframe"]["rel"]) for x in mtf if x["metric"] == "MA_ALIGN"} == {
         ("MA_ALIGN", "lower"), ("MA_ALIGN", "anchor"), ("MA_ALIGN", "regime")}
+
+
+# --- the predictor against the committed body (step 2) --------------------------------
+
+COMMITTED = json.loads((FIXTURES / "current_7534b2ee_from_get_strategy_20261010T0634Z.json")
+                       .read_text(encoding="utf-8"))["draft"]["content"]
+
+
+def _committed_report_and_rules():
+    """The body BattleGrid judged (the 11-column create of 2026-10-09), as omega types."""
+    from omega.types import CustomSection, Report, Rule
+    sections = [CustomSection.model_validate(s) for s in COMMITTED["REPORT"]["sections"]]
+    rules = [Rule.model_validate({k: v for k, v in r.items() if k != "params"})
+             for r in COMMITTED["SIGNAL_RULES"]["rules"]]
+    return Report(anchor=COMMITTED["TIMEFRAME_PROFILE"]["timeframe"], sections=sections), rules
+
+
+def test_rung_names_map_onto_the_columns_three_rels():
+    from omega.membership import RUNG_REL
+    assert RUNG_REL == {"anchor": "anchor", "lower": "lower", "signalHigher": "regime"}
+    assert set(RUNG_REL) == {r for data in RUNG_MAP.values() for r in (d["rung"] for d in data)}
+
+
+def test_the_predictor_reproduces_the_measured_seventeen_on_the_committed_body():
+    """Same input, same verdict: on the body the server judged, omega predicts the 12 active
+    gaps with the same data, the 4 off signals with the same data, and the one warning."""
+    from omega.membership import predicted_diagnostics
+    report, rules = _committed_report_and_rules()
+    got = predicted_diagnostics(report, rules)
+    measured = _by_code(CREATE["diagnostics"])
+    by_code: dict[str, dict[str, set]] = {}
+    for f in got["mismatches"]:
+        by_code.setdefault(f.platform_code, {})[f.signal_id] = set(f.missing)
+    assert {f.code for f in got["mismatches"]} == {"SCORING_INPUT_NOT_RENDERED", "REPORT_DATA_SIGNAL_OFF"}
+    assert by_code == measured
+    assert [w.code for w in got["warnings"]] == ["MODULE_IN_REPORT_SCORES_NOTHING"]
+    assert "REGIME" in got["warnings"][0].message and "4" in got["warnings"][0].message
+
+
+def test_a_column_at_the_rung_closes_the_gap():
+    """What the measured list says is missing - MA_ALIGN @ signalHigher, ADX @ lower, EMA20 and
+    EMA_CROSS @ anchor - is shown by one column each at the matching rel (the platform's own
+    includeHigherTimeframe / includeMtfConfluence columns for the first two)."""
+    from omega.membership import scoring_gaps
+    from omega.types import Column, CustomSection, Report, Rule
+    report, rules = _committed_report_and_rules()
+    extra = [Column.model_validate(c) for c in (
+        {"metric": "MA_ALIGN", "transformId": "value", "timeframe": {"rel": "regime"}},
+        {"metric": "MA_ALIGN", "transformId": "value", "timeframe": {"rel": "lower"}},
+        {"metric": "ADX", "transformId": "value", "timeframe": {"rel": "regime"}},
+        {"metric": "ADX", "transformId": "value", "timeframe": {"rel": "lower"}},
+        {"metric": "EMA20", "transformId": "value", "timeframe": {"rel": "anchor"}},
+        {"metric": "EMA_CROSS", "transformId": "value", "timeframe": {"rel": "anchor"}})]
+    widened = Report(anchor=report.anchor, sections=report.sections + [
+        CustomSection(title="rungs", benchmarkTicker=None, columns=extra)])
+    assert scoring_gaps(widened, rules) == []
+    # an anchor column never stands in for another rung (2026-08-28, still true at 91)
+    anchor_only = Report(anchor=report.anchor, sections=report.sections + [CustomSection(
+        title="a", benchmarkTicker=None, columns=[c for c in extra if c.timeframe.rel == "anchor"])])
+    left = {(m, r) for f in scoring_gaps(anchor_only, rules) for m, r in f.missing}
+    assert left == {("MA_ALIGN", "signalHigher"), ("MA_ALIGN", "lower"),
+                    ("ADX", "signalHigher"), ("ADX", "lower")}
+
+
+def test_weighting_or_dropping_clears_an_off_signal():
+    from omega.membership import report_data_signal_off
+    from omega.types import Rule
+    report, rules = _committed_report_and_rules()
+    assert {f.signal_id for f in report_data_signal_off(report, rules)} == {
+        "regime_alignment", "regime_divergence", "regime_trend_shift", "regime_volatility_shift"}
+    weighted = [Rule(signalId=r.signalId, allocation=1 if r.signalId.startswith("regime_") else r.allocation,
+                     required=False) for r in rules]
+    assert report_data_signal_off(report, weighted) == []
+    from omega.types import Report
+    no_context = Report(anchor=report.anchor, sections=[
+        s for s in report.sections if not any(c.metric.startswith("REGIME_") for c in s.columns)])
+    assert report_data_signal_off(no_context, rules) == []
