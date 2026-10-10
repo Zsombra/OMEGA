@@ -13,14 +13,17 @@ Emits to disk. Never submits.
 """
 from __future__ import annotations
 
+import copy
 import json
+import re
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 
 import uuid
 
 from .aggregate import Signal, aggregate
 from .conditions import (
-    all_of, close_on, condition, crowd_leaning_down, crowd_leaning_up, is_,
+    all_of, ambient_headers, close_on, condition, crowd_leaning_down, crowd_leaning_up, is_,
     market_read_text, n_of, num, ref, stables_at_par, tape_bearish, tape_bullish,
     validate_conditions, validate_market_read,
 )
@@ -29,6 +32,18 @@ from .fanout import cost_report, outputs_for
 from .membership import _map, analyse, check_allocations, scoring_gaps, signals_for
 from .types import Column, CustomSection, Report, Rule
 from .validate import validate_report
+
+# The v91 REPORT axis: a custom section's optional `sectionKey` must match this pattern
+# (schema_20261005T194629Z.json, REPORT.sections.items.anyOf[1].properties.sectionKey). A
+# clause's `column.sectionKey` is any string of 1..120 characters or null - no enum - so the
+# platform keys the server derives ("reference-pairs", "market-breadth", ...) and the minted
+# "custom:<uuid>" keys are all admissible there.
+CUSTOM_SECTION_KEY = re.compile(r"^custom:[0-9a-fA-F-]{36}$")
+CLAUSE_SECTION_KEY_MAX_LENGTH = 120
+# What makes two wire columns "the same column" for carrying a section key: the Column
+# docstring's identity triple plus the chained transform. The parameters (window, offset,
+# bars, ordering, side, inputs) may move without the header changing section.
+_COLUMN_IDENTITY = ("metric", "transformId", "chainedTransformId", "timeframe")
 
 # --- column recipes -------------------------------------------------------
 # One entry per signal module: the columns that both FEED the module and give the
@@ -417,9 +432,10 @@ class StrategyPlan:
         # Measured 2026-08-28: a CREATE refused ANY client-supplied custom sectionKey
         # (REPORT_CUSTOM_SECTION_NOT_OWNED, allowedDomain enum []) - the server mints them.
         # The v91 REPORT axis still declares sectionKey optional on a custom section; a
-        # create draft's acceptance of one is unmeasured, so omega keeps not sending it.
+        # create draft's acceptance of one is unmeasured, so a CREATE keeps not sending it.
         # Our deterministic keys stay on the local Report; platform sections keep theirs,
-        # which IS the section's identity.
+        # which IS the section's identity. An UPDATE puts the strategy's LIVE custom keys
+        # back on (axes_update -> _carry_section_keys, 2026-10-10).
         return [
             {k: v for k, v in s.items() if not (s.get("kind") == "custom" and k == "sectionKey")}
             for s in self.report.wire()
@@ -482,12 +498,46 @@ class StrategyPlan:
         thesis names one of their dials, the rest of the axis read from `current`; and
         SETUP_GATES - always staged, it carries the thesis's gate and required count - takes
         minAtrPct from the thesis or from `current`. A dial found in neither raises: omega
-        never invents the value of a live strategy's dial."""
+        never invents the value of a live strategy's dial.
+
+        Section keys are carried forward from `current` (2026-10-10). A CREATE sends no key -
+        the server mints a custom section's `sectionKey` and derives a clause's
+        `column.sectionKey` at commit - so re-staging a strategy omega created showed 14
+        changes of no substance on the first live UPDATE (2 sections "custom:…" -> null,
+        12 clauses "reference-pairs" / "market-breadth" / the strategy's own custom key ->
+        null; manager action 62, 2026-10-10 06:34Z). The commit kept every live key, so the
+        diff was cosmetic, but the manager's card binds that diff. Here:
+
+        * REPORT: each generated custom section takes the `sectionKey` of the current custom
+          section with the same `title` (omega writes titles deterministically); when no
+          title matches, the counts are equal and the titles unique on both sides, by
+          position; a partial title match carries only what matched. A current custom
+          section this thesis no longer generates is simply not carried - the platform drops
+          it at commit. A key not matching the schema's ^custom:[0-9a-fA-F-]{36}$ is never
+          sent.
+        * CONDITIONS: a generated clause whose `column.sectionKey` is null takes the key the
+          current clause with the same `conditionKey` and the same `header` carries, when
+          that key names where this plan's report resolves the header: an ambient or
+          platform section's own key, or - for a custom key - the live key of the section
+          carried above, whose current columns must hold a column with the same identity
+          (metric, transformId, chainedTransformId, timeframe) as the generated column that
+          emits the header. A header two sections emit, a key the schema refuses (empty or
+          over 120 characters), a differing or missing key: left null, as a CREATE sends it.
+
+        Never invents a key. Whether the server honours a key sent back on an UPDATE, rather
+        than re-deriving it, is unmeasured: the 2026-08-29 compile-path UPDATE re-minted
+        custom keys sent byte-identical (LOCKSTEP_REMINT); the v91 commit of 2026-10-10
+        kept them through nulls."""
         from .execution import POSITION_MANAGEMENT_DIALS, TRADE_LEVEL_DIALS
         out = self.axes()
         del out["ENTRY"]
+        # axes() hands out self.conditions itself; the carry below must not leak live keys
+        # into a later CREATE, so the two axes it rewrites are copied first.
+        out["REPORT"] = copy.deepcopy(out["REPORT"])
+        out["CONDITIONS"] = copy.deepcopy(out["CONDITIONS"])
         named = self.thesis.execution or {}
         current = current or {}
+        self._carry_section_keys(out, current)
 
         def complete(axis: str, dials: tuple[str, ...]) -> dict:
             have = current.get(axis) or {}
@@ -506,6 +556,82 @@ class StrategyPlan:
                 out[axis] = complete(axis, dials)
             else:
                 del out[axis]
+        return out
+
+    def _carry_section_keys(self, out: dict, current: dict) -> None:
+        """Copy the current strategy's section keys onto `out`'s REPORT custom sections and
+        CONDITIONS clauses under the rules axes_update() documents. Mutates `out` only."""
+        cur_sections = (current.get("REPORT") or {}).get("sections") or []
+        cur_conditions = (current.get("CONDITIONS") or {}).get("conditions") or []
+        sections = out["REPORT"]["sections"]
+
+        # omega's local deterministic key -> (the live key carried, the current section)
+        live_of_local: dict[str, tuple[str, dict]] = {}
+        for i, cur in _match_custom_sections(sections, cur_sections).items():
+            key = cur.get("sectionKey")
+            if not (isinstance(key, str) and CUSTOM_SECTION_KEY.match(key)):
+                continue
+            sections[i] = {**sections[i], "sectionKey": key}
+            live_of_local[self.report.sections[i].sectionKey] = (key, cur)
+
+        if not cur_conditions:
+            return
+        emitters = self._header_emitters()
+
+        def resolves(header: str, key: str) -> bool:
+            places = emitters.get(header) or []
+            if len(places) != 1:            # emitted nowhere or in two sections: the server resolves
+                return False
+            local_key, column = places[0]
+            if column is None:              # ambient / platform section: its key is the identity
+                return key == local_key
+            live = live_of_local.get(local_key)
+            if live is None or live[0] != key:
+                return False
+            wanted = _column_identity(column)
+            return any(_column_identity(c) == wanted for c in live[1].get("columns") or [])
+
+        cur_by_key = {c.get("conditionKey"): c for c in cur_conditions}
+        for cond in out["CONDITIONS"]["conditions"]:
+            cur = cur_by_key.get(cond["conditionKey"])
+            if cur is None:
+                continue
+            keys_by_header: dict[str, set[str]] = {}
+            for clause in _clauses_of(cur.get("definition")):
+                col = clause.get("column") or {}
+                key = col.get("sectionKey")
+                if isinstance(key, str) and 1 <= len(key) <= CLAUSE_SECTION_KEY_MAX_LENGTH:
+                    keys_by_header.setdefault(col.get("header"), set()).add(key)
+            for clause in _clauses_of(cond["definition"]):
+                col = clause["column"]
+                if col.get("sectionKey") is not None:
+                    continue
+                keys = keys_by_header.get(col["header"]) or set()
+                if len(keys) == 1 and resolves(col["header"], next(iter(keys))):
+                    clause["column"] = {**col, "sectionKey": next(iter(keys))}
+
+    def _header_emitters(self) -> dict[str, list[tuple[str, dict | None]]]:
+        """header -> every (sectionKey, column) in this plan's report that emits it: a custom
+        section's local key with the emitting column's wire dict; a platform section's key,
+        or an ambient section's, with None (their key is the identity)."""
+        c = load()
+        out: dict[str, list[tuple[str, dict | None]]] = {
+            h: [(spec["sectionKey"], None)] for h, spec in ambient_headers().items()}
+        for section in self.report.sections:
+            if isinstance(section, CustomSection):
+                for column in section.columns:
+                    if column.metric not in c.metrics:
+                        continue
+                    for o in outputs_for(column, c):
+                        out.setdefault(o.header, []).append((section.sectionKey, column.wire()))
+            else:
+                tmpl = c.platform_templates.get(section.sectionKey) or {}
+                for spec in tmpl.get("columns", []):
+                    try:
+                        for o in outputs_for(Column.model_validate(spec), c):
+                            out.setdefault(o.header, []).append((section.sectionKey, None))
+                    except Exception:
+                        continue
         return out
 
     def preview_request(self) -> dict:
@@ -559,6 +685,44 @@ class StrategyPlan:
 def _section_key(title: str) -> str:
     """Deterministic custom sectionKey so conditions can reference the section."""
     return f"custom:{uuid.uuid5(uuid.NAMESPACE_URL, f'omega/{title}')}"
+
+
+def _match_custom_sections(generated: list[dict], current: list[dict]) -> dict[int, dict]:
+    """Index of a generated custom section -> the current custom section it continues.
+
+    By `title` first (omega writes titles deterministically), which needs the current titles
+    to be unique; when NO title matches, by position - only when the counts are equal and
+    the titles are unique on both sides. A partial title match carries only what matched.
+    A current section no generated one matches is not in the result: the platform drops it."""
+    gen = [(i, s) for i, s in enumerate(generated) if s.get("kind") == "custom"]
+    cur = [s for s in current if s.get("kind") == "custom"]
+    cur_titles = [s.get("title") for s in cur]
+    gen_titles = [s.get("title") for _, s in gen]
+    matched: dict[int, dict] = {}
+    if len(set(cur_titles)) == len(cur_titles):
+        by_title = {s.get("title"): s for s in cur}
+        matched = {i: by_title[s["title"]] for i, s in gen if s.get("title") in by_title}
+        if not matched and len(gen) == len(cur) and len(set(gen_titles)) == len(gen_titles):
+            matched = {i: c for (i, _), c in zip(gen, cur)}
+    return matched
+
+
+def _clauses_of(defn: object) -> Iterator[dict]:
+    """Every clause node under a condition definition, in order (groups recursed, refs
+    skipped). Yields the live dicts so a caller may rewrite a clause's column."""
+    if not isinstance(defn, dict):
+        return
+    if defn.get("kind") == "clause":
+        yield defn
+        return
+    for member in defn.get("members") or []:
+        yield from _clauses_of(member)
+    if "member" in defn:
+        yield from _clauses_of(defn["member"])
+
+
+def _column_identity(column: dict) -> tuple[str, ...]:
+    return tuple(json.dumps(column.get(k), sort_keys=True) for k in _COLUMN_IDENTITY)
 
 
 def _split_by_timeframe_mode(modules: list[str]) -> tuple[list[dict], list[dict]]:
