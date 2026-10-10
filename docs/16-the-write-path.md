@@ -506,7 +506,9 @@ receipt's own CHANGELOG findings by `scripts/write_drift.py`.
   touched the authoring surface only and re-extracted nothing.
 - The TPO branch `claude/tpo-strategy-brainstorm-796f15` **pins the pre-60 entry** —
   `tests/test_tpo_suite_wire.py` asserts `builder.ENTRY_MIRROR` carries `confirmTf`. It
-  must be brought to the three-key entry when it is merged.
+  must be brought to the three-key entry when it is merged. (Resolved 2026-10-10: the suite
+  builder was ported to the v91 axes and `ENTRY` is `{trigger: "ON_CANDLE_CLOSE"}` alone —
+  [20 § 2026-10-10](20-the-authoring-procedure.md).)
 
 The addendum this instance earns: **a body that has not changed can start being refused.**
 Nothing in omega moved between 09-09 and 09-18; the schema did. The preflight is worth

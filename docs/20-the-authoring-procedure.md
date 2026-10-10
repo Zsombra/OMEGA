@@ -165,3 +165,47 @@ with its change, disposition, and the audit records that prove each step.
 Binding and deployment move real capital. The checklist beside each registry entry
 names those steps precisely so the USER can take them; no general "go ahead" ever
 authorizes the assistant to take them instead (P4, and the standing rule beneath it).
+
+## 2026-10-10: the TPO suite builder on the v91 draft lifecycle
+
+`scripts/tpo_suite_build.py` (S1–S7, designed 2026-09-10/11 on contract 54.1.0) emitted the
+flat `compile_strategy_plan` CREATE body with the pre-v84 condition grammar; contract 85.0.0
+retired the tool and `tests/test_tpo_suite_wire.py` was skipped on 2026-10-09. The port keeps
+every thesis — the market reads and the condition logic are unchanged — and changes only the
+shape, each move from the README contract history or the saved 91.0.0 schema
+([`schema_20261005T194629Z.json`](../data/contract/stage_strategy_draft/schema_20261005T194629Z.json)):
+
+| 2026-09-11 body | now |
+|---|---|
+| one `<id>.wire.json` compile body | `<id>.stage.json` = `{draftVersion: 0, axes}`, the `request` of a CREATE `stage_strategy_draft` (no `strategyId`), its ten axes built by `omega.generate.StrategyPlan.axes()` from a `Thesis` carrying the member's identity, anchor, gate and universe and a `Report` of the TPO spine plus the member's extras; and `<id>.preview.json` = `StrategyPlan.preview_request()`, the FIELDS preview body |
+| `closes: 1` on every condition | `hold: {atLeast: 1, of: 1}` on every clause and group (v84); a `conditionRef` carries none |
+| `clock: "CLOSE", closes: 2` on `RSI_HELD_UP_2C` / `RSI_HELD_DOWN_2C` (S5) | `hold: {atLeast: 2, of: 2}` on the RSI14 clause — "2 closes in a row" (v84); the clock went at 61.0.0. `REENTRY_CONFIRMED_*` keep `{1,1}` on their ALL over refs: a group hold over members that hold their own bars is refused, so the two-bar hold lives on the referenced leg |
+| `exit: false` everywhere | `exitSide: null` (v88). No member carried `exit: true`, so no `CLOSE_ON_<key>` rule arises |
+| six-key `entry` mirrored from 56c08ef6 rev 4 | `ENTRY {entry: {trigger: "ON_CANDLE_CLOSE"}}` alone (`omega.generate.ENTRY_MIRROR`; 60.0.0 / v85) |
+| `operation`, `intentSummary`, `assumptions` | gone (v85); their text lives on the design record `<id>.json` only |
+| `coinSelection` on the body | on the preview body only (v85) |
+| nothing for gates, dials, rules, market read | `SETUP_GATES` carries the 0.99 / 0 gate mirror plus `minAtrPct`; `TRADE_LEVEL_POLICY`, `POSITION_MANAGEMENT` and the 84-row `SIGNAL_RULES` (allocation 0) carry omega's measured 08-28 defaults, because a v91 axis is written whole; `MARKET_READ` is `market_read_text` over every condition |
+
+Every design record lists the mappings it received under `v91Mappings`, and the design
+record is a separate object — no design key reaches an axis (the test checks). The test walks
+every axis and the preview body against the saved capture with `omega.preflight` (zero FAIL,
+zero UNSUPPORTED) and `validate_conditions` reports no error and no warning on any member.
+
+Two things the port records and does not decide:
+
+- **Verdict resolution moved under the suite.** `ordered()` (directional-first) was
+  load-bearing on 54.1.0, where resolution was first-true-wins. Since 56.1.0 a coin resolves over
+  the DISTINCT verdicts of the carriers that read TRUE and disagreeing carriers resolve
+  `NEITHER`; every LOC tag is a `NEITHER` carrier and a re-entry is TRUE together with
+  `INSIDE_PRIOR_VALUE`, so S2–S5's directional legs resolve `NEITHER` when they fire. That is a
+  semantics change, not a grammar mapping; it is on every design record
+  (`verdictResolutionNote`) for the author, and no condition was changed.
+- **Hold ceilings are unmeasured for this report.** The 2026-10-06 M2 read covers the five
+  presets' headers (`RSI14_now` admits 192 bars at 1h); the `RSI14` value header and every
+  TPO header have no `conditionHold` row on disk. The builder judges `{2,2}`; omega warns only
+  where the header is not candle-moved, and RSI14 is.
+
+`scripts/tpo_suite_preview.py` (read-only, `preview_strategy_report` only) now sends
+`<id>.preview.json` verbatim and reads the v84 evidence shape. `scripts/build_pvm_strategy.py`
+and `scripts/write_drift.py` served the compile path only and are marked retired in place.
+Nothing was staged, previewed or committed by the port.
