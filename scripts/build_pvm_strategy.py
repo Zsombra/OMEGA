@@ -1,3 +1,9 @@
+# RETIRED 2026-10-10: this wrote the compile_strategy_plan CREATE body of the live PVM strategy
+# on 2026-09-11 (pre-v84 conditions, six-key entry, intentSummary/assumptions). Contract 85.0.0
+# retired that tool, so the body below is refused; it is kept as the record of what was sent.
+# Any change to PVM goes through its draft (omega.generate.StrategyPlan.axes_update), and the
+# TPO suite proper is scripts/tpo_suite_build.py on the v91 axes. ROOT points at a worktree
+# that no longer exists; do not run this.
 import json, os, sys
 ROOT = r"C:\Users\rafae\Documents\GitHub\OMEGA\.claude\worktrees\authoring-assistant-plan-0eaf0a"
 
