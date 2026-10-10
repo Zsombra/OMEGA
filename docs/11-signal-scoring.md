@@ -219,6 +219,59 @@ indices and commodities alongside it. That matters for scoring:
 Under fired-set semantics an unavailable module is costless, but a crypto-tuned scorecard
 silently carries less evidence off-crypto.
 
+## 2026-10-10: the recipes show every weighted signal's data
+
+**Measured.** Every live stage of the trend-continuation preset — the M1 draft of 2026-10-06,
+the create of 2026-10-09 23:10Z (manager action 60) and the update of 2026-10-10 06:34Z
+(action 62; both copied to `data/contract/stage_strategy_draft/diagnostics_action6*.json`) —
+returned the same 17 diagnostics: **12 `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT`** (`htf_ma_aligned_*`,
+`htf_trend_adx_*` on MA_ALIGN / ADX at `signalHigher`; `ltf_ma_aligned_*`, `ltf_trend_adx_*`
+at `lower`; `ma_ema_aligned_*` on EMA20 and `ma_ema_*_cross` on EMA_CROSS at the anchor),
+**4 `REPORT_DATA_SIGNAL_OFF`** (the four `regime_*` signals, allocation 0 behind the REGIME
+context columns) and 1 `MODULE_IN_REPORT_SCORES_NOTHING` (Market Regime). None refuses a commit.
+
+**How the vocabulary spells a rung.** The v91 REPORT axis puts `timeframe` on the *column* —
+`{rel: anchor | lower | regime}` or `{abs}` — and a custom section carries none
+(`schema_20261005T194629Z.json`). The platform's own `includeHigherTimeframe` template is
+ADX / RSI14 / MA_ALIGN `value` at `{rel: regime}`; `includeMtfConfluence` holds MA_ALIGN at
+lower, anchor and regime. A regime column renders with the `_htf` infix (`RSI14_htf`,
+`_renders_tfvariants.json`), the stem of the `htf_*` ids whose data sits at `signalHigher`. So
+`omega.membership.RUNG_REL` maps `lower -> rel:lower` and `signalHigher -> rel:regime`; that a
+rel:regime column clears an `htf_*` mismatch is predicted from this vocabulary and **owed a
+live stage** (the 2026-08-28 compile proved only that rel:anchor clears neither rung).
+
+**What changed.** `plan()` appends, after the module recipes, one `value` column (STRUCT_ZONES:
+`count`, its first transform) per (metric, rung) a weighted signal scores on that the recipes
+do not show (`Thesis.show_scoring_data`, default on; `False` reproduces the 2026-10-09 committed
+shape). Every preset dropped `context=["REGIME"]`: no thesis weights REGIME, so the columns
+went rather than the weights. The critique now prints both mismatch codes and the module
+warning (`membership.predicted_diagnostics`), reproduced exactly on the committed body of
+strategy 7534b2ee.
+
+| preset | columns added (section · metric · transform · rel) | gaps before → after | off before → after | columns / headers / ~tokens before → after | distinct tfs |
+|---|---|---|---|---|---|
+| mean-reversion | Signals · CCI20 value anchor; BB_WIDTH value anchor; RSI14 value regime; RSI14 value lower. Context · FUNDING_ANN value anchor | 9 → 0 | 4 → 0 | 15/37/999 → 17/36/972 | 1 → 3 |
+| trend-continuation | Signals · MA_ALIGN value regime; MA_ALIGN value lower; EMA20 value anchor; EMA_CROSS value anchor; ADX value regime; ADX value lower | 12 → 0 | 4 → 4 forced (below) | 11/34/918 → 14/34/918 | 1 → 3 |
+| squeeze-breakout | Signals · CCI20 value anchor; BB_WIDTH value anchor | 3 → 0 | 4 → 0 | 13/36/972 → 12/32/864 | 1 → 1 |
+| flow-divergence | Context · FUNDING_ANN value anchor | 2 → 0 | 4 → 0 | 13/31/837 → 11/26/702 | 1 → 1 |
+| structure-reversal | Signals · STRUCT_ZONES count regime; RSI14 value regime; RSI14 value lower | 8 → 0 | 4 → 0 | 13/27/729 → 13/24/648 | 1 → 3 |
+
+Tokens are omega's agent-read estimate (`fanout.TOKENS_PER_HEADER`, ±15%); there is no
+platform token cap since v92, the preview is capped at 150,000 result characters. The regime
+rung now counts as a distinct timeframe in `cost_report` and `validate_report` (the 2026-08-24
+preview of anchor + lower + regime read `distinctTimeframes.used 3`); three presets spend 3 of 8.
+
+**The residue the two rules force.** On trend-continuation the predictor now lists four *new*
+`REPORT_DATA_SIGNAL_OFF`: `mtf_aligned_bull/bear` (CONFLUENCE) and
+`comparison_sector_divergence/momentum` (COMPARISON). Their data — EMA5 / EMA13 / EMA20 at the
+anchor and MA_ALIGN at lower and signalHigher — is a subset of what the weighted `ma_ema_aligned_*`,
+`htf_ma_*` and `ltf_ma_*` require, so any report that clears the ACTIVE gaps shows it; and the
+two modules are unreachable through columns (07), so weighting them is not a column decision.
+Whether BattleGrid lists a signal of an out-of-report module under this code is **unmeasured**
+(no live stage has shown that data yet); the predictor applies the measured rule uniformly and
+marks these `forced` rather than exempt what it has not seen. `comparison_btc_decorrelation`
+stays unlisted in the rung map and silent.
+
 ## Open
 
 - **`bollinger_cci_*` — RESOLVED.** Both directions are now verified bit-exact:

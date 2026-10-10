@@ -29,7 +29,8 @@ from .conditions import (
 )
 from .contract import DERIVED_DIR, load
 from .fanout import cost_report, outputs_for
-from .membership import _map, analyse, check_allocations, scoring_gaps, signals_for
+from .membership import (RUNG_REL, _map, _signal_data, analyse, check_allocations,
+                         predicted_diagnostics, shown_data, signals_for)
 from .types import Column, CustomSection, Report, Rule
 from .validate import validate_report
 
@@ -205,7 +206,8 @@ CRYPTO_ONLY_MODULES = {"CVD", "FLOW_DIVERGENCE"}
 
 # Measured 2026-08-28 (cap_boundary_2026-08-28.json): the largest ranked selection
 # whose compile preview fits BG-14's 256,000-byte cap, FOR THE TREND-CONTINUATION
-# REPORT SHAPE (11 custom columns) - exact adjacent-pair bracket: 4 viable, 5 refused
+# REPORT SHAPE OF THAT DAY (11 custom columns; since 2026-10-10 the preset renders 14
+# columns and the same 34 headers) - exact adjacent-pair bracket: 4 viable, 5 refused
 # at 258,883 bytes; CRYPTO also viable at 4. Report-relative: a wider report refuses
 # earlier. The compile is the authority; this number only steers defaults and
 # warnings. The byte curve is concave, so this is nowhere near cap/coins-at-30.
@@ -226,7 +228,18 @@ class Thesis:
     # FADE:  the crowd should be leaning the OTHER way (contrarian theses).
     stance: str = "ALIGN"
     required: list[str] = field(default_factory=list)   # signalIds treated as vetoes
-    context: list[str] = field(default_factory=list)    # modules included but weighted 0
+    # Modules included as reading material, weighted 0. BattleGrid lists each of their signals
+    # whose data the report then shows as REPORT_DATA_SIGNAL_OFF and the module as
+    # MODULE_IN_REPORT_SCORES_NOTHING (measured 2026-10-09/10 on REGIME: 4 + 1); the critique
+    # predicts both. No preset carries one since 2026-10-10.
+    context: list[str] = field(default_factory=list)
+    # Show every (metric, rung) a weighted signal scores on that the module recipes do not:
+    # one `value` column (STRUCT_ZONES: `count`) per missing pair at the rung's rel
+    # (omega.membership.RUNG_REL). BattleGrid's ACTIVE_SIGNAL_DATA_NOT_IN_REPORT, measured
+    # 12 times on the trend-continuation create of 2026-10-09 (data/contract/
+    # stage_strategy_draft/diagnostics_action60_create_20261009T2310Z.json). False gives the
+    # pre-2026-10-10 report, the shape committed as strategy 7534b2ee.
+    show_scoring_data: bool = True
     # API coinSelection object; None means "derive one from the modules"
     coin_selection: dict | None = None
     # Explicit execution-parameter overrides (API field names); None/empty means the
@@ -255,6 +268,9 @@ class Thesis:
 
 
 # --- preset theses --------------------------------------------------------
+# Until 2026-10-10 every preset carried context=["REGIME"]: three columns the agent read and
+# no signal scored (REPORT_DATA_SIGNAL_OFF x4 + MODULE_IN_REPORT_SCORES_NOTHING on every live
+# stage). No preset's thesis weights REGIME, so the columns went rather than the weights.
 PRESETS: dict[str, Thesis] = {
     "mean-reversion": Thesis(
         name="Mean Reversion at Extremes",
@@ -263,7 +279,6 @@ PRESETS: dict[str, Thesis] = {
         stance="FADE",
         gate=0.65,
         weights={"BOLLINGER": 3, "RSI": 2, "CVD": 2, "FUNDING": 1, "VOLATILITY": 1},
-        context=["REGIME"],
     ),
     "trend-continuation": Thesis(
         name="Trend Continuation",
@@ -272,7 +287,6 @@ PRESETS: dict[str, Thesis] = {
         stance="ALIGN",
         gate=0.60,
         weights={"MOVING_AVERAGES": 3, "TREND_STRENGTH": 2, "MACD": 2, "VOLUME": 1},
-        context=["REGIME"],
     ),
     "squeeze-breakout": Thesis(
         name="Squeeze Breakout",
@@ -281,7 +295,6 @@ PRESETS: dict[str, Thesis] = {
         stance="ALIGN",
         gate=0.55,
         weights={"BOLLINGER": 3, "VOLATILITY": 3, "VOLUME": 2, "OPEN_INTEREST": 1},
-        context=["REGIME"],
     ),
     "flow-divergence": Thesis(
         name="Spot-Led Accumulation",
@@ -290,7 +303,6 @@ PRESETS: dict[str, Thesis] = {
         stance="FADE",
         gate=0.60,
         weights={"FLOW_DIVERGENCE": 3, "CVD": 2, "FUNDING": 2, "OPEN_INTEREST": 1},
-        context=["REGIME"],
     ),
     "structure-reversal": Thesis(
         name="Structure Reversal",
@@ -299,7 +311,6 @@ PRESETS: dict[str, Thesis] = {
         stance="FADE",
         gate=0.65,
         weights={"PRICE_STRUCTURE": 3, "SUPPORT_RESISTANCE": 2, "RSI": 2, "CVD": 1},
-        context=["REGIME"],
     ),
 }
 
@@ -385,7 +396,8 @@ class StrategyPlan:
             out.append(f"even at 0.75 across the board the aggregate is "
                        f"{sim.aggregate_score_percent}% - below the {sim.gate_percent}% gate")
 
-        out += [f"scoring {f.severity}: {f}" for f in scoring_gaps(self.report, self.rules)]
+        predicted = predicted_diagnostics(self.report, self.rules)
+        out += [f"scoring {f.severity}: {f}" for f in predicted["mismatches"] + predicted["warnings"]]
 
         from .execution import PLATFORM_EXECUTION_DEFAULTS, validate_execution
         ov = self.thesis.execution or {}
@@ -739,10 +751,52 @@ def _split_by_timeframe_mode(modules: list[str]) -> tuple[list[dict], list[dict]
     return candle, inert
 
 
+def _plainest_transform(metric: str) -> str:
+    """`value` when the metric offers it; else its first listed transform (STRUCT_ZONES, an
+    entitySet, lists count first) - the metric file's own list, data/contract/metrics/."""
+    transforms = load().metric(metric).transforms
+    return "value" if "value" in transforms else next(iter(transforms))
+
+
+def _scoring_data_columns(rules: list[Rule], recipe: list[dict]) -> list[dict]:
+    """One column per (metric, rung) a weighted signal scores on that the recipe columns do not
+    show: the metric at the rung's rel (RUNG_REL), plainest transform, in rule order. What
+    BattleGrid lists as ACTIVE_SIGNAL_DATA_NOT_IN_REPORT (membership.scoring_gaps)."""
+    shown = shown_data(Report(sections=[CustomSection(
+        title="recipe", benchmarkTicker=None,
+        columns=[Column.model_validate(c) for c in recipe])])) if recipe else set()
+    data = _signal_data()
+    out: list[dict] = []
+    for r in rules:
+        for d in data.get(r.signalId, []):
+            key = (d["metric"], RUNG_REL[d["rung"]])
+            if key in shown:
+                continue
+            shown.add(key)
+            out.append({"metric": key[0], "transformId": _plainest_transform(key[0]),
+                        "timeframe": {"rel": key[1]}})
+    return out
+
+
 def plan(thesis: Thesis) -> StrategyPlan:
     """Turn a thesis into a validated report plus allocations."""
     m = _map()
+    c = load()
     candle, inert = _split_by_timeframe_mode(thesis.modules)
+
+    # allocate only what the report can actually feed (membership is module-level, so the
+    # scoring-data columns below never widen it: every metric they add belongs to a module
+    # the thesis already weights)
+    feedable = signals_for({s["metric"] for s in candle + inert})
+    rules: list[Rule] = []
+    for module, tier in thesis.weights.items():
+        for sid in m["moduleSignals"].get(module, []):
+            if sid in feedable and tier > 0:
+                rules.append(Rule(signalId=sid, allocation=tier,
+                                  required=sid in thesis.required))
+    if thesis.show_scoring_data:
+        for spec in _scoring_data_columns(rules, candle + inert):
+            (inert if c.metric(spec["metric"]).is_timeless else candle).append(spec)
 
     # sections[].notes is REQUIRED by the compile schema (published 2026-08-30,
     # string 1-400 or null). Emit a provenance string - null is schema-legal but
@@ -762,15 +816,6 @@ def plan(thesis: Thesis) -> StrategyPlan:
             notes=notes, columns=[Column.model_validate(s) for s in inert]))
 
     report = Report(anchor=thesis.anchor, sections=sections)
-
-    # allocate only what the report can actually feed
-    feedable = signals_for({s["metric"] for s in candle + inert})
-    rules: list[Rule] = []
-    for module, tier in thesis.weights.items():
-        for sid in m["moduleSignals"].get(module, []):
-            if sid in feedable and tier > 0:
-                rules.append(Rule(signalId=sid, allocation=tier,
-                                  required=sid in thesis.required))
     conditions = _build_conditions(thesis)
     verdicts = [c for c in conditions if c.get("verdict") in ("UP", "DOWN")]
     text = market_read_text(

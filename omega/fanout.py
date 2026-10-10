@@ -13,6 +13,23 @@ from .types import Column, CustomSection, PlatformSection, Report
 
 REL_INFIX = {"anchor": "", "lower": "_ltf_", "regime": "_htf_"}
 
+
+def column_timeframe(column: Column, section: CustomSection, anchor: str, contract: Contract) -> str | None:
+    """The distinct timeframe a candle column spends: the section's override, else the rel
+    resolved for the anchor, else the abs. `regime` resolves to null in the authoring contract
+    (composition_rules.timeframeResolution: it binds from the strategy's regimeTimeframe, 04)
+    yet it IS a distinct timeframe - a 1h preview holding anchor, lower and regime columns
+    read budgetUsage.distinctTimeframes.used 3 (data/contract/columns/_renders_tfvariants.json,
+    2026-08-24) - so it counts as the literal "regime". None for a timeless metric."""
+    if contract.metric(column.metric).is_timeless:
+        return None
+    if section.timeframe is not None:
+        return section.timeframe
+    rel = getattr(column.timeframe, "rel", None)
+    if rel is None:
+        return getattr(column.timeframe, "abs", None)
+    return contract.resolve_timeframe(rel, anchor) or rel
+
 # APPROXIMATE. Three live preview_strategy_report renders (o200k_base):
 #     6 headers /  2 columns / 1 section ->  164 tokens  (27.3 per header)
 #    33 headers / 13 columns / 1 section ->  976 tokens  (29.6 per header)
@@ -203,14 +220,9 @@ def cost_report(report: Report, contract: Contract | None = None) -> BudgetRepor
                 continue
             columns += 1
             headers += len(outputs_for(col, c))
-            m = c.metric(col.metric)
-            if not m.is_timeless:
-                tf = section.timeframe
-                if tf is None:
-                    rel = getattr(col.timeframe, "rel", None)
-                    tf = c.resolve_timeframe(rel, report.anchor) if rel else getattr(col.timeframe, "abs", None)
-                if tf:
-                    timeframes.add(tf)
+            tf = column_timeframe(col, section, report.anchor, c)
+            if tf:
+                timeframes.add(tf)
 
     tokens = headers * TOKENS_PER_HEADER
     b = c.budgets
