@@ -80,7 +80,10 @@ def test_every_recipe_actually_feeds_its_module():
 
 
 def test_squeeze_breakout_matches_the_live_connector():
-    predicted = plan(PRESETS["squeeze-breakout"]).membership().signals_in
+    """The live derive read the report as generated before 2026-10-10, REGIME as context; the
+    preset dropped that context (tests/test_recipes_rung_gap.py), so the comparison keeps it."""
+    from dataclasses import replace
+    predicted = plan(replace(PRESETS["squeeze-breakout"], context=["REGIME"])).membership().signals_in
     assert predicted == SQUEEZE_LIVE_MEMBERSHIP
     assert len(predicted) == 18
 

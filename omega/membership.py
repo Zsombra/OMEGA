@@ -87,6 +87,9 @@ class ScoringFinding(Finding):
     signal_id: str = ""
     missing: frozenset = frozenset()
     platform_code: str = ""     # the code BattleGrid's diagnostics.mismatches carry
+    # REPORT_DATA_SIGNAL_OFF only: every pair is also data a WEIGHTED signal scores on, so the
+    # report cannot stop showing it without reopening an ACTIVE_SIGNAL_DATA_NOT_IN_REPORT
+    forced: bool = False
 
 
 def shown_data(report) -> set[tuple[str, str]]:
@@ -147,21 +150,38 @@ def report_data_signal_off(report, rules) -> list[ScoringFinding]:
     """BattleGrid's `REPORT_DATA_SIGNAL_OFF`, predicted offline: a signal at allocation 0 - or
     absent from the rules - whose every (metric, rung) the report shows. The agent reads data
     the scorecard never scores. Measured 2026-10-09/10 on the REGIME context columns: four
-    regime_* signals, data REGIME_TREND / REGIME_VOL / REGIME_MOM @ anchor."""
+    regime_* signals, data REGIME_TREND / REGIME_VOL / REGIME_MOM @ anchor.
+
+    `forced`: the same rule, applied to a signal whose data is a subset of what the WEIGHTED
+    signals score on - mtf_aligned_* and comparison_sector_* read the EMA5 / EMA13 / EMA20
+    anchor and MA_ALIGN rungs that ma_ema_aligned_* / htf_ma_* / ltf_ma_* require. Closing the
+    ACTIVE gaps shows their data; CONFLUENCE and COMPARISON are unreachable through columns
+    (docs/07), so weighting them is not a column decision. Whether BattleGrid lists a signal
+    of an out-of-report module here is UNMEASURED (no live stage has shown such data yet);
+    the prediction applies the measured rule uniformly rather than exempt what it has not
+    seen."""
     shown = shown_data(report)
+    data = _signal_data()
     alloc = {r.signalId: r.allocation for r in rules}
+    weighted_data = {(d["metric"], d["rung"]) for r in rules if r.allocation > 0
+                     for d in data.get(r.signalId, [])}
     out = []
-    for sid, data in sorted(_signal_data().items()):
-        if alloc.get(sid, 0) > 0 or not data:
+    for sid, pairs in sorted(data.items()):
+        if alloc.get(sid, 0) > 0 or not pairs:
             continue
-        pairs = frozenset((d["metric"], d["rung"]) for d in data)
-        if all((m, RUNG_REL[g]) in shown for m, g in pairs):
-            out.append(ScoringFinding(
-                "warning", "REPORT_DATA_SIGNAL_OFF", f"rules.{sid}",
-                f"{sid} is off while the report shows the data it scores on: "
-                f"{', '.join(f'{m} @ {g}' for m, g in sorted(pairs))} (BattleGrid "
-                f"REPORT_DATA_SIGNAL_OFF, measured 2026-10-09/10); weight it or drop the column",
-                signal_id=sid, missing=pairs, platform_code="REPORT_DATA_SIGNAL_OFF"))
+        pairs = frozenset((d["metric"], d["rung"]) for d in pairs)
+        if not all((m, RUNG_REL[g]) in shown for m, g in pairs):
+            continue
+        forced = pairs <= weighted_data
+        remedy = ("every pair is data a weighted signal scores on, so no column can go; the "
+                  "module is unreachable through columns (docs/07) - a residue the platform's "
+                  "two rules force, unmeasured live" if forced else "weight it or drop the column")
+        out.append(ScoringFinding(
+            "warning", "REPORT_DATA_SIGNAL_OFF", f"rules.{sid}",
+            f"{sid} is off while the report shows the data it scores on: "
+            f"{', '.join(f'{m} @ {g}' for m, g in sorted(pairs))} (BattleGrid "
+            f"REPORT_DATA_SIGNAL_OFF, measured 2026-10-09/10); {remedy}",
+            signal_id=sid, missing=pairs, platform_code="REPORT_DATA_SIGNAL_OFF", forced=forced))
     return out
 
 

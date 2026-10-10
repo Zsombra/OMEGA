@@ -38,8 +38,10 @@ def _report(*cols) -> Report:
 
 def test_trend_continuation_reproduces_the_platforms_own_mismatches_exactly():
     """The ground truth: the signals OMEGA flags, and the data it says each is missing, are
-    exactly what BattleGrid's diagnostics listed for the same axes."""
-    p = plan(PRESETS["trend-continuation"])
+    exactly what BattleGrid's diagnostics listed for the same axes - the pre-2026-10-10 shape
+    (REGIME as context, no scoring-data columns), which the preset no longer is."""
+    from dataclasses import replace
+    p = plan(replace(PRESETS["trend-continuation"], context=["REGIME"], show_scoring_data=False))
     gaps = scoring_gaps(p.report, p.rules)
     assert all(f.code == "SCORING_INPUT_NOT_RENDERED" and f.severity == "warning" for f in gaps)
     predicted = {f.path.removeprefix("rules."): f.missing for f in gaps}
@@ -48,10 +50,13 @@ def test_trend_continuation_reproduces_the_platforms_own_mismatches_exactly():
 
 def test_every_preset_now_warns_from_the_measured_map_not_silence():
     """Before the probe, a signal outside the 12 measured was silent. Now every weighted
-    signal is judged; each preset's warnings name only data the map lists for that signal."""
+    signal is judged; each pre-10-10 preset's warnings name only data the map lists for that
+    signal (the presets themselves warn of nothing since 2026-10-10)."""
+    from dataclasses import replace
     from omega.membership import _signal_data
     for name in PRESETS:
-        p = plan(PRESETS[name])
+        p = plan(replace(PRESETS[name], show_scoring_data=False))
+        assert scoring_gaps(p.report, p.rules), name
         for f in scoring_gaps(p.report, p.rules):
             sid = f.path.removeprefix("rules.")
             assert f.missing <= {(d["metric"], d["rung"]) for d in _signal_data()[sid]}, (name, sid)

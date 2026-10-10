@@ -29,6 +29,10 @@ CUSTOM_KEY = re.compile(r"^custom:[0-9a-fA-F-]{36}$")
 
 SIGNALS_KEY = "custom:854d0e89-aefa-847e-8d24-9697100f2ddd"
 CONTEXT_KEY = "custom:1035fbda-380e-8d68-86c5-eeb5534b8cfb"
+# The thesis strategy 7534b2ee was generated from on 2026-10-09: the trend-continuation preset
+# as it then was (REGIME as context, no scoring-data columns - both changed 2026-10-10,
+# tests/test_recipes_rung_gap.py). The round trip is against the body actually committed.
+COMMITTED_THESIS = replace(PRESETS["trend-continuation"], context=["REGIME"], show_scoring_data=False)
 
 
 def _clauses(defn: dict) -> list[dict]:
@@ -69,7 +73,7 @@ def test_the_fixture_is_the_measured_committed_body():
 def test_a_create_still_sends_no_section_keys():
     """axes() is a CREATE: the server mints custom keys and derives a clause's section, so
     a custom section carries no sectionKey and every clause's column.sectionKey is null."""
-    a = plan(PRESETS["trend-continuation"]).axes()
+    a = plan(COMMITTED_THESIS).axes()
     assert all("sectionKey" not in s for s in a["REPORT"]["sections"] if s["kind"] == "custom")
     assert {k for ks in _clause_keys(a).values() for _, k in ks} == {None}
 
@@ -78,7 +82,7 @@ def test_the_round_trip_restages_the_committed_body_exactly():
     """plan.axes() was committed (the fixture is what the server made of it); re-staging
     axes_update(current) must carry the live keys so REPORT and CONDITIONS read back
     identical - the 14-line diff of action 62 collapses to nothing."""
-    u = plan(PRESETS["trend-continuation"]).axes_update(CURRENT)
+    u = plan(COMMITTED_THESIS).axes_update(CURRENT)
     assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY]
     assert u["REPORT"] == CURRENT["REPORT"]
     assert _clause_keys(u) == _clause_keys(CURRENT)
@@ -86,7 +90,7 @@ def test_the_round_trip_restages_the_committed_body_exactly():
 
 
 def test_a_current_without_keys_leaves_the_nulls():
-    p = plan(PRESETS["trend-continuation"])
+    p = plan(COMMITTED_THESIS)
     a = p.axes()
     for cur in (_without_keys(CURRENT), {k: v for k, v in CURRENT.items()
                                           if k not in ("REPORT", "CONDITIONS")}):
@@ -96,10 +100,11 @@ def test_a_current_without_keys_leaves_the_nulls():
 
 
 def test_a_dropped_custom_section_does_not_carry_its_key():
-    """A thesis without the REGIME context no longer generates the Context section; the
-    platform drops it at commit and omega does not carry its key anywhere."""
-    t = replace(PRESETS["trend-continuation"], context=[])
-    u = plan(t).axes_update(CURRENT)
+    """A thesis without the REGIME context - the preset itself since 2026-10-10 - no longer
+    generates the Context section; the platform drops it at commit and omega does not carry
+    its key anywhere. The six scoring-data columns the preset gained emit headers no clause
+    reads, so every clause still inherits its key."""
+    u = plan(PRESETS["trend-continuation"]).axes_update(CURRENT)
     customs = [s for s in u["REPORT"]["sections"] if s["kind"] == "custom"]
     assert [s["title"] for s in customs] == ["Trend Continuation Signals"]
     assert customs[0]["sectionKey"] == SIGNALS_KEY
@@ -115,7 +120,7 @@ def test_a_changed_metric_does_not_inherit_a_key():
     signals = next(s for s in cur["REPORT"]["sections"] if s["sectionKey"] == SIGNALS_KEY)
     col = next(c for c in signals["columns"] if c["metric"] == "MA_ALIGN")
     col["metric"] = "RSI14"
-    u = plan(PRESETS["trend-continuation"]).axes_update(cur)
+    u = plan(COMMITTED_THESIS).axes_update(cur)
     assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY]
     keys = _clause_keys(u)
     for cond in ("TC_CORE_UP", "TC_CORE_DOWN"):
@@ -169,7 +174,7 @@ def test_sections_match_by_title_then_by_position_only_when_unambiguous():
     """Titles are omega's deterministic identity; a retitled strategy falls back to position
     only when no title matches, the counts are equal and the titles are unique on both
     sides. A partial title match carries only what matched."""
-    p = plan(PRESETS["trend-continuation"])
+    p = plan(COMMITTED_THESIS)
     renamed = copy.deepcopy(CURRENT)
     for s, title in zip(renamed["REPORT"]["sections"], ("Alpha", "Beta")):
         s["title"] = title
