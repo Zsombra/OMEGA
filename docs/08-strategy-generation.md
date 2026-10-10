@@ -245,7 +245,7 @@ draft, `get_strategy_draft` → `stage_strategy_draft {strategyId?, draftVersion
 | omega | what it is now |
 |---|---|
 | `plan(t).axes()` | the ten axes of a CREATE stage (no `strategyId`, `draftVersion: 0`), each written WHOLE: `IDENTITY`, `TIMEFRAME_PROFILE`, `REPORT`, `MARKET_READ`, `CONDITIONS`, `ENTRY`, `SETUP_GATES`, `TRADE_LEVEL_POLICY`, `POSITION_MANAGEMENT`, `SIGNAL_RULES` |
-| `plan(t).axes_update()` | the same without `ENTRY` — an axis a stage omits keeps the draft's value, so an existing strategy's entry is never touched (the 2026-08-29 rule) |
+| `plan(t).axes_update(current)` | the same without `ENTRY` — an axis a stage omits keeps the draft's value, so an existing strategy's entry is never touched (the 2026-08-29 rule); the dial axes come from `current` unless the thesis names a dial, and the current section keys are carried forward (below, 2026-10-10) |
 | `plan(t).preview_request()` | the read-only dry run, `preview_strategy_report {coinSelection, source: {kind: "FIELDS", timeframe, sections, conditions, marketReadText}}` — it judges the report and the conditions, **not** rules, gates or dials; only a stage does, and a stage is a write |
 | `emit_plan(...)` | writes the stage request `{draftVersion: 0, axes}` plus `_`-prefixed local metadata, the preview body among it |
 | `scripts/preview_dry_run.py` | prints those bodies; `--live` is refused — omega holds no MCP client |
@@ -272,3 +272,46 @@ What moved with it, each from the changelog or the schema:
 
 Nothing here has been staged, previewed or committed. Measurements M1–M3 in the plan are
 each a platform call, and so each is the user's word.
+
+## 2026-10-10: an UPDATE carries the current section keys
+
+The first live UPDATE of a strategy omega had created the day before (battlegrid-manager
+`tests/fixtures/2026-10-09-strategy-first-live/action_62_update_stage.json`, staged
+2026-10-10 06:33Z) returned a `review.diff` of 14 changes that were not changes:
+`REPORT.sections[0].sectionKey: "custom:854d0e89-…" → null`, `sections[1].sectionKey:
+"custom:1035fbda-…" → null`, and twelve clause `column.sectionKey`s → null
+(`reference-pairs` ×2, `market-breadth` ×2, the strategy's own `custom:854d0e89-…` ×8). A
+CREATE sends no key — the server mints a custom section's key and derives a clause's at
+commit — and the UPDATE re-sent the same nulls. The commit (`action_63_update_commit.json`,
+revision 2) kept every live key, so the diff was cosmetic; but a player approving the card
+sees 14 phantom changes, and the manager's rule is that the card is the approval.
+
+`axes_update(current)` now carries the keys forward; `axes()` (a CREATE) is unchanged:
+
+- **REPORT.** A generated custom section takes the `sectionKey` of the current custom
+  section with the same `title` (omega writes titles deterministically). When no title
+  matches, the counts are equal and the titles are unique on both sides, by position; a
+  partial title match carries only what matched. A current section the thesis no longer
+  generates is not carried — the platform drops it at commit. Only a key matching the
+  schema's `^custom:[0-9a-fA-F-]{36}$` is sent.
+- **CONDITIONS.** A generated clause whose `column.sectionKey` is null takes the key of
+  the current clause with the same `conditionKey` and the same `header`, when that key names
+  where this plan's report resolves the header: an ambient (`reference-pairs`,
+  `market-breadth`, `session-field`) or platform section's own key, or — for a custom key —
+  the live key of the section carried above, whose current columns must hold a column of
+  the same identity (`metric`, `transformId`, `chainedTransformId`, `timeframe`) as the
+  generated column that emits the header. A header two sections emit, a key the schema
+  refuses (a clause's `column.sectionKey` is a free string of 1–120 characters or null — no
+  enum), a differing or missing key: left null, as a CREATE sends it. A key is never
+  invented and never copied across conditions.
+
+The committed body read back, `current_7534b2ee_from_get_strategy.json` (manager commit
+8450268), sits at
+[`data/contract/stage_strategy_draft/current_7534b2ee_from_get_strategy_20261010T0634Z.json`](../data/contract/stage_strategy_draft/current_7534b2ee_from_get_strategy_20261010T0634Z.json);
+`tests/test_axes_update_section_keys.py` re-stages the `trend-continuation` preset against
+it and asserts `REPORT` and `CONDITIONS` come back identical — the 14 lines collapse to
+nothing. Unmeasured: whether the server honours a key sent back on an UPDATE rather than
+re-deriving it. The 2026-08-29 compile-path UPDATE re-minted custom keys sent
+byte-identical (`LOCKSTEP_REMINT`, [`first_generated_update_2026-08-29.json`](../data/audit/first_generated_update_2026-08-29.json));
+the v91 commit of 2026-10-10 kept them through nulls. The next live UPDATE is the
+measurement, and it is the user's word.
