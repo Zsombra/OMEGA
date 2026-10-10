@@ -215,3 +215,45 @@ def test_main_writes_design_stage_and_preview_per_member_and_a_manifest(tmp_path
         assert design["id"] == m["id"] and design["_what"].startswith("DESIGN RECORD")
         assert stage == builder.stage_request(_built(m["id"]))
         assert preview == _built(m["id"]).preview
+
+
+# --- scripts/tpo_suite_preview.py: the live caller sends the builder's preview body verbatim ---
+pspec = importlib.util.spec_from_file_location("tpo_suite_preview", ROOT / "scripts" / "tpo_suite_preview.py")
+previewer = importlib.util.module_from_spec(pspec)
+sys.modules["tpo_suite_preview"] = previewer
+pspec.loader.exec_module(previewer)  # type: ignore[union-attr]
+
+M3 = ROOT / "data/contract/stage_strategy_draft/m1_m3_live_20261006T055532Z.json"
+
+
+def test_previewer_sends_the_builders_preview_file_and_swaps_only_the_tickers(tmp_path, monkeypatch):
+    monkeypatch.setattr(builder, "OUT", str(tmp_path))
+    assert builder.main() == 0
+    monkeypatch.setattr(previewer, "SUITE", str(tmp_path))
+    manifest = json.loads((tmp_path / "_manifest.json").read_text(encoding="utf-8"))
+    for entry in manifest["suite"]:
+        want = _built(entry["id"]).preview
+        assert previewer.preview_request(entry, None) == want
+        swapped = previewer.preview_request(entry, ["BTC", "ETH"])
+        assert swapped["coinSelection"] == {"mode": "explicit", "tickers": ["BTC", "ETH"]}
+        assert swapped["source"] == want["source"]
+        assert _fails(P.diff_schema(swapped, PREVIEW_ROOT, PREVIEW_ROOT)) == []
+    assert previewer.ALLOWED_TOOLS == {"preview_strategy_report"}
+
+
+def test_previewer_tally_reads_the_v84_evidence_shape_of_a_measured_response():
+    """The 2026-10-06 M3 preview response (contract 91.0.0) is the shape the tally reads: a
+    verdict tally, outcomes with clause evidence carrying hold/counts/decidedBar, and
+    missingConditionColumns. No closeClock anywhere (v84 removed it)."""
+    calls = json.loads(M3.read_text(encoding="utf-8"))["calls"]
+    answer = next(c["answer"] for c in calls if c["tool"] == "preview_strategy_report")
+    vstr, held, fired, missing = previewer.tally(answer)
+    tally = answer["conditionVerdictTally"]
+    assert vstr == "U%d D%d N%d" % (tally.get("UP", 0), tally.get("DOWN", 0), tally.get("NEITHER", 0))
+    assert held == 0 and missing == 0 and fired != ""
+    assert "closeClock" not in json.dumps(answer)
+    held_answer = {"conditionOutcomes": [{"ticker": "X", "outcomes": [
+        {"conditionKey": "K", "outcome": "TRUE",
+         "evidence": [{"kind": "clause", "hold": {"atLeast": 2, "of": 2}}]}]}],
+        "conditionVerdictTally": {}, "missingConditionColumns": ["h"]}
+    assert previewer.tally(held_answer) == ("U0 D0 N0", 1, "K:1", 1)
