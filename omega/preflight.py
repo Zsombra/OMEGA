@@ -13,6 +13,12 @@ the RETIRED compile captures and pre-v84 read-backs (data/contract/_manifest.jso
 `retired`); the read-back mirror is retired until a v91 read-back is captured, because a
 pre-v84 record carries `closes` and `exit`, which no v91 body may.
 
+Contract 108.0.0 (2026-10-11, plan docs/plans/2026-10-11-omega-v108-conditions-only.md): the stage takes EIGHT
+axes - SIGNAL_RULES and SETUP_GATES are refused as unrecognized keys, minAtrPct is required on TRADE_LEVEL_POLICY.
+The walk is unchanged (it reads whatever axes the capture declares); fingerprint_axes checks the eight and no longer
+checks a signalId enum, because there is none: with signal rules gone there is no signal parameter or signal id
+to check a body against. AXES_91 stays as history.
+
 The walker covers only the JSON-Schema subset the definitions use: properties /
 required / additionalProperties:false / enum / const / type / minimum / maximum /
 exclusiveMinimum / exclusiveMaximum / multipleOf / minLength / maxLength / minItems /
@@ -96,7 +102,7 @@ def resolve_request(definition: dict) -> tuple[dict, dict]:
 
 def resolve_axes(definition: dict) -> tuple[dict[str, dict], dict]:
     """The axis schemas of a stage_strategy_draft definition, keyed by axis name (ten at
-    91.0.0), plus the root every local $ref is relative to. This replaces resolve_arms:
+    91.0.0, eight at 108.0.0), plus the root every local $ref is relative to. This replaces resolve_arms:
     v85 split the flat CREATE/UPDATE body into axes, each staged WHOLE."""
     request, root = resolve_request(definition)
     axes = deref(request.get("properties", {}).get("axes", {}), root)
@@ -109,7 +115,8 @@ def resolve_axes(definition: dict) -> tuple[dict[str, dict], dict]:
 def diff_axes(axes: dict, axis_schemas: dict[str, dict], root: dict) -> list[Finding]:
     """Walk each staged axis against its own schema (paths `axes.<AXIS>...`). An axis the
     definition does not declare is UNDECLARED (the axes object is additionalProperties:false
-    at 91.0.0); an axis the body omits is not a finding - "axes you omit keep their values"."""
+    at 91.0.0 and 108.0.0 - a SIGNAL_RULES or SETUP_GATES axis is UNDECLARED against a 108 capture); an axis the
+    body omits is not a finding - "axes you omit keep their values"."""
     out: list[Finding] = []
     for name, value in axes.items():
         path = f"axes.{name}"
@@ -674,24 +681,29 @@ def fingerprint_schema(arm: dict, root: dict, *, signal_ids: set[str], template_
     return out
 
 
+# History: the ten axes of 91.0.0 (data/contract/stage_strategy_draft/schema_20261005T194629Z.json).
 AXES_91 = ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
            "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES")
+# The eight axes of 108.0.0 (data/contract/stage_strategy_draft/schema_20261010T215326Z.json; README "Contract
+# history - v108": "stage_strategy_draft refuses the SIGNAL_RULES and SETUP_GATES axes as unrecognized keys").
+AXES_108 = tuple(a for a in AXES_91 if a not in ("SETUP_GATES", "SIGNAL_RULES"))
 
 
-def fingerprint_axes(axis_schemas: dict[str, dict], root: dict, *, signal_ids: set[str],
+def fingerprint_axes(axis_schemas: dict[str, dict], root: dict, *,
                      template_keys: set[str], timeframes: list[str]) -> list[Finding]:
     """Fidelity of a transcribed stage_strategy_draft capture against data the repo holds
-    independently - the fingerprint_schema checks, at their v91 homes (SIGNAL_RULES,
-    REPORT, TIMEFRAME_PROFILE) - plus the ten axes the 91.0.0 schema declares."""
+    independently - the fingerprint_schema checks at their homes on the axes (REPORT,
+    TIMEFRAME_PROFILE) - plus the eight axes the 108.0.0 schema declares.
+
+    Contract 108 (2026-10-11): the SIGNAL_RULES signalId check is retired with the axis - the
+    stage serves no signal id, and no signal definition exists to check a parameter against."""
     out: list[Finding] = []
-    if set(axis_schemas) != set(AXES_91):
+    if set(axis_schemas) != set(AXES_108):
         out.append(Finding("TRANSCRIPTION_SUSPECT", "axes",
-                           f"axes {sorted(axis_schemas)} are not the ten of 91.0.0; either "
+                           f"axes {sorted(axis_schemas)} are not the eight of 108.0.0; either "
                            "mistranscribed, or the platform's axis set moved - read the "
                            "changelog and re-capture before trusting the walk", "FAIL"))
     checks = (
-        ("axes.SIGNAL_RULES.rules[].signalId",
-         _enum_at(axis_schemas.get("SIGNAL_RULES", {}), root, "rules", "[]", "signalId"), signal_ids),
         ("axes.REPORT.sections[].platform.sectionKey",
          _enum_at(axis_schemas.get("REPORT", {}), root, "sections", "[]", "anyOf:platform", "sectionKey"),
          template_keys),

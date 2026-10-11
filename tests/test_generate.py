@@ -88,23 +88,18 @@ def test_squeeze_breakout_matches_the_live_connector():
     assert len(predicted) == 18
 
 
-def test_axes_carry_the_dense_84_entry_scorecard_with_integer_allocations():
+def test_axes_carry_no_scorecard_and_no_gate_at_108():
+    """v108: "signal rules, the aggregate-score gate and the required-count gate are removed"; the stage refuses
+    SIGNAL_RULES and SETUP_GATES. The dense 84-row scorecard is StrategyPlan._rules(), retired (history)."""
     axes = plan(PRESETS["mean-reversion"]).axes()
-    rules = axes["SIGNAL_RULES"]["rules"]
-    assert len(rules) == 84
-    assert len({r["signalId"] for r in rules}) == 84
-    assert axes["SETUP_GATES"]["minAggregateScore"] == PRESETS["mean-reversion"].gate
-    # unallocated signals must be present at zero, matching real strategies
-    zeros = [r for r in rules if r["allocation"] == 0]
-    assert zeros and all(r["required"] is False for r in zeros)
-    # v91 SIGNAL_RULES: allocation is an integer 0..3, required with `required`
-    assert all(type(r["allocation"]) is int and 0 <= r["allocation"] <= 3 for r in rules)
-    assert all(list(r) == ["signalId", "allocation", "required", "params"] for r in rules)
+    assert tuple(axes) == AXES and len(AXES) == 8
+    assert "minAggregateScore" not in json.dumps(axes) and "minRequiredCount" not in json.dumps(axes)
+    assert "signalId" not in json.dumps(axes)
 
 
-def test_axes_params_match_recorded_defaults():
-    axes = plan(PRESETS["mean-reversion"]).axes()
-    by_id = {r["signalId"]: r for r in axes["SIGNAL_RULES"]["rules"]}
+def test_the_retired_scorecard_still_carries_the_recorded_default_params():
+    """History: what the v91 SIGNAL_RULES rows carried (StrategyPlan._rules(), retired at contract 108)."""
+    by_id = {r["signalId"]: r for r in plan(PRESETS["mean-reversion"])._rules()}
     assert by_id["rsi_oversold"]["params"] == {"threshold": 30}
     assert by_id["bollinger_lower_touch"]["params"] == {"pctBThreshold": 0.05}
     assert by_id["macd_bull_cross"]["params"] == {}
@@ -173,18 +168,18 @@ def test_custom_sections_carry_provenance_notes(name):
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_axes_are_the_ten_in_order_and_the_update_drops_entry_and_unnamed_dials(name):
-    """A create stages all ten. An update without execution overrides stages neither ENTRY
-    nor the two dial axes (they keep the strategy's values), and SETUP_GATES' minAtrPct is
-    the strategy's own (tests/test_first_update.py pins the rule)."""
+def test_axes_are_the_eight_in_order_and_the_update_drops_entry_and_unnamed_dials(name):
+    """A create stages all eight (contract 108). An update without execution overrides stages
+    neither ENTRY nor the two dial axes (they keep the strategy's values; tests/test_first_update.py
+    pins the rule) - and since SETUP_GATES is gone, nothing else forces a dial axis onto it."""
     assert PRESETS[name].execution is None      # every preset runs on the platform's dials
     p = plan(PRESETS[name])
     a = p.axes()
-    assert tuple(a) == AXES
-    u = p.axes_update({"SETUP_GATES": {**a["SETUP_GATES"], "minAtrPct": 0.8}})
+    assert tuple(a) == AXES == ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS",
+                                "ENTRY", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT")
+    u = p.axes_update({"TRADE_LEVEL_POLICY": {**a["TRADE_LEVEL_POLICY"], "minAtrPct": 0.8}})
     dropped = {"ENTRY", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"}
     assert tuple(u) == tuple(x for x in AXES if x not in dropped)
-    assert u["SETUP_GATES"]["minAtrPct"] == 0.8
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
@@ -219,16 +214,17 @@ def test_whole_axes_send_every_dial_at_the_measured_defaults(name):
     a = plan(PRESETS[name]).axes()
     assert list(a["POSITION_MANAGEMENT"]) == list(POSITION_MANAGEMENT_DIALS)
     assert a["POSITION_MANAGEMENT"]["decisionInvalidationExitEnabled"] is True
-    assert list(a["TRADE_LEVEL_POLICY"]) == list(TRADE_LEVEL_DIALS)
-    assert list(a["SETUP_GATES"]) == ["minAggregateScore", "minRequiredCount", "minAtrPct"]
-    sent = {**a["SETUP_GATES"], **a["TRADE_LEVEL_POLICY"], **a["POSITION_MANAGEMENT"]}
+    # v108: minAtrPct is required on TRADE_LEVEL_POLICY, in the 108 schema's `required` order
+    assert list(a["TRADE_LEVEL_POLICY"]) == list(TRADE_LEVEL_DIALS) == [
+        "minAtrPct", "minStopLossAtrMultiple", "maxStopLossAtrMultiple", "minRiskRewardRatio"]
+    sent = {**a["TRADE_LEVEL_POLICY"], **a["POSITION_MANAGEMENT"]}
     assert all(sent[k] == v for k, v in PLATFORM_EXECUTION_DEFAULTS.items())
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_axes_walk_clean_against_the_v91_stage_schema(name):
+def test_axes_walk_clean_against_the_v108_stage_schema(name):
     """Zero FAIL and zero UNSUPPORTED walking the whole CREATE stage request through the
-    saved 91.0.0 stage_strategy_draft input schema."""
+    saved 108.0.0 stage_strategy_draft input schema (the manifest's writeSurface)."""
     from omega import preflight as P
     from omega.contract import stage_schema
     root = stage_schema()["stage_strategy_draft"]["inputSchema"]

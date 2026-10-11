@@ -48,7 +48,7 @@ def test_recipe_prints_numbered_steps_with_the_capture_path(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "ToolSearch" in out and "stage_strategy_draft" in out
     assert "data/contract/stage_strategy_draft/" in out
-    assert "CREATE stage, 10 axes, 7 conditions" in out
+    assert "CREATE stage, 8 axes, 7 conditions" in out          # contract 108: eight axes
     assert "6 KB" in out and "never" in out.lower() and "read-back" in out
     assert "YYYY-MM-DDTHH:MM:SSZ" in out and "fractional seconds" in out.lower()
     assert "compile_strategy_plan" not in out
@@ -93,7 +93,8 @@ def test_run_fails_a_body_carrying_the_retired_condition_keys_and_gate_refuses(t
 def test_run_refuses_a_transcription_suspect_schema(tmp_path, capsys):
     definition = copy.deepcopy(stage_schema()["stage_strategy_draft"])
     axes = definition["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
-    axes["SIGNAL_RULES"]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"].pop()
+    # a truncated platform sectionKey enum on the REPORT axis (the signalId enum went with SIGNAL_RULES at 108)
+    axes["REPORT"]["properties"]["sections"]["items"]["anyOf"][0]["properties"]["sectionKey"]["enum"].pop()
     out = tmp_path / "receipt.json"
     assert _run(_body(tmp_path), "--schema", _capture(tmp_path, definition), "--out", out) == 1
     receipt = json.loads(out.read_text(encoding="utf-8"))

@@ -11,13 +11,11 @@ call:
         -c "SELECT value::text FROM system_state WHERE key = 'surface_tools';" > surface.json
 
 It prints the `results` block of a `data/audit/contract_<N>_vocabulary_*.json` record and
-exits 0 when all three enums are identical in both directions, 1 when any moved. Nothing
+exits 0 when both enums are identical in both directions, 1 when either moved. Nothing
 is typed by hand: each live enum is read from the schema the platform serves, and each
 stored enum from the extraction this repo authors against.
 - metric: `get_metric_construction_hints` `properties.metric.enum`, against the
   `data/contract/metrics/<METRIC>.json` files;
-- signalId: the `signalId` enum on `stage_strategy_draft`'s SIGNAL_RULES axis, against the
-  keys of `data/contract/signals/_scoring.json["signals"]`;
 - sectionKey: the `sectionKey` enum on `stage_strategy_draft`'s REPORT axis, against the
   same enum in the newest `data/contract/stage_strategy_draft/schema_*.json` capture.
 
@@ -26,6 +24,11 @@ alias (README "Contract history - v85": "a signal rule is a row of the draft's S
 axis"), so both enums are read off the stage tool's axes now; the compile captures are
 retired (data/contract/_manifest.json). The 2026-09-26..10-02 records under data/audit/
 were made by the compile-era form of this script, which is in the repository history.
+
+Contract 108.0.0 (2026-10-11) removed the SIGNAL_RULES axis ("stage_strategy_draft refuses the SIGNAL_RULES and
+SETUP_GATES axes as unrecognized keys", README "Contract history - v108"): the platform serves no signalId enum to
+compare, so the `signals` kind is retired. Reading it would raise on every 108 surface ("an absent enum is
+unreadable"); the v91 form of this script is in the repository history.
 """
 from __future__ import annotations
 
@@ -76,7 +79,6 @@ def live_enums(surface: dict) -> dict[str, set[str]]:
     axes = _axes(tools[STAGE_TOOL])
     found = {
         "metrics": first_enum(_input_schema(tools, "get_metric_construction_hints"), "metric"),
-        "signals": first_enum(axes.get("SIGNAL_RULES", {}), "signalId"),
         "sectionKeys": first_enum(axes.get("REPORT", {}), "sectionKey"),
     }
     missing = [k for k, v in found.items() if not v]
@@ -98,10 +100,8 @@ def stored_enums(contract: Path = CONTRACT) -> dict[str, set[str]]:
     # a session capture is an envelope ({capturedAt, how, request, response}); the saved
     # manager-surface file is keyed by tool - resolve_axes reads either
     capture = doc["response"] if isinstance(doc.get("response"), dict) else doc
-    scoring = json.loads((contract / "signals" / "_scoring.json").read_text(encoding="utf-8"))
     return {
         "metrics": {p.stem for p in (contract / "metrics").glob("*.json") if not p.name.startswith("_")},
-        "signals": set(scoring["signals"]),
         "sectionKeys": set(first_enum(_axes(capture).get("REPORT", {}), "sectionKey") or []),
     }
 
@@ -109,7 +109,7 @@ def stored_enums(contract: Path = CONTRACT) -> dict[str, set[str]]:
 def compare(live: dict[str, set[str]], stored: dict[str, set[str]]) -> dict:
     return {k: {"live": len(live[k]), "stored": len(stored[k]),
                 "liveNotStored": sorted(live[k] - stored[k]), "storedNotLive": sorted(stored[k] - live[k])}
-            for k in ("metrics", "signals", "sectionKeys")}
+            for k in ("metrics", "sectionKeys")}
 
 
 def main(argv: list[str]) -> int:

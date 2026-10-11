@@ -142,7 +142,6 @@ def brief(p) -> str:
     t = p.thesis
     findings = validate_thesis(t)
     w = p.axes()
-    rules = w["SIGNAL_RULES"]["rules"]
     exits = [c for c in w["CONDITIONS"]["conditions"] if c["exitSide"]]
     lines = [
         f"{t.name}" + (f" - {t.tagline}" if t.tagline else ""),
@@ -161,8 +160,8 @@ def brief(p) -> str:
         "critique:",
         *[f"  {line}" for line in p.critique()],
         "",
-        f"create draft axes: {len(w['REPORT']['sections'])} sections, {len(rules)} rules "
-        f"({sum(1 for r in rules if r['allocation'] > 0)} weighted), "
+        # contract 108: no SIGNAL_RULES axis (the "84 rules (N weighted)" count went with it)
+        f"create draft axes: {len(w)} axes, {len(w['REPORT']['sections'])} sections, "
         f"{len(w['CONDITIONS']['conditions'])} conditions ({len(exits)} exit rules)",
     ]
     return "\n".join(lines)

@@ -122,7 +122,7 @@ def test_the_brief_is_one_honest_page():
     assert "Trend Continuation" in text
     assert "stance ALIGN" in text and "anchor 1h" in text
     assert "platform defaults" in text            # the execution profile line
-    assert "84 rules" in text and "24 weighted" in text
+    assert "create draft axes: 8 axes" in text   # contract 108: no SIGNAL_RULES, no "84 rules" count
     assert "thesis findings: none" in text        # presets pass clean
 
 

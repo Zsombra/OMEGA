@@ -323,10 +323,15 @@ PRESETS: dict[str, Thesis] = {
 # The level triggers rest orders omega has not measured.
 ENTRY_MIRROR: dict = {"trigger": "ON_CANDLE_CLOSE"}
 
-# The ten axes of stage_strategy_draft at 91.0.0, in the order its description lists them. Each is written
-# WHOLE except SIGNAL_RULES, whose rows replace only the drafted rows for the same signalId.
+# The eight axes of stage_strategy_draft at 108.0.0, in the order its description lists them, each written WHOLE
+# (data/contract/stage_strategy_draft/schema_20261010T215326Z.json). v108 refuses SIGNAL_RULES and SETUP_GATES "as
+# unrecognized keys"; SETUP_GATES' minAtrPct moved onto TRADE_LEVEL_POLICY. The ten axes of 91.0.0 are AXES_91.
 AXES = ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
-        "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES")
+        "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT")
+AXES_91 = ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
+           "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES")
+# What a `current` read before v108 may still hold: accepted by axes_update and never staged.
+RETIRED_AXES = ("SETUP_GATES", "SIGNAL_RULES")
 
 # The seven roles _build_conditions emits (key = <prefix>_<role>); Thesis.exits names some of them.
 EXIT_ROLES = ("RISK_ON", "CTX_UP", "CTX_DOWN", "CORE_UP", "CORE_DOWN", "UP", "DOWN")
@@ -472,10 +477,11 @@ class StrategyPlan:
 
     def axes(self) -> dict:
         """The `axes` of a CREATE stage_strategy_draft request (no strategyId,
-        draftVersion 0): all ten axes, each WHOLE, keyed and shaped by the v91 schema
-        (data/contract/stage_strategy_draft/schema_20261005T194629Z.json). The flat
-        compile body this replaces - and its operation, intentSummary, assumptions and
-        coinSelection, which v85 dropped - is in git history."""
+        draftVersion 0): all eight axes, each WHOLE, keyed and shaped by the 108 schema
+        (data/contract/stage_strategy_draft/schema_20261010T215326Z.json). TRADE_LEVEL_POLICY
+        carries minAtrPct beside the stop-loss multiples and the risk-reward minimum (v108).
+        The ten-axis v91 form (SETUP_GATES, SIGNAL_RULES) and the flat compile body before
+        it are in git history."""
         from .execution import (PLATFORM_EXECUTION_DEFAULTS, POSITION_MANAGEMENT_DIALS,
                                 POSITION_MANAGEMENT_MIRROR, TRADE_LEVEL_DIALS)
         t = self.thesis
@@ -488,12 +494,8 @@ class StrategyPlan:
             "MARKET_READ": {"marketReadText": self.market_read_text},
             "CONDITIONS": {"conditions": self.conditions},
             "ENTRY": {"entry": dict(ENTRY_MIRROR)},
-            "SETUP_GATES": {"minAggregateScore": t.gate,
-                            "minRequiredCount": sum(1 for r in self.rules if r.required),
-                            "minAtrPct": eff["minAtrPct"]},
             "TRADE_LEVEL_POLICY": {k: eff[k] for k in TRADE_LEVEL_DIALS},
             "POSITION_MANAGEMENT": {k: eff[k] for k in POSITION_MANAGEMENT_DIALS},
-            "SIGNAL_RULES": {"rules": self._rules()},
         }
 
     def axes_update(self, current: dict | None) -> dict:
@@ -504,13 +506,18 @@ class StrategyPlan:
 
         `current` is the strategy's axes as get_strategy_draft reads them (the held draft,
         or the committed values when none is held). The 2026-08-29 UPDATE sent a dial only
-        when `thesis.execution` named it, so a tuned strategy kept its dials; a v91 axis is
+        when `thesis.execution` named it, so a tuned strategy kept its dials; an axis is
         staged WHOLE, so sending axes()'s 08-28 defaults would reset them (the review of
         2026-10-06). So TRADE_LEVEL_POLICY and POSITION_MANAGEMENT are staged only when the
-        thesis names one of their dials, the rest of the axis read from `current`; and
-        SETUP_GATES - always staged, it carries the thesis's gate and required count - takes
-        minAtrPct from the thesis or from `current`. A dial found in neither raises: omega
-        never invents the value of a live strategy's dial.
+        thesis names one of their dials, the rest of the axis read from `current`. A dial
+        found in neither raises: omega never invents the value of a live strategy's dial.
+
+        Contract 108 (2026-10-11): SETUP_GATES and SIGNAL_RULES are gone, so nothing forces a
+        dial axis onto an update any more (SETUP_GATES was always staged because it carried the
+        thesis's gate). minAtrPct is a TRADE_LEVEL_POLICY dial; a `current` read before v108
+        that still holds SETUP_GATES / SIGNAL_RULES is accepted, those two axes are never
+        staged, and when current TRADE_LEVEL_POLICY lacks minAtrPct it is taken from the old
+        SETUP_GATES.
 
         Section keys are carried forward from `current` (2026-10-10). A CREATE sends no key -
         the server mints a custom section's `sectionKey` and derives a clause's
@@ -561,7 +568,11 @@ class StrategyPlan:
                     f"`current`; omega never invents a live strategy's dial")
             return {d: named[d] if d in named else have[d] for d in dials}
 
-        out["SETUP_GATES"]["minAtrPct"] = complete("SETUP_GATES", ("minAtrPct",))["minAtrPct"]
+        # a pre-v108 read: minAtrPct still sits on SETUP_GATES (RETIRED_AXES are never staged)
+        legacy_atr = (current.get("SETUP_GATES") or {}).get("minAtrPct")
+        tlp = current.get("TRADE_LEVEL_POLICY") or {}
+        if "minAtrPct" not in tlp and legacy_atr is not None:
+            current = {**current, "TRADE_LEVEL_POLICY": {**tlp, "minAtrPct": legacy_atr}}
         for axis, dials in (("TRADE_LEVEL_POLICY", TRADE_LEVEL_DIALS),
                             ("POSITION_MANAGEMENT", POSITION_MANAGEMENT_DIALS)):
             if named.keys() & set(dials):

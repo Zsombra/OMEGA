@@ -88,9 +88,9 @@ def test_axes_walk_clean_against_the_saved_stage_schema(sid):
 
 
 @pytest.mark.parametrize("sid", IDS)
-def test_axes_are_the_ten_of_91_and_the_stage_request_walks_clean(sid):
+def test_axes_are_the_eight_of_108_and_the_stage_request_walks_clean(sid):
     b = _built(sid)
-    assert set(b.axes) == set(P.AXES_91)
+    assert set(b.axes) == set(P.AXES_108)       # contract 108: no SETUP_GATES, no SIGNAL_RULES
     request = builder.stage_request(b)
     assert set(request) == {"draftVersion", "axes"} and request["draftVersion"] == 0
     assert "strategyId" not in request          # a CREATE: v85 "omit strategyId to open a NEW create draft"
@@ -176,10 +176,10 @@ def test_no_custom_section_key_is_sent_on_a_create(sid):
 def test_entry_and_gate_are_the_mirrors_not_inventions(sid):
     axes = _built(sid).axes
     assert axes["ENTRY"] == {"entry": ENTRY_MIRROR} == {"entry": {"trigger": "ON_CANDLE_CLOSE"}}
-    assert axes["SETUP_GATES"] == {**builder.GATE_MIRROR, "minAtrPct": 0.5}
     assert axes["TIMEFRAME_PROFILE"] == {"timeframe": builder.ANCHOR}
-    assert all(r["allocation"] == 0 and r["required"] is False for r in axes["SIGNAL_RULES"]["rules"])
-    assert len(axes["SIGNAL_RULES"]["rules"]) == 84
+    # contract 108: no gate axis and no scorecard; minAtrPct (the 08-28 measured default) rides on TRADE_LEVEL_POLICY
+    assert not {"SETUP_GATES", "SIGNAL_RULES"} & set(axes)
+    assert axes["TRADE_LEVEL_POLICY"]["minAtrPct"] == 0.5
 
 
 @pytest.mark.parametrize("sid", IDS)

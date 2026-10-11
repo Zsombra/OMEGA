@@ -29,8 +29,14 @@ EXECUTION_PARAMS = frozenset(PLATFORM_EXECUTION_DEFAULTS)
 # where the retired compile let omega send none (Decision 1(a)): until a create draft's
 # seeded values are read (plan 2026-10-06, measurement M1) omega sends the 08-28 measured
 # defaults above. The tuples are in each axis's `required` order.
-SETUP_GATE_DIALS = ("minAtrPct",)             # + minAggregateScore, minRequiredCount (thesis)
-TRADE_LEVEL_DIALS = ("minStopLossAtrMultiple", "maxStopLossAtrMultiple", "minRiskRewardRatio")
+#
+# 2026-10-11, contract 108.0.0 (README "Contract history - v108"): SETUP_GATES is refused as an unrecognized
+# key; "the ATR floor minAtrPct is staged in the TRADE_LEVEL_POLICY axis, beside the stop-loss multiples and the
+# risk-reward minimum; a TRADE_LEVEL_POLICY stage without it is refused". The 108 capture
+# (data/contract/stage_strategy_draft/schema_20261010T215326Z.json) requires the four in the order below.
+# SETUP_GATE_DIALS is the retired v91 axis's one dial, kept as history; nothing emits it.
+SETUP_GATE_DIALS = ("minAtrPct",)             # RETIRED at contract 108 (was + minAggregateScore, minRequiredCount)
+TRADE_LEVEL_DIALS = ("minAtrPct", "minStopLossAtrMultiple", "maxStopLossAtrMultiple", "minRiskRewardRatio")
 POSITION_MANAGEMENT_DIALS = (
     "breakEvenEnabled", "breakEvenTriggerR", "trailingEnabled", "trailingTriggerR",
     "trailingGivebackPct", "trailingBufferPct", "timeDecayEnabled",

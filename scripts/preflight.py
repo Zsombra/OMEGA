@@ -1,5 +1,6 @@
 """Schema-drift preflight CLI (design: docs/superpowers/specs/2026-09-04-schema-drift-preflight-design.md),
-at contract 91: the body is a stage_strategy_draft request, walked axis by axis.
+at contract 108: the body is a stage_strategy_draft request of eight axes, walked axis by axis (SIGNAL_RULES and
+SETUP_GATES are refused since 108.0.0; the signalId fingerprint went with them).
 
   recipe <body.json>
       Print the numbered, read-only session procedure for THIS body: which definition to
@@ -44,11 +45,6 @@ CAPTURE_SCHEMA_DIR = ROOT / "data" / "contract" / "stage_strategy_draft"
 AUDIT_DIR = ROOT / "data" / "audit"
 TOOL = "mcp__c330236a-7aee-4d07-ae11-e487c8cbc894__stage_strategy_draft"
 _SLUG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,39}$")
-
-
-def repo_signal_ids() -> set[str]:
-    m = json.loads((ROOT / "data/derived/signal_module_map.json").read_text(encoding="utf-8"))["moduleSignals"]
-    return {s for sigs in m.values() for s in sigs}
 
 
 def repo_template_keys() -> set[str]:
@@ -99,7 +95,7 @@ def cmd_recipe(a) -> int:
    Save the returned definition VERBATIM to
      {CAPTURE_SCHEMA_DIR.relative_to(ROOT).as_posix()}/schema_{stamp}.json
    as {{"capturedAt": "<YYYY-MM-DDTHH:MM:SSZ, fractional seconds accepted>", "how": "ToolSearch select:<tool>", "request": null, "response": <the definition>}}.
-   The definition is ~19 KB compact (~36 KB indented; measured on the saved 91.0.0 copy). If one Write fails or truncates, write it in <= 6 KB chunks and
+   The definition is ~15 KB compact (~32 KB indented; measured on the saved 108.0.0 copy). If one Write fails or truncates, write it in <= 6 KB chunks and
    concatenate, and say so in "how". Never edit, reorder or repair the text.
 
 2. No read-back: the get_strategy mirror is retired until a v91 read-back is captured (every
@@ -107,8 +103,8 @@ def cmd_recipe(a) -> int:
 
 3. Run the walk:
      python scripts/preflight.py run {a.body} --schema <step 1 file>
-   It checks the capture's fidelity first (the ten axes; signalId enum == 84 ids, 25 platform
-   section keys, 13 timeframes), then walks every axis, writes the receipt under data/audit/,
+   It checks the capture's fidelity first (the eight axes of 108.0.0; 25 platform section keys,
+   13 timeframes), then walks every axis, writes the receipt under data/audit/,
    and prints the gate line.
 
 4. On FAIL: stop. For each MISSING_* finding, mirror the value from the changelog or a record
@@ -141,8 +137,7 @@ def cmd_run(a) -> int:
     request_schema, root = P.resolve_request(definition)
     axis_schemas, _ = P.resolve_axes(definition)
     findings: list[P.Finding] = P.fingerprint_axes(
-        axis_schemas, root, signal_ids=repo_signal_ids(), template_keys=repo_template_keys(),
-        timeframes=repo_timeframes())
+        axis_schemas, root, template_keys=repo_template_keys(), timeframes=repo_timeframes())
     schema_fp_ok = not findings
     if schema_fp_ok:
         findings += P.diff_schema(body, request_schema, root)

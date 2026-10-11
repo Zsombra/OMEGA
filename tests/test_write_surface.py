@@ -86,13 +86,13 @@ def test_the_execution_surface_gap_stays_resolved():
     assert "_resolved" in GAP["executionSurfaceNotModelled"]
 
 
-def test_signal_rules_carry_the_dense_84_named_by_the_schema_enum():
-    """`rules` is still the name (the read-back calls them `signalRules`); the axis enum
-    names exactly the 84 signals the repo's module map holds."""
-    rules = plan(PRESETS["trend-continuation"]).axes()["SIGNAL_RULES"]["rules"]
-    enum = _axis_schemas()["SIGNAL_RULES"]["properties"]["rules"]["items"]["properties"]["signalId"]["enum"]
-    assert len(rules) == 84 == len(enum)
-    assert {r["signalId"] for r in rules} == set(enum)
+def test_no_signal_rule_or_setup_gate_axis_is_emitted_at_108():
+    """v108: "stage_strategy_draft refuses the SIGNAL_RULES and SETUP_GATES axes as unrecognized keys". The dense
+    84-row scorecard and the gate axis are history (the 91.0.0 capture keeps their schemas)."""
+    for preset in PRESETS:
+        axes = plan(PRESETS[preset]).axes()
+        assert not {"SIGNAL_RULES", "SETUP_GATES"} & set(axes), preset
+        assert {"SIGNAL_RULES", "SETUP_GATES"}.isdisjoint(_axis_schemas())
 
 
 @pytest.mark.parametrize("preset", sorted(PRESETS))
@@ -206,14 +206,25 @@ V91_TOOLS = {"stage_strategy_draft", "get_strategy_draft", "commit_strategy_draf
              "discard_strategy_draft", "list_strategy_drafts", "preview_strategy_report"}
 V91_AXES = {"IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
             "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES"}
+# 2026-10-11: contract 108.0.0 removed SIGNAL_RULES and SETUP_GATES (README "Contract history - v108"); the
+# manifest's writeSurface names the 108 capture (tests/test_write_surface_108.py pins its content) and keeps the
+# 91 capture as history.
+V108_TOOLS = {"stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft", "list_strategy_drafts",
+              "preview_strategy_report", "get_strategy"}
+V108_AXES = V91_AXES - {"SETUP_GATES", "SIGNAL_RULES"}
+SCHEMA_91 = "data/contract/stage_strategy_draft/schema_20261005T194629Z.json"
+SCHEMA_108 = "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
 
 
-def test_manifest_names_the_v91_draft_schema_and_retires_the_compile_captures():
+def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
     manifest = json.loads((ROOT / "data/contract/_manifest.json").read_text(encoding="utf-8"))
     ws = manifest["writeSurface"]
-    assert ws["servedContractVersion"] == "91.0.0"
-    assert ws["schema"] == "data/contract/stage_strategy_draft/schema_20261005T194629Z.json"
+    assert ws["servedContractVersion"] == "108.0.0"
+    assert ws["buildSha"].startswith("1076c4e7")
+    assert ws["schema"] == SCHEMA_108
     assert (ROOT / ws["schema"]).is_file()
+    assert ws["supersedes"]["servedContractVersion"] == "91.0.0"
+    assert ws["supersedes"]["schema"] == SCHEMA_91 and (ROOT / SCHEMA_91).is_file()
     retired = manifest["retired"]
     assert set(retired) == {"data/contract/compile_strategy_plan/", "data/contract/get_strategy/"}
     for path in retired:                         # kept on disk, never deleted
@@ -222,10 +233,19 @@ def test_manifest_names_the_v91_draft_schema_and_retires_the_compile_captures():
     assert manifest["servedContractVersion"] == "61.2.0"
 
 
-def test_the_named_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
-    doc = C.stage_schema()
+def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
+    doc = json.loads((ROOT / SCHEMA_91).read_text(encoding="utf-8"))
     assert doc["contractVersion"] == "91.0.0"
     assert V91_TOOLS <= set(doc)
     axes = doc["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]["axes"]
     assert set(axes["properties"]) == V91_AXES
+    assert axes["additionalProperties"] is False
+
+
+def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
+    doc = C.stage_schema()
+    assert doc["contractVersion"] == "108.0.0"
+    assert V108_TOOLS <= set(doc)
+    axes = doc["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]["axes"]
+    assert set(axes["properties"]) == V108_AXES
     assert axes["additionalProperties"] is False
