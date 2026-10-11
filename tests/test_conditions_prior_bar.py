@@ -239,3 +239,16 @@ def test_a_transition_label_outside_the_vocabulary_is_a_warning():
 def test_the_older_operators_keep_their_errors():
     errors, _ = _findings(num("RSI14_zone", "gt", 1))
     assert any("does not accept 'gt'" in f.message for f in errors)
+
+
+# --- the presets (step 4 of plan 2026-10-11-omega-condition-vocabulary-108) -------------------------
+def test_no_preset_changed_because_no_preset_description_asks_for_a_prior_bar_read():
+    """A new operator goes into a preset only where the preset's own description asks for it. None does: the five
+    describe states ("Full MA alignment ...", "Oscillator extreme plus band breach ...", "Volatility contraction
+    into expansion ...", "Spot CVD outpacing perp flow ...", "Price arriving at a structural zone ..."), not a
+    cross, a flip or a change on the bar before. So every generated condition still reads with the 91 operators."""
+    from omega.generate import PRESETS, _clauses_of, plan
+    for name, thesis in PRESETS.items():
+        assert not any(w in thesis.description.lower() for w in ("cross", "flip", "enters", "turns")), name
+        ops = {c.get("op") for cond in plan(thesis).conditions for c in _clauses_of(cond["definition"])}
+        assert ops and not ops & set(PRIOR_BAR_OPS), (name, ops)
