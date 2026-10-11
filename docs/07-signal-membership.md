@@ -2,6 +2,15 @@
 
 Which of the 84 signals can your report actually feed — answered offline.
 
+> **Retired 2026-10-11 (contract 108).** "Signal rules, the aggregate-score gate and the
+> required-count gate are removed" and `derive_strategy_rule_view` left discovery with no alias
+> (README "Contract history — v108"). No report feeds a signal any more, so this document and
+> `omega.membership` (the module map, the rung map `RUNG_REL` / `signal_data_rungs_91.json`,
+> `scoring_gaps`, `predicted_diagnostics`) are history: kept importable for the retired helpers and
+> the tests that reproduce the measured pre-108 diagnostics, called by nothing on the generation
+> path. A strategy's entry gate is now its conditions — see [09](09-conditions.md) and
+> [08](08-strategy-generation.md).
+
 [05](05-signal-aggregation-math.md) established the coupling: allocation converts evidence
 into influence but cannot manufacture evidence. A `NOT_IN_REPORT` signal never fires, and
 the aggregate's denominator counts **only signals that fired** — so it costs nothing

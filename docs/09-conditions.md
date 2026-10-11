@@ -7,6 +7,10 @@ as a named verdict.
 
 ## What conditions are not
 
+> **Superseded 2026-10-11 by contract 108:** conditions are now the *only* entry gate — see
+> [the 108 section](#2026-10-11-contract-108--conditions-are-the-only-entry-gate) at the end. The
+> text below describes the platform before 108 and stays as history.
+
 The platform says it plainly, in the rendered report itself:
 
 > Conditions are deterministic reads of your report columns, resolved server-side at
@@ -460,3 +464,52 @@ table above are unchanged.
 
 The presets still hold one read everywhere and declare no exit; `Thesis.exits` opts a generated
 condition into its `CLOSE_ON_` rule (see [08](08-strategy-generation.md)).
+
+## 2026-10-11: contract 108 — conditions are the only entry gate
+
+"Signal rules, the aggregate-score gate and the required-count gate are removed … A strategy's
+deterministic entry gate is its conditions: a required condition, or a condition that carries a
+verdict. A strategy that declares neither never trades, and its draft says so with the warning
+`NO_ENTRY_CONDITION`" (README "Contract history — v108"). The served `stage_strategy_draft`
+description narrows it to entry conditions: "the only deterministic entry gate — with no required
+and no verdict-carrying entry condition the strategy never routes, and the draft warns
+NO_ENTRY_CONDITION" ([`schema_20261010T215326Z.json`](../data/contract/stage_strategy_draft/schema_20261010T215326Z.json)).
+The draft's warning enum is now that one code, and `diagnostics.mismatches` is gone. The condition
+grammar did not move at 108: the `CONDITIONS` axis is identical at 106 and 108, six keys as at 91.
+It did move between 91 and 106, and omega has not followed yet: the 64-item cap is gone, and the
+clause arms gained `crossesAbove` / `crossesBelow` (numeric arm), `enters` / `exits` (label arm) and
+a fifth arm `increased` / `decreased` with no operand (README "Contract history — v98 (a clause can read the bar before)").
+omega's builders and `validate_conditions` still model the 91 operators only; nothing it generates
+uses the new ones, and the preflight walks them against the schema.
+
+So "What conditions are not", above, is history: since 108 they gate entry. Two things already
+gated before — `required: true` (a FALSE reading blocked the trade) and, since 56.1.0, the resolved
+verdict binding direction — and they are now the whole gate.
+
+**In omega:**
+
+```python
+entry_gates(conditions)        # the keys of every ENTRY condition (exitSide null) that is
+                               # required or carries a verdict (UP / DOWN / NEITHER)
+validate_entry_gate(conditions)  # [] or one ERROR: "NO_ENTRY_CONDITION: ..."
+```
+
+`validate_entry_gate` is kept apart from `validate_conditions`, which type-checks any set of
+conditions — fragments included — and has no opinion about completeness. `StrategyPlan
+.condition_findings()` runs both, so the critique and battlegrid-manager's checks carry the finding;
+`authoring.validate_thesis` reports it under the code `NO_ENTRY_CONDITION` from the conditions
+`_build_conditions` would generate. The platform warns; omega refuses, because a strategy that can
+never trade is not a plan. An exit rule never counts, even a malformed one carrying a verdict.
+
+**What the generator does.** `_build_conditions` is unchanged: the seven roles, with `{P}_UP` and
+`{P}_DOWN` the verdict carriers, so every thesis with two or more directional modules has an entry
+gate of two conditions and every preset passes. Below two directional modules it emits nothing —
+which was already `THESIS_TOO_FEW_DIRECTIONAL` and is now also `NO_ENTRY_CONDITION`. No generated
+condition is `required`; a required veto is still the author's call.
+
+**Unmeasured.** Whether the platform counts a strategy whose only verdict carriers are `NEITHER` as
+having an entry gate (the wording "carries a verdict" says yes, and omega follows it) — and whether
+such a strategy can ever enter, since a resolved `NEITHER` admits no side (vendor strategy-examples
+skill, exported at contract 105). TPO suite members S1 and S7 are exactly that case; their design
+records say so (`entryGate.note`). Also unmeasured: what the gate does with a required condition
+that reads UNRESOLVED.

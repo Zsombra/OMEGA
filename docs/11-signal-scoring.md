@@ -3,6 +3,15 @@
 How a raw indicator reading becomes the 0–1 number that [05](05-signal-aggregation-math.md)
 aggregates.
 
+> **Retired 2026-10-11 (contract 108).** There is no signal score and no aggregate on the platform:
+> signal rules and the aggregate-score gate are removed, and `get_coin_signal_preview` and
+> `simulate_aggregate_score` — the tools these formulas were reproduced against — left discovery
+> with no alias (README "Contract history — v108"). `omega.scoring`, `omega.aggregate` and the
+> signal-definition mirrors under `data/contract/signals/` (retired in the manifest) are history.
+> So is the 2026-10-10 section below: `plan()` no longer adds the scoring-data columns
+> (`Thesis.show_scoring_data` retired; `plan_pre_108` reproduces them). See
+> [08](08-strategy-generation.md) for what each preset dropped.
+
 ---
 
 ## The layer this fills in
