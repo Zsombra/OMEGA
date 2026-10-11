@@ -11,7 +11,7 @@ THREE FILES PER STRATEGY, BECAUSE ONE FILE CANNOT BE ALL OF THEM (measured 2026-
                        port applied. Human-facing. NEVER sent.
     <id>.stage.json    `{draftVersion: 0, axes}` - the `request` of a CREATE stage_strategy_draft
                        (no strategyId: v85 "omit strategyId to open a NEW create draft"). The
-                       ten axes are exactly what omega.generate.StrategyPlan.axes() returns, so
+                       eight axes (contract 108) are exactly what omega.generate.StrategyPlan.axes() returns, so
                        the manager stages them as it stages a generated plan.
     <id>.preview.json  the read-only dry run: preview_strategy_report {coinSelection, source:
                        {kind: FIELDS, timeframe, sections, conditions, marketReadText}} (v85),
@@ -28,6 +28,12 @@ PORTED 2026-10-10 FROM THE RETIRED COMPILE BODY TO THE v91 DRAFT LIFECYCLE
     record under `v91Mappings`, per member, and in V91_MAPPINGS below. The theses - the market
     reads and the condition logic - are the 2026-09-10/11 ones, unchanged.
 
+PORTED 2026-10-11 TO CONTRACT 108 (conditions are the only entry gate)
+    v108 refuses SETUP_GATES and SIGNAL_RULES; minAtrPct moved onto TRADE_LEVEL_POLICY. The 0.99 / 0
+    gate mirror (GATE_MIRROR) has no axis any more and is history. Every member's conditions are now
+    its entry gate: each declares a verdict carrier, so none draws NO_ENTRY_CONDITION; the design
+    record lists the gate under `entryGate`. No condition changed.
+
 EVERY NUMBER'S PROVENANCE IS RECORDED
     Each threshold carries a basis string. There are exactly two honest categories and this file
     uses only those: MEASURED (cite the measurement) or INVENTED (say so).
@@ -39,10 +45,13 @@ WHY THE COIN LIST IS EXPLICIT AND NOT RANKED
     Eight explicit tickers carry breadth with headroom.
 
 NOT ALL OF THESE ARE WORTH CREATING, AND THIS FILE DOES NOT DECIDE THAT
-    S1 and S7 emit only NEITHER verdicts, so neither can produce a direction. S2's re-entry
+    S1 and S7 emit only NEITHER verdicts, so neither can produce a direction - and at 108 their
+    NEITHER carriers are their whole entry gate, which (vendor strategy-examples: a resolved NEITHER
+    admits no side) suggests they can never enter; unmeasured. S2's re-entry
     geometry (bar opened outside prior value, closed inside) was observed firing ZERO times
-    across two days of probing, and S3 and S5 both lean on it. None of the seven weights a
-    signal, so all seven are annotation-only and cannot route at any gate. And since 56.1.0 a
+    across two days of probing, and S3 and S5 both lean on it. Until 108 none of the seven weighted
+    a signal, so all seven were annotation-only and could not route at any gate; at 108 the
+    conditions themselves gate entry. And since 56.1.0 a
     NEITHER carrier reading TRUE beside an UP or DOWN carrier resolves the coin NEITHER (see
     ordered()). Emitting a legal payload is not the same as it being worth a quota slot.
 
@@ -59,8 +68,8 @@ from dataclasses import dataclass
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from omega.conditions import (  # noqa: E402
-    all_of, between, condition, held, in_, market_read_text, num, ref, report_headers,
-    validate_conditions, validate_market_read,
+    all_of, between, condition, entry_gates, held, in_, market_read_text, num, ref, report_headers,
+    validate_conditions, validate_entry_gate, validate_market_read,
 )
 from omega.generate import ENTRY_MIRROR, StrategyPlan, Thesis  # noqa: E402
 from omega.types import Column, CustomSection, Report  # noqa: E402
@@ -339,6 +348,8 @@ ENTRY_MIRROR_SOURCE = ("omega.generate.ENTRY_MIRROR - v85 ENTRY axis, trigger ON
                        "(data/contract/stage_strategy_draft/schema_20261005T194629Z.json); the six-key "
                        "56c08ef6 rev-4 mirror of 2026-09-11 is history")
 
+# RETIRED 2026-10-11 (contract 108 removed the aggregate-score and required-count gates; no axis carries
+# them, and Thesis.gate is retired). Kept as history of what the v91 port sent on SETUP_GATES.
 # Routing gate, mirrored from the 2026-09-11 reference record (56c08ef6 rev 4). No strategy here
 # weights a signal (all nine TPO metrics feed zero of the 84 signal modules - 663-cell probe,
 # 0 failures), so none can produce an aggregate and none can qualify a coin at ANY gate. 0.99
@@ -355,10 +366,12 @@ GATE_MIRROR = {"minAggregateScore": 0.99, "minRequiredCount": 0}
 CAPS = {"name": 50, "tagline": 80, "description": 500}
 
 STANDING_ASSUMPTIONS = [
-    "Measured: all nine TPO metrics feed zero of the 84 signal modules (663-cell probe, "
-    "zero failures). This strategy weights no signal, so it has no aggregate and cannot "
-    "qualify a coin at any gate. Its conditions are advisory and reach an agent only as "
-    "prompt context (and as the verdict that binds entry direction since 56.1.0).",
+    "Contract 108 (2026-10-11): signal rules and the aggregate-score and required-count gates are "
+    "removed; a strategy's entry gate is its conditions - a required condition or a verdict "
+    "carrier (README 'Contract history - v108'). This strategy's verdict carriers are its entry "
+    "gate, and the resolved verdict binds entry direction (since 56.1.0). Before 108: all nine TPO "
+    "metrics fed zero of the 84 signal modules (663-cell probe), so it had no aggregate and could "
+    "not qualify a coin at any gate.",
     "Measured: spread(M,O) = (M - O)/O in percent, positive meaning M sits above O. Proven "
     "by arithmetic on BTC 2026-09-11 (close 76845.00 vs pTpoVAL 76488.38 -> -0.46%). Every "
     "sign in the conditions is read against that convention.",
@@ -395,10 +408,11 @@ V91_MAPPINGS = {
         "key); nothing replaces it on a one-read condition.",
         "60.0.0 / v85: the six-key entry mirror became ENTRY {entry: {trigger: ON_CANDLE_CLOSE}} alone "
         "(omega.generate.ENTRY_MIRROR); naming a dial on that trigger is refused.",
-        "v85 whole axes: SETUP_GATES carries the 0.99 / 0 gate mirror plus minAtrPct, and "
-        "TRADE_LEVEL_POLICY / POSITION_MANAGEMENT / SIGNAL_RULES (84 rows at allocation 0) carry "
-        "omega's measured 08-28 defaults - the compile body sent none of these (Decision 1a); the "
-        "axes require them.",
+        "v85 whole axes: TRADE_LEVEL_POLICY and POSITION_MANAGEMENT carry omega's measured 08-28 "
+        "defaults - the compile body sent none of these (Decision 1a); the axes require them.",
+        "v108: SETUP_GATES and SIGNAL_RULES are refused as unrecognized keys, so the eight axes carry "
+        "neither the 0.99 / 0 gate mirror nor the 84 allocation-0 rows the v91 port sent; minAtrPct "
+        "(0.5, the 08-28 default) is required on TRADE_LEVEL_POLICY. The conditions are the entry gate.",
         "MARKET_READ is a required axis: marketReadText is composed by omega.conditions.market_read_text "
         "over every condition (the compile body sent none). Advisory text; it changes no condition.",
     ],
@@ -434,10 +448,10 @@ def _carries_hold_above_one(conds: list[dict]) -> bool:
 
 
 def thesis_for(s: dict) -> Thesis:
-    """The omega Thesis that carries one suite member's identity, anchor, gate and universe
-    into StrategyPlan.axes() / preview_request(). weights is empty on purpose: the suite
-    weights no signal (SIGNAL_RULES rides at allocation 0 on all 84), and no module recipe
-    adds a column - the report is the SPINE plus the member's extras, built in build()."""
+    """The omega Thesis that carries one suite member's identity, anchor and universe into
+    StrategyPlan.axes() / preview_request(). weights is empty on purpose: no module recipe adds
+    a column - the report is the SPINE plus the member's extras, built in build() - and the
+    conditions are the member's own (contract 108: no gate, no signal rules)."""
     return Thesis(
         name=_cap("OMEGA-TEST: " + s["name"], "name"),
         tagline=_cap(s["thesis"], "tagline"),
@@ -475,13 +489,23 @@ def build() -> list[Built]:
         )
         report = Report(anchor=ANCHOR, sections=[section])
         text = market_read_text(
-            "%s. %s Every condition below is advisory: TPO feeds no signal module." % (s["name"], s["thesis"]),
+            "%s. %s The conditions below are this strategy's entry gate (contract 108)." % (s["name"], s["thesis"]),
             s["conds"])
         plan = StrategyPlan(thesis=thesis_for(s), report=report, rules=[],
                             conditions=s["conds"], market_read_text=text)
         vr = validate_report(report)
         rep_errs = [f for f in vr.findings if f.severity == "error"]
-        cf = validate_conditions(report, s["conds"]) + validate_market_read(text, s["conds"], report)
+        cf = (validate_conditions(report, s["conds"]) + validate_market_read(text, s["conds"], report)
+              + validate_entry_gate(s["conds"]))
+        gate = entry_gates(s["conds"])
+        gate_verdicts = {c["verdict"] for c in s["conds"] if c["conditionKey"] in gate}
+        gate_note = ("every entry gate is a NEITHER carrier: the platform counts a NEITHER verdict as "
+                     "carrying one (no NO_ENTRY_CONDITION), but a resolved NEITHER admits no side (vendor "
+                     "strategy-examples skill), so whether this member can ever enter is unmeasured"
+                     if gate_verdicts == {"NEITHER"} else
+                     "verdict carriers: %s; a required condition: %s" % (
+                         ", ".join(sorted(v for v in gate_verdicts if v)) or "none",
+                         "yes" if any(c["required"] for c in s["conds"] if c["conditionKey"] in gate) else "no"))
         cond_errs = [f for f in cf if f.severity == "error"]
         warns = [f for f in cf if f.severity == "warning"]
         mappings = list(V91_MAPPINGS["common"])
@@ -493,7 +517,9 @@ def build() -> list[Built]:
                      "body <id>.preview.json. NOT staged, NOT previewed, NOT committed, NOT bound.",
             "_provenance": "scripts/tpo_suite_build.py; designed on contract 54.1.0 (measured 2026-09-10/11), "
                            "ported 2026-10-10 to the 91.0.0 draft lifecycle "
-                           "(data/contract/stage_strategy_draft/schema_20261005T194629Z.json)",
+                           "(data/contract/stage_strategy_draft/schema_20261005T194629Z.json) and "
+                           "2026-10-11 to contract 108.0.0 "
+                           "(data/contract/stage_strategy_draft/schema_20261010T215326Z.json)",
             "id": s["id"], "name": s["name"], "thesis": s["thesis"],
             "teaches": s["teaches"], "nullExposure": s["null"],
             "anchor": ANCHOR,
@@ -513,7 +539,7 @@ def build() -> list[Built]:
                                          "the 1h RSI14 conditionHold ceiling is unmeasured"},
             },
             "entryMirror": {"values": dict(ENTRY_MIRROR), "source": ENTRY_MIRROR_SOURCE},
-            "gateMirror": dict(GATE_MIRROR),
+            "entryGate": {"conditions": gate, "note": gate_note},
             "assumptions": [("Null exposure: " + s["null"]),
                             ("What this strategy is meant to teach: " + s["teaches"])] + STANDING_ASSUMPTIONS,
             "v91Mappings": mappings,
@@ -529,8 +555,8 @@ def build() -> list[Built]:
 
 
 def stage_request(b: Built) -> dict:
-    """The `request` of a CREATE stage_strategy_draft: no strategyId, draftVersion 0, the ten
-    axes whole. A stage is a WRITE into the player's draft; writing this file is not making it."""
+    """The `request` of a CREATE stage_strategy_draft: no strategyId, draftVersion 0, the eight
+    axes whole (contract 108). A stage is a WRITE into the player's draft; writing this file is not making it."""
     return {"draftVersion": 0, "axes": b.axes}
 
 
@@ -568,7 +594,7 @@ def main():
         json.dump({"suite": manifest, "anchor": ANCHOR, "sectionKey": SK,
                    "coinSelection": COIN_SELECTION,
                    "entryMirror": dict(ENTRY_MIRROR), "entryMirrorSource": ENTRY_MIRROR_SOURCE,
-                   "contract": "91.0.0 (schema_20261005T194629Z.json)",
+                   "contract": "108.0.0 (schema_20261010T215326Z.json)",
                    "totalErrors": total_err}, f, indent=1)
 
     print("-" * 78)
