@@ -25,7 +25,7 @@ from .aggregate import Signal, aggregate
 from .conditions import (
     all_of, ambient_headers, close_on, condition, crowd_leaning_down, crowd_leaning_up, is_,
     market_read_text, n_of, num, ref, stables_at_par, tape_bearish, tape_bullish,
-    validate_conditions, validate_market_read,
+    entry_gates, validate_conditions, validate_entry_gate, validate_market_read,
 )
 from .contract import DERIVED_DIR, load
 from .fanout import cost_report, outputs_for
@@ -348,7 +348,12 @@ class StrategyPlan:
     def condition_findings(self):
         out = validate_conditions(self.report, self.conditions)
         out += validate_market_read(self.market_read_text, self.conditions, self.report)
+        out += validate_entry_gate(self.conditions)         # contract 108: the only entry gate
         return out
+
+    def entry_gates(self) -> list[str]:
+        """The conditionKeys that gate entry (omega.conditions.entry_gates); empty = NO_ENTRY_CONDITION."""
+        return entry_gates(self.conditions)
 
     # -- analysis ---------------------------------------------------------
     def validation(self):
@@ -689,6 +694,8 @@ class StrategyPlan:
         for tier in sorted(by_tier, reverse=True):
             lines.append(f"  tier {tier}  ({len(by_tier[tier])})  {', '.join(sorted(by_tier[tier])[:4])}"
                          + (" ..." if len(by_tier[tier]) > 4 else ""))
+        gates = self.entry_gates()
+        lines += ["", "entry gate: " + (", ".join(gates) if gates else "NONE (NO_ENTRY_CONDITION)")]
         if self.conditions:
             lines += ["", f"conditions        {len(self.conditions):>3}"]
             for cond in self.conditions:

@@ -7,8 +7,9 @@ from __future__ import annotations
 from .execution import (CATALOG_BOUND_ENFORCED, CATALOG_BOUNDS,
                         PLATFORM_EXECUTION_DEFAULTS, SCHEMA_BOUNDS,
                         validate_execution)
+from .conditions import NO_ENTRY_CONDITION, entry_gates
 from .generate import (CADENCE_FOR_ANCHOR, EXIT_ROLES, MODULE_CLAUSES, MODULE_RECIPES,
-                       RANKED_LIMIT_MEASURED_MAX, REGIME_TF_FOR_ANCHOR, Thesis)
+                       RANKED_LIMIT_MEASURED_MAX, REGIME_TF_FOR_ANCHOR, Thesis, _build_conditions)
 from .membership import _map
 from .validate import Finding
 
@@ -127,6 +128,17 @@ def validate_thesis(thesis: Thesis) -> list[Finding]:
             out.append(Finding("error", "THESIS_UNFEEDABLE_REQUIRED", f"required.{sid}",
                                f"{sid} is marked required but no weighted module "
                                f"feeds it - it could never fire"))
+    # contract 108: conditions are the only entry gate - a thesis whose generated conditions carry no
+    # verdict and no required condition yields a strategy that never trades (the draft's NO_ENTRY_CONDITION)
+    try:
+        conds = _build_conditions(thesis)
+    except ValueError:
+        conds = None                    # an unknown exit role; reported just below
+    if conds is not None and not entry_gates(conds):
+        out.append(Finding("error", NO_ENTRY_CONDITION, "conditions",
+                           f"the thesis generates {len(conds)} condition(s) and none is required or carries a "
+                           f"verdict - the strategy would never trade (contract 108: conditions are the only "
+                           f"entry gate; the draft warns {NO_ENTRY_CONDITION})"))
     for role in thesis.exits:
         if role not in EXIT_ROLES:
             out.append(Finding("error", "THESIS_UNKNOWN_EXIT_ROLE", f"exits.{role}",
@@ -163,5 +175,6 @@ def brief(p) -> str:
         # contract 108: no SIGNAL_RULES axis (the "84 rules (N weighted)" count went with it)
         f"create draft axes: {len(w)} axes, {len(w['REPORT']['sections'])} sections, "
         f"{len(w['CONDITIONS']['conditions'])} conditions ({len(exits)} exit rules)",
+        "entry gate: " + (", ".join(p.entry_gates()) or f"NONE ({NO_ENTRY_CONDITION})"),
     ]
     return "\n".join(lines)
