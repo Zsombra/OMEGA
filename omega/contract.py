@@ -92,6 +92,9 @@ class Contract:
     rules: dict
     shared: dict
     platform_templates: dict[str, dict] = field(default_factory=dict)
+    # Served at contract 108 and known by NAME only (data/contract/metrics/_unmeasured_108.json): never in `metrics`,
+    # so nothing that enumerates the corpus can select one; validate_column refuses them (METRIC_UNMEASURED).
+    unmeasured_metrics: dict[str, dict] = field(default_factory=dict)
 
     # -- lookups -------------------------------------------------------------
     def metric(self, name: str) -> Metric:
@@ -148,6 +151,12 @@ def load() -> Contract:
         raise RuntimeError(
             f"corpus incomplete: {len(metrics)} metric files, _index.json says {expected}")
 
+    unmeasured_path = CONTRACT_DIR / "metrics" / "_unmeasured_108.json"
+    unmeasured = _load(unmeasured_path)["metrics"] if unmeasured_path.exists() else {}
+    overlap = set(unmeasured) & set(metrics)
+    if overlap:
+        raise RuntimeError(f"measured AND listed unmeasured: {sorted(overlap)} - drop them from {unmeasured_path.name}")
+
     return Contract(
         metrics=metrics,
         transforms=authoring["transforms"],
@@ -156,4 +165,5 @@ def load() -> Contract:
         rules=rules,
         shared=shared,
         platform_templates={t["sectionKey"]: t for t in templates["templates"]},
+        unmeasured_metrics=unmeasured,
     )

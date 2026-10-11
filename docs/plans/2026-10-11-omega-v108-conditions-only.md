@@ -102,3 +102,6 @@ was already history. The TPO suite's `GATE_MIRROR` is retired; each member's des
 - The clause operators added at v98 (`crossesAbove`, `crossesBelow`, `enters`, `exits`, `increased`,
   `decreased`) and the metrics/transforms added between 91 and 106 are not modelled by `omega.conditions` /
   the 61.2.0 metric extraction. Nothing generated uses them; a re-extraction is its own slice.
+  **Closed for the conditions on 2026-10-11** by
+  [`2026-10-11-omega-condition-vocabulary-108.md`](2026-10-11-omega-condition-vocabulary-108.md): the six operators are
+  modelled and validated against the schema; the 15 metrics are known by name and refused until measured.

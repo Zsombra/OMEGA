@@ -36,6 +36,39 @@ from .types import CustomSection, PlatformSection, Report
 CONDITION_KEY = re.compile(r"^[A-Z][A-Z0-9_]{1,39}$")
 GROUP_OPS = ("ALL", "ANY", "NOT", "N_OF")
 NUMERIC_OPS = ("lt", "lte", "gte", "gt")
+# Contract 98.0.0 (README "Contract history - v98 (a clause can read the bar before)"): six operators that compare a
+# column with its own previous completed bar. The 108 CONDITIONS axis places them in three arms
+# (data/derived/condition_vocabulary_108.json): the crossings share the numeric arm and take a number `value`; the
+# transitions share the `is` arm and take one `label`; the changes are a fifth arm with NO operand.
+CROSS_OPS = ("crossesAbove", "crossesBelow")
+TRANSITION_OPS = ("enters", "exits")
+CHANGE_OPS = ("increased", "decreased")
+PRIOR_BAR_OPS = CROSS_OPS + CHANGE_OPS + TRANSITION_OPS
+# v98: "crossesAbove, crossesBelow, enters and exits are edges: a hold with atLeast above 1 is refused
+# (CONDITION_HOLD_ILLEGAL) - hold them 'within n closes'."
+EDGE_OPS = CROSS_OPS + TRANSITION_OPS
+# The clause operators omega has a builder for and validate_conditions checks, in the schema's order. The schema's
+# own list is data/derived/condition_vocabulary_108.json `clauseOperators`; omega.condition_vocabulary.gaps() diffs
+# the two (empty since 2026-10-11).
+MODELLED_CLAUSE_OPS = NUMERIC_OPS + CROSS_OPS + ("between", "is") + TRANSITION_OPS + ("in",) + CHANGE_OPS
+# Which header kind takes which prior-bar operator is a DESCRIPTION, not a schema fact - the platform serves the
+# admitted operators per header and per strategy (`conditionOperators`). README v98: "Numeric headers take the
+# crossings and changes; classification, direction and boolean headers take the transitions; event and rank headers
+# take none of them." validate_conditions turns a mismatch into a WARNING quoting that sentence; a kind the sentence
+# does not name (date) is unmeasured.
+PRIOR_BAR_SOURCE = ("README v98: \"Numeric headers take the crossings and changes; classification, direction and "
+                    "boolean headers take the transitions; event and rank headers take none of them\"")
+PRIOR_BAR_OPS_BY_KIND: dict[str, tuple[str, ...]] = {
+    "numeric": CROSS_OPS + CHANGE_OPS,
+    "classification": TRANSITION_OPS, "direction": TRANSITION_OPS, "boolean": TRANSITION_OPS,
+    "event": (), "rank": (),
+}
+EDGE_HOLD_SOURCE = ("README v98: \"crossesAbove, crossesBelow, enters and exits are edges: a hold with atLeast "
+                    "above 1 is refused (CONDITION_HOLD_ILLEGAL) - hold them 'within n closes'\"")
+EDGE_GROUP_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"A group whose members must all read TRUE "
+                     "together (ALL) over an edge admits 'within' only too\"")
+ONE_BAR_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"a header whose conditionHold.maxWindow is 1 is "
+                  "served none of the six, so vol24hUsd increased is refused (CONDITION_OPERATOR_UNSUPPORTED ...)\"")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
 CARRIER_VERDICTS = ("UP", "DOWN", "NEITHER")
 # Contract 91.0.0 (data/contract/stage_strategy_draft/schema_20261005T194629Z.json, the
@@ -118,6 +151,8 @@ def ambient_headers() -> dict[str, dict]:
                 "ops": o["ops"],
                 "vocab": o.get("vocab", []),
                 "meaning": o["meaning"],
+                # the surface records operators, not an output kind; omega does not infer one
+                "kind": None,
                 # ambient values do not come from the coin's own candle series, so a
                 # completed bar does not move them: no hold above 1 and no exit role
                 # (CONDITION_HOLD_OPERAND_ILLEGAL / CONDITION_EXIT_READ_ILLEGAL,
@@ -192,6 +227,90 @@ def in_(header: str, labels: list[str], *, section_key: str | None = None,
             "hold": hold_of(hold)}
 
 
+# --- the prior-bar operators (contract 98) ---------------------------------------------------------
+# Each reads the decided completed bar AND the one before it, "never the forming one, on every basis, so its reading
+# is never provisional" (README v98). The operand rules below are the 108 schema's own (the arm's type and lengths,
+# data/derived/condition_vocabulary_108.json); the edge-hold refusal is the changelog's, quoted at EDGE_HOLD_SOURCE.
+def _number(op: str, value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{op} takes a number `value` (108 schema: type number), got {value!r}")
+    return value
+
+
+def _label(op: str, label: object) -> str:
+    if not isinstance(label, str) or not 1 <= len(label) <= 80:
+        raise ValueError(f"{op} takes one `label`, a string of 1-80 characters (108 schema), got {label!r}")
+    return label
+
+
+def _edge_hold(op: str, hold: tuple[int, int]) -> dict:
+    h = hold_of(hold)
+    if h["atLeast"] > 1:
+        raise ValueError(f"{op} is an edge: hold it 'within n closes' (atLeast 1), not {h} - {EDGE_HOLD_SOURCE}")
+    return h
+
+
+def _prior(header: str, op: str, section_key: str | None, hold: dict, **operand) -> dict:
+    return {"kind": "clause", "column": col(header, section_key), "op": op, **operand, "hold": hold}
+
+
+def crosses_above(header: str, value: float, *, section_key: str | None = None,
+                  hold: tuple[int, int] = HOLD_ONE) -> dict:
+    """TRUE when the column is above `value` on the decided bar and was at or below it on the bar before (v98; "a
+    bar landing exactly on the level has not crossed"). A level break is `dist_<LEVEL> crossesAbove 0`."""
+    return _prior(header, "crossesAbove", section_key, _edge_hold("crossesAbove", hold),
+                  value=_number("crossesAbove", value))
+
+
+def crosses_below(header: str, value: float, *, section_key: str | None = None,
+                  hold: tuple[int, int] = HOLD_ONE) -> dict:
+    """TRUE when the column is below `value` on the decided bar and was at or above it on the bar before (v98)."""
+    return _prior(header, "crossesBelow", section_key, _edge_hold("crossesBelow", hold),
+                  value=_number("crossesBelow", value))
+
+
+def increased(header: str, *, section_key: str | None = None, hold: tuple[int, int] = HOLD_ONE) -> dict:
+    """Strictly above the prior bar's reading (v98). No operand: "A value beside them is refused". Not an edge, so
+    held(3) is three rising closes."""
+    return _prior(header, "increased", section_key, hold_of(hold))
+
+
+def decreased(header: str, *, section_key: str | None = None, hold: tuple[int, int] = HOLD_ONE) -> dict:
+    """Strictly below the prior bar's reading (v98). No operand."""
+    return _prior(header, "decreased", section_key, hold_of(hold))
+
+
+def enters(header: str, label: str, *, section_key: str | None = None,
+           hold: tuple[int, int] = HOLD_ONE) -> dict:
+    """The label is read now and was not on the bar before (v98) - the flip, where `is` reads the state."""
+    return _prior(header, "enters", section_key, _edge_hold("enters", hold), label=_label("enters", label))
+
+
+def exits(header: str, label: str, *, section_key: str | None = None,
+          hold: tuple[int, int] = HOLD_ONE) -> dict:
+    """The label was read on the bar before and is not now (v98)."""
+    return _prior(header, "exits", section_key, _edge_hold("exits", hold), label=_label("exits", label))
+
+
+def _edge_clauses(defn: object) -> list[dict]:
+    """Every edge clause in `defn`'s own tree (conditionRef is not followed)."""
+    if not isinstance(defn, dict):
+        return []
+    if defn.get("kind") == "clause":
+        return [defn] if defn.get("op") in EDGE_OPS else []
+    return [c for m in (defn.get("members") or []) for c in _edge_clauses(m)]
+
+
+def _refuse_held_edge(defn: dict, hold: dict, where: str) -> None:
+    """The builders' side of the two edge-hold rules, for a hold placed on `defn` itself."""
+    if hold["atLeast"] <= 1:
+        return
+    if defn.get("kind") == "clause" and defn.get("op") in EDGE_OPS:
+        raise ValueError(f"{where}: {defn['op']} is an edge, hold it 'within n closes' - {EDGE_HOLD_SOURCE}")
+    if defn.get("kind") == "group" and defn.get("op") == "ALL" and _edge_clauses(defn):
+        raise ValueError(f"{where}: an ALL group over an edge is held 'within' only - {EDGE_GROUP_SOURCE}")
+
+
 def ref(condition_key: str) -> dict:
     """A conditionRef carries no hold: the schema's ref arm is additionalProperties:false
     over exactly kind and conditionKey (v91 CONDITIONS axis)."""
@@ -207,6 +326,7 @@ def group(op: str, members: list[dict], n: int | None = None, *,
     out: dict[str, Any] = {"kind": "group", "op": op, "hold": hold_of(hold), "members": members}
     if n is not None:
         out["n"] = n
+    _refuse_held_edge(out, out["hold"], f"{op} group")
     return out
 
 
@@ -261,6 +381,7 @@ def condition(key: str, name: str, definition: dict, *,
             raise ValueError(f"{key}: the condition's hold goes on the root node; every nested "
                              f"clause and group must read {hold_of(HOLD_ONE)}")
         definition = {**definition, "hold": hold_of(hold)}
+        _refuse_held_edge(definition, definition["hold"], key)
     return {"conditionKey": key, "name": name, "definition": definition,
             "verdict": verdict, "required": required, "exitSide": exit_side}
 
@@ -446,7 +567,7 @@ def report_headers(report: Report) -> dict[str, dict]:
                         out[o.header] = {"sectionKey": section.sectionKey,
                                          "ops": o.condition_operators,
                                          "vocab": list(o.vocabulary), "meaning": "",
-                                         "moved": False, "candle": False,
+                                         "kind": o.kind, "moved": False, "candle": False,
                                          "above_anchor": False,
                                          "below_anchor": False, "developing": False}
                 except Exception:
@@ -463,7 +584,7 @@ def report_headers(report: Report) -> dict[str, dict]:
                     out[o.header] = {"sectionKey": section.sectionKey,
                                      "ops": o.condition_operators,
                                      "vocab": list(o.vocabulary), "meaning": "",
-                                     "moved": moved, "candle": candle,
+                                     "kind": o.kind, "moved": moved, "candle": candle,
                                      "above_anchor": above,
                                      "below_anchor": below, "developing": developing}
     return out
@@ -576,6 +697,10 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
         op, members = defn.get("op"), defn.get("members") or []
         if op not in GROUP_OPS:
             out.append(ConditionFinding("error", key, path, f"group op {op!r} not in {GROUP_OPS}"))
+        if op == "ALL" and h and h["atLeast"] > 1 and _edge_clauses(defn):
+            out.append(ConditionFinding(
+                "warning", key, f"{path}.hold",
+                f"an ALL group held {h} over an edge operator: the schema admits it, but {EDGE_GROUP_SOURCE}"))
         if not members:
             out.append(ConditionFinding("error", key, path, "group has no members"))
         if op == "NOT" and len(members) != 1:
@@ -622,8 +747,14 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
         out.append(ConditionFinding("error", key, path, f"unknown definition kind {kind!r}"))
         return 0
 
-    # --- a clause: hold, header must exist, operator must be offered, literal must fit
+    # --- a clause: hold, the arm's operands, header must exist, operator must be offered, literal must fit
     h = _check_hold(defn, key, path, out)
+    arm = _check_arm(defn, key, path, out)
+    op = defn.get("op")
+    if op in EDGE_OPS and h and h["atLeast"] > 1:
+        out.append(ConditionFinding(
+            "warning", key, f"{path}.hold",
+            f"{op} held {h}: the schema admits any atLeast >= 1, but {EDGE_HOLD_SOURCE}"))
     window = max(mode.window, h["of"] if h else 1)
     header = (defn.get("column") or {}).get("header", "")
     spec = headers.get(header)
@@ -649,12 +780,13 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             "error", key, path,
             f"header {header!r} lives in {spec['sectionKey']!r}, not {declared!r}"))
 
-    op = defn.get("op")
     allowed = spec["ops"]
     if not allowed:
         out.append(ConditionFinding("error", key, path,
                                     f"{header!r} offers no condition operators at all"))
-    elif op not in allowed:
+    elif op in PRIOR_BAR_OPS:
+        _check_prior_bar(op, header, spec, key, path, out)
+    elif arm is not None and op not in allowed:
         out.append(ConditionFinding(
             "error", key, path,
             f"{header!r} does not accept {op!r}. Allowed: {allowed}"))
@@ -695,12 +827,118 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
                                         f"{bad} not in {header!r} vocabulary {vocab}"))
         else:
             _trap(labels)
+    elif op in TRANSITION_OPS:
+        # The `is` rule (a label outside the served vocabulary is refused, CONDITION_LITERAL_UNSUPPORTED) was
+        # measured on `is`; for a transition it is the vendor's prose ("is|in|enters|exits with the served
+        # vocabulary", strategy-examples), so a warning.
+        label = defn.get("label")
+        if vocab and label not in vocab:
+            out.append(ConditionFinding(
+                "warning", key, path,
+                f"{op} {label!r} is not in {header!r} vocabulary {vocab}: a transition reads the served "
+                f"vocabulary (vendor strategy-examples: \"is|in|enters|exits with the served vocabulary\"); "
+                f"unmeasured for {op}, so not an error"))
+        elif disjoint:
+            out.append(ConditionFinding(
+                "warning", key, path,
+                f"{header!r} declares {list(vocab)} and was observed to emit only {observed}: an `is` on it is "
+                f"refused or FALSE forever (cookbook trap 13, measured 2026-08-24); unmeasured for {op}"))
     elif op == "between":
         low, high = defn.get("low"), defn.get("high")
         if low is not None and high is not None and low >= high:
             out.append(ConditionFinding("error", key, path,
                                         f"between low={low} is not below high={high}"))
     return 1
+
+
+def _schema_misfit(value: object, schema: dict) -> str | None:
+    """Why `value` does not fit one operand schema of the 108 arms (the subset they use: type number / string /
+    array, minLength / maxLength, minItems / maxItems, items), or None."""
+    t = schema.get("type")
+    if t == "number" and (isinstance(value, bool) or not isinstance(value, (int, float))):
+        return f"must be a number, got {value!r}"
+    if t == "string":
+        if not isinstance(value, str):
+            return f"must be a string, got {value!r}"
+        if len(value) < schema.get("minLength", 0) or len(value) > schema.get("maxLength", len(value)):
+            return f"must be {schema.get('minLength', 0)}-{schema.get('maxLength')} characters, got {len(value)}"
+    if t == "array":
+        if not isinstance(value, list):
+            return f"must be an array, got {value!r}"
+        if len(value) < schema.get("minItems", 0) or len(value) > schema.get("maxItems", len(value)):
+            return f"must hold {schema.get('minItems', 0)}-{schema.get('maxItems')} items, got {len(value)}"
+        for i, item in enumerate(value):
+            why = _schema_misfit(item, schema.get("items") or {})
+            if why:
+                return f"item {i} {why}"
+    return None
+
+
+def _check_arm(defn: dict, key: str, path: str, out: list[ConditionFinding]) -> dict | None:
+    """The clause against the arm the 108 CONDITIONS axis declares for its `op` (data/derived/
+    condition_vocabulary_108.json): the operator must be one of the schema's thirteen, every operand the arm
+    requires must be present and fit its schema, and nothing else may sit beside it (every arm is
+    additionalProperties:false). `hold` and `column` are checked by their own code. Returns the arm, or None."""
+    from .condition_vocabulary import CLAUSE_FRAME, arm_for, vocabulary
+    op = defn.get("op")
+    arm = arm_for(op) if isinstance(op, str) else None
+    if arm is None:
+        out.append(ConditionFinding(
+            "error", key, f"{path}.op",
+            f"{op!r} is not one of the {len(vocabulary()['clauseOperators'])} clause operators the 108 "
+            f"CONDITIONS axis declares: {vocabulary()['clauseOperators']}"))
+        return None
+    operands = arm["operands"]
+    for name in arm["required"]:
+        if name in operands and name not in defn:
+            out.append(ConditionFinding("error", key, f"{path}.{name}",
+                                        f"{op} requires `{name}` (108 schema, {operands[name]['pointer']})"))
+    for name, value in defn.items():
+        if name in CLAUSE_FRAME:
+            continue
+        if name not in operands:
+            takes = sorted(operands) or "no operand"
+            out.append(ConditionFinding(
+                "error", key, f"{path}.{name}",
+                f"{op} takes {takes}; `{name}` is not declared by its arm (additionalProperties:false, "
+                f"{arm['pointer']})" + (" - README v98: \"A value beside them is refused\""
+                                        if op in CHANGE_OPS and name == "value" else "")))
+            continue
+        why = _schema_misfit(value, operands[name]["schema"])
+        if why:
+            out.append(ConditionFinding("error", key, f"{path}.{name}", f"{op} `{name}` {why} (108 schema)"))
+    return arm
+
+
+def _check_prior_bar(op: str, header: str, spec: dict, key: str, path: str,
+                     out: list[ConditionFinding]) -> None:
+    """Whether `header` admits a prior-bar operator is served per header and per strategy (`conditionOperators`,
+    preview_strategy_report detail "detailed"); omega reads it offline only from descriptions, so every finding
+    here is a WARNING with its quoted source."""
+    kind = spec.get("kind")
+    if kind is None:
+        out.append(ConditionFinding(
+            "warning", key, path,
+            f"whether {header!r} admits {op} is UNMEASURED offline: omega has no output kind for it (an ambient or "
+            f"platform-section header), and {ONE_BAR_SOURCE} - its conditionHold.maxWindow is served per header"))
+        return
+    if kind not in PRIOR_BAR_OPS_BY_KIND:
+        out.append(ConditionFinding(
+            "warning", key, path,
+            f"whether a {kind} header admits {op} is UNMEASURED: {PRIOR_BAR_SOURCE} names no {kind} header"))
+        return
+    if op not in PRIOR_BAR_OPS_BY_KIND[kind]:
+        takes = list(PRIOR_BAR_OPS_BY_KIND[kind]) or "none of the six"
+        out.append(ConditionFinding(
+            "warning", key, path,
+            f"{header!r} is a {kind} header, which takes {takes} - {PRIOR_BAR_SOURCE}; the platform refuses an "
+            f"operator a header does not admit (CONDITION_OPERATOR_UNSUPPORTED)"))
+        return
+    if not spec.get("moved"):
+        out.append(ConditionFinding(
+            "warning", key, path,
+            f"{header!r} is not resolved from this coin's candle series offline, so whether its stored history keeps "
+            f"the bar before is unmeasured (conditionHold.maxWindow): {ONE_BAR_SOURCE}"))
 
 
 def validate_conditions(report: Report, conditions: list[dict]) -> list[ConditionFinding]:

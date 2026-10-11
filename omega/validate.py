@@ -80,6 +80,16 @@ def validate_column(
     out: list[Finding] = []
 
     # --- metric exists ------------------------------------------------------
+    if column.metric in c.unmeasured_metrics:
+        # Served (the 108 stage schema's column metric enum, data/derived/condition_vocabulary_108.json) but never
+        # extracted: which transforms it composes was measured by a live probe at 61.2.0 for the other 156 and is
+        # UNMEASURED for these (data/contract/metrics/_unmeasured_108.json). omega refuses to emit what it has not
+        # measured.
+        rec = c.unmeasured_metrics[column.metric]
+        return [Finding("error", "METRIC_UNMEASURED", f"{path}.metric",
+                        f"{column.metric!r} is served at contract {rec['servedAt']} (added {rec['addedAt']}) but its "
+                        f"transform admissibility is UNMEASURED offline; omega does not emit it until "
+                        f"`{rec['measuredBy']}` is read and the corpus re-extracted")]
     if column.metric not in c.metrics:
         return [Finding("error", "UNKNOWN_METRIC", f"{path}.metric",
                         f"{column.metric!r} is not one of the {len(c.metrics)} catalogued "

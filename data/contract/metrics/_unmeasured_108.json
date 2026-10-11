@@ -1,0 +1,148 @@
+{
+ "_what": "Metrics the contract 108 write schema serves (the REPORT column metric enum, data/derived/condition_vocabulary_108.json reportColumn.metric) that the 61.2.0 metric extraction never measured. Known NAMES only: which transforms each composes, its native output kind, timeframe mode, header code and vocabulary are UNMEASURED offline - at 61.2.0 they were read live (get_metric_construction_hints per metric, then get_strategy_column_contract / preview_strategy_report probes; data/contract/_manifest.json toolsUsed, scripts/refresh_metric_contracts.py). omega.validate refuses a column over one (METRIC_UNMEASURED) and the generator never selects one, so no generated plan emits them until a re-extraction moves them into data/contract/metrics/<METRIC>.json. scripts/compare_vocabulary.py counts them as stored (so a served metric omega knows by name is not 'missing'), and lists them under storedUnmeasured.",
+ "servedAt": "108.0.0",
+ "source": {
+  "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
+  "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/metric",
+  "sameAs": "get_metric_construction_hints input metric enum at 104.0.0 and 104.1.0 (battlegrid-manager tests/fixtures/2026-10-08-surface-104.*/tool_definitions.json): identical 171 values, same order"
+ },
+ "readmeDescriptions": {
+  "patterns": {
+   "section": "v100",
+   "quote": "candle patterns - CANDLE_DOJI (boolean), CANDLE_PIN (lower_wick / upper_wick / none), CANDLE_ENGULFING (bullish / bearish / none), BAR_CONTAINMENT (inside / outside / none) ... The patterns, gaps and runs compose value only, and none of the twelve is ranked.",
+   "status": "DESCRIPTION, not measured - recorded, not modelled"
+  },
+  "gaps": {
+   "section": "v100",
+   "quote": "gaps - GAP and GAP_RANGE_CLEAR (up / down / none) and GAP_PCT, the signed % from the prior close to the open",
+   "status": "DESCRIPTION, not measured - recorded, not modelled"
+  },
+  "runs": {
+   "section": "v100",
+   "quote": "run lengths - CLOSE_RUN and CANDLE_RUN, consecutive bars one way, capped at +/-20",
+   "status": "DESCRIPTION, not measured - recorded, not modelled"
+  },
+  "sources": {
+   "section": "v100",
+   "quote": "price sources - HL2, HLC3, OHLC4, price facts that take every transform a close takes",
+   "status": "DESCRIPTION, not measured - recorded, not modelled"
+  },
+  "swingLevels": {
+   "section": "v101.1",
+   "quote": "SWING_FRACTAL_HIGH and SWING_FRACTAL_LOW ... They are candle price levels: every transform a candle level takes, levelInteraction included, and they rank across the board as dist_fractalHi / dist_fractalLo.",
+   "status": "DESCRIPTION, not measured - recorded, not modelled"
+  },
+  "swingLabel": {
+   "section": "v101.1",
+   "quote": "SWING_FRACTAL_LABEL ... HH / LH for a high, HL / LL for a low, none when no comparable pair is in reach. A held state, value-only",
+   "status": "DESCRIPTION, not measured - recorded, not modelled"
+  }
+ },
+ "metrics": {
+  "CANDLE_DOJI": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "patterns",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_DOJI\"}"
+  },
+  "CANDLE_PIN": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "patterns",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_PIN\"}"
+  },
+  "CANDLE_ENGULFING": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "patterns",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_ENGULFING\"}"
+  },
+  "BAR_CONTAINMENT": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "patterns",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"BAR_CONTAINMENT\"}"
+  },
+  "GAP": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "gaps",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"GAP\"}"
+  },
+  "GAP_RANGE_CLEAR": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "gaps",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"GAP_RANGE_CLEAR\"}"
+  },
+  "GAP_PCT": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "gaps",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"GAP_PCT\"}"
+  },
+  "CLOSE_RUN": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "runs",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"CLOSE_RUN\"}"
+  },
+  "CANDLE_RUN": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "runs",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_RUN\"}"
+  },
+  "HL2": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "sources",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"HL2\"}"
+  },
+  "HLC3": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "sources",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"HLC3\"}"
+  },
+  "OHLC4": {
+   "addedAt": "v100",
+   "servedAt": "108.0.0",
+   "describedIn": "sources",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"OHLC4\"}"
+  },
+  "SWING_FRACTAL_HIGH": {
+   "addedAt": "v101.1",
+   "servedAt": "108.0.0",
+   "describedIn": "swingLevels",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"SWING_FRACTAL_HIGH\"}"
+  },
+  "SWING_FRACTAL_LOW": {
+   "addedAt": "v101.1",
+   "servedAt": "108.0.0",
+   "describedIn": "swingLevels",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"SWING_FRACTAL_LOW\"}"
+  },
+  "SWING_FRACTAL_LABEL": {
+   "addedAt": "v101.1",
+   "servedAt": "108.0.0",
+   "describedIn": "swingLabel",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"SWING_FRACTAL_LABEL\"}"
+  }
+ }
+}

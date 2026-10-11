@@ -29,6 +29,13 @@ Contract 108.0.0 (2026-10-11) removed the SIGNAL_RULES axis ("stage_strategy_dra
 SETUP_GATES axes as unrecognized keys", README "Contract history - v108"): the platform serves no signalId enum to
 compare, so the `signals` kind is retired. Reading it would raise on every 108 surface ("an absent enum is
 unreadable"); the v91 form of this script is in the repository history.
+
+2026-10-11 (plan docs/plans/2026-10-11-omega-condition-vocabulary-108.md): the stored `metrics` are the measured corpus
+(`data/contract/metrics/<METRIC>.json`, 156) PLUS the metrics known by name only
+(`data/contract/metrics/_unmeasured_108.json`, 15 - served by the 108 write schema, transform admissibility
+unmeasured). A served metric omega knows by name is therefore not `liveNotStored`; `compare(..., unmeasured=...)`
+lists the served ones under `storedUnmeasured` so the difference stays visible. omega never emits one
+(omega.validate METRIC_UNMEASURED).
 """
 from __future__ import annotations
 
@@ -95,20 +102,33 @@ def newest_stage_capture(contract: Path = CONTRACT) -> Path:
     return captures[-1]
 
 
+def stored_unmeasured(contract: Path = CONTRACT) -> dict[str, set[str]]:
+    """Per kind, the stored values known by name only (their admissibility is unmeasured): metrics only."""
+    path = contract / "metrics" / "_unmeasured_108.json"
+    names = set(json.loads(path.read_text(encoding="utf-8"))["metrics"]) if path.exists() else set()
+    return {"metrics": names, "sectionKeys": set()}
+
+
 def stored_enums(contract: Path = CONTRACT) -> dict[str, set[str]]:
     doc = json.loads(newest_stage_capture(contract).read_text(encoding="utf-8"))
     # a session capture is an envelope ({capturedAt, how, request, response}); the saved
     # manager-surface file is keyed by tool - resolve_axes reads either
     capture = doc["response"] if isinstance(doc.get("response"), dict) else doc
     return {
-        "metrics": {p.stem for p in (contract / "metrics").glob("*.json") if not p.name.startswith("_")},
+        "metrics": {p.stem for p in (contract / "metrics").glob("*.json") if not p.name.startswith("_")}
+        | stored_unmeasured(contract)["metrics"],
         "sectionKeys": set(first_enum(_axes(capture).get("REPORT", {}), "sectionKey") or []),
     }
 
 
-def compare(live: dict[str, set[str]], stored: dict[str, set[str]]) -> dict:
+def compare(live: dict[str, set[str]], stored: dict[str, set[str]],
+            unmeasured: dict[str, set[str]] | None = None) -> dict:
+    """Per kind: counts, `liveNotStored`, `storedNotLive`, and `storedUnmeasured` - the served values that are stored
+    by name only (empty unless `unmeasured` is given). A caller that reads only the first two is unaffected."""
+    unmeasured = unmeasured or {}
     return {k: {"live": len(live[k]), "stored": len(stored[k]),
-                "liveNotStored": sorted(live[k] - stored[k]), "storedNotLive": sorted(stored[k] - live[k])}
+                "liveNotStored": sorted(live[k] - stored[k]), "storedNotLive": sorted(stored[k] - live[k]),
+                "storedUnmeasured": sorted(live[k] & unmeasured.get(k, set()))}
             for k in ("metrics", "sectionKeys")}
 
 
@@ -117,7 +137,7 @@ def main(argv: list[str]) -> int:
         print(__doc__.strip().splitlines()[2].strip(), file=sys.stderr)
         return 2
     surface = json.loads(Path(argv[0]).read_text(encoding="utf-8"))
-    results = compare(live_enums(surface), stored_enums())
+    results = compare(live_enums(surface), stored_enums(), stored_unmeasured())
     print(json.dumps({"contractVersion": surface.get("contractVersion"), "buildSha": surface.get("buildSha"),
                       "observedAt": surface.get("observedAt"), "liveToolCount": len(surface["tools"]),
                       "storedStageCapture": newest_stage_capture().relative_to(ROOT).as_posix(),

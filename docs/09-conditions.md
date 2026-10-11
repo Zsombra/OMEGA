@@ -481,6 +481,8 @@ clause arms gained `crossesAbove` / `crossesBelow` (numeric arm), `enters` / `ex
 a fifth arm `increased` / `decreased` with no operand (README "Contract history — v98 (a clause can read the bar before)").
 omega's builders and `validate_conditions` still model the 91 operators only; nothing it generates
 uses the new ones, and the preflight walks them against the schema.
+*(Closed the same day — see [the condition vocabulary at contract 108](#2026-10-11-the-condition-vocabulary-at-contract-108)
+below.)*
 
 So "What conditions are not", above, is history: since 108 they gate entry. Two things already
 gated before — `required: true` (a FALSE reading blocked the trade) and, since 56.1.0, the resolved
@@ -513,3 +515,93 @@ such a strategy can ever enter, since a resolved `NEITHER` admits no side (vendo
 skill, exported at contract 105). TPO suite members S1 and S7 are exactly that case; their design
 records say so (`entryGate.note`). Also unmeasured: what the gate does with a required condition
 that reads UNRESOLVED.
+
+## 2026-10-11: the condition vocabulary at contract 108
+
+Since 108 the conditions are the whole entry gate, so the condition vocabulary is omega's core. It is now
+**derived**, not typed: `omega.condition_vocabulary.derive` walks the saved 108 write schema
+([`schema_20261010T215326Z.json`](../data/contract/stage_strategy_draft/schema_20261010T215326Z.json)) and writes
+[`condition_vocabulary_108.json`](../data/derived/condition_vocabulary_108.json) — every clause arm, operator,
+operand, the hold, the column, the ref and group arms, the condition object, the per-header fields the preview serves,
+and the REPORT column's `metric` / `transformId` / `chainedTransformId` enums, each with its JSON Pointer into the
+schema file. `tests/test_condition_vocabulary_108.py` re-derives it on every run, so the next schema swap shows up as a
+diff of that file (`python scripts/derive_condition_vocabulary.py` rewrites it; `--check` only compares).
+
+**The grammar the schema admits.** Thirteen clause operators in five arms, every arm
+`additionalProperties: false`, every one carrying `hold {atLeast, of}` (integers ≥ 1):
+
+| arm | operators | operand |
+|---|---|---|
+| 1 | `lt` `lte` `gte` `gt` **`crossesAbove` `crossesBelow`** | `value`: a number |
+| 2 | `between` | `low`, `high`: numbers |
+| 3 | `is` **`enters` `exits`** | `label`: one string, 1–80 |
+| 4 | `in` | `labels`: 1–32 strings, 1–80 each |
+| 5 | **`increased` `decreased`** | none — a `value` beside them is refused |
+
+So a crossing compares the column with **one number**, never another column (a level break is `dist_<LEVEL>
+crossesAbove 0`); `enters` / `exits` take **one label**, never a range or a set; `increased` / `decreased` take **no
+operand and no lookback** — "the bar before" is fixed. `conditionRef` is `{kind, conditionKey}` and carries no hold;
+a group is `ALL | ANY | NOT | N_OF` over 1–64 members, `n` in 1..64. The conditions array has no bound in the schema
+(v103: the budgets judge it — `strategyConditions` 16). `preview_strategy_report`'s `source.conditions` is the same
+grammar (`previewConditions.sameGrammarAsStage`).
+
+**In omega:**
+
+```python
+crosses_above("RSI14_now", 50)                 # {kind, column, op: crossesAbove, value: 50, hold: {1,1}}
+crosses_below("dist_SMA20", 0, hold=(1, 3))    # within the last 3 closes
+increased("donchianHi", hold=held(3))          # three rising closes in a row - a change is no edge
+enters("RSI14_zone", "overbought")             # the flip; `is` reads the state
+exits("kcSqueeze", "on")
+```
+
+The builders refuse what the schema refuses (a non-number `value`, an empty or 81-character `label`) and one thing the
+changelog states: an **edge** (`crossesAbove`, `crossesBelow`, `enters`, `exits`) held `atLeast` above 1 —
+"a hold with atLeast above 1 is refused (`CONDITION_HOLD_ILLEGAL`) — hold them 'within n closes'" (README v98) — and,
+from the vendor skill, an `ALL` group held `atLeast` above 1 over an edge.
+
+**`validate_conditions`** checks each clause against the arm the derived inventory names for its `op`, so it **errs
+exactly where the schema refuses**: an operator outside the thirteen, a missing operand, an undeclared key beside it
+(the `value` on `increased`), a mistyped or out-of-bounds operand. `tests/test_conditions_prior_bar.py` walks every
+positive and negative body through both `validate_conditions` and the preflight's schema walk and requires them to
+agree.
+
+**What is only a warning, and why.** Which header admits which operator is not in the write schema: the platform serves
+it **per header and per strategy** (`conditionOperators` on `preview_strategy_report` at `detail: "detailed"`). omega
+reads it offline only from descriptions, so each of these is a warning that quotes its source:
+
+- a header kind the changelog says does not take the operator — "Numeric headers take the crossings and changes;
+  classification, direction and boolean headers take the transitions; event and rank headers take none of them"
+  (README v98; `CONDITION_OPERATOR_UNSUPPORTED`); a `date` header is named by no sentence and is unmeasured;
+- a header omega cannot see the history of — an ambient or timeless header (`chg24h`, `mktBreadth_all`): "a header
+  whose `conditionHold.maxWindow` is 1 is served none of the six" (vendor strategy-examples, exported at 105);
+- an edge held "in a row", and an `ALL` group held above one read over an edge (the two hold rules above);
+- a transition label outside the header's vocabulary (measured for `is`, prose for `enters` / `exits`).
+
+The pre-v98 operators keep their errors exactly as before.
+
+**Metrics.** The 108 column `metric` enum is 171 — the same set, in the same order, as the 104.0.0 / 104.1.0
+`get_metric_construction_hints` enum the manager stored. 156 are the measured 61.2.0 extraction; the other 15 (v100:
+`CANDLE_DOJI`, `CANDLE_PIN`, `CANDLE_ENGULFING`, `BAR_CONTAINMENT`, `GAP`, `GAP_RANGE_CLEAR`, `GAP_PCT`, `CLOSE_RUN`,
+`CANDLE_RUN`, `HL2`, `HLC3`, `OHLC4`; v101.1: `SWING_FRACTAL_HIGH`, `SWING_FRACTAL_LOW`, `SWING_FRACTAL_LABEL`) are
+**known names** in [`_unmeasured_108.json`](../data/contract/metrics/_unmeasured_108.json): which transforms they
+compose, their kind, header and vocabulary are unmeasured (measured live per metric at 61.2.0). `validate_column`
+refuses a column over one (`METRIC_UNMEASURED`), the generator never picks one, and `scripts/compare_vocabulary.py`
+counts them as stored and names them under `storedUnmeasured`.
+
+**Transforms — a gap recorded, not closed.** The 108 `transformId` enum is 17: it adds `levelInteraction` (v100) and
+lists `classifyState` (platform-privileged at 61.2.0), and it no longer has `bandTouch`, "retired" at v100. The 61.2.0
+corpus and `omega.space` still list `bandTouch` for the band and level metrics; the generator never emits it and the
+preflight's schema walk refuses it, but `validate_column` would pass a hand-written one. Refusing it there moves the
+681-cell composability space, which is a REPORT re-extraction — its own slice. The same holds for the `buffer` column
+knob (v100) and the 64 maxima v103 removed from `window` / `offset` / `columns`.
+
+**Presets.** No preset changed. A new operator goes into a preset only where the preset's own description asks for
+it, and none does: all five describe states, not a cross, a flip or a change on the bar before. TPO suite S6 "POC
+Cross-Recross" — "One bar that crossed the prior POC and closed back on its original side" — is a single bar's range
+crossing and returning, which `crossesAbove` (a close-to-close crossing over two completed bars) does not express; the
+README's reading for it is a `levelInteraction` reject, a transform whose admissibility on `PRIOR_TPO_POC` is
+unmeasured here. S6 is unchanged.
+
+The record, the unmeasured list and the live reads that would close it:
+[`docs/plans/2026-10-11-omega-condition-vocabulary-108.md`](plans/2026-10-11-omega-condition-vocabulary-108.md).
