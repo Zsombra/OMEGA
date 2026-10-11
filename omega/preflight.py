@@ -36,8 +36,9 @@ from dataclasses import dataclass
 CLASSES = ("UNDECLARED", "MISSING_REQUIRED", "MISSING_VS_RECORD", "ENUM", "BOUNDS",
            "UNSUPPORTED", "MIRROR", "CHANGELOG", "TRANSCRIPTION_SUSPECT", "INFO")
 VERDICTS = ("FAIL", "WARN", "INFO")
-DISCLAIMER = ("covers the published schema only (the read-back mirror is retired until a v91 "
-              "read-back is captured); the builder's diagnostics and the runtime validator are "
+DISCLAIMER = ("covers the published schema only (the read-back mirror is retired until a read-back at "
+              "the write surface's contract, 108.0.0, is captured); the builder's diagnostics - among them "
+              "the NO_ENTRY_CONDITION warning - and the runtime validator are "
               "not observed by this check")
 
 
@@ -790,7 +791,7 @@ def build_receipt(*, body: dict, body_path: str, operation: str, schema_meta: di
     receipt = {
         "_what": "Schema-drift preflight receipt: the body walked against a fresh tool "
                  "definition capture (since v85 the stage_strategy_draft axes; the read-back "
-                 "mirror is retired until a v91 read-back exists). A PASS is a precondition of "
+                 "mirror is retired until a 108 read-back exists). A PASS is a precondition of "
                  "the authorization, not the authorization. Nothing here was interpreted.",
         "when": now.strftime(_ISO),
         "body": {"path": body_path, "sha256": body_sha256(body), "operation": operation},

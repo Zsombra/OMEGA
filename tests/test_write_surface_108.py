@@ -93,3 +93,41 @@ def test_a_strategy_read_carries_no_signal_rule_or_gate_field():
         gone = {"signalRules", "signalRuleTally", "minAggregateScore", "minRequiredCount"}
         assert not gone & set(strategy["properties"]), tool
         assert "minAtrPct" in strategy["required"], tool
+
+
+# --- the preflight and the dry run against the 108 capture (plan step 5) ---------------------------
+
+def test_the_preflight_refuses_the_two_removed_axes_as_undeclared():
+    """A v91-shaped body (ten axes) walked against the 108 capture: SETUP_GATES and SIGNAL_RULES are UNDECLARED
+    FAILs - the walker's view of "refuses ... as unrecognized keys" - and a TRADE_LEVEL_POLICY without minAtrPct is
+    MISSING_REQUIRED."""
+    from omega import preflight as P
+    from omega.generate import PRESETS, plan
+    axis_schemas, root = P.resolve_axes(DOC)
+    body = dict(plan(PRESETS["trend-continuation"]).axes())
+    body["SETUP_GATES"] = {"minAggregateScore": 0.6, "minRequiredCount": 0, "minAtrPct": 0.5}
+    body["SIGNAL_RULES"] = {"rules": []}
+    body["TRADE_LEVEL_POLICY"] = {k: v for k, v in body["TRADE_LEVEL_POLICY"].items() if k != "minAtrPct"}
+    fails = {(f.cls, f.path) for f in P.diff_axes(body, axis_schemas, root) if f.verdict == "FAIL"}
+    assert fails == {("UNDECLARED", "axes.SETUP_GATES"), ("UNDECLARED", "axes.SIGNAL_RULES"),
+                     ("MISSING_REQUIRED", "axes.TRADE_LEVEL_POLICY.minAtrPct")}
+
+
+def test_the_preview_input_did_not_move_at_108_and_the_dry_run_body_walks_it():
+    """preview_strategy_report's input schema is identical at 106.0.0 and 108.0.0 (the manager's two fixtures); its
+    FIELDS source never carried signal rules or gates. preview_request() is unchanged and walks clean - the optional
+    `detail` (concise | detailed, since v92) is not sent, so the default `concise` applies."""
+    from omega import preflight as P
+    from omega.generate import PRESETS, plan
+    schema = DOC["preview_strategy_report"]["inputSchema"]
+    assert schema["required"] == ["coinSelection", "source"]
+    fields_arm = schema["properties"]["source"]["anyOf"][0]
+    assert set(fields_arm["properties"]) == {"kind", "timeframe", "sections", "conditions", "marketReadText",
+                                             "marketReadLensTicker"}
+    old = FIXTURE.parent / "manager_schemas_acked_106.0.0.json"
+    if old.exists():
+        assert json.loads(old.read_text(encoding="utf-8"))["tools"]["preview_strategy_report"]["inputSchema"] == schema
+    for name in PRESETS:
+        body = plan(PRESETS[name]).preview_request()
+        assert "detail" not in body
+        assert [f for f in P.diff_schema(body, schema, schema) if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []

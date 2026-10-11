@@ -98,8 +98,9 @@ def cmd_recipe(a) -> int:
    The definition is ~15 KB compact (~32 KB indented; measured on the saved 108.0.0 copy). If one Write fails or truncates, write it in <= 6 KB chunks and
    concatenate, and say so in "how". Never edit, reorder or repair the text.
 
-2. No read-back: the get_strategy mirror is retired until a v91 read-back is captured (every
-   record on disk predates contract 84 and carries `closes`/`exit`).
+2. No read-back: the get_strategy mirror is retired until a 108 read-back is captured (every
+   get_strategy record on disk predates contract 84 and carries `closes`/`exit`; the one draft read,
+   7534b2ee of 2026-10-10, predates 108 and carries SETUP_GATES / SIGNAL_RULES).
 
 3. Run the walk:
      python scripts/preflight.py run {a.body} --schema <step 1 file>
