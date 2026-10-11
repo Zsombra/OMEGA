@@ -141,7 +141,9 @@ def test_the_critique_no_longer_simulates_an_aggregate_gate():
     p = plan(t)
     assert not any("below the" in x or "aggregate" in x for x in p.critique())
     assert "all-signals-at-0.75" not in p.render()
-    assert not p.simulate(0.75, gate=0.99).would_route
+    from omega.generate import plan_pre_108
+    assert p.simulate(0.75, gate=0.99) is None                       # plan() allocates nothing at 108
+    assert not plan_pre_108(t).simulate(0.75, gate=0.99).would_route  # history: the pre-108 allocation
 
 
 def test_generator_output_is_ascii_safe():

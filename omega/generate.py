@@ -1,13 +1,20 @@
 """Compose a complete, validated strategy from a thesis.
 
 Everything below composes the rest of the toolkit: columns come from recipes that are
-legal by construction (validate.py), sections respect the timeframe-inert rule
-(04), allocations only go to signals the report can actually feed (membership.py),
-and the gate is checked against the aggregation math (aggregate.py).
+legal by construction (validate.py), sections respect the timeframe-inert rule (04), and
+the conditions - since contract 108 the strategy's ONLY entry gate - are type-checked
+against the headers the report produces (conditions.py) and must declare an entry gate
+(a verdict carrier or a required condition; NO_ENTRY_CONDITION otherwise).
 
-Shape mirrors real strategies read back from the connector (EL_ALAMEIN, MATH-C3):
-a dense 84-entry scorecard where unused signals sit at allocation 0, and
-`minAggregateScore` as the routing gate.
+2026-10-11, contract 108 (README "Contract history - v108"): signal rules, the
+aggregate-score gate and the required-count gate are removed. What fed them is history,
+kept importable and called by nothing on the generation path (plan -> axes -> critique ->
+preflight): the dense 84-row scorecard (StrategyPlan._rules), the allocation plan
+(signal_rules), the 2026-10-10 scoring-data columns (_scoring_data_columns, plan_pre_108),
+the membership and scoring predictions (omega.membership, omega.scoring, omega.aggregate).
+Before 108 the shape mirrored real strategies read back from the connector (EL_ALAMEIN,
+MATH-C3): a dense scorecard with unused signals at allocation 0 and `minAggregateScore`
+as the routing gate.
 
 Emits to disk. Never submits.
 """
@@ -29,8 +36,10 @@ from .conditions import (
 )
 from .contract import DERIVED_DIR, load
 from .fanout import cost_report, outputs_for
+# Signal membership and scoring: RETIRED at contract 108, imported only by the history helpers
+# (membership, allocation_findings, signal_rules, _scoring_data_columns, plan_pre_108, _rules).
 from .membership import (RUNG_REL, _map, _signal_data, analyse, check_allocations,
-                         predicted_diagnostics, shown_data, signals_for)
+                         shown_data, signals_for)
 from .types import Column, CustomSection, Report, Rule
 from .validate import validate_report
 
@@ -239,18 +248,16 @@ class Thesis:
     # ALIGN: the tape should agree with the direction (trend theses).
     # FADE:  the crowd should be leaning the OTHER way (contrarian theses).
     stance: str = "ALIGN"
-    # Modules included as reading material, weighted 0. BattleGrid lists each of their signals
-    # whose data the report then shows as REPORT_DATA_SIGNAL_OFF and the module as
-    # MODULE_IN_REPORT_SCORES_NOTHING (measured 2026-10-09/10 on REGIME: 4 + 1); the critique
-    # predicts both. No preset carries one since 2026-10-10.
+    # Modules included as reading material only: their recipe columns are in the REPORT, and the
+    # condition checklist does not read them. Before contract 108 BattleGrid also flagged their
+    # unweighted signals (REPORT_DATA_SIGNAL_OFF x4 + MODULE_IN_REPORT_SCORES_NOTHING, measured
+    # 2026-10-09/10 on REGIME); 108 removed both diagnostics. No preset carries one since 2026-10-10.
     context: list[str] = field(default_factory=list)
-    # Show every (metric, rung) a weighted signal scores on that the module recipes do not:
-    # one `value` column (STRUCT_ZONES: `count`) per missing pair at the rung's rel
-    # (omega.membership.RUNG_REL). BattleGrid's ACTIVE_SIGNAL_DATA_NOT_IN_REPORT, measured
-    # 12 times on the trend-continuation create of 2026-10-09 (data/contract/
-    # stage_strategy_draft/diagnostics_action60_create_20261009T2310Z.json). False gives the
-    # pre-2026-10-10 report, the shape committed as strategy 7534b2ee.
-    show_scoring_data: bool = True
+    # `show_scoring_data` (bool, default True, after `context`) is RETIRED 2026-10-11 (contract
+    # 108): it added one column per (metric, rung) a weighted SIGNAL scored on that the recipes
+    # did not show (BattleGrid's ACTIVE_SIGNAL_DATA_NOT_IN_REPORT). With no signals those columns
+    # fed nothing; the report is the module recipes alone - what show_scoring_data=False gave.
+    # The widened report stays reproducible through plan_pre_108(thesis).
     # API coinSelection object; None means "derive one from the modules"
     coin_selection: dict | None = None
     # Explicit execution-parameter overrides (API field names); None/empty means the
@@ -347,7 +354,9 @@ EXIT_ROLES = ("RISK_ON", "CTX_UP", "CTX_DOWN", "CORE_UP", "CORE_DOWN", "UP", "DO
 class StrategyPlan:
     thesis: Thesis
     report: Report
-    rules: list[Rule]
+    # RETIRED at contract 108: the signal allocation plan() built until then. plan() leaves it
+    # empty; plan_pre_108() fills it for the history tests and the retired predictors.
+    rules: list[Rule] = field(default_factory=list)
     conditions: list[dict] = field(default_factory=list)
     market_read_text: str = ""
 
@@ -369,9 +378,14 @@ class StrategyPlan:
         return cost_report(self.report)
 
     def membership(self):
+        """RETIRED at contract 108: which of the 84 signals this report would feed
+        (omega.membership.analyse). History; nothing on the generation path calls it."""
         return analyse(self.report)
 
     def allocation_findings(self):
+        """RETIRED at contract 108: allocations to signals the report cannot feed. plan() makes
+        no allocation, so this is [] for every plan it returns; kept because battlegrid-manager's
+        pipeline (manager/authoring/pipeline.py, _omega_checks) still calls it."""
         return check_allocations(self.report, [r for r in self.rules if r.allocation > 0])
 
     def simulate(self, score: float = 0.75, *, gate: float):
@@ -386,13 +400,10 @@ class StrategyPlan:
 
     def critique(self) -> list[str]:
         out: list[str] = []
-        v, mem = self.validation(), self.membership()
+        # Contract 108: no allocation, membership ("feed no signal") or scoring-diagnostic line -
+        # there are no signals to allocate, feed or score (the pre-108 lines are in git history).
+        v = self.validation()
         out += [f"invalid column: {f}" for f in v.errors]
-        for f in self.allocation_findings():
-            if f.severity == "error":
-                out.append(f"wasted allocation: {f}")
-        if mem.dead_metrics:
-            out.append(f"context-only metrics (feed no signal): {', '.join(sorted(mem.dead_metrics))}")
 
         for f in self.condition_findings():
             out.append(f"condition {f.severity}: {f}")
@@ -400,7 +411,8 @@ class StrategyPlan:
         osc = CORRELATED_OSCILLATORS & set(self.thesis.weights)
         if len(osc) > 2:
             out.append(f"correlated oscillators weighted together: {', '.join(sorted(osc))} - "
-                       f"largely one piece of evidence counted {len(osc)} times")
+                       f"largely one piece of evidence counted {len(osc)} times in the condition "
+                       f"checklist")
 
         c = self.cost()
         if c.breaches:
@@ -408,9 +420,6 @@ class StrategyPlan:
         out.append(f"estimated agent tokens: ~{c.estimated_tokens} (what the agent reads; no platform token "
                    f"cap since contract 92 - the preview is capped at "
                    f"{load().shared['previewExecutionLimits']['maxResultChars']} result characters)")
-
-        predicted = predicted_diagnostics(self.report, self.rules)
-        out += [f"scoring {f.severity}: {f}" for f in predicted["mismatches"] + predicted["warnings"]]
 
         from .execution import PLATFORM_EXECUTION_DEFAULTS, validate_execution
         ov = self.thesis.execution or {}
@@ -448,7 +457,6 @@ class StrategyPlan:
                      "sent whole on their axes (see omega/execution.py; M1 is owed)")
         return [
             f"preview coinSelection {sel} ({how})",
-            "signal params are the platform defaults captured in the signal map",
             execution,
             "local only: never staged into a draft, never committed",
         ]
@@ -467,8 +475,10 @@ class StrategyPlan:
         ]
 
     def _rules(self) -> list[dict]:
-        """The dense 84-row scorecard. `allocation` is an INTEGER 0..3 and required on the
-        v91 SIGNAL_RULES axis, as is `required`; unallocated signals ride at 0."""
+        """RETIRED at contract 108 (2026-10-11; v108 refuses the SIGNAL_RULES axis). The dense
+        84-row scorecard the v91 SIGNAL_RULES axis carried: `allocation` an INTEGER 0..3 and
+        required, as was `required`; unallocated signals rode at 0. History; axes() no longer
+        calls it."""
         m = _map()
         defaults = m["defaultParams"]
         allocated = {r.signalId: r for r in self.rules}
@@ -682,21 +692,22 @@ class StrategyPlan:
         }
 
     def render(self) -> str:
-        c, mem = self.cost(), self.membership()
-        weighted = [r for r in self.rules if r.allocation > 0]
+        c = self.cost()
         lines = [
             f"{self.thesis.name}  --  {self.thesis.tagline}",
             f"anchor {self.thesis.anchor} | stance {self.thesis.stance} | "
             f"{len(self.report.sections)} sections | {c.columns} columns | {c.headers} headers",
             "",
-            f"weighted signals  {len(weighted):>3} of {len(mem.signals_in)} in report",
+            # contract 108: the modules the report shows (the weights' keys) - no signal tally
+            f"report modules    {len(self.thesis.modules):>3}",
         ]
         by_tier: dict[int, list[str]] = {}
-        for r in weighted:
-            by_tier.setdefault(r.allocation, []).append(r.signalId)
+        for m, tier in self.thesis.weights.items():
+            by_tier.setdefault(tier, []).append(m)
         for tier in sorted(by_tier, reverse=True):
-            lines.append(f"  tier {tier}  ({len(by_tier[tier])})  {', '.join(sorted(by_tier[tier])[:4])}"
-                         + (" ..." if len(by_tier[tier]) > 4 else ""))
+            lines.append(f"  tier {tier}  {', '.join(by_tier[tier])}")
+        if self.thesis.context:
+            lines.append(f"  context  {', '.join(self.thesis.context)}")
         gates = self.entry_gates()
         lines += ["", "entry gate: " + (", ".join(gates) if gates else "NONE (NO_ENTRY_CONDITION)")]
         if self.conditions:
@@ -776,9 +787,12 @@ def _plainest_transform(metric: str) -> str:
 
 
 def _scoring_data_columns(rules: list[Rule], recipe: list[dict]) -> list[dict]:
-    """One column per (metric, rung) a weighted signal scores on that the recipe columns do not
+    """RETIRED at contract 108 (the 2026-10-10 rung-gap columns; plan_pre_108 only).
+
+    One column per (metric, rung) a weighted signal scores on that the recipe columns do not
     show: the metric at the rung's rel (RUNG_REL), plainest transform, in rule order. What
-    BattleGrid lists as ACTIVE_SIGNAL_DATA_NOT_IN_REPORT (membership.scoring_gaps)."""
+    BattleGrid listed as ACTIVE_SIGNAL_DATA_NOT_IN_REPORT (membership.scoring_gaps) until 108
+    removed signals and the draft's `mismatches` with them."""
     shown = shown_data(Report(sections=[CustomSection(
         title="recipe", benchmarkTicker=None,
         columns=[Column.model_validate(c) for c in recipe])])) if recipe else set()
@@ -795,22 +809,41 @@ def _scoring_data_columns(rules: list[Rule], recipe: list[dict]) -> list[dict]:
     return out
 
 
-def plan(thesis: Thesis) -> StrategyPlan:
-    """Turn a thesis into a validated report plus allocations."""
+def signal_rules(thesis: Thesis) -> list[Rule]:
+    """RETIRED at contract 108 (2026-10-11): the signal allocation plan() made until then. Every
+    signal of a weighted module (tier > 0) that the module recipes feed, at the module's tier;
+    `required` False (Thesis.required retired with the required-count gate). Membership is
+    module-level (docs/07), so the 2026-10-10 scoring-data columns never widened it."""
     m = _map()
-    c = load()
     candle, inert = _split_by_timeframe_mode(thesis.modules)
-
-    # allocate only what the report can actually feed (membership is module-level, so the
-    # scoring-data columns below never widen it: every metric they add belongs to a module
-    # the thesis already weights)
     feedable = signals_for({s["metric"] for s in candle + inert})
     rules: list[Rule] = []
     for module, tier in thesis.weights.items():
         for sid in m["moduleSignals"].get(module, []):
             if sid in feedable and tier > 0:
                 rules.append(Rule(signalId=sid, allocation=tier, required=False))
-    if thesis.show_scoring_data:
+    return rules
+
+
+def plan(thesis: Thesis) -> StrategyPlan:
+    """Turn a thesis into a validated report and its conditions (contract 108: no allocations -
+    the report is the module recipes of `thesis.modules`, the conditions the entry gate)."""
+    return _plan(thesis, rules=[], scoring_data=False)
+
+
+def plan_pre_108(thesis: Thesis, *, show_scoring_data: bool = True) -> StrategyPlan:
+    """RETIRED at contract 108: the plan omega.generate.plan made at v0.3.2 - the signal allocation
+    (signal_rules) and, with show_scoring_data, the 2026-10-10 scoring-data columns. Kept so the
+    measured pre-108 diagnostics (tests/test_recipes_rung_gap.py) stay reproducible. Its axes()
+    are the 108 axes all the same: the scorecard is in `.rules` and `._rules()`, never staged."""
+    rules = signal_rules(thesis)
+    return _plan(thesis, rules=rules, scoring_data=show_scoring_data)
+
+
+def _plan(thesis: Thesis, *, rules: list[Rule], scoring_data: bool) -> StrategyPlan:
+    c = load()
+    candle, inert = _split_by_timeframe_mode(thesis.modules)
+    if scoring_data:
         for spec in _scoring_data_columns(rules, candle + inert):
             (inert if c.metric(spec["metric"]).is_timeless else candle).append(spec)
 
@@ -914,7 +947,9 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
 
 def plan_for_signals(signal_ids: list[str], *, name: str = "Ad-hoc", tier: int = 2,
                      anchor: str = "1h") -> StrategyPlan:
-    """Work backwards: given signals you want to weight, build the report that feeds them."""
+    """RETIRED at contract 108 (signal rules removed): work backwards from signals you wanted to
+    weight - the modules that feed them become the thesis's weights, and the plan is the pre-108
+    one (plan_pre_108, no scoring-data columns) so `.rules` still names what was allocated."""
     m = _map()
     modules, unreachable = [], []
     for sid in signal_ids:
@@ -925,7 +960,7 @@ def plan_for_signals(signal_ids: list[str], *, name: str = "Ad-hoc", tier: int =
             modules.append(module)
     thesis = Thesis(name=name, tagline="built from target signals", anchor=anchor,
                     weights={mod: tier for mod in modules})
-    result = plan(thesis)
+    result = plan_pre_108(thesis, show_scoring_data=False)
     if unreachable:
         result.thesis.description = (
             f"unreachable and therefore unallocated: {', '.join(unreachable)}")

@@ -93,7 +93,8 @@
  },
  "retired": {
   "data/contract/compile_strategy_plan/": "Captures of the compile_strategy_plan definition (2026-09-05, 09-09, 09-18; contracts 51-era to 61.0.1). The tool was removed at contract 85.0.0. Kept as history and as the record the old receipts name; never read as the current write surface.",
-  "data/contract/get_strategy/": "Pre-v84 read-backs (2026-09-05, 2026-09-18). Their conditions carry `closes` (removed at v84) and `exit` (removed at v88), so they cannot be a mirror for a v91 body. Kept as history; never read as current until a v91 read-back is captured."
+  "data/contract/get_strategy/": "Pre-v84 read-backs (2026-09-05, 2026-09-18). Their conditions carry `closes` (removed at v84) and `exit` (removed at v88), so they cannot be a mirror for a v91 body. Kept as history; never read as current until a v91 read-back is captured.",
+  "data/contract/signals/": "The signal-definition mirrors (_scoring.json, definitions_77.1.0, funding_extreme_76.0.0). Contract 108.0.0 removed signal rules, list_strategy_signals and get_strategy_signal_definition with no alias (README 'Contract history - v108'), so no current surface serves a signal or its parameters. Kept as history and as the record omega.scoring and docs/11 cite; never read as current."
  },
  "accountStateAtExtraction": {
   "privateStrategyQuota": {

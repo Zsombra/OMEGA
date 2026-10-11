@@ -32,7 +32,9 @@ CONTEXT_KEY = "custom:1035fbda-380e-8d68-86c5-eeb5534b8cfb"
 # The thesis strategy 7534b2ee was generated from on 2026-10-09: the trend-continuation preset
 # as it then was (REGIME as context, no scoring-data columns - both changed 2026-10-10,
 # tests/test_recipes_rung_gap.py). The round trip is against the body actually committed.
-COMMITTED_THESIS = replace(PRESETS["trend-continuation"], context=["REGIME"], show_scoring_data=False)
+# Contract 108 retired the scoring-data columns (Thesis.show_scoring_data), so plan() gives the
+# committed report from the context alone.
+COMMITTED_THESIS = replace(PRESETS["trend-continuation"], context=["REGIME"])
 
 
 def _clauses(defn: dict) -> list[dict]:

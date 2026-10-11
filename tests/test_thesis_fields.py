@@ -18,6 +18,26 @@ def _names() -> list[str]:
     return [f.name for f in fields(Thesis)]
 
 
+# The field list at contract 108, in order (battlegrid-manager's THESIS_KEYS must equal it).
+THESIS_FIELDS_108 = ("name", "tagline", "description", "anchor", "weights", "stance", "context",
+                     "coin_selection", "execution", "exits")
+
+
+def test_the_field_list_at_108_is_exactly_this():
+    assert tuple(_names()) == THESIS_FIELDS_108
+
+
+def test_show_scoring_data_is_retired_with_the_scoring_data_columns():
+    """It added a column per (metric, rung) a weighted SIGNAL scored on; with no signals at 108 those columns fed
+    nothing. plan() now gives what show_scoring_data=False gave; plan_pre_108 keeps the widened report."""
+    from omega.generate import plan_pre_108
+    assert "show_scoring_data" not in _names()
+    with pytest.raises(TypeError):
+        Thesis(name="x", show_scoring_data=False)
+    for name, t in PRESETS.items():
+        assert plan(t).report == plan_pre_108(t, show_scoring_data=False).report, name
+
+
 @pytest.mark.parametrize("retired", ["gate", "required"])
 def test_the_gate_and_the_required_signal_ids_are_retired(retired):
     assert retired not in _names()

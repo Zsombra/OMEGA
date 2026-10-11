@@ -226,7 +226,8 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     assert ws["supersedes"]["servedContractVersion"] == "91.0.0"
     assert ws["supersedes"]["schema"] == SCHEMA_91 and (ROOT / SCHEMA_91).is_file()
     retired = manifest["retired"]
-    assert set(retired) == {"data/contract/compile_strategy_plan/", "data/contract/get_strategy/"}
+    assert set(retired) == {"data/contract/compile_strategy_plan/", "data/contract/get_strategy/",
+                            "data/contract/signals/"}      # the signal mirrors, retired at 108
     for path in retired:                         # kept on disk, never deleted
         assert any((ROOT / path).glob("*.json")), path
     # the metric/transform extraction is a separate snapshot and keeps its own version

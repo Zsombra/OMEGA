@@ -10,7 +10,6 @@ from .execution import (CATALOG_BOUND_ENFORCED, CATALOG_BOUNDS,
 from .conditions import NO_ENTRY_CONDITION, entry_gates
 from .generate import (CADENCE_FOR_ANCHOR, EXIT_ROLES, MODULE_CLAUSES, MODULE_RECIPES,
                        RANKED_LIMIT_MEASURED_MAX, REGIME_TF_FOR_ANCHOR, Thesis, _build_conditions)
-from .membership import _map
 from .validate import Finding
 
 # The one hand-written table: what each module's columns measure, in plain language.
@@ -49,7 +48,6 @@ def _clause_text(c: dict) -> str:
 def vocabulary() -> dict:
     """The assistant's complete menu - every module, anchor, universe rule and
     execution knob the platform was MEASURED to accept."""
-    sigs = _map()["moduleSignals"]
     modules = {}
     for m in sorted(MODULE_RECIPES):
         spec = MODULE_CLAUSES[m]
@@ -57,7 +55,7 @@ def vocabulary() -> dict:
             "measures": MODULE_DESCRIPTIONS[m],
             "directional": "up" in spec,
             "readings": {k: _clause_text(spec[k]()) for k in sorted(spec)},
-            "signals": sorted(sigs.get(m, [])),
+            # "signals" (the module's signal ids) retired 2026-10-11: contract 108 removed signal rules
         }
     return {
         "modules": modules,
