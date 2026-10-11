@@ -12,8 +12,8 @@ shapes are binding in the sense that matters — they are checked, not merely as
 elsewhere in this file are not covered by that gate, and vocabulary moves with deploys, so discovery
 in the conversation stays the authority — prefer what `list_strategy_vocabulary`,
 `get_strategy_column_contract`, and `get_strategy_signal_definition` return over anything
-printed here, and read exact headers from a preview's `conditionColumns` before conditioning on
-them.
+printed here, and read exact headers from a `detail: "detailed"` preview's
+`authoring.conditionColumns` before conditioning on them.
 
 ## The full-power checklist
 
@@ -44,10 +44,11 @@ Before committing a CREATE, every "no" here is a decision to state, not an omiss
 | `efficiency` wN | `<code>_er` (1 straight, ~0 chop) | `close_ltf_er` |
 | `maxShare` wN | `<code>_maxShare` | `volBase_ltf_maxShare` |
 | `classifyZone` / `classifyState` | `<code>_zone` / `<code>_state` | `RSI14_zone`, `ADX_state` |
+| `levelInteraction` | `<code>_lvl`, `<code>_lvl_b<N>` at a buffer of N bps | `bbUpper_lvl`, `bbUpper_lvl_b25` |
 
 Non-anchor rungs affix `_ltf` (lower) / `_htf` (regime): `MAalign_htf`,
 `zones_htf_support_dist`. Chains are bounded at two: inner `distance`/`spread` → outer
-`trajectory`/`aggregate`/`efficiency`/`maxShare`/`rank` (`EMA5 spread EMA13 × trajectory` →
+`trajectory`/`aggregate`/`rank` (`EMA5 spread EMA13 × trajectory` →
 `EMA5_EMA13_spread_now` + `_trend`).
 
 **Timeframe references are two families.** *Relative* (`anchor`/`lower`/`regime`) re-resolve
@@ -69,8 +70,8 @@ things you do depends on the operation: on a **CREATE, omit `sectionKey` entirel
 is refused, since a new strategy owns no custom sections yet; on an **UPDATE or RESTORE, send back
 the keys `get_strategy` returned** for the sections you are keeping, and omit it on a section you
 add. Either way you never invent one. To section-qualify a duplicated header, read the key from a
-preview's `conditionColumns` or from the qualified candidates a `CONDITION_COLUMN_AMBIGUOUS`
-refusal offers.
+`detail: "detailed"` preview's `authoring.conditionColumns` or from the qualified candidates a
+`CONDITION_COLUMN_AMBIGUOUS` refusal offers.
 
 **Event columns print only on their event.** `MACD_cross` and `EMA5_13` (Bullish/Bearish) carry a
 value on the crossing bar and are null on every other one, which reads as UNRESOLVED. Use an event
@@ -84,7 +85,11 @@ no timeframe reference at all: bind them `{rel: 'anchor'}` — the default — a
 previous UTC session from any anchor. An absolute reference is REFUSED at save, including `1d`,
 because there is no rung for one to select. They are catalogued price levels, so `dist_PDH gte 0`
 composes directly. (`distance` still rejects an `offset`, and a clause still compares a column
-against a literal; neither of those shapes is what a previous-session level needed.)
+with a literal or with its own previous completed bar, never with another column; neither of those
+shapes is what a previous-session level needed.) The same holds
+for every timeless metric — these levels, funding, the regime and the other bundle
+reads: a `value` column over one accepts only `offset: 0`, and a larger offset is REFUSED at save,
+because there is no earlier bar to cut back to.
 
 ## Conditions
 
@@ -92,8 +97,11 @@ against a literal; neither of those shapes is what a previous-session level need
 required, no defaults. A `clock` key is REFUSED (the per-condition evidence clock was retired in
 contract `61.0.0`), so is a condition-level `closes` key — the hold lives on each clause and each
 group (contract `84.0.0`) — and so is a boolean `exit` key: the side an exit closes is its own
-`exitSide` (contract `88.0.0`). Clauses: numeric/rank headers take `lt|lte|gte|gt|between`;
-classification/direction headers take `is|in` with the served vocabulary. Groups:
+`exitSide` (contract `88.0.0`). Clauses — the operator a header takes is served per header
+(`conditionOperators`), by its output kind: numeric headers take the comparisons
+`lt|lte|gte|gt|between` and the prior-bar operators `crossesAbove|crossesBelow|increased|decreased`;
+rank headers take the comparisons only; classification, direction and boolean headers take
+`is|in|enters|exits` with the served vocabulary; event headers take `is|in`. Groups:
 `ALL | ANY | NOT | N_OF` (with `n`), depth ≤ 2. Every clause and every group carries a required
 `hold: { atLeast, of }` — `{ "atLeast": 1, "of": 1 }` is a single read; a clause or group without
 `hold` is refused (`CONDITION_HOLD_INVALID`). `conditionRef` composes named conditions (no
@@ -103,6 +111,46 @@ distinct verdict decides, and the first carrier in declaration order carrying it
 decider — so order breaks ties between carriers that AGREE. Carriers that DISAGREE resolve
 `NEITHER` and stand the coin aside; declaration order never picks a side between them. Building
 blocks carry `null`.
+
+**Prior-bar operators — a column against its own previous completed bar.** A clause compares its
+column with a literal, or with the same column's reading on the completed bar before the one it
+decides — never with another column. Six operators read that prior bar:
+
+| Operator | Literal | TRUE when |
+|---|---|---|
+| `crossesAbove` | a number `L` | `x > L` on the decided bar and `x ≤ L` on the bar before |
+| `crossesBelow` | a number `L` | `x < L` on the decided bar and `x ≥ L` on the bar before |
+| `increased` | none | `x` is strictly above its prior-bar reading |
+| `decreased` | none | `x` is strictly below its prior-bar reading |
+| `enters` | one label | the label is read now and was not on the bar before |
+| `exits` | one label | the label was read on the bar before and is not now |
+
+The crossing boundary is Pine's (`ta.crossover`): a bar sitting exactly on `L` has not crossed until a
+later bar closes above it. A change takes no literal at all — `{ "op": "increased" }` with no `value`.
+A prior-bar clause reads COMPLETED bars only, on every surface: the decided bar and the one before
+it, never the forming bar, so it is never provisional. A failed read on either bar is UNRESOLVED; a
+bar with no value (a null) reads FALSE. A header admits them only where its stored history keeps the
+bar before: a header whose `conditionHold.maxWindow` is 1 is served none of the six, so
+`vol24hUsd increased` is refused (`CONDITION_OPERATOR_UNSUPPORTED`, naming the operators it does
+admit), and on a header that keeps them each reads one bar less than its window.
+
+**An edge is held "within n closes" only.** `crossesAbove`, `crossesBelow`, `enters` and `exits` mark
+the bar a state changed, so like a crossover event their `maxAtLeast` is 1 — hold them "within n
+closes", never "in a row". `increased` and `decreased` are no edge: "3 closes in a row" of
+`increased` is three rising closes. A group whose members must all read TRUE together (`ALL`) over an
+edge admits "within" only too. Every prior-bar read counts toward the frame-read budget: a clause
+held "within 3 closes" reads four bars.
+
+Recipes — each one clause:
+
+- **Close crossed above the 20 SMA** — `dist_SMA20 crossesAbove 0` (the Moving Averages module).
+  `dist_SMA20` is the close's distance from the average, so crossing 0 is the close crossing it.
+- **RSI entered overbought** — `RSI14_zone enters "overbought"` (the RSI module).
+- **Squeeze released** — `kcSqueeze exits "on"`, over a `KC_SQUEEZE` value column.
+- **New 20-bar high** — `donchianHi increased`, over a `DONCHIAN_UPPER` value column: the 20-bar
+  upper channel rises exactly when the decided bar's high exceeds every high of the 20 bars before it.
+- **RSI crossed above 50 within the last 3 closes** — `RSI14_now crossesAbove 50` holding
+  `{ "atLeast": 1, "of": 3 }`.
 
 **Two things block a trade, not one.** `required: true` = a FALSE reading blocks compose-trade
 before billing. And the RESOLVED verdict binds entry DIRECTION: `UP` admits long setups only,
@@ -145,7 +193,7 @@ decide it (TRUE once `atLeast` bars read TRUE, FALSE once the rest can no longer
 UNRESOLVED.
 
 What a header admits is SERVED, never guessed: every column in the strategy's report catalog
-(`preview_strategy_report` → `conditionColumns[].outputs[].conditionHold`, and each scalar metric in
+(`preview_strategy_report` at `detail: "detailed"` → `authoring.conditionColumns[].outputs[].conditionHold`, and each scalar metric in
 the vocabulary) carries `{ timeframe, maxWindow, maxAtLeast, refusal }` — the timeframe it counts,
 the largest `of`, the largest `atLeast`, and, when it admits only Once, why. `maxWindow` is the
 history the store keeps for that column, less the column's own lookback and warm-up. A hold past
@@ -247,16 +295,157 @@ it opened under, with the report and timeframes they read: an exit-rule edit app
 opened after it, and an open position keeps the exit rules it opened with, so an open position never
 refuses a commit or a rebind.
 
-**A state column is not a flip event.** `ST_DIR` reads the same on every bar of a trend, so
-`ST_DIR is "bullish"` is a regime filter and never an entry signal. The flip needs an event column
-beside it — an `EMA5_13` cross, or a `ST_DIR` trajectory whose `_trend` changes. The same distinction
-applies to every persisting classification: `MAalign`, `ADX_state`, `zone`.
+**A state column is not a flip event — `is` reads the state, `enters` reads the flip.** `ST_DIR`
+reads the same on every bar of a trend, so `ST_DIR is "bullish"` is a regime filter and never an
+entry signal. The flip is `ST_DIR enters "bullish"`: TRUE on the one completed bar the direction
+turned, with no event column needed. The same distinction applies to every persisting
+classification: `MAalign`, `ADX_state`, `zone` — `is` for the regime, `enters` / `exits` for the
+bar it changed.
 
 **Name the anchor when a metric is calibrated for one.** `KC_SQUEEZE is "on"` reads *on* about 57% of
 1h crypto bars even at canonical parameters — Bollinger σ is close-to-close while ATR captures
 intrabar range, so σ/ATR runs low here — against about 19% at 15m. It is a selective filter at 15m and
 below and close to useless at 1h. A metric whose selectivity depends on the anchor is stated with the
 anchor, or the author gates on something that admits most bars.
+
+## Bar geometry
+
+What one bar did — against a price level, in its own shape, against the bar before it, and how many
+bars ran one way. Every value here reads the bar's own open, high, low and close, so it is a candle
+column: it takes a timeframe reference and the Confirmed / Developing selector like any other.
+
+**`levelInteraction` — what the bar did at a level.** It classifies the newest bar of the column as
+one of five labels: `touch_from_below`, `touch_from_above`, `reject_from_below`, `reject_from_above`,
+`none`. The side is where the PRIOR close stood against the PRIOR bar's level — from below when it
+closed at or under it — so a level that moved between the two bars is judged on the bar it stood at.
+From below: a bar that closes through the level is a break and reads `none`; a bar whose high
+reached the level and whose close came back under it is `reject_from_below`; a bar whose high came
+within the buffer of the level is `touch_from_below`. From above is the mirror on the low.
+
+- **A reject bar reports reject.** It is never also reported as a touch, so "touched or rejected" is
+  an `in` clause over both labels of a side: `bbUpper_lvl in ["touch_from_below","reject_from_below"]`.
+- **`buffer`** is whole basis points of the level, 0–500, default 0 — `buffer: 25` is 0.25%. Only the
+  touch reads it: a reject must pierce the level itself. Two buffers are two columns (`bbUpper_lvl`,
+  `bbUpper_lvl_b25`).
+- **A break is a crossing, never a label.** The break of a level is `distance` over the same level
+  crossing 0: `dist_bbUpper crossesAbove 0` from below, `crossesBelow 0` from above. On the strategy's
+  own rung a `…_from_below` label never holds on a bar where `crossesAbove 0` holds.
+- **Which levels take it.** A candle-homed level — a band (`BB_UPPER`, `BB_LOWER`, `KC_UPPER`,
+  `KC_MID`, `KC_LOWER`), `VWAP`, a moving average (`SMA20`, `EMA20`, …), `ST_LINE`, `PSAR`, the
+  Ichimoku lines, the swing levels (`SWING_FRACTAL_HIGH`, `SWING_FRACTAL_LOW`) — reads its own value at
+  each of the two bars. A prior-session level or pivot (`PDH`,
+  `PDL`, `PDO`, `PIVOT_P`, `PRIOR_TPO_POC`, …) has one reading for the session, used as both bars' level;
+  a clause over it is a single read with no hold, because the session profile keeps no earlier
+  reading. A developing-session level (`TPO_POC`, `TPO_VAH`, …) and the naked points of control move
+  between bars with no earlier reading kept, so they are not offered it; neither are the Donchian
+  rails (`DONCHIAN_UPPER`, `DONCHIAN_LOWER`), each the extreme of the window ending at the very bar it
+  would classify, which a close can never pass. A price fact (`CLOSE`, `HLC3`, `MARK`) is refused: it
+  is the price, not a level.
+- **A higher-rung level reads that rung's completed bar.** `bbUpper_htf_lvl` classifies the last
+  completed regime-rung bar from its own high, low and close, never the strategy bar's price — so
+  compose its break on the same rung, `dist_bbUpper_htf crossesAbove 0`.
+
+**`BB_TOUCH` and `BB_UPPER × levelInteraction` answer different questions.** `BB_TOUCH` (`BBtouch`)
+says where the CLOSE sits in %B — inside the band edge or not. `BB_UPPER × levelInteraction` says what
+the bar's RANGE did at the edge — touched it, or pierced it and closed back.
+
+**Candle patterns** — the bar's shape against the ten bars before it (TA-Lib's default settings). A
+pattern carries no trend context: "a hammer in a downtrend" is `pin is "lower_wick"` plus a separate
+trend clause.
+
+| Key | Header | Labels |
+|---|---|---|
+| `CANDLE_DOJI` | `doji` | boolean: the body is at most a tenth of the average range |
+| `CANDLE_PIN` | `pin` | `lower_wick`, `upper_wick`, `none` — a short body with one long wick |
+| `CANDLE_ENGULFING` | `engulf` | `bullish`, `bearish`, `none` — the body engulfs the prior opposite body |
+| `BAR_CONTAINMENT` | `barContain` | `inside`, `outside`, `none` — the range inside, or around, the prior range |
+
+**Gaps** — the open against the bar before it, as three separate keys.
+
+| Key | Header | Reads |
+|---|---|---|
+| `GAP` | `gap` | `up`, `down`, `none` — the open above the prior high, or below the prior low |
+| `GAP_RANGE_CLEAR` | `gapClear` | `up`, `down`, `none` — the whole range clear of the prior range (stricter) |
+| `GAP_PCT` | `gapPct` | the signed % from the prior close to the open |
+
+**Runs** — report columns counting consecutive bars, capped at ±20. Gating "three closes in a row" is
+the hold's job; a run column shows the streak.
+
+| Key | Header | Counts |
+|---|---|---|
+| `CLOSE_RUN` | `closeRun` | consecutive closes above (+) or below (−) the close before |
+| `CANDLE_RUN` | `candleRun` | consecutive candles of the newest bar's colour, white (+) or black (−) |
+
+**Price sources** — per-bar price facts that take every transform a close takes: `HL2` (`hl2`,
+median), `HLC3` (`hlc3`, typical), `OHLC4` (`ohlc4`, average).
+
+**"Within the last N closed bars" is the hold `{ "atLeast": 1, "of": N }`.** A pattern or a gap held
+within N reads each of the N bars against its own predecessor.
+
+Recipes — the level recipes on candle-homed levels:
+
+- **Price rejected the upper Bollinger band** — a `BB_UPPER × levelInteraction` column, header
+  `bbUpper_lvl`; the clause `bbUpper_lvl is "reject_from_below"`.
+- **Price touched or rejected VWAP from above** — `VWAP_lvl in ["touch_from_above","reject_from_above"]`,
+  with `buffer: 10` for a touch within 0.1% (header `VWAP_lvl_b10`).
+- **Price broke the 20 EMA** — `dist_EMA20 crossesAbove 0`, the `distance` column over the same level.
+- **A bullish engulfing within the last 3 bars** — `engulf is "bullish"` holding
+  `{ "atLeast": 1, "of": 3 }`.
+- **An inside bar** — `barContain is "inside"`.
+- **A gap up** — `gap is "up"`; `gapClear is "up"` when the whole range must clear.
+- **A run of candles as a report column** — a `CANDLE_RUN` value column (`candleRun`) beside the
+  thesis columns; no clause needed.
+- **The 20-bar simple moving average of typical price** — `HLC3 × aggregate(20)` with
+  `aggregate: "mean"`, header `hlc3_mean20`.
+
+## Swing structure
+
+Swing highs, swing lows and the structure they spell, from the market-data swing engine. Every value
+is stored under the bar it describes, so a swing column holds and takes the prior-bar operators like
+any candle column.
+
+| Key | Header | Reads |
+|---|---|---|
+| `SWING_FRACTAL_HIGH` | `fractalHi` | the most recent swing high — a price level |
+| `SWING_FRACTAL_LOW` | `fractalLo` | the most recent swing low — a price level |
+| `SWING_FRACTAL_LABEL` | `fractalLabel` | `HH`, `HL`, `LH`, `LL`, `none` — the most recent swing against the one before it on its side |
+
+**The rule.** A swing high is a bar whose high is at or above the highs of the two bars before it and
+strictly above the highs of the two bars after it; a swing low mirrors it on the lows. An equal extreme
+is allowed on the left and not on the right, so of a run of equal highs the newest is the swing (Pine's
+`ta.pivothigh(2, 2)`). A swing is published from the bar that completes its right side — two bars
+after its own — never earlier and never from a forming bar. Each level is held until the next swing on
+its side replaces it.
+
+- **The label is a held state, not an event.** It reads the most recent swing: `HH` / `LH` for a high
+  (an equal high is `LH` — it failed to make a higher high), `HL` / `LL` for a low (an equal low is
+  `HL`), `none` when no comparable pair is in reach. On too short a history it reads nothing, and a
+  clause over it reads FALSE.
+- **A swing level does not remember a broken level.** Two to four bars after a break the level steps
+  to the next swing, so a retest of the BROKEN level is not a swing-level read.
+- **The two levels take what every candle level takes** — `distance`, `spread`, `aggregate`,
+  `trajectory`, `efficiency` and `levelInteraction` — and both rank across the board
+  (`dist_fractalHi_rank_near`: the coins closest to their own last swing high).
+- **The break is the crossing toward the level.** `dist_fractalHi crossesAbove 0` is a close through the
+  last swing high and never fires when the level steps onto a new swing, because the bar that confirms
+  a swing high sits under it. The opposite crossing (`dist_fractalHi crossesBelow 0`, or
+  `dist_fractalLo crossesAbove 0`) CAN fire on the bar the level steps past the close — it is not a
+  break.
+- **A swing confirmed on the break bar can already have moved the label**, so a structure condition
+  paired with a break is held over the bars before it.
+
+Recipes:
+
+- **The swing structure is bullish** — `fractalLabel in ["HH","HL"]`.
+- **A higher high was confirmed on this bar** — `fractalHi increased` (it also catches a second
+  higher high in a row, which `fractalLabel enters "HH"` cannot); `fractalHi decreased` is a lower
+  high.
+- **Bullish break of structure** — a `SWING_FRACTAL_HIGH × distance` column, header `dist_fractalHi`;
+  the clause `dist_fractalHi crossesAbove 0`.
+- **Bearish break of structure** — `dist_fractalLo crossesBelow 0`.
+- **A break of the last swing low while the structure was bullish** — `dist_fractalLo crossesBelow 0`
+  together with `fractalLabel in ["HH","HL"]` holding `{ "atLeast": 1, "of": 3 }`, so the bullish
+  read may sit on the bars before the break.
 
 ## Entry
 
@@ -385,8 +574,8 @@ RR 2, BE 1R, trail 1.2R/giveback 35 · swing trend (4h) 1.0–2.5 ATR, RR 2, BE 
 
 The one place a claim that the catalog LACKS something may live, and every row names the key it
 denies so the claim can be checked. A claim about the grammar's shape (a clause compares one
-column against a literal; `distance` rejects an `offset`) belongs in prose above — those are
-permanent. A claim that a metric is absent belongs here, or nowhere.
+column with a literal or with its own previous completed bar, never with another column; `distance`
+rejects an `offset`) belongs in prose above — those are permanent. A claim that a metric is absent belongs here, or nowhere.
 
 | Script / primitive | Key the catalog would need | Nearest expressible neighbour |
 |---|---|---|

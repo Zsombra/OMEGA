@@ -12,6 +12,7 @@ engine) and names its substitutions where the catalog lacks a primitive.
 - VWAP reversion
 - Donchian / Turtle breakout
 - ICT / SMC (FVG + order blocks)
+- Pivot highs / lows, HH-HL structure and break of structure
 - Now native, formerly substituted
 
 ## TradingView ports — familiar processes, studio vocabulary
@@ -40,8 +41,9 @@ rules about the columns themselves, not about porting — they live in the skill
   distance to the plotted stop. The plotted trailing line is still best executed by the studio's
   own stop engine — `trailingTriggerR: 0` (trail from entry), giveback ~30–40 (tight factor) or
   45–55 (loose/chandelier) — because a trailing stop is a position-management mechanism, not a
-  column. `ST_DIR` is a persisting state and not a flip event — see `## Conditions` in the
-  skill body — so the FLIP needs an event column beside it. Name that as a substitution.
+  column. `ST_DIR` is a persisting state, so its FLIP is read with `enters`, natively:
+  `ST_DIR enters "bullish"` is TRUE on the one completed bar the direction turned, and
+  `ST_DIR exits "bullish"` on the bar it turned back — see `## Conditions` in the skill body.
 - **MACD + 200 MA filter** → `ABOVE_200` building block (`dist_SMA200 gt 0`) referenced by a
   carrier with `MACD_cross is "Bullish"`; rules `macd_bull/bear_cross` 3 required +
   `ma_sma200_above/below` 2 required; swing-trend geometry.
@@ -68,16 +70,27 @@ rules about the columns themselves, not about porting — they live in the skill
   and take `{rel: 'anchor'}` — see `## Header grammar` in the skill body.
 - **ICT / SMC (FVG + order blocks)** → `STRUCT_ZONES` is the native zone engine:
   `zones_htf_support_type` (`bullish FVG`/`bullish order block`), `zones_htf_support_dist
-  between -1.5 0`, `_age_h gte 12`, HTF bias required via `MAalign_htf`; rules
+  between 0 1.5`, `_age_h gte 12`, HTF bias required via `MAalign_htf`; rules
   `structure_fvg_approach`/`structure_ob_approach` required (their `proximityPct` is the
   in-zone dial). Liquidity sweeps, displacement, killzones and event *sequencing* are shapes the
-  grammar does not have — a clause compares one column against a literal, so an ordered sequence
-  of events cannot be stated at all. That is a grammar limit, not a missing metric; name it as
+  grammar does not have — a clause compares one column with a literal or with its own previous
+  completed bar, never with another column or an earlier event, so an ordered sequence of events
+  cannot be stated at all. That is a grammar limit, not a missing metric; name it as
   one.
+- **Pivot highs / lows, HH-HL structure and break of structure** (`ta.pivothigh(2, 2)` /
+  `ta.pivotlow(2, 2)`) → `SWING_FRACTAL_HIGH` / `SWING_FRACTAL_LOW` are the native swing levels and
+  `SWING_FRACTAL_LABEL` the structure label (`HH`/`HL`/`LH`/`LL`/`none`) — see `## Swing structure` in
+  the skill body. Pine's tie rule holds (an equal extreme on the left is allowed, on the right it is
+  not), and each level is the stepped, non-repainting series — held from the bar that completes the
+  pivot's right side, not plotted back on the pivot bar. Break of structure is
+  `dist_fractalHi crossesAbove 0` / `dist_fractalLo crossesBelow 0`; "structure is bullish" is
+  `fractalLabel in ["HH","HL"]`. Only two bars each side is native: a `ta.pivothigh(5, 5)` or longer
+  script ports onto the two-bar swing, and the spec-lock question says so.
 - **Now native, formerly substituted** — WaveTrend (`WT1`/`WT2`), QQE (`QQE_RSI_MA`/`QQE_STOP`),
   Hull (`HMA20`), Ichimoku (`ICHI_CONV`/`ICHI_BASE`/`ICHI_SPAN_A`/`ICHI_SPAN_B`/`ICHI_LAG`),
   Parabolic SAR (`PSAR`), Keltner (`KC_UPPER`/`KC_MID`/`KC_LOWER`), daily pivots
   (`PIVOT_P`/`PIVOT_R1`–`R3`/`PIVOT_S1`–`S3`), Williams %R (`WILLR14`), Stochastic RSI
   (`STOCH_RSI14`), the TTM squeeze (`KC_SQUEEZE`), Connors RSI-2 (`RSI2`), the 9/21/50 EMAs
-  (`EMA9`/`EMA21`/`EMA50`), and literal previous-session levels (`PDH`/`PDL`/`PDO`). Port these directly —
+  (`EMA9`/`EMA21`/`EMA50`), literal previous-session levels (`PDH`/`PDL`/`PDO`), and fractal swing
+  structure (`SWING_FRACTAL_HIGH`/`SWING_FRACTAL_LOW`/`SWING_FRACTAL_LABEL`). Port these directly —
   do not offer a substitute for a primitive the catalog serves.

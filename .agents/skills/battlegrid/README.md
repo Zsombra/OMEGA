@@ -24,6 +24,651 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
+## Contract history — v108 (conditions are the only entry gate; signal rules are removed)
+
+**Breaking at v108: signal rules, the aggregate-score gate and the required-count gate are removed.**
+v108 is the contract on top of v107. A strategy's deterministic entry gate is its conditions: a
+required condition, or a condition that carries a verdict. A strategy that declares neither never
+trades, and its draft says so with the warning `NO_ENTRY_CONDITION`.
+
+### Removed tools
+
+- **`simulate_aggregate_score`, `list_strategy_signals`, `get_strategy_signal_definition`,
+  `derive_strategy_rule_view` and `get_coin_signal_preview`** leave discovery with no alias. A call
+  gets the standard unknown-tool refusal.
+
+### Rejected input — something you send is no longer accepted
+
+- **`stage_strategy_draft` refuses the `SIGNAL_RULES` and `SETUP_GATES` axes** as unrecognized keys.
+  The ATR floor `minAtrPct` is staged in the `TRADE_LEVEL_POLICY` axis, beside the stop-loss multiples
+  and the risk-reward minimum; a `TRADE_LEVEL_POLICY` stage without it is refused.
+- **`decide_trade` cites `entry.conditionChecklist`**: 1–8 items `{ conditionKey, verdict,
+  interpretation }` over the decision's evaluated entry conditions, each key at most once, `CONFIRM`
+  only on a condition that read TRUE. `signalChecklist` and `signalModulesUsed` are refused.
+- **The signal-log and agent-profile filters refuse `dominantBias`.**
+
+### Reshaped output — something you read has moved or been removed
+
+- **Strategies, agents and drafts** lose `signalRules`, `signalRuleTally`, `minAggregateScore` and
+  `minRequiredCount`; the trading-config catalog loses the gate dial steps.
+- **Qualification and scans** (`get_agent_coin_qualification`, `scan_agent_coins`, `scan_coin_agents`)
+  lose the score and required-count gates, the score shortfall and the signal readings. Scan rows rank
+  qualifying first, then by ticker or agent name.
+- **Radar reads** lose every score field: the activity events, the close decision, the curve samples
+  (`{ at, atrPct, qualified }`) and the curve digest.
+- **Entry decisions** carry `conditionChecklist` in place of `signalChecklist` and `signalModulesUsed`.
+  The public signal-log detail serves it as `{ name, outcome }` only.
+- **Signal logs and signal performance** lose the aggregate score, bias, conflict and count fields; a
+  signal-log detail loses its scorecard and serves `candidateLevels`. The agent explorer loses its
+  average score.
+
+### Narrowed enums
+
+- **The qualification and screen reasons lose `AGGREGATE_BELOW_MIN` and `REQUIRED_COUNT_BELOW_MIN`
+  and gain `NO_ENTRY_CONDITION`**, which is the first reason a strategy fails. The attempt reasons lose
+  `NO_ALLOCATED_SIGNALS`, and the error codes lose `REPAIR_REQUIRED`.
+
+A client that stages a signal rule or a gate, cites a signal in `decide_trade`, or reads a score field
+breaks at v108, which is why this is a MAJOR.
+
+## Contract history — v107.1 (an arena entry is recorded before its fee moves)
+
+**Additive at v107.1: a paid entry can be recorded while its fee confirms.** v107.1 is the contract on top
+of v107. The server now records your entry first, then sends the fee, then settles the entry on the
+venue's answer, so a fee can never move for an entry that was not recorded. No input changes.
+
+### Widened output
+
+- **`submit_market_grid`, `random_submit_market_grid` and `submit_agent_grid` results gain
+  `entryStatus`**: `ENTERED`, or `PAYMENT_PENDING` when the entry is recorded and its fee is still
+  confirming at the venue. A payment-pending entry plays once its fee lands before lock; otherwise it is
+  released, and a fee that lands after that is refunded.
+- **`entryState` gains `PAYMENT_PENDING`** on `get_my_market_grid_entry`. `list_my_market_grid_entries`
+  shares the element schema but never returns one.
+
+### Refusal vocabulary
+
+- **`details.wagerErrorCode` gains `ACCOUNT_NOT_UNIFIED`** on the three submit tools: an entry fee is
+  paid only from a unified-collateral account (`unifiedAccount` or `portfolioMargin`).
+
+### Behaviour behind unchanged schemas
+
+- **`check_market_grid_submission` answers `hasSubmitted: true`** for a payment-pending entry.
+- **`update_market_grid` refuses a payment-pending entry** with `CONFLICT` until it is in play.
+
+## Contract history — v106 (the Opening Bell: a session starts at its scored candle's open)
+
+**Breaking at v106: Two-Look entry is retired. A deployment slot drops `entryStrategy`, and a
+deployment draft refuses one.** v106 is the contract on top of v105.5. Every automated entry now looks
+once, inside the Opening Bell window: from `startsAt` (the open of the one candle a session scores)
+until `lockAt` (entries close).
+
+### Reshaped output — something you read has moved or been removed
+
+- **`entryStrategy` leaves every deployment slot**: `get_deployment_policy`, `list_deployment_policies`,
+  `get_deployment_policy_draft`, `pause_deployment_policy`, `delete_deployment_policy`,
+  `preview_deployment_resolution` and `test_generate_deployment_grid`.
+
+### Rejected input — something you send is no longer accepted
+
+- **`stage_deployment_policy_draft` refuses `entryStrategy`** on a `RULES` rule and on the
+  `DEFAULT_SLOT`, as an unrecognized key. `preview_deployment_resolution`'s `SLOTS` subject and
+  `test_generate_deployment_grid` no longer publish the key, and they strip it if it is sent.
+
+### Widened output
+
+- **Every Market Grid session surface gains `startsAt`**, the Opening Bell. That covers
+  `get_market_grid_session`, `list_market_grid_sessions`, `get_market_grid_results`, and a deployment's
+  target session and open entries. A Coin Grid summary's `startsAt` equals its `lockAt`.
+- **`get_agent_prompt_context_preview`'s market context gains `startsAt` and
+  `millisecondsSinceOpeningBell`**, both nullable.
+
+### Behaviour behind unchanged schemas
+
+- **`lockAt` keeps its name and now means "entries close"**, the end of the Opening Bell window, a
+  fixed fraction of the session's duration after `startsAt`. Read `startsAt` for when a session starts
+  or what it scores. Submitting, editing and cancelling stay open until `lockAt`.
+- **`SESSION_START` rules match `startsAt`.**
+
+A client that reads `entryStrategy` from a slot, or stages one into a deployment draft, breaks at v106,
+which is why this is a MAJOR.
+
+## Contract history — v103 (a column's contract carries its read size, measurement and series home)
+
+**Breaking at v103: a transform entry drops `sideRequired` and `operandRequired`, and
+`get_strategy_column_contract` validates its ticker as a coin symbol.** v103 is the contract on top of
+v102.1.1, which changed only two deployment-draft input descriptions.
+
+### Reshaped output — something you read has moved or been removed
+
+- **`sideRequired` and `operandRequired` leave every transform entry** `get_metric_construction_hints`
+  serves. Each restated a field the same entry already carries: read
+  `authoring.parameters.side.required` and `authoring.parameters.inputs.required` instead, where an
+  absent parameter means the transform does not accept it.
+
+### Rejected input — something you send is no longer accepted
+
+- **`get_strategy_column_contract`'s `benchmarkTicker` is a coin symbol**: trimmed, 1–20 characters of
+  the coin-symbol charset. Any non-empty string was accepted before.
+
+### Widened input — something new you can send
+
+- **The fixed `64` maximums leave strategy authoring**: a column's `window` and `offset`, a custom
+  section's `columns` and the `conditions` arrays. The configured budgets `list_strategy_vocabulary`
+  serves under `budgets` judge them instead — `sectionColumns`, `strategyConditions`,
+  `conditionClauses` and `columnLookback`. `window` and `offset` keep their integer floors.
+
+### Widened output
+
+- **The column contract gains `lookback`, `measurement` and `seriesHome`.**
+  - `lookback: { used, cap }` — the bars the column reads, against the lookback budget a save holds it to.
+  - `measurement: { transform, chainedTransform }` — how each transform reads its series: `readShape`,
+    `windowUnit`, `priceBasis` and `nullPolicy`. `chainedTransform` is `null` for an unchained column.
+  - `seriesHome` — where the metric's series is kept: `candle`, `history`, or `null` when it has none,
+    which is why a series transform does not compose on it.
+- **`list_strategy_vocabulary` gains `conditionGrammar`**: the group depth, the operator and group
+  operator vocabularies and the verdicts a condition is written in.
+- **A category example gains `clause`**: `{ op: 'between', low, high }`, or `null` for an example with
+  no recipe clause. The structure family gains two recipes — `VWAP × distance` held `between -2 2`
+  ("price within ±2% of VWAP") and `STRUCT_ZONES × nearestZoneDist(support)` held `between 0 1.5`
+  ("approaching support").
+- **A `window` or `offset` declaration gains `minimum`**, the smallest value the transform accepts.
+
+### Behaviour behind unchanged schemas
+
+- **A column whose read size exceeds the lookback budget is refused with
+  `REPORT_COLUMN_LOOKBACK_EXCEEDED`** by `get_strategy_column_contract` exactly as by a save, before
+  the column is built. A window too large to build was a construction failure before.
+- **A value below a declared `minimum` is refused naming the transform that declares it**, including
+  a chained transform's window.
+- **A spread with the wrong number of operands is refused naming the operand its operand order
+  declares.**
+- **A `regime` timeframe reference resolves to the anchor's regime rung** when the request names an
+  anchor timeframe. It resolved to `null` before.
+
+A client that reads `sideRequired` or `operandRequired`, or sends a ticker outside the coin-symbol
+charset to `get_strategy_column_contract`, breaks at v103 — hence the MAJOR.
+
+## Contract history — v102.1 (your agents' trading record)
+
+**Additive at v102.1: three read tools.** v102.1 is the contract on top of v102. Nothing a client sends
+is refused and nothing it reads is reshaped.
+
+### Added tools
+
+All three are `mcp:read` and read your own agents only.
+
+- **`list_agent_open_orders`** — the live orders (`PENDING`, `ACKED`, `WORKING`) of the positions your
+  agents hold, newest first, each naming its agent.
+- **`list_agent_trades`** — your agents' closed trades, newest close first, paged with `nextCursor` and
+  narrowed by `coinTicker` and `agentId`, with a `summary` of the whole filtered scope: trade count, win
+  count, win rate and net P&L in USD. Another user's agent reads as an empty scope.
+- **`get_agents_portfolio_pnl`** — your agents' combined P&L over `24H`, `7D` or `30D`, as 48 dated
+  points ending on the period figure.
+
+## Contract history — v102 (your entry history's facets come with the first page)
+
+**Breaking at v102: `list_my_market_grid_entries` moves its counts, summary and agent options under one
+`facets` object, sent with the first page only, and every entry gains a payout state.** v102 is the
+contract on top of v101.1.
+
+### Reshaped output — something you read has moved or been added
+
+- **`outcomeCounts`, `summary` and `agentOptions` move under `facets`**, unchanged inside it:
+  `facets.outcomeCounts`, `facets.summary`, `facets.agentOptions`.
+- **`facets` comes with the first page only.** A page you read with a `cursor` carries `facets: null`.
+  Keep the first page's facets for the whole scroll: every page of one read shares the same filters, so
+  the first page's counts, summary and agent options describe all of them.
+- **Every entry gains `payoutState`**, in `list_my_market_grid_entries` and `get_my_market_grid_entry`:
+  `RECORDED` once settlement has recorded both of the entry's payouts, `UNDER_REVIEW` if it left one
+  unrecorded, and `null` while the entry is in play or cancelled.
+- **`facets.summary` gains `payoutsUnderReviewCount`**: how many settled entries the money figures leave
+  out because their payout is under review.
+
+### Behaviour behind unchanged schemas
+
+- **An entry under review has `netPnl: null`.** It is listed under `PLAYED` only, never under `PAID` or
+  `NOT_PAID`, and the summary leaves both its fee and its payout out of every money figure, so the totals
+  stay consistent. Today no entry is under review: the entries settled before settlement recorded both
+  payouts now record `0` for the payout they never received, so their net reads the same as before.
+- The five filters (`window`, `outcome`, `source`, `agentId`, `cursor`) accept exactly what they
+  accepted before. Only the `agentId` description changes: it now points at `facets.agentOptions`.
+
+A client that reads `outcomeCounts`, `summary` or `agentOptions` at the top level, expects them on every
+page, or rejects unknown entry fields, breaks at v102 — hence the MAJOR.
+
+## Contract history — v101.1 (swing highs, swing lows and the structure label)
+
+**Additive at v101.1: the catalog gains three swing-structure metrics.** v101.1 is the contract on top of
+v101; nothing you send today is refused and nothing you read is reshaped.
+
+### Widened input — something new you can send
+
+- **`SWING_FRACTAL_HIGH` and `SWING_FRACTAL_LOW`** — the most recent swing high and swing low: a bar
+  whose high is at or above the two highs before it and strictly above the two after it (Pine's
+  `ta.pivothigh(2, 2)` tie rule), and the mirror on the lows. A swing is published from the bar that
+  completes its right side — never under its own bar, never from a forming bar — and held until the
+  next swing on its side. They are candle price levels: every transform a candle level takes,
+  `levelInteraction` included, and they rank across the board as `dist_fractalHi` / `dist_fractalLo`.
+- **`SWING_FRACTAL_LABEL`** — the most recent swing against the previous one on its side: `HH` / `LH` for
+  a high (an equal high is `LH`), `HL` / `LL` for a low (an equal low is `HL`), `none` when no comparable
+  pair is in reach. A held state, value-only; on too short a history it reads nothing.
+- **Break of structure** is `dist_fractalHi crossesAbove 0` / `dist_fractalLo crossesBelow 0`; a step of
+  the level onto a newly confirmed swing never fires it.
+
+### Widened output
+
+- The catalog and vocabulary surfaces list the three keys, and the authoring digest's `metricKeys` gains
+  them.
+
+### Still refused
+
+- The headers are `fractalHi` / `fractalLo` / `fractalLabel`. The `swingHi` / `swingLo` stems retired at
+  v53 (the Donchian channel's old names) stay refused: `dist_swingHi` is still `CONDITION_COLUMN_UNKNOWN`.
+
+A client that treats the metric vocabulary as a closed set re-reads it; no request is refused — hence
+the MINOR.
+
+## Contract history — v101 (an agent on a radar cannot be archived)
+
+**Breaking at v101: `archive_intelligence_agent` refuses an agent held in any radar deployment, and its
+refusal names a fourth blocker.** v101 is the contract on top of v100.
+
+### Narrowed acceptance — the same request, refused where it was accepted
+
+- **`archive_intelligence_agent` refuses an agent that holds a slot in any radar deployment, paused ones
+  included.** The input schema is unchanged: a call that archived such an agent before now gets the
+  existing `CONFLICT`. A paused radar still holds its slots, so pausing does not clear it. Find the coins
+  with `list_radar_deployments`, then commit a radar draft without the agent or call
+  `delete_radar_deployment`, and archive again.
+
+### Widened enum
+
+- **`details.archiveBlockers[].reason` gains `RADAR_DEPLOYED`**, after `DEPLOYED`, `OPEN_TRADES` and
+  `ACTIVE_SESSION`. Its `detail` reads `in N radar deployment(s)`, counting every radar deployment that
+  holds the agent.
+
+### Behaviour behind unchanged schemas
+
+- An archived agent holds no deployment slot in either venue, so `activate_intelligence_agent` arms
+  nothing: the agent trades again only once you deploy it.
+- A `commit_radar_deployment_draft` or `commit_deployment_policy_draft` that races an archive of one of its
+  agents is refused with the existing `CONFLICT`. Read the draft again; its diagnostics name the archived
+  agent.
+
+A client that reads `archiveBlockers[].reason` as a closed set, or expects an archive of a radar-deployed
+agent to succeed, breaks at v101 — hence the MAJOR.
+
+## Contract history — v100 (what one bar did: level interaction, candle patterns, gaps, runs)
+
+**Breaking at v100: the `bandTouch` transform is retired and `levelInteraction` takes its place; a column
+gains a `buffer` knob; the catalog gains twelve bar-geometry metrics.** v100 is the contract on top of
+v99.
+
+### Rejected input — something you send is no longer accepted
+
+- **A column naming `bandTouch` is refused** by every tool that takes a column — `stage_strategy_draft`,
+  `preview_strategy_report`, `derive_strategy_rule_view`, `get_strategy_column_contract` and
+  `get_metric_construction_hints` — as any unknown transform id is. Where you want "where the close sits
+  in the bands", read `BB_TOUCH × value`; where you want "what the bar's range did at a band", use
+  `levelInteraction` below.
+
+### Widened input — something new you can send
+
+- **`levelInteraction`** classifies the newest bar of a column against a price level as
+  `touch_from_below`, `touch_from_above`, `reject_from_below`, `reject_from_above` or `none`. The side is
+  where the prior close stood against the prior bar's level. A reject — the range pierced the level and
+  the close came back — reports reject, never touch, so "touched or rejected" is an `in` clause over both
+  labels of a side. A close through the level reads `none`: the break is `distance crossesAbove 0` (or
+  `crossesBelow 0`) over the same level.
+  - It is offered on a level with a value at both bars it reads: a candle-homed level (a band, `VWAP`, a
+    moving average, `ST_LINE`, `PSAR`, the Ichimoku lines) or a prior-session level or pivot (`PDH`,
+    `PDL`, `PDO`, the floor pivots, `PRIOR_TPO_*`). A prior-session level is a single read and takes no
+    hold. It is not offered on a price fact (`CLOSE`, `MARK`, `HLC3`), a developing-session level
+    (`TPO_*`), the naked points of control, or the Donchian rails.
+  - The header is `{code}_lvl` — `bbUpper_lvl`.
+- **`buffer`**, a column knob declared by `levelInteraction` only: whole basis points of the level,
+  `0`–`500`, default `0`. Only a touch reads it. A non-zero buffer names the header (`bbUpper_lvl_b25`),
+  so two buffers are two columns. `buffer` on any other transform is refused as an undeclared parameter.
+- **Twelve metrics**, all in the `price` family:
+  - candle patterns — `CANDLE_DOJI` (boolean), `CANDLE_PIN` (`lower_wick` / `upper_wick` / `none`),
+    `CANDLE_ENGULFING` (`bullish` / `bearish` / `none`), `BAR_CONTAINMENT` (`inside` / `outside` /
+    `none`), each judged against the ten bars before it at TA-Lib's default settings;
+  - gaps — `GAP` and `GAP_RANGE_CLEAR` (`up` / `down` / `none`) and `GAP_PCT`, the signed % from the
+    prior close to the open;
+  - run lengths — `CLOSE_RUN` and `CANDLE_RUN`, consecutive bars one way, capped at ±20;
+  - price sources — `HL2`, `HLC3`, `OHLC4`, price facts that take every transform a close takes
+    (`HLC3 × aggregate(20)` is the 20-bar SMA of typical price).
+
+  The patterns, gaps and runs compose `value` only, and none of the twelve is ranked.
+
+### Reshaped output
+
+- **`effectiveParameters` gains `buffer`** — the declared default `0` or your value on a
+  `levelInteraction` column, `null` where no transform in the chain declares it.
+- A transform's authoring parameters may declare `buffer`, and the transform and section column-role
+  vocabularies read `levelInteraction` where they read `bandTouch`.
+- The authoring contract digest's `metricKeys` gains the twelve keys.
+
+A client that sends `bandTouch`, or reads `effectiveParameters` with a closed key set, breaks at v100 —
+hence the MAJOR.
+
+## Contract history — v99 (your arena entries are one owner-only history)
+
+**Breaking at v99: four tools are retired, two are added, and `get_agent_journal` loses a field.** v99 is
+the contract on top of v98.
+
+Every Market Grid entry you made — by your deployed agent, an agent you asked for, an MCP client,
+Commander, a grid you built or dice you rolled — is now read from one history, and only by you.
+
+### Removed tools
+
+- **`get_agent_game_history`, `get_user_agent_game_history`, `get_public_agent_game_history` and
+  `get_mcp_reasoning_journal`** are gone, with no alias; a call gets an unknown-tool error. The
+  replacements:
+  - `get_agent_game_history { agentId }` → `list_my_market_grid_entries { agentId }`;
+  - `get_user_agent_game_history` → `list_my_market_grid_entries` with no `agentId`;
+  - `get_public_agent_game_history` → none: arena entry history is owner-only, so no public read
+    replaces it;
+  - `get_mcp_reasoning_journal { sessionId }` → `get_my_market_grid_entry { sessionId }`, whose
+    `reasoning` is the reasoning recorded with the entry's picks.
+
+### Added tools
+
+- **`list_my_market_grid_entries { window?, outcome?, source?, agentId?, cursor?, limit? }`** (`mcp:read`)
+  pages every entry you made, newest first by its first submission. `outcome` is `PLAYED` (the default:
+  every entry except a cancelled one), `IN_PLAY`, `PAID` (a payout above zero), `NOT_PAID` or
+  `CANCELLED`; `source` and `agentId` filter by the entry's original author. The same read returns one
+  count per outcome, a summary (paid rate, totals, net, averages) and the agents you can filter by. Page
+  with `nextCursor`.
+- **`get_my_market_grid_entry { sessionId }`** (`mcp:read`) returns your entry in one session — the same
+  record a list row carries. A session you never entered is `NOT_FOUND`.
+- Each entry carries its `entryState` (`WON`, `PLACED`, `NO_WIN`, `VOID_NO_SUBMISSION`, `IN_PLAY` or
+  `CANCELLED`), its `entryFee` and signed `netPnl` (null while in play or cancelled), a cancelled entry's
+  `refundState`, its `originalSource` and original `agent`, and `edited` — true once another author has
+  rewritten the picks. `reasoning` is null on an edited entry, because the record no longer describes the
+  picks. Neither tool accepts a user identity: both read the authenticated account's own entries.
+
+### Narrowed output
+
+- **`get_agent_journal` no longer returns `recentGames`.** An agent's arena entries are read with
+  `list_my_market_grid_entries { agentId }`.
+
+A client that calls a retired tool, or reads `recentGames`, breaks at v99 — hence the MAJOR.
+
+## Contract history — v98 (a clause can read the bar before)
+
+**Breaking at v98: a condition clause accepts six operators that compare a column with its own previous
+completed bar, and a clause's evidence gains a second shape.** v98 is the contract on top of v97.
+
+### Widened input — something new you can send
+
+- A condition clause on `stage_strategy_draft` and `preview_strategy_report` accepts:
+  - `crossesAbove` / `crossesBelow` with a number `value` — TRUE when the value is above (below) it on the
+    decided bar and was at or below (at or above) it on the bar before. A bar landing exactly on the level
+    has not crossed.
+  - `increased` / `decreased` with **no** literal — strictly above (below) the prior bar's reading. A
+    `value` beside them is refused.
+  - `enters` / `exits` with one `label` — the label read now and not on the bar before, or the reverse.
+- Numeric headers take the crossings and changes; classification, direction and boolean headers take the
+  transitions; event and rank headers take none of them. A strategy's served `conditionOperators`
+  (`preview_strategy_report` at `detail: "detailed"`, and the scalar vocabulary) lists exactly what each
+  header admits on that strategy; `get_strategy_column_contract`, which reads no strategy's stored history,
+  lists the operators the header's kind takes.
+- Each of the six reads two completed bars, never the forming one, on every basis, so its reading is never
+  provisional. A failed read on either bar is `UNRESOLVED`; a bar with no value reads `FALSE`.
+
+### Narrowed acceptance — the same request, refused where it cannot be read
+
+- A header whose stored history keeps only one bar (`conditionHold.maxWindow` 1) admits none of the six:
+  the clause is refused with `CONDITION_OPERATOR_UNSUPPORTED`, and every operator refusal's
+  `allowedDomain` now lists the operators that header admits.
+- `crossesAbove`, `crossesBelow`, `enters` and `exits` are edges: a hold with `atLeast` above 1 is refused
+  (`CONDITION_HOLD_ILLEGAL`) — hold them "within n closes". A prior-bar clause's largest window is one bar
+  less than its header's, and the frame-read budget counts the bar before.
+
+### Reshaped output — a clause's evidence has two shapes
+
+- A prior-bar clause's evidence carries **`priorOperand`** — the same column's reading on the bar before —
+  and a **`decidedBar` that is never null**. It appears on `preview_strategy_report`,
+  `get_radar_close_decisions`, `list_gate_blocks`, `preview_radar_resolution`, `get_signal_log`,
+  `get_agent_coin_qualification` (a condition level's clauses) and the trade register an agent reads.
+- A current-bar clause's evidence is unchanged and carries no `priorOperand`; every record written before
+  v98 reads as it was written.
+- Rendered evidence lines read prior before current: `RSI14_now crosses above 50 (49.6 → 50.4)`.
+
+### Widened output
+
+- A condition series' `BOUND` threshold `op` widens to `crossesAbove` / `crossesBelow`, drawn at the level
+  crossed. A change or a transition draws no threshold.
+- The authoring contract digest gains `domains.conditionOperator`, the thirteen operator names.
+
+A clause reader that assumed one evidence shape, or an operator vocabulary of seven, breaks on the same
+call at v98 — hence the MAJOR.
+
+## Contract history — v97 (a signal records the evidence it decided on)
+
+**Breaking at v97: an evaluated signal's evidence keys move, `BB_TOUCH` touches by %B, and a crossing is
+read on the bar that leaves zero.** v97 is the contract on top of v96.
+
+### Changed meaning — the same record, different keys
+
+- An evaluated signal's `indicatorValues` — on `get_signal_log`, `get_public_agent_signal_log_detail` and
+  `get_coin_signal_preview` — records the last price a live-priced signal evaluated under **`last_price`**.
+  Six signals recorded it under `price`: `MA_SMA200_ABOVE` / `_BELOW`, `SR_AT_SUPPORT` / `_RESISTANCE` and
+  `BOLLINGER_LOWER_TOUCH` / `_UPPER_TOUCH`; the three structure-approach signals now record it too.
+- **`price` means the last closed close** on every signal that records it.
+- The Bollinger touches add `bb_upper` and `bb_lower`, and their `bb_percent_b` is the live %B they
+  compared — never the closed-bar %B.
+- The EMA 5/13 crosses add `ema_cross` (`1` / `−1`), and the sector comparison signals add `ema5`, `ema13`
+  and `ema20`.
+- `MFI_SUSTAINED_*` and `CVD_BULLISH` / `CVD_BEARISH` record their prior-bar value when there is one, and
+  omit it when there is not.
+
+A signal records exactly the keys its declared vocabulary names. Records written before v97 keep the keys
+they were written with, so a reader of history meets both.
+
+### Changed values — the same fields, one rule each
+
+- **Crossings.** One zero-cross rule decides every crossing: a value that reaches zero has not crossed; one
+  that leaves zero has. Every `crossDetect` column (`MACD_cross`, `PPO_cross`, `ROC_cross` and authored
+  ones), the `EMA_CROSS` label, the MACD / PPO / stochastic cross signals and `FUNDING_RATE_FLIPPING` read
+  no crossing on a bar that lands exactly on zero. They read the crossing on the bar that leaves it.
+- **`BB_TOUCH` and `bandTouch`** classify a touch when %B is strictly below `0.05` or above `0.95` — the
+  touch signals' default thresholds. Before, a price within 2% of the band width of an edge, inclusive,
+  touched. A degenerate band reads `none`, and a `BBtouch` condition now agrees with the scorecard's touch
+  at defaults.
+- **RSI zone.** The projected RSI state is overbought strictly above 70 and oversold strictly below 30, as
+  the `RSI14_zone` columns already read it.
+- **Descriptions.** A served rule description states the thresholds that rule evaluates, and the ROC
+  descriptions read "positive and rising".
+
+### Widened output
+
+- `get_strategy_signal_definition`'s `indicators[].meta` gains `optional: true` on a key the signal records
+  only when its read is present — `prev_cvd_value` on `CVD_BULLISH` / `CVD_BEARISH`, `prev_mfi14_value` on
+  `MFI_SUSTAINED_*`. Every other key is always recorded when the signal has the data to evaluate.
+
+A key read at v96 is absent at v97 on the same signal, and a touch or a crossing read at v96 can read
+differently on the same bar — hence the MAJOR.
+
+## Contract history — v96 (a metric's meaning is declared once)
+
+**Breaking at v96: `efficiency` admits only a level or a price-fact series, and `nearestZoneDist` changes
+sign.** v96 is the contract on top of v95.
+
+### Rejected input — something you send is no longer accepted
+
+- `efficiency` over an increment or an oscillator metric — `CLOSE_CHANGE`, `VOLUME`, `RSI14`, `FUNDING_RATE`
+  and the like — is refused at construction, and so is `efficiency` as the outer of `distance` or `spread`
+  (`VALIDATION_ERROR`, authoring code `REPORT_COLUMN_CONSTRUCTION_FAILED` or `REPORT_COLUMN_CHAIN_UNSUPPORTED`),
+  by every tool that builds a report column. `distance` and `spread` chain `trajectory`, `aggregate` and
+  `rank`; the column contract and the vocabulary tools serve exactly those sets.
+- `BB_PCT_B` no longer composes `maxShare`: `%B` leaves `[0, 1]` when price closes outside a band.
+- A `rank` column with no `ordering` is gated as the default `hi` it ranks by, so it is refused wherever a
+  written `hi` is (`REPORT_COLUMN_PAIR_UNSUPPORTED`). Write the ordering you mean.
+- `transformId` is the closed enum of the seventeen transforms and `chainedTransformId` the enum of the five
+  chain outers, where each was any 1–40 character string. An id outside them is refused by schema.
+
+### Changed values — the same fields, a declared meaning
+
+- **`nearestZoneDist` is price's distance from the zone midpoint**, `((price − mid) / mid) × 100`: positive
+  when price is above the zone, negative below it. It was the midpoint's distance from price, with the
+  opposite sign. A range symmetric about zero reads the same window; a one-sided bound needs its sign
+  flipped.
+- `BB_PCT_B` offers all four rank orderings.
+- A `classifyZone` column declares and resolves its own metric's vocabulary in canonical labels — ADX's
+  strength bands, MFI's five bands — not a shared `overbought / oversold / neutral` set.
+- `highDev`, `lowDev` and `oiRegime` read live sources and declare the live clock, so a condition over them
+  is provisional on the live frame.
+- A chained column's formula binds its outer half to the inner column's header (`dist_VWAP`), and every
+  relative-change formula reads `((value − reference) / reference) × 100`.
+
+### Reshaped output
+
+- An authoring parameter's `defaultValue` on `get_metric_construction_hints` is typed per knob — `window`
+  and `offset` integers, `ordering` a rank ordering — and absent on `side`, `inputs` and `bars`.
+- A rendered section column's `role` is one enum of the same members, where it was a union of an enum and
+  five literals.
+
+An input v95 accepted is refused at v96, and a value read at v95 reads with the opposite sign — hence the
+MAJOR.
+
+## Contract history — v95 (a refusal names the verdict it applied)
+
+**Breaking at v95: a gate block's `conditionVerdict` is the verdict applied, not the one read.** v95 is the
+contract on top of v94.
+
+### Changed meaning — the same key, a different question
+
+- On `list_gate_blocks`, a conditions-stage `reasonDetail.conditionVerdict` is the verdict **applied** — the
+  one bound for the pair, which can be a held verdict this evaluation did not read — where it was the verdict
+  the conditions read. It is served only on a `CONDITION_VERDICT_OPPOSES_DIRECTION` or
+  `CONDITION_EXIT_RULE_CLOSES_DIRECTION` block recorded since v95; a `REQUIRED_CONDITION_FALSE` block, which
+  no verdict decided, and a block recorded before v95 no longer carry it. Read `observedVerdict` for what the
+  conditions read.
+
+### Widened output
+
+- The reason detail gains `observedVerdict`, served on every conditions-stage block, and `heldVerdict`,
+  `verdictDwellResolutions` and `verdictDwellRequired` — the dwell state the binding was resolved from,
+  served beside `conditionVerdict` and absent where it is. `get_signal_log` and
+  `get_public_agent_signal_log_detail` embed the same schema and never fill these keys: a block writes no
+  signal log.
+- `get_signal_log`'s `conditionEvaluation.verdict` and `get_agent_journal`'s `marketSnapshot.conditionVerdict`
+  keep meaning the verdict the evaluation observed.
+
+A key read at v94 answers a different question at v95 — hence the MAJOR.
+
+## Contract history — v94 (every value you read names the bar it came from)
+
+**Breaking at v94: a timeless metric refuses an `offset`, and a value with no reading on its bar reads absent
+instead of an older bar's.** v94 is the contract on top of v93. A column reads the bar it names, or nothing.
+
+### Rejected input — something you send is no longer accepted
+
+- A `value` column over a timeless metric — one `get_strategy_column_contract` serves with `timeframeMode`
+  `"timeless"`: funding, the regime, the previous-session levels and the other bundle reads — with `offset` above
+  `0` is refused at construction (`VALIDATION_ERROR`, authoring code `REPORT_COLUMN_CONSTRUCTION_FAILED`) by every
+  tool that builds a report column, the strategy and agent draft tools and `preview_strategy_report` among them. It
+  used to be accepted and ignored. Drop the offset: a timeless metric has no earlier bar.
+
+### Changed values — the same fields, read at a named bar
+
+- A **trajectory**, **zone**, **state** or **cross** value whose current bar holds no reading is now absent,
+  instead of the newest older bar's value. A trajectory's slots keep a missing bar as an empty slot, in place.
+- A window — a trajectory's, `efficiency`'s, `maxShare`'s — counts the newest bars, present or not.
+- A candle **label** column at `offset N` reads bar t−N's label; it used to read the latest.
+- On a decided bar, a condition over a **published change** (`chg5m` … `chg24h`) or **`oiRegime`** reads
+  unresolved, and a condition over a **higher-timeframe column** reads unresolved during that bar's close lag.
+
+### Behaviour behind unchanged schemas
+
+- An Arena deployment that routes on the regime reads **`WARMING`** while its regime bar is landing — the regime
+  for the bar the clock just closed is not published yet — and plays nothing, its default slot included. Generating,
+  submitting or updating a grid for an agent on such a deployment is refused with `SERVICE_UNAVAILABLE` in those
+  seconds; retry.
+
+Something read at v93 reads absent at v94, and an input v93 accepted is refused — hence the MAJOR.
+
+## Contract history — v93 (a trajectory reads at least two observations)
+
+**Breaking at v93: a trajectory column below two observations is refused.** v93 is the contract on top of v92.
+Nothing in a schema moves.
+
+### Rejected input — something you send is no longer accepted
+
+- A custom column `{ transformId: "trajectory", window: 1 }`, plain or as the chained outer of
+  `distance × trajectory`, for any metric: `stage_strategy_draft` reports `REPORT_COLUMN_CONSTRUCTION_FAILED`
+  in its diagnostics, naming the minimum, `commit_strategy_draft` refuses it, and `preview_strategy_report`
+  refuses a report carrying one with the same error. A window of one has no build-up, and its trend compared a
+  reading with itself, so it read `flat` for every coin on every bar. The trajectory's served `window`
+  description states the minimum.
+
+### Changed values
+
+- The CVD section renders its buy-pressure, buy-trade and sell-trade columns as window-4 trajectories —
+  `_t3`, `_t2`, `_t1`, `_now`, `_trend` each — and every `_now` keeps its value. Their `_trend` cells read a
+  direction where they read `flat`, and the CVD-crowd convergence classifies from that buy-pressure column, so
+  `captainConf` can read `true` and `conf` can read `high`.
+
+Something accepted at v92 is refused at v93 — hence the MAJOR.
+
+## Contract history — v92 (every section you read is the JSON the agent reads)
+
+**Breaking at v92: the section fields are reshaped, the report preview's default narrows, and its size is measured
+in characters.** v92 is the contract on top of v91. Every tool that published a section as markdown text publishes
+it as the JSON object the agent reads, and `preview_strategy_report` takes a detail level.
+
+### Reshaped output — a section is its JSON
+
+A **section read** is `{ shape: "table", section }` — `{ id, title, notes, provenance?, anchorTf, groups, columns,
+rows, addendum? }`, rows positional and every cell its raw value, each column stating its `unit`, `precision`, bar
+set (`bars`) and, on a rank column, the ranked set's `universe`, with a key absent where the column has nothing to
+say — or `{ shape: "facts", section }`, `{ id, title, facts, glossary }`. It replaces:
+
+- **`preview_strategy_report.renderedSections[]`**: `{ sectionKey, section: { title, text }, structure,
+  authoredNote }` → `{ sectionKey }` and a section read, or `{ sectionKey, shape: "skipped" }` for a row that
+  rendered nothing. A custom section's authored note is its section's `notes`.
+- **`get_market_context.sections[]`**: `{ kind, title, content, structure }` → `{ kind }` and a section read.
+- **`get_context_source_full_preview.content`** → **`read`**, a section read or `null`.
+- **`get_context_sources_preview`**: each source's `value` → **`section`**, a section read or `null`, a coin-row
+  table sampled to its first five coins.
+- **`get_signal_log.reportSections[]`**: a section read, `skipped`, or `{ sectionKey, shape: "text", title, text }`
+  — a row stored before custom sections carried a structure, kept as its agent read it.
+- **`preview_strategy_report.conditionsTableText`** and **`.tradeConditionsBlockText`** → **`gridConditions`** and
+  **`tradeConditions`**, each `{ glossary, register }`: the glossary prose and the register object the text carried
+  as one JSON line. Each is `null` where its text was.
+
+### Widened output — the register names what decided the verdict
+
+- **`decidedBy`** joins the conditions register: on each `GRID` coin and on the `TRADE` register, the key of the
+  condition the `verdict` came from, `null` when no single condition made the call. It reaches you in
+  `gridConditions.register`, `tradeConditions.register`, and the register `get_agent_prompt_context_preview` shows,
+  and the conditions glossary gains the sentence defining it.
+
+### Narrowed default, new input — `preview_strategy_report` `detail`
+
+- **`detail`** is `"concise"` (the default) or `"detailed"`. A concise preview is exactly what the agent reads.
+- **`conditionColumns`** and **`conditionOutcomes`** leave the top level. With each row's `headerBindings`
+  (`{ sectionKey, columnIndexByHeader }`) they make up **`authoring`**, served only at `"detailed"` and `null`
+  otherwise. If you read either field, ask for `"detailed"` and read it under `authoring`.
+- **`marketReadMarkers[]`** lose `resolvedName` and `resolvedValue`.
+
+### Result size in characters
+
+- **`tokenCountModel`** and **`budgetUsage.estimatedTokens`** leave the preview. **`budgetUsage.resultChars`** is
+  the exact `JSON.stringify` length of the response that carries it, its own digits included, against the cap.
+- **`list_strategy_vocabulary`** drops `budgets.estimatedTokens`, and `previewExecutionLimits.maxResultBytes` is
+  renamed **`maxResultChars`**.
+- A preview over the cap is refused with **`PREVIEW_LIMIT_EXCEEDED`** and `limit: "result_chars"`;
+  `estimated_tokens` and `mcp_result_bytes` are retired. Every preview refusal now carries its `previewErrorCode`
+  and its bound (`deadlineMs`, or `limit`, `actual` and `maximum`) in the error's details.
+- **`preview_strategy_report`**, **`get_market_context`** and **`get_context_sources_preview`** declare the cap as
+  `_meta["anthropic/maxResultSizeChars"]`, so Claude Code keeps a large result inline.
+
+Something read at v91 is reshaped or gone at v92, and a default narrows — hence the MAJOR.
+
 ## Contract history — v91 (every data block an agent reads is one JSON object)
 
 **Breaking at v91: one output field is removed, and the published text that is the agent's prompt carries JSON.**
@@ -2856,6 +3501,11 @@ you reach over MCP:
 > `server/scripts/export-mcp-skills.mjs` in `playbattlegrid/battlegrid-app` and arrives by pull
 > request; `skills/EXPORT.json` records a hash per file and `src/__tests__/skill-provenance.test.ts`
 > fails CI on a hand edit. Change the skill upstream and let the export lane bring it here.
+
+A client connected to BattleGrid's remote server directly receives its `initialize` instructions:
+the rules that span tools and one routing card per workflow, each naming the `battlegrid-*` skill
+above that holds the full procedure. This proxy does not relay those instructions; the skills
+installed beside it carry the same workflows.
 
 ## License
 

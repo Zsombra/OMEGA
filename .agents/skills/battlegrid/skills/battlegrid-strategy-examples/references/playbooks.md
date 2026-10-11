@@ -87,13 +87,13 @@ would be ambiguous. Conditions: `HTF_UP` building block (`MAalign_htf is "bullis
 
 Platform `includePerpSpotFlow` (`perpSpotFlow` vocab: confirmed_bull / confirmed_bear /
 perp_led_fragile / spot_led_accumulation / neutral), `includeStructureZones`
-(`zones_htf_support_dist` signed %, support below price is negative; `_age_h`), custom `Tape`
+(`zones_htf_support_dist` signed % of price from the zone midpoint, positive above a support zone; `_age_h`), custom `Tape`
 (`BUY_PRESSURE value`→`buyPres` 0–1, `RVOL value`, `CLOSE_CHANGE value`). Conditions:
 `SPOT_ACCUM` (`perpSpotFlow is "spot_led_accumulation"`); `NEAR_SUPPORT`
-(`zones_htf_support_dist between -2 0` + `zones_htf_support_age_h gte 12`); `DIP_BID` verdict
+(`zones_htf_support_dist between 0 2` + `zones_htf_support_age_h gte 12`); `DIP_BID` verdict
 UP — refs plus an `N_OF(2)` quorum over `buyPres gte 0.55` / `RVOL gte 1.2` / `closeChg gt 0`
 (quorum beats a brittle ALL); `FRAGILE_POP` verdict DOWN (`perp_led_fragile` +
-`zones_htf_resist_dist between 0 2` + `RVOL gte 1.3`). Rules:
+`zones_htf_resist_dist between -2 0` + `RVOL gte 1.3`). Rules:
 `flow_perp_spot_bull_divergence`/`_bear_divergence` 3 required · `cvd_bull_divergence`/
 `_bear_divergence` 2 · `sr_at_support`/`_at_resistance` 2 · `structure_ob_approach` 1 ·
 `volume_surge` 1. Gates 0.55 / 1 / 0.4. Levels 0.5–1.2 ATR, RR 1.5. PM: BE 0.7R; trail 0.9R
@@ -101,10 +101,10 @@ giveback 30 buffer 0.15; timeDecay ON aggressive (45/15, 15→60, stale 30).
 
 ## Using a playbook
 
-Discover → confirm headers (`get_strategy_column_contract`, or one `preview_strategy_report`
-whose `conditionColumns` lists every addressable header with operators and vocabulary) →
-calibrate literals against the previewed live values → stage the draft and fix what its
-diagnostics name → read it back and review the drafted rule rows, then the draft's own report
-preview — condition outcomes, verdict tally, and `marketReadMarkers` (fix `unknown` / `ambiguous`
-markers) → commit per the strategy-authoring flow. Coin selection is call context, not strategy
+Discover → confirm headers (`get_strategy_column_contract`, or one `preview_strategy_report` at
+`detail: "detailed"`, whose `authoring.conditionColumns` lists every addressable header with
+operators and vocabulary) → calibrate literals against the previewed live values → stage the draft
+and fix what its diagnostics name → read it back and review the drafted rule rows, then the draft's
+own report preview — the conditions register (`gridConditions`), verdict tally, and
+`marketReadMarkers` (fix `unknown` / `ambiguous` markers) → commit per the strategy-authoring flow. Coin selection is call context, not strategy
 state: explicit tickers for focused work, `ranked` (with an optional category) for scanning books.

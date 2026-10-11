@@ -31,3 +31,21 @@ jobs:
 
       - name: Build (tsc)
         run: npm run build
+
+  # TradingView's terms forbid any part of the Advanced Charts library in a public repository, and
+  # this repository is public. The platform syncs the library from a private pin at deploy, so no
+  # copy ever belongs here: the job fails on any tracked path with a `charting_library*` component
+  # or a `datafeed-api.d.ts` basename — the same rule as battlegrid-app's
+  # `scripts/check_tracked_charting_library.py`.
+  no-charting-library:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse tracked TradingView library files
+        run: |
+          if git ls-files | grep -E '(^|/)(charting_library[^/]*|datafeed-api\.d\.ts)(/|$)'; then
+            echo "::error::TradingView charting library files are tracked; the library must never be committed to this public repository."
+            exit 1
+          fi
+          echo "No charting library files are tracked."
