@@ -51,7 +51,7 @@ BATTLEGRID_API_KEYS=bg_live_aaa,bg_live_bbb npx @battlegrid/mcp-server
 
 ## Capabilities — discovered live
 
-Tools, prompts, and resources are **discovered live** from the connected server via `tools/list`, `prompts/list`, and `resources/list`. This package does not hardcode the catalog, formulas, signal IDs, or defaults. After a server deployment, restart/reconnect the proxy and re-run discovery — a cached snapshot is not authoritative.
+Tools, prompts, and resources are **discovered live** from the connected server via `tools/list`, `prompts/list`, and `resources/list`. This package does not hardcode the catalog, formulas, or defaults. After a server deployment, restart/reconnect the proxy and re-run discovery — a cached snapshot is not authoritative.
 
 Capability areas exposed by the server include: Market Grid game play, market context, account state, leaderboards, intelligence agents + automation, strategy discovery/authoring, and trading signals/decisions.
 
@@ -65,7 +65,7 @@ Strategies and intelligence agents change only through their drafts, with one to
 
 **Stage reports; commit enforces.** A stage writes the proposed axes into the player's unsaved draft, commits nothing, and returns the composed draft's `diagnostics`; omit the id to open a new create draft, whose minted id the response carries. The read returns the draft, its `draftVersion` (0 when none is held), the live `committedRevision` (null for an entity not created yet), a per-axis `diff` against live, `diagnostics` and `impact`. Show the player the diff and impact, and on their explicit word commit exactly the `draftVersion` and `committedRevision` that read returned — `expectedRevision: null` creates the entity at revision 1. `discard_<kind>_draft({ request: { <id>, draftVersion } })` takes the same fence.
 
-**Refusals name the next act.** `DRAFT_VERSION_MOVED` (the draft moved after the read, or no draft is held — `details.draftVersion` is then null) and `DRAFT_AXIS_CONTESTED` (the player's own form changed `details.contestedAxes` after the version staged against) carry `details.nextAct: "get_draft"` from every tool. From `stage_<kind>_draft` and `commit_<kind>_draft` only, a revision `CONFLICT` also carries `"get_draft"` and a validation refusal `"stage"`; every other refusal carries no hint. After reading the draft again, show the player what it now holds and commit only on their word. A commit is idempotent on `{ id, draftVersion }`, so a retried commit replays its outcome.
+**Refusals name the next act.** `DRAFT_VERSION_MOVED` (the draft moved after the read, or no draft is held — `details.draftVersion` is then null) and `DRAFT_AXIS_CONTESTED` (the player's own form changed `details.contestedAxes` after the version staged against) carry `details.nextAct: "get_draft"` from every tool. From `stage_<kind>_draft` and `commit_<kind>_draft` only, a revision `CONFLICT` also carries `"get_draft"` and a validation refusal `"stage"`; a `preview_strategy_report` refusal over its result cap or its deadline carries `"narrow"` — preview again asking for less, in the order the tool's description gives; every other refusal carries no hint. After reading the draft again, show the player what it now holds and commit only on their word. A commit is idempotent on `{ id, draftVersion }`, so a retried commit replays its outcome.
 
 `fork_strategy` copies one revision into a new create draft and creates nothing until that draft commits. An agent binds to a strategy through its draft's `STRATEGY_BINDING` axis, on a create or as a rebind. The plan tools (`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`), `update_strategy_signal_rule`, `create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent` and `create_strategy` are **retired** and absent from discovery.
 
@@ -86,7 +86,7 @@ Nine skills ship from this repo (and inside the npm tarball, under `SKILL.md` + 
 | `battlegrid-radar-deployment` | Put agents on standing duty: per-coin Radar policies that fire on confirmed regime flips, and per-preset Arena deployment policies, previewed before they are written and un-deployed with the blast radius stated |
 | `battlegrid-strategy-authoring` | Build a strategy from a plain-English idea: gather evidence, lock the spec, stage it into the strategy's draft, review the diff, diagnostics and impact, commit only on confirmation. Also fork, tune, restore, archive, preview |
 | `battlegrid-strategy-doctor` | Diagnose an agent that is not doing what was expected — why it has not traded, why it stopped, whether it is healthy — from typed fields, then rank the fixes with the exact lever each needs |
-| `battlegrid-strategy-examples` | Full-surface composition patterns: custom report sections and header grammar, benchmark sections, condition trees with verdicts and enforcement gates, tiered signal weights and the aggregate gate math, routing gates, ATR trade levels, position management, plus validated desk-grade playbooks and TradingView process ports |
+| `battlegrid-strategy-examples` | Full-surface composition patterns: custom report sections and header grammar, benchmark sections, condition trees with verdicts and required conditions as the entry gate, ATR trade levels and the ATR floor, position management, plus validated desk-grade playbooks and TradingView process ports |
 | `battlegrid-trade-analysis` | Read your own trading position: where the money is, whether each agent is doing its job, what is open and how close it sits to its protections, and whether the automation is actually running |
 | `battlegrid-trade-proposal` | Find and stage a trade for one of your agents: check what is already held, scan every active coin against the agent's own gates, propose on one through the agent's own conversational turn, present the outcome with its conviction, and approve or decline only on your word |
 
@@ -96,7 +96,8 @@ repository, and `skill-provenance.test.ts` fails CI on a hand edit.
 
 ## Rate limits
 
-| Limit | Value |
-|-------|-------|
-| Operations | 50 ops/day |
-| Wager spend | $500 USD/day |
+Wagers are bounded by a daily operation count and a daily wager volume that the server configures,
+with per-user overrides. A refused wager names the limit it hit; no number is restated here, because
+a copy of a configured limit is eventually wrong where being wrong costs money. Every request also
+spends from a request budget the server announces in its `initialize` instructions and in the
+`RateLimit-*` headers of each response.

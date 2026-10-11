@@ -1,5 +1,14 @@
 """Predict strategy-report signal membership OFFLINE.
 
+RETIRED at contract 108 (2026-10-11): "signal rules, the aggregate-score gate and the required-count gate are removed" (README "Contract history - v108"). The platform has no signal
+to feed, no `derive_strategy_rule_view` (removed with no alias) and no draft `mismatches`, so
+nothing on the generation path calls this module any more (omega.generate's critique, axes() and
+the preflight). It is HISTORY, kept importable because the retired helpers (StrategyPlan.membership,
+allocation_findings, signal_rules, plan_pre_108, _scoring_data_columns) and the history tests
+reproduce the measured pre-108 diagnostics with it. The rung map (RUNG_REL, _signal_data over
+data/derived/signal_data_rungs_91.json), scoring_gaps, report_data_signal_off,
+modules_scoring_nothing and predicted_diagnostics are all retired with it.
+
 `derive_strategy_rule_view` answers "which of the 84 signals can my report feed?" but
 needs a connector round-trip. This module answers the same question locally, from two
 measured maps in data/derived/.
@@ -76,6 +85,7 @@ def _signal_data() -> dict[str, list[dict]]:
 # whose data sits at `signalHigher`. That a rel:regime column clears an `htf_*` mismatch is
 # PREDICTED from this vocabulary (2026-10-10) and owed a live stage; the 2026-08-28 compile
 # proved only that a rel:anchor column clears neither rung.
+# RETIRED at contract 108 with the signals whose data rungs it mapped (history).
 RUNG_REL = {"anchor": "anchor", "lower": "lower", "signalHigher": "regime"}
 
 
@@ -117,7 +127,9 @@ def shown_data(report) -> set[tuple[str, str]]:
 
 
 def scoring_gaps(report, rules) -> list[ScoringFinding]:
-    """Warn when a weighted signal scores on data the report does not show - BattleGrid's
+    """RETIRED at contract 108 (ACTIVE_SIGNAL_DATA_NOT_IN_REPORT went with the signals).
+
+    Warn when a weighted signal scores on data the report does not show - BattleGrid's
     `ACTIVE_SIGNAL_DATA_NOT_IN_REPORT`, predicted offline. It does not refuse a commit; it
     means the agent's model is shown none of what drives that part of the score.
 
@@ -204,7 +216,9 @@ def modules_scoring_nothing(report, rules) -> list[Finding]:
 
 
 def predicted_diagnostics(report, rules) -> dict[str, list]:
-    """The draft diagnostics BattleGrid would return for this report and scorecard, by the
+    """RETIRED at contract 108 (no `mismatches`; the warning enum is NO_ENTRY_CONDITION alone).
+
+    The draft diagnostics BattleGrid would return for this report and scorecard, by the
     two keys it uses: `mismatches` (ACTIVE_SIGNAL_DATA_NOT_IN_REPORT as SCORING_INPUT_NOT_RENDERED,
     then REPORT_DATA_SIGNAL_OFF) and `warnings` (MODULE_IN_REPORT_SCORES_NOTHING). Checked
     against the measured 12 + 4 + 1 of actions 60 / 62 in tests/test_recipes_rung_gap.py."""

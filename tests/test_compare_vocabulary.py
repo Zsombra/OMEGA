@@ -1,6 +1,9 @@
 """scripts/compare_vocabulary.py: a stored surface whose enums equal the extraction compares identical; one that
 adds, drops or omits an enum is caught. The surfaces here are built from the repo's own extraction, so the test
-needs no fixture of the platform's schema."""
+needs no fixture of the platform's schema.
+
+Contract 108 (2026-10-11): the SIGNAL_RULES axis is gone, so the `signals` kind is retired - two enums are compared,
+metrics and sectionKeys."""
 from __future__ import annotations
 
 import json
@@ -10,13 +13,10 @@ import pytest
 from scripts.compare_vocabulary import compare, first_enum, live_enums, main, stored_enums
 
 
-def _surface(metrics, signals, sections, *, drop_tool: str | None = None) -> dict:
-    """At contract 91 both the signalId and the sectionKey enums live on
-    stage_strategy_draft's axes (SIGNAL_RULES, REPORT); compile_strategy_plan and
-    update_strategy_signal_rule were removed at v85."""
+def _surface(metrics, sections, *, drop_tool: str | None = None) -> dict:
+    """At contract 108 the sectionKey enum lives on stage_strategy_draft's REPORT axis; there is no SIGNAL_RULES
+    axis (README "Contract history - v108")."""
     axes = {
-        "SIGNAL_RULES": {"type": "object", "properties": {"rules": {"type": "array", "items": {
-            "type": "object", "properties": {"signalId": {"type": "string", "enum": sorted(signals)}}}}}},
         "REPORT": {"type": "object", "properties": {"sections": {"type": "array", "items": {"anyOf": [
             {"type": "object", "properties": {"kind": {"const": "platform"},
                                               "sectionKey": {"type": "string", "enum": sorted(sections)}}}]}}}},
@@ -28,7 +28,7 @@ def _surface(metrics, signals, sections, *, drop_tool: str | None = None) -> dic
          "inputSchema": {"type": "object", "properties": {"request": {"type": "object", "properties": {
              "axes": {"type": "object", "properties": axes}}}}}},
     ]
-    return {"contractVersion": "0.0.0", "buildSha": "test", "observedAt": "2026-09-26T00:00:00Z",
+    return {"contractVersion": "0.0.0", "buildSha": "test", "observedAt": "2026-10-11T00:00:00Z",
             "tools": [t for t in tools if t["name"] != drop_tool]}
 
 
@@ -41,8 +41,10 @@ def test_first_enum_finds_a_nested_property_and_ignores_enumless_ones():
 
 def test_the_extraction_against_itself_is_identical_and_not_empty():
     stored = stored_enums()
+    assert set(stored) == {"metrics", "sectionKeys"}          # `signals` retired at contract 108
     assert all(stored[k] for k in stored), "an empty stored enum would make every comparison vacuous"
-    results = compare(live_enums(_surface(stored["metrics"], stored["signals"], stored["sectionKeys"])), stored)
+    results = compare(live_enums(_surface(stored["metrics"], stored["sectionKeys"])), stored)
+    assert set(results) == {"metrics", "sectionKeys"}
     for name, r in results.items():
         assert r["live"] == r["stored"] > 0, name
         assert r["liveNotStored"] == [] and r["storedNotLive"] == [], name
@@ -52,53 +54,62 @@ def test_an_added_and_a_dropped_value_are_named_on_the_right_side():
     stored = stored_enums()
     dropped = sorted(stored["metrics"])[0]
     metrics = (stored["metrics"] - {dropped}) | {"NOT_A_REAL_METRIC"}
-    results = compare(live_enums(_surface(metrics, stored["signals"], stored["sectionKeys"])), stored)
+    results = compare(live_enums(_surface(metrics, stored["sectionKeys"])), stored)
     assert results["metrics"]["liveNotStored"] == ["NOT_A_REAL_METRIC"]
     assert results["metrics"]["storedNotLive"] == [dropped]
-    assert results["signals"]["liveNotStored"] == results["sectionKeys"]["storedNotLive"] == []
+    assert results["sectionKeys"]["liveNotStored"] == results["sectionKeys"]["storedNotLive"] == []
 
 
 def test_a_missing_tool_or_enum_refuses_rather_than_reporting_everything_removed():
     stored = stored_enums()
     with pytest.raises(KeyError, match="stage_strategy_draft"):
-        live_enums(_surface(stored["metrics"], stored["signals"], stored["sectionKeys"],
-                            drop_tool="stage_strategy_draft"))
-    with pytest.raises(ValueError, match="signals"):
-        live_enums(_surface(stored["metrics"], set(), stored["sectionKeys"]))
+        live_enums(_surface(stored["metrics"], stored["sectionKeys"], drop_tool="stage_strategy_draft"))
+    with pytest.raises(ValueError, match="sectionKeys"):
+        live_enums(_surface(stored["metrics"], set()))
 
 
 def test_main_exits_0_when_identical_and_1_when_an_enum_moved(tmp_path, capsys):
     stored = stored_enums()
     same, moved = tmp_path / "same.json", tmp_path / "moved.json"
-    same.write_text(json.dumps(_surface(stored["metrics"], stored["signals"], stored["sectionKeys"])), encoding="utf-8")
-    moved.write_text(json.dumps(_surface(stored["metrics"], stored["signals"] | {"NEW_SIGNAL"}, stored["sectionKeys"])),
+    same.write_text(json.dumps(_surface(stored["metrics"], stored["sectionKeys"])), encoding="utf-8")
+    moved.write_text(json.dumps(_surface(stored["metrics"], stored["sectionKeys"] | {"newSection"})),
                      encoding="utf-8")
     assert main([str(same)]) == 0
-    assert json.loads(capsys.readouterr().out)["results"]["signals"]["liveNotStored"] == []
+    assert json.loads(capsys.readouterr().out)["results"]["sectionKeys"]["liveNotStored"] == []
     assert main([str(moved)]) == 1
     printed = json.loads(capsys.readouterr().out)
-    assert printed["results"]["signals"]["liveNotStored"] == ["NEW_SIGNAL"]
-    assert printed["storedStageCapture"].startswith("data/contract/stage_strategy_draft/schema_")
+    assert printed["results"]["sectionKeys"]["liveNotStored"] == ["newSection"]
+    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
 
 
-def test_the_stored_enums_are_read_off_the_saved_91_stage_schema():
-    """25 platform sections on the REPORT axis of the saved 91.0.0 capture, and the 84
-    signals the scoring extraction holds equal the SIGNAL_RULES enum there."""
+def test_the_stored_enums_are_read_off_the_saved_108_stage_schema():
+    """25 platform sections on the REPORT axis of the saved 108.0.0 capture (the newest), as on the 91.0.0 one."""
     from omega.contract import stage_schema
     from omega.preflight import resolve_axes
     stored = stored_enums()
     axes, _ = resolve_axes(stage_schema())
     assert len(stored["sectionKeys"]) == 25
     assert stored["sectionKeys"] == set(first_enum(axes["REPORT"], "sectionKey"))
-    assert stored["signals"] == set(first_enum(axes["SIGNAL_RULES"], "signalId"))
+    assert "SIGNAL_RULES" not in axes
 
 
-def test_the_saved_91_surface_compares_identical_on_the_two_stage_enums():
+def test_the_saved_108_surface_compares_identical_on_the_stage_enum():
     """The stage tool entry exactly as saved, in a surface: no hand-built schema."""
     from omega.contract import stage_schema
     stored = stored_enums()
-    surface = _surface(stored["metrics"], stored["signals"], stored["sectionKeys"])
+    surface = _surface(stored["metrics"], stored["sectionKeys"])
     surface["tools"][1] = {"name": "stage_strategy_draft", **stage_schema()["stage_strategy_draft"]}
     results = compare(live_enums(surface), stored)
-    for name in ("signals", "sectionKeys"):
-        assert results[name]["liveNotStored"] == results[name]["storedNotLive"] == [], name
+    assert results["sectionKeys"]["liveNotStored"] == results["sectionKeys"]["storedNotLive"] == []
+
+
+def test_a_91_surface_still_compares_its_two_enums():
+    """A stage tool that still carries SIGNAL_RULES (a pre-108 surface) is read the same way: the axis is ignored."""
+    import json as _json
+    from pathlib import Path
+    old = _json.loads((Path(__file__).resolve().parents[1] / "data/contract/stage_strategy_draft/"
+                       "schema_20261005T194629Z.json").read_text(encoding="utf-8"))
+    stored = stored_enums()
+    surface = _surface(stored["metrics"], stored["sectionKeys"])
+    surface["tools"][1] = {"name": "stage_strategy_draft", **old["stage_strategy_draft"]}
+    assert set(compare(live_enums(surface), stored)) == {"metrics", "sectionKeys"}

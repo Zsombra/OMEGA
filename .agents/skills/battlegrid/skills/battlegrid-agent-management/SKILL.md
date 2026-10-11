@@ -84,7 +84,8 @@ omit `agentId` and send `draftVersion: 0` on the first call, then reuse the id i
 `{ strategyId }`, all four required to create, plus TRADING_CONFIG with every agent-owned field —
 or no TRADING_CONFIG at all, to take the platform seed. The build then survives a refresh, lists in
 the Agents Hub as *not yet created*, and opens on the create screen, where **the player's own
-Create creates it**. Staging creates nothing and spends no slot.
+Create creates it**. Staging creates nothing and spends no slot. The avatar is minted by the server
+at creation — there is no avatar to stage.
 
 **Then read it, confirm it, and commit it.** `get_agent_draft` serves the draft, its
 `draftVersion`, a `committedRevision` of `null` and the diagnostics: a missing or invalid axis is
@@ -110,6 +111,11 @@ Profile → Wallet tab path instead, because no control renders there. **Create 
 way**: the consent gates entering a game, never commissioning one. A `true` flag is consent alone
 and not readiness — the pipeline's own refusal at the fee is the authority.
 
+**When the mandate is trading, the agent needs a trading wallet.** `get_account_state` reports
+`tradingWalletProvisioned`; the wallet is provisioned in the web app, where its key is signed
+locally in the browser, and no tool provisions it. Without one the agent can be created but cannot
+place an order — say so with the create, never after the first refused trade.
+
 ### 3. Stage, read, confirm, commit — every change goes through the draft
 
 Before proposing any change to an existing agent, `get_agent_draft`. **A draft means the player is
@@ -119,7 +125,8 @@ mid-edit in their form**, and every change you make joins it. Then:
   read you proposed against returned (0 when it found no draft): it lands in their open form,
   labelled as yours. Each axis you send is written WHOLE — BEHAVIOR carries all three of risk,
   outlook and conviction, TRADING_CONFIG the complete configuration (step 6) — and the axes you
-  omit keep their values.
+  omit keep their values. Complete stage payloads — a create, a behavior change, a rebind — are in
+  `references/agent-stage-examples.md`.
 - **Read the stage's diagnostics.** Its `errors` are the refusals the commit would raise, each
   naming its field: fix the axis and stage again before you ask for anything.
 - A staging call refused **`DRAFT_AXIS_CONTESTED`** names an axis the player changed after the
@@ -187,10 +194,13 @@ is voting on a state you have not seen. A commit refused with `nextAct: stage` n
 diagnostics named: fix it in a stage, read, and confirm again.
 
 **A refused archive names its own blockers.** The refusal carries typed `archiveBlockers[]` —
-DEPLOYED / OPEN_TRADES / ACTIVE_SESSION, each with a count. Report each blocker and its count as
-the reason, and name what would clear it (un-deploy via the radar/deployment tools, close or let
-the positions resolve, wait for the session to settle). Never paraphrase the refusal into "it
-didn't work", and never retry it unchanged.
+DEPLOYED / OPEN_TRADES / ACTIVE_SESSION / RADAR_DEPLOYED, each with a count. Report each blocker and
+its count as the reason, and name what would clear it (un-deploy via the deployment tools, close or
+let the positions resolve, wait for the session to settle). RADAR_DEPLOYED counts paused radars too:
+a paused radar still holds the slot, so pausing does not clear it. Clearing it is a radar-deployment
+write, not this arc's: activate `radar-deployment` and let its arc find the coins whose radar holds
+the agent and un-deploy it there — a radar draft committed without the agent, or the coin's
+deployment deleted. Never paraphrase the refusal into "it didn't work", and never retry it unchanged.
 
 ### 5. Halt recovery: offer exactly the served verdict's exits
 
@@ -242,7 +252,9 @@ keys). The commit holds the configuration to the same risk rules the agent form'
   the P&L. It carries a schema-level `confirm: true`, so present the position, its unrealized
   P&L and its protections, and confirm before calling. An exchange rejection comes back as a typed
   trading error — report it; a success means the close order was *accepted*.
-- **`override_agent_protection`** moves the effective stop. Its confirm must say, in words, that
+- **`override_agent_protection`** moves the effective stop — the stop-loss only; take-profit is not
+  overridable here. It names the stop it replaces by `effectiveStopLossOrderId`, which
+  `get_position_audit_history` serves. Its confirm must say, in words, that
   the change **moves the stop outside the platform's protective ratchet** — that is exactly what
   the tool is for — and name the direction: whether the new level sits further from or closer to
   price than the one the platform is holding. Present the current protection first, then the

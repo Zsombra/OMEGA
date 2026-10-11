@@ -100,8 +100,6 @@ const AXIS_HEADING: Readonly<Record<string, string>> = {
   entry: '## Entry',
   condition: '## Conditions',
   customSection: '## Report sections',
-  rule: '## Signal rules',
-  gates: '## Routing gates',
   tradeLevels: '## Trade levels',
   positionManagement: '## Position management',
 };

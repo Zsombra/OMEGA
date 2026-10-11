@@ -29,16 +29,16 @@ def main() -> None:
         tagline="Fade crowded leverage into structure",
         description="Extreme funding with OI at a peak, faded into a structural zone.",
         anchor="15m",
-        gate=0.70,
         weights={"FUNDING": 3, "OPEN_INTEREST": 3, "PRICE_STRUCTURE": 2, "CVD": 1},
         context=["REGIME"],
     )
     show(plan(mine), "CUSTOM THESIS")
 
-    # 3. work backwards from signals you want to weight ------------------------
+    # 3. HISTORY (retired at contract 108, no signal rules): the report that would
+    #    have fed signals you wanted to weight -------------------------------------
     wanted = ["bollinger_lower_touch", "rsi_oversold", "cvd_bull_divergence",
               "mtf_aligned_bull"]          # the last one is unreachable
-    back = plan_for_signals(wanted, name="Backwards Build", tier=2, gate=0.65)
+    back = plan_for_signals(wanted, name="Backwards Build", tier=2)
     print(RULE)
     print("BACKWARDS: build the report that feeds these signals")
     print(RULE)

@@ -1,5 +1,11 @@
 """The score layer: raw indicator reading -> the 0-1 number the aggregate consumes.
 
+RETIRED at contract 108 (2026-10-11): "signal rules, the aggregate-score gate and the required-count gate are removed" (README "Contract history - v108"). There is no score and no
+aggregate on the platform any more, and `get_coin_signal_preview` - the tool every formula here
+was reproduced against - was removed with no alias. HISTORY: kept importable for its tests and
+docs/11; nothing on the generation path calls it. Its mirror, data/contract/signals/, is retired
+in data/contract/_manifest.json.
+
 This is the transformation directly beneath omega.aggregate. Aggregation asks
 "given scores and allocations, does this route?"; this module answers the question
 underneath it: "given the market, what IS the score?"

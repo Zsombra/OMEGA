@@ -7,9 +7,9 @@ from __future__ import annotations
 from .execution import (CATALOG_BOUND_ENFORCED, CATALOG_BOUNDS,
                         PLATFORM_EXECUTION_DEFAULTS, SCHEMA_BOUNDS,
                         validate_execution)
+from .conditions import NO_ENTRY_CONDITION, entry_gates
 from .generate import (CADENCE_FOR_ANCHOR, EXIT_ROLES, MODULE_CLAUSES, MODULE_RECIPES,
-                       RANKED_LIMIT_MEASURED_MAX, REGIME_TF_FOR_ANCHOR, Thesis)
-from .membership import _map
+                       RANKED_LIMIT_MEASURED_MAX, REGIME_TF_FOR_ANCHOR, Thesis, _build_conditions)
 from .validate import Finding
 
 # The one hand-written table: what each module's columns measure, in plain language.
@@ -48,7 +48,6 @@ def _clause_text(c: dict) -> str:
 def vocabulary() -> dict:
     """The assistant's complete menu - every module, anchor, universe rule and
     execution knob the platform was MEASURED to accept."""
-    sigs = _map()["moduleSignals"]
     modules = {}
     for m in sorted(MODULE_RECIPES):
         spec = MODULE_CLAUSES[m]
@@ -56,7 +55,7 @@ def vocabulary() -> dict:
             "measures": MODULE_DESCRIPTIONS[m],
             "directional": "up" in spec,
             "readings": {k: _clause_text(spec[k]()) for k in sorted(spec)},
-            "signals": sorted(sigs.get(m, [])),
+            # "signals" (the module's signal ids) retired 2026-10-11: contract 108 removed signal rules
         }
     return {
         "modules": modules,
@@ -120,13 +119,18 @@ def validate_thesis(thesis: Thesis) -> list[Finding]:
                            f"ranked limit {sel['limit']} exceeds the measured BG-14 "
                            f"boundary {RANKED_LIMIT_MEASURED_MAX} - the compile "
                            f"preview refuses above it (measured 2026-08-28)"))
-    feedable = {sid for m, tier in thesis.weights.items() if tier > 0
-                for sid in _map()["moduleSignals"].get(m, [])}
-    for sid in thesis.required:
-        if sid not in feedable:
-            out.append(Finding("error", "THESIS_UNFEEDABLE_REQUIRED", f"required.{sid}",
-                               f"{sid} is marked required but no weighted module "
-                               f"feeds it - it could never fire"))
+    # THESIS_UNFEEDABLE_REQUIRED retired 2026-10-11 with Thesis.required (contract 108: no signal rules)
+    # contract 108: conditions are the only entry gate - a thesis whose generated conditions carry no
+    # verdict and no required condition yields a strategy that never trades (the draft's NO_ENTRY_CONDITION)
+    try:
+        conds = _build_conditions(thesis)
+    except ValueError:
+        conds = None                    # an unknown exit role; reported just below
+    if conds is not None and not entry_gates(conds):
+        out.append(Finding("error", NO_ENTRY_CONDITION, "conditions",
+                           f"the thesis generates {len(conds)} condition(s) and none is required or carries a "
+                           f"verdict - the strategy would never trade (contract 108: conditions are the only "
+                           f"entry gate; the draft warns {NO_ENTRY_CONDITION})"))
     for role in thesis.exits:
         if role not in EXIT_ROLES:
             out.append(Finding("error", "THESIS_UNKNOWN_EXIT_ROLE", f"exits.{role}",
@@ -142,13 +146,12 @@ def brief(p) -> str:
     t = p.thesis
     findings = validate_thesis(t)
     w = p.axes()
-    rules = w["SIGNAL_RULES"]["rules"]
     exits = [c for c in w["CONDITIONS"]["conditions"] if c["exitSide"]]
     lines = [
         f"{t.name}" + (f" - {t.tagline}" if t.tagline else ""),
         f"stance {t.stance} | anchor {t.anchor} "
         f"({CADENCE_FOR_ANCHOR.get(t.anchor, '?')}/"
-        f"{REGIME_TF_FOR_ANCHOR.get(t.anchor, '?')}) | gate {t.gate} | "
+        f"{REGIME_TF_FOR_ANCHOR.get(t.anchor, '?')}) | "
         f"universe {t.resolved_coin_selection()}",
         "weighted modules: " + (", ".join(
             f"{m}:{tier}" for m, tier in sorted(t.weights.items()) if tier) or "none"),
@@ -161,8 +164,9 @@ def brief(p) -> str:
         "critique:",
         *[f"  {line}" for line in p.critique()],
         "",
-        f"create draft axes: {len(w['REPORT']['sections'])} sections, {len(rules)} rules "
-        f"({sum(1 for r in rules if r['allocation'] > 0)} weighted), "
+        # contract 108: no SIGNAL_RULES axis (the "84 rules (N weighted)" count went with it)
+        f"create draft axes: {len(w)} axes, {len(w['REPORT']['sections'])} sections, "
         f"{len(w['CONDITIONS']['conditions'])} conditions ({len(exits)} exit rules)",
+        "entry gate: " + (", ".join(p.entry_gates()) or f"NONE ({NO_ENTRY_CONDITION})"),
     ]
     return "\n".join(lines)

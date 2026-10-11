@@ -104,7 +104,9 @@ anywhere; if the two ever disagree, you have created the exact ambiguity this st
 `get_strategy_signal_definition` for each signal you intend to use.
 
 Compose sections, columns, conditions and rules **only** from vocabulary returned in this
-conversation. A field you remember from another strategy is not discovery.
+conversation. A field you remember from another strategy is not discovery. A signal's availability
+at a timeframe is structural: it says the signal can be computed there, not that live data is
+flowing or that it will trigger.
 
 **Read the answer, not just the call.** Each of these returns one field that decides a composition
 question you would otherwise guess — and a refusal you would otherwise earn:
@@ -127,12 +129,29 @@ question you would otherwise guess — and a refusal you would otherwise earn:
   it — its own `hold: { atLeast, of }`, which the editor calls **Hold** (Once, In a row, Within, At
   least), counted in completed bars of the column's own timeframe — not to this axis. Every clause
   and group carries `hold`; `{ "atLeast": 1, "of": 1 }` is Once. The `strategy-examples` skill
-  carries the vocabulary, the served hold domain (a crossover is held "within" only; a Developing
-  column cannot be held) and the per-column Confirmed / Developing read.
+  carries the vocabulary, the served hold domain (a crossover or an edge operator — `crossesAbove`,
+  `crossesBelow`, `enters`, `exits` — is held "within" only; a Developing column cannot be held) and
+  the per-column Confirmed / Developing read.
+- **What a bar did is its own vocabulary.** A touch or a rejection of a level, a candle pattern, a
+  gap and a run of bars are composed from the `strategy-examples` skill's **Bar geometry** section —
+  `levelInteraction` over a level with its `buffer` knob, and the pattern, gap, run and price-source
+  metrics. A level BREAK is a `distance` crossing over the same level, never a `levelInteraction`
+  label.
+- **Swing structure is its own section.** Swing highs and lows, the `HH`/`HL`/`LH`/`LL` label and the
+  break-of-structure recipes are in the `strategy-examples` skill's **Swing structure** section.
 - `get_strategy_column_contract` → `outputs[].conditionOperators`. An empty array means that
   rendered header has no comparison semantics and cannot appear in a condition clause at all.
   Legality is per rendered header, not per column: a trajectory's slot header and its `_trend`
   header answer differently.
+- `get_strategy_column_contract` → `lookback`, `measurement` and `seriesHome`. `lookback.used` is
+  the bars the column reads against `lookback.cap`, the column-lookback budget a save holds it to —
+  a column past the cap is refused with `REPORT_COLUMN_LOOKBACK_EXCEEDED` by this tool exactly as by
+  the save, so shrink its window or offset rather than staging it. `measurement` names how the
+  transform (and a chained transform) reads its series: the read shape, the window's unit, the price
+  basis and what an absent bar does. `seriesHome` says where the metric's series is kept — `candle`,
+  `history`, or `null` when the metric has no series, which is why a series transform does not
+  compose on it. Window and offset carry a declared `minimum` and no fixed maximum; the lookback
+  cap is the bound.
 - `get_metric_construction_hints` → `rankOrderings`. Present only when rank is composable on that
   metric, already range-gated server-side — read the offered set rather than deriving one from
   the metric's native output.
@@ -144,7 +163,8 @@ teaches what to compose; this skill stays the authority on the flow.
 
 `derive_strategy_rule_view` belongs here, at composition time, and only here: it reports report
 membership and registry-default allocations for sections and rows you are about to stage. It reads
-no draft and no strategy, so it can never stand in for the review in step 5.
+no draft and no strategy, so it can never stand in for the review in step 5. Its suggestions and
+reset-to-default choices change only what you stage next — no tool applies one on its own.
 
 `simulate_aggregate_score` does **not** belong here. It is a review tool (step 5), and running it
 now answers a question about rows you have not staged, not about the draft the player will be
@@ -157,7 +177,8 @@ asked to approve.
 the `axes` you propose. It writes those axes into the player's draft — attributed to you, landing in
 their builder as unsaved changes — and commits nothing. Each stage returns the draft's new
 `version`: that is the `draftVersion` your next stage names. Stage each change once, and never fire
-two stages in parallel against one draft.
+two stages in parallel against one draft. Complete stage payloads showing the envelope are in
+`references/strategy-stage-examples.md`.
 
 **A new strategy is a create draft.** Omit `strategyId` and send `draftVersion: 0` on the first
 stage; the response carries the id minted for it, which every later call names. A create needs
@@ -224,7 +245,13 @@ Once the stage's diagnostics carry nothing you cannot explain, read the draft wi
   the commit's own: the player is approving all of it, not only what you proposed.
 - **Whether it can fire.** `preview_strategy_report` with
   `source: { "kind": "DRAFT", strategyId, draftVersion }`, at the version the read returned,
-  renders the draft against live market composed exactly as its commit would compose it. Support it
+  renders the draft against live market composed exactly as its commit would compose it. Its default
+  `detail: "concise"` is exactly what the agent will read — the sections, each surface's conditions
+  register with every coin's verdict, and the verdict tally; ask for `"detailed"` only when you need
+  each coin's full evaluation or the addressable headers (`authoring`). A preview is bounded by a
+  deadline and a result-character cap, both served by discovery as `previewExecutionLimits`
+  (`deadlineMs`, `maxResultChars`); one over either is refused whole, never truncated — narrow the
+  cohort and preview again. Support it
   with `get_coin_signal_preview` on the locked universe's main coin(s). The preview's
   `coinSelection` is its cohort, never strategy state: no strategy has one and `get_strategy` will
   not return one, so choose it — a short explicit list of the tickers the change is about for a
@@ -246,8 +273,9 @@ revise rather than presenting it as healthy.
 - `operation` — CREATE, UPDATE or RESTORE. A RESTORE is a draft over an archived strategy: say
   that committing it also restores the strategy and moves its bound agents, by count, from
   ORPHANED to BOUND.
-- `boundAgentCount`, `openPositionCount` and `timeframeChanged`. A change to signal rules reaches
-  every bound agent the moment it commits — say so.
+- `boundAgentCount`, `openPositionCount` and `timeframeChanged`. A committed change reaches every
+  bound agent the moment it commits, while a position already open keeps the exit rules it opened
+  under — say so.
 - `admission` — for a create draft or an archived strategy, the quota and whether the name is
   free. It is advisory: the commit decides.
 - `capital` — each bound agent the drafted stop band would leave unable to place an order, with its
@@ -319,9 +347,13 @@ verbs writes content.
   commit does, and a full quota or a name already in use is refused there.
 - **Archiving** — `archive_strategy` with the `strategyId` and the `expectedRevision` you read.
   State how many agents are bound, that their configuration stays byte-identical, that open
-  positions are unaffected and that the player's draft is kept.
-- **Restoring** — `restore_strategy` with the `strategyId` and `expectedRevision` brings back
-  unchanged, already-viable content and keeps the player's draft. Content that is not viable is
+  positions are unaffected and that the player's draft is kept, re-based onto the revision the
+  archive produces.
+- **Restoring** — find the archived strategy with `list_strategies` and `get_strategy` with
+  `includeInactive: true`, which add the player's own strategies in any state; another player's
+  PRIVATE strategy stays hidden either way. `restore_strategy` with the `strategyId` and
+  `expectedRevision` brings back unchanged, already-viable content and keeps the player's draft,
+  re-based onto the restored revision. Content that is not viable is
   refused with `REPAIR_REQUIRED` and stays archived: stage the repair into the strategy's draft and
   commit it — that commit restores it, and its read says `operation: RESTORE`.
 

@@ -2,7 +2,7 @@
   "digestVersion": 1,
   "server": {
     "name": "battlegrid",
-    "contractVersion": "88.1.0"
+    "contractVersion": "105.0.0"
   },
   "axes": {
     "create": [
@@ -103,6 +103,21 @@
       "DOWN",
       "NEITHER",
       "UP"
+    ],
+    "conditionOperator": [
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "decreased",
+      "enters",
+      "exits",
+      "gt",
+      "gte",
+      "in",
+      "increased",
+      "is",
+      "lt",
+      "lte"
     ]
   },
   "bounds": {
@@ -205,6 +220,7 @@
     "ADX",
     "ATR",
     "ATR_PCT",
+    "BAR_CONTAINMENT",
     "BAR_FORMING",
     "BB_LOWER",
     "BB_PCT_B",
@@ -215,6 +231,10 @@
     "BUY_PRESSURE",
     "BUY_TRADES",
     "BUY_VOLUME",
+    "CANDLE_DOJI",
+    "CANDLE_ENGULFING",
+    "CANDLE_PIN",
+    "CANDLE_RUN",
     "CAPTAIN_CONF",
     "CCI20",
     "CHG_15M",
@@ -224,6 +244,7 @@
     "CHG_5M",
     "CLOSE",
     "CLOSE_CHANGE",
+    "CLOSE_RUN",
     "CONFIDENCE",
     "CROWD_ACC",
     "CROWD_ACC_LIVE",
@@ -249,8 +270,13 @@
     "FUNDING_ANN",
     "FUNDING_LABEL",
     "FUNDING_RATE",
+    "GAP",
+    "GAP_PCT",
+    "GAP_RANGE_CLEAR",
     "HIGH",
     "HIGH_DEV",
+    "HL2",
+    "HLC3",
     "HMA20",
     "ICHI_BASE",
     "ICHI_CONV",
@@ -272,6 +298,7 @@
     "NAKED_POC_BELOW",
     "NOTIONAL_VOLUME_1D",
     "OBV",
+    "OHLC4",
     "OI",
     "OI_CHG",
     "OI_PX_REGIME",
@@ -342,6 +369,9 @@
     "STRUCT_ZONES",
     "ST_DIR",
     "ST_LINE",
+    "SWING_FRACTAL_HIGH",
+    "SWING_FRACTAL_LABEL",
+    "SWING_FRACTAL_LOW",
     "TPO_IB_HIGH",
     "TPO_IB_LOW",
     "TPO_POC",

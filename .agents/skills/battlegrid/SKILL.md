@@ -17,7 +17,7 @@ from BattleGrid's own server so they name exactly the tools you reach here:
 |---|---|
 | Playing Market Grid sessions | `battlegrid-arena-play` |
 | Building or changing a strategy | `battlegrid-strategy-authoring` |
-| Composing beyond a bare template — conditions, weights, gates, trade levels, playbooks | `battlegrid-strategy-examples` |
+| Composing beyond a bare template — report sections, conditions, trade levels, playbooks | `battlegrid-strategy-examples` |
 | Creating and governing intelligence agents | `battlegrid-agent-management` |
 | Putting an agent on standing duty (Radar, Arena presets) | `battlegrid-radar-deployment` |
 | Reading the market — regime, funding, leaders, a coin deep-dive | `battlegrid-market-analysis` |
@@ -43,7 +43,7 @@ Never put `account` inside `request`, and never flatten request fields beside it
 
 ## Scopes
 
-- `mcp:read` — strategy discovery **and** non-financial configuration writes (stage and commit strategy and agent drafts, customize signals). Treat it as configuration authority, not view-only.
+- `mcp:read` — strategy discovery **and** non-financial configuration writes (stage and commit strategy and agent drafts). Treat it as configuration authority, not view-only.
 - `mcp:wager` — financial actions (submit paid entries, accept/cancel entry decisions, deployment policies). Enable **Server-Signed Wagers** in Profile → MCP to grant it. Pending entry decisions come from the conversational surface, which waits for approval; an agent deployed to a radar coin or a trading-enabled arena slot executes without one.
 
 ## Author a strategy or an agent, and bind them
@@ -93,7 +93,7 @@ The `play-market-grid` prompt (discover via `prompts/list`) provides a guided en
 
 ## Retired operations
 
-`create_strategy`, the plan tools (`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`), `update_strategy_signal_rule`, and the direct agent writers (`create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent`) are **retired** — they are absent from discovery and cannot be invoked. Stage into the entity's draft, read it back, and commit the version you read; a signal rule is a row of the strategy draft's `SIGNAL_RULES` axis, and a strategy binding is the agent draft's `STRATEGY_BINDING` axis. A deployment preview's `previewToken`, and the `confirm` on a deployment commit, resume, delete or draft discard, are retired the same way: a strict input refuses either key. Do not attempt flat legacy payloads; the server enforces a closed-world request root and the proxy never reconstructs them.
+`create_strategy`, the plan tools (`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`), `update_strategy_signal_rule`, the signal-rule tools (`simulate_aggregate_score`, `list_strategy_signals`, `get_strategy_signal_definition`, `derive_strategy_rule_view`, `get_coin_signal_preview`), and the direct agent writers (`create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent`) are **retired** — they are absent from discovery and cannot be invoked. Stage into the entity's draft, read it back, and commit the version you read; a strategy's entry gate is its conditions (a required or verdict-carrying condition — a strategy with none never trades, and its draft warns `NO_ENTRY_CONDITION`), its ATR floor `minAtrPct` is part of the `TRADE_LEVEL_POLICY` axis, and a strategy binding is the agent draft's `STRATEGY_BINDING` axis. A deployment preview's `previewToken`, and the `confirm` on a deployment commit, resume, delete or draft discard, are retired the same way: a strict input refuses either key. Do not attempt flat legacy payloads; the server enforces a closed-world request root and the proxy never reconstructs them.
 
 ## Common errors
 
@@ -106,6 +106,5 @@ The `play-market-grid` prompt (discover via `prompts/list`) provides a guided en
 | `DRAFT_VERSION_MOVED` | The draft changed after you read it, or no draft is held (`details.draftVersion` null) | Call `get_<kind>_draft` again, show the player what it now holds, and commit only on their word |
 | `DRAFT_AXIS_CONTESTED` | The player changed `details.contestedAxes` in their open form after the version you staged against | Read the draft again and propose against what they now have |
 | `CONFLICT` on a commit | The live revision moved after the draft read | Read the draft again, show the player the new diff and impact, and commit at the new `committedRevision` only on their word |
-| Required at allocation Off | A rule flags `required` on a signal weighted `0` (contract 34) | Read `details.inertRequiredSignalIds`; per signal either raise `allocation` or set `required: false` |
 | Method not found | Calling a retired/unknown tool | Re-run `tools/list`; stage, read and commit through the entity's draft |
 | `Wager scope required` | `mcp:wager` not enabled | Enable Server-Signed Wagers in Profile → MCP |

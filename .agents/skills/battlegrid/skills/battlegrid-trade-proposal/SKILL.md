@@ -36,6 +36,7 @@ re-sorts a list, re-derives a verdict, or approves on the player's behalf.
 
 - `scan_agent_coins` for the agent. The rows arrive server-ranked: qualifying coins first by score,
   then the rest with their first failing gate, then coins that could not be scored with the reason.
+  The scan reads the agent's gates and spends no LLM call.
 - Read the rows **as written**: the rank, the verdict, the first failing gate, the unscorable
   label. Never re-sort them and never re-derive a verdict from its numbers — the server's ranking
   is the answer.
@@ -118,3 +119,6 @@ trade.
 - Never accept because the conviction reads high, because the scan ranked the coin first, or
   because the player asked you to "find a trade" — finding is not approving. `get_entry_decision`
   re-reads the row if the conversation moved on before they answered.
+- Only a conversational decision awaits the player: radar fires and arena challenge reactions
+  execute on their own. `list_entry_decisions` with `status: PENDING` lists the ones still waiting
+  for an agent.

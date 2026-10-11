@@ -1,14 +1,20 @@
 """Author strategy conditions, and type-check them offline against the report.
 
-A condition is a deterministic read of report columns, resolved server-side at
-prompt-build time. The platform is explicit about what they are NOT:
+A condition is a deterministic read of report columns, resolved server-side.
 
-    "They are advisory: they may make you more selective, never less - they do
-     not gate, score, or qualify anything."
+2026-10-11, contract 108.0.0: conditions are the ONLY entry gate. "Signal rules, the
+aggregate-score gate and the required-count gate are removed ... A strategy's deterministic
+entry gate is its conditions: a required condition, or a condition that carries a verdict. A
+strategy that declares neither never trades, and its draft says so with the warning
+NO_ENTRY_CONDITION" (README "Contract history - v108"). validate_entry_gate mirrors that
+warning as an OMEGA ERROR: a strategy that can never trade is not a plan.
 
-The gate is `minAggregateScore` over the signal scorecard. Conditions shape what the
-agent reads: a `conditionKey` interpolates into `marketReadText`, so the agent sees a
-named verdict instead of re-deriving four filters.
+History (before 108): the platform called conditions advisory - "they may make you more
+selective, never less - they do not gate, score, or qualify anything" - and the gate was
+`minAggregateScore` over the signal scorecard; `required: true` already blocked a trade
+(vendor pack, strategy-examples), and since 56.1.0 the resolved verdict binds direction.
+Conditions also shape what the agent reads: a `conditionKey` interpolates into
+`marketReadText`, so the agent sees a named verdict instead of re-deriving four filters.
 
 The value here is the cross-check: a clause names a header, an operator and a literal,
 and all three must agree with what the column actually compiles to. `validate_conditions`
@@ -349,6 +355,35 @@ class ConditionFinding:
 
     def __str__(self) -> str:
         return f"[{self.severity}] {self.condition_key}{self.path}: {self.message}"
+
+
+# --- the entry gate (contract 108) --------------------------------------------
+# The platform's draft warning code (the 108 get_strategy_draft / stage_strategy_draft output schemas:
+# diagnostics.warnings[].code enum is exactly ["NO_ENTRY_CONDITION"]).
+NO_ENTRY_CONDITION = "NO_ENTRY_CONDITION"
+
+
+def entry_gates(conditions: list[dict]) -> list[str]:
+    """The conditionKeys that make a strategy's entry gate, in order: every ENTRY condition (exitSide null) that is
+    `required` or carries a verdict (UP / DOWN / NEITHER). The served 108 stage description: "with no required and
+    no verdict-carrying entry condition the strategy never routes, and the draft warns NO_ENTRY_CONDITION". An exit
+    rule (exitSide LONG / SHORT / BOTH) never counts, even a malformed one validate_conditions refuses."""
+    return [c.get("conditionKey", "") for c in conditions
+            if isinstance(c, dict) and c.get("exitSide") is None
+            and (c.get("required") is True or c.get("verdict") in CARRIER_VERDICTS)]
+
+
+def validate_entry_gate(conditions: list[dict]) -> list[ConditionFinding]:
+    """One ERROR finding, NO_ENTRY_CONDITION, when the condition set has no entry gate (entry_gates is empty).
+    The platform only warns - its draft is the player's unsaved work - but a plan that can never trade is refused
+    here. Kept apart from validate_conditions, which type-checks any set of conditions, fragments included."""
+    if entry_gates(conditions):
+        return []
+    return [ConditionFinding(
+        "error", "<conditions>", "",
+        f"{NO_ENTRY_CONDITION}: no entry condition is required or carries a verdict, so the strategy never "
+        f"trades - since contract 108 conditions are the only entry gate (the draft would warn "
+        f"{NO_ENTRY_CONDITION}); declare a verdict carrier (UP / DOWN / NEITHER) or a required condition")]
 
 
 def _anchor_side(column, anchor: str, order: list[str]) -> tuple[bool, bool]:

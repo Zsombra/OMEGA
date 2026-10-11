@@ -7,16 +7,20 @@ get_strategy_draft reads them) - never from omega's 08-28 defaults. The record p
 the live loop follow."""
 from __future__ import annotations
 
+import json
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
 from omega.generate import PRESETS, plan
 
-# A tuned existing strategy: every dial differs from omega's 08-28 defaults.
+ROOT = Path(__file__).resolve().parents[1]
+
+# A tuned existing strategy as a 108 read: every dial differs from omega's 08-28 defaults, and minAtrPct sits on
+# TRADE_LEVEL_POLICY (README "Contract history - v108").
 CURRENT = {
-    "SETUP_GATES": {"minAggregateScore": 0.4, "minRequiredCount": 0, "minAtrPct": 0.8},
-    "TRADE_LEVEL_POLICY": {"minStopLossAtrMultiple": 1.2, "maxStopLossAtrMultiple": 2.5,
+    "TRADE_LEVEL_POLICY": {"minAtrPct": 0.8, "minStopLossAtrMultiple": 1.2, "maxStopLossAtrMultiple": 2.5,
                            "minRiskRewardRatio": 1.8},
     "POSITION_MANAGEMENT": {
         "breakEvenEnabled": False, "breakEvenTriggerR": 1.5, "trailingEnabled": False,
@@ -39,15 +43,16 @@ def test_an_update_never_stages_entry_or_request_fields():
 
 def test_an_update_without_overrides_keeps_every_dial_of_the_strategy():
     """The review of 2026-10-06: staging the 08-28 defaults whole would reset a tuned
-    strategy (trailing off -> on, minAtrPct 0.8 -> 0.5). The dial axes are left out, and
-    SETUP_GATES - whole, and carrying the thesis's gate - keeps the strategy's minAtrPct."""
+    strategy (trailing off -> on, minAtrPct 0.8 -> 0.5). The dial axes are left out. Since
+    contract 108 there is no SETUP_GATES to carry a gate, so minAtrPct stays where it is with
+    the rest of TRADE_LEVEL_POLICY: unstaged."""
     p = plan(PRESETS["trend-continuation"])
     u = p.axes_update(CURRENT)
     assert "TRADE_LEVEL_POLICY" not in u and "POSITION_MANAGEMENT" not in u
-    assert u["SETUP_GATES"]["minAtrPct"] == 0.8
-    assert u["SETUP_GATES"]["minAggregateScore"] == p.thesis.gate
+    assert not {"SETUP_GATES", "SIGNAL_RULES"} & set(u)
     a = p.axes()
-    for k in ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "SIGNAL_RULES"):
+    assert tuple(u) == ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS")
+    for k in u:
         assert u[k] == a[k], k
 
 
@@ -66,17 +71,71 @@ def test_an_override_moves_exactly_its_own_dial_on_an_update():
 
 def test_an_update_refuses_rather_than_invent_a_dial_it_cannot_read():
     p = plan(PRESETS["trend-continuation"])
-    with pytest.raises(ValueError, match="minAtrPct"):
-        p.axes_update(None)
-    with pytest.raises(ValueError, match="minAtrPct"):
-        p.axes_update({})
-    # a thesis that names minAtrPct needs no read for SETUP_GATES
+    # no dial named: nothing to complete, so no read is needed (v108: no gate axis forces one)
+    assert "TRADE_LEVEL_POLICY" not in p.axes_update(None)
     t = replace(PRESETS["trend-continuation"], execution={"minAtrPct": 0.6})
-    assert plan(t).axes_update(None)["SETUP_GATES"]["minAtrPct"] == 0.6
+    with pytest.raises(ValueError, match="minStopLossAtrMultiple"):
+        plan(t).axes_update(None)
+    with pytest.raises(ValueError, match="minAtrPct"):
+        plan(replace(t, execution={"minRiskRewardRatio": 2.0})).axes_update(
+            {"TRADE_LEVEL_POLICY": {k: v for k, v in CURRENT["TRADE_LEVEL_POLICY"].items() if k != "minAtrPct"}})
+    # a thesis naming all four trade-level dials needs no read
+    four = {"minAtrPct": 0.6, "minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 2, "minRiskRewardRatio": 1.5}
+    assert plan(replace(t, execution=four)).axes_update(None)["TRADE_LEVEL_POLICY"] == four
     # a dial override on an axis the read does not carry cannot be completed
-    t = replace(PRESETS["trend-continuation"], execution={"minAtrPct": 0.6, "trailingTriggerR": 1.5})
+    t = replace(PRESETS["trend-continuation"], execution={**four, "trailingTriggerR": 1.5})
     with pytest.raises(ValueError, match="POSITION_MANAGEMENT"):
         plan(t).axes_update(None)
+
+
+# --- a `current` read before contract 108 -------------------------------------
+
+# What get_strategy_draft returned for a strategy at v91..v106: SETUP_GATES carried minAtrPct, TRADE_LEVEL_POLICY
+# the three others, SIGNAL_RULES the scorecard (data/contract/stage_strategy_draft/
+# current_7534b2ee_from_get_strategy_20261010T0634Z.json is one such read).
+CURRENT_PRE_108 = {
+    "SETUP_GATES": {"minAggregateScore": 0.4, "minRequiredCount": 0, "minAtrPct": 0.8},
+    "TRADE_LEVEL_POLICY": {k: v for k, v in CURRENT["TRADE_LEVEL_POLICY"].items() if k != "minAtrPct"},
+    "POSITION_MANAGEMENT": CURRENT["POSITION_MANAGEMENT"],
+    "SIGNAL_RULES": {"rules": [{"signalId": "rsi_oversold", "allocation": 2, "required": False}]},
+}
+
+
+def test_a_pre_108_current_is_accepted_and_its_retired_axes_are_never_staged():
+    for t in (PRESETS["trend-continuation"],
+              replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0}),
+              replace(PRESETS["trend-continuation"], execution={"trailingTriggerR": 1.5})):
+        u = plan(t).axes_update(CURRENT_PRE_108)
+        assert not {"SETUP_GATES", "SIGNAL_RULES"} & set(u)
+
+
+def test_a_pre_108_current_gives_min_atr_pct_from_its_setup_gates():
+    """minAtrPct missing from the old TRADE_LEVEL_POLICY is taken from the old SETUP_GATES."""
+    t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})
+    u = plan(t).axes_update(CURRENT_PRE_108)
+    assert u["TRADE_LEVEL_POLICY"] == {"minAtrPct": 0.8, "minStopLossAtrMultiple": 1.2,
+                                       "maxStopLossAtrMultiple": 2.5, "minRiskRewardRatio": 2.0}
+    assert list(u["TRADE_LEVEL_POLICY"]) == ["minAtrPct", "minStopLossAtrMultiple", "maxStopLossAtrMultiple",
+                                             "minRiskRewardRatio"]
+
+
+def test_the_new_axis_wins_over_the_old_setup_gates():
+    """A read that holds both (a draft staged at 108 over a pre-108 committed strategy) keeps TRADE_LEVEL_POLICY's
+    own minAtrPct."""
+    t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})
+    both = {**CURRENT_PRE_108, "TRADE_LEVEL_POLICY": CURRENT["TRADE_LEVEL_POLICY"] | {"minAtrPct": 0.9}}
+    assert plan(t).axes_update(both)["TRADE_LEVEL_POLICY"]["minAtrPct"] == 0.9
+
+
+def test_the_committed_7534b2ee_read_is_a_pre_108_current():
+    """The one real read on disk: its SETUP_GATES.minAtrPct lands on the staged TRADE_LEVEL_POLICY."""
+    rec = json.loads((ROOT / "data/contract/stage_strategy_draft/current_7534b2ee_from_get_strategy_20261010T0634Z.json")
+                     .read_text(encoding="utf-8"))["draft"]["content"]
+    assert {"SETUP_GATES", "SIGNAL_RULES"} <= set(rec) and "minAtrPct" not in rec["TRADE_LEVEL_POLICY"]
+    t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})
+    u = plan(t).axes_update(rec)
+    assert u["TRADE_LEVEL_POLICY"]["minAtrPct"] == rec["SETUP_GATES"]["minAtrPct"]
+    assert not {"SETUP_GATES", "SIGNAL_RULES"} & set(u)
 
 
 # --- the live loop, 2026-08-29: pinned record ---------------------------------

@@ -23,8 +23,9 @@ def _load(path: Path) -> Any:
 @lru_cache(maxsize=1)
 def stage_schema() -> dict:
     """The input schemas of the six strategy-draft tools at the contract the manifest's
-    `writeSurface` names (91.0.0 as of 2026-10-06): stage/get/commit/discard/list
-    strategy drafts and preview_strategy_report. The path is read from the manifest, never
+    `writeSurface` names (108.0.0 since 2026-10-11, input AND output schemas: stage/get/commit/
+    list strategy drafts, preview_strategy_report and get_strategy; 91.0.0 before, kept as the
+    writeSurface's `supersedes`). The path is read from the manifest, never
     hard-coded here, so a re-capture moves one pointer. compile_strategy_plan/ and the
     pre-v84 get_strategy/ records are `retired` in the same manifest - history, not the
     write surface (plan 2026-10-06, Work step 1)."""

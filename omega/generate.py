@@ -1,13 +1,20 @@
 """Compose a complete, validated strategy from a thesis.
 
 Everything below composes the rest of the toolkit: columns come from recipes that are
-legal by construction (validate.py), sections respect the timeframe-inert rule
-(04), allocations only go to signals the report can actually feed (membership.py),
-and the gate is checked against the aggregation math (aggregate.py).
+legal by construction (validate.py), sections respect the timeframe-inert rule (04), and
+the conditions - since contract 108 the strategy's ONLY entry gate - are type-checked
+against the headers the report produces (conditions.py) and must declare an entry gate
+(a verdict carrier or a required condition; NO_ENTRY_CONDITION otherwise).
 
-Shape mirrors real strategies read back from the connector (EL_ALAMEIN, MATH-C3):
-a dense 84-entry scorecard where unused signals sit at allocation 0, and
-`minAggregateScore` as the routing gate.
+2026-10-11, contract 108 (README "Contract history - v108"): signal rules, the
+aggregate-score gate and the required-count gate are removed. What fed them is history,
+kept importable and called by nothing on the generation path (plan -> axes -> critique ->
+preflight): the dense 84-row scorecard (StrategyPlan._rules), the allocation plan
+(signal_rules), the 2026-10-10 scoring-data columns (_scoring_data_columns, plan_pre_108),
+the membership and scoring predictions (omega.membership, omega.scoring, omega.aggregate).
+Before 108 the shape mirrored real strategies read back from the connector (EL_ALAMEIN,
+MATH-C3): a dense scorecard with unused signals at allocation 0 and `minAggregateScore`
+as the routing gate.
 
 Emits to disk. Never submits.
 """
@@ -25,12 +32,14 @@ from .aggregate import Signal, aggregate
 from .conditions import (
     all_of, ambient_headers, close_on, condition, crowd_leaning_down, crowd_leaning_up, is_,
     market_read_text, n_of, num, ref, stables_at_par, tape_bearish, tape_bullish,
-    validate_conditions, validate_market_read,
+    entry_gates, validate_conditions, validate_entry_gate, validate_market_read,
 )
 from .contract import DERIVED_DIR, load
 from .fanout import cost_report, outputs_for
+# Signal membership and scoring: RETIRED at contract 108, imported only by the history helpers
+# (membership, allocation_findings, signal_rules, _scoring_data_columns, plan_pre_108, _rules).
 from .membership import (RUNG_REL, _map, _signal_data, analyse, check_allocations,
-                         predicted_diagnostics, shown_data, signals_for)
+                         shown_data, signals_for)
 from .types import Column, CustomSection, Report, Rule
 from .validate import validate_report
 
@@ -216,30 +225,39 @@ RANKED_LIMIT_MEASURED_MAX = 4
 
 @dataclass
 class Thesis:
-    """What the strategy believes, expressed as modules and weights."""
+    """What the strategy believes, expressed as modules and weights.
+
+    2026-10-11, contract 108 ("signal rules, the aggregate-score gate and the required-count gate
+    are removed", README "Contract history - v108"): two fields are RETIRED, removed rather than
+    aliased, because nothing in omega reads them and the platform has no field to receive them:
+      `gate`     (was SETUP_GATES.minAggregateScore, after the `stance` slot: float, default 0.65)
+      `required` (was the signalIds counted into SETUP_GATES.minRequiredCount and sent as
+                  `required: true` SIGNAL_RULES rows; list[str])
+    A caller passing either gets a TypeError. The entry gate is now the conditions omega builds
+    from `weights` and `stance` (omega.conditions.entry_gates)."""
     name: str
     tagline: str = ""
     description: str = ""
     anchor: str = "1h"
-    gate: float = 0.65
-    # module -> allocation tier (0-3) applied to every signal in that module
+    # module -> tier (0-3). The KEYS choose the modules whose recipe columns the REPORT shows
+    # (the agent's model reads the report) and whose readings the condition checklist reads
+    # (directional modules: MODULE_CLAUSES "up"/"down"; filters: "filter"). Until contract 108
+    # the tier was also the allocation of every signal in the module; at 108 the tier has no
+    # platform meaning - it is validated 0..3 and rendered, nothing more.
     weights: dict[str, int] = field(default_factory=dict)
     # ALIGN: the tape should agree with the direction (trend theses).
     # FADE:  the crowd should be leaning the OTHER way (contrarian theses).
     stance: str = "ALIGN"
-    required: list[str] = field(default_factory=list)   # signalIds treated as vetoes
-    # Modules included as reading material, weighted 0. BattleGrid lists each of their signals
-    # whose data the report then shows as REPORT_DATA_SIGNAL_OFF and the module as
-    # MODULE_IN_REPORT_SCORES_NOTHING (measured 2026-10-09/10 on REGIME: 4 + 1); the critique
-    # predicts both. No preset carries one since 2026-10-10.
+    # Modules included as reading material only: their recipe columns are in the REPORT, and the
+    # condition checklist does not read them. Before contract 108 BattleGrid also flagged their
+    # unweighted signals (REPORT_DATA_SIGNAL_OFF x4 + MODULE_IN_REPORT_SCORES_NOTHING, measured
+    # 2026-10-09/10 on REGIME); 108 removed both diagnostics. No preset carries one since 2026-10-10.
     context: list[str] = field(default_factory=list)
-    # Show every (metric, rung) a weighted signal scores on that the module recipes do not:
-    # one `value` column (STRUCT_ZONES: `count`) per missing pair at the rung's rel
-    # (omega.membership.RUNG_REL). BattleGrid's ACTIVE_SIGNAL_DATA_NOT_IN_REPORT, measured
-    # 12 times on the trend-continuation create of 2026-10-09 (data/contract/
-    # stage_strategy_draft/diagnostics_action60_create_20261009T2310Z.json). False gives the
-    # pre-2026-10-10 report, the shape committed as strategy 7534b2ee.
-    show_scoring_data: bool = True
+    # `show_scoring_data` (bool, default True, after `context`) is RETIRED 2026-10-11 (contract
+    # 108): it added one column per (metric, rung) a weighted SIGNAL scored on that the recipes
+    # did not show (BattleGrid's ACTIVE_SIGNAL_DATA_NOT_IN_REPORT). With no signals those columns
+    # fed nothing; the report is the module recipes alone - what show_scoring_data=False gave.
+    # The widened report stays reproducible through plan_pre_108(thesis).
     # API coinSelection object; None means "derive one from the modules"
     coin_selection: dict | None = None
     # Explicit execution-parameter overrides (API field names); None/empty means the
@@ -277,7 +295,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Fade the stretch, only with flow agreeing",
         description="Oscillator extreme plus band breach, confirmed by flow and paid for by funding.",
         stance="FADE",
-        gate=0.65,
         weights={"BOLLINGER": 3, "RSI": 2, "CVD": 2, "FUNDING": 1, "VOLATILITY": 1},
     ),
     "trend-continuation": Thesis(
@@ -285,7 +302,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Never fight an aligned stack",
         description="Full MA alignment with trend strength, entered on momentum resumption.",
         stance="ALIGN",
-        gate=0.60,
         weights={"MOVING_AVERAGES": 3, "TREND_STRENGTH": 2, "MACD": 2, "VOLUME": 1},
     ),
     "squeeze-breakout": Thesis(
@@ -293,7 +309,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Coiled, then released",
         description="Volatility contraction into expansion, validated by participation and OI.",
         stance="ALIGN",
-        gate=0.55,
         weights={"BOLLINGER": 3, "VOLATILITY": 3, "VOLUME": 2, "OPEN_INTEREST": 1},
     ),
     "flow-divergence": Thesis(
@@ -301,7 +316,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Organic demand ahead of leverage",
         description="Spot CVD outpacing perp flow while funding stays unexcited.",
         stance="FADE",
-        gate=0.60,
         weights={"FLOW_DIVERGENCE": 3, "CVD": 2, "FUNDING": 2, "OPEN_INTEREST": 1},
     ),
     "structure-reversal": Thesis(
@@ -309,7 +323,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Turn at a level that means something",
         description="Price arriving at a structural zone with momentum divergence and flow confirmation.",
         stance="FADE",
-        gate=0.65,
         weights={"PRICE_STRUCTURE": 3, "SUPPORT_RESISTANCE": 2, "RSI": 2, "CVD": 1},
     ),
 }
@@ -323,10 +336,15 @@ PRESETS: dict[str, Thesis] = {
 # The level triggers rest orders omega has not measured.
 ENTRY_MIRROR: dict = {"trigger": "ON_CANDLE_CLOSE"}
 
-# The ten axes of stage_strategy_draft at 91.0.0, in the order its description lists them. Each is written
-# WHOLE except SIGNAL_RULES, whose rows replace only the drafted rows for the same signalId.
+# The eight axes of stage_strategy_draft at 108.0.0, in the order its description lists them, each written WHOLE
+# (data/contract/stage_strategy_draft/schema_20261010T215326Z.json). v108 refuses SIGNAL_RULES and SETUP_GATES "as
+# unrecognized keys"; SETUP_GATES' minAtrPct moved onto TRADE_LEVEL_POLICY. The ten axes of 91.0.0 are AXES_91.
 AXES = ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
-        "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES")
+        "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT")
+AXES_91 = ("IDENTITY", "TIMEFRAME_PROFILE", "REPORT", "MARKET_READ", "CONDITIONS", "ENTRY",
+           "SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "SIGNAL_RULES")
+# What a `current` read before v108 may still hold: accepted by axes_update and never staged.
+RETIRED_AXES = ("SETUP_GATES", "SIGNAL_RULES")
 
 # The seven roles _build_conditions emits (key = <prefix>_<role>); Thesis.exits names some of them.
 EXIT_ROLES = ("RISK_ON", "CTX_UP", "CTX_DOWN", "CORE_UP", "CORE_DOWN", "UP", "DOWN")
@@ -336,14 +354,21 @@ EXIT_ROLES = ("RISK_ON", "CTX_UP", "CTX_DOWN", "CORE_UP", "CORE_DOWN", "UP", "DO
 class StrategyPlan:
     thesis: Thesis
     report: Report
-    rules: list[Rule]
+    # RETIRED at contract 108: the signal allocation plan() built until then. plan() leaves it
+    # empty; plan_pre_108() fills it for the history tests and the retired predictors.
+    rules: list[Rule] = field(default_factory=list)
     conditions: list[dict] = field(default_factory=list)
     market_read_text: str = ""
 
     def condition_findings(self):
         out = validate_conditions(self.report, self.conditions)
         out += validate_market_read(self.market_read_text, self.conditions, self.report)
+        out += validate_entry_gate(self.conditions)         # contract 108: the only entry gate
         return out
+
+    def entry_gates(self) -> list[str]:
+        """The conditionKeys that gate entry (omega.conditions.entry_gates); empty = NO_ENTRY_CONDITION."""
+        return entry_gates(self.conditions)
 
     # -- analysis ---------------------------------------------------------
     def validation(self):
@@ -353,28 +378,32 @@ class StrategyPlan:
         return cost_report(self.report)
 
     def membership(self):
+        """RETIRED at contract 108: which of the 84 signals this report would feed
+        (omega.membership.analyse). History; nothing on the generation path calls it."""
         return analyse(self.report)
 
     def allocation_findings(self):
+        """RETIRED at contract 108: allocations to signals the report cannot feed. plan() makes
+        no allocation, so this is [] for every plan it returns; kept because battlegrid-manager's
+        pipeline (manager/authoring/pipeline.py, _omega_checks) still calls it."""
         return check_allocations(self.report, [r for r in self.rules if r.allocation > 0])
 
-    def simulate(self, score: float = 0.75):
-        """What the aggregate would be if every weighted signal scored `score`."""
+    def simulate(self, score: float = 0.75, *, gate: float):
+        """RETIRED at contract 108 (2026-10-11): what the aggregate would have been if every
+        weighted signal scored `score`, against a minAggregateScore `gate`. The platform has no
+        aggregate and no gate since 108 (simulate_aggregate_score was removed with no alias);
+        kept as history of omega.aggregate's model, called by nothing on the generation path."""
         weighted = [r for r in self.rules if r.allocation > 0]
         if not weighted:
             return None
-        return aggregate([Signal(r.signalId, score, r.allocation) for r in weighted],
-                         self.thesis.gate)
+        return aggregate([Signal(r.signalId, score, r.allocation) for r in weighted], gate)
 
     def critique(self) -> list[str]:
         out: list[str] = []
-        v, mem = self.validation(), self.membership()
+        # Contract 108: no allocation, membership ("feed no signal") or scoring-diagnostic line -
+        # there are no signals to allocate, feed or score (the pre-108 lines are in git history).
+        v = self.validation()
         out += [f"invalid column: {f}" for f in v.errors]
-        for f in self.allocation_findings():
-            if f.severity == "error":
-                out.append(f"wasted allocation: {f}")
-        if mem.dead_metrics:
-            out.append(f"context-only metrics (feed no signal): {', '.join(sorted(mem.dead_metrics))}")
 
         for f in self.condition_findings():
             out.append(f"condition {f.severity}: {f}")
@@ -382,7 +411,8 @@ class StrategyPlan:
         osc = CORRELATED_OSCILLATORS & set(self.thesis.weights)
         if len(osc) > 2:
             out.append(f"correlated oscillators weighted together: {', '.join(sorted(osc))} - "
-                       f"largely one piece of evidence counted {len(osc)} times")
+                       f"largely one piece of evidence counted {len(osc)} times in the condition "
+                       f"checklist")
 
         c = self.cost()
         if c.breaches:
@@ -390,14 +420,6 @@ class StrategyPlan:
         out.append(f"estimated agent tokens: ~{c.estimated_tokens} (what the agent reads; no platform token "
                    f"cap since contract 92 - the preview is capped at "
                    f"{load().shared['previewExecutionLimits']['maxResultChars']} result characters)")
-
-        sim = self.simulate()
-        if sim and not sim.would_route:
-            out.append(f"even at 0.75 across the board the aggregate is "
-                       f"{sim.aggregate_score_percent}% - below the {sim.gate_percent}% gate")
-
-        predicted = predicted_diagnostics(self.report, self.rules)
-        out += [f"scoring {f.severity}: {f}" for f in predicted["mismatches"] + predicted["warnings"]]
 
         from .execution import PLATFORM_EXECUTION_DEFAULTS, validate_execution
         ov = self.thesis.execution or {}
@@ -435,7 +457,6 @@ class StrategyPlan:
                      "sent whole on their axes (see omega/execution.py; M1 is owed)")
         return [
             f"preview coinSelection {sel} ({how})",
-            "signal params are the platform defaults captured in the signal map",
             execution,
             "local only: never staged into a draft, never committed",
         ]
@@ -454,8 +475,10 @@ class StrategyPlan:
         ]
 
     def _rules(self) -> list[dict]:
-        """The dense 84-row scorecard. `allocation` is an INTEGER 0..3 and required on the
-        v91 SIGNAL_RULES axis, as is `required`; unallocated signals ride at 0."""
+        """RETIRED at contract 108 (2026-10-11; v108 refuses the SIGNAL_RULES axis). The dense
+        84-row scorecard the v91 SIGNAL_RULES axis carried: `allocation` an INTEGER 0..3 and
+        required, as was `required`; unallocated signals rode at 0. History; axes() no longer
+        calls it."""
         m = _map()
         defaults = m["defaultParams"]
         allocated = {r.signalId: r for r in self.rules}
@@ -472,10 +495,11 @@ class StrategyPlan:
 
     def axes(self) -> dict:
         """The `axes` of a CREATE stage_strategy_draft request (no strategyId,
-        draftVersion 0): all ten axes, each WHOLE, keyed and shaped by the v91 schema
-        (data/contract/stage_strategy_draft/schema_20261005T194629Z.json). The flat
-        compile body this replaces - and its operation, intentSummary, assumptions and
-        coinSelection, which v85 dropped - is in git history."""
+        draftVersion 0): all eight axes, each WHOLE, keyed and shaped by the 108 schema
+        (data/contract/stage_strategy_draft/schema_20261010T215326Z.json). TRADE_LEVEL_POLICY
+        carries minAtrPct beside the stop-loss multiples and the risk-reward minimum (v108).
+        The ten-axis v91 form (SETUP_GATES, SIGNAL_RULES) and the flat compile body before
+        it are in git history."""
         from .execution import (PLATFORM_EXECUTION_DEFAULTS, POSITION_MANAGEMENT_DIALS,
                                 POSITION_MANAGEMENT_MIRROR, TRADE_LEVEL_DIALS)
         t = self.thesis
@@ -488,12 +512,8 @@ class StrategyPlan:
             "MARKET_READ": {"marketReadText": self.market_read_text},
             "CONDITIONS": {"conditions": self.conditions},
             "ENTRY": {"entry": dict(ENTRY_MIRROR)},
-            "SETUP_GATES": {"minAggregateScore": t.gate,
-                            "minRequiredCount": sum(1 for r in self.rules if r.required),
-                            "minAtrPct": eff["minAtrPct"]},
             "TRADE_LEVEL_POLICY": {k: eff[k] for k in TRADE_LEVEL_DIALS},
             "POSITION_MANAGEMENT": {k: eff[k] for k in POSITION_MANAGEMENT_DIALS},
-            "SIGNAL_RULES": {"rules": self._rules()},
         }
 
     def axes_update(self, current: dict | None) -> dict:
@@ -504,13 +524,18 @@ class StrategyPlan:
 
         `current` is the strategy's axes as get_strategy_draft reads them (the held draft,
         or the committed values when none is held). The 2026-08-29 UPDATE sent a dial only
-        when `thesis.execution` named it, so a tuned strategy kept its dials; a v91 axis is
+        when `thesis.execution` named it, so a tuned strategy kept its dials; an axis is
         staged WHOLE, so sending axes()'s 08-28 defaults would reset them (the review of
         2026-10-06). So TRADE_LEVEL_POLICY and POSITION_MANAGEMENT are staged only when the
-        thesis names one of their dials, the rest of the axis read from `current`; and
-        SETUP_GATES - always staged, it carries the thesis's gate and required count - takes
-        minAtrPct from the thesis or from `current`. A dial found in neither raises: omega
-        never invents the value of a live strategy's dial.
+        thesis names one of their dials, the rest of the axis read from `current`. A dial
+        found in neither raises: omega never invents the value of a live strategy's dial.
+
+        Contract 108 (2026-10-11): SETUP_GATES and SIGNAL_RULES are gone, so nothing forces a
+        dial axis onto an update any more (SETUP_GATES was always staged because it carried the
+        thesis's gate). minAtrPct is a TRADE_LEVEL_POLICY dial; a `current` read before v108
+        that still holds SETUP_GATES / SIGNAL_RULES is accepted, those two axes are never
+        staged, and when current TRADE_LEVEL_POLICY lacks minAtrPct it is taken from the old
+        SETUP_GATES.
 
         Section keys are carried forward from `current` (2026-10-10). A CREATE sends no key -
         the server mints a custom section's `sectionKey` and derives a clause's
@@ -561,7 +586,11 @@ class StrategyPlan:
                     f"`current`; omega never invents a live strategy's dial")
             return {d: named[d] if d in named else have[d] for d in dials}
 
-        out["SETUP_GATES"]["minAtrPct"] = complete("SETUP_GATES", ("minAtrPct",))["minAtrPct"]
+        # a pre-v108 read: minAtrPct still sits on SETUP_GATES (RETIRED_AXES are never staged)
+        legacy_atr = (current.get("SETUP_GATES") or {}).get("minAtrPct")
+        tlp = current.get("TRADE_LEVEL_POLICY") or {}
+        if "minAtrPct" not in tlp and legacy_atr is not None:
+            current = {**current, "TRADE_LEVEL_POLICY": {**tlp, "minAtrPct": legacy_atr}}
         for axis, dials in (("TRADE_LEVEL_POLICY", TRADE_LEVEL_DIALS),
                             ("POSITION_MANAGEMENT", POSITION_MANAGEMENT_DIALS)):
             if named.keys() & set(dials):
@@ -663,21 +692,24 @@ class StrategyPlan:
         }
 
     def render(self) -> str:
-        c, mem, sim = self.cost(), self.membership(), self.simulate()
-        weighted = [r for r in self.rules if r.allocation > 0]
+        c = self.cost()
         lines = [
             f"{self.thesis.name}  --  {self.thesis.tagline}",
-            f"anchor {self.thesis.anchor} | gate {self.thesis.gate:.2f} | "
+            f"anchor {self.thesis.anchor} | stance {self.thesis.stance} | "
             f"{len(self.report.sections)} sections | {c.columns} columns | {c.headers} headers",
             "",
-            f"weighted signals  {len(weighted):>3} of {len(mem.signals_in)} in report",
+            # contract 108: the modules the report shows (the weights' keys) - no signal tally
+            f"report modules    {len(self.thesis.modules):>3}",
         ]
         by_tier: dict[int, list[str]] = {}
-        for r in weighted:
-            by_tier.setdefault(r.allocation, []).append(r.signalId)
+        for m, tier in self.thesis.weights.items():
+            by_tier.setdefault(tier, []).append(m)
         for tier in sorted(by_tier, reverse=True):
-            lines.append(f"  tier {tier}  ({len(by_tier[tier])})  {', '.join(sorted(by_tier[tier])[:4])}"
-                         + (" ..." if len(by_tier[tier]) > 4 else ""))
+            lines.append(f"  tier {tier}  {', '.join(by_tier[tier])}")
+        if self.thesis.context:
+            lines.append(f"  context  {', '.join(self.thesis.context)}")
+        gates = self.entry_gates()
+        lines += ["", "entry gate: " + (", ".join(gates) if gates else "NONE (NO_ENTRY_CONDITION)")]
         if self.conditions:
             lines += ["", f"conditions        {len(self.conditions):>3}"]
             for cond in self.conditions:
@@ -685,10 +717,6 @@ class StrategyPlan:
                 if cond.get("exitSide"):
                     v = f"x{cond['exitSide']}"       # an exit rule: the side it closes
                 lines.append(f"  {cond['conditionKey']:<16} {v:<8} {cond['name']}")
-        if sim:
-            lines += ["", f"all-signals-at-0.75 -> aggregate {sim.aggregate_score_percent}% "
-                          f"vs gate {sim.gate_percent}% -> "
-                          f"{'ROUTES' if sim.would_route else 'held'}"]
         lines += ["", "assumptions:"] + [f"  - {x}" for x in self._assumptions()]
         lines += ["", "critique:"] + [f"  - {x}" for x in self.critique()]
         return "\n".join(lines)
@@ -759,9 +787,12 @@ def _plainest_transform(metric: str) -> str:
 
 
 def _scoring_data_columns(rules: list[Rule], recipe: list[dict]) -> list[dict]:
-    """One column per (metric, rung) a weighted signal scores on that the recipe columns do not
+    """RETIRED at contract 108 (the 2026-10-10 rung-gap columns; plan_pre_108 only).
+
+    One column per (metric, rung) a weighted signal scores on that the recipe columns do not
     show: the metric at the rung's rel (RUNG_REL), plainest transform, in rule order. What
-    BattleGrid lists as ACTIVE_SIGNAL_DATA_NOT_IN_REPORT (membership.scoring_gaps)."""
+    BattleGrid listed as ACTIVE_SIGNAL_DATA_NOT_IN_REPORT (membership.scoring_gaps) until 108
+    removed signals and the draft's `mismatches` with them."""
     shown = shown_data(Report(sections=[CustomSection(
         title="recipe", benchmarkTicker=None,
         columns=[Column.model_validate(c) for c in recipe])])) if recipe else set()
@@ -778,23 +809,41 @@ def _scoring_data_columns(rules: list[Rule], recipe: list[dict]) -> list[dict]:
     return out
 
 
-def plan(thesis: Thesis) -> StrategyPlan:
-    """Turn a thesis into a validated report plus allocations."""
+def signal_rules(thesis: Thesis) -> list[Rule]:
+    """RETIRED at contract 108 (2026-10-11): the signal allocation plan() made until then. Every
+    signal of a weighted module (tier > 0) that the module recipes feed, at the module's tier;
+    `required` False (Thesis.required retired with the required-count gate). Membership is
+    module-level (docs/07), so the 2026-10-10 scoring-data columns never widened it."""
     m = _map()
-    c = load()
     candle, inert = _split_by_timeframe_mode(thesis.modules)
-
-    # allocate only what the report can actually feed (membership is module-level, so the
-    # scoring-data columns below never widen it: every metric they add belongs to a module
-    # the thesis already weights)
     feedable = signals_for({s["metric"] for s in candle + inert})
     rules: list[Rule] = []
     for module, tier in thesis.weights.items():
         for sid in m["moduleSignals"].get(module, []):
             if sid in feedable and tier > 0:
-                rules.append(Rule(signalId=sid, allocation=tier,
-                                  required=sid in thesis.required))
-    if thesis.show_scoring_data:
+                rules.append(Rule(signalId=sid, allocation=tier, required=False))
+    return rules
+
+
+def plan(thesis: Thesis) -> StrategyPlan:
+    """Turn a thesis into a validated report and its conditions (contract 108: no allocations -
+    the report is the module recipes of `thesis.modules`, the conditions the entry gate)."""
+    return _plan(thesis, rules=[], scoring_data=False)
+
+
+def plan_pre_108(thesis: Thesis, *, show_scoring_data: bool = True) -> StrategyPlan:
+    """RETIRED at contract 108: the plan omega.generate.plan made at v0.3.2 - the signal allocation
+    (signal_rules) and, with show_scoring_data, the 2026-10-10 scoring-data columns. Kept so the
+    measured pre-108 diagnostics (tests/test_recipes_rung_gap.py) stay reproducible. Its axes()
+    are the 108 axes all the same: the scorecard is in `.rules` and `._rules()`, never staged."""
+    rules = signal_rules(thesis)
+    return _plan(thesis, rules=rules, scoring_data=show_scoring_data)
+
+
+def _plan(thesis: Thesis, *, rules: list[Rule], scoring_data: bool) -> StrategyPlan:
+    c = load()
+    candle, inert = _split_by_timeframe_mode(thesis.modules)
+    if scoring_data:
         for spec in _scoring_data_columns(rules, candle + inert):
             (inert if c.metric(spec["metric"]).is_timeless else candle).append(spec)
 
@@ -897,8 +946,10 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
 
 
 def plan_for_signals(signal_ids: list[str], *, name: str = "Ad-hoc", tier: int = 2,
-                     gate: float = 0.65, anchor: str = "1h") -> StrategyPlan:
-    """Work backwards: given signals you want to weight, build the report that feeds them."""
+                     anchor: str = "1h") -> StrategyPlan:
+    """RETIRED at contract 108 (signal rules removed): work backwards from signals you wanted to
+    weight - the modules that feed them become the thesis's weights, and the plan is the pre-108
+    one (plan_pre_108, no scoring-data columns) so `.rules` still names what was allocated."""
     m = _map()
     modules, unreachable = [], []
     for sid in signal_ids:
@@ -907,9 +958,9 @@ def plan_for_signals(signal_ids: list[str], *, name: str = "Ad-hoc", tier: int =
             unreachable.append(sid)
         elif module not in modules:
             modules.append(module)
-    thesis = Thesis(name=name, tagline="built from target signals", anchor=anchor, gate=gate,
+    thesis = Thesis(name=name, tagline="built from target signals", anchor=anchor,
                     weights={mod: tier for mod in modules})
-    result = plan(thesis)
+    result = plan_pre_108(thesis, show_scoring_data=False)
     if unreachable:
         result.thesis.description = (
             f"unreachable and therefore unallocated: {', '.join(unreachable)}")

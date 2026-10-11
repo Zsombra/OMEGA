@@ -17,7 +17,8 @@ def test_the_defaults_are_the_measured_ones():
 
 
 def _dials(axes: dict) -> dict:
-    return {**axes["SETUP_GATES"], **axes["TRADE_LEVEL_POLICY"], **axes["POSITION_MANAGEMENT"]}
+    # contract 108: minAtrPct rides on TRADE_LEVEL_POLICY; SETUP_GATES is refused
+    return {**axes["TRADE_LEVEL_POLICY"], **axes["POSITION_MANAGEMENT"]}
 
 
 def test_presets_send_every_dial_at_the_measured_defaults():
@@ -42,9 +43,11 @@ def test_an_explicit_override_reaches_its_axis():
 def test_every_dial_has_exactly_one_axis():
     from omega.execution import (POSITION_MANAGEMENT_DIALS, POSITION_MANAGEMENT_MIRROR,
                                  SETUP_GATE_DIALS, TRADE_LEVEL_DIALS)
-    placed = list(SETUP_GATE_DIALS) + list(TRADE_LEVEL_DIALS) + list(POSITION_MANAGEMENT_DIALS)
+    placed = list(TRADE_LEVEL_DIALS) + list(POSITION_MANAGEMENT_DIALS)
     assert len(placed) == len(set(placed))
     assert set(placed) == EXECUTION_PARAMS | set(POSITION_MANAGEMENT_MIRROR)
+    # the retired v91 SETUP_GATES dial is TRADE_LEVEL_POLICY's at 108 (README "Contract history - v108")
+    assert set(SETUP_GATE_DIALS) <= set(TRADE_LEVEL_DIALS) and TRADE_LEVEL_DIALS[0] == "minAtrPct"
 
 
 def test_schema_bounds_are_the_ones_the_2026_09_18_capture_declares():
@@ -109,11 +112,11 @@ def test_an_open_lower_bound_still_validates_the_upper_edge():
 
 def test_the_retired_schema_bounds_warn_and_never_gate():
     """Plan 2026-10-06: SCHEMA_BOUNDS "becomes a record of a retired schema, never a gate".
-    The v91 axis schemas declare no bound on any dial, and since v89 a create is judged at
+    The v91 and v108 axis schemas declare no bound on any dial, and since v89 a create is judged at
     the operator bounds configured now, in the draft's diagnostics and at commit."""
     from omega.contract import stage_schema
     axes = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
-    for axis in ("SETUP_GATES", "TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"):
+    for axis in ("TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"):
         for name, node in axes[axis]["properties"].items():
             assert not {"minimum", "maximum", "multipleOf"} & set(node), (axis, name)
     lo, hi = SCHEMA_BOUNDS["breakEvenTriggerR"]

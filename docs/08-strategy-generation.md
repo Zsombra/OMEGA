@@ -316,3 +316,78 @@ re-deriving it. The 2026-08-29 compile-path UPDATE re-minted custom keys sent
 byte-identical (`LOCKSTEP_REMINT`, [`first_generated_update_2026-08-29.json`](../data/audit/first_generated_update_2026-08-29.json));
 the v91 commit of 2026-10-10 kept them through nulls. The next live UPDATE is the
 measurement, and it is the user's word.
+
+## 2026-10-11: contract 108 — conditions are the only entry gate
+
+Contract 108.0.0 (live 2026-10-10 21:53Z; README "Contract history — v108", vendored at
+`.agents/skills/battlegrid/README.md`, pack 31.2.94) removed signal rules, the aggregate-score
+gate and the required-count gate. "A strategy's deterministic entry gate is its conditions: a
+required condition, or a condition that carries a verdict. A strategy that declares neither never
+trades, and its draft says so with the warning `NO_ENTRY_CONDITION`." The write surface is saved at
+[`schema_20261010T215326Z.json`](../data/contract/stage_strategy_draft/schema_20261010T215326Z.json)
+(input and output schemas of the six draft tools, from battlegrid-manager's 108 fixture) and the
+manifest's `writeSurface` names it; the 91.0.0 capture stays as its `supersedes`. The plan is
+[`2026-10-11-omega-v108-conditions-only.md`](plans/2026-10-11-omega-v108-conditions-only.md).
+Everything above about `SETUP_GATES`, `SIGNAL_RULES`, the gate, allocations, the dense scorecard
+and the scoring-data columns is history.
+
+| omega | at 108 |
+|---|---|
+| `plan(t).axes()` | **eight** axes: `IDENTITY`, `TIMEFRAME_PROFILE`, `REPORT`, `MARKET_READ`, `CONDITIONS`, `ENTRY`, `TRADE_LEVEL_POLICY`, `POSITION_MANAGEMENT`. v108 refuses `SIGNAL_RULES` and `SETUP_GATES` "as unrecognized keys" |
+| `TRADE_LEVEL_POLICY` | `{minAtrPct, minStopLossAtrMultiple, maxStopLossAtrMultiple, minRiskRewardRatio}`, all four required (the ATR floor moved here from `SETUP_GATES`; "a `TRADE_LEVEL_POLICY` stage without it is refused") |
+| `plan(t).axes_update(current)` | the axes without `ENTRY`; a dial axis only when the thesis names one of its dials, the rest from `current`. Nothing forces a dial axis any more (`SETUP_GATES` was always staged because it carried the gate). A `current` read before 108 is accepted: its `SETUP_GATES` / `SIGNAL_RULES` are never staged, and `minAtrPct` is taken from the old `SETUP_GATES` when its `TRADE_LEVEL_POLICY` lacks it |
+| `plan(t).preview_request()` | unchanged; `preview_strategy_report`'s input schema is identical at 106 and 108 |
+| `plan(t).condition_findings()` | adds `NO_ENTRY_CONDITION` as an **error** when no entry condition is `required` or carries a verdict — the platform only warns, but a strategy that can never trade is not a plan |
+| `plan(t).entry_gates()` | the conditionKeys that gate entry; `render()` and `authoring.brief()` print them |
+
+**The thesis.** `Thesis` is now, in order: `name, tagline, description, anchor, weights, stance,
+context, coin_selection, execution, exits`. Three fields are retired — removed, not aliased; passing
+one is a `TypeError`:
+
+- `gate` was `SETUP_GATES.minAggregateScore`; there is no gate to set.
+- `required` named signal ids counted into `minRequiredCount`; there are no signal rules
+  (`THESIS_UNFEEDABLE_REQUIRED` retired with it).
+- `show_scoring_data` added the 2026-10-10 columns showing each weighted signal's data at its rung;
+  with no signals they fed nothing.
+
+`weights` keeps its role and its name. **Its keys choose the modules whose recipe columns the REPORT
+shows** — the agent's model reads the report — **and the modules whose readings the condition
+checklist reads** (directional modules give the `up`/`down` clauses, `TREND_STRENGTH` and
+`VOLATILITY` the filters). The tier number (0–3) was also the allocation of every signal in the
+module; at 108 it has no platform meaning, is still validated 0–3 so existing theses stay legal, and
+is only rendered. `context` keeps its role too: modules whose columns the report shows and the
+checklist does not read.
+
+**The presets' entry gates.** Every preset weights at least two directional modules, so
+`_build_conditions` already emitted two verdict carriers; nothing in any preset had to change, and
+none declares a required condition.
+
+| preset | entry gate | columns 10-10 → 108 | dropped (they only fed signals) |
+|---|---|---|---|
+| mean-reversion | `MR_UP` (UP), `MR_DOWN` (DOWN) | 17 → 12 | `CCI20`, `BB_WIDTH` @anchor; `RSI14` @regime, @lower; `FUNDING_ANN` @anchor |
+| trend-continuation | `TC_UP`, `TC_DOWN` | 14 → 8 | `MA_ALIGN` @regime, @lower; `EMA20`, `EMA_CROSS` @anchor; `ADX` @regime, @lower |
+| squeeze-breakout | `SB_UP`, `SB_DOWN` | 12 → 10 | `CCI20`, `BB_WIDTH` @anchor |
+| flow-divergence | `SA_UP`, `SA_DOWN` | 11 → 10 | `FUNDING_ANN` @anchor |
+| structure-reversal | `SR_UP`, `SR_DOWN` | 13 → 10 | `STRUCT_ZONES` count @regime; `RSI14` @regime, @lower |
+
+The REPORT keeps every module-recipe column (the weighted modules the agent reads and the columns the
+conditions read — `tests/test_recipes_rung_gap.py` checks no condition header went with the drop).
+Each preset now reads its anchor alone (one distinct timeframe; three before for mean-reversion,
+trend-continuation and structure-reversal), and trend-continuation's agent-token estimate falls from
+~918 to ~756.
+
+**The critique** lost every signal line: no `wasted allocation`, no `context-only metrics (feed no
+signal)`, no `scoring` prediction, no all-signals-at-0.75 aggregate. It gained the entry gate. The
+correlated-oscillator warning stays: two oscillators in the `N_OF` checklist still count one piece
+of evidence twice.
+
+**History, kept importable, called by nothing on the generation path:** `StrategyPlan._rules()`
+(the dense 84-row scorecard), `StrategyPlan.rules` (empty from `plan()`), `signal_rules(thesis)`,
+`plan_pre_108(thesis, show_scoring_data=True)` (the v0.3.2 plan, for the measured pre-108
+diagnostics), `_scoring_data_columns`, `StrategyPlan.simulate(score, gate=…)`, `membership()`,
+`allocation_findings()` (always `[]` now; battlegrid-manager still calls it), `plan_for_signals`,
+`AXES_91`, `execution.SETUP_GATE_DIALS`, and the modules `omega.membership`, `omega.scoring`,
+`omega.aggregate`. `scripts/compare_vocabulary.py` compares metrics and section keys only (no
+`signalId` enum is served), and the preflight fingerprints the eight axes with no signal check.
+
+Nothing here was staged, previewed or committed; no platform call was made.

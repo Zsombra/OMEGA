@@ -1,5 +1,10 @@
 """The strategy scorecard aggregation math.
 
+RETIRED at contract 108 (2026-10-11): "signal rules, the aggregate-score gate and the required-count gate are removed" (README "Contract history - v108"). `simulate_aggregate_score` was
+removed with no alias and no strategy has a minAggregateScore. HISTORY: kept importable for
+omega.feasibility, StrategyPlan.simulate (retired) and their tests; nothing on the generation
+path calls it.
+
 Reverse-engineered from `simulate_aggregate_score` and confirmed by probe:
 signals {score 1 @ alloc 3, score 0 @ alloc 1} -> aggregate 0.75 = (1*3 + 0*1) / (3 + 1).
 

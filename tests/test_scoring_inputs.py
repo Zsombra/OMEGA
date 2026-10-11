@@ -8,11 +8,14 @@ since 2026-10-10 a lower rung is shown by a rel:lower column and a signalHigher 
 rel:regime column - the vocabulary's two non-anchor rels, the platform's own
 includeHigherTimeframe / includeMtfConfluence columns (omega.membership.RUNG_REL;
 tests/test_recipes_rung_gap.py). The regime half is predicted from that vocabulary and owed
-a live stage."""
+a live stage.
+
+RETIRED at contract 108 (2026-10-11): signals and the draft's `mismatches` are gone. These tests
+pin the history - the pre-108 plan is omega.generate.plan_pre_108."""
 import json
 from pathlib import Path
 
-from omega.generate import PRESETS, plan
+from omega.generate import PRESETS, plan_pre_108
 from omega.membership import scoring_gaps
 from omega.types import Column, CustomSection, Report, Rule
 
@@ -41,7 +44,7 @@ def test_trend_continuation_reproduces_the_platforms_own_mismatches_exactly():
     exactly what BattleGrid's diagnostics listed for the same axes - the pre-2026-10-10 shape
     (REGIME as context, no scoring-data columns), which the preset no longer is."""
     from dataclasses import replace
-    p = plan(replace(PRESETS["trend-continuation"], context=["REGIME"], show_scoring_data=False))
+    p = plan_pre_108(replace(PRESETS["trend-continuation"], context=["REGIME"]), show_scoring_data=False)
     gaps = scoring_gaps(p.report, p.rules)
     assert all(f.code == "SCORING_INPUT_NOT_RENDERED" and f.severity == "warning" for f in gaps)
     predicted = {f.path.removeprefix("rules."): f.missing for f in gaps}
@@ -55,7 +58,7 @@ def test_every_preset_now_warns_from_the_measured_map_not_silence():
     from dataclasses import replace
     from omega.membership import _signal_data
     for name in PRESETS:
-        p = plan(replace(PRESETS[name], show_scoring_data=False))
+        p = plan_pre_108(PRESETS[name], show_scoring_data=False)
         assert scoring_gaps(p.report, p.rules), name
         for f in scoring_gaps(p.report, p.rules):
             sid = f.path.removeprefix("rules.")

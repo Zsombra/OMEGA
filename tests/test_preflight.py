@@ -499,7 +499,7 @@ def test_mirror_findings_handles_a_list_valued_body_condition_field_without_rais
     assert ("MIRROR", "conditions[0].exitSide", "WARN") in {(f.cls, f.path, f.verdict) for f in finds}
 
 
-# --- the v91 stage schema: axes, nested unions, fingerprint -------------------------
+# --- the stage schema the manifest names (108.0.0 since 2026-10-11): axes, nested unions, fingerprint ---
 
 from omega.contract import stage_schema                         # noqa: E402
 from omega.generate import PRESETS, plan                         # noqa: E402
@@ -511,13 +511,13 @@ def _v91():
 
 def test_resolve_axes_reads_every_capture_shape():
     """The saved multi-tool file, a manager surface entry ({inputSchema}) and a ToolSearch
-    definition ({parameters}) resolve to the same ten axes."""
+    definition ({parameters}) resolve to the same eight axes (108.0.0)."""
     saved = stage_schema()
     entry = saved["stage_strategy_draft"]
     toolsearch = {"name": "x", "parameters": entry["inputSchema"]}
     for d in (saved, entry, toolsearch):
         axes, root = P.resolve_axes(d)
-        assert set(axes) == set(P.AXES_91)
+        assert set(axes) == set(P.AXES_108) == set(P.AXES_91) - {"SETUP_GATES", "SIGNAL_RULES"}
         assert root is entry["inputSchema"]
     with pytest.raises(P.UnsupportedSchema):
         P.resolve_axes({"name": "x"})
@@ -584,15 +584,22 @@ def test_fingerprint_axes_passes_the_saved_schema_and_flags_a_truncated_enum():
     import importlib.util
     spec = importlib.util.spec_from_file_location("preflight_cli_fp", ROOT / "scripts" / "preflight.py")
     cli = importlib.util.module_from_spec(spec); spec.loader.exec_module(cli)  # type: ignore[union-attr]
-    kw = dict(signal_ids=cli.repo_signal_ids(), template_keys=cli.repo_template_keys(),
-              timeframes=cli.repo_timeframes())
+    kw = dict(template_keys=cli.repo_template_keys(), timeframes=cli.repo_timeframes())
     axes, root = _v91()
     assert P.fingerprint_axes(axes, root, **kw) == []
-    short = dict(kw, signal_ids=kw["signal_ids"] | {"made_up_signal"})
+    short = dict(kw, template_keys=kw["template_keys"] | {"madeUpSection"})
     [f] = P.fingerprint_axes(axes, root, **short)
-    assert f.cls == "TRANSCRIPTION_SUSPECT" and "SIGNAL_RULES" in f.path and f.verdict == "FAIL"
+    assert f.cls == "TRANSCRIPTION_SUSPECT" and "REPORT" in f.path and f.verdict == "FAIL"
     missing = {k: v for k, v in axes.items() if k != "ENTRY"}
     assert any(f.path == "axes" for f in P.fingerprint_axes(missing, root, **kw))
+    # contract 108: no signalId check survives - the retired 91 capture now reads as the wrong axis set
+    import json as _json
+    old = _json.loads((ROOT / "data/contract/stage_strategy_draft/schema_20261005T194629Z.json")
+                      .read_text(encoding="utf-8"))
+    old_axes, old_root = P.resolve_axes(old)
+    [f] = P.fingerprint_axes(old_axes, old_root, **kw)
+    assert f.path == "axes" and "eight of 108.0.0" in f.detail
+    assert not hasattr(cli, "repo_signal_ids")
 
 
 def test_schema_index_and_changelog_see_enum_growth_and_new_optional_keys():

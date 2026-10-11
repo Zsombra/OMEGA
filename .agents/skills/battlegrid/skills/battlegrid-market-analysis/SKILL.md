@@ -20,7 +20,10 @@ Run these in order. Skip a step only when the player's question makes it irrelev
 
 1. **Regime.** `get_regime_snapshot` for the current read. `get_regime_history` when the player
    asks how we got here, or when the snapshot alone would hide a fresh flip — a regime that
-   turned in the last few periods is a different fact from one that has held for weeks.
+   turned in the last few periods is a different fact from one that has held for weeks. Read the
+   snapshot's evidence before its label: a label the hysteresis buffer is **holding** is the
+   previous bar's, not this bar's, and conviction names which rule matched, not how comfortably —
+   the margins to each gate say how close the read is to turning.
 2. **Market context.** `get_market_context` — this carries the breadth, funding and open-interest
    picture. Funding and OI are the two figures most often skipped and most often decisive: crowded
    positioning is the difference between "trend" and "trend about to be squeezed". Report both.
@@ -28,9 +31,11 @@ Run these in order. Skip a step only when the player's question makes it irrelev
    "strength in majors". A laggard list is as informative as a leader list and is usually omitted.
 3b. **Many coins on the same indicators — one call, not one per coin.** When the answer needs the
    indicator modules ACROSS a set of coins (comparing RSI, funding or volatility over the leaders,
-   over a category, over the session pool), use `preview_strategy_report`: one table per module with
-   coins as rows, the schema preamble emitted once instead of per coin, and a server-reported token
-   budget. Ask `list_strategy_categories` for the section catalogue and pass the sections you want,
+   over a category, over the session pool), use `preview_strategy_report`: one section JSON per
+   module with coins as rows, each column described once instead of per coin, and the exact size of
+   the response it served (`budgetUsage.resultChars`). The default `detail: "concise"` is the read;
+   `"detailed"` adds only the authoring contract a strategy builder needs. Ask
+   `list_strategy_categories` for the section catalogue and pass the sections you want,
    each as `{ "kind": "platform", "sectionKey": "includeRsi" }`, inside
    `source: { "kind": "FIELDS", "timeframe": …, "sections": [ … ] }` — no authoring vocabulary is
    needed. Use `{ "mode": "ranked", "limit": N }` as the coin selection when you have no explicit
