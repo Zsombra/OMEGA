@@ -36,6 +36,9 @@ from .types import CustomSection, PlatformSection, Report
 CONDITION_KEY = re.compile(r"^[A-Z][A-Z0-9_]{1,39}$")
 GROUP_OPS = ("ALL", "ANY", "NOT", "N_OF")
 NUMERIC_OPS = ("lt", "lte", "gte", "gt")
+# The clause operators omega has a builder for and validate_conditions checks. The schema's own list is
+# data/derived/condition_vocabulary_108.json `clauseOperators`; omega.condition_vocabulary.gaps() diffs the two.
+MODELLED_CLAUSE_OPS = NUMERIC_OPS + ("between", "is", "in")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
 CARRIER_VERDICTS = ("UP", "DOWN", "NEITHER")
 # Contract 91.0.0 (data/contract/stage_strategy_draft/schema_20261005T194629Z.json, the
