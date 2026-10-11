@@ -91,6 +91,27 @@
    "note": "The 91.0.0 write surface (ten axes, SIGNAL_RULES and SETUP_GATES among them). Kept as history; never read as the current write surface."
   }
  },
+ "conditionVocabulary": {
+  "_what": "The condition vocabulary and column enums the 108 write schema serves, DERIVED from writeSurface.schema (no platform call): data/derived/condition_vocabulary_108.json, written by scripts/derive_condition_vocabulary.py and re-derived by tests/test_condition_vocabulary_108.py. omega.conditions models all 13 clause operators (the six v98 prior-bar ones since 2026-10-11) and validate_conditions errs exactly where the schema refuses; which header admits which operator is served per header (conditionOperators) and is checked offline only as a quoted warning.",
+  "derived": "data/derived/condition_vocabulary_108.json",
+  "notedAt": "2026-10-11",
+  "plan": "docs/plans/2026-10-11-omega-condition-vocabulary-108.md",
+  "metrics": {
+   "served": 171,
+   "measured": 156,
+   "knownUnmeasured": 15,
+   "knownUnmeasuredRecord": "data/contract/metrics/_unmeasured_108.json",
+   "note": "The 15 served metrics the 61.2.0 extraction never measured (README v100: twelve bar-geometry metrics; v101.1: three swing metrics) are known NAMES: their transform admissibility, kind, header and vocabulary are UNMEASURED offline. omega.validate refuses a column over one (METRIC_UNMEASURED) and no generated plan uses one; scripts/compare_vocabulary.py counts them as stored and names them under storedUnmeasured. The 156 measured metrics are still the 61.2.0 extraction (this manifest's servedContractVersion); none was re-measured at 108."
+  },
+  "transforms": {
+   "served": 17,
+   "omegaAuthorable": 16,
+   "note": "Served and not modelled: levelInteraction (v100) and classifyState (platform-privileged at 61.2.0). Modelled and no longer served: bandTouch (retired at v100) - the 61.2.0 corpus and omega.space still carry it; the generator never emits it and the preflight's schema walk refuses it (ENUM). Not closed here: it is a REPORT re-extraction."
+  },
+  "columnFields": {
+   "note": "buffer (v100, levelInteraction only) is served and not on omega.types.Column; the 64 maxima on window/offset/columns that v103 removed are still on the Column model. Not closed here."
+  }
+ },
  "retired": {
   "data/contract/compile_strategy_plan/": "Captures of the compile_strategy_plan definition (2026-09-05, 09-09, 09-18; contracts 51-era to 61.0.1). The tool was removed at contract 85.0.0. Kept as history and as the record the old receipts name; never read as the current write surface.",
   "data/contract/get_strategy/": "Pre-v84 read-backs (2026-09-05, 2026-09-18). Their conditions carry `closes` (removed at v84) and `exit` (removed at v88), so they cannot be a mirror for a v91 body. Kept as history; never read as current until a v91 read-back is captured.",

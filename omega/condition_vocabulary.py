@@ -321,7 +321,10 @@ def gaps() -> dict:
     return {
         "clauseOperators": diff(v["clauseOperators"], MODELLED_CLAUSE_OPS),
         "groupOperators": diff(v["groupOperators"], GROUP_OPS),
-        "metrics": diff(col["metric"]["enum"], c.metrics),
+        # the measured corpus plus the names known only (data/contract/metrics/_unmeasured_108.json) ...
+        "metrics": diff(col["metric"]["enum"], set(c.metrics) | set(c.unmeasured_metrics)),
+        # ... and of those, the ones whose transform admissibility is unmeasured
+        "metricsUnmeasured": sorted(c.unmeasured_metrics),
         "transforms": diff(col["transformId"]["enum"], c.transforms),
         "columnFields": diff(col["fields"], Column.model_fields),
     }

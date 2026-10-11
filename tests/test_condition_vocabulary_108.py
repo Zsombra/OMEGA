@@ -195,7 +195,9 @@ def test_the_gaps_between_the_schema_and_omega():
     # (tests/test_conditions_prior_bar.py); before, schemaOnly was exactly PRIOR_BAR
     assert gaps["clauseOperators"] == {"schemaOnly": [], "omegaOnly": []}
     assert gaps["groupOperators"] == {"schemaOnly": [], "omegaOnly": []}
-    assert gaps["metrics"] == {"schemaOnly": ADDED_SINCE_61_2, "omegaOnly": []}
+    # known by name since 2026-10-11 (data/contract/metrics/_unmeasured_108.json); before, schemaOnly was these 15
+    assert gaps["metrics"] == {"schemaOnly": [], "omegaOnly": []}
+    assert gaps["metricsUnmeasured"] == ADDED_SINCE_61_2
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
     # the enum and was platform-privileged at the 61.2.0 extraction (data/derived/platform_privileged.json)
     assert gaps["transforms"] == {"schemaOnly": ["classifyState", "levelInteraction"], "omegaOnly": ["bandTouch"]}
