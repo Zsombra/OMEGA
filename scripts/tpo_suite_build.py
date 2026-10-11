@@ -443,7 +443,6 @@ def thesis_for(s: dict) -> Thesis:
         tagline=_cap(s["thesis"], "tagline"),
         description=_cap(s["thesis"] + " " + s["teaches"], "description"),
         anchor=ANCHOR,
-        gate=GATE_MIRROR["minAggregateScore"],
         coin_selection=dict(COIN_SELECTION),
     )
 

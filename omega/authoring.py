@@ -121,13 +121,7 @@ def validate_thesis(thesis: Thesis) -> list[Finding]:
                            f"ranked limit {sel['limit']} exceeds the measured BG-14 "
                            f"boundary {RANKED_LIMIT_MEASURED_MAX} - the compile "
                            f"preview refuses above it (measured 2026-08-28)"))
-    feedable = {sid for m, tier in thesis.weights.items() if tier > 0
-                for sid in _map()["moduleSignals"].get(m, [])}
-    for sid in thesis.required:
-        if sid not in feedable:
-            out.append(Finding("error", "THESIS_UNFEEDABLE_REQUIRED", f"required.{sid}",
-                               f"{sid} is marked required but no weighted module "
-                               f"feeds it - it could never fire"))
+    # THESIS_UNFEEDABLE_REQUIRED retired 2026-10-11 with Thesis.required (contract 108: no signal rules)
     # contract 108: conditions are the only entry gate - a thesis whose generated conditions carry no
     # verdict and no required condition yields a strategy that never trades (the draft's NO_ENTRY_CONDITION)
     try:
@@ -159,7 +153,7 @@ def brief(p) -> str:
         f"{t.name}" + (f" - {t.tagline}" if t.tagline else ""),
         f"stance {t.stance} | anchor {t.anchor} "
         f"({CADENCE_FOR_ANCHOR.get(t.anchor, '?')}/"
-        f"{REGIME_TF_FOR_ANCHOR.get(t.anchor, '?')}) | gate {t.gate} | "
+        f"{REGIME_TF_FOR_ANCHOR.get(t.anchor, '?')}) | "
         f"universe {t.resolved_coin_selection()}",
         "weighted modules: " + (", ".join(
             f"{m}:{tier}" for m, tier in sorted(t.weights.items()) if tier) or "none"),

@@ -92,9 +92,12 @@ def test_universe_bounds_are_the_measured_ones():
     assert "THESIS_UNIVERSE_TOO_WIDE" in _codes(fat)
 
 
-def test_unfeedable_required_signal_is_an_error():
-    t = replace(PRESETS["trend-continuation"], required=["cvd_bullish"])  # CVD unweighted
-    assert "THESIS_UNFEEDABLE_REQUIRED" in _codes(t)
+def test_the_required_signal_check_is_retired_with_the_field():
+    """THESIS_UNFEEDABLE_REQUIRED checked Thesis.required (signal ids); both retired at contract 108."""
+    import pytest
+    with pytest.raises(TypeError):
+        replace(PRESETS["trend-continuation"], required=["cvd_bullish"])
+    assert "THESIS_UNFEEDABLE_REQUIRED" not in _codes(PRESETS["trend-continuation"])
 
 
 def test_an_unknown_exit_role_is_an_error():

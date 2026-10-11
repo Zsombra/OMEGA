@@ -216,18 +216,29 @@ RANKED_LIMIT_MEASURED_MAX = 4
 
 @dataclass
 class Thesis:
-    """What the strategy believes, expressed as modules and weights."""
+    """What the strategy believes, expressed as modules and weights.
+
+    2026-10-11, contract 108 ("signal rules, the aggregate-score gate and the required-count gate
+    are removed", README "Contract history - v108"): two fields are RETIRED, removed rather than
+    aliased, because nothing in omega reads them and the platform has no field to receive them:
+      `gate`     (was SETUP_GATES.minAggregateScore, after the `stance` slot: float, default 0.65)
+      `required` (was the signalIds counted into SETUP_GATES.minRequiredCount and sent as
+                  `required: true` SIGNAL_RULES rows; list[str])
+    A caller passing either gets a TypeError. The entry gate is now the conditions omega builds
+    from `weights` and `stance` (omega.conditions.entry_gates)."""
     name: str
     tagline: str = ""
     description: str = ""
     anchor: str = "1h"
-    gate: float = 0.65
-    # module -> allocation tier (0-3) applied to every signal in that module
+    # module -> tier (0-3). The KEYS choose the modules whose recipe columns the REPORT shows
+    # (the agent's model reads the report) and whose readings the condition checklist reads
+    # (directional modules: MODULE_CLAUSES "up"/"down"; filters: "filter"). Until contract 108
+    # the tier was also the allocation of every signal in the module; at 108 the tier has no
+    # platform meaning - it is validated 0..3 and rendered, nothing more.
     weights: dict[str, int] = field(default_factory=dict)
     # ALIGN: the tape should agree with the direction (trend theses).
     # FADE:  the crowd should be leaning the OTHER way (contrarian theses).
     stance: str = "ALIGN"
-    required: list[str] = field(default_factory=list)   # signalIds treated as vetoes
     # Modules included as reading material, weighted 0. BattleGrid lists each of their signals
     # whose data the report then shows as REPORT_DATA_SIGNAL_OFF and the module as
     # MODULE_IN_REPORT_SCORES_NOTHING (measured 2026-10-09/10 on REGIME: 4 + 1); the critique
@@ -277,7 +288,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Fade the stretch, only with flow agreeing",
         description="Oscillator extreme plus band breach, confirmed by flow and paid for by funding.",
         stance="FADE",
-        gate=0.65,
         weights={"BOLLINGER": 3, "RSI": 2, "CVD": 2, "FUNDING": 1, "VOLATILITY": 1},
     ),
     "trend-continuation": Thesis(
@@ -285,7 +295,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Never fight an aligned stack",
         description="Full MA alignment with trend strength, entered on momentum resumption.",
         stance="ALIGN",
-        gate=0.60,
         weights={"MOVING_AVERAGES": 3, "TREND_STRENGTH": 2, "MACD": 2, "VOLUME": 1},
     ),
     "squeeze-breakout": Thesis(
@@ -293,7 +302,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Coiled, then released",
         description="Volatility contraction into expansion, validated by participation and OI.",
         stance="ALIGN",
-        gate=0.55,
         weights={"BOLLINGER": 3, "VOLATILITY": 3, "VOLUME": 2, "OPEN_INTEREST": 1},
     ),
     "flow-divergence": Thesis(
@@ -301,7 +309,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Organic demand ahead of leverage",
         description="Spot CVD outpacing perp flow while funding stays unexcited.",
         stance="FADE",
-        gate=0.60,
         weights={"FLOW_DIVERGENCE": 3, "CVD": 2, "FUNDING": 2, "OPEN_INTEREST": 1},
     ),
     "structure-reversal": Thesis(
@@ -309,7 +316,6 @@ PRESETS: dict[str, Thesis] = {
         tagline="Turn at a level that means something",
         description="Price arriving at a structural zone with momentum divergence and flow confirmation.",
         stance="FADE",
-        gate=0.65,
         weights={"PRICE_STRUCTURE": 3, "SUPPORT_RESISTANCE": 2, "RSI": 2, "CVD": 1},
     ),
 }
@@ -368,13 +374,15 @@ class StrategyPlan:
     def allocation_findings(self):
         return check_allocations(self.report, [r for r in self.rules if r.allocation > 0])
 
-    def simulate(self, score: float = 0.75):
-        """What the aggregate would be if every weighted signal scored `score`."""
+    def simulate(self, score: float = 0.75, *, gate: float):
+        """RETIRED at contract 108 (2026-10-11): what the aggregate would have been if every
+        weighted signal scored `score`, against a minAggregateScore `gate`. The platform has no
+        aggregate and no gate since 108 (simulate_aggregate_score was removed with no alias);
+        kept as history of omega.aggregate's model, called by nothing on the generation path."""
         weighted = [r for r in self.rules if r.allocation > 0]
         if not weighted:
             return None
-        return aggregate([Signal(r.signalId, score, r.allocation) for r in weighted],
-                         self.thesis.gate)
+        return aggregate([Signal(r.signalId, score, r.allocation) for r in weighted], gate)
 
     def critique(self) -> list[str]:
         out: list[str] = []
@@ -400,11 +408,6 @@ class StrategyPlan:
         out.append(f"estimated agent tokens: ~{c.estimated_tokens} (what the agent reads; no platform token "
                    f"cap since contract 92 - the preview is capped at "
                    f"{load().shared['previewExecutionLimits']['maxResultChars']} result characters)")
-
-        sim = self.simulate()
-        if sim and not sim.would_route:
-            out.append(f"even at 0.75 across the board the aggregate is "
-                       f"{sim.aggregate_score_percent}% - below the {sim.gate_percent}% gate")
 
         predicted = predicted_diagnostics(self.report, self.rules)
         out += [f"scoring {f.severity}: {f}" for f in predicted["mismatches"] + predicted["warnings"]]
@@ -679,11 +682,11 @@ class StrategyPlan:
         }
 
     def render(self) -> str:
-        c, mem, sim = self.cost(), self.membership(), self.simulate()
+        c, mem = self.cost(), self.membership()
         weighted = [r for r in self.rules if r.allocation > 0]
         lines = [
             f"{self.thesis.name}  --  {self.thesis.tagline}",
-            f"anchor {self.thesis.anchor} | gate {self.thesis.gate:.2f} | "
+            f"anchor {self.thesis.anchor} | stance {self.thesis.stance} | "
             f"{len(self.report.sections)} sections | {c.columns} columns | {c.headers} headers",
             "",
             f"weighted signals  {len(weighted):>3} of {len(mem.signals_in)} in report",
@@ -703,10 +706,6 @@ class StrategyPlan:
                 if cond.get("exitSide"):
                     v = f"x{cond['exitSide']}"       # an exit rule: the side it closes
                 lines.append(f"  {cond['conditionKey']:<16} {v:<8} {cond['name']}")
-        if sim:
-            lines += ["", f"all-signals-at-0.75 -> aggregate {sim.aggregate_score_percent}% "
-                          f"vs gate {sim.gate_percent}% -> "
-                          f"{'ROUTES' if sim.would_route else 'held'}"]
         lines += ["", "assumptions:"] + [f"  - {x}" for x in self._assumptions()]
         lines += ["", "critique:"] + [f"  - {x}" for x in self.critique()]
         return "\n".join(lines)
@@ -810,8 +809,7 @@ def plan(thesis: Thesis) -> StrategyPlan:
     for module, tier in thesis.weights.items():
         for sid in m["moduleSignals"].get(module, []):
             if sid in feedable and tier > 0:
-                rules.append(Rule(signalId=sid, allocation=tier,
-                                  required=sid in thesis.required))
+                rules.append(Rule(signalId=sid, allocation=tier, required=False))
     if thesis.show_scoring_data:
         for spec in _scoring_data_columns(rules, candle + inert):
             (inert if c.metric(spec["metric"]).is_timeless else candle).append(spec)
@@ -915,7 +913,7 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
 
 
 def plan_for_signals(signal_ids: list[str], *, name: str = "Ad-hoc", tier: int = 2,
-                     gate: float = 0.65, anchor: str = "1h") -> StrategyPlan:
+                     anchor: str = "1h") -> StrategyPlan:
     """Work backwards: given signals you want to weight, build the report that feeds them."""
     m = _map()
     modules, unreachable = [], []
@@ -925,7 +923,7 @@ def plan_for_signals(signal_ids: list[str], *, name: str = "Ad-hoc", tier: int =
             unreachable.append(sid)
         elif module not in modules:
             modules.append(module)
-    thesis = Thesis(name=name, tagline="built from target signals", anchor=anchor, gate=gate,
+    thesis = Thesis(name=name, tagline="built from target signals", anchor=anchor,
                     weights={mod: tier for mod in modules})
     result = plan(thesis)
     if unreachable:

@@ -48,13 +48,6 @@ def test_preset_allocates_only_feedable_signals(name):
 
 
 @pytest.mark.parametrize("name", PRESET_IDS)
-def test_preset_can_clear_its_own_gate(name):
-    """A thesis whose signals all score well should route - otherwise the gate is unreachable."""
-    p = plan(PRESETS[name])
-    assert p.simulate(0.75).would_route
-
-
-@pytest.mark.parametrize("name", PRESET_IDS)
 def test_preset_separates_inert_metrics_into_their_own_section(name):
     p = plan(PRESETS[name])
     for section in p.report.sections:
@@ -140,11 +133,15 @@ def test_critique_flags_correlated_oscillators():
     assert "correlated oscillators" in text
 
 
-def test_critique_flags_an_unreachable_gate():
-    t = Thesis(name="Impossible", gate=0.99, weights={"RSI": 1})
+def test_the_critique_no_longer_simulates_an_aggregate_gate():
+    """Contract 108 removed the aggregate-score gate (and simulate_aggregate_score). The 0.75-across-the-board
+    check went from the critique and the render; StrategyPlan.simulate stays as history and now needs the gate
+    it is asked about, since no Thesis carries one."""
+    t = Thesis(name="Impossible", weights={"RSI": 1})
     p = plan(t)
-    assert any("below the" in x for x in p.critique())
-    assert not p.simulate(0.75).would_route
+    assert not any("below the" in x or "aggregate" in x for x in p.critique())
+    assert "all-signals-at-0.75" not in p.render()
+    assert not p.simulate(0.75, gate=0.99).would_route
 
 
 def test_generator_output_is_ascii_safe():
@@ -268,7 +265,7 @@ def test_render_carries_the_assumptions_that_no_longer_reach_the_platform():
 
 # --- exits: the v88 split, generated -----------------------------------------------
 
-EXITING = Thesis(name="Trend Continuation", tagline="t", description="d", gate=0.60,
+EXITING = Thesis(name="Trend Continuation", tagline="t", description="d",
                  weights={"MOVING_AVERAGES": 3, "TREND_STRENGTH": 2, "MACD": 2, "VOLUME": 1},
                  context=["REGIME"], exits=["CORE_UP", "UP"])
 
