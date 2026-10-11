@@ -81,6 +81,7 @@ def test_thirteen_clause_operators_in_five_arms():
         ["lt", "lte", "gte", "gt", "crossesAbove", "crossesBelow"], ["between"], ["is", "enters", "exits"],
         ["in"], ["increased", "decreased"]]
     assert all(arm["additionalProperties"] is False for arm in G["clauseArms"])
+    assert set(PRIOR_BAR) < set(V["clauseOperators"])
 
 
 def test_a_crossing_compares_the_column_with_one_number_value():
@@ -190,7 +191,9 @@ def test_a_moved_schema_derives_a_different_inventory():
 # --- what omega models against it -----------------------------------------------------------------
 def test_the_gaps_between_the_schema_and_omega():
     gaps = CV.gaps()
-    assert gaps["clauseOperators"] == {"schemaOnly": sorted(PRIOR_BAR), "omegaOnly": []}
+    # closed 2026-10-11: the six v98 operators have builders and validate_conditions checks their arms
+    # (tests/test_conditions_prior_bar.py); before, schemaOnly was exactly PRIOR_BAR
+    assert gaps["clauseOperators"] == {"schemaOnly": [], "omegaOnly": []}
     assert gaps["groupOperators"] == {"schemaOnly": [], "omegaOnly": []}
     assert gaps["metrics"] == {"schemaOnly": ADDED_SINCE_61_2, "omegaOnly": []}
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
