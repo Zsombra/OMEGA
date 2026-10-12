@@ -800,3 +800,23 @@ def test_string_format_keyword_is_declared_but_unchecked_info_not_unsupported():
     found = [f for f in P.diff_schema(body, arms["UPDATE"], root) if f.path == "strategyId"]
     assert [(f.cls, f.verdict) for f in found] == [("INFO", "INFO")]
     assert "format-unchecked" in found[0].detail and "uuid" in found[0].detail
+
+
+# --- deferred minors from the 2026-09-04 final review, closed 2026-10-12 ----------------------------
+
+def test_deref_follows_a_multi_hop_chain_and_stops_a_cycle():
+    """T1: a $ref whose target is itself a $ref (two hops) resolves to the final node; a cycle is refused rather
+    than looping (the 32-hop guard)."""
+    root = {"a": {"$ref": "#/b"}, "b": {"$ref": "#/c"}, "c": {"type": "integer", "minimum": 1},
+            "x": {"$ref": "#/y"}, "y": {"$ref": "#/x"}}
+    assert P.deref({"$ref": "#/a"}, root) == {"type": "integer", "minimum": 1}
+    with pytest.raises(P.UnsupportedSchema):
+        P.deref({"$ref": "#/x"}, root)
+
+
+def test_parse_iso_refuses_a_space_separator():
+    """The documented form is YYYY-MM-DDTHH:MM:SS[...]; datetime.fromisoformat also takes a space, so a hand-typed
+    `--now "2026-10-12 06:00:00Z"` used to pass. Every stored capturedAt/expiresAt uses the T."""
+    with pytest.raises(ValueError):
+        P.parse_iso("2026-10-12 06:00:00Z")
+    assert P.parse_iso("2026-10-12T06:00:00Z") == datetime(2026, 10, 12, 6, 0, tzinfo=timezone.utc)
