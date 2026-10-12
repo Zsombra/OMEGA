@@ -58,7 +58,8 @@ for path in sources:
     coins = doc.get("coins", doc)
     for coin in MAJORS:
         for row in coins.get(coin, []):
-            funding[coin][_hour(row["time"])] = float(row["rate"])
+            # the base file stores {time, rate}; a repull stores Hyperliquid's verbatim row {fundingRate: "<str>", ...}
+            funding[coin][_hour(row["time"])] = float(row["rate"] if "rate" in row else row["fundingRate"])
 
 
 def events(pct: float, new_only: bool) -> list[dict]:
