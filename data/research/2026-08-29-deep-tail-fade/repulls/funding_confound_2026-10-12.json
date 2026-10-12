@@ -1,0 +1,141 @@
+{
+ "_what": "FUNDING-leg confound test, Deep-Tail Fade. Reading pre-registered in funding_confound.py and committed (626a3f6) before this was computed.",
+ "computedAt": "2026-10-12T08:53:31Z",
+ "script": "data/research/2026-08-29-deep-tail-fade/repulls/funding_confound.py",
+ "sources": "base corpus + repulls 2026-08-30 .. 2026-09-12 (analyze_repull POLICY=latest); funding_history.json + every repull funding_raw.json",
+ "primary": "COMBINED >75th",
+ "readings": {
+  "COMBINED >75th": {
+   "events": 324,
+   "fundingMissing": 0,
+   "pooledDiff": 25.85818050842077,
+   "ci95": 27.037934206042966,
+   "verdict": "NOT SHOWN",
+   "sides": {
+    "long": {
+     "aligned": {
+      "n": 16,
+      "hit": 0.75,
+      "edge": 25.78455386754025
+     },
+     "opposed": {
+      "n": 153,
+      "hit": 0.5620915032679739,
+      "edge": 2.6691551093217067
+     },
+     "testable": true
+    },
+    "short": {
+     "aligned": {
+      "n": 141,
+      "hit": 0.6595744680851063,
+      "edge": 14.023413601863362
+     },
+     "opposed": {
+      "n": 14,
+      "hit": 0.5714285714285714,
+      "edge": -14.969374621074236
+     },
+     "testable": true
+    }
+   }
+  },
+  "COMBINED >90th": {
+   "events": 129,
+   "fundingMissing": 0,
+   "verdict": "NOT SHOWN (not testable)",
+   "sides": {
+    "long": {
+     "aligned": {
+      "n": 7,
+      "hit": 0.7142857142857143,
+      "edge": 18.106860964842706
+     },
+     "opposed": {
+      "n": 65,
+      "hit": 0.5692307692307692,
+      "edge": -4.5443805269186255
+     },
+     "testable": false
+    },
+    "short": {
+     "aligned": {
+      "n": 52,
+      "hit": 0.7115384615384616,
+      "edge": 23.728106118149242
+     },
+     "opposed": {
+      "n": 5,
+      "hit": 0.6,
+      "edge": 8.724506053393366
+     },
+     "testable": false
+    }
+   }
+  },
+  "NEW-ONLY >75th": {
+   "events": 154,
+   "fundingMissing": 0,
+   "verdict": "NOT SHOWN (not testable)",
+   "sides": {
+    "long": {
+     "aligned": {
+      "n": 6,
+      "hit": 0.6666666666666666,
+      "edge": 15.069086875107812
+     },
+     "opposed": {
+      "n": 75,
+      "hit": 0.52,
+      "edge": -1.5877563141091382
+     },
+     "testable": false
+    },
+    "short": {
+     "aligned": {
+      "n": 67,
+      "hit": 0.6716417910447762,
+      "edge": 17.862535136231145
+     },
+     "opposed": {
+      "n": 6,
+      "hit": 0.6666666666666666,
+      "edge": 17.620693379549376
+     },
+     "testable": false
+    }
+   }
+  },
+  "NEW-ONLY >90th": {
+   "events": 37,
+   "fundingMissing": 0,
+   "verdict": "NOT SHOWN (not testable)",
+   "sides": {
+    "long": {
+     "aligned": {
+      "n": 0
+     },
+     "opposed": {
+      "n": 19,
+      "hit": 0.5263157894736842,
+      "edge": -2.2719717440094165
+     },
+     "testable": false
+    },
+    "short": {
+     "aligned": {
+      "n": 17,
+      "hit": 0.8235294117647058,
+      "edge": 36.85026345186918
+     },
+     "opposed": {
+      "n": 1,
+      "hit": 1.0,
+      "edge": 10.234576493224345
+     },
+     "testable": false
+    }
+   }
+  }
+ }
+}

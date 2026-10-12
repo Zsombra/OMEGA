@@ -434,3 +434,31 @@ overlaps run 5 by 33 bars on every 1h series, so nothing was lost. Verbatim raw 
   sixteen-point interval. Six windows is closer to convergence than five; it is not there.
 - **Next pull due ≤ 2026-09-15** (three days), hard limit ≈ 2026-09-16T05:00Z for the 100-bar
   window to reach back to run 6's last bar (2026-09-12T01:00Z). Write `raw/_pulled_at.json`.
+
+### The FUNDING-leg confound test — 2026-10-12 (offline, on the six repulls)
+
+Run for the first time, as `repulls/funding_confound.py`, with its reading **pre-registered and committed (`626a3f6`)
+before any number was computed**: majors only; a fade event is `analyze_repull.py`'s own (that script is executed and
+its merged series reused, not copied); "aligned" is the preset's FADE fallback (long with funding < 0, short with
+funding > 0); alignment is judged **within a side**, a side being testable with ≥ 10 events in both its aligned and
+opposed cells; the leg is SHOWN only if aligned beats opposed on every testable side and the side-stratified pooled
+difference has a 95 % interval excluding 0. Record: `repulls/funding_confound_2026-10-12.json`.
+
+| reading | long aligned | long opposed | short aligned | short opposed | verdict |
+|---|---|---|---|---|---|
+| **COMBINED >75th (primary)** | n=16, 75.0 %, **+25.8** | n=153, 56.2 %, +2.7 | n=141, 66.0 %, **+14.0** | n=14, 57.1 %, −15.0 | **NOT SHOWN**: +25.9 ± 27.0 bps |
+| COMBINED >90th | n=7 | n=65 | n=52 | n=5 | not testable |
+| NEW-ONLY >75th | n=6 | n=75 | n=67 | n=6 | not testable |
+| NEW-ONLY >90th | n=0 | n=19 | n=17 | n=1 | not testable |
+
+- **The direction favours the leg on both sides**, which is what "confounded with side" could not show: aligned
+  long fades beat opposed long fades, and aligned short fades beat opposed short fades. But the pooled difference's
+  interval (−1.1 to +52.9 bps) includes zero, so under the rule written in advance the leg is **not shown**. It
+  stays context, never a condition clause.
+- **The binding constraint is the minority cells**: 16 aligned longs and 14 opposed shorts, i.e. the 30 events at
+  negative funding. Every reading but the primary has a minority cell under 10.
+- **More data cannot arrive from this protocol.** No repull has been taken since 2026-09-12 (run 7 was due ≤ 09-15;
+  the 100-bar window cannot reach back), so the out-of-sample chain is broken and these are the windows there will
+  be. A new chain would be a new live series (the user's word).
+- At contract 108 the thesis's weights and gate are history; the price premise and this leg map onto conditions
+  (a funding-sign clause). Today's answer for such a clause: unproven, leaning favourable, 30 minority events.
