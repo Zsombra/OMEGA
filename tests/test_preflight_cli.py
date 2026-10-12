@@ -145,7 +145,8 @@ def test_run_refuses_to_overwrite_an_existing_receipt_without_force(tmp_path, ca
     first = out.read_text(encoding="utf-8")
     with pytest.raises(SystemExit) as excinfo:
         _run(body, "--schema", sp, "--out", out)
-    assert str(out) in str(excinfo.value) or "force" in str(excinfo.value).lower()
+    # both halves of the refusal: which receipt, and how to proceed (the old `or` passed on either alone)
+    assert str(out) in str(excinfo.value) and "--force" in str(excinfo.value)
     assert out.read_text(encoding="utf-8") == first
     assert _run(body, "--schema", sp, "--out", out, "--force") == 0
 
@@ -189,3 +190,22 @@ def test_receipt_gate_line_records_a_repo_relative_path_under_the_repo(tmp_path)
     finally:
         if inside.exists():
             inside.unlink()
+
+
+@pytest.mark.parametrize("which", ["body", "schema", "previous", "receipt"])
+def test_a_missing_or_corrupt_input_is_refused_cleanly_not_a_traceback(tmp_path, which):
+    """Deferred minor (2026-09-04 final review): a missing or corrupt input file surfaced as a raw traceback.
+    It now refuses with SystemExit naming the file and what it should be."""
+    missing, corrupt = tmp_path / "nope.json", tmp_path / "bad.json"
+    corrupt.write_text("{not json", encoding="utf-8")
+    for bad in (missing, corrupt):
+        args = {"body": (bad, "--schema", _capture(tmp_path)),
+                "schema": (_body(tmp_path), "--schema", bad),
+                "previous": (_body(tmp_path), "--schema", _capture(tmp_path), "--previous-schema", bad),
+                }.get(which)
+        with pytest.raises(SystemExit) as excinfo:
+            if which == "receipt":
+                cli.main(["gate", str(bad), "--body", str(_body(tmp_path))])
+            else:
+                _run(*args, "--out", tmp_path / f"r-{which}.json", "--force")
+        assert str(bad) in str(excinfo.value), excinfo.value

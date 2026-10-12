@@ -56,16 +56,26 @@ def repo_timeframes() -> list[str]:
     return json.loads((ROOT / "data/contract/vocabulary/_shared.json").read_text(encoding="utf-8"))["absoluteTimeframes"]
 
 
+def _read_json(path: str, what: str):
+    """A missing or corrupt input is a refusal naming the file, never a raw traceback."""
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise SystemExit(f"{path}: no such file (expected {what})") from None
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"{path}: not readable as JSON ({what}): {exc}") from None
+
+
 def _load_body(path: str) -> dict:
     """The stage request object. emit_plan's local metadata ("_"-prefixed keys) never goes
     to the API, so it is no part of what is walked or hashed."""
-    doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    doc = _read_json(path, "a stage request body")
     req = doc.get("request", doc) if isinstance(doc, dict) else doc
     return {k: v for k, v in req.items() if not k.startswith("_")} if isinstance(req, dict) else req
 
 
 def _load_capture(path: str) -> tuple[dict, dict]:
-    doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    doc = _read_json(path, "a schema capture {capturedAt, how, request, response}")
     required = {"capturedAt", "how", "request", "response"}
     missing = required - (set(doc.keys()) if isinstance(doc, dict) else set())
     if missing:
@@ -181,7 +191,7 @@ def cmd_run(a) -> int:
 
 
 def cmd_gate(a) -> int:
-    receipt = json.loads(Path(a.receipt).read_text(encoding="utf-8"))
+    receipt = _read_json(a.receipt, "a preflight receipt")
     ok, why = P.gate_check(receipt, _load_body(a.body), _now(a.now))
     if ok:
         print(P.gate_line(receipt, a.receipt))

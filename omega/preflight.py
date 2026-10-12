@@ -764,6 +764,10 @@ def parse_iso(s: str) -> datetime:
     if not isinstance(s, str):
         raise ValueError(f"not a string: {s!r}")
     txt = s.strip()
+    if len(txt) > 10 and txt[10] != "T":
+        # fromisoformat also takes a space (and any one character); the documented form - and every stored
+        # capturedAt / expiresAt - uses the T
+        raise ValueError(f"unparsable ISO-8601 timestamp (date and time must be joined by 'T'): {s!r}")
     if txt.endswith("Z") or txt.endswith("z"):
         txt = txt[:-1] + "+00:00"
     try:

@@ -1633,3 +1633,16 @@ Deferred (final triage, not blocking): T1 multi-hop deref test; discriminator-le
 ALL TASKS 1-7 COMPLETE. Suite 982 passed. Task 8 pending the user's ask.
 Task 8: complete (734cbf7) - live run PASS; merged and pushed 2026-09-05.
 ```
+
+## 2026-10-12: the deferred minors, triaged again
+
+- **Closed:** T1 multi-hop deref (`test_deref_follows_a_multi_hop_chain_and_stops_a_cycle` - two hops resolve, a
+  cycle is refused by the 32-hop guard); file-not-found / corrupt-input tracebacks (`scripts/preflight.py`
+  `_read_json` refuses with SystemExit naming the file, for the body, the capture, the previous capture and the
+  receipt); `parse_iso` accepting a space separator (now requires the `T`; no stored timestamp used a space); the loose
+  `or` in the overwrite test (both halves asserted).
+- **Already gone** before this pass: `--previous-schema` untested (`test_previous_schema_adds_changelog_info_only`);
+  recipe `'?'` vs run `CREATE` (both read `_operation` since the v85 port).
+- **Left as is:** the discriminator-less anyOf ambiguity comment, pattern checks INFO-only, and the plan doc's
+  pre-fix KNOWN_DELTAS strings (a historical snapshot).
+
