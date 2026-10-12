@@ -132,7 +132,7 @@ def test_offset_over_the_floor_is_an_error(contract):
     for offset, ok in ((0, True), (8, True), (9, False), (16, False), (32, False)):
         col = Column.model_validate({"metric": "CLOSE", "transformId": "value",
                                      "timeframe": {"rel": "anchor"}, "offset": offset})
-        errors = [f for f in validate_column(col, section_timeframe=None, path="s",
+        errors = [f for f in validate_column(col, path="s",
                                              contract=contract) if f.severity == "error"]
         assert (not errors) is ok, f"offset={offset} should be {'legal' if ok else 'refused'}"
 

@@ -63,13 +63,19 @@ which must be preserved verbatim and annotated separately.
 """
 
 
-def contract_request(shape: ColumnShape, section_timeframe: str = "1h",
+def contract_request(shape: ColumnShape, anchor_timeframe: str = "1h",
                      window: int | None = None) -> dict:
-    """The payload for get_strategy_column_contract."""
+    """The payload for get_strategy_column_contract: `{column, anchorTimeframe}`.
+
+    48.0.0 renamed the request's `sectionTimeframe` to `anchorTimeframe` ("same meaning, and still optional"); the
+    104.1.0 capture (data/contract/get_strategy_column_contract/schema_104.1.0.json) declares `column`,
+    `anchorTimeframe` and `benchmarkTicker` with additionalProperties false. The captures under
+    data/contract/columns/ predate the rename and record the request as it was sent.
+    """
     col = shape.to_column()
     if window is not None:
         col = col.model_copy(update={"window": window})
-    return {"column": col.wire(), "sectionTimeframe": section_timeframe}
+    return {"column": col.wire(), "anchorTimeframe": anchor_timeframe}
 
 
 def render_request(shapes: Sequence[ColumnShape], tickers: Sequence[str],

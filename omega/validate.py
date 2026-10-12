@@ -28,6 +28,18 @@ LOOKBACK_FLOOR = 24
 # Transforms that take no parameters at all.
 NULLARY_TRANSFORMS = {"distance", "bandTouch", "classifyZone", "crossDetect", "count"}
 
+# What the changelog says replaces a retired transform (which transforms are retired is derived, contract.py).
+RETIRED_TRANSFORM_REPLACEMENT = {
+    "bandTouch": ('README "Contract history - v100": "Where you want \'where the close sits in the bands\', read '
+                  'BB_TOUCH x value; where you want \'what the bar\'s range did at a band\', use levelInteraction"'),
+}
+# v100: "`buffer`, a column knob declared by `levelInteraction` only ... `buffer` on any other transform is refused
+# as an undeclared parameter."
+BUFFER_TRANSFORMS = {"levelInteraction"}
+# 48.0.0 (`remove-section-anchor-override`): "a section whose anchor is the strategy timeframe, which it now always
+# is"; the 108 custom-section arm has no `timeframe` and additionalProperties false.
+SECTION_TIMEFRAME_RETIRED_AT = "48.0.0"
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -71,11 +83,11 @@ class ValidationResult:
 def validate_column(
     column: Column,
     *,
-    section_timeframe: str | None = None,
     path: str = "column",
     contract: Contract | None = None,
 ) -> list[Finding]:
-    """Validate one column. `section_timeframe` is the section's explicit override, if any."""
+    """Validate one column. (A section anchor override no longer exists - contract 48.0.0 - so a column is judged
+    on its own; validate_section refuses a section that still carries one.)"""
     c = contract or load()
     out: list[Finding] = []
 
@@ -124,8 +136,29 @@ def validate_column(
                 f'the save path accepts only {{"abs": "{m.anchor}"}}. That path is unmeasured; '
                 f"pin it if the column must survive a save."))
 
-    # --- metric x transform composability ----------------------------------
+    # --- transforms the served enum no longer has, or has and omega never extracted ------------
     tid = column.transformId
+    if tid in c.retired_transforms:
+        rec = c.retired_transforms[tid]
+        return out + [Finding(
+            "error", "TRANSFORM_RETIRED", f"{path}.transformId",
+            f"{tid!r} is not in the transformId enum the contract {rec['servedAt']} write schema serves "
+            f"({rec['schema']}); a column naming it is refused. "
+            f"{RETIRED_TRANSFORM_REPLACEMENT.get(tid, 'The changelog names no replacement.')}")]
+    if tid in c.unmeasured_transforms:
+        rec = c.unmeasured_transforms[tid]
+        return out + [Finding(
+            "error", "TRANSFORM_UNMEASURED", f"{path}.transformId",
+            f"{tid!r} is served at contract {rec['servedAt']} but was never extracted: which metrics it composes, "
+            f"its header and its vocabulary are UNMEASURED offline; omega does not emit it until "
+            f"`get_strategy_column_contract` is read over it and the corpus re-extracted")]
+    if column.buffer is not None and tid not in BUFFER_TRANSFORMS:
+        out.append(Finding(
+            "error", "BUFFER_UNDECLARED", f"{path}.buffer",
+            f"`buffer` is declared by {sorted(BUFFER_TRANSFORMS)} only; on {tid!r} it is refused as an undeclared "
+            f'parameter (README "Contract history - v100")'))
+
+    # --- metric x transform composability ----------------------------------
     if not m.offers(tid):
         candidates = sorted(m.transforms)
         if c.is_privileged(m.metric, tid):
@@ -142,13 +175,9 @@ def validate_column(
 
     spec = m.transforms[tid]
 
-    # --- section timeframe compatibility ------------------------------------
-    if m.is_timeless and section_timeframe is not None:
-        out.append(Finding(
-            "error", "REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED", f"{path}.metric",
-            f"{m.metric} is timeframe-inert (a bundle read) and cannot sit in a section "
-            f"carrying a timeframe override (section timeframe={section_timeframe!r}). "
-            f"Drop the section override, or move this column to its own section."))
+    # --- section timeframe compatibility: retired with the override at 48.0.0 ------------------
+    # "REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED leaves the authoringCode vocabulary" (README 48.0.0); measured
+    # 2026-08-24 while the override existed (compiler probe timeless-metric-in-overridden-section, now retired).
 
     # --- column timeframe compatibility -------------------------------------
     # A timeless metric's own timeframe must be LITERALLY {"rel": "anchor"}. The rule is
@@ -353,10 +382,16 @@ def validate_section(
         out.append(Finding("error", "SECTION_COLUMNS_EXCEEDED", f"{path}.columns",
                            f"{len(section.columns)} columns exceeds the budget of {limit}"))
 
+    if section.timeframe is not None:
+        out.append(Finding(
+            "error", "SECTION_TIMEFRAME_RETIRED", f"{path}.timeframe",
+            f"a section anchor override (timeframe={section.timeframe!r}) was removed at contract "
+            f"{SECTION_TIMEFRAME_RETIRED_AT} - \"no section can be overridden\" - and the 108 custom-section schema "
+            f"refuses the key. Drop it; to read another timeframe, give each column its own `timeframe` "
+            f"(rel lower/regime, or abs)."))
+
     for i, col in enumerate(section.columns):
-        out.extend(validate_column(
-            col, section_timeframe=section.timeframe,
-            path=f"{path}.columns[{i}]", contract=c))
+        out.extend(validate_column(col, path=f"{path}.columns[{i}]", contract=c))
 
     # THE SILENT ONE. Two columns compiling to the same header do not raise on the
     # platform - it renders both under the duplicate name and then omits the whole
@@ -379,16 +414,6 @@ def validate_section(
                     f"conditionColumns, leaving every column in it unreferenceable."))
             else:
                 first_seen[out_.header] = i
-
-    # A section-level diagnosis that is easy to miss column-by-column.
-    if section.timeframe is not None:
-        inert = [col.metric for col in section.columns
-                 if col.metric in c.metrics and c.metric(col.metric).is_timeless]
-        if inert:
-            out.append(Finding(
-                "error", "SECTION_MIXES_INERT_METRICS", f"{path}.timeframe",
-                f"section sets timeframe={section.timeframe!r} but contains timeframe-inert "
-                f"metrics {sorted(set(inert))}. Either drop the override or split them out."))
     return out
 
 

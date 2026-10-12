@@ -47,7 +47,7 @@ def test_first_cut_spans_the_interesting_cases():
 
 def test_every_first_cut_shape_is_legal_before_we_spend_a_call():
     for shape in FIRST_CUT:
-        findings = validate_column(shape.to_column(), section_timeframe="1h")
+        findings = validate_column(shape.to_column())
         errors = [f for f in findings if f.severity == "error"]
         assert not errors, f"{shape} -> {errors}"
 
@@ -63,7 +63,7 @@ def test_the_legality_guard_actually_bites():
     attribute is read on a non-empty list.
     """
     illegal = ColumnShape("VOLUME", "rank").to_column()
-    findings = validate_column(illegal, section_timeframe="1h")
+    findings = validate_column(illegal)
     errors = [f for f in findings if f.severity == "error"]
     assert errors, "raw VOLUME must not rank - use RVOL, which is already a ratio"
 
@@ -71,7 +71,8 @@ def test_the_legality_guard_actually_bites():
 def test_contract_request_is_the_wire_shape():
     shape = ColumnShape("EMA5", "spread", "trajectory", "EMA13", None)
     req = contract_request(shape, window=4)
-    assert req["sectionTimeframe"] == "1h"
+    assert req["anchorTimeframe"] == "1h"     # renamed from sectionTimeframe at 48.0.0
+    assert "sectionTimeframe" not in req
     col = req["column"]
     assert col["metric"] == "EMA5"
     assert col["transformId"] == "spread"

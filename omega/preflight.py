@@ -383,8 +383,8 @@ NESTED_REQUEST_OBJECTS = ("entry",)
 NESTED_REQUEST_ARRAYS = ("conditions", "sections", "rules")
 
 # A record key/element field whose value is null on every record element carries nothing to
-# mirror - the platform's not-set default (e.g. the optional section-level `timeframe`,
-# omega/validate.py section_timeframe). INFO, not FAIL; no drift instance to date (#3/#4/#5)
+# mirror - the platform's not-set default (e.g. the section-level `timeframe` a pre-48.0.0 record
+# carries as null; the override was removed at 48.0.0). INFO, not FAIL; no drift instance to date (#3/#4/#5)
 # was null-valued.
 _NULL_INFO_DETAIL = "platform null default on the record; nothing to mirror"
 

@@ -33,7 +33,11 @@ def test_matrix_is_the_full_metric_by_transform_grid():
 
 
 def test_structural_shape_count_is_1018():
-    """681 legal atoms + 301 chained forms = 982, at contract 61.2.0.
+    """619 legal atoms + 301 chained forms = 920 since 2026-10-12: the 61.2.0 corpus less the 62 `bandTouch`
+    atoms that left at v100 (the 108 write schema's transformId enum has no `bandTouch`; omega.contract derives
+    the retirement and drops it from every Metric.transforms). bandTouch never chained, so the 301 are unchanged.
+
+    It was 681 + 301 = 982 at contract 61.2.0.
 
     Was 663 + 355 = 1018 at 54.1.0 (name kept for history; the number moved). Atoms grew
     12 -> 681 (663 + 18): the twelve new metrics contribute 45 atoms of their own (eleven
@@ -50,15 +54,17 @@ def test_structural_shape_count_is_1018():
     shapes = enumerate_shapes()
     atoms = [s for s in shapes if s.chained is None]
     chained = [s for s in shapes if s.chained is not None]
-    assert len(atoms) == 681
+    assert len(atoms) == 619
     assert len(chained) == 301
-    assert len(shapes) == 982
+    assert len(shapes) == 920
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
-    """The enumeration must not invent or drop an atom the corpus disagrees with."""
+    """The enumeration must not invent or drop an atom the corpus disagrees with. The matrix is the 61.2.0
+    extraction's record and keeps `bandTouch`; the space has dropped what the served enum retired since."""
+    retired = set(load().retired_transforms)
     from_matrix = {(r["metric"], r["transform"])
-                   for r in _matrix_rows() if r["legal"] == "yes"}
+                   for r in _matrix_rows() if r["legal"] == "yes" and r["transform"] not in retired}
     from_code = {(s.metric, s.transform)
                  for s in enumerate_shapes() if s.chained is None}
     assert from_code == from_matrix
@@ -103,7 +109,8 @@ def test_expanding_operands_and_orderings_gives_8999():
     operands instead. omega's own validator had always refused those 64 - only
     enumerate_shapes disagreed. See tests/test_space_validate_agreement.py.
     """
-    assert len(enumerate_shapes(expand_operands=True)) == 8429
+    # 8,367 since 2026-10-12: the 62 bandTouch atoms (one shape each - no operand, no ordering) left at v100.
+    assert len(enumerate_shapes(expand_operands=True)) == 8367
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -200,9 +207,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 982
+    assert len(unused) + len(used) == 920
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 982
-    assert len(query(expand_operands=True)) == 8429
+    assert len(query()) == 920
+    assert len(query(expand_operands=True)) == 8367

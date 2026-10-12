@@ -38,7 +38,7 @@ def contract():
 def _findings(metric, offset, contract):
     col = Column.model_validate({"metric": metric, "transformId": "value",
                                  "timeframe": {"rel": "anchor"}, "offset": offset})
-    return validate_column(col, section_timeframe=None, path="s", contract=contract)
+    return validate_column(col, path="s", contract=contract)
 
 
 @pytest.mark.parametrize("metric", ["MA_ALIGN", "BB_TOUCH", "EMA_CROSS", "PRICE_ZONE"])

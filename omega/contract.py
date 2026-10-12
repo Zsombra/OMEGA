@@ -95,6 +95,13 @@ class Contract:
     # Served at contract 108 and known by NAME only (data/contract/metrics/_unmeasured_108.json): never in `metrics`,
     # so nothing that enumerates the corpus can select one; validate_column refuses them (METRIC_UNMEASURED).
     unmeasured_metrics: dict[str, dict] = field(default_factory=dict)
+    # Both DERIVED from the write schema's column `transformId` enum (data/derived/condition_vocabulary_108.json),
+    # never typed. Retired: extracted at 61.2.0 and no longer served (v100 retired `bandTouch`) - dropped from every
+    # Metric.transforms, so omega.space never enumerates one; `transforms` above keeps the extraction's catalogue as
+    # extracted. Unmeasured: served, never extracted, and not a platform-privileged transform (v100's
+    # `levelInteraction`) - which metrics it composes is unmeasured offline.
+    retired_transforms: dict[str, dict] = field(default_factory=dict)
+    unmeasured_transforms: dict[str, dict] = field(default_factory=dict)
 
     # -- lookups -------------------------------------------------------------
     def metric(self, name: str) -> Metric:
@@ -122,6 +129,8 @@ def load() -> Contract:
     rules = _load(DERIVED_DIR / "composition_rules.json")
     privileged = _load(DERIVED_DIR / "platform_privileged.json")
     templates = _load(CONTRACT_DIR / "templates" / "platform" / "_all.json")
+    privileged_pairs = {(p["metric"], p["transform"]) for p in privileged["pairs"]}
+    retired, unmeasured_transforms = _transform_drift(authoring["transforms"], privileged_pairs)
 
     metrics: dict[str, Metric] = {}
     for path in sorted((CONTRACT_DIR / "metrics").glob("*.json")):
@@ -136,7 +145,7 @@ def load() -> Contract:
             native_output=rec["nativeOutput"],
             output_kind=rec["outputKind"],
             timeframe_mode=rec["timeframeMode"],
-            transforms={t["id"]: t for t in rec["transforms"]},
+            transforms={t["id"]: t for t in rec["transforms"] if t["id"] not in retired},
             spread_operands=tuple(rec.get("spreadOperands", ())),
             rank_orderings=tuple(rec.get("rankOrderings", ())),
             anchor=rec.get("anchor"),
@@ -160,10 +169,28 @@ def load() -> Contract:
     return Contract(
         metrics=metrics,
         transforms=authoring["transforms"],
-        privileged_pairs={(p["metric"], p["transform"]) for p in privileged["pairs"]},
+        privileged_pairs=privileged_pairs,
         budgets=shared["budgets"],
         rules=rules,
         shared=shared,
         platform_templates={t["sectionKey"]: t for t in templates["templates"]},
         unmeasured_metrics=unmeasured,
+        retired_transforms=retired,
+        unmeasured_transforms=unmeasured_transforms,
     )
+
+
+def _transform_drift(extracted: dict, privileged_pairs: set[tuple[str, str]]) -> tuple[dict, dict]:
+    """(retired, unmeasured) transform ids: the extraction's catalogue against the write schema's served enum, read
+    from the derived inventory (omega.condition_vocabulary). With no inventory on disk, neither."""
+    path = DERIVED_DIR / "condition_vocabulary_108.json"
+    if not path.exists():
+        return {}, {}
+    vocab = _load(path)
+    served = vocab["reportColumn"]["transformId"]
+    at = {"servedAt": vocab["source"]["contractVersion"], "enumPointer": served["pointer"],
+          "schema": vocab["source"]["schema"]}
+    privileged = {t for _, t in privileged_pairs}
+    retired = {t: dict(at) for t in extracted if t not in served["enum"]}
+    unmeasured = {t: dict(at) for t in served["enum"] if t not in extracted and t not in privileged}
+    return retired, unmeasured

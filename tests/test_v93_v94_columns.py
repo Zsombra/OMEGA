@@ -22,7 +22,7 @@ def contract():
 
 def _errors(spec, contract):
     col = Column.model_validate(spec)
-    return [f for f in validate_column(col, section_timeframe=None, path="s", contract=contract)
+    return [f for f in validate_column(col, path="s", contract=contract)
             if f.severity == "error"]
 
 
