@@ -113,6 +113,19 @@ class Contract:
     def transform_ids(self) -> list[str]:
         return list(self.transforms)
 
+    def _requires(self, transform_id: str, parameter: str) -> bool:
+        params = (self.transforms.get(transform_id) or {}).get("parameters") or {}
+        return bool((params.get(parameter) or {}).get("required"))
+
+    def requires_operand(self, transform_id: str) -> bool:
+        """`authoring.parameters.inputs.required` - where v103 says to read what `operandRequired` restated (that
+        flag left the served transform entry; it agrees with this on every 61.2.0 cell)."""
+        return self._requires(transform_id, "inputs")
+
+    def requires_side(self, transform_id: str) -> bool:
+        """`authoring.parameters.side.required` - where v103 says to read what `sideRequired` restated."""
+        return self._requires(transform_id, "side")
+
     def is_privileged(self, metric: str, transform_id: str) -> bool:
         """True when the platform's own templates use this pair but authors cannot."""
         return (metric, transform_id) in self.privileged_pairs

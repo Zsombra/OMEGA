@@ -36,6 +36,11 @@ os.makedirs(RAW, exist_ok=True)
 # Every per-transform flag the platform actually returns, enumerated from the 144 responses
 # of the 2026-09-09 sweep - NOT assumed. A first pass listed only the first three and silently
 # dropped chainedRankOrderings and rankableSpreadOperands, which the suite caught.
+# Since v103 a served entry no longer carries operandRequired / sideRequired ("read
+# authoring.parameters.side.required and authoring.parameters.inputs.required instead"): a refresh at
+# 108 writes neither, and that is fine - omega.contract.requires_operand / requires_side, omega.validate
+# and both corpus builders read the requirement from the transform's authoring block, which this
+# script still collects (tests/test_v103_transform_entry.py runs the checks on a flag-less corpus).
 TRANSFORM_FLAGS = ("operandRequired", "chainSuccessors", "chainedRankOrderings",
                    "sideRequired", "rankableSpreadOperands")
 
