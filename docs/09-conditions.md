@@ -589,7 +589,9 @@ compose, their kind, header and vocabulary are unmeasured (measured live per met
 refuses a column over one (`METRIC_UNMEASURED`), the generator never picks one, and `scripts/compare_vocabulary.py`
 counts them as stored and names them under `storedUnmeasured`.
 
-**Transforms — a gap recorded, not closed.** The 108 `transformId` enum is 17: it adds `levelInteraction` (v100) and
+**Transforms — a gap recorded, not closed** *(closed 2026-10-12 — see
+[03](03-column-compilation.md#2026-10-12-the-column-at-contract-108): `bandTouch` is derived as retired and refused,
+`levelInteraction` as unmeasured and refused, `buffer` is modelled, the 64 maxima are gone)*. The 108 `transformId` enum is 17: it adds `levelInteraction` (v100) and
 lists `classifyState` (platform-privileged at 61.2.0), and it no longer has `bandTouch`, "retired" at v100. The 61.2.0
 corpus and `omega.space` still list `bandTouch` for the band and level metrics; the generator never emits it and the
 preflight's schema walk refuses it, but `validate_column` would pass a hand-written one. Refusing it there moves the

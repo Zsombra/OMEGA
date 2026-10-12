@@ -2,10 +2,15 @@
 
 *Generated from `data/contract/transforms/_authoring.json` — do not hand-edit.*
 
-A transform is **how you read** a metric. There are 16 authorable transforms.
+A transform is **how you read** a metric. There are 15 authorable transforms omega has extracted.
 Crucially the metric×transform matrix is a **sparse partial function**, not a grid:
-only **663 of 144×16 = 2304** cells are legal
-(**28.8%** density).
+only **619 of 156×15 = 2340** cells are legal
+(**26.5%** density).
+
+Against the column `transformId` enum the contract 108.0.0 write schema serves (`data/contract/stage_strategy_draft/schema_20261010T215326Z.json`):
+
+- **`bandTouch` is retired** — extracted, no longer served; it is dropped from every metric's transforms in doc 01 and here, and `omega.validate` refuses it (`TRANSFORM_RETIRED`). Its reference entry is kept as history.
+- **`levelInteraction` is served and unmeasured** — never extracted, so it has no entry here; `omega.validate` refuses it (`TRANSFORM_UNMEASURED`) until its column contract is read.
 
 ## Reference
 
@@ -17,7 +22,7 @@ Select one value at the requested offset.
 output = base[t - offset]
 ```
 
-- **Supported on:** 143 metric(s)
+- **Supported on:** 155 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the requested slot is absent or the source value is null.
 - **Parameters:**
@@ -31,7 +36,7 @@ Render the recent build-up plus its rising, falling, or flat direction.
 slots = last window non-null base values; trend = compare(first, last)
 ```
 
-- **Supported on:** 80 metric(s)
+- **Supported on:** 71 metric(s)
 - **Emits:** window + 1 — window value slots (_t{n-1}..._t1, _now) plus one _trend direction output.
 - **Null behaviour:** Missing observations produce null slots; an empty series has null now and trend.
 - **Parameters:**
@@ -46,7 +51,7 @@ Measure signed percentage distance from current price to a price-level metric.
 output = ((price - base) / base) × 100
 ```
 
-- **Supported on:** 51 metric(s)
+- **Supported on:** 62 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when price or the base level is null, or when the base level is zero.
 - **Parameters:** none
@@ -60,7 +65,7 @@ Measure the signed percentage gap between the base and one operand metric.
 output = (base - inputs[0]) / inputs[0] × 100
 ```
 
-- **Supported on:** 108 metric(s)
+- **Supported on:** 119 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when either operand is null or the second operand is zero.
 - **Parameters:**
@@ -75,7 +80,7 @@ Measure how directly the series travelled: net movement divided by the total dis
 output = |base[last] - base[first]| / sum(|base[i] - base[i-1]|) over the window
 ```
 
-- **Supported on:** 77 metric(s)
+- **Supported on:** 68 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the window holds fewer than two non-null points, or when every consecutive delta is zero (a flat series has no efficiency).
 - **Parameters:**
@@ -91,7 +96,7 @@ Compute the mean of non-null history values in the selected window.
 output = sum(nonNull(base[-window:])) / count(nonNull(base[-window:]))
 ```
 
-- **Supported on:** 77 metric(s)
+- **Supported on:** 68 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the selected history window has no non-null values.
 - **Parameters:**
@@ -155,7 +160,7 @@ output = crossDirection(base[t - 1], base[t])
 - **Null behaviour:** Returns null when the two observations required for crossing are unavailable.
 - **Parameters:** none
 
-### `bandTouch` — Band touch
+### `bandTouch` — Band touch (RETIRED)
 
 Classify current price proximity to the canonical upper and lower bands.
 
@@ -163,7 +168,7 @@ Classify current price proximity to the canonical upper and lower bands.
 output = bandTouch(base, current price)
 ```
 
-- **Supported on:** 51 metric(s)
+- **Retired** at contract 108.0.0: not in the served enum; the 61.2.0 extraction offered it on 62 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the price or band values required by the classifier are unavailable.
 - **Parameters:** none
@@ -251,7 +256,7 @@ output = floor((now - detectedAt(nearest zone)) / 1 hour)
 | `largeCount` | 5 | `BUY_VOLUME`, `OBV`, `SELL_VOLUME`, `VOLUME`, `VOL_SMA20` |
 | `oscillator` | 17 | `ADX`, `CCI20`, `DI_MINUS`, `DI_PLUS`, `MFI14`, `QQE_RSI_MA`, `QQE_STOP`, `REGIME_DI_SPREAD`, `REGIME_TREND_MARGIN`, `RSI14`, `RSI2`, `RSI7`, `STOCH_D`, `STOCH_K`, `WILLR14`, `WT1`, `WT2` |
 | `percent` | 16 | `ATR_PCT`, `BB_WIDTH_PCT`, `CHG_15M`, `CHG_1H`, `CHG_24H`, `CHG_4H`, `CHG_5M`, `CLOSE_CHANGE`, `FUNDING_ANN`, `FUNDING_RATE`, `HIGH_DEV`, `LOW_DEV`, `OI_CHG`, `PPO`, `REGIME_CRASH_MARGIN`, `ROC12` |
-| `price` | 51 | `BB_LOWER`, `BB_UPPER`, `CLOSE`, `DONCHIAN_LOWER`, `DONCHIAN_UPPER`, `EMA13`, `EMA20`, `EMA21`, `EMA5`, `EMA50`, `EMA9`, `HIGH`, `HMA20`, `ICHI_BASE`, `ICHI_CONV`, `ICHI_LAG`, `ICHI_SPAN_A`, `ICHI_SPAN_B`, `KC_LOWER`, `KC_MID`, `KC_UPPER`, `LAST`, `LOW`, `MARK`, `OPEN`, `ORACLE`, `PDH`, `PDL`, `PIVOT_P`, `PIVOT_R1`, `PIVOT_R2`, `PIVOT_R3`, `PIVOT_S1`, `PIVOT_S2`, `PIVOT_S3`, `PRIOR_TPO_POC`, `PRIOR_TPO_VAH`, `PRIOR_TPO_VAL`, `PSAR`, `SMA20`, `SMA200`, `SMA50`, `SPOT_CLOSE_BN`, `SPOT_CLOSE_CB`, `ST_LINE`, `TPO_IB_HIGH`, `TPO_IB_LOW`, `TPO_POC`, `TPO_VAH`, `TPO_VAL`, `VWAP` |
+| `price` | 62 | `BB_LOWER`, `BB_UPPER`, `CLOSE`, `DONCHIAN_LOWER`, `DONCHIAN_UPPER`, `EMA13`, `EMA20`, `EMA21`, `EMA5`, `EMA50`, `EMA9`, `HIGH`, `HMA20`, `ICHI_BASE`, `ICHI_CONV`, `ICHI_LAG`, `ICHI_SPAN_A`, `ICHI_SPAN_B`, `KC_LOWER`, `KC_MID`, `KC_UPPER`, `LAST`, `LOW`, `MARK`, `NAKED_POC_ABOVE`, `NAKED_POC_BELOW`, `OPEN`, `ORACLE`, `PDH`, `PDL`, `PDO`, `PIVOT_P`, `PIVOT_R1`, `PIVOT_R2`, `PIVOT_R3`, `PIVOT_S1`, `PIVOT_S2`, `PIVOT_S3`, `PRIOR_TPO_IB_HIGH`, `PRIOR_TPO_IB_LOW`, `PRIOR_TPO_POC`, `PRIOR_TPO_VAH`, `PRIOR_TPO_VAL`, `PRIOR_TPO_VPOC`, `PRIOR_TPO_VVAH`, `PRIOR_TPO_VVAL`, `PSAR`, `SMA20`, `SMA200`, `SMA50`, `SPOT_CLOSE_BN`, `SPOT_CLOSE_CB`, `ST_LINE`, `TPO_IB_HIGH`, `TPO_IB_LOW`, `TPO_POC`, `TPO_VAH`, `TPO_VAL`, `TPO_VPOC`, `TPO_VVAH`, `TPO_VVAL`, `VWAP` |
 | `ratio` | 3 | `REGIME_VOL_ATR_RATIO`, `REGIME_VOL_BBW_RATIO`, `RVOL` |
 | `signedPrice` | 5 | `ATR`, `BB_WIDTH`, `CVD`, `MACD`, `SPOT_CVD` |
 | `usdLargeCount` | 2 | `NOTIONAL_VOLUME_1D`, `OI` |
@@ -259,7 +264,7 @@ output = floor((now - detectedAt(nearest zone)) / 1 hour)
 `RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —
 its pool would have exactly one member.
 
-36 metrics offer no `spread`: mostly classifications,
+37 metrics offer no `spread`: mostly classifications,
 booleans, events and the entity set.
 
 ## Platform-privileged pairs

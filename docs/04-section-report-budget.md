@@ -33,6 +33,11 @@ composition goes they contribute nothing.
 
 ## The timeframe-override trap
 
+> **History since contract 48.0.0** (`remove-section-anchor-override`): "no section can be overridden". The 108
+> custom-section schema has no `timeframe` key, `REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED` left the vocabulary,
+> and `omega.validate` refuses a section that still carries one (`SECTION_TIMEFRAME_RETIRED`). A column reads
+> another timeframe through its own `timeframe` (`rel` lower/regime, or `abs`). What follows is the August record.
+
 A custom section may pin `timeframe`. But a **timeframe-inert** metric may not appear in a
 section that does:
 
@@ -129,3 +134,20 @@ Sections render in array order and the agent reads them top to bottom. A defensi
 3. **State** — momentum, volatility
 4. **Confirmation** — volume/flow, derivatives
 5. **Crowd last** — so consensus is read *against* evidence already formed, not before it
+
+## 2026-10-12: sections at contract 108
+
+The 108 REPORT axis (derived: `data/derived/condition_vocabulary_108.json` `reportSection`) admits a custom section
+of exactly `kind, title, benchmarkTicker, notes, columns` (required) and an optional server-minted `sectionKey` —
+no `timeframe`. `columns` has `minItems: 1` and no maximum, and the `sections` array none: since v103 "the
+configured budgets `list_strategy_vocabulary` serves under `budgets` judge them", so `omega.types` no longer caps
+either at 64 and `omega.validate` checks `sectionColumns` and `sections` against the budgets. `benchmarkTicker` is a
+coin symbol — 1–20 characters, `^[A-Za-z0-9][A-Za-z0-9._:-]*$` (e.g. `xyz:BRENTOIL`).
+
+The budgets table above is the August one. The served budgets omega holds are in
+[`_shared.json`](../data/contract/vocabulary/_shared.json), as `list_strategy_vocabulary` served them at 95.0.0
+(read 2026-10-06): `sections` 32, `sectionColumns` 32, `columnLookback` 32, `distinctTimeframes` 8,
+`strategyConditions` 16, `conditionClauses` 16, `conditionFrameReads` 256, `reportNoteChars` 3200, and a preview cap
+of 150,000 result characters. `estimatedTokens` left them at v92, where the preview's size became
+`budgetUsage.resultChars`. Whether any moved by 108 is unmeasured until `list_strategy_vocabulary` is read again.
+

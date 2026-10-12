@@ -3,6 +3,11 @@
 Would this strategy route, and which signals are holding it back — answered before the
 strategy exists.
 
+> **Retired 2026-10-11 (contract 108).** Routing was the aggregate score against
+> `minAggregateScore`; both are removed (README "Contract history — v108"). `omega.feasibility` is
+> history. Whether a strategy can enter is now whether a required or verdict-carrying condition reads
+> TRUE — see [09](09-conditions.md).
+
 ---
 
 ## The correction this document exists to record

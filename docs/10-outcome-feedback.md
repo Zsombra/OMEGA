@@ -3,6 +3,12 @@
 Which signals actually earned their allocation — and the discipline of not answering when
 the data can't support an answer.
 
+> **Retired 2026-10-11 (contract 108).** No signal carries an allocation any more (README "Contract
+> history — v108"), so "which signals earned their allocation" has no subject, and the per-signal join
+> in `omega.performance` is history. Its sample-size discipline is not: `MIN_SAMPLE` and
+> `wilson_interval` are what battlegrid-manager's allocator ranks agents' realized records with
+> (`manager/allocation/performance.py`).
+
 ---
 
 ## The state of your data

@@ -209,7 +209,7 @@ spread         {code}_{operandCode}_spread
 efficiency     {code}_er
 maxShare       {code}_maxShare
 aggregate      {code}_mean{window}
-bandTouch      {code}_touch
+bandTouch      {code}_touch                       (retired at v100 - history)
 rank           {code}_rank_{ordering}
 chained rank   {stage1Header}_rank_{ordering}
 nearestZone*   {code}_{side}_{dist|type|range|age}
@@ -248,3 +248,32 @@ internalising because they are *silent*, not errors:
 - `rank` returns null when the ranked universe has no entry for the asset.
 - `count` on an empty zone set returns **0**; an unavailable set returns **null**. Those are
   different facts and your conditions should treat them differently.
+
+## 2026-10-12: the column at contract 108
+
+The 108 write schema's column arm (`data/derived/condition_vocabulary_108.json` `reportColumn`, derived from
+[`schema_20261010T215326Z.json`](../data/contract/stage_strategy_draft/schema_20261010T215326Z.json)) moved four
+things above:
+
+- **`bandTouch` is retired** (README "Contract history — v100": "A column naming `bandTouch` is refused by every tool
+  that takes a column"). It is not in the served `transformId` enum, so `omega.contract` derives it as retired, drops
+  it from every metric, and `omega.validate` refuses it (`TRANSFORM_RETIRED`). For where the close sits in the bands,
+  read `BB_TOUCH × value`.
+- **`levelInteraction` is served and unmeasured.** The changelog describes it — the newest bar against a level,
+  `touch_from_below | touch_from_above | reject_from_below | reject_from_above | none`, header `{code}_lvl` — and lists
+  the levels it is offered on, but omega has not read its column contract, so it refuses it
+  (`TRANSFORM_UNMEASURED`) rather than predict a header it has never seen rendered.
+- **`buffer`** (0–500 whole basis points) is a column field, "declared by `levelInteraction` only"; on any other
+  transform omega refuses it (`BUFFER_UNDECLARED`). A non-zero buffer names the header (`bbUpper_lvl_b25`).
+- **The fixed 64 maximums are gone** (v103): `window` and `offset` keep only their floors (1 and 0) and the
+  `columnLookback` budget judges them, so the usable offset on a `value` column is still 32 − 24 = 8.
+
+The operator table above is the pre-v98 one. Since v98 a numeric header also takes `crossesAbove`, `crossesBelow`,
+`increased`, `decreased`, and a classification/direction/boolean header `enters` / `exits`; which operators a header
+admits is served per header — see [09](09-conditions.md#2026-10-11-the-condition-vocabulary-at-contract-108).
+
+`get_strategy_column_contract` — the tool this doc tells you to confirm a header with — takes `{column,
+anchorTimeframe?, benchmarkTicker?}` since 48.0.0 renamed `sectionTimeframe` (the 104.1.0 capture,
+[`schema_104.1.0.json`](../data/contract/get_strategy_column_contract/schema_104.1.0.json));
+`omega.probe.contract_request` builds that shape.
+

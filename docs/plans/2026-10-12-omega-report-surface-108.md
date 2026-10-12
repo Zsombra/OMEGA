@@ -1,7 +1,8 @@
 # The REPORT surface at contract 108 — plan and record
 
-**Status: IN PROGRESS 2026-10-12** on branch `feat/report-surface-108` (offline: no platform call of any kind). Baseline
-main `b1bd433` / tag v0.4.1: 1357 passed. Follows
+**Status: DONE 2026-10-12** on branch `feat/report-surface-108` (offline: no platform call of any kind). Baseline
+main `b1bd433` / tag v0.4.1: 1357 passed; after: **1373 passed** (17 in `tests/test_report_surface_108.py`, one
+pinning the retired probe; two probe replays left with the cases they replayed). Follows
 [`2026-10-11-omega-condition-vocabulary-108.md`](2026-10-11-omega-condition-vocabulary-108.md), whose "Gaps recorded
 and not closed" this works through — every item below has a source on disk.
 
@@ -47,3 +48,20 @@ and not closed" this works through — every item below has a source on disk.
 - A re-extraction at 108 meets the v103 shape: a served transform entry no longer carries `sideRequired` /
   `operandRequired` (read `authoring.parameters.side.required` / `inputs.required`). `validate_column` reads the old
   flags from the 61.2.0 corpus; the refresh script must map them, or the checks go silent.
+
+## Result
+
+- **The space**: 619 legal atoms / 301 chained / 920 shapes / 8,367 operand-expanded (was 681 / 301 / 982 / 8,429).
+  Exactly the 62 `bandTouch` atoms left; `bandTouch` never chained, has no operand and no ordering, so each atom was
+  one shape at every level. Render coverage stays complete (593 / 8,347 rendered, 0 uncovered) — every one of the
+  62 had rendered live before v100 retired it.
+- **The compiler-probe oracle** (`data/derived/compiler_probes.json`): `bandTouch-on-price-level` is superseded
+  (`expect: illegal`) on schema evidence, not a live re-probe; `timeless-metric-in-overridden-section` is retired
+  (`retiredOn`, `retiredBecause` quoting 48.0.0) and not replayed. Both say which.
+- **Docs**: 01 / 02 regenerated (156 metrics; doc 02 labels `bandTouch` RETIRED and names `levelInteraction` as
+  unmeasured); 03, 04, 06, 09 carry the 108 column and section; 05, 10, 12, 13 carry the contract-108 banner; the
+  00 / 14 / 18 count banners and the README's state are current. Doc 10's banner says what is NOT history:
+  battlegrid-manager's allocator imports `omega.performance`'s `MIN_SAMPLE` and `wilson_interval`.
+- **battlegrid-manager**: calls none of the changed functions (`validate_column`'s removed `section_timeframe`,
+  `contract_request`); its pin-drift kinds (metrics, sectionKeys) do not move. Re-pinning is optional.
+

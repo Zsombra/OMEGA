@@ -3,6 +3,10 @@
 The second axis. Doc 12 asks *would this strategy route on this tape*. This one asks
 whether the tape was a tape at all, or a single photograph.
 
+> **Retired 2026-10-11 (contract 108).** The per-signal noise floors below were measured on signal
+> scores, which no longer exist (README "Contract history — v108"). The method — a second capture
+> before trusting a first — still applies to condition readings.
+
 ## The problem a second capture exposes
 
 Every conclusion in doc 12 came from five coins read at one instant. That sample has

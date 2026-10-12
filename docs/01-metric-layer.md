@@ -2,7 +2,7 @@
 
 *Generated from `data/contract/metrics/` — do not hand-edit.*
 
-144 metrics across 10 families. A metric is a **named quantity the platform already
+156 metrics across 10 families. A metric is a **named quantity the platform already
 computes**; you never define the maths, you select the quantity and then choose how
 to read it. Four fields govern everything you can do with one:
 
@@ -25,15 +25,15 @@ to read it. Four fields govern everything you can do with one:
 | Metric | `code` | Kind / unit | TF mode | Transforms |
 |---|---|---|---|---|
 | `BAR_FORMING` | `bar` | classification / forming·closed | candle | value |
-| `CLOSE` | `close` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `HIGH` | `high` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `LAST` | `last` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `LOW` | `low` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `MARK` | `mark` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `OPEN` | `open` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `ORACLE` | `oracle` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `SPOT_CLOSE_BN` | `bnClose` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `SPOT_CLOSE_CB` | `cbClose` | numeric / price | timeless | value, distance, spread, bandTouch |
+| `CLOSE` | `close` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `HIGH` | `high` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `LAST` | `last` | numeric / price | timeless | value, distance, spread |
+| `LOW` | `low` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `MARK` | `mark` | numeric / price | timeless | value, distance, spread |
+| `OPEN` | `open` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `ORACLE` | `oracle` | numeric / price | timeless | value, distance, spread |
+| `SPOT_CLOSE_BN` | `bnClose` | numeric / price | timeless | value, distance, spread |
+| `SPOT_CLOSE_CB` | `cbClose` | numeric / price | timeless | value, distance, spread |
 
 ## Momentum — `momentum` (22)
 
@@ -83,23 +83,23 @@ to read it. Four fields govern everything you can do with one:
 | `ADX` | `ADX` | numeric / oscillator [0–100] | candle | value, trajectory, spread, efficiency, aggregate, maxShare, rank, classifyZone |
 | `DI_MINUS` | `DIminus` | numeric / oscillator [0–100] | candle | value, trajectory, spread, efficiency, aggregate, maxShare, rank |
 | `DI_PLUS` | `DIplus` | numeric / oscillator [0–100] | candle | value, trajectory, spread, efficiency, aggregate, maxShare, rank |
-| `EMA13` | `EMA13` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `EMA20` | `EMA20` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `EMA21` | `EMA21` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `EMA5` | `EMA5` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `EMA50` | `EMA50` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `EMA9` | `EMA9` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
+| `EMA13` | `EMA13` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `EMA20` | `EMA20` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `EMA21` | `EMA21` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `EMA5` | `EMA5` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `EMA50` | `EMA50` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `EMA9` | `EMA9` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
 | `EMA_CROSS` | `EMA5_13` | event / Bullish·Bearish | candle | value |
-| `HMA20` | `HMA20` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `ICHI_BASE` | `kijun` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `ICHI_CONV` | `tenkan` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `ICHI_LAG` | `chikou` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `ICHI_SPAN_A` | `senkouA` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `ICHI_SPAN_B` | `senkouB` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
+| `HMA20` | `HMA20` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `ICHI_BASE` | `kijun` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `ICHI_CONV` | `tenkan` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `ICHI_LAG` | `chikou` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `ICHI_SPAN_A` | `senkouA` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `ICHI_SPAN_B` | `senkouB` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
 | `MA_ALIGN` | `MAalign` | classification / bullish·bearish·mixed | candle | value |
-| `SMA20` | `SMA20` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `SMA200` | `SMA200` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `SMA50` | `SMA50` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
+| `SMA20` | `SMA20` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `SMA200` | `SMA200` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `SMA50` | `SMA50` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
 | `ST_DIR` | `stDir` | classification / bullish·bearish | candle | value |
 
 ## Volatility — `volatility` (7)
@@ -167,7 +167,7 @@ to read it. Four fields govern everything you can do with one:
 | `OI_PX_REGIME` | `oiRegime` | classification / new longs·new shorts·short covering… | timeless | value |
 | `OI_VELOCITY` | `oiVel` | classification / accelerating·decelerating·steady | timeless | value |
 
-## Structure — `structure` (32)
+## Structure — `structure` (44)
 
 > Describe price location, reference levels, and active support or resistance zones.
 
@@ -178,38 +178,50 @@ to read it. Four fields govern everything you can do with one:
 
 | Metric | `code` | Kind / unit | TF mode | Transforms |
 |---|---|---|---|---|
-| `BB_LOWER` | `bbLower` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
+| `BB_LOWER` | `bbLower` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
 | `BB_PCT_B` | `pctB` | numeric / fraction [0–1] | candle | value, trajectory, spread, efficiency, aggregate, maxShare, rank |
 | `BB_TOUCH` | `BBtouch` | classification / upper·lower·none | candle | value |
-| `BB_UPPER` | `bbUpper` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `DONCHIAN_LOWER` | `donchianLo` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `DONCHIAN_UPPER` | `donchianHi` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `KC_LOWER` | `kcLower` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `KC_MID` | `kcMid` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `KC_UPPER` | `kcUpper` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PDH` | `pdh` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PDL` | `pdl` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PIVOT_P` | `pivotP` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PIVOT_R1` | `pivotR1` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PIVOT_R2` | `pivotR2` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PIVOT_R3` | `pivotR3` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PIVOT_S1` | `pivotS1` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PIVOT_S2` | `pivotS2` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `PIVOT_S3` | `pivotS3` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
+| `BB_UPPER` | `bbUpper` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `DONCHIAN_LOWER` | `donchianLo` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `DONCHIAN_UPPER` | `donchianHi` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `KC_LOWER` | `kcLower` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `KC_MID` | `kcMid` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `KC_UPPER` | `kcUpper` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `NAKED_POC_ABOVE` | `nPocAbove` | numeric / price | timeless | value, distance, spread |
+| `NAKED_POC_BELOW` | `nPocBelow` | numeric / price | timeless | value, distance, spread |
+| `PDH` | `pdh` | numeric / price | timeless | value, distance, spread |
+| `PDL` | `pdl` | numeric / price | timeless | value, distance, spread |
+| `PDO` | `pdo` | numeric / price | timeless | value, distance, spread |
+| `PIVOT_P` | `pivotP` | numeric / price | timeless | value, distance, spread |
+| `PIVOT_R1` | `pivotR1` | numeric / price | timeless | value, distance, spread |
+| `PIVOT_R2` | `pivotR2` | numeric / price | timeless | value, distance, spread |
+| `PIVOT_R3` | `pivotR3` | numeric / price | timeless | value, distance, spread |
+| `PIVOT_S1` | `pivotS1` | numeric / price | timeless | value, distance, spread |
+| `PIVOT_S2` | `pivotS2` | numeric / price | timeless | value, distance, spread |
+| `PIVOT_S3` | `pivotS3` | numeric / price | timeless | value, distance, spread |
 | `PRICE_ZONE` | `zone` | classification / breakout high·breakdown low·near high… | candle | value |
-| `PRIOR_TPO_POC` | `pTpoPOC` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `PRIOR_TPO_VAH` | `pTpoVAH` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `PRIOR_TPO_VAL` | `pTpoVAL` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `PSAR` | `PSAR` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
+| `PRIOR_TPO_IB_HIGH` | `pTpoIBH` | numeric / price | timeless | value, distance, spread |
+| `PRIOR_TPO_IB_LOW` | `pTpoIBL` | numeric / price | timeless | value, distance, spread |
+| `PRIOR_TPO_POC` | `pTpoPOC` | numeric / price | timeless | value, distance, spread |
+| `PRIOR_TPO_SHAPE` | `pTpoShape` | classification / p-shape·b-shape·balanced | timeless | value |
+| `PRIOR_TPO_VAH` | `pTpoVAH` | numeric / price | timeless | value, distance, spread |
+| `PRIOR_TPO_VAL` | `pTpoVAL` | numeric / price | timeless | value, distance, spread |
+| `PRIOR_TPO_VPOC` | `pTpoVPOC` | numeric / price | timeless | value, distance, spread |
+| `PRIOR_TPO_VVAH` | `pTpoVVAH` | numeric / price | timeless | value, distance, spread |
+| `PRIOR_TPO_VVAL` | `pTpoVVAL` | numeric / price | timeless | value, distance, spread |
+| `PSAR` | `PSAR` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
 | `STRUCT_ZONES` | `zones` | entitySet /  | candle | count, nearestZoneType, nearestZoneRange, nearestZoneDist, nearestZoneAge |
-| `ST_LINE` | `stLine` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
-| `TPO_IB_HIGH` | `tpoIBH` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `TPO_IB_LOW` | `tpoIBL` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `TPO_POC` | `tpoPOC` | numeric / price | timeless | value, distance, spread, bandTouch |
+| `ST_LINE` | `stLine` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
+| `TPO_IB_HIGH` | `tpoIBH` | numeric / price | timeless | value, distance, spread |
+| `TPO_IB_LOW` | `tpoIBL` | numeric / price | timeless | value, distance, spread |
+| `TPO_POC` | `tpoPOC` | numeric / price | timeless | value, distance, spread |
 | `TPO_SHAPE` | `tpoShape` | classification / p-shape·b-shape·balanced | timeless | value |
-| `TPO_VAH` | `tpoVAH` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `TPO_VAL` | `tpoVAL` | numeric / price | timeless | value, distance, spread, bandTouch |
-| `VWAP` | `VWAP` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate, bandTouch |
+| `TPO_VAH` | `tpoVAH` | numeric / price | timeless | value, distance, spread |
+| `TPO_VAL` | `tpoVAL` | numeric / price | timeless | value, distance, spread |
+| `TPO_VPOC` | `tpoVPOC` | numeric / price | timeless | value, distance, spread |
+| `TPO_VVAH` | `tpoVVAH` | numeric / price | timeless | value, distance, spread |
+| `TPO_VVAL` | `tpoVVAL` | numeric / price | timeless | value, distance, spread |
+| `VWAP` | `VWAP` | numeric / price | candle | value, trajectory, distance, spread, efficiency, aggregate |
 
 ## Regime — `regime` (16)
 

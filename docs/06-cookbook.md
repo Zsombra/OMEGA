@@ -96,6 +96,10 @@ detected 40 hours ago is a different object from one detected 40 minutes ago.
 
 ### Band proximity without Bollinger columns
 
+> **Retired at v100.** `bandTouch` is no longer served; omega refuses it (`TRANSFORM_RETIRED`). Read
+> `BB_TOUCH × value` for where the close sits in the bands; `levelInteraction` (what one bar did at a level) is
+> served but unmeasured here — [03](03-column-compilation.md#2026-10-12-the-column-at-contract-108).
+
 ```json
 {"metric":"OPEN","transformId":"bandTouch","timeframe":{"rel":"anchor"}}
 ```
@@ -141,6 +145,9 @@ The engine refuses.
 There is no rule you can derive from sign or range. Check `rankOrderings`.
 
 ### 5. Mixing timeless metrics into a pinned section
+
+> **History since 48.0.0**: no section can carry a timeframe override any more
+> ([04](04-section-report-budget.md#the-timeframe-override-trap)).
 
 One `FUNDING_RATE` column silently invalidates a section's `timeframe` override.
 
@@ -619,6 +626,9 @@ warning rather than an error, because the column does render; it just answers ab
 different bar than the one you asked for.
 
 ## Workflow
+
+> Steps 5 and 6 are history since contract 108: `derive_strategy_rule_view` and `simulate_aggregate_score` left
+> discovery, and there are no allocations to tune. The entry gate is the conditions ([09](09-conditions.md)).
 
 ```
  1. sketch columns              omega.types.Column

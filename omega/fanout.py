@@ -15,16 +15,15 @@ REL_INFIX = {"anchor": "", "lower": "_ltf_", "regime": "_htf_"}
 
 
 def column_timeframe(column: Column, section: CustomSection, anchor: str, contract: Contract) -> str | None:
-    """The distinct timeframe a candle column spends: the section's override, else the rel
-    resolved for the anchor, else the abs. `regime` resolves to null in the authoring contract
+    """The distinct timeframe a candle column spends: the rel resolved for the anchor, else the
+    abs. (A section override no longer exists - 48.0.0 - and omega.validate refuses one, so the
+    section never decides it.) `regime` resolves to null in the authoring contract
     (composition_rules.timeframeResolution: it binds from the strategy's regimeTimeframe, 04)
     yet it IS a distinct timeframe - a 1h preview holding anchor, lower and regime columns
     read budgetUsage.distinctTimeframes.used 3 (data/contract/columns/_renders_tfvariants.json,
     2026-08-24) - so it counts as the literal "regime". None for a timeless metric."""
     if contract.metric(column.metric).is_timeless:
         return None
-    if section.timeframe is not None:
-        return section.timeframe
     rel = getattr(column.timeframe, "rel", None)
     if rel is None:
         return getattr(column.timeframe, "abs", None)
