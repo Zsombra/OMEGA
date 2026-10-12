@@ -1,6 +1,6 @@
 # 14 · Column Space
 
-> **Stale since 2026-09-09.** The platform serves **144 metrics** (contract 54.1.0); SWING_HIGH/SWING_LOW were renamed to DONCHIAN_UPPER/DONCHIAN_LOWER and nine TPO market-profile metrics were added. The composability numbers below (322 legal cells, 488 shapes, 46 buildable families) describe the 2026-08-24 roster; the current ones are 663 / 1018. Measured record: [22 · Platform drift 2026-09-09](22-platform-drift-2026-09-09.md), superseding [21](21-platform-drift-2026-09-05.md).
+> **Stale since 2026-09-09.** The platform serves **144 metrics** (contract 54.1.0); SWING_HIGH/SWING_LOW were renamed to DONCHIAN_UPPER/DONCHIAN_LOWER and nine TPO market-profile metrics were added. The composability numbers below (322 legal cells, 488 shapes, 46 buildable families) describe the 2026-08-24 roster; the current ones are 619 legal atoms / 920 shapes / 8,367 operand-expanded at contract 108 — the 61.2.0 corpus (156 metrics) less `bandTouch`, retired at v100 ([02](02-transform-layer.md), [the 2026-10-12 record](plans/2026-10-12-omega-report-surface-108.md)). Measured record: [22 · Platform drift 2026-09-09](22-platform-drift-2026-09-09.md), superseding [21](21-platform-drift-2026-09-05.md).
 
 
 Every table you could build, counted — and what the platform itself has never touched.

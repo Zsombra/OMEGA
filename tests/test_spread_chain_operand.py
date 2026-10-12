@@ -37,7 +37,7 @@ def _errors(base, operand, chained, contract):
     col = Column.model_validate({
         "metric": base, "transformId": "spread", "timeframe": {"rel": "anchor"},
         "chainedTransformId": chained, "inputs": [{"metric": operand}]})
-    return [f.code for f in validate_column(col, section_timeframe=None, path="s",
+    return [f.code for f in validate_column(col, path="s",
                                             contract=contract) if f.severity == "error"]
 
 
@@ -99,5 +99,6 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     pivots and the twelve metrics added at 61.2.0 are all timeless, so any OTHER metric's
     spread chained into a series now refuses whenever one of those 21 names is the
     operand - on top of the nine no longer offering that chain themselves."""
-    assert len(enumerate_shapes(contract=contract)) == 982
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 8429
+    # 920 / 8367 since 2026-10-12: the 62 bandTouch atoms left at v100 (a roster change, not this rule)
+    assert len(enumerate_shapes(contract=contract)) == 920
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 8367

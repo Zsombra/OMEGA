@@ -36,10 +36,10 @@ def contract():
     return C.load()
 
 
-def _findings(metric, timeframe, contract, section_timeframe=None):
+def _findings(metric, timeframe, contract):
     col = Column.model_validate(
         {"metric": metric, "transformId": "value", "timeframe": timeframe})
-    return validate_column(col, section_timeframe=section_timeframe,
+    return validate_column(col,
                            path="s.columns[0]", contract=contract)
 
 

@@ -147,9 +147,11 @@ def test_structural_coverage_is_complete(contract):
     it was: twelve metrics arrived carrying 45 mechanisms between them, while PDH, PDL and the
     seven pivots each lost three (trajectory, aggregate, efficiency) when they went timeless.
     The denominator shrank faster than it grew; what matters is that the uncovered set is empty.
+    593 since 2026-10-12: the 62 bandTouch mechanisms - each rendered live before v100 retired it - left the space
+    with the transform, so nothing was uncovered by the move.
     """
     cov, unc, _ = coverage(False, contract)
-    assert (cov, len(unc)) == (655, 0), (
+    assert (cov, len(unc)) == (593, 0), (
         "every metric x transform mechanism has been rendered live at least once")
 
 
@@ -176,6 +178,7 @@ def test_live_coverage_is_complete(contract):
     render is not covered by declaring it out of scope.
     """
     cov, unc, byt = coverage(True, contract)
-    assert (cov, len(unc)) == (8409, 0), (
+    # 8,347 since 2026-10-12: the 62 bandTouch shapes left with the transform at v100 (all had rendered live)
+    assert (cov, len(unc)) == (8347, 0), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
     assert not byt

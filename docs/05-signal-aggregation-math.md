@@ -3,6 +3,12 @@
 The layer above the report: 84 canonical signals across 19 modules, each carrying an
 allocation tier and a `required` flag, aggregated into one number and compared to a gate.
 
+> **Retired 2026-10-11 (contract 108).** "Signal rules, the aggregate-score gate and the
+> required-count gate are removed" (README "Contract history — v108"): there is no allocation, no
+> aggregate and no gate to invert. This derivation and `omega.aggregate` are history, kept importable
+> and called by nothing on the generation path. A strategy's entry gate is now its conditions — see
+> [09](09-conditions.md).
+
 > Where the scores themselves come from — the transformation from a raw indicator
 > reading to the 0–1 value this document aggregates — is
 > [11 · Signal Scoring](11-signal-scoring.md). Every score is clamped to [0, 1],

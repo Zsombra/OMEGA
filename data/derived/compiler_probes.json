@@ -12,11 +12,21 @@
     }
    },
    "sectionTimeframe": "1h",
-   "expect": "legal",
-   "headers": [
-    "open_touch"
-   ],
-   "note": "bandTouch is authorable but used by ZERO platform templates."
+   "expect": "illegal",
+   "rule": "bandTouch is not in the transformId enum the contract 108.0.0 write schema serves; README \"Contract history - v100\": \"A column naming `bandTouch` is refused by every tool that takes a column ... as any unknown transform id is.\" omega refuses it as TRANSFORM_RETIRED.",
+   "supersededOn": "2026-10-12",
+   "supersedes": {
+    "expect": "legal",
+    "headers": [
+     "open_touch"
+    ],
+    "note": "bandTouch is authorable but used by ZERO platform templates."
+   },
+   "schemaEvidence": {
+    "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
+    "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/transformId",
+    "_what": "Not re-probed live. The served enum is the evidence: the 108 write schema's column transformId enum (17 ids) has no bandTouch, and the 104.1.0 get_strategy_column_contract capture's column enum agrees (data/contract/get_strategy_column_contract/schema_104.1.0.json)."
+   }
   },
   {
    "id": "spread-chain-rank-allowed-operand",
@@ -215,7 +225,9 @@
    "sectionTimeframe": "1h",
    "expect": "illegal",
    "errorCode": "REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED",
-   "rule": "SECTION-LEVEL: a timeframe-inert (timeless) metric cannot sit in a section carrying a timeframe override"
+   "rule": "SECTION-LEVEL: a timeframe-inert (timeless) metric cannot sit in a section carrying a timeframe override",
+   "retiredOn": "2026-10-12",
+   "retiredBecause": "The probe sent `sectionTimeframe`, the section anchor override. Contract 48.0.0 removed the override (\"no section can be overridden\"), renamed the request field to `anchorTimeframe` (\"same meaning\"), and \"One call also stops being refused - a timeframe-inert metric supplied with an anchor now compiles\"; REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED left the authoringCode vocabulary. The verdict describes a surface that no longer exists; it is kept as history and not replayed."
   },
   {
    "id": "timeless-metric-without-override",
@@ -428,5 +440,6 @@
    }
   }
  ],
- "_reprobed": "2026-09-09: three cases were re-probed live because the refreshed 144-metric corpus disagreed with them. Two are now ACCEPTED (STOCH_D and CCI20 gained classifyZone; CCI20 x classifyZone is no longer platform-privileged) and one still refuses but at the operand level. Each keeps its August expectation under `supersedes`. A fourth case was added. Verdicts are measured, not inferred from the contract."
+ "_reprobed": "2026-09-09: three cases were re-probed live because the refreshed 144-metric corpus disagreed with them. Two are now ACCEPTED (STOCH_D and CCI20 gained classifyZone; CCI20 x classifyZone is no longer platform-privileged) and one still refuses but at the operand level. Each keeps its August expectation under `supersedes`. A fourth case was added. Verdicts are measured, not inferred from the contract.",
+ "_retired": "2026-10-12: one case retired (timeless-metric-in-overridden-section: the section override left at 48.0.0) and one superseded on schema evidence (bandTouch-on-price-level: the transform left at v100). Neither was re-probed live; each names its source."
 }

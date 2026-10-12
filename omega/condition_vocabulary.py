@@ -192,19 +192,39 @@ def strip_pointers(node: Any) -> Any:
     return node
 
 
-def _column_enums(doc: dict) -> dict:
+def _custom_section(doc: dict) -> list:
+    """Pointer parts of the REPORT axis's one custom-section arm (the arm that carries `columns`)."""
     base = [STAGE, "inputSchema"]
     sections = base + ["properties", "request", "properties", "axes", "properties", "REPORT", "properties",
                        "sections", "items"]
     custom = [p for p, arm in _flatten(doc, base, sections) if "columns" in arm.get("properties", {})]
     if len(custom) != 1:
         raise ValueError(f"expected one custom-section arm on the REPORT axis, got {len(custom)}")
-    column = custom[0] + ["properties", "columns", "items"]
+    return custom[0]
+
+
+def _report_section(doc: dict) -> dict:
+    """The custom section the REPORT axis admits: its fields, which are required, and the `columns` array bounds
+    (v103 removed the fixed 64; 48.0.0 removed the section `timeframe` override)."""
+    parts = _custom_section(doc)
+    node = resolve(doc, pointer(parts))
+    columns = node["properties"]["columns"]
+    return {"pointer": pointer(parts), "fields": sorted(node["properties"]), "required": list(node["required"]),
+            "additionalProperties": node.get("additionalProperties", True),
+            "columns": {k: columns[k] for k in ("minItems", "maxItems") if k in columns}}
+
+
+def _column_enums(doc: dict) -> dict:
+    base = [STAGE, "inputSchema"]
+    column = _custom_section(doc) + ["properties", "columns", "items"]
     _, node = _deref(doc, base, column)
     out: dict[str, Any] = {"pointer": pointer(column), "fields": sorted(node["properties"])}
     for name in ("metric", "transformId", "chainedTransformId"):
         p, n = _deref(doc, base, column + ["properties", name])
         out[name] = {"pointer": pointer(p), "count": len(n["enum"]), "enum": list(n["enum"])}
+    # the integer fields' bounds: window/offset keep only their floors since v103; buffer is 0-500 (v100)
+    out["bounds"] = {name: {k: spec[k] for k in ("minimum", "maximum") if k in spec}
+                     for name, spec in sorted(node["properties"].items()) if spec.get("type") == "integer"}
     return out
 
 
@@ -267,6 +287,7 @@ def derive(doc: dict, *, source: str, source_sha256: str) -> dict:
         "previewConditions": {"pointer": pointer(preview_items),
                               "sameGrammarAsStage": strip_pointers(preview) == strip_pointers(stage)},
         "servedPerHeader": _served_per_header(doc),
+        "reportSection": _report_section(doc),
         "reportColumn": _column_enums(doc),
     }
 
@@ -310,7 +331,7 @@ def gaps() -> dict:
     schema admits and omega does not model, `omegaOnly` what omega models and the schema does not admit."""
     from .conditions import GROUP_OPS, MODELLED_CLAUSE_OPS
     from .contract import load
-    from .types import Column
+    from .types import Column, CustomSection
     v = vocabulary()
     c = load()
     col = v["reportColumn"]
@@ -327,4 +348,5 @@ def gaps() -> dict:
         "metricsUnmeasured": sorted(c.unmeasured_metrics),
         "transforms": diff(col["transformId"]["enum"], c.transforms),
         "columnFields": diff(col["fields"], Column.model_fields),
+        "sectionFields": diff(v["reportSection"]["fields"], CustomSection.model_fields),
     }

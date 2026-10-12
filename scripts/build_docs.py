@@ -79,6 +79,16 @@ def metric_layer(c) -> str:
     return "\n".join(out)
 
 
+def _extracted_offers(tid: str):
+    """The metric records of the extraction that list `tid` (a retired transform leaves Metric.transforms)."""
+    for path in sorted((CONTRACT_DIR / "metrics").glob("*.json")):
+        if path.name.startswith("_"):
+            continue
+        rec = json.loads(path.read_text(encoding="utf-8"))
+        if any(t["id"] == tid for t in rec["transforms"]):
+            yield rec["metric"]
+
+
 def transform_layer(c) -> str:
     graph = json.loads((DERIVED_DIR / "spread_operand_graph.json").read_text(encoding="utf-8"))
     priv = json.loads((DERIVED_DIR / "platform_privileged.json").read_text(encoding="utf-8"))
@@ -88,23 +98,43 @@ def transform_layer(c) -> str:
         for tid in m.transforms:
             support[tid].append(m.metric)
 
+    live = [tid for tid in TRANSFORM_ORDER if tid not in c.retired_transforms]
+    cells = sum(len(v) for v in support.values())
     out = [
         "# 02 · The Transform Layer",
         "",
         "*Generated from `data/contract/transforms/_authoring.json` — do not hand-edit.*",
         "",
-        "A transform is **how you read** a metric. There are 16 authorable transforms.",
+        f"A transform is **how you read** a metric. There are {len(live)} authorable transforms omega has extracted.",
         "Crucially the metric×transform matrix is a **sparse partial function**, not a grid:",
-        f"only **{sum(len(v) for v in support.values())} of {len(c.metrics)}×16 = {len(c.metrics)*16}** cells are legal",
-        f"(**{100*sum(len(v) for v in support.values())/(len(c.metrics)*16):.1f}%** density).",
+        f"only **{cells} of {len(c.metrics)}×{len(live)} = {len(c.metrics)*len(live)}** cells are legal",
+        f"(**{100*cells/(len(c.metrics)*len(live)):.1f}%** density).",
         "",
+    ]
+    if c.retired_transforms or c.unmeasured_transforms:
+        rec = next(iter({**c.retired_transforms, **c.unmeasured_transforms}.values()))
+        out += [
+            f"Against the column `transformId` enum the contract {rec['servedAt']} write schema serves "
+            f"(`{rec['schema']}`):",
+            "",
+        ]
+        for tid in c.retired_transforms:
+            out.append(f"- **`{tid}` is retired** — extracted, no longer served; it is dropped from every metric's transforms in doc 01 and "
+                       f"here, and `omega.validate` refuses it (`TRANSFORM_RETIRED`). Its reference entry is kept "
+                       f"as history.")
+        for tid in c.unmeasured_transforms:
+            out.append(f"- **`{tid}` is served and unmeasured** — never extracted, so it has no entry here; "
+                       f"`omega.validate` refuses it (`TRANSFORM_UNMEASURED`) until its column contract is read.")
+        out.append("")
+    out += [
         "## Reference",
         "",
     ]
     for tid in TRANSFORM_ORDER:
         t = c.transforms[tid]
+        retired = tid in c.retired_transforms
         out += [
-            f"### `{tid}` — {t['label']}",
+            f"### `{tid}` — {t['label']}" + (" (RETIRED)" if retired else ""),
             "",
             f"{t['calculationSummary']}",
             "",
@@ -112,7 +142,9 @@ def transform_layer(c) -> str:
             f"{t['formula']}",
             "```",
             "",
-            f"- **Supported on:** {len(support[tid])} metric(s)",
+            (f"- **Retired** at contract {c.retired_transforms[tid]['servedAt']}: not in the served enum; the "
+             f"61.2.0 extraction offered it on {sum(1 for r in _extracted_offers(tid))} metric(s)"
+             if retired else f"- **Supported on:** {len(support[tid])} metric(s)"),
             f"- **Emits:** {t['emits']}" + (f" — {t['emitsNote']}" if "emitsNote" in t else ""),
             f"- **Null behaviour:** {t['nullBehavior']}",
         ]

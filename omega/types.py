@@ -48,12 +48,17 @@ class Column(BaseModel):
     transformId: str = Field(min_length=1, max_length=40)
     timeframe: Timeframe
     chainedTransformId: str | None = Field(default=None, min_length=1, max_length=40)
-    window: Annotated[int, Field(ge=1, le=64)] | None = None
-    offset: Annotated[int, Field(ge=0, le=64)] | None = None
+    # Integer floors only: v103 "The fixed `64` maximums leave strategy authoring ... `window` and `offset` keep their
+    # integer floors" - the served budget `columnLookback` judges them (omega.validate).
+    window: Annotated[int, Field(ge=1)] | None = None
+    offset: Annotated[int, Field(ge=0)] | None = None
     bars: BARS | None = None
     ordering: ORDERING | None = None
     side: SIDE | None = None
     inputs: list[Operand] | None = Field(default=None, max_length=4)
+    # v100: "whole basis points of the level, 0-500, default 0 ... declared by levelInteraction only"; the bounds are
+    # the 108 schema's (data/derived/condition_vocabulary_108.json reportColumn.bounds.buffer).
+    buffer: Annotated[int, Field(ge=0, le=500)] | None = None
 
     def wire(self) -> dict:
         """The exact JSON the connector expects."""
@@ -65,8 +70,14 @@ class CustomSection(BaseModel):
 
     kind: Literal["custom"] = "custom"
     title: str = Field(min_length=1, max_length=60)
-    benchmarkTicker: str | None = None
-    columns: list[Column] = Field(min_length=1, max_length=64)
+    # The 108 schema's coin symbol (v103 holds get_strategy_column_contract's ticker to the same charset).
+    benchmarkTicker: str | None = Field(default=None, min_length=1, max_length=20,
+                                        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+    # No fixed ceiling since v103; the served `sectionColumns` budget judges the count (omega.validate).
+    columns: list[Column] = Field(min_length=1)
+    # RETIRED at contract 48.0.0 (`remove-section-anchor-override`): "no section can be overridden", and the 108
+    # custom-section arm has no `timeframe` (additionalProperties false). Kept so a record written before 48 still
+    # loads; omega.validate refuses it (SECTION_TIMEFRAME_RETIRED).
     timeframe: ABS_TIMEFRAMES | None = None
     sectionKey: str | None = None
     # Required by the compile schema since the 2026-08-29 condition-clock deployment
@@ -110,7 +121,8 @@ class Report(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     anchor: ANCHOR_TIMEFRAMES = "1h"
-    sections: list[Section] = Field(default_factory=list, max_length=64)
+    # The 108 REPORT axis bounds no `sections` array; the served `sections` budget judges it (omega.validate).
+    sections: list[Section] = Field(default_factory=list)
 
     def wire(self) -> list[dict]:
         return [s.wire() for s in self.sections]

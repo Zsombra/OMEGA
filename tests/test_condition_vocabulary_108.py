@@ -200,5 +200,11 @@ def test_the_gaps_between_the_schema_and_omega():
     assert gaps["metricsUnmeasured"] == ADDED_SINCE_61_2
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
     # the enum and was platform-privileged at the 61.2.0 extraction (data/derived/platform_privileged.json)
+    # The extraction's catalogue still lists bandTouch; since 2026-10-12 omega.contract derives it as RETIRED from this
+    # very gap (and levelInteraction as UNMEASURED) and neither is enumerated or validated as legal
+    # (tests/test_report_surface_108.py).
     assert gaps["transforms"] == {"schemaOnly": ["classifyState", "levelInteraction"], "omegaOnly": ["bandTouch"]}
-    assert gaps["columnFields"] == {"schemaOnly": ["buffer"], "omegaOnly": []}
+    # closed 2026-10-12: Column.buffer with the schema's 0-500; before, schemaOnly was ["buffer"]
+    assert gaps["columnFields"] == {"schemaOnly": [], "omegaOnly": []}
+    # the section anchor override left at 48.0.0; kept on the model for old records, refused by validate_section
+    assert gaps["sectionFields"] == {"schemaOnly": [], "omegaOnly": ["timeframe"]}

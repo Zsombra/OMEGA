@@ -43,8 +43,7 @@ def contract():
 
 
 def _errors(shape, contract):
-    return [f for f in validate_column(shape.to_column(), section_timeframe=None,
-                                       path="s", contract=contract)
+    return [f for f in validate_column(shape.to_column(), path="s", contract=contract)
             if f.severity == "error"]
 
 

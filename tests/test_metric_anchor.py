@@ -47,7 +47,7 @@ def _codes(metric, timeframe, contract):
     col = Column.model_validate({"metric": metric, "transformId": "value",
                                  "timeframe": timeframe})
     return [(f.severity, f.code) for f in
-            validate_column(col, section_timeframe=None, path="c", contract=contract)]
+            validate_column(col, path="c", contract=contract)]
 
 
 def test_the_anchored_metrics_are_exactly_the_ones_declaring_an_anchor(contract):

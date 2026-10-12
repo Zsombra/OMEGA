@@ -47,6 +47,25 @@ strategies from a thesis.
 > registry with its prepare-never-execute checklist, and the conversation
 > procedure itself — [20 · The authoring procedure](docs/20-the-authoring-procedure.md).
 
+## Where it stands (2026-10-12, contract 108)
+
+- **Conditions are the only entry gate.** Contract 108 removed signal rules, the aggregate-score gate and the
+  required-count gate. A strategy is eight draft axes, and its entry gate is a required or verdict-carrying condition
+  ([08](docs/08-strategy-generation.md), [09](docs/09-conditions.md)). The signal model (docs 05, 07, 10–13,
+  `omega.membership`, `omega.scoring`, `omega.aggregate`) is history, kept importable.
+- **The vocabulary is derived from the saved write schema**, not typed: 13 clause operators, 171 metrics (156
+  measured, 15 known by name and refused until measured), 17 served transforms (`bandTouch` retired, `levelInteraction`
+  unmeasured), the custom section and column arms — `data/derived/condition_vocabulary_108.json`.
+- **The column space** is 619 legal atoms / 920 shapes / 8,367 operand-expanded, every one rendered live.
+- **What is left needs live reads** (none writes; each is the user's word): the 15 metrics' contracts,
+  `levelInteraction`, the per-header operators and hold domain, `list_strategy_vocabulary` at 108 — listed in
+  [the 2026-10-12 record](docs/plans/2026-10-12-omega-report-surface-108.md).
+- battlegrid-manager pins a tagged OMEGA release and drives the draft lifecycle (stage → read → commit); OMEGA
+  itself never calls the platform.
+
+The sections below are the project's history in the order it happened; the numbers in "What the extraction found"
+are the August extraction's.
+
 ---
 
 ## Start here
@@ -59,14 +78,14 @@ strategies from a thesis.
 | [02 · Transform Layer](docs/02-transform-layer.md) | all 16 transforms: formulas, parameters, null behaviour, spread pools, privilege |
 | [03 · Column Compilation](docs/03-column-compilation.md) | how a column becomes output headers; fan-out; chaining; naming |
 | [04 · Sections & Budgets](docs/04-section-report-budget.md) | composition rules, timeframe resolution, what actually costs you |
-| [05 · Aggregation Math](docs/05-signal-aggregation-math.md) | the scoring derivation and what follows from it |
+| [05 · Aggregation Math](docs/05-signal-aggregation-math.md) | the scoring derivation and what follows from it *(retired at 108)* |
 | [06 · Cookbook](docs/06-cookbook.md) | recipes that compile, and ten traps |
-| [07 · Signal Membership](docs/07-signal-membership.md) | which of the 84 signals your report can actually feed — offline |
+| [07 · Signal Membership](docs/07-signal-membership.md) | which of the 84 signals your report can actually feed — offline *(retired at 108)* |
 | [08 · Strategy Generation](docs/08-strategy-generation.md) | compose a complete validated strategy from a thesis — `wire()` is the exact CREATE request, and the critique states the measured execution profile |
-| [09 · Conditions](docs/09-conditions.md) | the condition DSL, ambient headers, and offline type-checking |
-| [10 · Outcome Feedback](docs/10-outcome-feedback.md) | which signals earned their allocation — and when to refuse to say |
-| [11 · Signal Scoring](docs/11-signal-scoring.md) | how a raw indicator reading becomes the 0–1 number that gets aggregated |
-| [12 · Routing Feasibility](docs/12-routing-feasibility.md) | would this strategy route — and which signals are holding it back |
+| [09 · Conditions](docs/09-conditions.md) | the condition DSL, ambient headers, offline type-checking — and, since 108, the entry gate |
+| [10 · Outcome Feedback](docs/10-outcome-feedback.md) | which signals earned their allocation — and when to refuse to say *(retired at 108)* |
+| [11 · Signal Scoring](docs/11-signal-scoring.md) | how a raw indicator reading becomes the 0–1 number that gets aggregated *(retired at 108)* |
+| [12 · Routing Feasibility](docs/12-routing-feasibility.md) | would this strategy route — and which signals are holding it back *(retired at 108)* |
 | [13 · Temporal Spread](docs/13-temporal-spread.md) | the second axis: what survives across time, and what was one instant |
 | [14 · Column Space](docs/14-column-space.md) | every table you could build: 488 shapes, 1779 expanded — all of them rendered live, 0 header mismatches — and the 349 nothing has ever used |
 | [15 · What the account has built](docs/15-what-the-account-has-built.md) | the audit: not one custom column has ever existed on this account |
@@ -75,6 +94,8 @@ strategies from a thesis.
 | [18 · Indicator census](docs/18-indicator-census.md) | which named indicators this platform can build, which it cannot, and **why not** |
 | [19 · Is the data correct?](docs/19-is-the-data-correct.md) | the tape and the indicator maths, checked against Hyperliquid rather than against BattleGrid |
 | [20 · The authoring procedure](docs/20-the-authoring-procedure.md) | how a session turns intent into a strategy — the vocabulary, the guardrails, the honesty gate, and the per-authorized live loops |
+| [21](docs/21-platform-drift-2026-09-05.md) – [24](docs/24-tpo-panel-logger.md) | platform drift records (09-05, 09-09), the vendor skill pack, the TPO panel logger |
+| [plans/](docs/plans/) | the re-extraction records since 2026-10-06: the draft lifecycle (v91), conditions-only (108), the condition vocabulary (108), the REPORT surface (108) |
 
 ## What the extraction found
 
@@ -158,11 +179,11 @@ data/performance/  one real signal-log/outcome pair (parser fixture)
 data/derived/      composability matrix, spread graph, type system, privileged pairs,
                    composition rules, compiler probes, aggregate oracle,
                    signal module map
-docs/              00–14
+docs/              00–24, plans/ (the re-extraction records)
 omega/             the toolkit (`python -m omega.table` drives the column loop)
 scripts/           build_corpus.py, build_docs.py, write_manifest.py
 examples/          build_section.py, build_strategy.py
-tests/             1025 tests, incl. 21 compiler + 21 membership probes replayed
+tests/             1373 tests, incl. the compiler and membership probes replayed
 ```
 
 `data/contract/` is raw extracted fact. `data/derived/` is analysis computed from it.
@@ -175,7 +196,7 @@ PYTHONPATH=. python scripts/build_corpus.py && PYTHONPATH=. python scripts/build
 ## Verification
 
 ```bash
-python -m pytest tests/ -q     # 1025 passed (2026-09-18)
+python -m pytest tests/ -q     # 1373 passed (2026-10-12)
 ```
 
 - 86/86 metrics; all 10 family counts reconcile with the connector

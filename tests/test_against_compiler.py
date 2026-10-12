@@ -14,8 +14,17 @@ from omega.fanout import outputs_for
 from omega.types import Column
 from omega.validate import validate_column
 
-PROBES = json.loads((DERIVED_DIR / "compiler_probes.json").read_text(encoding="utf-8"))["cases"]
+ALL_PROBES = json.loads((DERIVED_DIR / "compiler_probes.json").read_text(encoding="utf-8"))["cases"]
+# A retired case describes a surface the platform removed (its `retiredBecause` quotes the changelog); it stays in
+# the oracle as history and is not replayed against today's validator.
+PROBES = [c for c in ALL_PROBES if "retiredOn" not in c]
 CONTRACT = load()
+
+
+def test_the_retired_probes_are_exactly_the_section_override():
+    retired = [c["id"] for c in ALL_PROBES if "retiredOn" in c]
+    assert retired == ["timeless-metric-in-overridden-section"]
+    assert all("48.0.0" in c["retiredBecause"] for c in ALL_PROBES if "retiredOn" in c)
 
 
 def _column(case) -> Column:
@@ -26,7 +35,6 @@ def _column(case) -> Column:
 def test_validator_agrees_with_compiler(case):
     findings = validate_column(
         _column(case),
-        section_timeframe=case.get("sectionTimeframe"),
         contract=CONTRACT,
     )
     errors = [f for f in findings if f.severity == "error"]
