@@ -1,5 +1,9 @@
 # 19 · Is the data correct?
 
+> **Names (2026-10-12).** `SWING_HIGH` / `SWING_LOW` below are the August names: contract 53.0.0 renamed them
+> `DONCHIAN_UPPER` / `DONCHIAN_LOWER` (header stems `donchianHi` / `donchianLo`) - a pure rename, same 20-bar channel
+> ([22](22-platform-drift-2026-09-09.md) §2). The measurements are unchanged.
+
 Everything else in this repo verifies **consistency** — that `omega` predicts what
 BattleGrid does. 1,759 of 1,759 column shapes, 46 of 46 indicator families, 25 of 25
 platform sections. None of it would notice if the platform's RSI were secretly a
