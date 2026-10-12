@@ -576,7 +576,12 @@ reads it offline only from descriptions, so each of these is a warning that quot
 - a header omega cannot see the history of — an ambient or timeless header (`chg24h`, `mktBreadth_all`): "a header
   whose `conditionHold.maxWindow` is 1 is served none of the six" (vendor strategy-examples, exported at 105);
 - an edge held "in a row", and an `ALL` group held above one read over an edge (the two hold rules above);
-- a transition label outside the header's vocabulary (measured for `is`, prose for `enters` / `exits`).
+- a transition label outside the header's vocabulary (measured for `is`, prose for `enters` / `exits`);
+- *(2026-10-12)* a group nested more than two deep inside one definition — "Groups: `ALL | ANY | NOT | N_OF` (with
+  `n`), depth ≤ 2" (vendor strategy-examples, exported at 105). The schema does not bound it and v103 serves the real
+  figure in `list_strategy_vocabulary`'s `conditionGrammar`, unread here. A `conditionRef` adds no depth: the
+  referenced condition "is resolved once", so moving an inner group into its own condition is the fix the warning
+  names. No preset and no TPO suite member nests past two.
 
 The pre-v98 operators keep their errors exactly as before.
 

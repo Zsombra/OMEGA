@@ -69,6 +69,10 @@ EDGE_GROUP_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"A group 
                      "together (ALL) over an edge admits 'within' only too\"")
 ONE_BAR_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"a header whose conditionHold.maxWindow is 1 is "
                   "served none of the six, so vol24hUsd increased is refused (CONDITION_OPERATOR_UNSUPPORTED ...)\"")
+GROUP_DEPTH_MAX = 2
+GROUP_DEPTH_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"Groups: ALL | ANY | NOT | N_OF (with n), depth "
+                      "≤ 2\"; the 108 schema does not bound it and list_strategy_vocabulary's conditionGrammar (v103) "
+                      "is unread")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
 CARRIER_VERDICTS = ("UP", "DOWN", "NEITHER")
 # Contract 91.0.0 (data/contract/stage_strategy_draft/schema_20261005T194629Z.json, the
@@ -695,6 +699,13 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
     if kind == "group":
         h = _check_hold(defn, key, path, out)
         op, members = defn.get("op"), defn.get("members") or []
+        if depth + 1 == GROUP_DEPTH_MAX + 1:
+            # once, at the first group past the limit; a conditionRef is a leaf here (its definition is walked on
+            # its own turn), so referencing a condition never adds depth
+            out.append(ConditionFinding(
+                "warning", key, path,
+                f"a group nested {depth + 1} deep inside one definition: the schema admits it, but "
+                f"{GROUP_DEPTH_SOURCE}. Move the inner group into its own condition and reference it"))
         if op not in GROUP_OPS:
             out.append(ConditionFinding("error", key, path, f"group op {op!r} not in {GROUP_OPS}"))
         if op == "ALL" and h and h["atLeast"] > 1 and _edge_clauses(defn):

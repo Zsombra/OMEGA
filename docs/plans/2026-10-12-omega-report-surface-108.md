@@ -69,3 +69,10 @@ and not closed" this works through — every item below has a source on disk.
 - **battlegrid-manager**: calls none of the changed functions (`validate_column`'s removed `section_timeframe`,
   `contract_request`); its pin-drift kinds (metrics, sectionKeys) do not move. Re-pinning is optional.
 
+## Follow-ups the same day (branch `feat/v103-transform-entry`)
+
+- v103 transform entry: requiredness read from the authoring catalogue (above, "Not in this slice").
+- Group depth: `validate_conditions` warns once at a group nested three deep inside one definition, quoting the vendor's
+  "depth ≤ 2" (`omega.conditions.GROUP_DEPTH_SOURCE`); a `conditionRef` resets it. Warning, not error: the served
+  `conditionGrammar` depth is unread. `tests/test_condition_group_depth.py`. Suite: 1381 passed.
+
