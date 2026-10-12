@@ -300,7 +300,9 @@ Thirty-three shapes across six renders and four contract calls — **6.8%** of t
 Complete on every structural axis: all 16 transforms, all 3 timeframe rels, all 8 chained
 combinations, and both the `offset` and `bars` parameters.
 
-**455 of the 488 shapes have still never been compiled or rendered.** 55 columns compiled
+*(Superseded the same month: the 2026-08-26 sweep rendered all 1,759 expanded shapes - the table above and
+[17](17-the-full-sweep.md) - and the 2026-09-09 / 09-20 sweeps re-completed it on each larger roster. The paragraph
+below is the state before those sweeps.)* **455 of the 488 shapes had still never been compiled or rendered.** 55 columns compiled
 live have exposed nine header mispredictions, one shipped condition bug, and one silent
 platform failure. The last batch found nothing, which is the first evidence that the
 structural surface may now be sound — but it is one clean batch, not a guarantee about

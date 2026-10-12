@@ -9,7 +9,9 @@ compiled, applied, forked, bound or deployed. Machine-readable twin:
 **Docs 00, 01, 03, 14, 18 and the README still describe the August roster (86 metrics, 322 legal
 cells, 46 buildable families).** They are not wrong about August; they are stale about today.
 Doc 01 is generated from `data/contract/metrics/`, which still holds 86 files. The re-extraction
-that would refresh them is listed at the end and has not been run.
+that would refresh them is listed at the end and has not been run. *(2026-10-12: since run - 144 metrics on
+2026-09-09 ([22](22-platform-drift-2026-09-09.md)), 156 at contract 61.2.0 on 2026-09-20; docs 01/02 were
+regenerated from that corpus on 2026-10-12.)*
 
 ## 1. Metric roster: 86 → 135, nothing removed
 
