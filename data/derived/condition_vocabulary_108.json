@@ -521,6 +521,28 @@
    }
   }
  },
+ "reportSection": {
+  "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1",
+  "fields": [
+   "benchmarkTicker",
+   "columns",
+   "kind",
+   "notes",
+   "sectionKey",
+   "title"
+  ],
+  "required": [
+   "kind",
+   "title",
+   "benchmarkTicker",
+   "notes",
+   "columns"
+  ],
+  "additionalProperties": false,
+  "columns": {
+   "minItems": 1
+  }
+ },
  "reportColumn": {
   "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items",
   "fields": [
@@ -746,6 +768,18 @@
     "maxShare",
     "rank"
    ]
+  },
+  "bounds": {
+   "buffer": {
+    "minimum": 0,
+    "maximum": 500
+   },
+   "offset": {
+    "minimum": 0
+   },
+   "window": {
+    "minimum": 1
+   }
   }
  }
 }
