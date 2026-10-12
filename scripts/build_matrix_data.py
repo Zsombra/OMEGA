@@ -67,9 +67,9 @@ def main() -> None:
                 if m.offers(tid):
                     spec = m.transforms[tid]
                     cell = {"s": "legal"}
-                    if spec.get("operandRequired"):
+                    if c.requires_operand(tid):   # v103: from the authoring catalogue
                         cell["op"] = True
-                    if spec.get("sideRequired"):
+                    if c.requires_side(tid):
                         cell["side"] = True
                     if spec.get("chainSuccessors"):
                         cell["chain"] = spec["chainSuccessors"]

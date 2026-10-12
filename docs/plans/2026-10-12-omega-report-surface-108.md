@@ -45,9 +45,13 @@ and not closed" this works through — every item below has a source on disk.
   `list_strategy_vocabulary` at 108 — the list in the 2026-10-11 record, unchanged.
 - `conditionFrameReads` (256): the vendor states one rule ("a clause held 'within 3 closes' reads four bars") but not
   how reads sum across clauses, groups and references. Encoding a sum would be inventing it.
-- A re-extraction at 108 meets the v103 shape: a served transform entry no longer carries `sideRequired` /
-  `operandRequired` (read `authoring.parameters.side.required` / `inputs.required`). `validate_column` reads the old
-  flags from the 61.2.0 corpus; the refresh script must map them, or the checks go silent.
+- ~~A re-extraction at 108 meets the v103 shape: a served transform entry no longer carries `sideRequired` /
+  `operandRequired`; the refresh script must map them, or the checks go silent.~~ **Closed the same day** (branch
+  `feat/v103-transform-entry`): the 95.0.0 output schema shows `authoring.parameters.{inputs,side}.required` on the
+  same entry, the 61.2.0 corpus agrees on all 619 cells, and `Contract.requires_operand` / `requires_side` read it
+  from the authoring catalogue — `validate_column`, `build_corpus` and `build_matrix_data` no longer read the
+  per-metric flags (`tests/test_v103_transform_entry.py` runs the checks on a flag-less corpus; the rebuilt
+  composability matrix is identical).
 
 ## Result
 
@@ -64,4 +68,11 @@ and not closed" this works through — every item below has a source on disk.
   battlegrid-manager's allocator imports `omega.performance`'s `MIN_SAMPLE` and `wilson_interval`.
 - **battlegrid-manager**: calls none of the changed functions (`validate_column`'s removed `section_timeframe`,
   `contract_request`); its pin-drift kinds (metrics, sectionKeys) do not move. Re-pinning is optional.
+
+## Follow-ups the same day (branch `feat/v103-transform-entry`)
+
+- v103 transform entry: requiredness read from the authoring catalogue (above, "Not in this slice").
+- Group depth: `validate_conditions` warns once at a group nested three deep inside one definition, quoting the vendor's
+  "depth ≤ 2" (`omega.conditions.GROUP_DEPTH_SOURCE`); a `conditionRef` resets it. Warning, not error: the served
+  `conditionGrammar` depth is unread. `tests/test_condition_group_depth.py`. Suite: 1381 passed.
 

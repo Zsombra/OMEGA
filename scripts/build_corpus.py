@@ -99,8 +99,17 @@ def verify(records: dict, categories: dict) -> None:
     print(f"OK  {len(records)}/{len(METRIC_ENUM)} metrics; all {len(categories['categories'])} family counts reconcile with the connector")
 
 
+def _required(authoring: dict, tid: str, parameter: str) -> bool:
+    """v103: `operandRequired` / `sideRequired` left the served transform entry; read
+    `authoring.parameters.{inputs,side}.required` instead (equal on every 61.2.0 cell -
+    tests/test_v103_transform_entry.py). A corpus extracted before v103 still carries the flags."""
+    params = (authoring.get(tid) or {}).get("parameters") or {}
+    return bool((params.get(parameter) or {}).get("required"))
+
+
 def build_composability(records: dict, shared: dict) -> list[dict]:
     transform_ids = [t["id"] for t in shared["transforms"]]
+    authoring = load_json(CONTRACT / "transforms" / "_authoring.json")["transforms"]
     rows = []
     for name in METRIC_ENUM:
         rec = records[name]
@@ -115,8 +124,8 @@ def build_composability(records: dict, shared: dict) -> list[dict]:
                 "timeframeMode": rec["timeframeMode"],
                 "transform": tid,
                 "legal": "yes" if t else "no",
-                "operandRequired": "yes" if t and t.get("operandRequired") else "",
-                "sideRequired": "yes" if t and t.get("sideRequired") else "",
+                "operandRequired": "yes" if t and (t.get("operandRequired") or _required(authoring, tid, "inputs")) else "",
+                "sideRequired": "yes" if t and (t.get("sideRequired") or _required(authoring, tid, "side")) else "",
                 "chainSuccessors": "|".join(t.get("chainSuccessors", [])) if t else "",
                 "chainedRankOrderings": "|".join(t.get("chainedRankOrderings", [])) if t else "",
                 "rankableSpreadOperands": "|".join(t.get("rankableSpreadOperands", [])) if t else "",

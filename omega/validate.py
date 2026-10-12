@@ -198,7 +198,8 @@ def validate_column(
                 f"even when it equals the anchor; only the literal reference passes."))
 
     # --- spread operands ----------------------------------------------------
-    if spec.get("operandRequired"):
+    # requiredness from the transform's authoring catalogue, not the per-metric flag v103 removed
+    if c.requires_operand(tid):
         inputs = column.inputs or []
         if len(inputs) != 1:
             out.append(Finding(
@@ -221,11 +222,11 @@ def validate_column(
             f"{m.metric} x {tid} takes no operand; `inputs` will be ignored"))
 
     # --- side (entitySet transforms) ---------------------------------------
-    if spec.get("sideRequired") and column.side is None:
+    if c.requires_side(tid) and column.side is None:
         out.append(Finding(
             "error", "SIDE_REQUIRED", f"{path}.side",
             f"{tid} requires side='support' or 'resistance'"))
-    if column.side is not None and not spec.get("sideRequired"):
+    if column.side is not None and not c.requires_side(tid):
         out.append(Finding(
             "warning", "SIDE_IGNORED", f"{path}.side",
             f"{m.metric} x {tid} does not use `side`"))
