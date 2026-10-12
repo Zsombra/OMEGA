@@ -182,3 +182,34 @@ def test_no_buildable_family_uses_a_shape_the_renderer_refuses():
         for spec in fam["columns"]:
             key = (spec["metric"], spec.get("chainedTransformId") or spec["transformId"])
             assert key not in UNRENDERABLE, f"{fam['id']} uses unrenderable {key}"
+
+
+# --- the native-indicator families decided 2026-10-12 -------------------------
+
+NATIVE_2026_10_12 = ["keltner", "supertrend", "ichimoku", "parabolic-sar", "hull-ma", "floor-pivots",
+                     "prior-session-levels", "market-profile", "prior-market-profile", "williams-r", "qqe",
+                     "wavetrend", "stoch-rsi", "directional-movement"]
+
+
+def test_the_native_families_are_decided_and_keltner_is_no_longer_blocked():
+    """The census's `_knownWrongSince_2026-09-09` block asked for these to be re-decided with real column specs:
+    the platform publishes the indicators as native metrics, so each family is SELECTED, not constructed."""
+    ids = _ids(BUILDABLE)
+    assert [f for f in NATIVE_2026_10_12 if f not in ids] == []
+    assert "keltner" not in _ids(BLOCKED)
+    assert "_knownWrongSince_2026-09-09" not in FAMILIES
+    assert all(_fam(f)["decidedOn"] == "2026-10-12" for f in NATIVE_2026_10_12)
+
+
+@pytest.mark.parametrize("fid", NATIVE_2026_10_12)
+def test_every_native_family_column_was_rendered_live(fid):
+    """No family probe was run for these; instead each column's every header must be in the recorded render
+    caches (the 2026-09-09 / 09-20 coverage sweeps rendered every enumerated shape), so the family is made only of
+    columns the live renderer has produced."""
+    import sys
+    sys.path.insert(0, "scripts")
+    from render_coverage import rendered_headers
+    seen = rendered_headers()
+    for spec in _fam(fid)["columns"]:
+        missing = [o.header for o in outputs_for(_column(spec)) if o.header not in seen]
+        assert not missing, f"{fid}: {spec} -> never rendered: {missing}"
