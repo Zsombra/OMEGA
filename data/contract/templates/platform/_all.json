@@ -629,6 +629,13 @@
      "timeframe": {
       "rel": "anchor"
      }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
     }
    ]
   },
@@ -1141,9 +1148,17 @@
   }
  ],
  "_refreshed": {
-  "at": "2026-09-09T08:03:07Z",
-  "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
-  "note": "contract 54.1.0. includeSupportResistance now names DONCHIAN_UPPER/DONCHIAN_LOWER where it named SWING_HIGH/SWING_LOW; the two metrics were renamed, not removed - same nativeOutput, timeframeMode and transform set, code swingHi->donchianHi and swingLo->donchianLo, label 'Swing high'->'20-bar high'."
+  "at": "2026-10-13T03:37Z",
+  "contractVersion": "108.4.0",
+  "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261013T0337Z/",
+  "moved": [
+   "includeSupportResistance gained {metric: BAR_FORMING, transformId: value, timeframe: {rel: anchor}}"
+  ],
+  "previous": {
+   "at": "2026-09-09T08:03:07Z",
+   "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+   "note": "contract 54.1.0. includeSupportResistance now names DONCHIAN_UPPER/DONCHIAN_LOWER where it named SWING_HIGH/SWING_LOW; the two metrics were renamed, not removed - same nativeOutput, timeframeMode and transform set, code swingHi->donchianHi and swingLo->donchianLo, label 'Swing high'->'20-bar high'."
+  }
  },
  "_amended": [
   {
