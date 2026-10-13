@@ -54,11 +54,13 @@ class Output:
         ops = {
             "numeric": ["lt", "lte", "gte", "gt", "between"],
             "rank": ["lt", "lte", "gte", "gt", "between"],
-            "date": ["lt", "lte", "gte", "gt", "between"],
+            # MEASURED (preview_strategy_report, detail "detailed", 108.4.0, 2026-10-13, data/contract/columns/operators_108_4_2026-10-13/base.json):
+            # a date header (settledAt) is served NO operators - as SETTLED_AT was on 2026-08-25 (cookbook trap 24)
+            "date": [],
             "classification": ["is", "in"],
             "direction": ["is", "in"],
             "event": ["is", "in"],
-            "boolean": ["is"],
+            "boolean": ["is", "in"],          # measured 2026-10-13: doji is served is/in (+ enters/exits)
         }
         return ops.get(self.kind, [])
 

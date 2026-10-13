@@ -1,0 +1,85 @@
+{
+ "headers": {
+  "numeric candle": [
+   "RSI14"
+  ],
+  "timeless numeric": [
+   "chg24h"
+  ],
+  "classification": [
+   "RSI14_zone"
+  ],
+  "direction": [
+   "ADX_t2",
+   "ADX_t1",
+   "ADX_now",
+   "ADX_trend"
+  ],
+  "boolean": [
+   "doji"
+  ],
+  "event": [
+   "EMA5_13"
+  ],
+  "rank": [
+   "RSI14_rank_hi"
+  ],
+  "date": [
+   "settledAt"
+  ],
+  "level interaction": [
+   "bbUpper_lvl"
+  ]
+ },
+ "summary": {
+  "base": {
+   "refused": null,
+   "register": "{}"
+  },
+  "cross_numeric_ok": {
+   "refused": null,
+   "register": "{\"id\": \"strategy-conditions-table\", \"title\": \"Strategy Conditions\", \"surface\": \"GRID\", \"coins\": [{\"coin\": \"BTC\", \"outcomes\": {\"P_CROSS\": \"FALSE\"}, \"verdict\": \"Neither\", \"decidedBy\": null}]}"
+  },
+  "cross_held_in_a_row": {
+   "refused": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"[condition] strategy report preview condition 'P_CROSS_ROW' holds 2 closes in a row on 'custom:0b7f688e-045d-8dff-84fb-0885d958e4ca.RSI14', but it reads a transition — a change that fires on one bar — so it can be held \\\"within 194 closes\\\" only, never on 2 or more of them.\",\n  \"details\": {\n    \"authoringCode\": \"CONDITION_HOLD_ILLEGAL\",\n    \"path\": [\n      \"conditions\",\n      \"P_CROSS_ROW\",\n      \"definition\",\n      \"hold\"\n    ],\n    \"receivedValue\": {\n      \"atLeast\": 2,\n      \"of\": 2\n    },\n    \"allowedDomain\": {\n      \"kind\": \"relation\",\n      \""
+  },
+  "cross_within_3": {
+   "refused": null,
+   "register": "{\"id\": \"strategy-conditions-table\", \"title\": \"Strategy Conditions\", \"surface\": \"GRID\", \"coins\": [{\"coin\": \"BTC\", \"outcomes\": {\"P_CROSS_WITHIN\": \"TRUE\"}, \"verdict\": \"Up\", \"decidedBy\": \"P_CROSS_WITHIN\"}]}"
+  },
+  "increased_timeless": {
+   "refused": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"[condition] strategy report preview condition 'P_INC_TIMELESS': operator 'increased' reads the bar before the one it decides, and 'chg24h' admits one bar — This value is only stored for the current bar — it has no bar-by-bar history to count. Its admitted operators are lt, lte, gte, gt, between\",\n  \"details\": {\n    \"authoringCode\": \"CONDITION_OPERATOR_UNSUPPORTED\",\n    \"path\": [\n      \"conditions\",\n      \"P_INC_TIMELESS\",\n      \"definition\",\n      \"op\"\n    ],\n    \"receivedValue\": \"increased\",\n    \"allowedDomain\": {\n      \"kind\": \"enum\",\n      \"valu"
+  },
+  "cross_on_classification": {
+   "refused": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"[condition] strategy report preview condition 'P_CROSS_ZONE': operator 'crossesAbove' is not legal for 'RSI14_zone' (output kind 'classification') — its admitted operators are is, in, enters, exits\",\n  \"details\": {\n    \"authoringCode\": \"CONDITION_OPERATOR_UNSUPPORTED\",\n    \"path\": [\n      \"conditions\",\n      \"P_CROSS_ZONE\",\n      \"definition\",\n      \"op\"\n    ],\n    \"receivedValue\": \"crossesAbove\",\n    \"allowedDomain\": {\n      \"kind\": \"enum\",\n      \"values\": [\n        \"is\",\n        \"in\",\n        \"enters\",\n        \"exits\"\n      ]\n    },\n    \"context\""
+  },
+  "enters_classification": {
+   "refused": null,
+   "register": "{\"id\": \"strategy-conditions-table\", \"title\": \"Strategy Conditions\", \"surface\": \"GRID\", \"coins\": [{\"coin\": \"BTC\", \"outcomes\": {\"P_ENTERS\": \"FALSE\"}, \"verdict\": \"Neither\", \"decidedBy\": null}]}"
+  },
+  "enters_bad_label": {
+   "refused": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"[condition] strategy report preview condition 'P_ENTERS_BAD': 'sideways' is not a value 'RSI14_zone' can take — its vocabulary is overbought | oversold | neutral Nearest canonical key: 'neutral'.\",\n  \"details\": {\n    \"authoringCode\": \"CONDITION_LITERAL_UNSUPPORTED\",\n    \"path\": [\n      \"conditions\",\n      \"P_ENTERS_BAD\",\n      \"definition\",\n      \"label\"\n    ],\n    \"receivedValue\": \"sideways\",\n    \"allowedDomain\": {\n      \"kind\": \"enum\",\n      \"values\": [\n        \"overbought\",\n        \"oversold\",\n        \"neutral\"\n      ]\n    },\n    \"context\": {\n  "
+  },
+  "enters_direction": {
+   "refused": null,
+   "register": "{\"id\": \"strategy-conditions-table\", \"title\": \"Strategy Conditions\", \"surface\": \"GRID\", \"coins\": [{\"coin\": \"BTC\", \"outcomes\": {\"P_TREND_FLIP\": \"FALSE\"}, \"verdict\": \"Neither\", \"decidedBy\": null}]}"
+  },
+  "enters_boolean": {
+   "refused": null,
+   "register": "{\"id\": \"strategy-conditions-table\", \"title\": \"Strategy Conditions\", \"surface\": \"GRID\", \"coins\": [{\"coin\": \"BTC\", \"outcomes\": {\"P_DOJI\": \"FALSE\"}, \"verdict\": \"Neither\", \"decidedBy\": null}]}"
+  },
+  "enters_event": {
+   "refused": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"[condition] strategy report preview condition 'P_EVENT': operator 'enters' is not legal for 'EMA5_13' (output kind 'event') — its admitted operators are is, in\",\n  \"details\": {\n    \"authoringCode\": \"CONDITION_OPERATOR_UNSUPPORTED\",\n    \"path\": [\n      \"conditions\",\n      \"P_EVENT\",\n      \"definition\",\n      \"op\"\n    ],\n    \"receivedValue\": \"enters\",\n    \"allowedDomain\": {\n      \"kind\": \"enum\",\n      \"values\": [\n        \"is\",\n        \"in\"\n      ]\n    },\n    \"context\": {\n      \"conditionKey\": \"P_EVENT\",\n      \"header\": \"EMA5_13\",\n      \"outputKind\": "
+  },
+  "increased_rank": {
+   "refused": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"[condition] strategy report preview condition 'P_RANK_INC': operator 'increased' is not legal for 'RSI14_rank_hi' (output kind 'rank') — its admitted operators are lt, lte, gte, gt, between\",\n  \"details\": {\n    \"authoringCode\": \"CONDITION_OPERATOR_UNSUPPORTED\",\n    \"path\": [\n      \"conditions\",\n      \"P_RANK_INC\",\n      \"definition\",\n      \"op\"\n    ],\n    \"receivedValue\": \"increased\",\n    \"allowedDomain\": {\n      \"kind\": \"enum\",\n      \"values\": [\n        \"lt\",\n        \"lte\",\n        \"gte\",\n        \"gt\",\n        \"between\"\n      ]\n    },\n    \"context"
+  },
+  "enters_level": {
+   "refused": null,
+   "register": "{\"id\": \"strategy-conditions-table\", \"title\": \"Strategy Conditions\", \"surface\": \"GRID\", \"coins\": [{\"coin\": \"BTC\", \"outcomes\": {\"P_LVL\": \"FALSE\"}, \"verdict\": \"Neither\", \"decidedBy\": null}]}"
+  },
+  "all_held_over_edge": {
+   "refused": "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"[condition] strategy report preview condition 'P_ALL_EDGE' holds a ALL group together on at least 2 of 3 closes, but 'custom:0b7f688e-045d-8dff-84fb-0885d958e4ca.RSI14': it reads a transition — a change that fires on one bar — so it can be held \\\"within 194 closes\\\" only, never on 2 or more of them.\",\n  \"details\": {\n    \"authoringCode\": \"CONDITION_HOLD_ILLEGAL\",\n    \"path\": [\n      \"conditions\",\n      \"P_ALL_EDGE\",\n      \"definition\",\n      \"hold\"\n    ],\n    \"receivedValue\": {\n      \"atLeast\": 2,\n      \"of\": 3\n    },\n    \"allowedDomain\": {\n      \"k"
+  }
+ }
+}

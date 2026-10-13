@@ -1,0 +1,661 @@
+{
+  "renderedSections": [
+    {
+      "sectionKey": "custom:0b7f688e-045d-8dff-84fb-0885d958e4ca",
+      "shape": "table",
+      "section": {
+        "id": "custom:0b7f688e-045d-8dff-84fb-0885d958e4ca",
+        "title": "operator probe",
+        "notes": "",
+        "anchorTf": "1h",
+        "groups": [
+          {
+            "key": "RSI14",
+            "gloss": "14-period relative strength index (0–100)",
+            "values": null
+          },
+          {
+            "key": "chg24h",
+            "gloss": "published 1-day price change (%) since the UTC day's 00:00 open, read live off the forming 1d bar — not a rolling 24h change",
+            "values": null
+          },
+          {
+            "key": "ADX",
+            "gloss": "14-period average directional index (trend strength, 0–100)",
+            "values": null
+          },
+          {
+            "key": "doji",
+            "gloss": "whether the bar is a doji: its body is at most 0.1× the mean range of the 10 bars before it (TA-Lib CDLDOJI)",
+            "values": null
+          },
+          {
+            "key": "EMA5_13",
+            "gloss": "the 5/13 EMA crossover event",
+            "values": [
+              "Bullish",
+              "Bearish"
+            ]
+          },
+          {
+            "key": "settledAt",
+            "gloss": "the settlement timestamp of the reference game",
+            "values": null
+          },
+          {
+            "key": "bbUpper",
+            "gloss": "the upper Bollinger band (20, 2σ), a price level",
+            "values": null
+          }
+        ],
+        "columns": [
+          {
+            "key": "coin",
+            "group": null,
+            "role": "identity",
+            "timeframe": null,
+            "window": null,
+            "unit": null,
+            "precision": null,
+            "values": null
+          },
+          {
+            "key": "RSI14",
+            "group": "RSI14",
+            "role": "value",
+            "timeframe": "1h",
+            "window": null,
+            "bars": "Developing",
+            "unit": "oscillator",
+            "precision": 1,
+            "values": null
+          },
+          {
+            "key": "chg24h",
+            "group": "chg24h",
+            "role": "value",
+            "timeframe": "1h",
+            "window": null,
+            "unit": "percent",
+            "precision": 2,
+            "values": null
+          },
+          {
+            "key": "RSI14_zone",
+            "group": "RSI14",
+            "role": "classifyZone",
+            "timeframe": "1h",
+            "window": null,
+            "bars": "Developing",
+            "unit": null,
+            "precision": null,
+            "values": [
+              "overbought",
+              "oversold",
+              "neutral"
+            ],
+            "spanFragments": [
+              "RSI14_zone: thresholded regime (overbought / oversold / neutral)."
+            ]
+          },
+          {
+            "key": "ADX_t2",
+            "group": "ADX",
+            "role": "trajectory",
+            "timeframe": "1h",
+            "window": 3,
+            "bars": "Developing",
+            "unit": "oscillator",
+            "precision": 1,
+            "values": null,
+            "spanFragments": [
+              "3-period trajectory (ADX_t2 → … → ADX_now); ADX_trend = direction over the window."
+            ]
+          },
+          {
+            "key": "ADX_t1",
+            "group": "ADX",
+            "role": "trajectory",
+            "timeframe": "1h",
+            "window": 3,
+            "bars": "Developing",
+            "unit": "oscillator",
+            "precision": 1,
+            "values": null
+          },
+          {
+            "key": "ADX_now",
+            "group": "ADX",
+            "role": "trajectory",
+            "timeframe": "1h",
+            "window": 3,
+            "bars": "Developing",
+            "unit": "oscillator",
+            "precision": 1,
+            "values": null
+          },
+          {
+            "key": "ADX_trend",
+            "group": "ADX",
+            "role": "trajectory",
+            "timeframe": "1h",
+            "window": 3,
+            "bars": "Developing",
+            "unit": null,
+            "precision": null,
+            "values": [
+              "rising",
+              "falling",
+              "flat"
+            ]
+          },
+          {
+            "key": "doji",
+            "group": "doji",
+            "role": "value",
+            "timeframe": "1h",
+            "window": null,
+            "bars": "Developing",
+            "unit": null,
+            "precision": null,
+            "values": [
+              "true",
+              "false"
+            ]
+          },
+          {
+            "key": "EMA5_13",
+            "group": "EMA5_13",
+            "role": "value",
+            "timeframe": "1h",
+            "window": null,
+            "bars": "Developing",
+            "unit": null,
+            "precision": null,
+            "values": [
+              "Bullish",
+              "Bearish"
+            ]
+          },
+          {
+            "key": "RSI14_rank_hi",
+            "group": "RSI14",
+            "role": "rank",
+            "timeframe": "1h",
+            "window": null,
+            "unit": null,
+            "precision": null,
+            "values": null,
+            "universe": 78,
+            "spanFragments": [
+              "RSI14_rank_hi: ordinal across the tracked universe, 1 = highest value, rendered as rank/universe-size; the standing as of the last close, unchanged until the next one."
+            ]
+          },
+          {
+            "key": "settledAt",
+            "group": "settledAt",
+            "role": "value",
+            "timeframe": "1h",
+            "window": null,
+            "unit": null,
+            "precision": null,
+            "values": null
+          },
+          {
+            "key": "bbUpper_lvl",
+            "group": "bbUpper",
+            "role": "levelInteraction",
+            "timeframe": "1h",
+            "window": null,
+            "bars": "Developing",
+            "unit": null,
+            "precision": null,
+            "values": [
+              "touch_from_below",
+              "touch_from_above",
+              "reject_from_below",
+              "reject_from_above",
+              "none"
+            ],
+            "spanFragments": [
+              "bbUpper_lvl: what the bar did at bbUpper — touch or reject, from below or above (a close through it reads none)."
+            ]
+          }
+        ],
+        "rows": [
+          [
+            "BTC",
+            55.95847995,
+            1.8860083360835076,
+            "neutral",
+            25.51784228,
+            24.02602314,
+            22.64076668,
+            "falling",
+            "true",
+            null,
+            6,
+            "2026-07-24",
+            "none"
+          ]
+        ]
+      }
+    }
+  ],
+  "resolvedCoinTickers": [
+    "BTC"
+  ],
+  "vocabularyDigest": "454db7fcd1a7c6af09dd6b3a731bf20acdb3970331e8c862a0a5a437d79925eb",
+  "budgetUsage": {
+    "sections": {
+      "used": 1,
+      "cap": 32
+    },
+    "sectionColumns": {
+      "used": 9,
+      "cap": 32
+    },
+    "columnLookback": {
+      "used": 11,
+      "cap": 32
+    },
+    "distinctTimeframes": {
+      "used": 1,
+      "cap": 8
+    },
+    "resultChars": {
+      "used": 10291,
+      "cap": 150000
+    },
+    "reportNoteChars": {
+      "used": 0,
+      "cap": 3200
+    }
+  },
+  "missingConditionColumns": [],
+  "conditionVerdictTally": {
+    "UP": 0,
+    "DOWN": 0,
+    "NEITHER": 1,
+    "UNRESOLVED": 0
+  },
+  "markerConditions": [
+    {
+      "conditionKey": "P_DOJI",
+      "markerToken": "P_DOJI",
+      "unreferenceableReason": null
+    }
+  ],
+  "marketReadPreview": null,
+  "marketReadMarkers": [],
+  "gridConditions": {
+    "glossary": "Conditions are deterministic reads of your report columns, resolved server-side at prompt-build time. They are advisory: they may make you more selective, never less — they do not gate, score, or qualify anything. TRUE / FALSE / UNRESOLVED are three distinct states; UNRESOLVED means an input was missing, not that the read was false. `decidedBy` names the condition this entry's `verdict` came from: when the conditions that carry a verdict and read TRUE agree on one verdict, the first of them in declaration order. It is null whenever no single condition made the call — no condition carries a verdict, none read TRUE, or those that did disagree.",
+    "register": {
+      "id": "strategy-conditions-table",
+      "title": "Strategy Conditions",
+      "surface": "GRID",
+      "coins": [
+        {
+          "coin": "BTC",
+          "outcomes": {
+            "P_DOJI": "FALSE"
+          },
+          "verdict": "Neither",
+          "decidedBy": null
+        }
+      ]
+    }
+  },
+  "tradeConditions": null,
+  "authoring": {
+    "conditionColumns": [
+      {
+        "sectionKey": "custom:0b7f688e-045d-8dff-84fb-0885d958e4ca",
+        "title": "operator probe",
+        "benchmarkTicker": null,
+        "outputs": [
+          {
+            "header": "RSI14",
+            "meaning": "RSI14: value. Taken on the newest bar it reads.",
+            "conditionOperators": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between",
+              "crossesAbove",
+              "crossesBelow",
+              "increased",
+              "decreased"
+            ],
+            "conditionVocabulary": [],
+            "markerToken": "RSI14",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 195,
+              "maxAtLeast": 195,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "chg24h",
+            "meaning": "chg24h: value.",
+            "conditionOperators": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "conditionVocabulary": [],
+            "markerToken": "chg24h",
+            "conditionHold": {
+              "timeframe": null,
+              "maxWindow": 1,
+              "maxAtLeast": 1,
+              "refusal": "NOT_REWINDABLE"
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "RSI14_zone",
+            "meaning": "RSI14_zone: thresholded regime (overbought / oversold / neutral).",
+            "conditionOperators": [
+              "is",
+              "in",
+              "enters",
+              "exits"
+            ],
+            "conditionVocabulary": [
+              "overbought",
+              "oversold",
+              "neutral"
+            ],
+            "markerToken": "RSI14_zone",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 195,
+              "maxAtLeast": 195,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "ADX_t2",
+            "meaning": "Trajectory value 2 bars before the newest bar it reads.",
+            "conditionOperators": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between",
+              "crossesAbove",
+              "crossesBelow",
+              "increased",
+              "decreased"
+            ],
+            "conditionVocabulary": [],
+            "markerToken": "ADX_t2",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 193,
+              "maxAtLeast": 193,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "ADX_t1",
+            "meaning": "Trajectory value 1 bar before the newest bar it reads.",
+            "conditionOperators": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between",
+              "crossesAbove",
+              "crossesBelow",
+              "increased",
+              "decreased"
+            ],
+            "conditionVocabulary": [],
+            "markerToken": "ADX_t1",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 193,
+              "maxAtLeast": 193,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "ADX_now",
+            "meaning": "Trajectory value on the newest bar it reads.",
+            "conditionOperators": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between",
+              "crossesAbove",
+              "crossesBelow",
+              "increased",
+              "decreased"
+            ],
+            "conditionVocabulary": [],
+            "markerToken": "ADX_now",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 193,
+              "maxAtLeast": 193,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "ADX_trend",
+            "meaning": "Trajectory direction: rising | falling | flat.",
+            "conditionOperators": [
+              "is",
+              "in",
+              "enters",
+              "exits"
+            ],
+            "conditionVocabulary": [
+              "rising",
+              "falling",
+              "flat"
+            ],
+            "markerToken": "ADX_trend",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 193,
+              "maxAtLeast": 193,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "doji",
+            "meaning": "doji: value. Taken on the newest bar it reads.",
+            "conditionOperators": [
+              "is",
+              "in",
+              "enters",
+              "exits"
+            ],
+            "conditionVocabulary": [
+              "true",
+              "false"
+            ],
+            "markerToken": "doji",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 199,
+              "maxAtLeast": 199,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": [
+              "P_DOJI"
+            ]
+          },
+          {
+            "header": "EMA5_13",
+            "meaning": "EMA5_13: value. Taken on the newest bar it reads.",
+            "conditionOperators": [
+              "is",
+              "in"
+            ],
+            "conditionVocabulary": [
+              "Bullish",
+              "Bearish"
+            ],
+            "markerToken": "EMA5_13",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 191,
+              "maxAtLeast": 1,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "RSI14_rank_hi",
+            "meaning": "RSI14_rank_hi: ordinal across the tracked universe, 1 = highest value, rendered as rank/universe-size; the standing as of the last close, unchanged until the next one.",
+            "conditionOperators": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "conditionVocabulary": [],
+            "markerToken": "RSI14_rank_hi",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 1,
+              "maxAtLeast": 1,
+              "refusal": "NOT_REWINDABLE"
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "settledAt",
+            "meaning": "settledAt: value.",
+            "conditionOperators": [],
+            "conditionVocabulary": [],
+            "markerToken": "settledAt",
+            "conditionHold": {
+              "timeframe": null,
+              "maxWindow": 1,
+              "maxAtLeast": 1,
+              "refusal": "NOT_REWINDABLE"
+            },
+            "developingRead": false,
+            "readBy": []
+          },
+          {
+            "header": "bbUpper_lvl",
+            "meaning": "bbUpper_lvl: what the bar did at bbUpper — touch or reject, from below or above (a close through it reads none).",
+            "conditionOperators": [
+              "is",
+              "in",
+              "enters",
+              "exits"
+            ],
+            "conditionVocabulary": [
+              "touch_from_below",
+              "touch_from_above",
+              "reject_from_below",
+              "reject_from_above",
+              "none"
+            ],
+            "markerToken": "bbUpper_lvl",
+            "conditionHold": {
+              "timeframe": "1h",
+              "maxWindow": 188,
+              "maxAtLeast": 188,
+              "refusal": null
+            },
+            "developingRead": false,
+            "readBy": []
+          }
+        ]
+      }
+    ],
+    "conditionOutcomes": [
+      {
+        "ticker": "BTC",
+        "outcomes": [
+          {
+            "conditionKey": "P_DOJI",
+            "name": "P Doji",
+            "outcome": "FALSE",
+            "evidence": [
+              {
+                "kind": "clause",
+                "sectionKey": "custom:0b7f688e-045d-8dff-84fb-0885d958e4ca",
+                "header": "doji",
+                "operand": "false",
+                "literal": "true",
+                "outcome": "FALSE",
+                "hold": {
+                  "atLeast": 1,
+                  "of": 1
+                },
+                "counts": {
+                  "trueCount": 0,
+                  "total": 1,
+                  "unresolvedCount": 0
+                },
+                "op": "enters",
+                "priorOperand": "false",
+                "decidedBar": {
+                  "timeframe": "1h",
+                  "closesBack": 1
+                }
+              }
+            ],
+            "counts": null,
+            "provisional": false,
+            "developingRead": false
+          }
+        ],
+        "verdict": "NEITHER",
+        "decidedBy": null
+      }
+    ],
+    "headerBindings": [
+      {
+        "sectionKey": "custom:0b7f688e-045d-8dff-84fb-0885d958e4ca",
+        "columnIndexByHeader": [
+          null,
+          0,
+          1,
+          2,
+          3,
+          3,
+          3,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      }
+    ]
+  },
+  "rankScopingNote": "Rank columns reflect the full active market, not the previewed coin selection — a coin may show a rank higher than the number of rows shown."
+}

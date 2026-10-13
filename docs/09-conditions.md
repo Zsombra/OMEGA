@@ -612,3 +612,29 @@ unmeasured here. S6 is unchanged.
 
 The record, the unmeasured list and the live reads that would close it:
 [`docs/plans/2026-10-11-omega-condition-vocabulary-108.md`](plans/2026-10-11-omega-condition-vocabulary-108.md).
+
+## 2026-10-13: the per-header operators, measured at contract 108.4.0
+
+One `preview_strategy_report` at `detail: "detailed"` over a report carrying one header of each kind, plus one preview
+per condition probe (a refusal refuses the whole preview); raw requests and responses in
+[`operators_108_4_2026-10-13/`](../data/contract/columns/operators_108_4_2026-10-13/).
+
+| header (kind) | served `conditionOperators` | `conditionHold` |
+|---|---|---|
+| `RSI14` (numeric, candle) | `lt lte gte gt between crossesAbove crossesBelow increased decreased` | 1h, maxWindow 195 |
+| `chg24h` (numeric, timeless) | `lt lte gte gt between` | maxWindow 1, `NOT_REWINDABLE` |
+| `RSI14_zone` (classification), `ADX_trend` (direction), `doji` (boolean), `bbUpper_lvl` | `is in enters exits` | ~188–199 |
+| `EMA5_13` (event) | `is in` | maxWindow 191, **maxAtLeast 1** |
+| `RSI14_rank_hi` (rank) | `lt lte gte gt between` | maxWindow 1, `NOT_REWINDABLE` |
+| `settledAt` (date) | **none** | maxWindow 1, `NOT_REWINDABLE` |
+
+Every probe the changelog and vendor predicted to be refused was refused, with the code they name:
+`CONDITION_HOLD_ILLEGAL` for `crossesAbove` held `{2,2}` and for an `ALL` held `{2,3}` over an edge;
+`CONDITION_OPERATOR_UNSUPPORTED` for `increased` on `chg24h`, `crossesAbove` on `RSI14_zone`, `enters` on `EMA5_13` and
+`increased` on `RSI14_rank_hi`; `CONDITION_LITERAL_UNSUPPORTED` for `enters "sideways"` on `RSI14_zone`. Everything
+predicted legal rendered (`crossesAbove` within 3 closes, `enters` on a classification, direction, boolean and
+level-interaction header).
+
+So the warnings of 2026-10-11 that quoted those rules are now **errors** citing the measurement; only a header whose
+kind omega cannot see (ambient, platform-section) keeps a warning. Two operator-table corrections came with it: a date
+header admits no operator, and a boolean admits `in` as well as `is`.

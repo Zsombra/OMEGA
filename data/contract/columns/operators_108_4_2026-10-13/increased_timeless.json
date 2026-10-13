@@ -1,0 +1,30 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "[condition] strategy report preview condition 'P_INC_TIMELESS': operator 'increased' reads the bar before the one it decides, and 'chg24h' admits one bar — This value is only stored for the current bar — it has no bar-by-bar history to count. Its admitted operators are lt, lte, gte, gt, between",
+  "details": {
+    "authoringCode": "CONDITION_OPERATOR_UNSUPPORTED",
+    "path": [
+      "conditions",
+      "P_INC_TIMELESS",
+      "definition",
+      "op"
+    ],
+    "receivedValue": "increased",
+    "allowedDomain": {
+      "kind": "enum",
+      "values": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+      ]
+    },
+    "context": {
+      "conditionKey": "P_INC_TIMELESS",
+      "header": "chg24h",
+      "outputKind": "numeric",
+      "refusal": "NOT_REWINDABLE"
+    }
+  }
+}

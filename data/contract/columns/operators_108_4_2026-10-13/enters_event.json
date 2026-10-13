@@ -1,0 +1,26 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "[condition] strategy report preview condition 'P_EVENT': operator 'enters' is not legal for 'EMA5_13' (output kind 'event') — its admitted operators are is, in",
+  "details": {
+    "authoringCode": "CONDITION_OPERATOR_UNSUPPORTED",
+    "path": [
+      "conditions",
+      "P_EVENT",
+      "definition",
+      "op"
+    ],
+    "receivedValue": "enters",
+    "allowedDomain": {
+      "kind": "enum",
+      "values": [
+        "is",
+        "in"
+      ]
+    },
+    "context": {
+      "conditionKey": "P_EVENT",
+      "header": "EMA5_13",
+      "outputKind": "event"
+    }
+  }
+}

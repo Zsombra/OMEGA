@@ -90,3 +90,11 @@ None of these needs a write: `preview_strategy_report` renders "without saving o
    15. A generated plan carries neither.
 4. **`schema_checks`** is unchanged: it already validates the CONDITIONS axis with `jsonschema`, so the new operators
    pass it.
+
+## Closed 2026-10-13
+
+Items 1–5 above were read live at contract 108.4.0: the 15 metrics and `levelInteraction` in the corpus re-extraction
+([`2026-10-13-omega-reextraction-108-4.md`](2026-10-13-omega-reextraction-108-4.md)); the per-header operators, hold
+domain and refusals in [09](../09-conditions.md#2026-10-13-the-per-header-operators-measured-at-contract-10840); the
+`conditionGrammar` (`maxGroupDepth` 2) and budgets in `data/contract/vocabulary/_shared.json`.
+

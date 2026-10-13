@@ -1,0 +1,28 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "[condition] strategy report preview condition 'P_CROSS_ZONE': operator 'crossesAbove' is not legal for 'RSI14_zone' (output kind 'classification') — its admitted operators are is, in, enters, exits",
+  "details": {
+    "authoringCode": "CONDITION_OPERATOR_UNSUPPORTED",
+    "path": [
+      "conditions",
+      "P_CROSS_ZONE",
+      "definition",
+      "op"
+    ],
+    "receivedValue": "crossesAbove",
+    "allowedDomain": {
+      "kind": "enum",
+      "values": [
+        "is",
+        "in",
+        "enters",
+        "exits"
+      ]
+    },
+    "context": {
+      "conditionKey": "P_CROSS_ZONE",
+      "header": "RSI14_zone",
+      "outputKind": "classification"
+    }
+  }
+}
