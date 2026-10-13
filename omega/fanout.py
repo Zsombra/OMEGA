@@ -97,6 +97,11 @@ def _stage1_header(column: Column, contract: Contract) -> str:
         return f"{code}{infix or '_'}touch"
     if tid == "classifyZone":
         return f"{code}{infix or '_'}zone"
+    if tid == "levelInteraction":
+        # Measured 2026-10-13 (get_strategy_column_contract, contract 108.4.0,
+        # data/contract/columns/levelInteraction_108_4_2026-10-13.json): bbUpper_lvl, VWAP_ltf_lvl, and a non-zero
+        # buffer names the header - bbUpper_lvl_b25.
+        return f"{code}{infix or '_'}lvl" + (f"_b{column.buffer}" if column.buffer else "")
     if tid == "crossDetect":
         return f"{code}{infix or '_'}cross"
     if tid == "classifyState":          # platform-only, listed for completeness
@@ -146,7 +151,7 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
 
     # single-output transforms
     tid = column.transformId
-    if tid in ("classifyZone", "bandTouch", "crossDetect", "nearestZoneType"):
+    if tid in ("classifyZone", "bandTouch", "crossDetect", "nearestZoneType", "levelInteraction"):
         kind = "classification"
     elif tid == "rank":
         kind = "rank"
@@ -162,6 +167,8 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
         vocab = ("overbought", "oversold", "neutral")
     elif tid == "crossDetect":
         vocab = ("Bullish", "Bearish")
+    elif tid == "levelInteraction":       # measured 2026-10-13, conditionOperators is/in/enters/exits
+        vocab = ("touch_from_below", "touch_from_above", "reject_from_below", "reject_from_above", "none")
     elif tid == "classifyState":
         vocab = ()          # platform-only; vocabulary varies per metric
     return [Output(base, kind, vocab)]

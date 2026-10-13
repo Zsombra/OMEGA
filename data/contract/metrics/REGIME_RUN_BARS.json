@@ -1,29 +1,32 @@
 {
+  "metric": "REGIME_RUN_BARS",
+  "label": "Regime · run length",
   "code": "regBars",
   "family": "regime",
-  "label": "Regime · run length",
-  "metric": "REGIME_RUN_BARS",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 0,
-    "unit": "count"
+    "unit": "count",
+    "precision": 0
   },
   "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "spread"
+    }
+  ],
+  "study": "regimeVerdict",
   "spreadOperands": [
     "TRADES",
     "BUY_TRADES",
     "SELL_TRADES",
     "REGIME_MOM_BULL_VOTES",
     "REGIME_MOM_BEAR_VOTES"
-  ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    }
   ]
 }

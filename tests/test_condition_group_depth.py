@@ -35,7 +35,7 @@ def test_three_levels_warn_once_at_the_third_quoting_the_vendor():
     found = _depth_warnings([three])
     assert [(f.severity, f.condition_key, f.path) for f in found] == [
         ("warning", "THREE", ".definition.members[0].members[0]")]
-    assert "depth ≤ 2" in found[0].message and "105.0.0" in found[0].message
+    assert "maxGroupDepth 2" in found[0].message
 
 
 def test_a_condition_ref_resets_the_depth():
@@ -52,3 +52,10 @@ def test_no_preset_nests_deeper_than_two():
 
 def _depth_warnings_for(p):
     return [f for f in p.condition_findings() if "depth" in getattr(f, "message", "")]
+
+
+def test_the_limit_is_the_served_max_group_depth():
+    """2026-10-13: list_strategy_vocabulary serves conditionGrammar.maxGroupDepth at 108.4.0."""
+    from omega.conditions import GROUP_DEPTH_MAX
+    from omega.contract import load
+    assert GROUP_DEPTH_MAX == load().shared["conditionGrammar"]["maxGroupDepth"] == 2

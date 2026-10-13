@@ -70,9 +70,9 @@ EDGE_GROUP_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"A group 
 ONE_BAR_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"a header whose conditionHold.maxWindow is 1 is "
                   "served none of the six, so vol24hUsd increased is refused (CONDITION_OPERATOR_UNSUPPORTED ...)\"")
 GROUP_DEPTH_MAX = 2
-GROUP_DEPTH_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"Groups: ALL | ANY | NOT | N_OF (with n), depth "
-                      "≤ 2\"; the 108 schema does not bound it and list_strategy_vocabulary's conditionGrammar (v103) "
-                      "is unread")
+GROUP_DEPTH_SOURCE = ("list_strategy_vocabulary conditionGrammar.maxGroupDepth 2, served at 108.4.0 (read 2026-10-13, "
+                      "data/contract/vocabulary/_shared.json); the vendor's \"depth ≤ 2\" agrees. How a conditionRef "
+                      "counts toward it is unmeasured - omega counts groups inside one definition")
 VERDICTS = ("UP", "DOWN", "NEITHER", None)
 CARRIER_VERDICTS = ("UP", "DOWN", "NEITHER")
 # Contract 91.0.0 (data/contract/stage_strategy_draft/schema_20261005T194629Z.json, the

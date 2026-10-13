@@ -1,22 +1,56 @@
 {
+  "metric": "DI_MINUS",
+  "label": "DI−",
   "code": "DIminus",
   "family": "trend",
-  "label": "DI−",
-  "metric": "DI_MINUS",
   "nativeOutput": {
     "kind": "numeric",
+    "unit": "oscillator",
     "precision": 1,
     "range": {
-      "max": 100,
-      "min": 0
-    },
-    "unit": "oscillator"
+      "min": 0,
+      "max": 100
+    }
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "maxShare",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "rank"
+    }
   ],
+  "study": "directionalMovement",
   "spreadOperands": [
     "RSI14",
     "RSI7",
@@ -33,36 +67,11 @@
     "WILLR14",
     "DI_PLUS",
     "REGIME_TREND_MARGIN",
-    "REGIME_DI_SPREAD"
+    "REGIME_DI_SPREAD",
+    "REGIME_CRASH_MARGIN"
   ],
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "maxShare"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo"
   ]
 }

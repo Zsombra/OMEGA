@@ -1,10 +1,10 @@
-"""The 171-metric vocabulary served at contract 108: 156 measured (the 61.2.0 extraction) and 15 known by name only.
+"""The 171-metric vocabulary served at contract 108 - all of it MEASURED since 2026-10-13.
 
-The 15 are the REPORT column metric enum of the saved 108 write schema (data/derived/condition_vocabulary_108.json)
-minus the measured corpus: the twelve bar-geometry metrics of README "Contract history - v100" and the three swing
-metrics of "v101.1". Which transforms each composes is UNMEASURED offline (it was read live per metric at 61.2.0), so
-omega refuses to emit them (METRIC_UNMEASURED) while scripts/compare_vocabulary.py counts them as stored - which is
-what makes battlegrid-manager's `pin_drift` stop reporting them as `VOCABULARY_MOVED metrics.liveNotStored`.
+History: from 2026-10-11 the 15 metrics added at v100 / v101.1 were known by name only (the 108 column enum minus the
+61.2.0 corpus) and refused (METRIC_UNMEASURED). On 2026-10-13 `get_metric_construction_hints` was read for all 171 at
+contract 108.4.0 (docs/plans/2026-10-13-omega-reextraction-108-4.md); the corpus now holds every served metric,
+data/contract/metrics/_unmeasured_108.json is empty and names what it used to hold, and the 2026-10-13 render sweep
+rendered every shape over them live.
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from omega.condition_vocabulary import resolve, vocabulary
+from omega.condition_vocabulary import vocabulary
 from omega.contract import CONTRACT_DIR, load
 from omega.generate import PRESETS, plan
 from omega.types import Column, CustomSection, Report
@@ -23,49 +23,53 @@ from scripts.compare_vocabulary import compare, live_enums, stored_enums, stored
 ROOT = Path(__file__).resolve().parents[1]
 RECORD = json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(encoding="utf-8"))
 SERVED = vocabulary()["reportColumn"]["metric"]["enum"]
-V100 = {"CANDLE_DOJI", "CANDLE_PIN", "CANDLE_ENGULFING", "BAR_CONTAINMENT", "GAP", "GAP_RANGE_CLEAR", "GAP_PCT",
-        "CLOSE_RUN", "CANDLE_RUN", "HL2", "HLC3", "OHLC4"}                       # README v100: "Twelve metrics"
+PATTERNS_GAPS_RUNS = {"CANDLE_DOJI", "CANDLE_PIN", "CANDLE_ENGULFING", "BAR_CONTAINMENT", "GAP", "GAP_RANGE_CLEAR",
+                      "GAP_PCT", "CLOSE_RUN", "CANDLE_RUN"}
+PRICE_SOURCES = {"HL2", "HLC3", "OHLC4"}
+V100 = PATTERNS_GAPS_RUNS | PRICE_SOURCES                                        # README v100: "Twelve metrics"
 V101_1 = {"SWING_FRACTAL_HIGH", "SWING_FRACTAL_LOW", "SWING_FRACTAL_LABEL"}    # README v101.1: "three swing-structure"
 SURFACE_104_1 = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/fixtures/"
                      "2026-10-08-surface-104.1.0/tool_definitions.json")
 
 
-def test_the_unmeasured_record_is_exactly_the_served_enum_minus_the_measured_corpus():
+def test_the_corpus_is_the_whole_served_enum_and_the_unmeasured_record_is_empty():
     c = load()
-    assert set(RECORD["metrics"]) == set(SERVED) - set(c.metrics) == V100 | V101_1
-    assert set(c.metrics) < set(SERVED) and len(c.metrics) == 156 and len(SERVED) == 171
-    assert {m for m, r in RECORD["metrics"].items() if r["addedAt"] == "v100"} == V100
-    assert {m for m, r in RECORD["metrics"].items() if r["addedAt"] == "v101.1"} == V101_1
-    assert all(r["transformAdmissibility"] == "UNMEASURED" for r in RECORD["metrics"].values())
-    schema = json.loads((ROOT / RECORD["source"]["schema"]).read_text(encoding="utf-8"))
-    assert resolve(schema, RECORD["source"]["pointer"])["enum"] == SERVED
+    assert set(c.metrics) == set(SERVED) and len(SERVED) == 171
+    assert RECORD["metrics"] == {} and c.unmeasured_metrics == {}
+    assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
 
 
-def test_the_contract_knows_them_by_name_and_never_as_measured():
+def test_the_v100_metrics_are_what_the_changelog_says():
+    """README v100: "The patterns, gaps and runs compose `value` only, and none of the twelve is ranked"; the price
+    sources are "price facts that take every transform a close takes"."""
     c = load()
-    assert set(c.unmeasured_metrics) == V100 | V101_1
-    assert not set(c.unmeasured_metrics) & set(c.metrics)
+    for m in PATTERNS_GAPS_RUNS:
+        assert set(c.metrics[m].transforms) == {"value"}, m
+    for m in V100:
+        assert "rank" not in c.metrics[m].transforms, m
+    for m in PRICE_SOURCES:
+        assert set(c.metrics[m].transforms) == set(c.metrics["CLOSE"].transforms), m
 
 
 @pytest.mark.parametrize("metric", sorted(V100 | V101_1))
-def test_a_column_over_an_unmeasured_metric_is_refused(metric):
+def test_a_value_column_over_each_now_validates(metric):
     column = Column.model_validate({"metric": metric, "transformId": "value", "timeframe": {"rel": "anchor"}})
-    findings = validate_column(column)
-    assert [f.code for f in findings] == ["METRIC_UNMEASURED"]
-    assert findings[0].severity == "error" and "get_metric_construction_hints" in findings[0].message
+    assert [f for f in validate_column(column) if f.severity == "error"] == []
 
 
-def test_a_report_carrying_one_does_not_validate():
+def test_the_changelogs_own_example_validates():
+    """README v100: "`HLC3 x aggregate(20)` is the 20-bar SMA of typical price"."""
     report = Report(anchor="1h", sections=[CustomSection(title="T", columns=[
-        Column.model_validate({"metric": "HLC3", "transformId": "value", "timeframe": {"rel": "anchor"}})])])
-    assert not validate_report(report).ok
+        Column.model_validate({"metric": "HLC3", "transformId": "aggregate", "timeframe": {"rel": "anchor"},
+                               "window": 20})])])
+    assert validate_report(report).ok
 
 
 @pytest.mark.parametrize("name", sorted(PRESETS))
-def test_no_generated_plan_emits_an_unmeasured_metric(name):
+def test_every_generated_plan_uses_only_measured_metrics(name):
     report = plan(PRESETS[name]).report
     used = {col.metric for s in report.sections if isinstance(s, CustomSection) for col in s.columns}
-    assert used and not used & set(load().unmeasured_metrics)
+    assert used and used <= set(load().metrics)
 
 
 # --- what the manager's pin-drift check sees -------------------------------------------------------
@@ -79,21 +83,16 @@ def _surface(metrics: list[str], sections: set[str]) -> dict:
             "type": "object", "properties": {"axes": {"type": "object", "properties": axes}}}}}}]}
 
 
-def test_the_served_171_compare_as_stored_and_the_15_are_named_unmeasured():
+def test_the_served_171_compare_as_stored_and_none_is_unmeasured():
     stored = stored_enums()
     assert stored["metrics"] == set(SERVED)
     result = compare(live_enums(_surface(SERVED, stored["sectionKeys"])), stored, stored_unmeasured())
     assert result["metrics"]["liveNotStored"] == [] and result["metrics"]["storedNotLive"] == []
-    assert result["metrics"]["storedUnmeasured"] == sorted(V100 | V101_1)
-    # a caller that passes no `unmeasured` (battlegrid-manager's pin_drift) reads the same two lists it always did
-    assert compare(live_enums(_surface(SERVED, stored["sectionKeys"])), stored)["metrics"]["storedUnmeasured"] == []
+    assert result["metrics"]["storedUnmeasured"] == []
 
 
 @pytest.mark.skipif(not SURFACE_104_1.exists(), reason="the battlegrid-manager checkout is not beside this repo")
-def test_the_stored_104_1_surface_no_longer_reports_a_metric_as_missing():
-    """battlegrid-manager pin_drift -> _moved("metrics", liveNotStored, ...) raised one VOCABULARY_MOVED warning per
-    metric OMEGA had not extracted: these 15 against the 104.x surfaces. With the names stored, the list is empty."""
+def test_the_stored_104_1_surface_reports_nothing_missing_and_nothing_unmeasured():
     surface = json.loads(SURFACE_104_1.read_text(encoding="utf-8"))
     result = compare(live_enums(surface), stored_enums(), stored_unmeasured())
-    assert result["metrics"]["liveNotStored"] == []
-    assert result["metrics"]["storedUnmeasured"] == sorted(V100 | V101_1)
+    assert result["metrics"]["liveNotStored"] == [] and result["metrics"]["storedUnmeasured"] == []

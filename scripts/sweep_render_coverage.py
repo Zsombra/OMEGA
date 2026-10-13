@@ -30,7 +30,9 @@ from scripts.render_coverage import (                # noqa: E402
 )
 
 COLS_PER_SECTION = 32
-SECTIONS_PER_CALL = 8
+# 4 since the 2026-10-13 run: v92 made the preview cap 150,000 result CHARACTERS and a "detailed" render (the only
+# one that carries authoring.conditionColumns) is larger than the concise one; an over-cap batch is bisected anyway.
+SECTIONS_PER_CALL = int(os.environ.get("SWEEP_SECTIONS_PER_CALL", "4"))
 SWEEP_DATE = os.environ.get("SWEEP_DATE", "2026-09-09")
 HEADERS_OUT = f"data/contract/columns/_coverage_sweep_{SWEEP_DATE}.json"
 RECORD_OUT = f"data/audit/coverage_sweep_{SWEEP_DATE}.json"
@@ -63,15 +65,17 @@ def render(columns):
         secs.append({"kind": "custom", "title": f"sweep {len(secs) + 1}",
                      "benchmarkTicker": None, "notes": NOTE,
                      "columns": columns[i:i + COLS_PER_SECTION]})
-    req = {"timeframe": "1h", "coinSelection": {"mode": "explicit", "tickers": ["BTC"]},
-           "sections": secs}
+    # The request at v85+ (`source.kind: "FIELDS"`) and the read at v92+ (`conditionColumns` left the top level for
+    # `authoring`, served only at detail "detailed"); the 09-09 / 09-20 runs used the flat compile-era shape.
+    req = {"coinSelection": {"mode": "explicit", "tickers": ["BTC"]}, "detail": "detailed",
+           "source": {"kind": "FIELDS", "timeframe": "1h", "sections": secs}}
     d, err = call("preview_strategy_report", req)
     if d is None:
         return None, err
-    if "budgetUsage" not in d:
+    if "budgetUsage" not in d or not isinstance(d.get("authoring"), dict):
         return None, json.dumps(d)[:400]
     hdrs = []
-    for cc in d.get("conditionColumns", []):
+    for cc in d["authoring"].get("conditionColumns", []):
         if str(cc.get("title", "")).startswith("sweep "):
             hdrs += [o["header"] for o in cc["outputs"]]
     return hdrs, None
@@ -144,7 +148,7 @@ for s, col in targets:
     if missing:
         mismatches.append({"shape": f"{s.metric}|{s.transform}|{s.chained}|{s.operand}|{s.ordering}",
                            "predicted": pred, "notRendered": missing})
-json.dump({"_what": ("Run record for the 2026-09-09 live coverage sweep: what was asked for, what "
+json.dump({"_what": (f"Run record for the {SWEEP_DATE} live coverage sweep: what was asked for, what "
                      "the platform refused, and every shape whose omega-predicted header did not "
                      "turn up in the render. Kept OUT of data/contract/columns/ so none of these "
                      "strings can be mistaken for a rendered header."),

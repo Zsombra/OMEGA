@@ -1,0 +1,20 @@
+{
+  "metric": "CANDLE_DOJI",
+  "label": "Doji",
+  "code": "doji",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 21
+      }
+    }
+  ],
+  "study": "candlePatterns"
+}

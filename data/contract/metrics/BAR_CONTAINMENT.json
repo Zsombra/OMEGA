@@ -1,0 +1,25 @@
+{
+  "metric": "BAR_CONTAINMENT",
+  "label": "Inside / outside bar",
+  "code": "barContain",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "inside",
+      "outside",
+      "none"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 30
+      }
+    }
+  ],
+  "study": "candlePatterns"
+}

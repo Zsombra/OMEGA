@@ -1,8 +1,8 @@
 {
+  "metric": "PERP_SPOT_STRENGTH",
+  "label": "Perp/spot strength",
   "code": "perpSpotStr",
   "family": "derived",
-  "label": "Perp/spot strength",
-  "metric": "PERP_SPOT_STRENGTH",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,7 +15,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": "perpSpotFlow"
 }

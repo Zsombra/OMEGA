@@ -27,9 +27,12 @@ def test_matrix_is_the_full_metric_by_transform_grid():
     86 x 16 = 1376 on 2026-08-24 and 135 metrics on 2026-09-05; the roster is the
     platform's to grow, so these track it."""
     rows = _matrix_rows()
-    assert len(rows) == 2496
-    assert len({r["metric"] for r in rows}) == 156
+    # 171 x 16 since the re-extraction at 108.4.0, 2026-10-13 - still 16 transforms: the served list swapped bandTouch for
+    # levelInteraction (data/contract/vocabulary/_shared.json, list_strategy_vocabulary)
+    assert len(rows) == 2736
+    assert len({r["metric"] for r in rows}) == 171
     assert len({r["transform"] for r in rows}) == 16
+    assert "levelInteraction" in {r["transform"] for r in rows} and "bandTouch" not in {r["transform"] for r in rows}
 
 
 def test_structural_shape_count_is_1018():
@@ -54,9 +57,12 @@ def test_structural_shape_count_is_1018():
     shapes = enumerate_shapes()
     atoms = [s for s in shapes if s.chained is None]
     chained = [s for s in shapes if s.chained is not None]
-    assert len(atoms) == 619
-    assert len(chained) == 301
-    assert len(shapes) == 920
+    # 670 + 229 = 899 since the re-extraction at 108.4.0, 2026-10-13. Atoms: 619 + 42 (the 15 new metrics' cells)
+    # + 41 (levelInteraction on existing levels) - 30 (efficiency left oscillators/ratios) - 1 (a maxShare) - 1
+    # (SPOT_CVD's spread) = 670. Chained: efficiency left every distance/spread chain, 301 -> 229. 920 on 2026-10-12.
+    assert len(atoms) == 670
+    assert len(chained) == 229
+    assert len(shapes) == 899
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -86,8 +92,13 @@ def test_chain_successors_split_93_and_19():
     three = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate", "efficiency"}]
     four = [k for k, v in by_atom.items()
             if v == {"trajectory", "aggregate", "efficiency", "rank"}]
-    assert len(three) == 75
-    assert len(four) == 19
+    # since the re-extraction at 108.4.0, 2026-10-13 the general successors are TWO (trajectory, aggregate): 83 atoms take
+    # them, 21 also take rank. Was 75 x {trajectory, aggregate, efficiency} and 19 with rank at 61.2.0.
+    two = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate"}]
+    two_rank = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate", "rank"}]
+    assert (len(three), len(four)) == (0, 0)
+    assert len(two) == 83
+    assert len(two_rank) == 21
 
 
 def test_expanding_operands_and_orderings_gives_8999():
@@ -109,8 +120,8 @@ def test_expanding_operands_and_orderings_gives_8999():
     operands instead. omega's own validator had always refused those 64 - only
     enumerate_shapes disagreed. See tests/test_space_validate_agreement.py.
     """
-    # 8,367 since 2026-10-12: the 62 bandTouch atoms (one shape each - no operand, no ordering) left at v100.
-    assert len(enumerate_shapes(expand_operands=True)) == 8367
+    # 8,575 since the re-extraction at 108.4.0, 2026-10-13; 8,367 on 2026-10-12 (bandTouch retired).
+    assert len(enumerate_shapes(expand_operands=True)) == 8575
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -122,7 +133,7 @@ def test_chained_rank_expands_over_its_own_ordering_axis():
     """
     expanded = enumerate_shapes(expand_operands=True)
     rank_chains = [s for s in expanded if s.chained == "rank"]
-    assert len(rank_chains) == 76
+    assert len(rank_chains) == 84      # 76 at 61.2.0; the two swing fractals added distance -> rank (4 orderings each)
     assert {s.ordering for s in rank_chains} == {"hi", "lo", "far", "near"}
 
 
@@ -141,7 +152,7 @@ def test_expansion_produces_no_duplicate_rows():
 EXPANSION_DEAD_ENDS = {
     ("RVOL", "spread", "trajectory"),
     ("RVOL", "spread", "aggregate"),
-    ("RVOL", "spread", "efficiency"),
+    # ("RVOL", "spread", "efficiency") left with efficiency itself from every spread chain (re-extraction at 108.4.0, 2026-10-13)
 }
 
 
@@ -207,9 +218,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 920
+    assert len(unused) + len(used) == 899
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 920
-    assert len(query(expand_operands=True)) == 8367
+    assert len(query()) == 899
+    assert len(query(expand_operands=True)) == 8575

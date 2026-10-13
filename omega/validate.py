@@ -326,15 +326,25 @@ def validate_column(
             out.append(Finding(
                 "warning", "WINDOW_IGNORED", f"{path}.window",
                 f"{m.metric} x {tid} does not consume `window`"))
-        elif column.window > lookback:
+        elif column.window > ((spec.get("maximums") or {}).get("window") or lookback):
             out.append(Finding(
                 "error", "LOOKBACK_EXCEEDED", f"{path}.window",
                 f"window={column.window} exceeds the columnLookback budget of {lookback}"))
     if column.offset is not None:
+        served_max = (spec.get("maximums") or {}).get("offset")
         if tid != "value":
             out.append(Finding(
                 "warning", "OFFSET_IGNORED", f"{path}.offset",
                 f"`offset` applies to the `value` transform; {tid} ignores it"))
+        elif served_max is not None:
+            # 108.4.0 serves the maximum per metric (get_metric_construction_hints, value.parameters.offset.maximum:
+            # 31 on most candle metrics, 30/21/12/11 on the bar-geometry ones, 0 on a timeless one). It supersedes
+            # the 24-bar floor measured 2026-08-26 below, which made 8 the usable offset.
+            if column.offset > served_max:
+                out.append(Finding(
+                    "error", "LOOKBACK_EXCEEDED", f"{path}.offset",
+                    f"offset={column.offset} exceeds the maximum {served_max} the platform serves for "
+                    f"{m.metric} x value (REPORT_COLUMN_LOOKBACK_EXCEEDED)"))
         elif column.offset + LOOKBACK_FLOOR > lookback:
             # The floor is the trap. omega compared offset against the raw 32 and so
             # accepted offset 16 and 32, both of which the platform refuses: a bare

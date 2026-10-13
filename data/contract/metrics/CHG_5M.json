@@ -1,14 +1,27 @@
 {
+  "metric": "CHG_5M",
+  "label": "Change (5m)",
   "code": "chg5m",
   "family": "momentum",
-  "label": "Change (5m)",
-  "metric": "CHG_5M",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "percent"
+    "unit": "percent",
+    "precision": 2
   },
   "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "spread"
+    }
+  ],
+  "study": "multiTimeframeChange",
   "spreadOperands": [
     "PPO",
     "ROC12",
@@ -23,17 +36,6 @@
     "LOW_DEV",
     "FUNDING_RATE",
     "FUNDING_ANN",
-    "OI_CHG",
-    "REGIME_CRASH_MARGIN"
-  ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    }
+    "OI_CHG"
   ]
 }

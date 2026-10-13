@@ -126,10 +126,12 @@ def test_coin_selection_default_is_class_aware():
 
 # --- the lookback floor ------------------------------------------------------
 
-def test_offset_over_the_floor_is_an_error(contract):
-    """omega previously compared offset against the raw 32 and accepted 16 and 32, both
-    of which the platform refuses."""
-    for offset, ok in ((0, True), (8, True), (9, False), (16, False), (32, False)):
+def test_offset_over_the_served_maximum_is_an_error(contract):
+    """History: omega once compared offset against the raw 32 and accepted 16 and 32, both of which the platform then
+    refused; the 2026-08-26 floor (below) made 8 the usable offset. Since the 2026-10-13 re-extraction at 108.4.0 the
+    platform SERVES the maximum per metric - value.parameters.offset.maximum is 31 on CLOSE - and omega reads it."""
+    assert contract.metric("CLOSE").transforms["value"]["maximums"] == {"offset": 31}
+    for offset, ok in ((0, True), (8, True), (9, True), (31, True), (32, False)):
         col = Column.model_validate({"metric": "CLOSE", "transformId": "value",
                                      "timeframe": {"rel": "anchor"}, "offset": offset})
         errors = [f for f in validate_column(col, path="s",
@@ -230,8 +232,10 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
                             "data/contract/signals/"}      # the signal mirrors, retired at 108
     for path in retired:                         # kept on disk, never deleted
         assert any((ROOT / path).glob("*.json")), path
-    # the metric/transform extraction is a separate snapshot and keeps its own version
-    assert manifest["servedContractVersion"] == "61.2.0"
+    # the metric/transform extraction is a separate snapshot and keeps its own version: 108.4.0 since the 2026-10-13
+    # re-extraction (61.2.0 before, kept under `supersedes`), while the write surface above is still the 108.0.0 capture
+    assert manifest["servedContractVersion"] == "108.4.0"
+    assert manifest["supersedes"]["servedContractVersion"] == "61.2.0"
 
 
 def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():

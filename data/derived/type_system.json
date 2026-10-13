@@ -30,6 +30,12 @@
         "ORACLE",
         "SPOT_CLOSE_CB",
         "SPOT_CLOSE_BN",
+        "GAP_PCT",
+        "CLOSE_RUN",
+        "CANDLE_RUN",
+        "HL2",
+        "HLC3",
+        "OHLC4",
         "RSI14",
         "RSI7",
         "RSI2",
@@ -90,6 +96,8 @@
         "KC_MID",
         "KC_LOWER",
         "ST_LINE",
+        "SWING_FRACTAL_HIGH",
+        "SWING_FRACTAL_LOW",
         "HMA20",
         "WT1",
         "WT2",
@@ -150,7 +158,7 @@
         "CROWD_CAPT_LIVE"
       ],
       "vocabularies": {},
-      "metricCount": 127
+      "metricCount": 135
     },
     "classification": {
       "conditionOperators": [
@@ -160,6 +168,11 @@
       "units": [],
       "metrics": [
         "BAR_FORMING",
+        "CANDLE_PIN",
+        "CANDLE_ENGULFING",
+        "BAR_CONTAINMENT",
+        "GAP",
+        "GAP_RANGE_CLEAR",
         "MA_ALIGN",
         "KC_SQUEEZE",
         "PRICE_ZONE",
@@ -167,6 +180,7 @@
         "TPO_SHAPE",
         "PRIOR_TPO_SHAPE",
         "ST_DIR",
+        "SWING_FRACTAL_LABEL",
         "FUNDING_LABEL",
         "OI_VELOCITY",
         "OI_PX_REGIME",
@@ -188,6 +202,31 @@
         "BAR_FORMING": [
           "forming",
           "closed"
+        ],
+        "CANDLE_PIN": [
+          "lower_wick",
+          "upper_wick",
+          "none"
+        ],
+        "CANDLE_ENGULFING": [
+          "bullish",
+          "bearish",
+          "none"
+        ],
+        "BAR_CONTAINMENT": [
+          "inside",
+          "outside",
+          "none"
+        ],
+        "GAP": [
+          "up",
+          "down",
+          "none"
+        ],
+        "GAP_RANGE_CLEAR": [
+          "up",
+          "down",
+          "none"
         ],
         "MA_ALIGN": [
           "bullish",
@@ -223,6 +262,13 @@
         "ST_DIR": [
           "bullish",
           "bearish"
+        ],
+        "SWING_FRACTAL_LABEL": [
+          "HH",
+          "HL",
+          "LH",
+          "LL",
+          "none"
         ],
         "FUNDING_LABEL": [
           "low",
@@ -315,7 +361,20 @@
           "low"
         ]
       },
-      "metricCount": 24
+      "metricCount": 30
+    },
+    "boolean": {
+      "conditionOperators": [
+        "is"
+      ],
+      "units": [],
+      "metrics": [
+        "CANDLE_DOJI",
+        "CAPTAIN_CONF",
+        "PERP_SPOT_CONFIRMS"
+      ],
+      "vocabularies": {},
+      "metricCount": 3
     },
     "event": {
       "conditionOperators": [
@@ -357,18 +416,6 @@
       ],
       "vocabularies": {},
       "metricCount": 1
-    },
-    "boolean": {
-      "conditionOperators": [
-        "is"
-      ],
-      "units": [],
-      "metrics": [
-        "CAPTAIN_CONF",
-        "PERP_SPOT_CONFIRMS"
-      ],
-      "vocabularies": {},
-      "metricCount": 2
     }
   },
   "syntheticOutputKinds": {

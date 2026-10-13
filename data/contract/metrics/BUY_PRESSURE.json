@@ -1,54 +1,62 @@
 {
+  "metric": "BUY_PRESSURE",
+  "label": "Buy pressure",
   "code": "buyPres",
   "family": "volumeFlow",
-  "label": "Buy pressure",
-  "metric": "BUY_PRESSURE",
   "nativeOutput": {
     "kind": "numeric",
+    "unit": "fraction",
     "precision": 2,
     "range": {
-      "max": 1,
-      "min": 0
-    },
-    "unit": "fraction"
+      "min": 0,
+      "max": 1
+    }
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo"
-  ],
-  "spreadOperands": [
-    "BB_PCT_B",
-    "STOCH_RSI14"
-  ],
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
     },
     {
-      "id": "trajectory"
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
     },
     {
+      "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
+        "aggregate"
+      ]
     },
     {
-      "id": "aggregate"
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
     },
     {
-      "id": "efficiency"
-    },
-    {
-      "id": "maxShare"
+      "id": "maxShare",
+      "maximums": {
+        "window": 32
+      }
     },
     {
       "id": "rank"
     }
+  ],
+  "study": "barVolume",
+  "spreadOperands": [
+    "BB_PCT_B",
+    "STOCH_RSI14"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
   ]
 }

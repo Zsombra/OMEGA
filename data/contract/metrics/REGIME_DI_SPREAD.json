@@ -1,18 +1,31 @@
 {
+  "metric": "REGIME_DI_SPREAD",
+  "label": "Regime · DI spread",
   "code": "regDI",
   "family": "regime",
-  "label": "Regime · DI spread",
-  "metric": "REGIME_DI_SPREAD",
   "nativeOutput": {
     "kind": "numeric",
+    "unit": "oscillator",
     "precision": 1,
     "range": {
-      "max": 100,
-      "min": -100
-    },
-    "unit": "oscillator"
+      "min": -100,
+      "max": 100
+    }
   },
   "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "spread"
+    }
+  ],
+  "study": "regimeTrendEvidence",
   "spreadOperands": [
     "RSI14",
     "RSI7",
@@ -29,16 +42,7 @@
     "WILLR14",
     "DI_PLUS",
     "DI_MINUS",
-    "REGIME_TREND_MARGIN"
-  ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    }
+    "REGIME_TREND_MARGIN",
+    "REGIME_CRASH_MARGIN"
   ]
 }

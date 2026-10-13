@@ -1,20 +1,49 @@
 {
+  "metric": "CCI20",
+  "label": "CCI (20)",
   "code": "CCI",
   "family": "momentum",
-  "label": "CCI (20)",
-  "metric": "CCI20",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 1,
-    "unit": "oscillator"
+    "unit": "oscillator",
+    "precision": 1
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "classifyZone"
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "rank"
+    }
   ],
+  "study": null,
   "spreadOperands": [
     "RSI14",
     "RSI7",
@@ -31,36 +60,13 @@
     "DI_PLUS",
     "DI_MINUS",
     "REGIME_TREND_MARGIN",
-    "REGIME_DI_SPREAD"
+    "REGIME_DI_SPREAD",
+    "REGIME_CRASH_MARGIN"
   ],
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "classifyZone"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ]
 }

@@ -52,10 +52,12 @@ def test_timeless_operand_cannot_feed_a_series_chain(base, operand, chained, con
     assert "REPORT_COLUMN_CHAIN_UNSUPPORTED" in _errors(base, operand, chained, contract)
 
 
-@pytest.mark.parametrize("chained", sorted(SERIES_CHAINS))
+@pytest.mark.parametrize("chained", ["aggregate", "trajectory"])
 def test_candle_operand_still_feeds_a_series_chain(chained, contract):
     """The control that passed in every probe. Without it the rule could be 'spread
-    never chains', which is false and would delete 770 legal shapes."""
+    never chains', which is false and would delete 770 legal shapes. Since the re-extraction at 108.4.0, 2026-10-13
+    `spread` chains into [trajectory, aggregate] only - efficiency left every distance/spread chain - so the control is
+    those two."""
     assert not contract.metric("RSI14").is_timeless
     assert _errors("ADX", "RSI14", chained, contract) == []
 
@@ -99,6 +101,7 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     pivots and the twelve metrics added at 61.2.0 are all timeless, so any OTHER metric's
     spread chained into a series now refuses whenever one of those 21 names is the
     operand - on top of the nine no longer offering that chain themselves."""
-    # 920 / 8367 since 2026-10-12: the 62 bandTouch atoms left at v100 (a roster change, not this rule)
-    assert len(enumerate_shapes(contract=contract)) == 920
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 8367
+    # 899 / 8575 since the re-extraction at 108.4.0, 2026-10-13 (171 metrics; efficiency off the spread/distance chains and
+    # the oscillators; levelInteraction on 43 levels); 920 / 8367 on 2026-10-12 (bandTouch retired)
+    assert len(enumerate_shapes(contract=contract)) == 899
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 8575

@@ -1,20 +1,30 @@
 {
+  "metric": "OI_CHG",
+  "label": "OI change",
   "code": "oiChg",
   "family": "derivatives",
-  "label": "OI change",
-  "metric": "OI_CHG",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "percent"
+    "unit": "percent",
+    "precision": 2
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "spread"
+    },
+    {
+      "id": "rank"
+    }
   ],
+  "study": "openInterest",
   "spreadOperands": [
     "PPO",
     "ROC12",
@@ -29,20 +39,12 @@
     "HIGH_DEV",
     "LOW_DEV",
     "FUNDING_RATE",
-    "FUNDING_ANN",
-    "REGIME_CRASH_MARGIN"
+    "FUNDING_ANN"
   ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ]
 }

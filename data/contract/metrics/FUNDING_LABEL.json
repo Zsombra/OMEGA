@@ -1,8 +1,8 @@
 {
+  "metric": "FUNDING_LABEL",
+  "label": "Funding label",
   "code": "rateLbl",
   "family": "derivatives",
-  "label": "Funding label",
-  "metric": "FUNDING_LABEL",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -16,7 +16,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": "funding"
 }

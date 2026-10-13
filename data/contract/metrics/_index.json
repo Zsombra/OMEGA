@@ -1,5 +1,5 @@
 {
-  "metricCount": 156,
+  "metricCount": 171,
   "byFamily": {
     "crowd": [
       "CROWD_ACC",
@@ -55,12 +55,24 @@
       "WT2"
     ],
     "price": [
+      "BAR_CONTAINMENT",
       "BAR_FORMING",
+      "CANDLE_DOJI",
+      "CANDLE_ENGULFING",
+      "CANDLE_PIN",
+      "CANDLE_RUN",
       "CLOSE",
+      "CLOSE_RUN",
+      "GAP",
+      "GAP_PCT",
+      "GAP_RANGE_CLEAR",
       "HIGH",
+      "HL2",
+      "HLC3",
       "LAST",
       "LOW",
       "MARK",
+      "OHLC4",
       "OPEN",
       "ORACLE",
       "SPOT_CLOSE_BN",
@@ -119,6 +131,9 @@
       "PSAR",
       "STRUCT_ZONES",
       "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LABEL",
+      "SWING_FRACTAL_LOW",
       "TPO_IB_HIGH",
       "TPO_IB_LOW",
       "TPO_POC",

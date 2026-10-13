@@ -1,8 +1,8 @@
 {
+  "metric": "SMART_RETAIL",
+  "label": "Smart vs retail",
   "code": "smartRetail",
   "family": "derived",
-  "label": "Smart vs retail",
-  "metric": "SMART_RETAIL",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,7 +15,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": null
 }

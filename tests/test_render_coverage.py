@@ -35,7 +35,10 @@ from scripts.render_coverage import (
 # metric's spread chained into a series (aggregate/trajectory/efficiency) now refuses
 # whenever one of those 21 names is the operand (tests/test_spread_chain_operand.py) -
 # shapes blocked by a timeless operand rose from 1782 to 3171. Net: 8190 - 550 = 7640.
-EXPANDED_SPREAD_SHAPES = 7640
+# 7810 since the re-extraction at 108.4.0, 2026-10-13: 5014 unchained (every pool gained the new price metrics - CLOSE's
+# 61 operands became 66) and 2796 chained (efficiency left every spread chain, so each operand pairs with two series
+# successors, not three).
+EXPANDED_SPREAD_SHAPES = 7810
 
 
 @pytest.fixture(scope="module")
@@ -64,7 +67,7 @@ def test_expanded_spread_header_names_both_sides(contract):
 
 def test_rendered_headers_spans_every_cache():
     """Bug 2: a single cache is not the record of what was rendered."""
-    assert len(SEEN_FILES) == 13   # 11 until the 09-09 sweep, 13 since the 09-20 one
+    assert len(SEEN_FILES) == 14   # 11 until the 09-09 sweep, 13 since the 09-20 one, 14 since 10-13
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -151,7 +154,9 @@ def test_structural_coverage_is_complete(contract):
     with the transform, so nothing was uncovered by the move.
     """
     cov, unc, _ = coverage(False, contract)
-    assert (cov, len(unc)) == (593, 0), (
+    # 623 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md): the new metrics and levelInteraction on 43 levels, all rendered by that day's
+    # sweep; bandTouch's 62 had already left, and the efficiency cells 108.4 removed left with the corpus.
+    assert (cov, len(unc)) == (623, 0), (
         "every metric x transform mechanism has been rendered live at least once")
 
 
@@ -179,6 +184,7 @@ def test_live_coverage_is_complete(contract):
     """
     cov, unc, byt = coverage(True, contract)
     # 8,347 since 2026-10-12: the 62 bandTouch shapes left with the transform at v100 (all had rendered live)
-    assert (cov, len(unc)) == (8347, 0), (
+    # 8,555 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md) (1,394 shapes rendered that day, 0 refusals, 0 mispredicted)
+    assert (cov, len(unc)) == (8555, 0), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
     assert not byt

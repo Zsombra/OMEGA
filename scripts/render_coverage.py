@@ -46,6 +46,10 @@ SEEN_FILES = [
     # predicted by outputs_for that the platform did not mint - the authoring model matched
     # the new prior-session metrics exactly on the first pass.
     "_coverage_sweep_2026-09-20.json",
+    # 2026-10-13: the 171-metric re-extraction at contract 108.4.0 - the 15 v100/v101.1 metrics and levelInteraction
+    # on 43 levels. 1,394 previously-unrendered shapes, 2,672 headers minted, zero refusals, zero predicted-but-not-
+    # rendered (data/audit/coverage_sweep_2026-10-13.json).
+    "_coverage_sweep_2026-10-13.json",
 ]
 
 

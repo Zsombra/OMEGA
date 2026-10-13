@@ -1,20 +1,49 @@
 {
+  "metric": "ROC12",
+  "label": "ROC (12)",
   "code": "ROC",
   "family": "momentum",
-  "label": "ROC (12)",
-  "metric": "ROC12",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "percent"
+    "unit": "percent",
+    "precision": 2
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "rank"
+    }
   ],
+  "study": null,
   "spreadOperands": [
     "PPO",
     "CLOSE_CHANGE",
@@ -29,37 +58,12 @@
     "LOW_DEV",
     "FUNDING_RATE",
     "FUNDING_ANN",
-    "OI_CHG",
-    "REGIME_CRASH_MARGIN"
+    "OI_CHG"
   ],
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "crossDetect"
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ]
 }

@@ -1,18 +1,46 @@
 {
+  "metric": "CLOSE_CHANGE",
+  "label": "Close change",
   "code": "closeChg",
   "family": "momentum",
-  "label": "Close change",
-  "metric": "CLOSE_CHANGE",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "percent"
+    "unit": "percent",
+    "precision": 2
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "far",
-    "near"
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "rank"
+    }
   ],
+  "study": null,
   "spreadOperands": [
     "PPO",
     "ROC12",
@@ -27,34 +55,10 @@
     "LOW_DEV",
     "FUNDING_RATE",
     "FUNDING_ANN",
-    "OI_CHG",
-    "REGIME_CRASH_MARGIN"
+    "OI_CHG"
   ],
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "far",
+    "near"
   ]
 }

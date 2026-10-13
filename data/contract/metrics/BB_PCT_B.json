@@ -1,54 +1,54 @@
 {
+  "metric": "BB_PCT_B",
+  "label": "Bollinger %B",
   "code": "pctB",
   "family": "structure",
-  "label": "Bollinger %B",
-  "metric": "BB_PCT_B",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "range": {
-      "max": 1,
-      "min": 0
-    },
-    "unit": "fraction"
+    "unit": "fraction",
+    "precision": 2
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo"
-  ],
-  "spreadOperands": [
-    "STOCH_RSI14",
-    "BUY_PRESSURE"
-  ],
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
     },
     {
-      "id": "trajectory"
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
     },
     {
+      "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
+        "aggregate"
+      ]
     },
     {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "maxShare"
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
     },
     {
       "id": "rank"
     }
+  ],
+  "study": "bollingerBands",
+  "spreadOperands": [
+    "STOCH_RSI14",
+    "BUY_PRESSURE"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ]
 }

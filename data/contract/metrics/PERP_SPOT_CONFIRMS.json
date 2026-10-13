@@ -1,8 +1,8 @@
 {
+  "metric": "PERP_SPOT_CONFIRMS",
+  "label": "Perp/spot confirms",
   "code": "perpSpotConf",
   "family": "derived",
-  "label": "Perp/spot confirms",
-  "metric": "PERP_SPOT_CONFIRMS",
   "nativeOutput": {
     "kind": "boolean"
   },
@@ -10,7 +10,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": "perpSpotFlow"
 }

@@ -1,0 +1,25 @@
+{
+  "metric": "GAP",
+  "label": "Gap",
+  "code": "gap",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "up",
+      "down",
+      "none"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 30
+      }
+    }
+  ],
+  "study": "gaps"
+}

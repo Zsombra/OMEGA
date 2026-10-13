@@ -1,8 +1,8 @@
 {
+  "metric": "CAPTAIN_CONF",
+  "label": "Captain confidence",
   "code": "captainConf",
   "family": "derived",
-  "label": "Captain confidence",
-  "metric": "CAPTAIN_CONF",
   "nativeOutput": {
     "kind": "boolean"
   },
@@ -10,7 +10,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": null
 }

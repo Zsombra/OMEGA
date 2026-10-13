@@ -8,7 +8,7 @@ from omega.contract import CONTRACT_DIR, DERIVED_DIR, ROOT, load
 
 TRANSFORM_ORDER = [
     "value", "trajectory", "distance", "spread", "efficiency", "aggregate",
-    "maxShare", "rank", "classifyZone", "crossDetect", "bandTouch",
+    "maxShare", "rank", "classifyZone", "crossDetect", "levelInteraction", "bandTouch",
     "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist", "nearestZoneAge",
 ]
 FAMILY_ORDER = ["price", "momentum", "trend", "volatility", "volumeFlow",
@@ -16,7 +16,7 @@ FAMILY_ORDER = ["price", "momentum", "trend", "volatility", "volumeFlow",
 SHORT = {
     "value": "val", "trajectory": "traj", "distance": "dist", "spread": "sprd",
     "efficiency": "eff", "aggregate": "agg", "maxShare": "mxSh", "rank": "rank",
-    "classifyZone": "zone", "crossDetect": "xdet", "bandTouch": "band",
+    "classifyZone": "zone", "crossDetect": "xdet", "levelInteraction": "lvl", "bandTouch": "band",
     "count": "cnt", "nearestZoneType": "nzTy", "nearestZoneRange": "nzRg",
     "nearestZoneDist": "nzDs", "nearestZoneAge": "nzAg",
 }

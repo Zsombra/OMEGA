@@ -1,14 +1,33 @@
 {
+  "metric": "PIVOT_S3",
+  "label": "Pivot S3",
   "code": "pivotS3",
   "family": "structure",
-  "label": "Pivot S3",
-  "metric": "PIVOT_S3",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "price"
+    "unit": "price",
+    "precision": 2
   },
   "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "distance"
+    },
+    {
+      "id": "spread"
+    },
+    {
+      "id": "levelInteraction"
+    }
+  ],
+  "study": "floorPivots",
   "spreadOperands": [
     "OPEN",
     "HIGH",
@@ -19,6 +38,9 @@
     "ORACLE",
     "SPOT_CLOSE_CB",
     "SPOT_CLOSE_BN",
+    "HL2",
+    "HLC3",
+    "OHLC4",
     "SMA20",
     "SMA50",
     "SMA200",
@@ -55,6 +77,8 @@
     "KC_MID",
     "KC_LOWER",
     "ST_LINE",
+    "SWING_FRACTAL_HIGH",
+    "SWING_FRACTAL_LOW",
     "HMA20",
     "PSAR",
     "ICHI_CONV",
@@ -71,21 +95,5 @@
     "PDH",
     "PDL",
     "PDO"
-  ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "distance"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "bandTouch"
-    }
   ]
 }

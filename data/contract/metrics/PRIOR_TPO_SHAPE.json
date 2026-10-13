@@ -1,8 +1,8 @@
 {
+  "metric": "PRIOR_TPO_SHAPE",
+  "label": "TPO profile shape (prior session)",
   "code": "pTpoShape",
   "family": "structure",
-  "label": "TPO profile shape (prior session)",
-  "metric": "PRIOR_TPO_SHAPE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,7 +15,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": "priorSessionProfile"
 }

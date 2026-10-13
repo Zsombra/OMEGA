@@ -1,8 +1,8 @@
 {
+  "metric": "CONFIDENCE",
+  "label": "Convergence confidence",
   "code": "conf",
   "family": "derived",
-  "label": "Convergence confidence",
-  "metric": "CONFIDENCE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,7 +15,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": null
 }

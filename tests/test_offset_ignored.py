@@ -75,8 +75,14 @@ def test_the_affected_set_is_exactly_the_candle_categoricals(contract):
                       and contract.metric(n).vocab)
     # KC_SQUEEZE and ST_DIR joined the roster between 2026-08-24 and 2026-09-09 and are
     # candle-mode categoricals like the other five, so the rule catches them too.
-    assert affected == ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "KC_SQUEEZE",
-                        "MA_ALIGN", "PRICE_ZONE", "ST_DIR"]
+    # Since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md): v100's patterns/gaps and v101.1's
+    # fractal label are candle categoricals too. The 2026-08-28 probe measured the first seven; the eight joined after
+    # v94 fixed the behaviour ("A candle label column at offset N reads bar t-N's label"), so they were never affected.
+    MEASURED = ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "KC_SQUEEZE", "MA_ALIGN", "PRICE_ZONE", "ST_DIR"]
+    JOINED_AFTER_V94 = ["BAR_CONTAINMENT", "CANDLE_DOJI", "CANDLE_ENGULFING", "CANDLE_PIN", "GAP", "GAP_RANGE_CLEAR",
+                        "SWING_FRACTAL_LABEL"]
+    assert affected == sorted(MEASURED + JOINED_AFTER_V94)
+    affected = MEASURED
     rec = json.loads(AUDIT.read_text(encoding="utf-8"))
     assert rec["scope"]["candleCategoricalMetrics"] == affected
     assert rec["scope"]["untested"] == [], (

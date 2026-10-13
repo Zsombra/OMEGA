@@ -1,5 +1,5 @@
 {
- "_what": "Metrics the contract 108 write schema serves (the REPORT column metric enum, data/derived/condition_vocabulary_108.json reportColumn.metric) that the 61.2.0 metric extraction never measured. Known NAMES only: which transforms each composes, its native output kind, timeframe mode, header code and vocabulary are UNMEASURED offline - at 61.2.0 they were read live (get_metric_construction_hints per metric, then get_strategy_column_contract / preview_strategy_report probes; data/contract/_manifest.json toolsUsed, scripts/refresh_metric_contracts.py). omega.validate refuses a column over one (METRIC_UNMEASURED) and the generator never selects one, so no generated plan emits them until a re-extraction moves them into data/contract/metrics/<METRIC>.json. scripts/compare_vocabulary.py counts them as stored (so a served metric omega knows by name is not 'missing'), and lists them under storedUnmeasured.",
+ "_what": "EMPTY since 2026-10-13: the 15 metrics served at 108 without a measured contract were measured and are in the corpus. The file stays so a future served-but-unmeasured metric has its place (omega.contract reads it).",
  "servedAt": "108.0.0",
  "source": {
   "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
@@ -38,111 +38,24 @@
    "status": "DESCRIPTION, not measured - recorded, not modelled"
   }
  },
- "metrics": {
-  "CANDLE_DOJI": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "patterns",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_DOJI\"}"
-  },
-  "CANDLE_PIN": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "patterns",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_PIN\"}"
-  },
-  "CANDLE_ENGULFING": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "patterns",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_ENGULFING\"}"
-  },
-  "BAR_CONTAINMENT": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "patterns",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"BAR_CONTAINMENT\"}"
-  },
-  "GAP": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "gaps",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"GAP\"}"
-  },
-  "GAP_RANGE_CLEAR": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "gaps",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"GAP_RANGE_CLEAR\"}"
-  },
-  "GAP_PCT": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "gaps",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"GAP_PCT\"}"
-  },
-  "CLOSE_RUN": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "runs",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"CLOSE_RUN\"}"
-  },
-  "CANDLE_RUN": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "runs",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"CANDLE_RUN\"}"
-  },
-  "HL2": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "sources",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"HL2\"}"
-  },
-  "HLC3": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "sources",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"HLC3\"}"
-  },
-  "OHLC4": {
-   "addedAt": "v100",
-   "servedAt": "108.0.0",
-   "describedIn": "sources",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"OHLC4\"}"
-  },
-  "SWING_FRACTAL_HIGH": {
-   "addedAt": "v101.1",
-   "servedAt": "108.0.0",
-   "describedIn": "swingLevels",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"SWING_FRACTAL_HIGH\"}"
-  },
-  "SWING_FRACTAL_LOW": {
-   "addedAt": "v101.1",
-   "servedAt": "108.0.0",
-   "describedIn": "swingLevels",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"SWING_FRACTAL_LOW\"}"
-  },
-  "SWING_FRACTAL_LABEL": {
-   "addedAt": "v101.1",
-   "servedAt": "108.0.0",
-   "describedIn": "swingLabel",
-   "transformAdmissibility": "UNMEASURED",
-   "measuredBy": "get_metric_construction_hints {metric: \"SWING_FRACTAL_LABEL\"}"
-  }
- }
+ "metrics": {},
+ "measuredOn": "2026-10-13",
+ "measuredBy": "get_metric_construction_hints x 171 at contract 108.4.0 (docs/plans/2026-10-13-omega-reextraction-108-4.md)",
+ "formerlyUnmeasured": [
+  "BAR_CONTAINMENT",
+  "CANDLE_DOJI",
+  "CANDLE_ENGULFING",
+  "CANDLE_PIN",
+  "CANDLE_RUN",
+  "CLOSE_RUN",
+  "GAP",
+  "GAP_PCT",
+  "GAP_RANGE_CLEAR",
+  "HL2",
+  "HLC3",
+  "OHLC4",
+  "SWING_FRACTAL_HIGH",
+  "SWING_FRACTAL_LABEL",
+  "SWING_FRACTAL_LOW"
+ ]
 }

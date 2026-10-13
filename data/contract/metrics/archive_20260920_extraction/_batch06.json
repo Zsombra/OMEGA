@@ -1,0 +1,120 @@
+[
+ {
+  "code": "smartRetail",
+  "family": "derived",
+  "label": "Smart vs retail",
+  "metric": "SMART_RETAIL",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "hidden accumulation",
+    "hidden distribution",
+    "confirmed"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "captainConf",
+  "family": "derived",
+  "label": "Captain confidence",
+  "metric": "CAPTAIN_CONF",
+  "nativeOutput": {
+   "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "conf",
+  "family": "derived",
+  "label": "Convergence confidence",
+  "metric": "CONFIDENCE",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "high",
+    "moderate",
+    "low"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "perpSpotFlow",
+  "family": "derived",
+  "label": "Perp/spot flow",
+  "metric": "PERP_SPOT_FLOW",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "confirmed_bull",
+    "confirmed_bear",
+    "perp_led_fragile",
+    "spot_led_accumulation",
+    "neutral"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "perpSpotStr",
+  "family": "derived",
+  "label": "Perp/spot strength",
+  "metric": "PERP_SPOT_STRENGTH",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "high",
+    "moderate",
+    "low"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "perpSpotConf",
+  "family": "derived",
+  "label": "Perp/spot confirms",
+  "metric": "PERP_SPOT_CONFIRMS",
+  "nativeOutput": {
+   "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ }
+]
