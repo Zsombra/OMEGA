@@ -22,7 +22,7 @@ axis you omit keeps the value the draft already has.
     "draftVersion": 0,
     "axes": {
       "DEFAULT_SLOT": {
-        "defaultSlot": { "agentId": "<AGENT_ID>", "minConfidence": null, "entryStrategy": "STANDARD" }
+        "defaultSlot": { "agentId": "<AGENT_ID>", "minConfidence": null }
       }
     }
   }
@@ -42,7 +42,6 @@ axis you omit keeps the value the draft already has.
           {
             "agentId": "<AGENT_ID>",
             "minConfidence": null,
-            "entryStrategy": "STANDARD",
             "conditions": [{ "kind": "regime", "regimes": ["bull_expansion", "bull_ranging"] }]
           }
         ]
@@ -68,7 +67,6 @@ session occurrence, never both.
           {
             "agentId": "<AGENT_ID>",
             "minConfidence": 0.6,
-            "entryStrategy": "TWO_LOOK",
             "conditions": [
               { "kind": "session_start", "startTimes": ["14:00:00", "15:00:00"], "days": [1, 2, 3, 4, 5] }
             ]
@@ -93,7 +91,6 @@ session occurrence, never both.
           {
             "agentId": "<AGENT_ID>",
             "minConfidence": null,
-            "entryStrategy": "STANDARD",
             "conditions": [
               { "kind": "regime", "regimes": ["volatile"] },
               { "kind": "session_start", "startTimes": ["14:00:00"], "days": [1, 2, 3, 4, 5] }

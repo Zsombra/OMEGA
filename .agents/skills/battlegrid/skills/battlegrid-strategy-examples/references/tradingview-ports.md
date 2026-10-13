@@ -21,7 +21,7 @@ Players often ask for strategies by the name of a popular TradingView script. Po
 **process** (regime filter → setup state → trigger → stop engine), and where the catalog lacks
 the primitive, name the substitution in the spec-lock question — never present a substitute as
 the thing itself. Most TV strategies run on the daily chart: carry that with the
-daily-strategy pattern above (pinned-1d thesis at `offset: 1` on an intraday anchor), which
+daily-strategy pattern above (pinned-1d thesis with `"bars": "closed"` at offset 0 on an intraday anchor), which
 binds decisions to daily closes while the studio keeps managing risk intraday.
 
 Event-column behaviour, state-vs-event, previous-session-level binding and the squeeze's anchor calibration are
@@ -45,8 +45,7 @@ rules about the columns themselves, not about porting — they live in the skill
   `ST_DIR enters "bullish"` is TRUE on the one completed bar the direction turned, and
   `ST_DIR exits "bullish"` on the bar it turned back — see `## Conditions` in the skill body.
 - **MACD + 200 MA filter** → `ABOVE_200` building block (`dist_SMA200 gt 0`) referenced by a
-  carrier with `MACD_cross is "Bullish"`; rules `macd_bull/bear_cross` 3 required +
-  `ma_sma200_above/below` 2 required; swing-trend geometry.
+  carrier with `MACD_cross is "Bullish"`; swing-trend geometry.
 - **Golden / Death Cross** → `SMA50 spread SMA200 × trajectory` gives state and freshness:
   `SMA50_SMA200_spread_now gt 0` AND `_trend is "rising"`; optional breadth gate on
   `mktBreadth_crypto gte 0` — every published scope resolves, not only `all`, because the leg reads
@@ -54,8 +53,7 @@ rules about the columns themselves, not about porting — they live in the skill
   the canonical definition and stays the default port; `EMA50` is available as the crypto variant
   when a player asks for it by name.
 - **RSI-2 (Connors)** → `RSI2` is native, so this ports exactly: `RSI2 lte 10` gated by required
-  `ABOVE_200`; the source's fast exit is time — timeDecay ON (180/60, 15→50, stale 20);
-  `rsi_oversold` 3 required with a tuned threshold. Keep the literal `lte 10` as the GATE:
+  `ABOVE_200`; the source's fast exit is time — timeDecay ON (180/60, 15→50, stale 20). Keep the literal `lte 10` as the GATE:
   `RSI2 × classifyZone` exists and reads on the same Connors bands, but a zone label is a fixed
   reading while the literal is a threshold the author can see and tune. Use the zone as a report
   column, never as the substitute for the gate.
@@ -63,16 +61,14 @@ rules about the columns themselves, not about porting — they live in the skill
   stretch; required `NOT [ADX_state in ["trending","extreme"]]` veto; scalp geometry +
   aggressive timeDecay (VWAP anchors daily at 00:00 UTC).
 - **Donchian / Turtle breakout** → `zone is "breakout high"` + `dist_donchianHi gte 0` +
-  `RVOL gte 1.5`; `sr_resistance_break` 3 required; turtle exits = trend preset (trail from
+  `RVOL gte 1.5`; turtle exits = trend preset (trail from
   1R, giveback 50). Mirror with `"breakdown low"`. **Daily-breakout variant on any anchor:**
   pin the structure at 1d — `zone_1d is "breakout high"`, `dist_donchianHi_1d gte 0` (validated).
   **Literal previous-day levels are native**: `dist_PDH gte 0` composes directly. They are TIMELESS
   and take `{rel: 'anchor'}` — see `## Header grammar` in the skill body.
 - **ICT / SMC (FVG + order blocks)** → `STRUCT_ZONES` is the native zone engine:
   `zones_htf_support_type` (`bullish FVG`/`bullish order block`), `zones_htf_support_dist
-  between 0 1.5`, `_age_h gte 12`, HTF bias required via `MAalign_htf`; rules
-  `structure_fvg_approach`/`structure_ob_approach` required (their `proximityPct` is the
-  in-zone dial). Liquidity sweeps, displacement, killzones and event *sequencing* are shapes the
+  between 0 1.5`, `_age_h gte 12`, HTF bias required via `MAalign_htf`. Liquidity sweeps, displacement, killzones and event *sequencing* are shapes the
   grammar does not have — a clause compares one column with a literal or with its own previous
   completed bar, never with another column or an earlier event, so an ordered sequence of events
   cannot be stated at all. That is a grammar limit, not a missing metric; name it as

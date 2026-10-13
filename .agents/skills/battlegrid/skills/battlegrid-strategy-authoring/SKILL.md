@@ -15,12 +15,13 @@ All three come from real authoring sessions, and all three were discovered only 
 was already built. None of them is allowed to happen here.
 
 1. **Built ≠ picked.** The player selected a "≥ +10%" trigger and a +5% trigger was implemented.
-   Nobody noticed until the results looked wrong. You prevent this by showing the *drafted* rules,
+   Nobody noticed until the results looked wrong. You prevent this by showing the *drafted* conditions,
    as the server's own draft read serves them, next to their *locked* picks, before committing, and
    naming any contradiction yourself.
 2. **Silent zero-trigger.** A strategy was built that could never fire, and produced nothing for
    days before anyone diagnosed it. You prevent this by reading the draft's own report preview and
-   the per-signal preview before committing, and flagging a draft that shows no passing conditions.
+   its diagnostics before committing, and flagging a draft that shows no passing conditions or
+   warns `NO_ENTRY_CONDITION`.
 
 3. **Silent substitution.** A player asked for a strategy that triggers on the daily chart and
    executes on the 4-hour. The grammar carries no such semantics. Instead of saying so, the flow
@@ -100,13 +101,19 @@ anywhere; if the two ever disagree, you have created the exact ambiguity this st
 ### 3. Discover the grammar — never guess it
 
 `list_strategy_categories` → `list_strategy_vocabulary` → `get_strategy_column_contract` and
-`get_strategy_section_template` → `list_strategy_signals`, plus
-`get_strategy_signal_definition` for each signal you intend to use.
+`get_strategy_section_template`.
 
-Compose sections, columns, conditions and rules **only** from vocabulary returned in this
-conversation. A field you remember from another strategy is not discovery. A signal's availability
-at a timeframe is structural: it says the signal can be computed there, not that live data is
-flowing or that it will trigger.
+Compose sections, columns and conditions **only** from vocabulary returned in this conversation. A
+field you remember from another strategy is not discovery.
+
+**Conditions are the only deterministic entry gate.** A condition gates an entry when it is
+`required` or carries a verdict (UP, DOWN or NEITHER); a building block — neither required nor a
+verdict carrier — gates nothing, and an exit rule never counts. A strategy whose entry conditions
+include no required and no verdict-carrying condition never routes a trade: every coin fails first
+with `NO_ENTRY_CONDITION`, and its draft carries the warning of the same name. It stays a valid
+strategy — Market Grid reads it as context — so a strategy the player means to trade needs at least
+one. Before any condition is read, a coin must clear the ATR floor, `minAtrPct`, the
+TRADE_LEVEL_POLICY dial beside the stop-loss band.
 
 **Read the answer, not just the call.** Each of these returns one field that decides a composition
 question you would otherwise guess — and a refusal you would otherwise earn:
@@ -150,25 +157,17 @@ question you would otherwise guess — and a refusal you would otherwise earn:
   transform (and a chained transform) reads its series: the read shape, the window's unit, the price
   basis and what an absent bar does. `seriesHome` says where the metric's series is kept — `candle`,
   `history`, or `null` when the metric has no series, which is why a series transform does not
-  compose on it. Window and offset carry a declared `minimum` and no fixed maximum; the lookback
-  cap is the bound.
+  compose on it. Window and offset carry a declared `minimum` and a served `maximum` on each metric's
+  transform entry — the largest value whose read size fits the lookback cap, or `null` when none
+  does. Stage at most that maximum.
 - `get_metric_construction_hints` → `rankOrderings`. Present only when rank is composable on that
   metric, already range-gated server-side — read the offered set rather than deriving one from
   the metric's native output.
 
 For full-surface composition patterns — custom and benchmark sections, condition trees with
-verdicts and enforcement gates, weight pyramids and gate math, trade-level and
-position-management presets, worked desk-grade playbooks — activate `strategy-examples`. It
-teaches what to compose; this skill stays the authority on the flow.
-
-`derive_strategy_rule_view` belongs here, at composition time, and only here: it reports report
-membership and registry-default allocations for sections and rows you are about to stage. It reads
-no draft and no strategy, so it can never stand in for the review in step 5. Its suggestions and
-reset-to-default choices change only what you stage next — no tool applies one on its own.
-
-`simulate_aggregate_score` does **not** belong here. It is a review tool (step 5), and running it
-now answers a question about rows you have not staged, not about the draft the player will be
-asked to approve.
+verdicts and `required` enforcement, the trade-level policy with its ATR floor, position-management
+presets, worked desk-grade playbooks — activate `strategy-examples`. It teaches what to compose; this
+skill stays the authority on the flow.
 
 ### 4. Stage, and iterate on the diagnostics
 
@@ -184,24 +183,24 @@ two stages in parallel against one draft. Complete stage payloads showing the en
 stage; the response carries the id minted for it, which every later call names. A create needs
 IDENTITY (`{ name, description, tagline }`) and TIMEFRAME_PROFILE (`{ timeframe }`). A create with
 no REPORT starts from the platform's starting report (Price Action, RSI, MACD and Moving Averages),
-one with no ENTRY takes the seed entry, and the rule rows you stage overlay a creation seed in
-which every signal is Off.
+and one with no ENTRY takes the seed entry. A create with no CONDITIONS declares no entry gate and
+will not trade until one is staged.
 
 **An UPDATE carries only the axes that change.** Axes you omit keep the values the draft has, and
 an axis the draft does not hold is the committed strategy's. Each axis you send is written WHOLE —
-a REPORT is the complete section list, CONDITIONS the complete set — except SIGNAL_RULES, whose
-rows replace the drafted rows for the same `signalId` and keep every other one. Restating an axis
+a REPORT is the complete section list, CONDITIONS the complete set. Restating an axis
 you are not changing is never required, changes nothing about the result, and the player pays for
 every byte of it on this call and on every later step of the conversation. Send the axes you are
 changing; send no other axis.
 
-**A rule row is complete.** Every staged row carries `signalId`, `allocation` and `required`;
-`params` only when the thresholds change, and omitting it keeps the stored ones byte-identically.
-"Raise volume_surge to Critical" is one row with `allocation: 3` and `required` exactly as it
-stands now — read it from the draft's SIGNAL_RULES row when the draft holds one, otherwise from
-`get_strategy`. Never set `required` from memory, and never change it unless the player asked about
-the Required flag: a wrong value there is how a scoring signal silently becomes a mandatory trade
-gate. Stage no row for a signal you are not changing.
+**A whole axis restates what it keeps.** "Raise the ATR floor to 0.8%" is one TRADE_LEVEL_POLICY
+stage carrying all four of its dials — `minStopLossAtrMultiple`, `maxStopLossAtrMultiple`,
+`minRiskRewardRatio` and `minAtrPct` — the three you are not changing exactly as they stand now:
+read them from the draft's TRADE_LEVEL_POLICY when the draft holds it, otherwise from
+`get_strategy`. The same holds for a condition: CONDITIONS carries every condition, each with its
+`required` flag and verdict as they stand. Never set `required` or a verdict from memory, and never
+change either unless the player asked: a wrong value there is how a building block silently becomes
+a mandatory trade gate, or a gate silently disappears.
 
 **Read the diagnostics every stage returns.** Past its checks of shape — an undeclared key, a
 parameter beside `ON_CANDLE_CLOSE`, a coin that names nothing — a stage refuses nothing for being
@@ -210,9 +209,9 @@ are where you learn what the commit would do:
 
 - `errors` — the refusals the commit would raise, each with its `field` and `details` naming the
   `path`, the value it received and the `allowedDomain` it accepts. Fix the axis and stage again.
-- `warnings` and `mismatches` — observations that never refuse. `NO_SIGNAL_ACTIVE` means the
-  strategy scores nothing and will never route a trade; a mismatch means the report and the
-  weights disagree. Fix each one, or carry it into the review as something to explain.
+- `warnings` — observations that never refuse. `NO_ENTRY_CONDITION` means the strategy declares no
+  required and no verdict-carrying entry condition, so it will never route a trade. Fix it, or carry
+  it into the review as something to explain.
 
 An empty `errors` is not a promise: the strategy quota, the name and capital feasibility are
 decided only by the commit itself.
@@ -237,7 +236,7 @@ Once the stage's diagnostics carry nothing you cannot explain, read the draft wi
 `get_strategy_draft`. Everything here comes from that read:
 
 - **What will actually run.** Its `diff` — every drafted axis with its `live` and drafted value
-  and the field-level `changes` between them, the drafted signal-rule rows among them — beside the
+  and the field-level `changes` between them, the drafted conditions among them — beside the
   picks they locked in step 2. **If any drafted row or diff entry contradicts a locked pick, say so
   in words before you ask for anything.** Do not make them spot it.
 - **All of what the commit publishes.** The diff names every axis the draft holds, including
@@ -250,23 +249,16 @@ Once the stage's diagnostics carry nothing you cannot explain, read the draft wi
   register with every coin's verdict, and the verdict tally; ask for `"detailed"` only when you need
   each coin's full evaluation or the addressable headers (`authoring`). A preview is bounded by a
   deadline and a result-character cap, both served by discovery as `previewExecutionLimits`
-  (`deadlineMs`, `maxResultChars`); one over either is refused whole, never truncated — narrow the
-  cohort and preview again. Support it
-  with `get_coin_signal_preview` on the locked universe's main coin(s). The preview's
-  `coinSelection` is its cohort, never strategy state: no strategy has one and `get_strategy` will
-  not return one, so choose it — a short explicit list of the tickers the change is about for a
-  single-gate edit, a `ranked` cohort for a broad one. Any reasonable cohort is correct.
-- **A routing what-if**, optionally, via `simulate_aggregate_score` — **after the draft read, never
-  before it.** This is a calculator, not a verdict: it computes over whatever inputs you hand it.
-  Feed it what the commit would carry — the gate and the allocations as the read serves them (the
-  drafted value where the draft holds the axis, the committed one where it does not) and the
-  per-signal scores from the preview you just read — and show those inputs beside its output so a
-  copy slip is visible on the card itself.
+  (`deadlineMs`, `maxResultChars`); one over either is refused whole, never truncated, and the
+  refusal carries `nextAct: narrow` — preview again asking for less, in the order the tool's
+  description gives. The preview's `coinSelection` is its cohort, never strategy state: no strategy
+  has one and `get_strategy` will not return one, so choose it — a short explicit list of the
+  tickers the change is about for a single-condition edit, a `ranked` cohort for a broad one. Any
+  reasonable cohort is correct.
 
-**Flag before confirming** if the preview shows no passing conditions, the coin preview shows
-zero triggered signals, the simulation reports `wouldRoute: false`, or the diagnostics warn
-`NO_SIGNAL_ACTIVE`. Any one of those means the strategy probably never fires — ask whether to
-revise rather than presenting it as healthy.
+**Flag before confirming** if the preview shows no passing conditions or the diagnostics warn
+`NO_ENTRY_CONDITION`. Either one means the strategy probably never fires — ask whether to revise
+rather than presenting it as healthy.
 
 **State the impact as numbers, not buried in prose.** The read's `impact` carries:
 
@@ -314,13 +306,13 @@ Prose never triggers a commit. The same holds for an answer typed into the form'
 answer-in-your-own-words box: it is the player's words in an answer slot, not a confirming pick,
 so treat it exactly as you would free text in the chat.
 
-Do not pre-check ownership, viability, quota or the name before calling. The server is the only
+Do not pre-check ownership, validity, quota or the name before calling. The server is the only
 authority on all of them; your job is to react to what it returns.
 
-**Report the change from the receipt.** The commit returns the committed `strategy` and, when
-signal rules moved, `ruleChanges` with the server's own `before` and `after` for each edited
-signal. State those. Never describe a prior value from memory or from an earlier read — the
-receipt is the only record that cannot be stale.
+**Report the change from the read and the receipt.** The commit returns the committed `strategy`.
+State each change as its live value in the read the player confirmed against its value in the
+receipt's strategy. Never describe a value from memory or from any other read — those two are the
+only records that cannot be stale.
 
 **Offer to discard a draft only on the player's explicit word**, never on your own judgement that
 it looks stale, and never batched into another act. `get_strategy_draft` is the read of what a
@@ -334,11 +326,12 @@ removed. The unsaved values are gone afterwards and there is no other copy.
 
 `fork_strategy`, `restore_strategy`, `archive_strategy`, `discard_strategy_draft` and
 `preview_strategy_report` are part of this flow. Every change to a strategy's content — a single
-tuned rule included — is a staged draft committed with `commit_strategy_draft`; none of the other
-verbs writes content.
+tuned condition or dial included — is a staged draft committed with `commit_strategy_draft`; none of
+the other verbs writes content.
 
-- **Tuning a single rule** is one SIGNAL_RULES row staged (step 4), read, confirmed and committed.
-  State how many agents are bound, and that the change reaches every one of them immediately.
+- **Tuning a single condition or dial** is its axis staged whole (step 4), read, confirmed and
+  committed. State how many agents are bound, and that the change reaches every one of them
+  immediately.
 - **Forking** — `fork_strategy` takes the `strategyId`, the exact `sourceRevision` to copy and an
   optional `name`, and returns a NEW create draft's `strategyId` and `draftVersion`. **No strategy
   exists yet.** Read the draft with `get_strategy_draft` — every authored axis equals the source
@@ -352,10 +345,9 @@ verbs writes content.
 - **Restoring** — find the archived strategy with `list_strategies` and `get_strategy` with
   `includeInactive: true`, which add the player's own strategies in any state; another player's
   PRIVATE strategy stays hidden either way. `restore_strategy` with the `strategyId` and
-  `expectedRevision` brings back unchanged, already-viable content and keeps the player's draft,
-  re-based onto the restored revision. Content that is not viable is
-  refused with `REPAIR_REQUIRED` and stays archived: stage the repair into the strategy's draft and
-  commit it — that commit restores it, and its read says `operation: RESTORE`.
+  `expectedRevision` brings back the unchanged content and keeps the player's draft, re-based onto
+  the restored revision. To change the content as it comes back, stage the change into the
+  strategy's draft and commit it — that commit restores it, and its read says `operation: RESTORE`.
 
 **Your `ask_user` is the approval, and the server does not repeat it.** No strategy verb takes a
 confirmation flag. So never call `commit_strategy_draft`, `archive_strategy`, `restore_strategy` or
@@ -369,7 +361,8 @@ offered, and nothing else is.
 
 Each refusal is a specific typed code, and a refusal of a draft's stage or commit names its next
 act in `details.nextAct` — `get_draft` or `stage`; a moved or contested draft names `get_draft`
-from any tool. Read it and take the cheapest correct step — never retry the same call blindly.
+from any tool, and a refused preview names `narrow`. Read it and take the cheapest correct step —
+never retry the same call blindly.
 
 - **`DRAFT_VERSION_MOVED`** (`nextAct: get_draft`) — the draft changed after your read: the
   player's form saved an edit, another surface staged, or a human-paced review outlived it. Read
@@ -385,8 +378,8 @@ from any tool. Read it and take the cheapest correct step — never retry the sa
 - **A validation error** (`nextAct: stage`) — the error the diagnostics named, with its own
   `field` and `details`. Nothing was written. Return to step 4: fix the axis, stage, read, and
   confirm again.
-- **A refusal with no `nextAct`** — the strategy quota (`FORBIDDEN`), a name already in use,
-  `REPAIR_REQUIRED`, viability, or a `CONFLICT` whose `details.reason` is `RADAR_DEPLOYMENT_MOVED`. The draft is
+- **A refusal with no `nextAct`** — the strategy quota (`FORBIDDEN`), a name already in use, or a
+  `CONFLICT` whose `details.reason` is `RADAR_DEPLOYMENT_MOVED`. The draft is
   untouched. Clear the cause with the player — a rename is an IDENTITY stage, which makes a new
   version to read and confirm — then commit the draft they confirmed. A moved radar deployment is
   a race, not a decision: read and commit again.

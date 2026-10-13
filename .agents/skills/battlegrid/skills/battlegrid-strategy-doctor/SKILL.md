@@ -50,22 +50,26 @@ Three reads, and they are not interchangeable:
 
 ### 2. Diagnose from typed sources
 
-- **The one vocabulary is `TradeEvaluationAttemptReasonCode`** — 25 members, two of them
+- **The one vocabulary is `TradeEvaluationAttemptReasonCode`**, two of its members
   `@deprecated` and historical-only (`TRADING_MODE_OFF`, `TRADING_MODE_INELIGIBLE`): if either
   turns up, it is an old row, not a live cause, and you say so. Do not translate a code into a
   different enum's wording, and do not try to unify the platform's overlapping reason vocabularies
   — they describe different stages and merging them invents a cause.
-- Render every code through its display meta. A raw `SETUP_GATES` or `OPEN_POSITION_CONFLICT` on
+- Render every code through its display meta. A raw `NO_ENTRY_CONDITION` or `OPEN_POSITION_CONFLICT` on
   screen is a system identifier leaking into an explanation.
 - **`get_agent_decision_context` is keyed by COIN**, not by agent. Use it for "why did nothing
   happen on SOL", once you know which coin the blocks are about.
 - **`get_agent_coin_qualification` answers the forward-looking half.** The reason codes above say
   why an agent did NOT trade in the past; this says whether a coin would route for it RIGHT NOW,
-  and which gate stops it — candidate levels, aggregate score, required-signal count, the ATR%
-  volatility floor and the agent's own required conditions, without spending an LLM call. Read the
-  four-member verdict as written: `NOT_ENFORCED` means the agent's own threshold switches the gate
-  off, `UNMEASURABLE` means the input was missing and the gate fail-opened. Neither is a pass, and
+  and which gate stops it — the strategy's entry condition, candidate levels, the ATR% volatility
+  floor and the strategy's required conditions and verdict, without spending an LLM call. Read the
+  four-member verdict as written: `NOT_ENFORCED` means the strategy declares nothing for that gate to
+  enforce, `UNMEASURABLE` means the input was missing and the gate fail-opened. Neither is a pass, and
   reporting either as "cleared" is the conflation the verdict vocabulary exists to prevent.
+- **`NO_ENTRY_CONDITION` is a property of the strategy, not of the market.** It fails every coin
+  first, in both directions: the bound strategy declares no required and no verdict-carrying entry
+  condition, so it never routes a trade. Say so once, for every coin at once, and route the fix — a
+  required or verdict condition — to the strategy-authoring flow; no coin or radar change clears it.
 - **A failing condition comes back as a KEY — resolve it.** `requiredConditions.failedKeys` names
   gates like `LOCATION_OK`: an identifier, not an explanation. Read the agent's bound strategy with
   `get_strategy` (the `strategyId` is on `get_intelligence_agent`), find the matching

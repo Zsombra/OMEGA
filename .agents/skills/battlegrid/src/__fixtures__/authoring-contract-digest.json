@@ -2,7 +2,7 @@
   "digestVersion": 1,
   "server": {
     "name": "battlegrid",
-    "contractVersion": "105.0.0"
+    "contractVersion": "108.2.0"
   },
   "axes": {
     "create": [
@@ -14,13 +14,10 @@
       "entry",
       "marketReadText",
       "maxStopLossAtrMultiple",
-      "minAggregateScore",
       "minAtrPct",
-      "minRequiredCount",
       "minRiskRewardRatio",
       "minStopLossAtrMultiple",
       "name",
-      "rules",
       "sections",
       "strategyId",
       "tagline",
@@ -57,19 +54,9 @@
       "sectionKey",
       "title"
     ],
-    "rule": [
-      "allocation",
-      "params",
-      "required",
-      "signalId"
-    ],
-    "gates": [
-      "minAggregateScore",
-      "minAtrPct",
-      "minRequiredCount"
-    ],
     "tradeLevels": [
       "maxStopLossAtrMultiple",
+      "minAtrPct",
       "minRiskRewardRatio",
       "minStopLossAtrMultiple"
     ],
@@ -145,20 +132,10 @@
       "max": 3,
       "step": 0.1
     },
-    "minAggregateScore": {
-      "min": 0,
-      "max": 1,
-      "step": 0.05
-    },
     "minAtrPct": {
       "min": null,
       "max": null,
       "step": 0.05
-    },
-    "minRequiredCount": {
-      "min": 0,
-      "max": 20,
-      "step": 1
     },
     "minRiskRewardRatio": {
       "min": null,
@@ -169,11 +146,6 @@
       "min": null,
       "max": null,
       "step": 0.1
-    },
-    "signalRule.allocation": {
-      "min": 0,
-      "max": 3,
-      "step": 1
     },
     "timeDecayGracePeriodMinutes": {
       "min": 5,

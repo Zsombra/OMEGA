@@ -33,7 +33,7 @@ rather than events all live there. This document assumes them.
 | Chop filter on the entry rung | `{ "metric": "CLOSE", "transformId": "efficiency", "timeframe": { "rel": "lower" }, "window": 5, "bars": "closed" }` | `close_ltf_er` (≥0.6 directional) |
 | One-bar volume concentration | `{ "metric": "VOLUME", "transformId": "maxShare", "timeframe": { "rel": "lower" }, "window": 4, "bars": "closed" }` | `volBase_ltf_maxShare` |
 | Room to structure | `{ "metric": "STRUCT_ZONES", "transformId": "nearestZoneDist", "timeframe": { "rel": "regime" }, "side": "resistance" }` | `zones_htf_resist_dist` |
-| Last **closed** daily read | `{ "metric": "RSI14", "transformId": "value", "timeframe": { "abs": "1d" }, "offset": 1 }` | `RSI14_1d` — `RSI14[t - 1]` |
+| Last **closed** daily read | `{ "metric": "RSI14", "transformId": "value", "timeframe": { "abs": "1d" }, "bars": "closed" }` | `RSI14_1d` — the newest completed daily bar |
 
 ## Cross detection
 

@@ -24,6 +24,36 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
+## Contract history — v109 (a player's picks are entered through their entry draft)
+
+**Breaking at v109: `submit_market_grid` and `update_market_grid` are removed.** v109 is the contract on
+top of v108. A player's picks for a session live in their Market Grid entry draft — the same draft their
+builder on the session page writes as they pick — and an entry is placed or changed by committing it.
+
+### Rejected input — something you send is no longer accepted
+
+- **`submit_market_grid` and `update_market_grid`** leave discovery with no alias. A call gets the
+  standard unknown-tool refusal. Play is stage → get → commit:
+  `stage_market_grid_entry_draft({ request: { sessionId, draftVersion, axes } })` with one
+  `CELL_n: { cell: { coinId, prediction } }` per grid position (`CELL_0` is the captain) and a
+  `RATIONALE` carrying the reasoning, confidence, model name and per-cell pick reasoning the removed
+  tools required; `get_market_grid_entry_draft` for the diff, diagnostics and impact; then
+  `commit_market_grid_entry_draft({ request: { sessionId, draftVersion, expectedRevision } })` on the
+  player's word. `random_submit_market_grid` and `submit_agent_grid` are unchanged.
+
+### Added tools
+
+- **`get_market_grid_entry_draft`, `stage_market_grid_entry_draft`, `discard_market_grid_entry_draft`
+  and `list_market_grid_entry_drafts`** (`mcp:read`) read and stage the player's picks for free: no
+  entry, fee, deposit or LLM access. **`commit_market_grid_entry_draft`** (`mcp:wager`) enters a session
+  the player has not entered, charging the session's entry fee (the read's `impact.entryFee`), or
+  replaces a live entry's picks for no fee.
+
+### Refusal vocabulary
+
+- **An entry that already exists is a revision `CONFLICT`** naming the live entry's revision, with
+  `nextAct: get_draft`: read the draft again and commit over the revision it returns.
+
 ## Contract history — v108 (conditions are the only entry gate; signal rules are removed)
 
 **Breaking at v108: signal rules, the aggregate-score gate and the required-count gate are removed.**
@@ -3322,7 +3352,7 @@ Strategies and intelligence agents change only through their drafts, with one to
 1. **Choose the entity.** `list_strategies` (add `includeInactive:true` when repairing an archived strategy) and `get_strategy`, or `list_intelligence_agents` and `get_intelligence_agent`. `fork_strategy({ strategyId, sourceRevision })` copies a visible revision into a new create draft and returns its `strategyId` and `draftVersion`; it creates nothing.
 2. **Discover the report vocabulary live.** Walk `list_strategy_categories` → `list_strategy_vocabulary` → `get_metric_construction_hints` → `get_strategy_column_contract`, and use `get_strategy_section_template` / `preview_strategy_report`. Do not guess metric, transform, parameter, template, or enabled-timeframe facts — they are server-discovered.
 3. **Read the draft.** `get_<kind>_draft({ request: { <id> } })` returns the draft (or `null`), its `draftVersion` (0 when none is held), the live `committedRevision` (null for an entity not created yet), a per-axis `diff` against live, `diagnostics` and `impact`.
-4. **Stage the change.** `stage_<kind>_draft({ request: { <id>?, draftVersion, axes } })` names the version you read. Each axis is whole, except a strategy's `SIGNAL_RULES`, whose rows replace the drafted rows for the same signals and keep every other one. Omit the id to open a new create draft; the response carries the minted id. A stage that has written never refuses: the composed draft's errors and warnings come back as `diagnostics`. It is refused only when the version is one the draft never reached (`DRAFT_VERSION_MOVED`) or when the player's own form changed an axis you are staging after that version (`DRAFT_AXIS_CONTESTED`, naming `contestedAxes`).
+4. **Stage the change.** `stage_<kind>_draft({ request: { <id>?, draftVersion, axes } })` names the version you read. Each axis is whole: it replaces the drafted axis entirely, so restate what it keeps. Omit the id to open a new create draft; the response carries the minted id. A stage that has written never refuses: the composed draft's errors and warnings come back as `diagnostics`. It is refused only when the version is one the draft never reached (`DRAFT_VERSION_MOVED`) or when the player's own form changed an axis you are staging after that version (`DRAFT_AXIS_CONTESTED`, naming `contestedAxes`).
 5. **Review with the player, then commit.** Read the draft again, show the player its diff and impact, and on their explicit word call `commit_<kind>_draft({ request: { <id>, draftVersion, expectedRevision } })` with exactly the two numbers that read returned — `expectedRevision: null` creates the entity at revision 1. A draft that moved is refused `DRAFT_VERSION_MOVED`, a moved revision `CONFLICT`, and an invalid draft with the same code its diagnostics carried; nothing is written. Each refusal's `details.nextAct` says what to do next (`get_draft` or `stage`). The commit is idempotent on `{ id, draftVersion }`: a retried commit replays its outcome. Changed strategy configuration propagates to every bound agent immediately; committing a draft of an archived strategy restores it.
 
 `discard_<kind>_draft({ request: { <id>, draftVersion } })` removes the draft at the version you read and never one that moved since. `preview_strategy_report({ coinSelection, source: { kind: 'DRAFT', strategyId, draftVersion } })` previews a draft as a commit would compose it. In multi-account mode the lifecycle tools use the `{ account, request }` sibling envelope; `preview_strategy_report` keeps its own flat input and takes `account` beside `coinSelection` and `source`.
@@ -3331,7 +3361,7 @@ Strategies and intelligence agents change only through their drafts, with one to
 
 ## Capabilities
 
-Tools, prompts, and resources are **discovered live** from the connected server via `tools/list`, `prompts/list`, and `resources/list`. This package intentionally does not copy the server's catalog, formulas, signal IDs, or defaults — inspect the live connection for the authoritative, current surface. Broadly, the server exposes game play (Market Grid), market context, account state, leaderboards, intelligence agents and automation, strategy discovery/authoring, and trading signals/decisions.
+Tools, prompts, and resources are **discovered live** from the connected server via `tools/list`, `prompts/list`, and `resources/list`. This package intentionally does not copy the server's catalog, formulas, or defaults — inspect the live connection for the authoritative, current surface. Broadly, the server exposes game play (Market Grid), market context, account state, leaderboards, intelligence agents and automation, strategy discovery/authoring, and trading signals/decisions.
 
 ## Environment variables
 

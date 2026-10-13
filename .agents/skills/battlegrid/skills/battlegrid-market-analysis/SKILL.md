@@ -40,6 +40,7 @@ Run these in order. Skip a step only when the player's question makes it irrelev
    `source: { "kind": "FIELDS", "timeframe": …, "sections": [ … ] }` — no authoring vocabulary is
    needed. Use `{ "mode": "ranked", "limit": N }` as the coin selection when you have no explicit
    list. Looping a per-coin tool over N coins costs several times this and returns the same values.
+   A refused preview names its recovery in `nextAct`.
 4. **Coin deep-dive**, when the player named a coin or when one dominates the read: the SAME
    `preview_strategy_report` call as step 3, with `{ "mode": "explicit", "tickers": ["SOL"] }` as the
    coin selection and the funding / open-interest / positioning sections chosen — one coin is a
