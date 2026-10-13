@@ -209,3 +209,13 @@ Two things the port records and does not decide:
 `<id>.preview.json` verbatim and reads the v84 evidence shape. `scripts/build_pvm_strategy.py`
 and `scripts/write_drift.py` served the compile path only and are marked retired in place.
 Nothing was staged, previewed or committed by the port.
+
+## 2026-10-13: S8 "POC Reject" - the platform's own reading of S6
+
+`levelInteraction` was measured on `PRIOR_TPO_POC` in the re-extraction at 108.4.0, which unblocks the reading the
+README gives for S6. It is added as **S8**, not swapped into S6: the platform takes a reject's side from where the
+**prior close** stood against the prior bar's level, S6 from where the bar **opened**, so the two differ on a bar that
+gaps across the POC - and changing S6 would change what it believes. S8 is one column (`pTpoPOC_lvl`) and two carriers
+(`reject_from_above` → UP, `reject_from_below` → DOWN) over the suite's location tags. It validates with no error and no
+warning, and one read-only preview (`data/audit/tpo_s8_preview_2026-10-13.json`) shows the platform accepts it and
+resolves both carriers on all eight coins. Nothing was staged.
