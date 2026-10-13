@@ -277,3 +277,26 @@ anchorTimeframe?, benchmarkTicker?}` since 48.0.0 renamed `sectionTimeframe` (th
 [`schema_104.1.0.json`](../data/contract/get_strategy_column_contract/schema_104.1.0.json));
 `omega.probe.contract_request` builds that shape.
 
+## 2026-10-13: the header token
+
+Measured live at contract 109.0.0 (two read-only previews, 42 headers over 24 columns in every transform -
+[`header_tokens_2026-10-13.json`](../data/contract/columns/header_tokens_2026-10-13.json)); the vendor pack 31.2.98
+states the same order, the changelog names no version for it:
+
+```
+token = <code> [_ltf | _htf | _<abs>] [_dev] [_o<N>]
+```
+
+- **the timeframe part:** `_ltf` / `_htf` for rel lower / regime (as before), and now `_<tf>` for **any** pinned `abs`,
+  even one equal to the anchor (`RSI14_1d`, `K_4h`, `ADX_1h` at a 1h anchor);
+- **`_dev`** when the column stores `bars: "all"` (Developing), at any timeframe (`ADX_dev_t2`, `close_dev_er`);
+  `closed` or unset adds nothing;
+- **`_o<N>`** for an `offset` N > 0 on a `value` (`RSI7_o1`, `RSI2_1d_o1`, `low_ltf_o3`).
+
+Every transform shapes the token as before: `dist_<token>` (`dist_VWAP_4h`), `<token>_<operand>_spread`
+(`EMA5_4h_EMA13_spread`), `<token>_mean<w>` (`high_4h_dev_mean10` - omega used to drop the timeframe part here),
+`<token>_zone` / `_rank_<o>` / `_lvl[_b<n>]` / `_<side>_dist` / `_t<n>` … `_trend`. A `value` column now accepts `bars`
+(`CCI_4h_dev`), which it refused on 2026-08-24 (above). The upshot for authors: **an offset no longer collides with its
+own present** (cookbook traps 11, 15 and 20 are history), and a condition over a pinned, offset or Developing column must
+name the tokened header. `omega.fanout` predicts it; `tests/test_header_tokens.py` replays both captures.
+

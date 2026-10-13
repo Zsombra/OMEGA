@@ -1,0 +1,303 @@
+{
+ "_what": "Two read-only preview_strategy_report renders (detail detailed, BTC, 1h anchor) at contract 109.0.0 over columns with a pinned abs timeframe, an offset, and a stored bars selector, in every transform - the headers as minted. They measure the header token rule: <code>[_ltf|_htf|_<abs>][_dev][_o<N>] then the transform's suffix (the vendor pack 31.2.98 strategy-examples states it).",
+ "capturedAt": "2026-10-13T12:41Z (probe 1) and ~12:43Z (probe 2)",
+ "contractVersion": "109.0.0",
+ "cases": [
+  {
+   "request": {
+    "coinSelection": {
+     "mode": "explicit",
+     "tickers": [
+      "BTC"
+     ]
+    },
+    "detail": "detailed",
+    "source": {
+     "kind": "FIELDS",
+     "timeframe": "1h",
+     "sections": [
+      {
+       "kind": "custom",
+       "title": "header probe",
+       "benchmarkTicker": null,
+       "notes": null,
+       "columns": [
+        {
+         "metric": "RSI14",
+         "transformId": "value",
+         "timeframe": {
+          "abs": "1d"
+         }
+        },
+        {
+         "metric": "RSI7",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "offset": 1
+        },
+        {
+         "metric": "RSI2",
+         "transformId": "value",
+         "timeframe": {
+          "abs": "1d"
+         },
+         "offset": 1
+        },
+        {
+         "metric": "ADX",
+         "transformId": "trajectory",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "window": 3,
+         "bars": "all"
+        },
+        {
+         "metric": "MFI14",
+         "transformId": "trajectory",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "window": 3,
+         "bars": "closed"
+        },
+        {
+         "metric": "CLOSE",
+         "transformId": "efficiency",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": "all"
+        },
+        {
+         "metric": "CCI20",
+         "transformId": "value",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "bars": "all"
+        },
+        {
+         "metric": "STOCH_K",
+         "transformId": "value",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "bars": "closed"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "headers": [
+    "RSI14_1d",
+    "RSI7_o1",
+    "RSI2_1d_o1",
+    "ADX_dev_t2",
+    "ADX_dev_t1",
+    "ADX_dev_now",
+    "ADX_dev_trend",
+    "MFI14_t2",
+    "MFI14_t1",
+    "MFI14_now",
+    "MFI14_trend",
+    "close_dev_er",
+    "CCI_4h_dev",
+    "K_4h"
+   ]
+  },
+  {
+   "request": {
+    "coinSelection": {
+     "mode": "explicit",
+     "tickers": [
+      "BTC"
+     ]
+    },
+    "detail": "detailed",
+    "source": {
+     "kind": "FIELDS",
+     "timeframe": "1h",
+     "sections": [
+      {
+       "kind": "custom",
+       "title": "header probe 2",
+       "benchmarkTicker": null,
+       "notes": null,
+       "columns": [
+        {
+         "metric": "RSI14",
+         "transformId": "trajectory",
+         "timeframe": {
+          "rel": "lower"
+         },
+         "window": 3,
+         "bars": "all"
+        },
+        {
+         "metric": "CLOSE",
+         "transformId": "efficiency",
+         "timeframe": {
+          "rel": "lower"
+         },
+         "bars": "all"
+        },
+        {
+         "metric": "RSI7",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "regime"
+         },
+         "offset": 2
+        },
+        {
+         "metric": "RSI2",
+         "transformId": "trajectory",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "window": 3
+        },
+        {
+         "metric": "STOCH_D",
+         "transformId": "trajectory",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "window": 3,
+         "bars": "all"
+        },
+        {
+         "metric": "VWAP",
+         "transformId": "distance",
+         "timeframe": {
+          "abs": "4h"
+         }
+        },
+        {
+         "metric": "EMA5",
+         "transformId": "spread",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "inputs": [
+          {
+           "metric": "EMA13"
+          }
+         ]
+        },
+        {
+         "metric": "MFI14",
+         "transformId": "classifyZone",
+         "timeframe": {
+          "abs": "4h"
+         }
+        },
+        {
+         "metric": "CCI20",
+         "transformId": "rank",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "ordering": "hi"
+        },
+        {
+         "metric": "HIGH",
+         "transformId": "aggregate",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "window": 10,
+         "bars": "all"
+        },
+        {
+         "metric": "SMA20",
+         "transformId": "distance",
+         "chainedTransformId": "rank",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "ordering": "far"
+        },
+        {
+         "metric": "ADX",
+         "transformId": "value",
+         "timeframe": {
+          "abs": "1h"
+         }
+        },
+        {
+         "metric": "LOW",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "lower"
+         },
+         "offset": 3
+        },
+        {
+         "metric": "BB_UPPER",
+         "transformId": "levelInteraction",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "buffer": 25
+        },
+        {
+         "metric": "EMA20",
+         "transformId": "distance",
+         "chainedTransformId": "trajectory",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "window": 3,
+         "bars": "all"
+        },
+        {
+         "metric": "STRUCT_ZONES",
+         "transformId": "nearestZoneDist",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "side": "support"
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "headers": [
+    "RSI14_ltf_dev_t2",
+    "RSI14_ltf_dev_t1",
+    "RSI14_ltf_dev_now",
+    "RSI14_ltf_dev_trend",
+    "close_ltf_dev_er",
+    "RSI7_htf_o2",
+    "RSI2_4h_t2",
+    "RSI2_4h_t1",
+    "RSI2_4h_now",
+    "RSI2_4h_trend",
+    "D_4h_dev_t2",
+    "D_4h_dev_t1",
+    "D_4h_dev_now",
+    "D_4h_dev_trend",
+    "dist_VWAP_4h",
+    "EMA5_4h_EMA13_spread",
+    "MFI14_4h_zone",
+    "CCI_4h_rank_hi",
+    "high_4h_dev_mean10",
+    "dist_SMA20_4h_rank_far",
+    "ADX_1h",
+    "low_ltf_o3",
+    "bbUpper_4h_lvl_b25",
+    "dist_EMA20_4h_dev_t2",
+    "dist_EMA20_4h_dev_t1",
+    "dist_EMA20_4h_dev_now",
+    "dist_EMA20_4h_dev_trend",
+    "zones_4h_support_dist"
+   ]
+  }
+ ]
+}

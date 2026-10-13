@@ -147,7 +147,8 @@
    "why": "offset is not part of the header name, so any two columns differing only by offset collide. The same applies to any other parameter the namer ignores.",
    "cost": "The agent still SEES both values as table text, so the table looks correct. But a condition referencing 'SMA20' has no column to bind to. Combined with BG-6 - a null read is FALSE, never UNRESOLVED - a gate written against that header fails silently and reads as a real negative.",
    "control": "SMA20 alone, without the offset twin, appears in conditionColumns normally with lt/lte/gte/gt/between. So the metric is conditionable; the COLLISION is what removes it.",
-   "suggestedFix": "Either disambiguate the header when offset is set (SMA20_off3, as trajectory already does with _t3), or reject the section with REPORT_COLUMN_HEADER_COLLISION. Rendering a column that cannot be referenced is the worst of the three options."
+   "suggestedFix": "Either disambiguate the header when offset is set (SMA20_off3, as trajectory already does with _t3), or reject the section with REPORT_COLUMN_HEADER_COLLISION. Rendering a column that cannot be referenced is the worst of the three options.",
+   "resolvedObserved": "2026-10-13: the header token now carries the offset (`RSI14_o3`), so two value columns differing only by offset no longer collide (data/contract/columns/header_tokens_2026-10-13.json). Undocumented in the changelog; observed between 2026-08-24 and 2026-10-13."
   },
   {
    "id": "nearest-zone-dist-formula-is-documented-with-the-wrong-sign",

@@ -88,38 +88,29 @@ def test_spread_pools_are_symmetric_and_exclude_self():
 def test_duplicate_headers_in_one_section_are_an_error():
     """Two columns that compile to the same header make the section unaddressable.
 
-    Verified live (data/contract/columns/_renders_collision.json): a section with
-    RSI14 at offset 0 and offset 3 renders BOTH columns under the header `RSI14`,
-    and the platform raises nothing. But that section then produces NO
-    conditionColumns entry at all - the agent can read the table while no condition
-    can reference either column. The failure is completely silent.
-
-    omega refuses it up front instead.
+    Verified live on 2026-08-24 (data/contract/columns/_renders_collision.json): a section with RSI14 at offset 0 and
+    offset 3 rendered BOTH under `RSI14` and produced NO conditionColumns entry - the failure was silent. Since the
+    header token carries the offset (`RSI14_o3`, 2026-10-13) that pair no longer collides; two IDENTICAL columns still
+    do, and omega refuses them up front. (history: on 2026-08-24 an offset never named the header, so `RSI14` at offsets 0 and 3 collided (data/contract/columns/_renders_collision.json); by 2026-10-13 it does (`RSI14_o3`, data/contract/columns/header_tokens_2026-10-13.json). The changelog names no version for the change.)
     """
     from omega.types import Column, CustomSection, RelTimeframe
     from omega.validate import validate_section
 
-    cols = [Column(metric="RSI14", transformId="value",
-                   timeframe=RelTimeframe(rel="anchor"), offset=0),
-            Column(metric="RSI14", transformId="value",
-                   timeframe=RelTimeframe(rel="anchor"), offset=3)]
-    section = CustomSection(kind="custom", title="collide",
-                            benchmarkTicker=None, columns=cols)
-    errs = [f for f in validate_section(section) if f.severity == "error"]
-    assert errs, "a header collision must not pass validation"
-    assert any(f.code == "DUPLICATE_HEADER" for f in errs), [f.code for f in errs]
-    assert "RSI14" in errs[0].message
+    cols = [Column(metric="RSI14", transformId="value", timeframe=RelTimeframe(rel="anchor")),
+            Column(metric="RSI14", transformId="value", timeframe=RelTimeframe(rel="anchor"))]
+    section = CustomSection(kind="custom", title="collide", benchmarkTicker=None, columns=cols)
+    codes = {f.code for f in validate_section(section)}
+    assert "DUPLICATE_HEADER" in codes, "a header collision must not pass validation"
 
 
-def test_offset_alone_does_not_distinguish_a_header():
-    """`offset` changes the VALUE but never appears in the header."""
+def test_offset_now_names_the_header():
+    """`offset` changes the VALUE and, since the header token, the header too. (history: on 2026-08-24 an offset never named the header, so `RSI14` at offsets 0 and 3 collided (data/contract/columns/_renders_collision.json); by 2026-10-13 it does (`RSI14_o3`, data/contract/columns/header_tokens_2026-10-13.json). The changelog names no version for the change.)"""
     from omega.fanout import outputs_for
     from omega.types import Column, RelTimeframe
 
     base = Column(metric="RSI14", transformId="value", timeframe=RelTimeframe(rel="anchor"))
-    assert [o.header for o in outputs_for(base.model_copy(update={"offset": 0}))] \
-        == [o.header for o in outputs_for(base.model_copy(update={"offset": 7}))] \
-        == ["RSI14"]
+    assert [o.header for o in outputs_for(base.model_copy(update={"offset": 0}))] == ["RSI14"]
+    assert [o.header for o in outputs_for(base.model_copy(update={"offset": 7}))] == ["RSI14_o7"]
 
 
 def test_distinct_headers_still_pass():
