@@ -1,8 +1,8 @@
 {
+  "metric": "MA_ALIGN",
+  "label": "MA alignment",
   "code": "MAalign",
   "family": "trend",
-  "label": "MA alignment",
-  "metric": "MA_ALIGN",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,7 +15,11 @@
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
     }
-  ]
+  ],
+  "study": null
 }

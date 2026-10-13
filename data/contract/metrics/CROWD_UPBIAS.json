@@ -1,29 +1,33 @@
 {
+  "metric": "CROWD_UPBIAS",
+  "label": "Crowd up-bias",
   "code": "upBias",
   "family": "crowd",
-  "label": "Crowd up-bias",
-  "metric": "CROWD_UPBIAS",
   "nativeOutput": {
     "kind": "numeric",
+    "unit": "percent",
     "precision": 1,
     "range": {
-      "max": 100,
-      "min": 0
-    },
-    "unit": "percent"
+      "min": 0,
+      "max": 100
+    }
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo"
-  ],
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     },
     {
       "id": "rank"
     }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+    "hi",
+    "lo"
   ]
 }

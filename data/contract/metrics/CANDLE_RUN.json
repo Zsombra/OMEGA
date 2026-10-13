@@ -1,0 +1,26 @@
+{
+  "metric": "CANDLE_RUN",
+  "label": "Candle run",
+  "code": "candleRun",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0,
+    "range": {
+      "min": -20,
+      "max": 20
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 12
+      }
+    }
+  ],
+  "study": "runs"
+}

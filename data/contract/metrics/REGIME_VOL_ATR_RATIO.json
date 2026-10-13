@@ -1,26 +1,29 @@
 {
+  "metric": "REGIME_VOL_ATR_RATIO",
+  "label": "Regime · ATR ratio",
   "code": "regAtrR",
   "family": "regime",
-  "label": "Regime · ATR ratio",
-  "metric": "REGIME_VOL_ATR_RATIO",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "ratio"
+    "unit": "ratio",
+    "precision": 2
   },
   "outputKind": "scalar",
-  "spreadOperands": [
-    "RVOL",
-    "REGIME_VOL_BBW_RATIO"
-  ],
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     },
     {
-      "id": "spread",
-      "operandRequired": true
+      "id": "spread"
     }
+  ],
+  "study": "regimeVolatilityEvidence",
+  "spreadOperands": [
+    "RVOL",
+    "REGIME_VOL_BBW_RATIO"
   ]
 }

@@ -1,8 +1,8 @@
 {
+  "metric": "KC_SQUEEZE",
+  "label": "TTM squeeze",
   "code": "kcSqueeze",
   "family": "volatility",
-  "label": "TTM squeeze",
-  "metric": "KC_SQUEEZE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -14,7 +14,11 @@
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
     }
-  ]
+  ],
+  "study": null
 }

@@ -1,8 +1,8 @@
 {
+  "metric": "FLOW_ALIGN",
+  "label": "Flow alignment",
   "code": "flowAlign",
   "family": "derived",
-  "label": "Flow alignment",
-  "metric": "FLOW_ALIGN",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -16,7 +16,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": null
 }

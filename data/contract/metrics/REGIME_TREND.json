@@ -1,8 +1,8 @@
 {
+  "metric": "REGIME_TREND",
+  "label": "Regime · trend",
   "code": "regTrend",
   "family": "regime",
-  "label": "Regime · trend",
-  "metric": "REGIME_TREND",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,10 +15,17 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     },
     {
-      "id": "trajectory"
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
     }
-  ]
+  ],
+  "study": "regimeContext"
 }

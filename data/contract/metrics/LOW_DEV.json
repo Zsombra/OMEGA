@@ -1,20 +1,30 @@
 {
+  "metric": "LOW_DEV",
+  "label": "Bar low vs open",
   "code": "lowDev",
   "family": "volatility",
-  "label": "Bar low vs open",
-  "metric": "LOW_DEV",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "percent"
+    "unit": "percent",
+    "precision": 2
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "spread"
+    },
+    {
+      "id": "rank"
+    }
   ],
+  "study": "barDeviation",
   "spreadOperands": [
     "PPO",
     "ROC12",
@@ -29,20 +39,12 @@
     "HIGH_DEV",
     "FUNDING_RATE",
     "FUNDING_ANN",
-    "OI_CHG",
-    "REGIME_CRASH_MARGIN"
+    "OI_CHG"
   ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ]
 }

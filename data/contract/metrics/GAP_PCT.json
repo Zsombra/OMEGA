@@ -1,0 +1,22 @@
+{
+  "metric": "GAP_PCT",
+  "label": "Gap %",
+  "code": "gapPct",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 30
+      }
+    }
+  ],
+  "study": "gaps"
+}

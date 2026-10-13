@@ -26,10 +26,6 @@
    "label": "Efficiency (ER)"
   },
   {
-   "id": "bandTouch",
-   "label": "Band touch"
-  },
-  {
    "id": "classifyZone",
    "label": "Zone label"
   },
@@ -44,6 +40,10 @@
   {
    "id": "crossDetect",
    "label": "Cross detect"
+  },
+  {
+   "id": "levelInteraction",
+   "label": "Level interaction"
   },
   {
    "id": "count",
@@ -140,12 +140,21 @@
  ],
  "nullSentinel": "—",
  "_refreshed": {
-  "at": "2026-09-09T08:03:07Z",
-  "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
-  "fieldsUpdated": [
-   "budgets",
-   "transforms"
-  ]
+  "at": "2026-10-13T03:37Z",
+  "contractVersion": "108.4.0",
+  "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only; the in-app connector was disconnected); raw responses in data/contract/vocabulary/20261013T0337Z/",
+  "moved": [
+   "transforms",
+   "conditionGrammar (new)"
+  ],
+  "previous": {
+   "at": "2026-09-09T08:03:07Z",
+   "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+   "fieldsUpdated": [
+    "budgets",
+    "transforms"
+   ]
+  }
  },
  "_amended": [
   {
@@ -153,5 +162,34 @@
    "contractVersion": "95.0.0",
    "what": "budgets and previewExecutionLimits as list_strategy_vocabulary served them at 95.0.0 (read 2026-10-06 ~22:45Z): v92 dropped budgets.estimatedTokens and renamed maxResultBytes to maxResultChars (now 150000)"
   }
- ]
+ ],
+ "conditionGrammar": {
+  "maxGroupDepth": 2,
+  "operators": [
+   "lt",
+   "lte",
+   "gte",
+   "gt",
+   "between",
+   "is",
+   "in",
+   "crossesAbove",
+   "crossesBelow",
+   "increased",
+   "decreased",
+   "enters",
+   "exits"
+  ],
+  "groupOperators": [
+   "ALL",
+   "ANY",
+   "NOT",
+   "N_OF"
+  ],
+  "verdicts": [
+   "UP",
+   "DOWN",
+   "NEITHER"
+  ]
+ }
 }

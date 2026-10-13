@@ -1,8 +1,8 @@
 {
+  "metric": "REGIME_VOL",
+  "label": "Regime · volatility",
   "code": "regVol",
   "family": "regime",
-  "label": "Regime · volatility",
-  "metric": "REGIME_VOL",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,10 +15,17 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     },
     {
-      "id": "trajectory"
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
     }
-  ]
+  ],
+  "study": "regimeContext"
 }

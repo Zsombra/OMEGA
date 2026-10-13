@@ -26,10 +26,15 @@ import subprocess
 import sys
 import time
 
-ROOT = r"C:\Users\rafae\Documents\GitHub\OMEGA\.claude\worktrees\vwap-strategy-dev-c75dc9"
+# Re-run 2026-10-13 at contract 108.4.0: the root is this checkout (the first two runs hard-coded a worktree that no
+# longer exists), and the stamp, the scratch dir and the archive stamp are required - a default pointed at another
+# session's scratch, which is how a stale raw dir could be read silently.
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "contract", "metrics")
-STAMP = os.environ.get("EXTRACTION_STAMP", "20260909")
-SP = os.environ.get("EXTRACTION_SCRATCH") or r"C:\Users\rafae\AppData\Local\Temp\claude\C--Users-rafae-Documents-GitHub-OMEGA--claude-worktrees-vwap-strategy-dev-c75dc9\79a52272-a56d-4902-9595-98fac9bb1dda\scratchpad"
+STAMP = os.environ.get("EXTRACTION_STAMP") or sys.exit("set EXTRACTION_STAMP (e.g. 20261013)")
+SP = os.environ.get("EXTRACTION_SCRATCH") or sys.exit("set EXTRACTION_SCRATCH (the dir holding hints_<STAMP>/)")
+# The batches this run replaces are archived to data/contract/metrics/archive_<ARCHIVE>_extraction/.
+ARCHIVE = os.environ.get("EXTRACTION_ARCHIVE") or sys.exit("set EXTRACTION_ARCHIVE (the stamp of the batches replaced)")
 RAW = os.path.join(SP, "hints_" + STAMP)
 os.makedirs(RAW, exist_ok=True)
 
@@ -63,9 +68,17 @@ def call(tool, args, timeout=120):
         return None, out.decode(errors="replace")[:300]
 
 
-live = json.load(open(os.path.join(SP, "vocab_live_flat.json"), encoding="utf-8"))
-names = sorted(live)
+# The roster, in platform order: the write schema's column metric enum (data/derived/condition_vocabulary_108.json,
+# derived from the manifest's writeSurface). A vocab_live_flat.json in the scratch dir (the 09-09 / 09-20 runs) wins.
+_flat = os.path.join(SP, "vocab_live_flat.json")
+if os.path.exists(_flat):
+    names = sorted(json.load(open(_flat, encoding="utf-8")))
+else:
+    names = json.load(open(os.path.join(ROOT, "data", "derived", "condition_vocabulary_108.json"),
+                           encoding="utf-8"))["reportColumn"]["metric"]["enum"]
 print(f"live metrics: {len(names)}")
+records = {}
+labels = {}           # transformId -> label (served on the transform entry, beside its authoring block)
 
 authoring_seen = {}   # transformId -> {json of authoring block: [metrics]}
 written, failed = [], []
@@ -92,14 +105,27 @@ for i, name in enumerate(names, 1):
         "timeframeMode": m["timeframeMode"],
         "transforms": [],
     }
+    if "study" in m:          # served since the v100 catalogue additions; recorded as served
+        rec["study"] = m["study"]
     for t in m.get("transforms", []):
         entry = {"id": t["id"]}
         for flag in TRANSFORM_FLAGS:
             if flag in t:
                 entry[flag] = t[flag]
         rec["transforms"].append(entry)
+        labels.setdefault(t["id"], t.get("label"))
         if "authoring" in t:
-            blob = json.dumps(t["authoring"], sort_keys=True)
+            # 108.4.0: a parameter's `maximum` is served PER METRIC (value.offset: 0 on a timeless metric, 31 on most
+            # candle metrics, 30/21/12/11 on the bar-geometry ones); everything else in the block is invariant. The
+            # maxima go on this metric's transform entry; the catalogue keeps the invariant rest.
+            auth = json.loads(json.dumps(t["authoring"]))
+            maxima = {}
+            for pname, pspec in (auth.get("parameters") or {}).items():
+                if isinstance(pspec, dict) and "maximum" in pspec:
+                    maxima[pname] = pspec.pop("maximum")
+            if maxima:
+                entry["maximums"] = maxima
+            blob = json.dumps(auth, sort_keys=True)
             authoring_seen.setdefault(t["id"], {}).setdefault(blob, []).append(m["metric"])
     if m.get("spreadOperands"):
         rec["spreadOperands"] = m["spreadOperands"]
@@ -108,6 +134,7 @@ for i, name in enumerate(names, 1):
     with open(os.path.join(OUT, f"{name}.json"), "w", encoding="utf-8") as f:
         json.dump(rec, f, indent=2, ensure_ascii=False)
         f.write("\n")
+    records[name] = rec
     written.append(name)
     if i % 20 == 0 or i == len(names):
         print(f"  [{i}/{len(names)}] ... {name}")
@@ -118,15 +145,15 @@ for path in glob.glob(os.path.join(OUT, "*.json")):
     base = os.path.basename(path)
     if base.startswith("_"):
         continue
-    if base[:-5] not in live:
+    if base[:-5] not in names:
         os.remove(path)
         retired.append(base[:-5])
 
 # index
 by_family = {}
-for name in sorted(live):
-    by_family.setdefault(live[name]["family"], []).append(name)
-idx = {"metricCount": len(live), "byFamily": {k: sorted(v) for k, v in sorted(by_family.items())}}
+for name in sorted(records):
+    by_family.setdefault(records[name]["family"], []).append(name)
+idx = {"metricCount": len(records), "byFamily": {k: sorted(v) for k, v in sorted(by_family.items())}}
 with open(os.path.join(OUT, "_index.json"), "w", encoding="utf-8") as f:
     json.dump(idx, f, indent=2, ensure_ascii=False)
     f.write("\n")
@@ -145,3 +172,48 @@ print(f"\nwritten {len(written)}; retired {retired}; failed {failed or 'none'}")
 print("authoring variants per transform (1 == invariant):", variants)
 if failed:
     sys.exit(1)
+
+# The batches build_corpus merges: archive the ones this run replaces, then write the new set in platform order, 30
+# per batch (the shape of every earlier extraction's batches).
+arch = os.path.join(OUT, f"archive_{ARCHIVE}_extraction")
+old = sorted(glob.glob(os.path.join(OUT, "_batch*.json")))
+if old:
+    os.makedirs(arch, exist_ok=False)
+    for path in old:
+        os.replace(path, os.path.join(arch, os.path.basename(path)))
+ordered = [records[n] for n in names if n in records]
+for b in range(0, len(ordered), 30):
+    with open(os.path.join(OUT, f"_batch{b // 30 + 1:02d}.json"), "w", encoding="utf-8") as f:
+        json.dump(ordered[b:b + 30], f, indent=1, ensure_ascii=False)
+        f.write("\n")
+print(f"batches: {len(old)} archived to {os.path.basename(arch)}; {-(-len(ordered) // 30)} written")
+
+# The transform catalogue (data/contract/transforms/_authoring.json): only when every transform's authoring block is
+# invariant across the metrics that serve it - otherwise the catalogue's own claim is false and nothing is written.
+if any(v != 1 for v in variants.values()):
+    sys.exit("authoring blocks VARY across metrics - the catalogue is not refreshed; inspect authoring_invariance_*")
+cat_path = os.path.join(ROOT, "data", "contract", "transforms", "_authoring.json")
+cat = json.load(open(cat_path, encoding="utf-8"))
+added, changed = [], []
+for tid, blobs in sorted(authoring_seen.items()):
+    block = json.loads(next(iter(blobs)))
+    entry = dict(cat["transforms"].get(tid, {}))
+    before = dict(entry)
+    entry.update(block)
+    if any("maximums" in tr for r in records.values() for tr in r["transforms"] if tr["id"] == tid):
+        entry["_maximumServedPerMetric"] = ("a parameter's `maximum` is served per metric since 108.4.0 - read it from "
+                                           "the metric record's transform entry (`maximums`), never from here")
+    if labels.get(tid):
+        entry["label"] = labels[tid]
+    if tid not in cat["transforms"]:
+        added.append(tid)
+        entry.setdefault("_addedAt", f"extraction {STAMP}; `emits` and any `range` are not served by this tool - "
+                                     "set them from a measured render, never assumed")
+    elif entry != before:
+        changed.append(tid)
+    cat["transforms"][tid] = entry
+with open(cat_path, "w", encoding="utf-8") as f:
+    json.dump(cat, f, indent=1, ensure_ascii=False)
+    f.write("\n")
+print(f"catalogue: added {added}; authoring changed on {changed}; untouched (no metric serves them): "
+      f"{sorted(set(cat['transforms']) - set(authoring_seen))}")

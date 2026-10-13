@@ -1,0 +1,25 @@
+{
+  "metric": "CANDLE_PIN",
+  "label": "Pin bar",
+  "code": "pin",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "lower_wick",
+      "upper_wick",
+      "none"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 21
+      }
+    }
+  ],
+  "study": "candlePatterns"
+}

@@ -1,8 +1,8 @@
 {
+  "metric": "OI_PX_REGIME",
+  "label": "OI · price regime",
   "code": "oiRegime",
   "family": "derivatives",
-  "label": "OI · price regime",
-  "metric": "OI_PX_REGIME",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -16,7 +16,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": "openInterest"
 }

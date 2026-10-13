@@ -1,0 +1,27 @@
+{
+  "metric": "SWING_FRACTAL_LABEL",
+  "label": "Swing structure",
+  "code": "fractalLabel",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "HH",
+      "HL",
+      "LH",
+      "LL",
+      "none"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    }
+  ],
+  "study": "swingFractal"
+}

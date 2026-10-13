@@ -1,0 +1,26 @@
+{
+  "metric": "CLOSE_RUN",
+  "label": "Close run",
+  "code": "closeRun",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0,
+    "range": {
+      "min": -20,
+      "max": 20
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 11
+      }
+    }
+  ],
+  "study": "runs"
+}

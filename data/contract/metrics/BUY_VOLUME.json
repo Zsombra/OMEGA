@@ -1,48 +1,56 @@
 {
+  "metric": "BUY_VOLUME",
+  "label": "Buy volume",
   "code": "buyVol",
   "family": "volumeFlow",
-  "label": "Buy volume",
-  "metric": "BUY_VOLUME",
   "nativeOutput": {
     "kind": "numeric",
+    "unit": "largeCount",
     "precision": 1,
     "range": {
       "min": 0
-    },
-    "unit": "largeCount"
+    }
   },
   "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "maxShare",
+      "maximums": {
+        "window": 32
+      }
+    }
+  ],
+  "study": "barVolume",
   "spreadOperands": [
     "VOLUME",
     "VOL_SMA20",
     "SELL_VOLUME",
     "OBV"
-  ],
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "maxShare"
-    }
   ]
 }

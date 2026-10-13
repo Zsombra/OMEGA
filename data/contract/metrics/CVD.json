@@ -1,42 +1,52 @@
 {
+  "metric": "CVD",
+  "label": "CVD (session)",
   "code": "CVD",
   "family": "volumeFlow",
-  "label": "CVD (session)",
-  "metric": "CVD",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 0,
-    "unit": "signedPrice"
+    "unit": "signedPrice",
+    "precision": 0
   },
   "outputKind": "scalar",
-  "spreadOperands": [
-    "MACD",
-    "ATR",
-    "BB_WIDTH",
-    "SPOT_CVD"
-  ],
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
     },
     {
-      "id": "trajectory"
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
     },
     {
+      "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
+        "aggregate"
+      ]
     },
     {
-      "id": "aggregate"
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
     },
     {
-      "id": "efficiency"
+      "id": "efficiency",
+      "maximums": {
+        "window": 32
+      }
     }
+  ],
+  "study": null,
+  "spreadOperands": [
+    "MACD",
+    "ATR",
+    "BB_WIDTH"
   ]
 }

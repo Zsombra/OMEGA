@@ -1,9 +1,480 @@
 [
  {
+  "metric": "REGIME_VOL_BBW_RATIO",
+  "label": "Regime · BB-width ratio",
+  "code": "regBbwR",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "ratio",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "regimeVolatilityEvidence",
+  "spreadOperands": [
+   "RVOL",
+   "REGIME_VOL_ATR_RATIO"
+  ]
+ },
+ {
+  "metric": "REGIME_MOM_BULL_VOTES",
+  "label": "Regime · bullish votes",
+  "code": "regBull",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "count",
+   "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "regimeMomentumVotes",
+  "spreadOperands": [
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_RUN_BARS",
+   "REGIME_MOM_BEAR_VOTES"
+  ]
+ },
+ {
+  "metric": "REGIME_MOM_BEAR_VOTES",
+  "label": "Regime · bearish votes",
+  "code": "regBear",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "count",
+   "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "regimeMomentumVotes",
+  "spreadOperands": [
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_RUN_BARS",
+   "REGIME_MOM_BULL_VOTES"
+  ]
+ },
+ {
+  "metric": "REGIME_CRASH_MARGIN",
+  "label": "Regime · crash margin",
+  "code": "regCrash",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "regimeCrashEvidence",
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "DI_PLUS",
+   "DI_MINUS",
+   "REGIME_TREND_MARGIN",
+   "REGIME_DI_SPREAD"
+  ]
+ },
+ {
+  "metric": "REGIME_CRASH_LATCH",
+  "label": "Regime · crash latch",
+  "code": "regLatch",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "armed",
+    "clear"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "regimeCrashEvidence"
+ },
+ {
+  "metric": "CROWD_PICK",
+  "label": "Crowd pick rate",
+  "code": "pick",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_UPBIAS",
+  "label": "Crowd up-bias",
+  "code": "upBias",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC",
+  "label": "Crowd accuracy",
+  "code": "crowdAcc",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT",
+  "label": "Crowd captain rate",
+  "code": "captRate",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_PICK_LIVE",
+  "label": "Crowd pick rate (live)",
+  "code": "pickLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_UPBIAS_LIVE",
+  "label": "Crowd up-bias (live)",
+  "code": "upBiasLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC_LIVE",
+  "label": "Crowd accuracy (live)",
+  "code": "crowdAccLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT_LIVE",
+  "label": "Crowd captain rate (live)",
+  "code": "captRateLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "SETTLED_AT",
+  "label": "Settled at",
+  "code": "settledAt",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "date"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "crowdSettled"
+ },
+ {
+  "metric": "FLOW_ALIGN",
+  "label": "Flow alignment",
+  "code": "flowAlign",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "aligned bullish",
+    "aligned bearish",
+    "divergent",
+    "neutral"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": null
+ },
+ {
+  "metric": "SMART_RETAIL",
+  "label": "Smart vs retail",
   "code": "smartRetail",
   "family": "derived",
-  "label": "Smart vs retail",
-  "metric": "SMART_RETAIL",
   "nativeOutput": {
    "kind": "classification",
    "vocab": [
@@ -16,15 +487,19 @@
   "timeframeMode": "timeless",
   "transforms": [
    {
-    "id": "value"
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
    }
-  ]
+  ],
+  "study": null
  },
  {
+  "metric": "CAPTAIN_CONF",
+  "label": "Captain confidence",
   "code": "captainConf",
   "family": "derived",
-  "label": "Captain confidence",
-  "metric": "CAPTAIN_CONF",
   "nativeOutput": {
    "kind": "boolean"
   },
@@ -32,15 +507,19 @@
   "timeframeMode": "timeless",
   "transforms": [
    {
-    "id": "value"
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
    }
-  ]
+  ],
+  "study": null
  },
  {
+  "metric": "CONFIDENCE",
+  "label": "Convergence confidence",
   "code": "conf",
   "family": "derived",
-  "label": "Convergence confidence",
-  "metric": "CONFIDENCE",
   "nativeOutput": {
    "kind": "classification",
    "vocab": [
@@ -53,15 +532,19 @@
   "timeframeMode": "timeless",
   "transforms": [
    {
-    "id": "value"
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
    }
-  ]
+  ],
+  "study": null
  },
  {
+  "metric": "PERP_SPOT_FLOW",
+  "label": "Perp/spot flow",
   "code": "perpSpotFlow",
   "family": "derived",
-  "label": "Perp/spot flow",
-  "metric": "PERP_SPOT_FLOW",
   "nativeOutput": {
    "kind": "classification",
    "vocab": [
@@ -76,15 +559,19 @@
   "timeframeMode": "timeless",
   "transforms": [
    {
-    "id": "value"
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
    }
-  ]
+  ],
+  "study": "perpSpotFlow"
  },
  {
+  "metric": "PERP_SPOT_STRENGTH",
+  "label": "Perp/spot strength",
   "code": "perpSpotStr",
   "family": "derived",
-  "label": "Perp/spot strength",
-  "metric": "PERP_SPOT_STRENGTH",
   "nativeOutput": {
    "kind": "classification",
    "vocab": [
@@ -97,15 +584,19 @@
   "timeframeMode": "timeless",
   "transforms": [
    {
-    "id": "value"
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
    }
-  ]
+  ],
+  "study": "perpSpotFlow"
  },
  {
+  "metric": "PERP_SPOT_CONFIRMS",
+  "label": "Perp/spot confirms",
   "code": "perpSpotConf",
   "family": "derived",
-  "label": "Perp/spot confirms",
-  "metric": "PERP_SPOT_CONFIRMS",
   "nativeOutput": {
    "kind": "boolean"
   },
@@ -113,8 +604,12 @@
   "timeframeMode": "timeless",
   "transforms": [
    {
-    "id": "value"
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
    }
-  ]
+  ],
+  "study": "perpSpotFlow"
  }
 ]

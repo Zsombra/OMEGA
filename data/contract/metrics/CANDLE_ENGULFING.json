@@ -1,0 +1,25 @@
+{
+  "metric": "CANDLE_ENGULFING",
+  "label": "Engulfing",
+  "code": "engulf",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "bullish",
+      "bearish",
+      "none"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 30
+      }
+    }
+  ],
+  "study": "candlePatterns"
+}

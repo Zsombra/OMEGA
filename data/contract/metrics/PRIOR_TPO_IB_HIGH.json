@@ -1,14 +1,33 @@
 {
+  "metric": "PRIOR_TPO_IB_HIGH",
+  "label": "Initial balance high (prior session)",
   "code": "pTpoIBH",
   "family": "structure",
-  "label": "Initial balance high (prior session)",
-  "metric": "PRIOR_TPO_IB_HIGH",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "price"
+    "unit": "price",
+    "precision": 2
   },
   "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "distance"
+    },
+    {
+      "id": "spread"
+    },
+    {
+      "id": "levelInteraction"
+    }
+  ],
+  "study": "priorSessionProfile",
   "spreadOperands": [
     "OPEN",
     "HIGH",
@@ -19,6 +38,9 @@
     "ORACLE",
     "SPOT_CLOSE_CB",
     "SPOT_CLOSE_BN",
+    "HL2",
+    "HLC3",
+    "OHLC4",
     "SMA20",
     "SMA50",
     "SMA200",
@@ -54,6 +76,8 @@
     "KC_MID",
     "KC_LOWER",
     "ST_LINE",
+    "SWING_FRACTAL_HIGH",
+    "SWING_FRACTAL_LOW",
     "HMA20",
     "PSAR",
     "ICHI_CONV",
@@ -71,21 +95,5 @@
     "PDL",
     "PDO",
     "PIVOT_S3"
-  ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "distance"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "bandTouch"
-    }
   ]
 }

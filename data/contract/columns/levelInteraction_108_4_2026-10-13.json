@@ -1,0 +1,299 @@
+{
+ "_what": "get_strategy_column_contract over levelInteraction, verbatim responses (read-only, mcporter CLI, battlegrid-anbu). Measures the header, kind, vocabulary and operators the hints tool does not serve.",
+ "capturedAt": "2026-10-13T03:38Z",
+ "contractVersion": "108.4.0",
+ "cases": [
+  {
+   "id": "plain",
+   "request": {
+    "column": {
+     "metric": "BB_UPPER",
+     "transformId": "levelInteraction",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    "anchorTimeframe": "1h"
+   },
+   "response": {
+    "contract": {
+     "normalizedColumn": {
+      "metric": "BB_UPPER",
+      "transformId": "levelInteraction",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "buffer": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": null,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": "all",
+      "ordering": null,
+      "buffer": 0
+     },
+     "outputs": [
+      {
+       "header": "bbUpper_lvl",
+       "outputType": {
+        "kind": "classification",
+        "vocab": [
+         "touch_from_below",
+         "touch_from_above",
+         "reject_from_below",
+         "reject_from_above",
+         "none"
+        ]
+       },
+       "nullable": true,
+       "meaning": "bbUpper_lvl: what the bar did at bbUpper — touch or reject, from below or above (a close through it reads none).",
+       "conditionOperators": [
+        "is",
+        "in",
+        "enters",
+        "exits"
+       ],
+       "conditionVocabulary": [
+        "touch_from_below",
+        "touch_from_above",
+        "reject_from_below",
+        "reject_from_above",
+        "none"
+       ]
+      }
+     ],
+     "operandOrder": [
+      "BB_UPPER"
+     ],
+     "calculationSummary": "Classify what the newest bar did against a price level: a touch within the buffer, or a rejection that pierced the level and closed back, on the side the prior close stood.",
+     "formula": "output = levelInteraction(bar t, close t−1, bbUpper[t], bbUpper[t−1], buffer 0 bps)",
+     "glossary": {
+      "bbUpper_lvl": "bbUpper_lvl: what the bar did at bbUpper — touch or reject, from below or above (a close through it reads none)."
+     },
+     "nullBehavior": "Returns null when the series holds no prior bar, a price or the level is absent, or either bar's level is not positive.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "—",
+     "lookback": {
+      "used": 2,
+      "cap": 32
+     },
+     "measurement": {
+      "transform": {
+       "readShape": "priorAndCurrent",
+       "windowUnit": null,
+       "priceBasis": "barRange",
+       "nullPolicy": "anyAbsent"
+      },
+      "chainedTransform": null
+     },
+     "seriesHome": "candle"
+    }
+   }
+  },
+  {
+   "id": "buffer25",
+   "request": {
+    "column": {
+     "metric": "BB_UPPER",
+     "transformId": "levelInteraction",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "buffer": 25
+    },
+    "anchorTimeframe": "1h"
+   },
+   "response": {
+    "contract": {
+     "normalizedColumn": {
+      "metric": "BB_UPPER",
+      "transformId": "levelInteraction",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "buffer": 25
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": null,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": "all",
+      "ordering": null,
+      "buffer": 25
+     },
+     "outputs": [
+      {
+       "header": "bbUpper_lvl_b25",
+       "outputType": {
+        "kind": "classification",
+        "vocab": [
+         "touch_from_below",
+         "touch_from_above",
+         "reject_from_below",
+         "reject_from_above",
+         "none"
+        ]
+       },
+       "nullable": true,
+       "meaning": "bbUpper_lvl_b25: what the bar did at bbUpper — touch or reject, from below or above (a close through it reads none).",
+       "conditionOperators": [
+        "is",
+        "in",
+        "enters",
+        "exits"
+       ],
+       "conditionVocabulary": [
+        "touch_from_below",
+        "touch_from_above",
+        "reject_from_below",
+        "reject_from_above",
+        "none"
+       ]
+      }
+     ],
+     "operandOrder": [
+      "BB_UPPER"
+     ],
+     "calculationSummary": "Classify what the newest bar did against a price level: a touch within the buffer, or a rejection that pierced the level and closed back, on the side the prior close stood.",
+     "formula": "output = levelInteraction(bar t, close t−1, bbUpper[t], bbUpper[t−1], buffer 25 bps)",
+     "glossary": {
+      "bbUpper_lvl_b25": "bbUpper_lvl_b25: what the bar did at bbUpper — touch or reject, from below or above (a close through it reads none)."
+     },
+     "nullBehavior": "Returns null when the series holds no prior bar, a price or the level is absent, or either bar's level is not positive.",
+     "timeframe": {
+      "requested": {
+       "rel": "anchor"
+      },
+      "resolved": "1h",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "—",
+     "lookback": {
+      "used": 2,
+      "cap": 32
+     },
+     "measurement": {
+      "transform": {
+       "readShape": "priorAndCurrent",
+       "windowUnit": null,
+       "priceBasis": "barRange",
+       "nullPolicy": "anyAbsent"
+      },
+      "chainedTransform": null
+     },
+     "seriesHome": "candle"
+    }
+   }
+  },
+  {
+   "id": "lower",
+   "request": {
+    "column": {
+     "metric": "VWAP",
+     "transformId": "levelInteraction",
+     "timeframe": {
+      "rel": "lower"
+     }
+    },
+    "anchorTimeframe": "1h"
+   },
+   "response": {
+    "contract": {
+     "normalizedColumn": {
+      "metric": "VWAP",
+      "transformId": "levelInteraction",
+      "timeframe": {
+       "rel": "lower"
+      },
+      "buffer": 0
+     },
+     "effectiveParameters": {
+      "window": null,
+      "offset": null,
+      "side": null,
+      "inputs": [],
+      "aggregate": null,
+      "bars": "all",
+      "ordering": null,
+      "buffer": 0
+     },
+     "outputs": [
+      {
+       "header": "VWAP_ltf_lvl",
+       "outputType": {
+        "kind": "classification",
+        "vocab": [
+         "touch_from_below",
+         "touch_from_above",
+         "reject_from_below",
+         "reject_from_above",
+         "none"
+        ]
+       },
+       "nullable": true,
+       "meaning": "VWAP_ltf_lvl: what the bar did at VWAP_ltf — touch or reject, from below or above (a close through it reads none).",
+       "conditionOperators": [
+        "is",
+        "in",
+        "enters",
+        "exits"
+       ],
+       "conditionVocabulary": [
+        "touch_from_below",
+        "touch_from_above",
+        "reject_from_below",
+        "reject_from_above",
+        "none"
+       ]
+      }
+     ],
+     "operandOrder": [
+      "VWAP"
+     ],
+     "calculationSummary": "Classify what the newest bar did against a price level: a touch within the buffer, or a rejection that pierced the level and closed back, on the side the prior close stood.",
+     "formula": "output = levelInteraction(bar t, close t−1, VWAP[t], VWAP[t−1], buffer 0 bps)",
+     "glossary": {
+      "VWAP_ltf_lvl": "VWAP_ltf_lvl: what the bar did at VWAP_ltf — touch or reject, from below or above (a close through it reads none)."
+     },
+     "nullBehavior": "Returns null when the series holds no prior bar, a price or the level is absent, or either bar's level is not positive.",
+     "timeframe": {
+      "requested": {
+       "rel": "lower"
+      },
+      "resolved": "15m",
+      "timeframeMode": "candle",
+      "requiresAnchorTimeframe": true
+     },
+     "nullSentinel": "—",
+     "lookback": {
+      "used": 2,
+      "cap": 32
+     },
+     "measurement": {
+      "transform": {
+       "readShape": "priorAndCurrent",
+       "windowUnit": null,
+       "priceBasis": "barRange",
+       "nullPolicy": "anyAbsent"
+      },
+      "chainedTransform": null
+     },
+     "seriesHome": "candle"
+    }
+   }
+  }
+ ]
+}

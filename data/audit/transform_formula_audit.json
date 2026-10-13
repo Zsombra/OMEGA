@@ -109,7 +109,13 @@
    "result": "behaviourally consistent via a platform section; still not authorable"
   }
  ],
- "notVerified": [],
+ "notVerified": [
+  {
+   "transform": "levelInteraction",
+   "at": "2026-10-13",
+   "why": "Served at 108.4.0 as a classifier the platform names - `output = levelInteraction(bar t, close t-1, {base}[t], {base}[t-1], buffer {buffer} bps)` - not arithmetic omega can recompute from a rendered row. Measured: its header ({code}_lvl, _ltf_ infix, _b<buffer>), kind (classification) and five-label vocabulary (data/contract/columns/levelInteraction_108_4_2026-10-13.json); its labels on real bars are unmeasured."
+  }
+ ],
  "operationalFindings": [
   {
    "finding": "rank is scoped to the whole active market, not your coin selection",

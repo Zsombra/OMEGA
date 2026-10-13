@@ -1,29 +1,32 @@
 {
+  "metric": "REGIME_MOM_BEAR_VOTES",
+  "label": "Regime · bearish votes",
   "code": "regBear",
   "family": "regime",
-  "label": "Regime · bearish votes",
-  "metric": "REGIME_MOM_BEAR_VOTES",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 0,
-    "unit": "count"
+    "unit": "count",
+    "precision": 0
   },
   "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "spread"
+    }
+  ],
+  "study": "regimeMomentumVotes",
   "spreadOperands": [
     "TRADES",
     "BUY_TRADES",
     "SELL_TRADES",
     "REGIME_RUN_BARS",
     "REGIME_MOM_BULL_VOTES"
-  ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    }
   ]
 }

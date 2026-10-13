@@ -1,25 +1,28 @@
 {
+  "metric": "NOTIONAL_VOLUME_1D",
+  "label": "Notional volume (24h)",
   "code": "vol24hUsd",
   "family": "volumeFlow",
-  "label": "Notional volume (24h)",
-  "metric": "NOTIONAL_VOLUME_1D",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 1,
-    "unit": "usdLargeCount"
+    "unit": "usdLargeCount",
+    "precision": 1
   },
   "outputKind": "scalar",
-  "spreadOperands": [
-    "OI"
-  ],
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     },
     {
-      "id": "spread",
-      "operandRequired": true
+      "id": "spread"
     }
+  ],
+  "study": null,
+  "spreadOperands": [
+    "OI"
   ]
 }

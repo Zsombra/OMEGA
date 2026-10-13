@@ -1,0 +1,854 @@
+[
+ {
+  "code": "OI",
+  "family": "derivatives",
+  "label": "Open interest",
+  "metric": "OI",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "unit": "usdLargeCount"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ],
+  "spreadOperands": [
+   "NOTIONAL_VOLUME_1D"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "trajectory"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   },
+   {
+    "id": "aggregate"
+   },
+   {
+    "id": "efficiency"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "oiChg",
+  "family": "derivatives",
+  "label": "OI change",
+  "metric": "OI_CHG",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 2,
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ],
+  "spreadOperands": [
+   "PPO",
+   "ROC12",
+   "CLOSE_CHANGE",
+   "CHG_5M",
+   "CHG_15M",
+   "CHG_1H",
+   "CHG_4H",
+   "CHG_24H",
+   "ATR_PCT",
+   "BB_WIDTH_PCT",
+   "HIGH_DEV",
+   "LOW_DEV",
+   "FUNDING_RATE",
+   "FUNDING_ANN",
+   "REGIME_CRASH_MARGIN"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "oiVel",
+  "family": "derivatives",
+  "label": "OI velocity",
+  "metric": "OI_VELOCITY",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "accelerating",
+    "decelerating",
+    "steady"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "oiRegime",
+  "family": "derivatives",
+  "label": "OI \u00b7 price regime",
+  "metric": "OI_PX_REGIME",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "new longs",
+    "new shorts",
+    "short covering",
+    "long liquidation"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "regTrend",
+  "family": "regime",
+  "label": "Regime \u00b7 trend",
+  "metric": "REGIME_TREND",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "trending up",
+    "trending down",
+    "ranging"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "trajectory"
+   }
+  ]
+ },
+ {
+  "code": "regVol",
+  "family": "regime",
+  "label": "Regime \u00b7 volatility",
+  "metric": "REGIME_VOL",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "expanding",
+    "contracting",
+    "normal"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "trajectory"
+   }
+  ]
+ },
+ {
+  "code": "regMom",
+  "family": "regime",
+  "label": "Regime \u00b7 momentum",
+  "metric": "REGIME_MOM",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "bullish",
+    "bearish",
+    "neutral",
+    "diverging"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "trajectory"
+   }
+  ]
+ },
+ {
+  "code": "regState",
+  "family": "regime",
+  "label": "Regime \u00b7 state",
+  "metric": "REGIME_STATE",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "bull expansion",
+    "bear expansion",
+    "bull ranging",
+    "bear ranging",
+    "contraction",
+    "volatile",
+    "fallback"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "regConv",
+  "family": "regime",
+  "label": "Regime \u00b7 conviction",
+  "metric": "REGIME_CONVICTION",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "maximum",
+    "high",
+    "medium",
+    "low",
+    "uncertain"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "regBars",
+  "family": "regime",
+  "label": "Regime \u00b7 run length",
+  "metric": "REGIME_RUN_BARS",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 0,
+   "unit": "count"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_MOM_BULL_VOTES",
+   "REGIME_MOM_BEAR_VOTES"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regGate",
+  "family": "regime",
+  "label": "Regime \u00b7 trend gate",
+  "metric": "REGIME_TREND_GATE",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "cleared",
+    "held",
+    "dropped"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "regMargin",
+  "family": "regime",
+  "label": "Regime \u00b7 trend margin",
+  "metric": "REGIME_TREND_MARGIN",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "oscillator"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "DI_PLUS",
+   "DI_MINUS",
+   "REGIME_DI_SPREAD"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regSrc",
+  "family": "regime",
+  "label": "Regime \u00b7 trend source",
+  "metric": "REGIME_TREND_SOURCE",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "di spread",
+    "ema fallback"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "regDI",
+  "family": "regime",
+  "label": "Regime \u00b7 DI spread",
+  "metric": "REGIME_DI_SPREAD",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": -100
+   },
+   "unit": "oscillator"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "DI_PLUS",
+   "DI_MINUS",
+   "REGIME_TREND_MARGIN"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regAtrR",
+  "family": "regime",
+  "label": "Regime \u00b7 ATR ratio",
+  "metric": "REGIME_VOL_ATR_RATIO",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 2,
+   "unit": "ratio"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "RVOL",
+   "REGIME_VOL_BBW_RATIO"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regBbwR",
+  "family": "regime",
+  "label": "Regime \u00b7 BB-width ratio",
+  "metric": "REGIME_VOL_BBW_RATIO",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 2,
+   "unit": "ratio"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "RVOL",
+   "REGIME_VOL_ATR_RATIO"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regBull",
+  "family": "regime",
+  "label": "Regime \u00b7 bullish votes",
+  "metric": "REGIME_MOM_BULL_VOTES",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 0,
+   "unit": "count"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_RUN_BARS",
+   "REGIME_MOM_BEAR_VOTES"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regBear",
+  "family": "regime",
+  "label": "Regime \u00b7 bearish votes",
+  "metric": "REGIME_MOM_BEAR_VOTES",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 0,
+   "unit": "count"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_RUN_BARS",
+   "REGIME_MOM_BULL_VOTES"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regCrash",
+  "family": "regime",
+  "label": "Regime \u00b7 crash margin",
+  "metric": "REGIME_CRASH_MARGIN",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 2,
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "spreadOperands": [
+   "PPO",
+   "ROC12",
+   "CLOSE_CHANGE",
+   "CHG_5M",
+   "CHG_15M",
+   "CHG_1H",
+   "CHG_4H",
+   "CHG_24H",
+   "ATR_PCT",
+   "BB_WIDTH_PCT",
+   "HIGH_DEV",
+   "LOW_DEV",
+   "FUNDING_RATE",
+   "FUNDING_ANN",
+   "OI_CHG"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "spread",
+    "operandRequired": true
+   }
+  ]
+ },
+ {
+  "code": "regLatch",
+  "family": "regime",
+  "label": "Regime \u00b7 crash latch",
+  "metric": "REGIME_CRASH_LATCH",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "armed",
+    "clear"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "pick",
+  "family": "crowd",
+  "label": "Crowd pick rate",
+  "metric": "CROWD_PICK",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "upBias",
+  "family": "crowd",
+  "label": "Crowd up-bias",
+  "metric": "CROWD_UPBIAS",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "crowdAcc",
+  "family": "crowd",
+  "label": "Crowd accuracy",
+  "metric": "CROWD_ACC",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "captRate",
+  "family": "crowd",
+  "label": "Crowd captain rate",
+  "metric": "CROWD_CAPT",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "pickLive",
+  "family": "crowd",
+  "label": "Crowd pick rate (live)",
+  "metric": "CROWD_PICK_LIVE",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "upBiasLive",
+  "family": "crowd",
+  "label": "Crowd up-bias (live)",
+  "metric": "CROWD_UPBIAS_LIVE",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "crowdAccLive",
+  "family": "crowd",
+  "label": "Crowd accuracy (live)",
+  "metric": "CROWD_ACC_LIVE",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "captRateLive",
+  "family": "crowd",
+  "label": "Crowd captain rate (live)",
+  "metric": "CROWD_CAPT_LIVE",
+  "nativeOutput": {
+   "kind": "numeric",
+   "precision": 1,
+   "range": {
+    "max": 100,
+    "min": 0
+   },
+   "unit": "percent"
+  },
+  "outputKind": "scalar",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ],
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   },
+   {
+    "id": "rank"
+   }
+  ]
+ },
+ {
+  "code": "settledAt",
+  "family": "crowd",
+  "label": "Settled at",
+  "metric": "SETTLED_AT",
+  "nativeOutput": {
+   "kind": "date"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ },
+ {
+  "code": "flowAlign",
+  "family": "derived",
+  "label": "Flow alignment",
+  "metric": "FLOW_ALIGN",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "aligned bullish",
+    "aligned bearish",
+    "divergent",
+    "neutral"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value"
+   }
+  ]
+ }
+]

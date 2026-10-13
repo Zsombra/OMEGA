@@ -1,49 +1,54 @@
 {
+  "metric": "RVOL",
+  "label": "RVOL (relative volume)",
   "code": "RVOL",
   "family": "volumeFlow",
-  "label": "RVOL (relative volume)",
-  "metric": "RVOL",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "ratio"
+    "unit": "ratio",
+    "precision": 2
   },
   "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "relativeVolume",
+  "spreadOperands": [
+    "REGIME_VOL_ATR_RATIO",
+    "REGIME_VOL_BBW_RATIO"
+  ],
   "rankOrderings": [
     "hi",
     "lo",
     "far",
     "near"
-  ],
-  "spreadOperands": [
-    "REGIME_VOL_ATR_RATIO",
-    "REGIME_VOL_BBW_RATIO"
-  ],
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
   ]
 }

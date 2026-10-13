@@ -1,8 +1,8 @@
 {
+  "metric": "SETTLED_AT",
+  "label": "Settled at",
   "code": "settledAt",
   "family": "crowd",
-  "label": "Settled at",
-  "metric": "SETTLED_AT",
   "nativeOutput": {
     "kind": "date"
   },
@@ -10,7 +10,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": "crowdSettled"
 }

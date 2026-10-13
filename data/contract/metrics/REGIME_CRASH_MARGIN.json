@@ -1,39 +1,44 @@
 {
+  "metric": "REGIME_CRASH_MARGIN",
+  "label": "Regime · crash margin",
   "code": "regCrash",
   "family": "regime",
-  "label": "Regime · crash margin",
-  "metric": "REGIME_CRASH_MARGIN",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "percent"
+    "unit": "oscillator",
+    "precision": 2
   },
   "outputKind": "scalar",
-  "spreadOperands": [
-    "PPO",
-    "ROC12",
-    "CLOSE_CHANGE",
-    "CHG_5M",
-    "CHG_15M",
-    "CHG_1H",
-    "CHG_4H",
-    "CHG_24H",
-    "ATR_PCT",
-    "BB_WIDTH_PCT",
-    "HIGH_DEV",
-    "LOW_DEV",
-    "FUNDING_RATE",
-    "FUNDING_ANN",
-    "OI_CHG"
-  ],
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     },
     {
-      "id": "spread",
-      "operandRequired": true
+      "id": "spread"
     }
+  ],
+  "study": "regimeCrashEvidence",
+  "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "RSI2",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "CCI20",
+    "ADX",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "WILLR14",
+    "DI_PLUS",
+    "DI_MINUS",
+    "REGIME_TREND_MARGIN",
+    "REGIME_DI_SPREAD"
   ]
 }

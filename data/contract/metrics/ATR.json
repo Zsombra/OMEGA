@@ -1,42 +1,52 @@
 {
+  "metric": "ATR",
+  "label": "ATR (14)",
   "code": "ATR",
   "family": "volatility",
-  "label": "ATR (14)",
-  "metric": "ATR",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 4,
-    "unit": "signedPrice"
+    "unit": "signedPrice",
+    "precision": 4
   },
   "outputKind": "scalar",
-  "spreadOperands": [
-    "MACD",
-    "BB_WIDTH",
-    "CVD",
-    "SPOT_CVD"
-  ],
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
     },
     {
-      "id": "trajectory"
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
     },
     {
+      "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
+        "aggregate"
+      ]
     },
     {
-      "id": "aggregate"
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
     },
     {
-      "id": "efficiency"
+      "id": "efficiency",
+      "maximums": {
+        "window": 32
+      }
     }
+  ],
+  "study": "atr",
+  "spreadOperands": [
+    "MACD",
+    "BB_WIDTH",
+    "CVD"
   ]
 }

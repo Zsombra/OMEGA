@@ -1,8 +1,8 @@
 {
+  "metric": "PRICE_ZONE",
+  "label": "Price zone",
   "code": "zone",
   "family": "structure",
-  "label": "Price zone",
-  "metric": "PRICE_ZONE",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -17,7 +17,11 @@
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
     }
-  ]
+  ],
+  "study": "donchianChannels"
 }

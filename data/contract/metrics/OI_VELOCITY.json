@@ -1,8 +1,8 @@
 {
+  "metric": "OI_VELOCITY",
+  "label": "OI velocity",
   "code": "oiVel",
   "family": "derivatives",
-  "label": "OI velocity",
-  "metric": "OI_VELOCITY",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
@@ -15,7 +15,11 @@
   "timeframeMode": "timeless",
   "transforms": [
     {
-      "id": "value"
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
     }
-  ]
+  ],
+  "study": "openInterest"
 }

@@ -1,0 +1,3297 @@
+{
+  "category": "structure",
+  "metrics": [
+    {
+      "metric": "BB_PCT_B",
+      "label": "Bollinger %B",
+      "code": "pctB",
+      "family": "structure",
+      "study": "bollingerBands",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "fraction",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "spread",
+        "aggregate",
+        "rank"
+      ]
+    },
+    {
+      "metric": "DONCHIAN_UPPER",
+      "label": "20-bar high",
+      "code": "donchianHi",
+      "family": "structure",
+      "study": "donchianChannels",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "metric": "DONCHIAN_LOWER",
+      "label": "20-bar low",
+      "code": "donchianLo",
+      "family": "structure",
+      "study": "donchianChannels",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency"
+      ]
+    },
+    {
+      "metric": "VWAP",
+      "label": "VWAP (session)",
+      "code": "VWAP",
+      "family": "structure",
+      "study": null,
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PRICE_ZONE",
+      "label": "Price zone",
+      "code": "zone",
+      "family": "structure",
+      "study": "donchianChannels",
+      "nativeOutput": {
+        "kind": "classification",
+        "vocab": [
+          "breakout high",
+          "breakdown low",
+          "near high",
+          "near low",
+          "mid-range"
+        ]
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value"
+      ]
+    },
+    {
+      "metric": "BB_TOUCH",
+      "label": "Band touch",
+      "code": "BBtouch",
+      "family": "structure",
+      "study": "bollingerBands",
+      "nativeOutput": {
+        "kind": "classification",
+        "vocab": [
+          "upper",
+          "lower",
+          "none"
+        ]
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value"
+      ]
+    },
+    {
+      "metric": "STRUCT_ZONES",
+      "label": "Structure zones",
+      "code": "zones",
+      "family": "structure",
+      "study": null,
+      "nativeOutput": {
+        "kind": "entitySet",
+        "entity": "structureZone"
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "count",
+        "nearestZoneType",
+        "nearestZoneRange",
+        "nearestZoneDist",
+        "nearestZoneAge"
+      ]
+    },
+    {
+      "metric": "TPO_POC",
+      "label": "TPO point of control",
+      "code": "tpoPOC",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "TPO_VAH",
+      "label": "TPO value-area high",
+      "code": "tpoVAH",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "TPO_VAL",
+      "label": "TPO value-area low",
+      "code": "tpoVAL",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "TPO_IB_HIGH",
+      "label": "Initial balance high",
+      "code": "tpoIBH",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "TPO_IB_LOW",
+      "label": "Initial balance low",
+      "code": "tpoIBL",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "TPO_SHAPE",
+      "label": "TPO profile shape",
+      "code": "tpoShape",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "classification",
+        "vocab": [
+          "p-shape",
+          "b-shape",
+          "balanced"
+        ]
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_POC",
+      "label": "TPO point of control (prior session)",
+      "code": "pTpoPOC",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_VAH",
+      "label": "TPO value-area high (prior session)",
+      "code": "pTpoVAH",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_VAL",
+      "label": "TPO value-area low (prior session)",
+      "code": "pTpoVAL",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_SHAPE",
+      "label": "TPO profile shape (prior session)",
+      "code": "pTpoShape",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "classification",
+        "vocab": [
+          "p-shape",
+          "b-shape",
+          "balanced"
+        ]
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_IB_HIGH",
+      "label": "Initial balance high (prior session)",
+      "code": "pTpoIBH",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_IB_LOW",
+      "label": "Initial balance low (prior session)",
+      "code": "pTpoIBL",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "TPO_VPOC",
+      "label": "Volume point of control",
+      "code": "tpoVPOC",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "TPO_VVAH",
+      "label": "Volume value-area high",
+      "code": "tpoVVAH",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "TPO_VVAL",
+      "label": "Volume value-area low",
+      "code": "tpoVVAL",
+      "family": "structure",
+      "study": "sessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_VPOC",
+      "label": "Volume point of control (prior session)",
+      "code": "pTpoVPOC",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_VVAH",
+      "label": "Volume value-area high (prior session)",
+      "code": "pTpoVVAH",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PRIOR_TPO_VVAL",
+      "label": "Volume value-area low (prior session)",
+      "code": "pTpoVVAL",
+      "family": "structure",
+      "study": "priorSessionProfile",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "NAKED_POC_ABOVE",
+      "label": "Naked POC above",
+      "code": "nPocAbove",
+      "family": "structure",
+      "study": "nakedPoc",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "NAKED_POC_BELOW",
+      "label": "Naked POC below",
+      "code": "nPocBelow",
+      "family": "structure",
+      "study": "nakedPoc",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread"
+      ]
+    },
+    {
+      "metric": "BB_UPPER",
+      "label": "Bollinger upper band",
+      "code": "bbUpper",
+      "family": "structure",
+      "study": "bollingerBands",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "BB_LOWER",
+      "label": "Bollinger lower band",
+      "code": "bbLower",
+      "family": "structure",
+      "study": "bollingerBands",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "KC_UPPER",
+      "label": "Keltner upper",
+      "code": "kcUpper",
+      "family": "structure",
+      "study": "keltnerChannels",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "KC_MID",
+      "label": "Keltner basis",
+      "code": "kcMid",
+      "family": "structure",
+      "study": "keltnerChannels",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "KC_LOWER",
+      "label": "Keltner lower",
+      "code": "kcLower",
+      "family": "structure",
+      "study": "keltnerChannels",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "ST_LINE",
+      "label": "Supertrend stop",
+      "code": "stLine",
+      "family": "structure",
+      "study": null,
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "SWING_FRACTAL_HIGH",
+      "label": "Swing high (fractal 2/2)",
+      "code": "fractalHi",
+      "family": "structure",
+      "study": "swingFractal",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "SWING_FRACTAL_LOW",
+      "label": "Swing low (fractal 2/2)",
+      "code": "fractalLo",
+      "family": "structure",
+      "study": "swingFractal",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "SWING_FRACTAL_LABEL",
+      "label": "Swing structure",
+      "code": "fractalLabel",
+      "family": "structure",
+      "study": "swingFractal",
+      "nativeOutput": {
+        "kind": "classification",
+        "vocab": [
+          "HH",
+          "HL",
+          "LH",
+          "LL",
+          "none"
+        ]
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value"
+      ]
+    },
+    {
+      "metric": "PSAR",
+      "label": "Parabolic SAR",
+      "code": "PSAR",
+      "family": "structure",
+      "study": null,
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "candle",
+      "transformIds": [
+        "value",
+        "trajectory",
+        "distance",
+        "spread",
+        "aggregate",
+        "efficiency",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PIVOT_P",
+      "label": "Pivot",
+      "code": "pivotP",
+      "family": "structure",
+      "study": "floorPivots",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PIVOT_R1",
+      "label": "Pivot R1",
+      "code": "pivotR1",
+      "family": "structure",
+      "study": "floorPivots",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PIVOT_R2",
+      "label": "Pivot R2",
+      "code": "pivotR2",
+      "family": "structure",
+      "study": "floorPivots",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PIVOT_R3",
+      "label": "Pivot R3",
+      "code": "pivotR3",
+      "family": "structure",
+      "study": "floorPivots",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PIVOT_S1",
+      "label": "Pivot S1",
+      "code": "pivotS1",
+      "family": "structure",
+      "study": "floorPivots",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PIVOT_S2",
+      "label": "Pivot S2",
+      "code": "pivotS2",
+      "family": "structure",
+      "study": "floorPivots",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PDH",
+      "label": "Previous-day high",
+      "code": "pdh",
+      "family": "structure",
+      "study": "priorDay",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PDL",
+      "label": "Previous-day low",
+      "code": "pdl",
+      "family": "structure",
+      "study": "priorDay",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PDO",
+      "label": "Previous-day open",
+      "code": "pdo",
+      "family": "structure",
+      "study": "priorDay",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    },
+    {
+      "metric": "PIVOT_S3",
+      "label": "Pivot S3",
+      "code": "pivotS3",
+      "family": "structure",
+      "study": "floorPivots",
+      "nativeOutput": {
+        "kind": "numeric",
+        "unit": "price",
+        "precision": 2
+      },
+      "timeframeMode": "timeless",
+      "transformIds": [
+        "value",
+        "distance",
+        "spread",
+        "levelInteraction"
+      ]
+    }
+  ],
+  "studies": [
+    {
+      "study": "bollingerBands",
+      "label": "Bollinger Bands (20, 2)",
+      "family": "structure",
+      "members": [
+        "BB_UPPER",
+        "BB_LOWER",
+        "BB_PCT_B",
+        "BB_TOUCH"
+      ],
+      "levelSets": [
+        {
+          "label": "Bands",
+          "levels": [
+            "BB_UPPER",
+            "BB_LOWER"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "keltnerChannels",
+      "label": "Keltner Channels (20, 1.5)",
+      "family": "structure",
+      "members": [
+        "KC_UPPER",
+        "KC_MID",
+        "KC_LOWER"
+      ],
+      "levelSets": [
+        {
+          "label": "Channel",
+          "levels": [
+            "KC_UPPER",
+            "KC_MID",
+            "KC_LOWER"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "donchianChannels",
+      "label": "Donchian Channels (20)",
+      "family": "structure",
+      "members": [
+        "DONCHIAN_UPPER",
+        "DONCHIAN_LOWER",
+        "PRICE_ZONE"
+      ],
+      "levelSets": [
+        {
+          "label": "Channel",
+          "levels": [
+            "DONCHIAN_UPPER",
+            "DONCHIAN_LOWER"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "swingFractal",
+      "label": "Swing fractal (2/2)",
+      "family": "structure",
+      "members": [
+        "SWING_FRACTAL_HIGH",
+        "SWING_FRACTAL_LOW",
+        "SWING_FRACTAL_LABEL"
+      ],
+      "levelSets": [
+        {
+          "label": "Swing levels",
+          "levels": [
+            "SWING_FRACTAL_HIGH",
+            "SWING_FRACTAL_LOW"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "sessionProfile",
+      "label": "Session profile",
+      "family": "structure",
+      "members": [
+        "TPO_VAH",
+        "TPO_POC",
+        "TPO_VAL",
+        "TPO_IB_HIGH",
+        "TPO_IB_LOW",
+        "TPO_VVAH",
+        "TPO_VPOC",
+        "TPO_VVAL",
+        "TPO_SHAPE"
+      ],
+      "levelSets": [
+        {
+          "label": "Value area",
+          "levels": [
+            "TPO_VAH",
+            "TPO_POC",
+            "TPO_VAL"
+          ]
+        },
+        {
+          "label": "Initial balance",
+          "levels": [
+            "TPO_IB_HIGH",
+            "TPO_IB_LOW"
+          ]
+        },
+        {
+          "label": "Volume value area",
+          "levels": [
+            "TPO_VVAH",
+            "TPO_VPOC",
+            "TPO_VVAL"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "priorSessionProfile",
+      "label": "Prior session profile",
+      "family": "structure",
+      "members": [
+        "PRIOR_TPO_VAH",
+        "PRIOR_TPO_POC",
+        "PRIOR_TPO_VAL",
+        "PRIOR_TPO_IB_HIGH",
+        "PRIOR_TPO_IB_LOW",
+        "PRIOR_TPO_VVAH",
+        "PRIOR_TPO_VPOC",
+        "PRIOR_TPO_VVAL",
+        "PRIOR_TPO_SHAPE"
+      ],
+      "levelSets": [
+        {
+          "label": "Value area",
+          "levels": [
+            "PRIOR_TPO_VAH",
+            "PRIOR_TPO_POC",
+            "PRIOR_TPO_VAL"
+          ]
+        },
+        {
+          "label": "Initial balance",
+          "levels": [
+            "PRIOR_TPO_IB_HIGH",
+            "PRIOR_TPO_IB_LOW"
+          ]
+        },
+        {
+          "label": "Volume value area",
+          "levels": [
+            "PRIOR_TPO_VVAH",
+            "PRIOR_TPO_VPOC",
+            "PRIOR_TPO_VVAL"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "priorDay",
+      "label": "Prior day",
+      "family": "structure",
+      "members": [
+        "PDH",
+        "PDO",
+        "PDL"
+      ],
+      "levelSets": [
+        {
+          "label": "Prior-day levels",
+          "levels": [
+            "PDH",
+            "PDO",
+            "PDL"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "floorPivots",
+      "label": "Floor pivots",
+      "family": "structure",
+      "members": [
+        "PIVOT_R3",
+        "PIVOT_R2",
+        "PIVOT_R1",
+        "PIVOT_P",
+        "PIVOT_S1",
+        "PIVOT_S2",
+        "PIVOT_S3"
+      ],
+      "levelSets": [
+        {
+          "label": "Pivots",
+          "levels": [
+            "PIVOT_R3",
+            "PIVOT_R2",
+            "PIVOT_R1",
+            "PIVOT_P",
+            "PIVOT_S1",
+            "PIVOT_S2",
+            "PIVOT_S3"
+          ]
+        }
+      ]
+    },
+    {
+      "study": "nakedPoc",
+      "label": "Naked POC",
+      "family": "structure",
+      "members": [
+        "NAKED_POC_ABOVE",
+        "NAKED_POC_BELOW"
+      ],
+      "levelSets": [
+        {
+          "label": "Naked POCs",
+          "levels": [
+            "NAKED_POC_ABOVE",
+            "NAKED_POC_BELOW"
+          ]
+        }
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": "value",
+      "label": "Value"
+    },
+    {
+      "id": "trajectory",
+      "label": "Trajectory"
+    },
+    {
+      "id": "distance",
+      "label": "Distance from price"
+    },
+    {
+      "id": "spread",
+      "label": "Spread vs metric"
+    },
+    {
+      "id": "aggregate",
+      "label": "Windowed aggregate"
+    },
+    {
+      "id": "efficiency",
+      "label": "Efficiency (ER)"
+    },
+    {
+      "id": "classifyZone",
+      "label": "Zone label"
+    },
+    {
+      "id": "maxShare",
+      "label": "Largest share"
+    },
+    {
+      "id": "rank",
+      "label": "Peer rank"
+    },
+    {
+      "id": "crossDetect",
+      "label": "Cross detect"
+    },
+    {
+      "id": "levelInteraction",
+      "label": "Level interaction"
+    },
+    {
+      "id": "count",
+      "label": "Zone count"
+    },
+    {
+      "id": "nearestZoneType",
+      "label": "Nearest zone type"
+    },
+    {
+      "id": "nearestZoneRange",
+      "label": "Nearest zone range"
+    },
+    {
+      "id": "nearestZoneDist",
+      "label": "Nearest zone distance"
+    },
+    {
+      "id": "nearestZoneAge",
+      "label": "Nearest zone age"
+    }
+  ],
+  "timeframeRefs": [
+    {
+      "rel": "anchor",
+      "resolvedByAnchor": {
+        "5m": "5m",
+        "15m": "15m",
+        "1h": "1h",
+        "4h": "4h"
+      }
+    },
+    {
+      "rel": "lower",
+      "resolvedByAnchor": {
+        "5m": "1m",
+        "15m": "5m",
+        "1h": "15m",
+        "4h": "1h"
+      }
+    },
+    {
+      "rel": "regime",
+      "resolvedByAnchor": {
+        "5m": null,
+        "15m": null,
+        "1h": null,
+        "4h": null
+      }
+    }
+  ],
+  "budgets": {
+    "sections": 32,
+    "sectionColumns": 32,
+    "columnLookback": 32,
+    "distinctTimeframes": 8,
+    "strategyConditions": 16,
+    "conditionClauses": 16,
+    "conditionFrameReads": 256,
+    "reportNoteChars": 3200
+  },
+  "previewExecutionLimits": {
+    "maxResultChars": 150000,
+    "deadlineMs": 15000
+  },
+  "timeframes": [
+    "5m",
+    "15m",
+    "1h",
+    "4h"
+  ],
+  "rankedTimeframes": [
+    "1m",
+    "5m",
+    "15m",
+    "1h",
+    "4h",
+    "1d"
+  ],
+  "conditionGrammar": {
+    "maxGroupDepth": 2,
+    "operators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "is",
+      "in",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased",
+      "enters",
+      "exits"
+    ],
+    "groupOperators": [
+      "ALL",
+      "ANY",
+      "NOT",
+      "N_OF"
+    ],
+    "verdicts": [
+      "UP",
+      "DOWN",
+      "NEITHER"
+    ]
+  },
+  "templates": [
+    {
+      "kind": "platform",
+      "sectionKey": "includePriceAction",
+      "title": "Price Action",
+      "columns": [
+        {
+          "metric": "LAST",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CLOSE_CHANGE",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "window": 5,
+          "bars": "closed"
+        },
+        {
+          "metric": "VWAP",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "VWAP",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "VWAP",
+          "transformId": "distance",
+          "chainedTransformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "far"
+        },
+        {
+          "metric": "VWAP",
+          "transformId": "distance",
+          "chainedTransformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "near"
+        },
+        {
+          "metric": "CHG_5M",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CHG_15M",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CHG_1H",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CHG_4H",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CHG_24H",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "BAR_FORMING",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeSubTimeframe",
+      "title": "Candle Breakdown",
+      "columns": [
+        {
+          "metric": "CLOSE_CHANGE",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "lower"
+          },
+          "window": 4,
+          "bars": "closed"
+        },
+        {
+          "metric": "VOLUME",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "lower"
+          },
+          "window": 4,
+          "bars": "closed"
+        },
+        {
+          "metric": "CLOSE",
+          "transformId": "efficiency",
+          "timeframe": {
+            "rel": "lower"
+          },
+          "window": 5,
+          "bars": "closed"
+        },
+        {
+          "metric": "VOLUME",
+          "transformId": "maxShare",
+          "timeframe": {
+            "rel": "lower"
+          },
+          "window": 4,
+          "bars": "closed"
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeRsi",
+      "title": "RSI",
+      "columns": [
+        {
+          "metric": "RSI14",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "RSI14",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "RSI7",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "RSI7",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeMacd",
+      "title": "MACD",
+      "columns": [
+        {
+          "metric": "MACD",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "MACD",
+          "transformId": "crossDetect",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeVolume",
+      "title": "Volume",
+      "columns": [
+        {
+          "metric": "RVOL",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "OBV",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeVolatility",
+      "title": "Volatility",
+      "columns": [
+        {
+          "metric": "ATR",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "ATR_PCT",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "ATR_PCT",
+          "transformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "hi"
+        },
+        {
+          "metric": "ATR_PCT",
+          "transformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "lo"
+        },
+        {
+          "metric": "HIGH_DEV",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "LOW_DEV",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeBollingerBands",
+      "title": "Bollinger Bands",
+      "columns": [
+        {
+          "metric": "BB_PCT_B",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "BB_WIDTH",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "BB_WIDTH_PCT",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "BB_WIDTH_PCT",
+          "transformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "lo"
+        },
+        {
+          "metric": "BB_TOUCH",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CCI20",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CCI20",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeMovingAverages",
+      "title": "Moving Averages",
+      "columns": [
+        {
+          "metric": "SMA20",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "SMA50",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "EMA5",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "EMA13",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "EMA20",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "SMA200",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "MA_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "EMA5",
+          "transformId": "spread",
+          "chainedTransformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "inputs": [
+            {
+              "metric": "EMA13"
+            }
+          ]
+        },
+        {
+          "metric": "EMA_CROSS",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeStochastic",
+      "title": "Stochastic",
+      "columns": [
+        {
+          "metric": "STOCH_K",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "STOCH_D",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "STOCH_K",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeFundingRates",
+      "title": "Funding Rates",
+      "columns": [
+        {
+          "metric": "FUNDING_RATE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "FUNDING_RATE",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "FUNDING_RATE",
+          "transformId": "aggregate",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "window": 24
+        },
+        {
+          "metric": "FUNDING_ANN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "FUNDING_LABEL",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "MARK",
+          "transformId": "spread",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "inputs": [
+            {
+              "metric": "ORACLE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeOpenInterest",
+      "title": "Open Interest",
+      "columns": [
+        {
+          "metric": "OI",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "OI",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "OI_CHG",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "OI",
+          "transformId": "aggregate",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "window": 24
+        },
+        {
+          "metric": "OI_VELOCITY",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "OI_PX_REGIME",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeRelativeStrength",
+      "title": "Relative Strength",
+      "columns": [
+        {
+          "metric": "PPO",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "PPO",
+          "transformId": "crossDetect",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "ROC12",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "ROC12",
+          "transformId": "crossDetect",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CLOSE_CHANGE",
+          "transformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "far"
+        },
+        {
+          "metric": "RVOL",
+          "transformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "hi"
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeSupportResistance",
+      "title": "Support & Resistance",
+      "columns": [
+        {
+          "metric": "DONCHIAN_UPPER",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "DONCHIAN_LOWER",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "DONCHIAN_UPPER",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "DONCHIAN_LOWER",
+          "transformId": "distance",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "DONCHIAN_LOWER",
+          "transformId": "distance",
+          "chainedTransformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "near"
+        },
+        {
+          "metric": "DONCHIAN_UPPER",
+          "transformId": "distance",
+          "chainedTransformId": "rank",
+          "timeframe": {
+            "rel": "anchor"
+          },
+          "ordering": "near"
+        },
+        {
+          "metric": "PRICE_ZONE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "BAR_FORMING",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeTrendStrength",
+      "title": "Trend Strength",
+      "columns": [
+        {
+          "metric": "ADX",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "ADX",
+          "transformId": "classifyState",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeMfi",
+      "title": "Money Flow Index",
+      "columns": [
+        {
+          "metric": "MFI14",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "MFI14",
+          "transformId": "classifyState",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeCvd",
+      "title": "Volume Delta (CVD)",
+      "columns": [
+        {
+          "metric": "CVD",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CVD",
+          "transformId": "classifyState",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "BUY_PRESSURE",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "BUY_TRADES",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "SELL_TRADES",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeHigherTimeframe",
+      "title": "Higher Timeframe Context",
+      "columns": [
+        {
+          "metric": "ADX",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "regime"
+          }
+        },
+        {
+          "metric": "ADX",
+          "transformId": "classifyState",
+          "timeframe": {
+            "rel": "regime"
+          }
+        },
+        {
+          "metric": "RSI14",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "regime"
+          }
+        },
+        {
+          "metric": "RSI14",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "regime"
+          }
+        },
+        {
+          "metric": "MA_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "regime"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeMtfConfluence",
+      "title": "Multi-Timeframe Confluence",
+      "columns": [
+        {
+          "metric": "MA_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "lower"
+          }
+        },
+        {
+          "metric": "MA_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "MA_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "regime"
+          }
+        },
+        {
+          "metric": "RSI14",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "lower"
+          }
+        },
+        {
+          "metric": "RSI14",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "RSI14",
+          "transformId": "classifyZone",
+          "timeframe": {
+            "rel": "regime"
+          }
+        },
+        {
+          "metric": "ADX",
+          "transformId": "classifyState",
+          "timeframe": {
+            "rel": "lower"
+          }
+        },
+        {
+          "metric": "ADX",
+          "transformId": "classifyState",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "ADX",
+          "transformId": "classifyState",
+          "timeframe": {
+            "rel": "regime"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeRegimeContext",
+      "title": "Regime Context",
+      "columns": [
+        {
+          "metric": "REGIME_TREND",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_VOL",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_MOM",
+          "transformId": "trajectory",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_STATE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_CONVICTION",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_RUN_BARS",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_TREND_GATE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_TREND_MARGIN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_TREND_SOURCE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_VOL_ATR_RATIO",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "REGIME_VOL_BBW_RATIO",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeCrowdIntelligence",
+      "title": "Crowd Intelligence",
+      "columns": [
+        {
+          "metric": "CROWD_PICK",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CROWD_UPBIAS",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CROWD_ACC",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CROWD_CAPT",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CROWD_PICK_LIVE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CROWD_UPBIAS_LIVE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CROWD_ACC_LIVE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CROWD_CAPT_LIVE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeCvdCrowdConvergence",
+      "title": "CVD-Crowd Convergence",
+      "columns": [
+        {
+          "metric": "FLOW_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "SMART_RETAIL",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CAPTAIN_CONF",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "CONFIDENCE",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeStructureZones",
+      "title": "Price Structure Zones",
+      "columns": [
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "count",
+          "timeframe": {
+            "rel": "regime"
+          }
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneType",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "support"
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneRange",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "support"
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneDist",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "support"
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneAge",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "support"
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneType",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "resistance"
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneRange",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "resistance"
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneDist",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "resistance"
+        },
+        {
+          "metric": "STRUCT_ZONES",
+          "transformId": "nearestZoneAge",
+          "timeframe": {
+            "rel": "regime"
+          },
+          "side": "resistance"
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includePerpSpotFlow",
+      "title": "Perp/Spot Flow",
+      "columns": [
+        {
+          "metric": "SPOT_CVD",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "PERP_SPOT_FLOW",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "PERP_SPOT_STRENGTH",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        },
+        {
+          "metric": "PERP_SPOT_CONFIRMS",
+          "transformId": "value",
+          "timeframe": {
+            "rel": "anchor"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeMarketBreadth",
+      "title": "Market Breadth",
+      "columns": []
+    },
+    {
+      "kind": "platform",
+      "sectionKey": "includeReferencePairs",
+      "title": "Reference Pairs",
+      "columns": []
+    },
+    {
+      "kind": "custom",
+      "templateKey": "momentum-composite",
+      "title": "Momentum Composite",
+      "description": "RSI, MACD, and Stochastic %K read at the section anchor — a one-glance momentum panel.",
+      "columnCount": 3
+    },
+    {
+      "kind": "custom",
+      "templateKey": "volatility-trend",
+      "title": "Volatility & Trend",
+      "description": "ATR, ADX, and Bollinger width at the section anchor — regime and expansion at a glance.",
+      "columnCount": 3
+    }
+  ],
+  "scalarFamilies": [
+    {
+      "moduleKey": null,
+      "sectionKey": "session-field",
+      "title": "Session Field",
+      "metrics": [
+        {
+          "metric": "fieldPlayers",
+          "gloss": "players in this session",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "session",
+              "header": "fieldPlayers_session"
+            }
+          ]
+        },
+        {
+          "metric": "fieldUpBias",
+          "gloss": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "session",
+              "header": "fieldUpBias_session"
+            }
+          ]
+        },
+        {
+          "metric": "fieldBiasDir",
+          "gloss": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+          "conditionOperators": [
+            "is",
+            "in"
+          ],
+          "conditionVocabulary": [
+            "UP",
+            "DOWN"
+          ],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "session",
+              "header": "fieldBiasDir_session"
+            }
+          ]
+        },
+        {
+          "metric": "captConc",
+          "gloss": "share of captain picks landing on the single most-captained coin (%)",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "session",
+              "header": "captConc_session"
+            }
+          ]
+        },
+        {
+          "metric": "picksSpread",
+          "gloss": "distinct coins picked, over distinct coins available",
+          "conditionOperators": [],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "session",
+              "header": "picksSpread_session"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleKey": "includeMarketBreadth",
+      "sectionKey": "market-breadth",
+      "title": "Market Breadth",
+      "metrics": [
+        {
+          "metric": "mktUp",
+          "gloss": "share of the scope's coins that closed up (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktUp_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktUp_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktUp_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktUp_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktUp_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktUp_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktUp_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktUp_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktUp_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktDown",
+          "gloss": "share of the scope's coins that closed down (%), over the universe it was measured across",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktDown_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktDown_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktDown_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktDown_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktDown_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktDown_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktDown_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktDown_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktDown_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktBreadth",
+          "gloss": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktBreadth_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktBreadth_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktBreadth_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktBreadth_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktBreadth_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktBreadth_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktBreadth_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktBreadth_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktBreadth_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktAvgChg",
+          "gloss": "mean close-change across the scope (%), signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktAvgChg_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktAvgChg_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktAvgChg_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktAvgChg_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktAvgChg_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktAvgChg_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktAvgChg_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktAvgChg_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktAvgChg_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktDispersion",
+          "gloss": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktDispersion_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktDispersion_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktDispersion_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktDispersion_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktDispersion_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktDispersion_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktDispersion_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktDispersion_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktDispersion_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktPpoUp",
+          "gloss": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktPpoUp_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktPpoUp_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktPpoUp_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktPpoUp_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktPpoUp_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktPpoUp_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktPpoUp_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktPpoUp_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktPpoUp_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktPpoDown",
+          "gloss": "share of the scope's coins carrying a negative PPO histogram (%), over the coins that have one",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktPpoDown_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktPpoDown_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktPpoDown_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktPpoDown_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktPpoDown_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktPpoDown_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktPpoDown_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktPpoDown_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktPpoDown_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktPpoNet",
+          "gloss": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktPpoNet_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktPpoNet_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktPpoNet_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktPpoNet_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktPpoNet_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktPpoNet_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktPpoNet_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktPpoNet_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktPpoNet_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktAvgPpo",
+          "gloss": "mean PPO histogram across the scope, signed",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktAvgPpo_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktAvgPpo_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktAvgPpo_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktAvgPpo_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktAvgPpo_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktAvgPpo_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktAvgPpo_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktAvgPpo_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktAvgPpo_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktVolNet",
+          "gloss": "mean relative volume across the scope, each coin against its own 20-bar baseline (1.0 = the field at its own normal, 2.0 = twice it) — how much of the field is actually participating; on the stock and commodity scopes it also reads whether the underlying cash session is open, since those perps trade when their underlying markets are shut",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktVolNet_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktVolNet_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktVolNet_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktVolNet_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktVolNet_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktVolNet_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktVolNet_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktVolNet_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktVolNet_commodities"
+            }
+          ]
+        },
+        {
+          "metric": "mktStretch",
+          "gloss": "mean RSI(14) across the scope — how extended the field already is, and a slow-moving state rather than a reversal trigger: elevated readings have tended to persist and to run with the move, not against it; the reading is sharpest on the tight crypto cohorts, since averaging the whole tracked universe pulls it toward the midpoint",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "all",
+              "header": "mktStretch_all"
+            },
+            {
+              "scope": "crypto",
+              "header": "mktStretch_crypto"
+            },
+            {
+              "scope": "l1",
+              "header": "mktStretch_l1"
+            },
+            {
+              "scope": "memes",
+              "header": "mktStretch_memes"
+            },
+            {
+              "scope": "defi",
+              "header": "mktStretch_defi"
+            },
+            {
+              "scope": "tradfi",
+              "header": "mktStretch_tradfi"
+            },
+            {
+              "scope": "stocks",
+              "header": "mktStretch_stocks"
+            },
+            {
+              "scope": "indices",
+              "header": "mktStretch_indices"
+            },
+            {
+              "scope": "commodities",
+              "header": "mktStretch_commodities"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "moduleKey": "includeReferencePairs",
+      "sectionKey": "reference-pairs",
+      "title": "Reference Pairs",
+      "metrics": [
+        {
+          "metric": "usdtUsdDev",
+          "gloss": "USDT/USD deviation from par (%), signed, from Coinbase’s USDT-USD spot tape quoted in USD; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "market",
+              "header": "usdtUsdDev_market"
+            }
+          ]
+        },
+        {
+          "metric": "usdcUsdtDev",
+          "gloss": "USDC/USDT deviation from par (%), signed, from Binance’s USDCUSDT spot tape quoted in USDT; read as of its latest stored minute close and absent when that close is older than 15 minutes",
+          "conditionOperators": [
+            "lt",
+            "lte",
+            "gte",
+            "gt",
+            "between"
+          ],
+          "conditionVocabulary": [],
+          "conditionHold": {
+            "timeframe": null,
+            "maxWindow": 1,
+            "maxAtLeast": 1,
+            "refusal": "NOT_REWINDABLE"
+          },
+          "developingRead": false,
+          "scopes": [
+            {
+              "scope": "market",
+              "header": "usdcUsdtDev_market"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -307,19 +307,36 @@
    "columns": [
     {
      "metric": "CVD",
-     "transformId": "spread",
-     "inputs": [
-      {
-       "metric": "SPOT_CVD"
-      }
-     ]
+     "transformId": "trajectory",
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "SPOT_CVD",
+     "transformId": "trajectory",
+     "window": 4,
+     "bars": "closed"
     }
    ],
-   "note": "Unchained only. SPOT_CVD 'resolves from the bundle and has no per-bar value', so it blocks a chain as an operand - and SPOT_CVD as a base offers no chain successors at all. Chain against MACD or ATR instead if you need the trajectory of a CVD relation.",
+   "note": "Re-specified 2026-10-13: at 108.4.0 SPOT_CVD offers no spread and is no longer in CVD's operand pool, so the one-column divergence is gone. The two trajectories side by side are the read - for the agent, not one gateable column (a clause never compares two columns).",
    "cryptoOnly": [
     "CVD",
     "SPOT_CVD"
-   ]
+   ],
+   "supersedes": {
+    "columns": [
+     {
+      "metric": "CVD",
+      "transformId": "spread",
+      "inputs": [
+       {
+        "metric": "SPOT_CVD"
+       }
+      ]
+     }
+    ],
+    "note": "Unchained only. SPOT_CVD 'resolves from the bundle and has no per-bar value', so it blocks a chain as an operand - and SPOT_CVD as a base offers no chain successors at all. Chain against MACD or ATR instead if you need the trajectory of a CVD relation."
+   }
   },
   {
    "id": "effort-vs-result",
@@ -503,12 +520,28 @@
      "window": 4
     },
     {
-     "metric": "RSI14",
+     "metric": "CLOSE",
      "transformId": "efficiency",
-     "window": 32
+     "window": 21,
+     "rel": "lower"
     }
    ],
-   "note": "Two windows on different metrics - same metric twice would collide on the header."
+   "note": "Re-specified 2026-10-13: at 108.4.0 RSI14 no longer offers efficiency (bounded oscillators lost it). Two scales of the same price instead - the anchor (close_er) and the lower rung (close_ltf_er); the rung infix keeps the headers apart.",
+   "supersedes": {
+    "columns": [
+     {
+      "metric": "CLOSE",
+      "transformId": "efficiency",
+      "window": 4
+     },
+     {
+      "metric": "RSI14",
+      "transformId": "efficiency",
+      "window": 32
+     }
+    ],
+    "note": "Two windows on different metrics - same metric twice would collide on the header."
+   }
   },
   {
    "id": "reversion-baseline",
@@ -716,10 +749,20 @@
    "columns": [
     {
      "metric": "BUY_PRESSURE",
-     "transformId": "efficiency"
+     "transformId": "aggregate",
+     "window": 24
     }
    ],
-   "note": "VPIN proper needs volume-clock bucketing. Persistence of one-sided pressure is the reachable substitute."
+   "note": "Re-specified 2026-10-13: at 108.4.0 BUY_PRESSURE no longer offers efficiency. Persistence of one-sided pressure is now its 24-bar mean (buyPres_mean24) - how lopsided the flow has been, not how straight. VPIN proper still needs volume-clock bucketing.",
+   "supersedes": {
+    "columns": [
+     {
+      "metric": "BUY_PRESSURE",
+      "transformId": "efficiency"
+     }
+    ],
+    "note": "VPIN proper needs volume-clock bucketing. Persistence of one-sided pressure is the reachable substitute."
+   }
   },
   {
    "id": "aggressor-imbalance",
@@ -1301,5 +1344,6 @@
   "be in the recorded render caches (the 2026-09-09 / 09-20 coverage sweeps), so every column has rendered live.",
   "The 2026-09-09 caveat that these 'feed no signal module' and so are not scoreable is moot since contract 108:",
   "there is no score, and a condition over any of them is a full entry gate."
- ]
+ ],
+ "_reextraction_2026-10-13": "Three families re-specified against the 108.4.0 corpus (scale-dependent-efficiency, flow-toxicity, perp-spot-cvd); each keeps its previous spec under `supersedes`."
 }

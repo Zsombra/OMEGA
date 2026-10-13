@@ -1,20 +1,42 @@
 {
+  "metric": "FUNDING_RATE",
+  "label": "Funding rate",
   "code": "rate",
   "family": "derivatives",
-  "label": "Funding rate",
-  "metric": "FUNDING_RATE",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 4,
-    "unit": "percent"
+    "unit": "percent",
+    "precision": 4
   },
   "outputKind": "scalar",
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread"
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "rank"
+    }
   ],
+  "study": "funding",
   "spreadOperands": [
     "PPO",
     "ROC12",
@@ -29,29 +51,12 @@
     "HIGH_DEV",
     "LOW_DEV",
     "FUNDING_ANN",
-    "OI_CHG",
-    "REGIME_CRASH_MARGIN"
+    "OI_CHG"
   ],
-  "timeframeMode": "timeless",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "rank"
-    }
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
   ]
 }

@@ -1,14 +1,59 @@
 {
+  "metric": "BB_LOWER",
+  "label": "Bollinger lower band",
   "code": "bbLower",
   "family": "structure",
-  "label": "Bollinger lower band",
-  "metric": "BB_LOWER",
   "nativeOutput": {
     "kind": "numeric",
-    "precision": 2,
-    "unit": "price"
+    "unit": "price",
+    "precision": 2
   },
   "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "distance",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "levelInteraction"
+    }
+  ],
+  "study": "bollingerBands",
   "spreadOperands": [
     "OPEN",
     "HIGH",
@@ -19,6 +64,9 @@
     "ORACLE",
     "SPOT_CLOSE_CB",
     "SPOT_CLOSE_BN",
+    "HL2",
+    "HLC3",
+    "OHLC4",
     "SMA20",
     "SMA50",
     "SMA200",
@@ -54,6 +102,8 @@
     "KC_MID",
     "KC_LOWER",
     "ST_LINE",
+    "SWING_FRACTAL_HIGH",
+    "SWING_FRACTAL_LOW",
     "HMA20",
     "PSAR",
     "ICHI_CONV",
@@ -71,40 +121,5 @@
     "PDL",
     "PDO",
     "PIVOT_S3"
-  ],
-  "timeframeMode": "candle",
-  "transforms": [
-    {
-      "id": "value"
-    },
-    {
-      "id": "trajectory"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "distance"
-    },
-    {
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate",
-        "efficiency"
-      ],
-      "id": "spread",
-      "operandRequired": true
-    },
-    {
-      "id": "aggregate"
-    },
-    {
-      "id": "efficiency"
-    },
-    {
-      "id": "bandTouch"
-    }
   ]
 }
