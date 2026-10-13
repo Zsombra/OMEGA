@@ -30,7 +30,7 @@ to connect and to know which one to open.
 
 ## Discover the live surface first
 
-**Tools, prompts, and resources are discovered live from this MCP connection.** Always read the current `tools/list`, `prompts/list`, and `resources/list` before acting — a cached capability list is not authoritative after a server deployment. This skill teaches the workflows and the strict request contracts; it deliberately does not copy the server's tool catalog, metric/transform vocabulary, signal IDs, formulas, or default values. Discover those from the live tools (`list_strategy_categories`, `list_strategy_vocabulary`, `list_strategy_signals`, `get_strategy_signal_definition`, …). Never guess a metric, transform, parameter, template, signal, or enabled-timeframe fact.
+**Tools, prompts, and resources are discovered live from this MCP connection.** Always read the current `tools/list`, `prompts/list`, and `resources/list` before acting — a cached capability list is not authoritative after a server deployment. This skill teaches the workflows and the strict request contracts; it deliberately does not copy the server's tool catalog, metric/transform vocabulary, formulas, or default values. Discover those from the live tools (`list_strategy_categories`, `list_strategy_vocabulary`, `list_strategy_signals`, `get_strategy_signal_definition`, …). Never guess a metric, transform, parameter, template, signal, or enabled-timeframe fact.
 
 ## Single-account vs multi-account request shape
 
@@ -85,7 +85,8 @@ as a rebind. **`battlegrid-radar-deployment`** carries putting an agent on stand
 
 Predict UP or DOWN for each coin in the pool; exactly one coin is your **Captain** (2x score
 multiplier). **The arc lives in `battlegrid-arena-play`** — activate it to find a session, read its
-market context, compose a grid with real per-coin reasoning, submit it, and read the results.
+market context, stage picks with real per-coin reasoning into the player's entry draft (the same draft
+their builder writes), read it back, commit it on the player's word, and read the results.
 **`battlegrid-market-analysis`** carries the market read that informs the picks, and
 **`battlegrid-trade-analysis`** carries reading back how you have done.
 
@@ -93,7 +94,7 @@ The `play-market-grid` prompt (discover via `prompts/list`) provides a guided en
 
 ## Retired operations
 
-`create_strategy`, the plan tools (`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`), `update_strategy_signal_rule`, the signal-rule tools (`simulate_aggregate_score`, `list_strategy_signals`, `get_strategy_signal_definition`, `derive_strategy_rule_view`, `get_coin_signal_preview`), and the direct agent writers (`create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent`) are **retired** — they are absent from discovery and cannot be invoked. Stage into the entity's draft, read it back, and commit the version you read; a strategy's entry gate is its conditions (a required or verdict-carrying condition — a strategy with none never trades, and its draft warns `NO_ENTRY_CONDITION`), its ATR floor `minAtrPct` is part of the `TRADE_LEVEL_POLICY` axis, and a strategy binding is the agent draft's `STRATEGY_BINDING` axis. A deployment preview's `previewToken`, and the `confirm` on a deployment commit, resume, delete or draft discard, are retired the same way: a strict input refuses either key. Do not attempt flat legacy payloads; the server enforces a closed-world request root and the proxy never reconstructs them.
+`create_strategy`, the plan tools (`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`), `update_strategy_signal_rule`, the signal-rule tools (`simulate_aggregate_score`, `list_strategy_signals`, `get_strategy_signal_definition`, `derive_strategy_rule_view`, `get_coin_signal_preview`), the direct agent writers (`create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent`), and the direct grid writers (`submit_market_grid`, `update_market_grid`) are **retired** — they are absent from discovery and cannot be invoked. Stage into the entity's draft, read it back, and commit the version you read; a strategy's entry gate is its conditions (a required or verdict-carrying condition — a strategy with none never trades, and its draft warns `NO_ENTRY_CONDITION`), its ATR floor `minAtrPct` is part of the `TRADE_LEVEL_POLICY` axis, a strategy binding is the agent draft's `STRATEGY_BINDING` axis, and a player's Market Grid picks are the entry draft's `CELL_n` and `RATIONALE` axes. A deployment preview's `previewToken`, and the `confirm` on a deployment commit, resume, delete or draft discard, are retired the same way: a strict input refuses either key. Do not attempt flat legacy payloads; the server enforces a closed-world request root and the proxy never reconstructs them.
 
 ## Common errors
 

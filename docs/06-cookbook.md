@@ -194,6 +194,8 @@ must decide what that means — an absent reading is not a low reading.
 
 ### 11. Two columns, one header — and the section goes dark
 
+> **History since 2026-10-13:** the header token now carries the offset (`RSI14_o3`), a stored `bars: "all"` (`_dev`) and a pinned timeframe (`_4h`), so two columns differing only by offset no longer collide - see [03](03-column-compilation.md#2026-10-13-the-header-token). The duplicate-header guard still refuses two identical columns.
+
 `offset` changes a column's **value** and never appears in its **header**. So two
 `RSI14 × value` columns at `offset: 0` and `offset: 3` compile to the same header.
 
@@ -313,6 +315,8 @@ resolved UP on SOL (88.9) and XRP (100.0), NEITHER on BTC (40.0).
 
 ### 15. `offset` is invisible in the header, so a lag cannot sit beside its own present
 
+> **History since 2026-10-13:** the header token now carries the offset (`RSI14_o3`), a stored `bars: "all"` (`_dev`) and a pinned timeframe (`_4h`), so two columns differing only by offset no longer collide - see [03](03-column-compilation.md#2026-10-13-the-header-token). The duplicate-header guard still refuses two identical columns.
+
 `value` accepts `offset`, which reads the metric N bars back. But the header carries
 only the metric code — `CLOSE × value` emits `close` at every offset. Two `value`
 columns on one metric therefore collide, the section is dropped from
@@ -423,6 +427,8 @@ rendered `/78`. The values agree with `conditionColumns`; the preamble is wrong.
 the denominator you can see, not the prose above the table.
 
 ### 20. A duplicate header renders, but silently loses conditionability
+
+> **History since 2026-10-13:** the header token now carries the offset (`RSI14_o3`), a stored `bars: "all"` (`_dev`) and a pinned timeframe (`_4h`), so two columns differing only by offset no longer collide - see [03](03-column-compilation.md#2026-10-13-the-header-token). The duplicate-header guard still refuses two identical columns.
 
 `offset` is **not** part of the header name. Two columns differing only by offset collide:
 

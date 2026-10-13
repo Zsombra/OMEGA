@@ -241,7 +241,12 @@ def test_fanout_predicts_every_rendered_header_exactly():
         section = payload["request"]["sections"][0]
         predicted = []
         for spec in section["columns"]:
-            predicted += [o.header for o in outputs_for(Column(**spec))]
+            col = Column(**spec)
+            if payload["capturedAt"] < "2026-10-13":
+                # Captured before the header token (<code>[_<tf>][_dev][_o<N>], 2026-10-13): then an offset, a stored
+                # Developing selector and a pinned timeframe named nothing - replay under the naming of the date.
+                col = _pre_token(col)
+            predicted += [o.header for o in outputs_for(col)]
 
         custom = [cc for cc in payload["response"]["conditionColumns"]
                   if cc["sectionKey"].startswith("custom:")]
@@ -330,3 +335,15 @@ def test_rank_denominator_is_the_universe_not_the_report():
     assert "32/78" in row and "12/78" in row, "denominator is 78, not the 1-coin report"
     note = payload["response"]["rankScopingNote"]
     assert "not the previewed coin selection" in note
+
+
+def _pre_token(col):
+    """The column as headers named it before the 2026-10-13 token rule: no `_o<N>`, no `_dev`, no `_<abs>`."""
+    from omega.types import RelTimeframe
+    update = {"offset": None}
+    if col.bars == "all":
+        update["bars"] = None
+    if getattr(col.timeframe, "abs", None):
+        update["timeframe"] = RelTimeframe(rel="anchor")
+    return col.model_copy(update=update)
+

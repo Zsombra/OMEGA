@@ -36,9 +36,8 @@ approves needs no deployment. An Arena deployment enters an agent into a preset'
 5. **Answering "why isn't it firing?" by paging the journal.** *Cue: any question about why a
    deployed agent has been quiet — "is it working?", "it hasn't traded all day", "what's blocking
    it?".* `get_radar_activity_summary` now answers the whole question in one small call — which
-   cause recurs, how far the score sits from firing, and what just happened — so paging the journal
-   for it tallies an aggregate the server already computed and re-derives a proximity reading it
-   already serves. The journal read is for ONE occurrence, or for more rows than the summary's ten.
+   cause recurs, how often the pair qualified, and what just happened — so paging the journal for it
+   tallies an aggregate the server already computed and re-derives a reading it already serves. The journal read is for ONE occurrence, or for more rows than the summary's ten.
    → step 5.
 
 ## Sequence
@@ -198,18 +197,26 @@ resolver:
 - `reading.live` is the reading its qualification verdict was built from: the gates with their margins
   (`qualification`); every entry-lane condition — required, direction-setting, and the ones they
   reference — with its outcome and its clause values against their thresholds
-  (`conditions.entries[]`); the allocated signals with their attribution; and the data it lacked
+  (`conditions.entries[]`); and the data it lacked
   (`missingData`). An `UNEVALUATED` entry is a condition this tick could not read, with its
   `reachReason`. A pair the scan can never read was refused above, so every such cause is one the next
   sweep can change — report it as the current reading, never as a reason the deployment will not
   work. `anchorBarStatus` says which bar the conditions read (`live` while it is still forming), and
-  `scoredBarStart` names the bar the signals and gates were scored on. **A live reading decides
+  `scoredBarStart` names the bar the gates were read on. **A live reading decides
   nothing**: the radar decides at the close, on the closed bar, so say what it reads right now, never
   that it will fire.
 - `reading.lastClose` is the one decision the agent's on-duty row names as its last close: `RECORDED`
   with that bar's close-decision record — the reading it was decided on, or why it was missed —
   `PENDING` while that record is still being written, or `NONE` when the pair remembers no decision.
-  For the decisions before it, call `get_radar_close_decisions` (step 5).
+  For the decisions before it, call `get_radar_close_decisions` (step 5). Name a close by the served
+  `barCloseAt` — on a record's `bar`, on a `PENDING` close and on the on-duty row's
+  `closeDecision.last` — and a `DEFERRED` row's bar being decided by `closeDecision.decidingBarStart`;
+  never add a timeframe to `barStart`.
+- `reading.sinceClose` is how the live reading moved since the deciding reading, computed by the
+  server: the ATR reading's move (`UP`, `DOWN`, `UNCHANGED`), whether the required conditions, the
+  trade levels, the condition verdict and the first failing gate changed, and each live condition
+  against the deciding entry for its key (`ABSENT`, `NOT_READ`, `UNCHANGED`, `CHANGED`). It is `null` unless `lastClose` is `RECORDED`
+  on a reading. Quote it; never compare the two readings yourself.
 
 An `UNSCORABLE` entry is an on-duty agent the preview could not read on the coin, with
 `coinDataStopped` when the coin's data explains why; it never fails the preview. `readings` is null
@@ -304,7 +311,7 @@ Four reads, cheapest first. Stop as soon as the player's question is answered.
    the agent the pause refused, not to a trade. That is the whole answer while the pause lasts; never
    send the player to change an agent or a policy for it. Most "is it working?" questions end here.
    When the question is what ONE on-duty agent of a scanning coin needs to fire — which condition
-   reads false, how far a gate sits from its threshold — drill into its row
+   reads false, how far the ATR reading sits from its floor — drill into its row
    with `get_agent_coin_qualification({ agentId, coinTickers: [<the coin's ticker>], reading: true })`
    and read the verdict's `reading` as step 2 of the deploy flow describes it: `live` is what the
    agent reads now, and `lastClose` is the decision its row names as its last close, with the reading
@@ -313,11 +320,12 @@ Four reads, cheapest first. Stop as soon as the player's question is answered.
    carries three parts and they answer three different questions, each on its own scope:
    - `groups` — which cause recurs and how often, over the window the response names. Quote the
      counts with that window; never sum them across calls.
-   - `curveDigest` — how FAR the score sits from firing, over the FIRST on-duty agent's ring (the
-     lowest-numbered slot on duty now, named in `curveAgentName`). This is what
-     separates "lower the minimum two points and it fires" from "this strategy does not fit this
-     coin": `bestUnqualifiedScorePercent` against `latestThresholdPercent`. Its `ringStartAt` /
-     `ringEndAt` describe the ring, NOT the cause window above.
+   - `curveDigest` — how often the pair qualified, over the FIRST on-duty agent's ring (the
+     lowest-numbered slot on duty now, named in `curveAgentName`): `qualifiedCount` of
+     `sampleCount`, and the latest ATR% with how many samples read one. A pair that qualified on no
+     sample is one whose strategy does not fit this coin as it trades now; the `groups` above name the
+     gate that blocked it. Its `ringStartAt` / `ringEndAt` describe the ring, NOT the cause window
+     above.
    - `recentEvents` — the last ten key events, lean. Deliberately NOT bounded by the cause window, so
      a pair quiet for longer returns no groups beside populated older rows. That is correct, not a
      contradiction; each row carries its own `occurredAt`.
@@ -334,7 +342,7 @@ Four reads, cheapest first. Stop as soon as the player's question is answered.
    `outcome` (`FIRED`, `NOT_QUALIFIED`, `CLAIMED` or `MISSED`), the fire's `fireDisposition` as
    arbitration settled it, and the `evidence` the bar was decided on — the closed-bar reading's gates
    with their margins, every condition's outcome with its clause evidence, each condition the scan
-   could not evaluate with its reach reason, the allocated signals and `missingData` — or, for a
+   could not evaluate with its reach reason, and `missingData` — or, for a
    `MISSED` bar, the close step's own answer: the bar never settled, an input was not on its due bar,
    or the window passed. An `outcome` of `FIRED` says the bar qualified and its agent was offered the
    coin's fire; `fireDisposition` says what the fire came to — `FIRED` when a decision was enqueued,

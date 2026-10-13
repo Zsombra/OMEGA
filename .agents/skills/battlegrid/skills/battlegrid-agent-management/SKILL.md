@@ -171,7 +171,7 @@ State the blast radius **from server fields, as numbers**, before the confirm fo
 - **Rebind** — a strategy change is the draft's STRATEGY_BINDING axis: stage `{ strategyId }`, read
   `get_agent_draft`, and take both strategies from its `impact.rebind` — the strategy it replaces
   (`fromStrategyName`) and the one it binds (`toStrategyName`, at `toStrategyRevision`). Say that
-  the target strategy's context modules, signal rules, prose and timeframe **replace** the ones
+  the target strategy's report, conditions, trade levels, prose and timeframe **replace** the ones
   materialized on the agent (this is not a merge), naming both strategies. Agent-owned settings are
   untouched. The commit checks the new strategy against the coins the radar acts on for this agent;
   a refusal names the coin and the condition — surface it, never retry it unchanged.

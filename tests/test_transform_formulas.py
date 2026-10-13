@@ -120,20 +120,19 @@ def test_value_offset_shifts_the_window_by_exactly_n():
             f"offset={other} also fits - the test does not discriminate")
 
 
-def test_a_header_collision_is_recorded_as_a_platform_defect():
-    """Two columns differing only by offset produce the same header, render anyway, and
-    both drop out of conditionColumns. omega predicts the collision; the platform does
-    not refuse it."""
+def test_the_offset_header_collision_defect_is_recorded_and_resolved():
+    """Two columns differing only by offset produced the same header on 2026-08-24, rendered anyway, and both dropped
+    out of conditionColumns - a platform defect. By 2026-10-13 the offset names the header, so the defect is resolved;
+    the record keeps it, marked. (history: on 2026-08-24 an offset never named the header, so `RSI14` at offsets 0 and 3 collided (data/contract/columns/_renders_collision.json); by 2026-10-13 it does (`RSI14_o3`, data/contract/columns/header_tokens_2026-10-13.json). The changelog names no version for the change.)"""
     from omega.fanout import outputs_for
     from omega.types import Column, RelTimeframe
     plain = [o.header for o in outputs_for(
         Column(metric="SMA20", transformId="value", timeframe=RelTimeframe(rel="anchor")))]
     shifted = [o.header for o in outputs_for(
-        Column(metric="SMA20", transformId="value",
-               timeframe=RelTimeframe(rel="anchor"), offset=3))]
-    assert plain == shifted, "offset must not disambiguate, or the defect is stale"
-    assert any(x["id"] == "duplicate-header-drops-conditionability"
-               for x in AUDIT["platformDefects"])
+        Column(metric="SMA20", transformId="value", timeframe=RelTimeframe(rel="anchor"), offset=3))]
+    assert (plain, shifted) == (["SMA20"], ["SMA20_o3"])
+    defect = next(x for x in AUDIT["platformDefects"] if x["id"] == "duplicate-header-drops-conditionability")
+    assert defect["resolvedObserved"].startswith("2026-10-13")
 
 
 def test_classify_state_is_observable_but_still_not_authorable():

@@ -1,18 +1,17 @@
 ---
 name: battlegrid-strategy-examples
-description: Full-surface composition patterns for the strategy studio — validated desk-grade examples of custom report sections, benchmark sections, condition trees with verdicts and enforcement gates, tiered signal weights, routing gates, ATR trade levels, and position management. Activate beside strategy-authoring whenever a strategy is being composed or upgraded beyond a basic template.
+description: Full-surface composition patterns for the strategy studio — validated desk-grade examples of custom report sections, benchmark sections, condition trees with verdicts and required enforcement, the entry-condition rule, ATR trade levels with the ATR floor, and position management. Activate beside strategy-authoring whenever a strategy is being composed or upgraded beyond a basic template.
 ---
 
 # Strategy Studio — full-power composition patterns
 
 `strategy-authoring` owns the flow (evidence → locked spec → discover → stage → review →
 commit). This skill owns **what to compose**: a default build — a few platform sections, no
-conditions, untouched weights — wastes the studio. The playbooks below are compiled in CI, so their
+conditions, untouched trade levels — wastes the studio, and one with no entry condition never trades. The playbooks below are compiled in CI, so their
 shapes are binding in the sense that matters — they are checked, not merely asserted. Loose tokens
 elsewhere in this file are not covered by that gate, and vocabulary moves with deploys, so discovery
-in the conversation stays the authority — prefer what `list_strategy_vocabulary`,
-`get_strategy_column_contract`, and `get_strategy_signal_definition` return over anything
-printed here, and read exact headers from a `detail: "detailed"` preview's
+in the conversation stays the authority — prefer what `list_strategy_vocabulary` and
+`get_strategy_column_contract` return over anything printed here, and read exact headers from a `detail: "detailed"` preview's
 `authoring.conditionColumns` before conditioning on them.
 
 ## The full-power checklist
@@ -22,14 +21,12 @@ Before committing a CREATE, every "no" here is a decision to state, not an omiss
 1. At least one **custom section** whose columns encode the thesis — not only platform modules.
 2. **Conditions** encode the entry logic: building blocks (`verdict: null`) + verdict carriers,
    and at least one `required: true` condition vetoing obvious disqualifiers **before any
-   billing or LLM call**.
-3. **Every signal meant to score is named in `rules`** with a deliberate tier — unnamed signals
-   keep server defaults (Off on a CREATE). Verify against the rule rows the draft read serves,
-   never assume.
-4. **Gates** (`minAggregateScore`, `minRequiredCount`, `minAtrPct`) are computed against the
-   chosen weight budget, not guessed.
-5. **Trade levels + position management** match the setup's geometry and holding period.
-6. `marketReadText` states standing orders with `{...}` markers so live values render inline.
+   billing or LLM call**. They are the only deterministic entry gate: with no required and no
+   verdict-carrying entry condition the strategy never routes a trade (`NO_ENTRY_CONDITION`).
+3. **The ATR floor** (`minAtrPct`) is set for the coins and timeframe the thesis trades, not left
+   at the default by accident — a coin below it is refused before any condition is read.
+4. **Trade levels + position management** match the setup's geometry and holding period.
+5. `marketReadText` states standing orders with `{...}` markers so live values render inline.
 
 ## Header grammar (system-generated — never named by the author)
 
@@ -45,6 +42,12 @@ Before committing a CREATE, every "no" here is a decision to state, not an omiss
 | `maxShare` wN | `<code>_maxShare` | `volBase_ltf_maxShare` |
 | `classifyZone` / `classifyState` | `<code>_zone` / `<code>_state` | `RSI14_zone`, `ADX_state` |
 | `levelInteraction` | `<code>_lvl`, `<code>_lvl_b<N>` at a buffer of N bps | `bbUpper_lvl`, `bbUpper_lvl_b25` |
+| any, stored `"bars": "all"` | `<code>_dev`, then the transform's suffix | `RSI14_dev_t1` |
+| `value` at `offset` N > 0 | `<code>_o<N>` | `RSI14_1d_o1` |
+
+The code carries its tokens in this order: `<code>[_<tf>][_dev][_o<N>]`, then the transform's suffix.
+`_dev` follows the STORED selector — the author chose Developing — whatever bar set the column then
+reads; `_o<N>` appears on a `value` at offset N > 0.
 
 Non-anchor rungs affix `_ltf` (lower) / `_htf` (regime): `MAalign_htf`,
 `zones_htf_support_dist`. Chains are bounded at two: inner `distance`/`spread` → outer
@@ -56,11 +59,12 @@ when the strategy timeframe changes — `regime` is the anchor's ladder successo
 anchor). *Pinned* (`{abs: "<tf>"}`) is fixed, ignores anchor retunes, suffixes the literal
 (`RSI14_1d`, `dist_SMA200_1d`, `MAalign_1d` — validated), and binds to discovery's
 `rankedTimeframes`, a **superset** of the authorable anchor set — `{abs: "1d"}` is valid while
-`1d` is not an anchor. `offset: 1` on a pinned `value` column reads the last **closed** bar of
-that timeframe (`RSI14[t - 1]`) — the deterministic daily-close read; offset 0 reads the
-forming bar (provisional), and offset does not change the header, so one offset per
-`metric × timeframe` per section. **Daily-strategy pattern:** anchor 4h, pinned-1d thesis
-columns at `offset: 1`, `required: true` daily conditions gating every carrier, anchor-rung
+`1d` is not an anchor. `offset` steps back inside the bar set the Read selector admits, counted
+from the newest bar that set admits, and suffixes the header `_o<N>` (`RSI14_1d_o1`). A pinned
+column above the strategy timeframe reads Confirmed, so its offset 0 is already the newest
+**completed** bar of that timeframe — the deterministic daily-close read — and offset 1 is the
+day before it. **Daily-strategy pattern:** anchor 4h, pinned-1d thesis columns with
+`"bars": "closed"` at offset 0, `required: true` daily conditions gating every carrier, anchor-rung
 columns only for entry timing and risk — daily inputs then move once per daily close while
 stops and time decay keep managing intraday. **Benchmark sections** (`benchmarkTicker: "BTC"`,
 required-nullable on every custom section) read the benchmark's values on every row — the
@@ -156,7 +160,16 @@ Recipes — each one clause:
 before billing. And the RESOLVED verdict binds entry DIRECTION: `UP` admits long setups only,
 `DOWN` short only, and `NEITHER`/`UNRESOLVED` admit none — the refused side is absent from the
 setups block and from the `decide_trade` contract, not merely discouraged in them. A strategy that
-declares no verdict-carrying condition resolves `null` and constrains nothing.
+declares no verdict-carrying condition resolves `null` and constrains no side.
+
+**A strategy without an entry condition never routes.** An entry condition gates when it is
+`required: true` or carries a verdict (`UP`, `DOWN` or `NEITHER`); a building block gates nothing,
+and an exit rule never counts. A strategy whose conditions include neither never trades: every coin
+fails first with `NO_ENTRY_CONDITION`, before the trade levels, the ATR floor or any condition is
+read, and its draft carries the `NO_ENTRY_CONDITION` warning. It stays a valid strategy — Market Grid
+reads it as context — so this is a choice to state, never an accident. When the agent decides a
+routed trade, its `decide_trade` call cites 1–8 of the evaluated entry conditions in
+`conditionChecklist`, and only a condition that read TRUE may be cited as `CONFIRM`.
 
 A verdict carrier must read no DEVELOPING bar. A verdict is refused over any closure that reads a
 column selecting Developing above the strategy timeframe (`CONDITION_VERDICT_READ_ILLEGAL`). The
@@ -461,7 +474,7 @@ bar whose close decides an entry is the strategy's OWN timeframe.
 
 **Every trigger is decided at the close of the strategy's own bar — there are three, and the close
 is the only entry clock.** The newest completed bar is read on the closed basis — every one-close
-condition resolves on that bar and the scorecard reads its close — and a reading that still qualifies
+condition resolves on that bar and the gates read its close — and a reading that still qualifies
 fires at that close. A bar that does not qualify decides nothing and is not revisited. The fill lands
 at the next tick, and the platform refuses it if the market has already run past its own drift budget
 from that close. A fourth value, `AT_SIGNAL`, is readable on strategies authored before this contract
@@ -505,45 +518,16 @@ column reaches any other timeframe by pinning it (`timeframe: { abs: '4h' }`). `
 than omitting them, because the section is rebuilt whole on save and an omitted key clears the
 author's value silently. On a CREATE, omit `sectionKey` — it is derived from the section itself.
 
-## Signal rules
-
-`{ signalId, allocation, required, params }` — one entry per signal you want scoring.
-`allocation` is the tier (0–3) and `params` replaces canonical defaults only when present. Staged
-into the draft's SIGNAL_RULES axis, every row is complete — `allocation` and `required` on each —
-and replaces the drafted row for its signal while every other row is kept.
-
-## Signal weights and gate math
-
-Tiers: 0 Off · 1 Normal · 2 Important · 3 Critical.
-
-```
-aggregateScore = Σ(score × allocation) / Σ(allocation)   over triggered signals
-```
-
-Weights are relative — build a pyramid: 1–2 Critical (thesis, usually `required`), 2–4
-Important (independent confirmation, different modules), 1–3 Normal (context), rest Off so
-noise cannot dilute the average. Gate check: with 3/2/2/1 weights, Critical + one Important at
-score 1.0 → (3+2)/8 = 0.625, so a 0.6 gate means "thesis plus one confirmation".
-`simulate_aggregate_score` does this arithmetic from the draft's values at review time.
-`required: true` counts the signal toward `minRequiredCount` when triggered; at
-`allocation: 0` it is rejected (contract 34). `params` replace canonical defaults only when
-present — read `get_strategy_signal_definition({ signalId, timeframe })` before tuning (e.g.
-`rsi_overbought {"threshold": 65}` for a fade book; `volume_surge {"multiplier": 1.5}`).
-`derive_strategy_rule_view` shows which signals a draft report feeds — weighting a signal the
-report never feeds is dead weight.
-
-## Routing gates
-
-`{ minAggregateScore, minRequiredCount, minAtrPct }` — whether a scored setup may route to a
-trade at all. `minAggregateScore` 0–1 · `minRequiredCount` 0–20 · `minAtrPct` is the dead-market
-floor, with bounds from `get_trading_config_catalog`.
-
 ## Trade levels
 
-`{ minStopLossAtrMultiple, maxStopLossAtrMultiple, minRiskRewardRatio }` — where stops and
-targets may sit. `minStopLossAtrMultiple < maxStopLossAtrMultiple` (≤ the 3×ATR structural cap),
-`minRiskRewardRatio` within the served range. Sizing is risk-budget based — a wider stop means a
-smaller position, never more risk.
+`{ minStopLossAtrMultiple, maxStopLossAtrMultiple, minRiskRewardRatio, minAtrPct }` — where stops
+and targets may sit, and how much a coin must move before it is worth trading at all.
+`minStopLossAtrMultiple < maxStopLossAtrMultiple` (≤ the 3×ATR structural cap), `minRiskRewardRatio`
+within the served range. `minAtrPct` is the ATR floor: a coin whose ATR% sits below it is refused
+(`ATR_VOLATILITY_BELOW_MIN`) before any condition is read, with bounds from
+`get_trading_config_catalog`; it is multiplied with `maxStopLossAtrMultiple` in the capital check, so
+a high floor with a wide stop needs more capital per trade. The axis is staged whole — all four.
+Sizing is risk-budget based — a wider stop means a smaller position, never more risk.
 
 ## Position management
 
@@ -583,7 +567,7 @@ rejects an `offset`) belongs in prose above — those are permanent. A claim tha
 
 ## Where the worked material lives
 
-This skill's body is the contract — the axes, the header grammar, how conditions and weights behave,
+This skill's body is the contract — the axes, the header grammar, how conditions and trade levels behave,
 and the absence section above. The worked material is disclosed on demand, so it costs nothing until
 you ask for it. Read a reference with `read_skill_reference` when you reach the work it covers:
 

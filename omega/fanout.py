@@ -70,46 +70,57 @@ def _infix(column: Column) -> str:
     return REL_INFIX.get(rel, "") if rel else ""
 
 
-def _stage1_header(column: Column, contract: Contract) -> str:
-    """Header produced by the first transform stage (before any chaining).
+def _token(column: Column, contract: Contract) -> str:
+    """The metric's header token: `<code>[_ltf|_htf|_<abs>][_dev][_o<N>]` (contract 109, measured 2026-10-13 -
+    data/contract/columns/header_tokens_2026-10-13.json; the vendor pack 31.2.98 states the same order).
 
-    EVERY branch must place the timeframe infix. `bandTouch`, `classifyZone`,
-    `crossDetect` and `rank` silently dropped it until live renders at rel=lower
-    proved otherwise (close_ltf_touch, ADX_ltf_zone, MACD_ltf_cross,
-    ADX_ltf_rank_hi). `distance` and `value` are the two that carry the marker as a
-    trailing SUFFIX rather than an infix.
-    """
-    m = contract.metric(column.metric)
-    code, infix, tid = m.code, _infix(column), column.transformId
+    - the timeframe part: `_ltf` / `_htf` for rel lower / regime (REL_INFIX), `_<tf>` for ANY pinned `abs` - even one
+      equal to the anchor (`ADX_1h` at a 1h anchor) - and nothing at rel anchor;
+    - `_dev` when the column STORES `bars: "all"` (Developing), at any timeframe; `closed` or unset adds nothing;
+    - `_o<N>` for an `offset` N > 0, which only `value` reads.
+    Until 2026-10-13 omega emitted only the rel part, so `RSI14_1d`, `RSI7_o1` and `ADX_dev_t2` were mispredicted -
+    and offset no longer collides two `value` columns (cookbook trap 20 is history)."""
+    code = contract.metric(column.metric).code
+    rel = getattr(column.timeframe, "rel", None)
+    tf = REL_INFIX.get(rel, "").rstrip("_") if rel else f"_{column.timeframe.abs}"
+    dev = "_dev" if column.bars == "all" else ""
+    off = f"_o{column.offset}" if column.offset and column.transformId == "value" else ""
+    return f"{code}{tf}{dev}{off}"
+
+
+def _stage1_header(column: Column, contract: Contract) -> str:
+    """Header produced by the first transform stage (before any chaining): the token, shaped by the transform.
+
+    Every branch is the token plus the transform's suffix (live renders: close_ltf_er, ADX_ltf_zone, MACD_ltf_cross,
+    ADX_ltf_rank_hi, dist_VWAP_4h, EMA5_4h_EMA13_spread, high_4h_dev_mean10, bbUpper_4h_lvl_b25); `distance` is the one
+    PREFIX shape (`dist_<token>`)."""
+    token, tid = _token(column, contract), column.transformId
 
     if tid == "distance":
-        # The rel marker is a SUFFIX here, not an infix: dist_VWAP_ltf, never
-        # dist_ltf_VWAP. Verified against _renders_tfvariants.json.
-        return f"dist_{code}{infix.rstrip('_')}"
+        return f"dist_{token}"
     if tid == "spread":
         operand = contract.metric(column.inputs[0].metric).code if column.inputs else "?"
-        return f"{code}{infix or '_'}{operand}_spread" if infix else f"{code}_{operand}_spread"
+        return f"{token}_{operand}_spread"
     if tid == "efficiency":
-        return f"{code}{infix or '_'}er" if infix else f"{code}_er"
+        return f"{token}_er"
     if tid == "maxShare":
-        return f"{code}{infix or '_'}maxShare" if infix else f"{code}_maxShare"
+        return f"{token}_maxShare"
     if tid == "aggregate":
-        return f"{code}_mean{column.window or 24}"
-    if tid == "bandTouch":
-        return f"{code}{infix or '_'}touch"
+        return f"{token}_mean{column.window or 24}"
+    if tid == "bandTouch":                 # retired at v100; kept for the history records
+        return f"{token}_touch"
     if tid == "classifyZone":
-        return f"{code}{infix or '_'}zone"
+        return f"{token}_zone"
     if tid == "levelInteraction":
-        # Measured 2026-10-13 (get_strategy_column_contract, contract 108.4.0,
-        # data/contract/columns/levelInteraction_108_4_2026-10-13.json): bbUpper_lvl, VWAP_ltf_lvl, and a non-zero
-        # buffer names the header - bbUpper_lvl_b25.
-        return f"{code}{infix or '_'}lvl" + (f"_b{column.buffer}" if column.buffer else "")
+        # Measured 2026-10-13 (get_strategy_column_contract, levelInteraction_108_4_2026-10-13.json): bbUpper_lvl,
+        # VWAP_ltf_lvl, and a non-zero buffer names the header - bbUpper_lvl_b25 (bbUpper_4h_lvl_b25 pinned).
+        return f"{token}_lvl" + (f"_b{column.buffer}" if column.buffer else "")
     if tid == "crossDetect":
-        return f"{code}{infix or '_'}cross"
+        return f"{token}_cross"
     if tid == "classifyState":          # platform-only, listed for completeness
-        return f"{code}_state"
+        return f"{token}_state"
     if tid == "rank":
-        return f"{code}{infix or '_'}rank_{column.ordering or 'hi'}"
+        return f"{token}_rank_{column.ordering or 'hi'}"
     if tid.startswith("nearestZone"):
         # Verified against live renders (data/contract/columns/_renders_coverage.json),
         # which corrected two guesses here:
@@ -119,11 +130,11 @@ def _stage1_header(column: Column, contract: Contract) -> str:
         suffix = {"nearestZoneType": "type", "nearestZoneRange": "range",
                   "nearestZoneDist": "dist", "nearestZoneAge": "age_h"}[tid]
         side = "resist" if column.side == "resistance" else column.side
-        return f"{code}{infix or '_'}{side}_{suffix}" if infix else f"{code}_{side}_{suffix}"
+        return f"{token}_{side}_{suffix}"
     if tid == "count":
-        return f"{code}{infix or '_'}count" if infix else f"{code}_count"
-    # value, classifyZone, crossDetect, trajectory all key off the bare code
-    return f"{code}{infix.rstrip('_')}" if infix else code
+        return f"{token}_count"
+    # value and trajectory key off the bare token (trajectory adds its slots in outputs_for)
+    return token
 
 
 def outputs_for(column: Column, contract: Contract | None = None) -> list[Output]:

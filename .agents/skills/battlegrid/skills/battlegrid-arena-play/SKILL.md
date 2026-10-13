@@ -47,7 +47,10 @@ the enablement path there.
 1. `list_market_grid_sessions` with status `PENDING` — the sessions still enterable. **The
    `sessionId` you use comes from here; never fabricate one.**
 2. `get_market_grid_session` — the coin pool (note each coin's `id`), the entry fee, the pool and
-   the lock time.
+   the session's three instants: `startsAt` (the **Opening Bell** — the open of the one candle it
+   scores), `lockAt` (entries close) and `settleAt` (the candle closes). Entries stay open through
+   the Opening Bell window, from `startsAt` until `lockAt`, so an entry made inside the window can
+   read the candle that closed at the bell; the full candle from `startsAt` is scored either way.
 3. `get_market_context` for that session — the indicators, rankings and trends the picks will
    actually be reasoned from.
 4. `check_market_grid_submission` — **before composing anything.** If a submission already exists,
@@ -102,7 +105,8 @@ reasoning as the player's, and the attribution is part of what was scored.
 
 ### 5. After settlement
 
-- A session moves PENDING → LIVE → RESOLVING → SETTLED. Two states sit off that path: CANCELLED
+- A session moves PENDING → LIVE → RESOLVING → SETTLED. It stays PENDING through the Opening Bell
+  window and goes LIVE at `lockAt`. Two states sit off that path: CANCELLED
   (entry fees refunded) and SETTLEMENT_QUARANTINED (settlement exhausted its retries and awaits an
   operator). Either one is the answer — report it as the status.
 - `get_market_grid_results` — available only once the session is SETTLED. Before that it returns a
@@ -114,6 +118,22 @@ reasoning as the player's, and the attribution is part of what was scored.
   reasoning was wrong. `reasoning` is null once the entry was edited — the record no longer describes
   the picks, so say that rather than reconstructing one. `list_my_market_grid_entries` is the history
   across sessions. An agent's decisions are a different record, `get_agent_journal`.
+
+## On the arena's session page
+
+When the conversation is embedded in the player's Market Grid session page, the round on screen
+arrives as the attached scope, and the session it names is the one in scope.
+
+- **Propose, do not submit.** When the player asks for a grid, call `generate_agent_grid` for the
+  session in scope (the billed-inference warning in step 3 still applies). The result reaches them
+  as a card with **LOAD INTO GRID**, which puts the picks into their own builder as a starting point.
+- **A loaded grid they have not changed is the agent's.** Their builder will not place it as theirs.
+  If they want the agent's grid entered as it stands, run step 4: one confirmation, then
+  `submit_agent_grid` on their explicit pick, never on free text.
+- **Once they change a pick, the grid is theirs.** They place it themselves from their ticket. Do not
+  submit it for them, and do not describe it as the agent's.
+- **A newer generation for the same agent replaces the older card.** The older one reads SUPERSEDED;
+  only the newest is what `submit_agent_grid` would enter.
 
 ## Refusals, and what each one means
 

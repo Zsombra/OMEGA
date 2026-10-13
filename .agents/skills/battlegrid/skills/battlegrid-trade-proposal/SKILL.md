@@ -19,14 +19,14 @@ re-sorts a list, re-derives a verdict, or approves on the player's behalf.
 ## 1. When the player names a coin and not an agent — choose the agent
 
 - `scan_coin_agents` for the coin. The rows arrive server-ranked across the player's own agents:
-  `qualified` by score, then `rejected` with the first failing gate, then `unscorable` with the
+  `qualified` first, then `rejected` with the first failing gate, then `unscorable` with the
   reason, then `ineligible` with the refusal `propose_entry_decision` would give (`AGENT_NOT_ACTIVE`,
   `MODEL_INACTIVE`, `AGENT_HALTED`). Read them **as written** — never re-sort or re-derive a verdict.
 - **Ask the top-ranked qualifying agent**, and name the other agents that qualified so the player can
   choose one of them instead. One request per coin: the platform holds one pending request per coin
   across all of the player's agents, so ask one agent, not each of them.
 - **When none qualifies, say so plainly.** Name each agent's blocking gate or ineligibility, and offer
-  the strategy doctor for the one closest to qualifying. Never propose through an agent the scan
+  the strategy doctor for the one whose blocking gate is the one to work on. Never propose through an agent the scan
   reports rejected, unscorable or ineligible.
 - **When the player has no agent at all**, the scan is empty: say so, and the next step is building one
   (a strategy first, when they have none).
@@ -34,8 +34,8 @@ re-sorts a list, re-derives a verdict, or approves on the player's behalf.
 
 ## 2. Which coins fit the agent right now
 
-- `scan_agent_coins` for the agent. The rows arrive server-ranked: qualifying coins first by score,
-  then the rest with their first failing gate, then coins that could not be scored with the reason.
+- `scan_agent_coins` for the agent. The rows arrive server-ranked: qualifying coins first by ticker,
+  then the rest with their first failing gate, then coins that could not be evaluated, with the reason.
   The scan reads the agent's gates and spends no LLM call.
 - Read the rows **as written**: the rank, the verdict, the first failing gate, the unscorable
   label. Never re-sort them and never re-derive a verdict from its numbers — the server's ranking

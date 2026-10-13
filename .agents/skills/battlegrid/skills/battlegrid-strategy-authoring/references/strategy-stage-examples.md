@@ -4,8 +4,8 @@
 checked in CI against the live `stage_strategy_draft` schema; a create example is also checked for the axes a new
 strategy needs. Its shape is current.
 
-These examples show the envelope and the small axes. A full composition (report sections, conditions, signal
-rules) is in `strategy-examples`' playbooks, which have their own compile gate.
+These examples show the envelope and the small axes. A full composition (report sections, conditions, trade
+levels) is in `strategy-examples`' playbooks, which have their own compile gate.
 
 Every `<UPPER_SNAKE>` value is a placeholder: `<STRATEGY_ID>` is the id a read returned. Never send a placeholder as
 written, and never invent an id. `draftVersion` is the version `get_strategy_draft` returned: 0 when there was no
@@ -33,9 +33,10 @@ and TIMEFRAME_PROFILE before it can be created.
 }
 ```
 
-## Change an existing strategy's setup gates
+## Change an existing strategy's trade levels
 
-SETUP_GATES is sent whole: all three gates, even when only one changes.
+TRADE_LEVEL_POLICY is sent whole: all four dials, even when only one changes. `minAtrPct` is the ATR% volatility floor
+a coin must clear before any condition is read; the other three are the stop-loss band and the reward-to-risk floor.
 
 ```json stage_strategy_draft
 {
@@ -43,7 +44,12 @@ SETUP_GATES is sent whole: all three gates, even when only one changes.
     "strategyId": "<STRATEGY_ID>",
     "draftVersion": 2,
     "axes": {
-      "SETUP_GATES": { "minAggregateScore": 60, "minRequiredCount": 1, "minAtrPct": 0.5 }
+      "TRADE_LEVEL_POLICY": {
+        "minStopLossAtrMultiple": 1,
+        "maxStopLossAtrMultiple": 2,
+        "minRiskRewardRatio": 1.5,
+        "minAtrPct": 0.8
+      }
     }
   }
 }
