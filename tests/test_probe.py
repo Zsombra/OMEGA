@@ -218,6 +218,12 @@ def test_all_sixteen_transforms_are_exercised_on_live_data():
             covered.add(col["transformId"])
             if col.get("chainedTransformId"):
                 covered.add(col["chainedTransformId"])
+    # levelInteraction: get_strategy_column_contract, 2026-10-13 at 108.4.0 (its own capture file, so the first-cut
+    # store above stays the four first-cut probes)
+    from omega.probe import COLUMNS_DIR
+    import json as _json
+    for case in _json.loads((COLUMNS_DIR / "levelInteraction_108_4_2026-10-13.json").read_text(encoding="utf-8"))["cases"]:
+        covered.add(case["request"]["column"]["transformId"])
     missing = set(load().transform_ids()) - covered
     assert not missing, f"never exercised live: {sorted(missing)}"
 

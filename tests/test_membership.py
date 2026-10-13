@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from omega.contract import DERIVED_DIR, load
+from omega.contract import CONTRACT_DIR, DERIVED_DIR, load
 from omega.membership import (
     analyse, check_allocations, modules_for, signals_for, suggest_columns_for,
 )
@@ -87,8 +87,13 @@ def test_mapped_plus_dead_covers_the_whole_corpus():
     mapped = {m for v in MAP["moduleSatisfiedBy"].values() for m in v}
     dead = set(MAP["metricsSatisfyingNoModule"])
     assert not (mapped & dead), f"metric both mapped and dead: {mapped & dead}"
-    assert mapped | dead == set(CONTRACT.metrics), (
-        f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - (mapped | dead))}")
+    # History since contract 108 (signals removed; derive_strategy_rule_view left discovery): the map covers the 156
+    # metrics measured while membership existed. The 15 extracted in the re-extraction at 108.4.0, 2026-10-13 were never
+    # probed and never can be - no signal module exists for them to feed.
+    never_probed = set(json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(
+        encoding="utf-8"))["formerlyUnmeasured"])
+    assert mapped | dead == set(CONTRACT.metrics) - never_probed, (
+        f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - never_probed - (mapped | dead))}")
 
 
 def test_coverage_counts_are_accurate():

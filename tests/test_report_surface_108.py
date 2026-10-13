@@ -68,9 +68,11 @@ def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
-def test_the_unmeasured_transforms_are_served_and_neither_extracted_nor_privileged():
-    # classifyState is served too, and is the platform-privileged one (data/derived/platform_privileged.json)
-    assert set(C.unmeasured_transforms) == {"levelInteraction"}
+def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
+    """levelInteraction was served-but-unmeasured from 2026-10-12 until the 2026-10-13 re-extraction read it per metric
+    (43 metrics offer it). classifyState is served too, and is the platform-privileged one."""
+    assert C.unmeasured_transforms == {}
+    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 43
 
 
 def test_a_retired_transform_is_refused_naming_its_replacement():
@@ -80,15 +82,30 @@ def test_a_retired_transform_is_refused_naming_its_replacement():
     assert "BB_TOUCH" in msg and "levelInteraction" in msg and "108.0.0" in msg
 
 
-def test_an_unmeasured_transform_is_refused_until_its_contract_is_read():
-    f = validate_column(col("BB_UPPER", "levelInteraction"), contract=C)
-    assert codes(f) == {"TRANSFORM_UNMEASURED"}
-    assert "get_strategy_column_contract" in f[0].message
+def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():
+    """README v100: offered on "a candle-homed level (a band, VWAP, a moving average, ST_LINE, PSAR, the Ichimoku
+    lines) or a prior-session level or pivot"; "not offered on a price fact (CLOSE, MARK, HLC3), a developing-session
+    level (TPO_*), the naked points of control, or the Donchian rails". The extraction agrees on every one named."""
+    assert codes(validate_column(col("BB_UPPER", "levelInteraction"), contract=C)) == set()
+    for fact in ("CLOSE", "MARK", "HLC3", "TPO_POC", "NAKED_POC_ABOVE", "DONCHIAN_UPPER"):
+        assert codes(validate_column(col(fact, "levelInteraction"), contract=C)) == {"REPORT_COLUMN_PAIR_UNSUPPORTED"}
 
 
-def test_the_space_never_enumerates_a_retired_or_unmeasured_transform():
-    for shape in enumerate_shapes(expand_operands=True):
-        assert {shape.transform, shape.chained} & {"bandTouch", "levelInteraction"} == set()
+def test_level_interaction_headers_are_the_measured_ones():
+    """get_strategy_column_contract, 2026-10-13 (data/contract/columns/levelInteraction_108_4_2026-10-13.json)."""
+    from omega.fanout import outputs_for
+    assert [o.header for o in outputs_for(col("BB_UPPER", "levelInteraction"))] == ["bbUpper_lvl"]
+    assert [o.header for o in outputs_for(col("BB_UPPER", "levelInteraction", buffer=25))] == ["bbUpper_lvl_b25"]
+    lower = Column(metric="VWAP", transformId="levelInteraction", timeframe=RelTimeframe(rel="lower"))
+    out = outputs_for(lower)
+    assert [(o.header, o.kind) for o in out] == [("VWAP_ltf_lvl", "classification")]
+    assert out[0].vocabulary == ("touch_from_below", "touch_from_above", "reject_from_below", "reject_from_above", "none")
+
+
+def test_the_space_never_enumerates_a_retired_transform_and_does_enumerate_level_interaction():
+    shapes = enumerate_shapes(expand_operands=True)
+    assert not [s for s in shapes if "bandTouch" in (s.transform, s.chained)]
+    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 43
 
 
 # --- buffer ----------------------------------------------------------------------------------------

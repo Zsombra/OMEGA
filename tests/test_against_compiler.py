@@ -62,7 +62,8 @@ def test_predicted_headers_match_compiler(case):
 def test_corpus_is_complete():
     # 156 as of the 2026-09-20 refresh (contract 61.2.0); 144 on 2026-09-09 at 54.1.0;
     # 86 on 2026-08-24. The twelve added are all prior-session structure (TPO, naked POC, PDO).
-    assert len(CONTRACT.metrics) == 156
+    # 171 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); the 15 are v100's twelve bar-geometry metrics and v101.1's three swing ones.
+    assert len(CONTRACT.metrics) == 171
 
 
 def test_every_privileged_pair_is_rejected():

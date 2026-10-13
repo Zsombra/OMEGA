@@ -2,15 +2,14 @@
 
 *Generated from `data/contract/transforms/_authoring.json` — do not hand-edit.*
 
-A transform is **how you read** a metric. There are 15 authorable transforms omega has extracted.
+A transform is **how you read** a metric. There are 16 authorable transforms omega has extracted.
 Crucially the metric×transform matrix is a **sparse partial function**, not a grid:
-only **619 of 156×15 = 2340** cells are legal
-(**26.5%** density).
+only **670 of 171×16 = 2736** cells are legal
+(**24.5%** density).
 
 Against the column `transformId` enum the contract 108.0.0 write schema serves (`data/contract/stage_strategy_draft/schema_20261010T215326Z.json`):
 
 - **`bandTouch` is retired** — extracted, no longer served; it is dropped from every metric's transforms in doc 01 and here, and `omega.validate` refuses it (`TRANSFORM_RETIRED`). Its reference entry is kept as history.
-- **`levelInteraction` is served and unmeasured** — never extracted, so it has no entry here; `omega.validate` refuses it (`TRANSFORM_UNMEASURED`) until its column contract is read.
 
 ## Reference
 
@@ -19,42 +18,44 @@ Against the column `transformId` enum the contract 108.0.0 write schema serves (
 Select one value at the requested offset.
 
 ```
-output = base[t - offset]
+output = {base}[t - {offset}]
 ```
 
-- **Supported on:** 155 metric(s)
+- **Supported on:** 170 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the requested slot is absent or the source value is null.
 - **Parameters:**
-  - `offset` (optional, default `0`) — Bars before the latest value; 0 selects the current resolved value.
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
+  - `offset` (optional, default `0`) — Bars to step back inside the Read bar set, counted from the newest bar that set admits; 0 reads that newest bar. At or below the strategy timeframe, Developing offset 1 and Confirmed offset 0 read the same completed bar on the live report. A timeless metric (one the catalog serves as "timeless") accepts only 0.
 
 ### `trajectory` — Trajectory
 
 Render the recent build-up plus its rising, falling, or flat direction.
 
 ```
-slots = last window non-null base values; trend = compare(first, last)
+slots = the newest {window} bars of {base}, present or not; trend = compare(oldest non-null slot, now)
 ```
 
-- **Supported on:** 71 metric(s)
+- **Supported on:** 76 metric(s)
 - **Emits:** window + 1 — window value slots (_t{n-1}..._t1, _now) plus one _trend direction output.
-- **Null behaviour:** Missing observations produce null slots; an empty series has null now and trend.
+- **Null behaviour:** A bar with no value is a null slot, and now is null when the newest bar has none; the trend is null when now is null or fewer than two bars hold a value.
 - **Parameters:**
-  - `window` (optional, default `4`) — Number of non-null observations represented by the trajectory.
-  - `bars` (optional, default `all`) — Which bars feed the series: 'all' includes the live forming bar as now; 'closed' uses closed bars only.
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
+  - `window` (optional, default `4`) — Number of bars the trajectory spans: the newest `window` bars, present or not — at least 2, because the trend compares the oldest present reading with the newest.
 
 ### `distance` — Distance from price
 
 Measure signed percentage distance from current price to a price-level metric.
 
 ```
-output = ((price - base) / base) × 100
+output = (({price} − {base}) / {base}) × 100
 ```
 
-- **Supported on:** 62 metric(s)
+- **Supported on:** 67 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when price or the base level is null, or when the base level is zero.
-- **Parameters:** none
+- **Parameters:**
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
 - **Chains into:** ['trajectory', 'aggregate', 'efficiency'] (candle-backed metrics only)
 
 ### `spread` — Spread vs metric
@@ -62,13 +63,14 @@ output = ((price - base) / base) × 100
 Measure the signed percentage gap between the base and one operand metric.
 
 ```
-output = (base - inputs[0]) / inputs[0] × 100
+output = (({base} − {inputs[0]}) / {inputs[0]}) × 100
 ```
 
-- **Supported on:** 119 metric(s)
+- **Supported on:** 123 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when either operand is null or the second operand is zero.
 - **Parameters:**
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
   - `inputs` (required) — Exactly one candle-backed operand metric, resolved at the base column timeframe.
 - **Chains into:** ['trajectory', 'aggregate', 'efficiency'] (candle-backed metrics only)
 
@@ -77,30 +79,31 @@ output = (base - inputs[0]) / inputs[0] × 100
 Measure how directly the series travelled: net movement divided by the total distance covered.
 
 ```
-output = |base[last] - base[first]| / sum(|base[i] - base[i-1]|) over the window
+output = |{base}[last] - {base}[first]| / sum(|{base}[i] - {base}[i-1]|) over the newest {window} bars
 ```
 
-- **Supported on:** 68 metric(s)
+- **Supported on:** 43 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the window holds fewer than two non-null points, or when every consecutive delta is zero (a flat series has no efficiency).
 - **Parameters:**
-  - `window` (optional, default `21`) — Number of non-null POINTS in the window — N moves needs window N+1.
-  - `bars` (optional, default `all`) — Which bars feed the series: 'all' includes the live forming bar; 'closed' uses closed bars only.
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
+  - `window` (optional, default `21`) — Number of bars in the window — N moves needs window N+1. The ratio reduces the values present among the newest `window` bars.
 - **Output range:** [0, 1]
 
 ### `aggregate` — Windowed aggregate
 
-Compute the mean of non-null history values in the selected window.
+Compute the mean of non-null values in the selected window.
 
 ```
-output = sum(nonNull(base[-window:])) / count(nonNull(base[-window:]))
+output = sum(nonNull({base}[-{window}:])) / count(nonNull({base}[-{window}:]))
 ```
 
-- **Supported on:** 68 metric(s)
+- **Supported on:** 73 metric(s)
 - **Emits:** 1
-- **Null behaviour:** Returns null when the selected history window has no non-null values.
+- **Null behaviour:** Returns null when the selected window has no non-null values.
 - **Parameters:**
-  - `window` (optional, default `24`) — Number of history observations included in the canonical mean.
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
+  - `window` (optional, default `24`) — Number of observations included in the canonical mean.
 - **Note:** Mean only — there is no sum/min/max variant.
 
 ### `maxShare` — Largest share
@@ -108,15 +111,15 @@ output = sum(nonNull(base[-window:])) / count(nonNull(base[-window:]))
 Report how much of the window total sits in its single largest observation.
 
 ```
-output = max(nonNull(base[-window:])) / sum(nonNull(base[-window:]))
+output = max(nonNull({base}[-{window}:])) / sum(nonNull({base}[-{window}:]))
 ```
 
-- **Supported on:** 20 metric(s)
+- **Supported on:** 19 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the window holds no non-null values, or when they total zero (a share of nothing is not a number).
 - **Parameters:**
-  - `window` (optional, default `24`) — Number of non-null observations included in the window total.
-  - `bars` (optional, default `all`) — Which bars feed the series: 'all' includes the live forming bar; 'closed' uses closed bars only.
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
+  - `window` (optional, default `24`) — Number of bars in the window. The share reduces the values present among the newest `window` bars.
 - **Output range:** [0, 1]
 
 ### `rank` — Peer rank
@@ -124,7 +127,7 @@ output = max(nonNull(base[-window:])) / sum(nonNull(base[-window:]))
 Read the platform-computed ordinal for the base metric across the tracked universe. The ranked set holds current values only, so there is no historical ordinal to offset into.
 
 ```
-output = ordinal(base among the ranked universe, by the chosen ordering)
+output = ordinal({base} among the ranked universe, by the chosen ordering)
 ```
 
 - **Supported on:** 40 metric(s)
@@ -136,29 +139,46 @@ output = ordinal(base among the ranked universe, by the chosen ordering)
 
 ### `classifyZone` — Zone label
 
-Classify a bounded oscillator with its canonical overbought and oversold policy.
+Classify the oscillator into the zones its own classifier declares.
 
 ```
-output = oscillatorZone(base)
+output = oscillatorZone({base})
 ```
 
 - **Supported on:** 8 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the source oscillator is null.
-- **Parameters:** none
+- **Parameters:**
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
 
 ### `crossDetect` — Cross detect
 
 Detect a bullish or bearish crossing in the canonical source series.
 
 ```
-output = crossDirection(base[t - 1], base[t])
+output = crossDirection({base}[t - 1], {base}[t])
 ```
 
 - **Supported on:** 3 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the two observations required for crossing are unavailable.
-- **Parameters:** none
+- **Parameters:**
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
+
+### `levelInteraction` — Level interaction
+
+Classify what the newest bar did against a price level: a touch within the buffer, or a rejection that pierced the level and closed back, on the side the prior close stood.
+
+```
+output = levelInteraction(bar t, close t−1, {base}[t], {base}[t−1], buffer {buffer} bps)
+```
+
+- **Supported on:** 43 metric(s)
+- **Emits:** 1
+- **Null behaviour:** Returns null when the series holds no prior bar, a price or the level is absent, or either bar's level is not positive.
+- **Parameters:**
+  - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.
+  - `buffer` (optional, default `0`) — How near a TOUCH must come to the level, in whole basis points of the level (0–500). At 0 the bar must reach the level and close on it to read TOUCH. A REJECT pierces the level itself and ignores the buffer.
 
 ### `bandTouch` — Band touch (RETIRED)
 
@@ -168,7 +188,7 @@ Classify current price proximity to the canonical upper and lower bands.
 output = bandTouch(base, current price)
 ```
 
-- **Retired** at contract 108.0.0: not in the served enum; the 61.2.0 extraction offered it on 62 metric(s)
+- **Retired** at contract 108.0.0: not in the served enum; the 61.2.0 extraction offered it on 0 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the price or band values required by the classifier are unavailable.
 - **Parameters:** none
@@ -179,7 +199,7 @@ output = bandTouch(base, current price)
 Count active entities in the resolved set.
 
 ```
-output = cardinality(base)
+output = cardinality({base})
 ```
 
 - **Supported on:** 1 metric(s)
@@ -192,7 +212,7 @@ output = cardinality(base)
 Return the canonical type of the nearest zone on the selected side.
 
 ```
-output = type(nearest(base filtered by side))
+output = type(nearest({base} filtered by {side}))
 ```
 
 - **Supported on:** 1 metric(s)
@@ -206,7 +226,7 @@ output = type(nearest(base filtered by side))
 Return the low-to-high price range of the nearest zone on the selected side.
 
 ```
-output = [low, high] of nearest(base filtered by side)
+output = [low, high] of nearest({base} filtered by {side})
 ```
 
 - **Supported on:** 1 metric(s)
@@ -217,10 +237,10 @@ output = [low, high] of nearest(base filtered by side)
 
 ### `nearestZoneDist` — Nearest zone distance
 
-Measure signed percentage distance from price to the nearest zone midpoint.
+Measure the signed percentage of price from the nearest zone's midpoint.
 
 ```
-output = ((price - midpoint(nearest zone)) / midpoint(nearest zone)) × 100
+output = (({price} − midpoint(nearest zone)) / midpoint(nearest zone)) × 100
 ```
 
 - **Supported on:** 1 metric(s)
@@ -254,17 +274,17 @@ output = floor((now - detectedAt(nearest zone)) / 1 hour)
 | `count` | 6 | `BUY_TRADES`, `REGIME_MOM_BEAR_VOTES`, `REGIME_MOM_BULL_VOTES`, `REGIME_RUN_BARS`, `SELL_TRADES`, `TRADES` |
 | `fraction` | 3 | `BB_PCT_B`, `BUY_PRESSURE`, `STOCH_RSI14` |
 | `largeCount` | 5 | `BUY_VOLUME`, `OBV`, `SELL_VOLUME`, `VOLUME`, `VOL_SMA20` |
-| `oscillator` | 17 | `ADX`, `CCI20`, `DI_MINUS`, `DI_PLUS`, `MFI14`, `QQE_RSI_MA`, `QQE_STOP`, `REGIME_DI_SPREAD`, `REGIME_TREND_MARGIN`, `RSI14`, `RSI2`, `RSI7`, `STOCH_D`, `STOCH_K`, `WILLR14`, `WT1`, `WT2` |
-| `percent` | 16 | `ATR_PCT`, `BB_WIDTH_PCT`, `CHG_15M`, `CHG_1H`, `CHG_24H`, `CHG_4H`, `CHG_5M`, `CLOSE_CHANGE`, `FUNDING_ANN`, `FUNDING_RATE`, `HIGH_DEV`, `LOW_DEV`, `OI_CHG`, `PPO`, `REGIME_CRASH_MARGIN`, `ROC12` |
-| `price` | 62 | `BB_LOWER`, `BB_UPPER`, `CLOSE`, `DONCHIAN_LOWER`, `DONCHIAN_UPPER`, `EMA13`, `EMA20`, `EMA21`, `EMA5`, `EMA50`, `EMA9`, `HIGH`, `HMA20`, `ICHI_BASE`, `ICHI_CONV`, `ICHI_LAG`, `ICHI_SPAN_A`, `ICHI_SPAN_B`, `KC_LOWER`, `KC_MID`, `KC_UPPER`, `LAST`, `LOW`, `MARK`, `NAKED_POC_ABOVE`, `NAKED_POC_BELOW`, `OPEN`, `ORACLE`, `PDH`, `PDL`, `PDO`, `PIVOT_P`, `PIVOT_R1`, `PIVOT_R2`, `PIVOT_R3`, `PIVOT_S1`, `PIVOT_S2`, `PIVOT_S3`, `PRIOR_TPO_IB_HIGH`, `PRIOR_TPO_IB_LOW`, `PRIOR_TPO_POC`, `PRIOR_TPO_VAH`, `PRIOR_TPO_VAL`, `PRIOR_TPO_VPOC`, `PRIOR_TPO_VVAH`, `PRIOR_TPO_VVAL`, `PSAR`, `SMA20`, `SMA200`, `SMA50`, `SPOT_CLOSE_BN`, `SPOT_CLOSE_CB`, `ST_LINE`, `TPO_IB_HIGH`, `TPO_IB_LOW`, `TPO_POC`, `TPO_VAH`, `TPO_VAL`, `TPO_VPOC`, `TPO_VVAH`, `TPO_VVAL`, `VWAP` |
+| `oscillator` | 18 | `ADX`, `CCI20`, `DI_MINUS`, `DI_PLUS`, `MFI14`, `QQE_RSI_MA`, `QQE_STOP`, `REGIME_CRASH_MARGIN`, `REGIME_DI_SPREAD`, `REGIME_TREND_MARGIN`, `RSI14`, `RSI2`, `RSI7`, `STOCH_D`, `STOCH_K`, `WILLR14`, `WT1`, `WT2` |
+| `percent` | 15 | `ATR_PCT`, `BB_WIDTH_PCT`, `CHG_15M`, `CHG_1H`, `CHG_24H`, `CHG_4H`, `CHG_5M`, `CLOSE_CHANGE`, `FUNDING_ANN`, `FUNDING_RATE`, `HIGH_DEV`, `LOW_DEV`, `OI_CHG`, `PPO`, `ROC12` |
+| `price` | 67 | `BB_LOWER`, `BB_UPPER`, `CLOSE`, `DONCHIAN_LOWER`, `DONCHIAN_UPPER`, `EMA13`, `EMA20`, `EMA21`, `EMA5`, `EMA50`, `EMA9`, `HIGH`, `HL2`, `HLC3`, `HMA20`, `ICHI_BASE`, `ICHI_CONV`, `ICHI_LAG`, `ICHI_SPAN_A`, `ICHI_SPAN_B`, `KC_LOWER`, `KC_MID`, `KC_UPPER`, `LAST`, `LOW`, `MARK`, `NAKED_POC_ABOVE`, `NAKED_POC_BELOW`, `OHLC4`, `OPEN`, `ORACLE`, `PDH`, `PDL`, `PDO`, `PIVOT_P`, `PIVOT_R1`, `PIVOT_R2`, `PIVOT_R3`, `PIVOT_S1`, `PIVOT_S2`, `PIVOT_S3`, `PRIOR_TPO_IB_HIGH`, `PRIOR_TPO_IB_LOW`, `PRIOR_TPO_POC`, `PRIOR_TPO_VAH`, `PRIOR_TPO_VAL`, `PRIOR_TPO_VPOC`, `PRIOR_TPO_VVAH`, `PRIOR_TPO_VVAL`, `PSAR`, `SMA20`, `SMA200`, `SMA50`, `SPOT_CLOSE_BN`, `SPOT_CLOSE_CB`, `ST_LINE`, `SWING_FRACTAL_HIGH`, `SWING_FRACTAL_LOW`, `TPO_IB_HIGH`, `TPO_IB_LOW`, `TPO_POC`, `TPO_VAH`, `TPO_VAL`, `TPO_VPOC`, `TPO_VVAH`, `TPO_VVAL`, `VWAP` |
 | `ratio` | 3 | `REGIME_VOL_ATR_RATIO`, `REGIME_VOL_BBW_RATIO`, `RVOL` |
-| `signedPrice` | 5 | `ATR`, `BB_WIDTH`, `CVD`, `MACD`, `SPOT_CVD` |
+| `signedPrice` | 4 | `ATR`, `BB_WIDTH`, `CVD`, `MACD` |
 | `usdLargeCount` | 2 | `NOTIONAL_VOLUME_1D`, `OI` |
 
 `RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —
 its pool would have exactly one member.
 
-37 metrics offer no `spread`: mostly classifications,
+48 metrics offer no `spread`: mostly classifications,
 booleans, events and the entity set.
 
 ## Platform-privileged pairs

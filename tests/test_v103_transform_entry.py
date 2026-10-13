@@ -29,14 +29,16 @@ def _strip_v103_flags(c):
     return dataclasses.replace(c, metrics=metrics)
 
 
-def test_the_per_metric_flags_restate_the_authoring_catalogue_on_every_cell():
+def test_the_108_4_corpus_is_the_v103_shape_and_the_catalogue_carries_the_requirement():
+    """Until 2026-10-13 the corpus was the 61.2.0 extraction, whose per-metric flags agreed with the catalogue on all
+    619 cells (the check that justified reading the catalogue). The 2026-10-13 re-extraction at 108.4.0 is the v103
+    shape itself: no transform entry carries either flag, and every operand / side requirement is in the catalogue."""
     cells = 0
     for m in C.metrics.values():
         for tid, spec in m.transforms.items():
             cells += 1
-            assert bool(spec.get("operandRequired")) == C.requires_operand(tid), (m.metric, tid)
-            assert bool(spec.get("sideRequired")) == C.requires_side(tid), (m.metric, tid)
-    assert cells == 619
+            assert "operandRequired" not in spec and "sideRequired" not in spec, (m.metric, tid)
+    assert cells == 670
 
 
 def test_the_catalogue_names_exactly_spread_and_the_four_zone_transforms():

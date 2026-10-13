@@ -47,7 +47,9 @@ def test_a_column_never_captured_reports_the_absence():
 
 def test_the_transform_formula_comes_from_the_stored_authoring_contract():
     e = explain(_col("EMA5", "spread", inputs=[Operand(metric="EMA13")]))
-    assert e.formula == "output = (base - inputs[0]) / inputs[0] × 100"
+    # the formula text served at 108.4.0 (refreshed into the catalogue 2026-10-13); it read
+    # "output = (base - inputs[0]) / inputs[0] × 100" before
+    assert e.formula == "output = (({base} \u2212 {inputs[0]}) / {inputs[0]}) \u00d7 100"
     assert e.operand_order == ["base", "inputs[0]"]
     assert "null" in e.null_behavior.lower()
 
