@@ -81,6 +81,7 @@ Raw: `data/contract/metrics/_batch01-06.json` (the 61.2.0 batches archived to `a
   the pre-v92 top-level `conditionColumns` (it would have reported every shape unrendered); `refresh_metric_contracts.py`
   hard-coded a deleted worktree and wrote no batches.
 
-**Not re-read** (each still a read, none needed for this slice): the 25 platform section templates
-(`templates/platform/_all.json`, 61.2.0-era); the per-header operators and hold domain on a detailed preview of the
-presets' own headers (the 2026-10-06 M2 read is the latest).
+**Followed the same day:** the 25 platform section templates were refreshed from the `templates` block the same
+`list_strategy_vocabulary` reads serve (no extra call): one moved - `includeSupportResistance` gained a `BAR_FORMING`
+value column; nothing derived changed. The per-header operators, hold domain and refusals were measured live
+([09](../09-conditions.md#2026-10-13-the-per-header-operators-measured-at-contract-10840)).
