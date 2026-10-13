@@ -1,0 +1,27 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "[condition] strategy report preview condition 'P_CROSS_ROW' holds 2 closes in a row on 'custom:0b7f688e-045d-8dff-84fb-0885d958e4ca.RSI14', but it reads a transition — a change that fires on one bar — so it can be held \"within 194 closes\" only, never on 2 or more of them.",
+  "details": {
+    "authoringCode": "CONDITION_HOLD_ILLEGAL",
+    "path": [
+      "conditions",
+      "P_CROSS_ROW",
+      "definition",
+      "hold"
+    ],
+    "receivedValue": {
+      "atLeast": 2,
+      "of": 2
+    },
+    "allowedDomain": {
+      "kind": "relation",
+      "rule": "a hold may count at most 194 closes and require at most 1 of them"
+    },
+    "context": {
+      "conditionKey": "P_CROSS_ROW",
+      "header": "custom:0b7f688e-045d-8dff-84fb-0885d958e4ca.RSI14",
+      "maxWindow": 194,
+      "maxAtLeast": 1
+    }
+  }
+}

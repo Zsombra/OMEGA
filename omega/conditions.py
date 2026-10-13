@@ -54,15 +54,17 @@ MODELLED_CLAUSE_OPS = NUMERIC_OPS + CROSS_OPS + ("between", "is") + TRANSITION_O
 # Which header kind takes which prior-bar operator is a DESCRIPTION, not a schema fact - the platform serves the
 # admitted operators per header and per strategy (`conditionOperators`). README v98: "Numeric headers take the
 # crossings and changes; classification, direction and boolean headers take the transitions; event and rank headers
-# take none of them." validate_conditions turns a mismatch into a WARNING quoting that sentence; a kind the sentence
-# does not name (date) is unmeasured.
+# take none of them." MEASURED 2026-10-13 (108.4.0, data/contract/columns/operators_108_4_2026-10-13/): the served conditionOperators match the
+# sentence for every kind it names, and a date header is served no operator at all; each mismatch was refused
+# CONDITION_OPERATOR_UNSUPPORTED, so validate_conditions errs on it.
 PRIOR_BAR_SOURCE = ("README v98: \"Numeric headers take the crossings and changes; classification, direction and "
                     "boolean headers take the transitions; event and rank headers take none of them\"")
 PRIOR_BAR_OPS_BY_KIND: dict[str, tuple[str, ...]] = {
     "numeric": CROSS_OPS + CHANGE_OPS,
     "classification": TRANSITION_OPS, "direction": TRANSITION_OPS, "boolean": TRANSITION_OPS,
-    "event": (), "rank": (),
+    "event": (), "rank": (), "date": (),
 }
+MEASURED_SOURCE = ("measured 2026-10-13 against preview_strategy_report at 108.4.0 (" + "data/contract/columns/operators_108_4_2026-10-13/" + ")")
 EDGE_HOLD_SOURCE = ("README v98: \"crossesAbove, crossesBelow, enters and exits are edges: a hold with atLeast "
                     "above 1 is refused (CONDITION_HOLD_ILLEGAL) - hold them 'within n closes'\"")
 EDGE_GROUP_SOURCE = ("vendor strategy-examples (exported at 105.0.0): \"A group whose members must all read TRUE "
@@ -710,8 +712,9 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             out.append(ConditionFinding("error", key, path, f"group op {op!r} not in {GROUP_OPS}"))
         if op == "ALL" and h and h["atLeast"] > 1 and _edge_clauses(defn):
             out.append(ConditionFinding(
-                "warning", key, f"{path}.hold",
-                f"an ALL group held {h} over an edge operator: the schema admits it, but {EDGE_GROUP_SOURCE}"))
+                "error", key, f"{path}.hold",
+                f"an ALL group held {h} over an edge operator is refused (CONDITION_HOLD_ILLEGAL, {MEASURED_SOURCE}): "
+                f"{EDGE_GROUP_SOURCE}"))
         if not members:
             out.append(ConditionFinding("error", key, path, "group has no members"))
         if op == "NOT" and len(members) != 1:
@@ -764,8 +767,8 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
     op = defn.get("op")
     if op in EDGE_OPS and h and h["atLeast"] > 1:
         out.append(ConditionFinding(
-            "warning", key, f"{path}.hold",
-            f"{op} held {h}: the schema admits any atLeast >= 1, but {EDGE_HOLD_SOURCE}"))
+            "error", key, f"{path}.hold",
+            f"{op} held {h} is refused (CONDITION_HOLD_ILLEGAL, {MEASURED_SOURCE}): {EDGE_HOLD_SOURCE}"))
     window = max(mode.window, h["of"] if h else 1)
     header = (defn.get("column") or {}).get("header", "")
     spec = headers.get(header)
@@ -924,8 +927,8 @@ def _check_arm(defn: dict, key: str, path: str, out: list[ConditionFinding]) -> 
 def _check_prior_bar(op: str, header: str, spec: dict, key: str, path: str,
                      out: list[ConditionFinding]) -> None:
     """Whether `header` admits a prior-bar operator is served per header and per strategy (`conditionOperators`,
-    preview_strategy_report detail "detailed"); omega reads it offline only from descriptions, so every finding
-    here is a WARNING with its quoted source."""
+    preview_strategy_report detail "detailed"). Measured 2026-10-13 for every output kind omega predicts, so a known
+    kind's mismatch is an ERROR; a header whose kind omega cannot see (ambient, platform section) stays a warning."""
     kind = spec.get("kind")
     if kind is None:
         out.append(ConditionFinding(
@@ -941,11 +944,19 @@ def _check_prior_bar(op: str, header: str, spec: dict, key: str, path: str,
     if op not in PRIOR_BAR_OPS_BY_KIND[kind]:
         takes = list(PRIOR_BAR_OPS_BY_KIND[kind]) or "none of the six"
         out.append(ConditionFinding(
-            "warning", key, path,
-            f"{header!r} is a {kind} header, which takes {takes} - {PRIOR_BAR_SOURCE}; the platform refuses an "
-            f"operator a header does not admit (CONDITION_OPERATOR_UNSUPPORTED)"))
+            "error", key, path,
+            f"{header!r} is a {kind} header, which takes {takes} of the prior-bar operators - refused "
+            f"(CONDITION_OPERATOR_UNSUPPORTED, {MEASURED_SOURCE}); {PRIOR_BAR_SOURCE}"))
         return
-    if not spec.get("moved"):
+    custom = spec.get("sectionKey") is None or str(spec.get("sectionKey")).startswith("custom:")
+    if not spec.get("moved") and custom:
+        # a custom-section header that no completed bar moves is a timeless metric: measured on chg24h - served
+        # conditionHold {maxWindow 1, refusal NOT_REWINDABLE} and `increased` refused
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"{header!r} is a timeless read with one stored bar (conditionHold.maxWindow 1, NOT_REWINDABLE), so {op} "
+            f"- which reads the bar before - is refused (CONDITION_OPERATOR_UNSUPPORTED, {MEASURED_SOURCE})"))
+    elif not spec.get("moved"):
         out.append(ConditionFinding(
             "warning", key, path,
             f"{header!r} is not resolved from this coin's candle series offline, so whether its stored history keeps "

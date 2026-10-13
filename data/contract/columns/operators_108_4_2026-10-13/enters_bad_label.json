@@ -1,0 +1,28 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "[condition] strategy report preview condition 'P_ENTERS_BAD': 'sideways' is not a value 'RSI14_zone' can take — its vocabulary is overbought | oversold | neutral Nearest canonical key: 'neutral'.",
+  "details": {
+    "authoringCode": "CONDITION_LITERAL_UNSUPPORTED",
+    "path": [
+      "conditions",
+      "P_ENTERS_BAD",
+      "definition",
+      "label"
+    ],
+    "receivedValue": "sideways",
+    "allowedDomain": {
+      "kind": "enum",
+      "values": [
+        "overbought",
+        "oversold",
+        "neutral"
+      ]
+    },
+    "context": {
+      "conditionKey": "P_ENTERS_BAD",
+      "header": "RSI14_zone",
+      "lookupKind": "reportHeader",
+      "nearestKey": "neutral"
+    }
+  }
+}

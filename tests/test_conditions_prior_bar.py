@@ -191,41 +191,42 @@ def test_a_negative_body_fails_the_schema_walk_and_the_validator(name):
 
 
 # --- description rules: warnings with their quoted source, never errors ----------------------------
-def test_a_header_kind_the_changelog_says_takes_none_of_them_is_a_warning():
-    # v98: "Numeric headers take the crossings and changes; classification, direction and boolean headers take
-    # the transitions; event and rank headers take none of them."
+def test_a_header_kind_that_does_not_take_the_operator_is_refused():
+    """v98: "Numeric headers take the crossings and changes; classification, direction and boolean headers take the
+    transitions; event and rank headers take none of them." A warning quoting that sentence until (measured 2026-10-13 at 108.4.0, data/contract/columns/operators_108_4_2026-10-13/), when the
+    served conditionOperators matched it for every kind and each mismatch probed was refused
+    CONDITION_OPERATOR_UNSUPPORTED (crossesAbove on RSI14_zone, enters on EMA5_13, increased on RSI14_rank_hi)."""
     cases = [crosses_above(_header("classification"), 1), increased(_header("direction")),
              enters("RSI14_now", "x"), crosses_above(_header("rank"), 3), enters(_header("event"), "Bullish")]
     for definition in cases:
         assert _walk(definition) == []                       # the schema accepts every one of them
-        errors, warnings = _findings(definition)
-        assert errors == [], [str(f) for f in errors]
-        assert any("CONDITION_OPERATOR_UNSUPPORTED" in w.message and "v98" in w.message for w in warnings), \
-            [str(w) for w in warnings]
+        errors, _ = _findings(definition)
+        assert any("CONDITION_OPERATOR_UNSUPPORTED" in e.message for e in errors), [str(e) for e in errors]
 
 
-def test_a_header_omega_cannot_see_the_history_of_is_a_warning():
-    # vendor strategy-examples: "a header whose conditionHold.maxWindow is 1 is served none of the six, so
-    # vol24hUsd increased is refused (CONDITION_OPERATOR_UNSUPPORTED ...)"; maxWindow is unmeasured offline
-    for definition in (increased("chg24h"), crosses_above("mktBreadth_all", 0)):
-        assert _walk(definition) == []
-        errors, warnings = _findings(definition)
-        assert errors == [], [str(f) for f in errors]
-        assert any("maxWindow" in w.message for w in warnings), [str(w) for w in warnings]
+def test_a_timeless_custom_header_is_refused_and_an_ambient_one_stays_a_warning():
+    """vendor strategy-examples: "a header whose conditionHold.maxWindow is 1 is served none of the six". (measured 2026-10-13 at 108.4.0, data/contract/columns/operators_108_4_2026-10-13/):
+    chg24h (a timeless custom column) is served maxWindow 1 / NOT_REWINDABLE and `increased` on it was refused. An
+    ambient header's kind and history omega cannot see, so mktBreadth_all stays a warning (unmeasured)."""
+    assert _walk(increased("chg24h")) == []
+    errors, _ = _findings(increased("chg24h"))
+    assert any("NOT_REWINDABLE" in e.message and "CONDITION_OPERATOR_UNSUPPORTED" in e.message for e in errors)
+    errors, warnings = _findings(crosses_above("mktBreadth_all", 0))
+    assert errors == [] and any("maxWindow" in w.message for w in warnings), [str(w) for w in warnings]
 
 
-def test_an_edge_held_in_a_row_passes_the_schema_and_is_a_warning():
+def test_an_edge_held_in_a_row_passes_the_schema_and_is_refused():
+    """A warning quoting README v98 and the vendor until (measured 2026-10-13 at 108.4.0, data/contract/columns/operators_108_4_2026-10-13/): both were refused CONDITION_HOLD_ILLEGAL."""
     clause = _clause("crossesAbove", value=50)
     clause["hold"] = {"atLeast": 2, "of": 2}
     assert _walk(clause) == []                               # the schema only says atLeast >= 1
-    errors, warnings = _findings(clause)
-    assert errors == []
-    assert any("CONDITION_HOLD_ILLEGAL" in w.message for w in warnings)
+    errors, _ = _findings(clause)
+    assert any("CONDITION_HOLD_ILLEGAL" in e.message for e in errors)
     group = {"kind": "group", "op": "ALL", "hold": {"atLeast": 2, "of": 3},
              "members": [_clause("crossesAbove", value=50), _clause("gt", value=40)]}
     assert _walk(group) == []
-    errors, warnings = _findings(group)
-    assert errors == [] and any("within" in w.message for w in warnings)
+    errors, _ = _findings(group)
+    assert any("CONDITION_HOLD_ILLEGAL" in e.message and "within" in e.message for e in errors)
 
 
 def test_a_transition_label_outside_the_vocabulary_is_a_warning():

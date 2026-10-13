@@ -1,0 +1,29 @@
+{
+  "code": "VALIDATION_ERROR",
+  "message": "[condition] strategy report preview condition 'P_RANK_INC': operator 'increased' is not legal for 'RSI14_rank_hi' (output kind 'rank') — its admitted operators are lt, lte, gte, gt, between",
+  "details": {
+    "authoringCode": "CONDITION_OPERATOR_UNSUPPORTED",
+    "path": [
+      "conditions",
+      "P_RANK_INC",
+      "definition",
+      "op"
+    ],
+    "receivedValue": "increased",
+    "allowedDomain": {
+      "kind": "enum",
+      "values": [
+        "lt",
+        "lte",
+        "gte",
+        "gt",
+        "between"
+      ]
+    },
+    "context": {
+      "conditionKey": "P_RANK_INC",
+      "header": "RSI14_rank_hi",
+      "outputKind": "rank"
+    }
+  }
+}
