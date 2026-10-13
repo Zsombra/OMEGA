@@ -278,3 +278,15 @@ def test_previewer_tally_reads_the_v84_evidence_shape_of_a_measured_response():
          "evidence": [{"kind": "clause", "hold": {"atLeast": 2, "of": 2}}]}]}],
         "conditionVerdictTally": {}, "missingConditionColumns": ["h"]}
     assert previewer.tally(held_answer) == ("U0 D0 N0", 1, "K:1", 1)
+
+
+def test_s8_is_the_platform_reject_over_the_prior_poc_and_s6_is_unchanged():
+    """2026-10-13: levelInteraction measured on PRIOR_TPO_POC (re-extraction at 108.4.0). S8 reads the platform's reject;
+    S6 keeps its OHLC reconstruction (open-side, not prior-close-side), so the two differ only on a gap bar."""
+    s8 = _built("S8")
+    assert [c.transformId for c in s8.section.columns if c.metric == "PRIOR_TPO_POC" and c.transformId == "levelInteraction"]
+    labels = {cl["label"] for cond in s8.spec["conds"] for cl in _nodes(cond["definition"]) if cl.get("kind") == "clause"
+              and cl["column"]["header"] == "pTpoPOC_lvl"}
+    assert labels == {"reject_from_above", "reject_from_below"}
+    s6 = _built("S6")
+    assert not [c for c in s6.section.columns if c.transformId == "levelInteraction"]

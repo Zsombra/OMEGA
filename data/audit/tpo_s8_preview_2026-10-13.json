@@ -1,0 +1,347 @@
+{
+ "_what": "One read-only preview_strategy_report (detail detailed) of out/tpo_suite/S8.preview.json at contract 108.4.0, verbatim register plus the request. Proves the platform accepts S8's levelInteraction clauses over pTpoPOC_lvl and that they resolve per coin.",
+ "capturedAt": "2026-10-13T05:29Z",
+ "contractVersion": "108.4.0",
+ "request": {
+  "coinSelection": {
+   "mode": "explicit",
+   "tickers": [
+    "BTC",
+    "ETH",
+    "SOL",
+    "BNB",
+    "XRP",
+    "LINK",
+    "DOGE",
+    "MOODENG"
+   ]
+  },
+  "source": {
+   "kind": "FIELDS",
+   "timeframe": "1h",
+   "sections": [
+    {
+     "kind": "custom",
+     "title": "TPO POC Reject",
+     "columns": [
+      {
+       "metric": "PRIOR_TPO_VAH",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_VAL",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_VAH",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "OPEN"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_VAL",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "OPEN"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_POC",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_VAH",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "PRIOR_TPO_VAL"
+        }
+       ]
+      },
+      {
+       "metric": "PRIOR_TPO_POC",
+       "transformId": "levelInteraction",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ],
+     "notes": "The bar pierced the prior POC and closed back on the side the prior close stood - the platform's own levelInteraction reject over PRIOR_TPO_POC.",
+     "benchmarkTicker": null
+    }
+   ],
+   "conditions": [
+    {
+     "conditionKey": "POC_REJECTED_UP",
+     "name": "Prior close above the prior POC; the bar pierced it and closed back above",
+     "definition": {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoPOC_lvl"
+      },
+      "op": "is",
+      "label": "reject_from_above",
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      }
+     },
+     "verdict": "UP",
+     "required": false,
+     "exitSide": null
+    },
+    {
+     "conditionKey": "POC_REJECTED_DOWN",
+     "name": "Prior close below the prior POC; the bar pierced it and closed back below",
+     "definition": {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoPOC_lvl"
+      },
+      "op": "is",
+      "label": "reject_from_below",
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      }
+     },
+     "verdict": "DOWN",
+     "required": false,
+     "exitSide": null
+    },
+    {
+     "conditionKey": "ABOVE_PRIOR_VALUE",
+     "name": "Close above the prior value area",
+     "definition": {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAH_close_spread"
+      },
+      "op": "lte",
+      "value": -0.05,
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      }
+     },
+     "verdict": "NEITHER",
+     "required": false,
+     "exitSide": null
+    },
+    {
+     "conditionKey": "INSIDE_PRIOR_VALUE",
+     "name": "Close inside the prior value area",
+     "definition": {
+      "kind": "group",
+      "op": "ALL",
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      },
+      "members": [
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": null,
+         "header": "pTpoVAH_close_spread"
+        },
+        "op": "gte",
+        "value": 0.05,
+        "hold": {
+         "atLeast": 1,
+         "of": 1
+        }
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": null,
+         "header": "pTpoVAL_close_spread"
+        },
+        "op": "lte",
+        "value": -0.05,
+        "hold": {
+         "atLeast": 1,
+         "of": 1
+        }
+       }
+      ]
+     },
+     "verdict": "NEITHER",
+     "required": false,
+     "exitSide": null
+    },
+    {
+     "conditionKey": "BELOW_PRIOR_VALUE",
+     "name": "Close below the prior value area",
+     "definition": {
+      "kind": "clause",
+      "column": {
+       "sectionKey": null,
+       "header": "pTpoVAL_close_spread"
+      },
+      "op": "gte",
+      "value": 0.05,
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      }
+     },
+     "verdict": "NEITHER",
+     "required": false,
+     "exitSide": null
+    }
+   ],
+   "marketReadText": "POC Reject. The bar pierced the prior POC and closed back on the side the prior close stood - the platform's own levelInteraction reject over PRIOR_TPO_POC. The conditions below are this strategy's entry gate (contract 108).\n\n- {POC_REJECTED_UP} (UP) - Prior close above the prior POC; the bar pierced it and closed back above.\n- {POC_REJECTED_DOWN} (DOWN) - Prior close below the prior POC; the bar pierced it and closed back below.\n- {ABOVE_PRIOR_VALUE} - Close above the prior value area.\n- {INSIDE_PRIOR_VALUE} - Close inside the prior value area.\n- {BELOW_PRIOR_VALUE} - Close below the prior value area.\n\nRead these verdicts rather than re-deriving them from the columns."
+  }
+ },
+ "gridConditionsRegister": {
+  "id": "strategy-conditions-table",
+  "title": "Strategy Conditions",
+  "surface": "GRID",
+  "coins": [
+   {
+    "coin": "BNB",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "TRUE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "TRUE",
+     "BELOW_PRIOR_VALUE": "FALSE"
+    },
+    "verdict": "Neither",
+    "decidedBy": null
+   },
+   {
+    "coin": "BTC",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "FALSE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "FALSE",
+     "BELOW_PRIOR_VALUE": "FALSE"
+    },
+    "verdict": "Neither",
+    "decidedBy": null
+   },
+   {
+    "coin": "DOGE",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "FALSE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "FALSE",
+     "BELOW_PRIOR_VALUE": "TRUE"
+    },
+    "verdict": "Neither",
+    "decidedBy": "BELOW_PRIOR_VALUE"
+   },
+   {
+    "coin": "ETH",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "FALSE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "TRUE",
+     "BELOW_PRIOR_VALUE": "FALSE"
+    },
+    "verdict": "Neither",
+    "decidedBy": "INSIDE_PRIOR_VALUE"
+   },
+   {
+    "coin": "LINK",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "FALSE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "TRUE",
+     "BELOW_PRIOR_VALUE": "FALSE"
+    },
+    "verdict": "Neither",
+    "decidedBy": "INSIDE_PRIOR_VALUE"
+   },
+   {
+    "coin": "MOODENG",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "FALSE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "TRUE",
+     "BELOW_PRIOR_VALUE": "FALSE"
+    },
+    "verdict": "Neither",
+    "decidedBy": "INSIDE_PRIOR_VALUE"
+   },
+   {
+    "coin": "SOL",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "FALSE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "FALSE",
+     "BELOW_PRIOR_VALUE": "TRUE"
+    },
+    "verdict": "Neither",
+    "decidedBy": "BELOW_PRIOR_VALUE"
+   },
+   {
+    "coin": "XRP",
+    "outcomes": {
+     "POC_REJECTED_UP": "FALSE",
+     "POC_REJECTED_DOWN": "FALSE",
+     "ABOVE_PRIOR_VALUE": "FALSE",
+     "INSIDE_PRIOR_VALUE": "TRUE",
+     "BELOW_PRIOR_VALUE": "FALSE"
+    },
+    "verdict": "Neither",
+    "decidedBy": "INSIDE_PRIOR_VALUE"
+   }
+  ]
+ },
+ "observations": [
+  "Accepted, no refusal; both reject carriers resolve TRUE/FALSE on all 8 coins.",
+  "BNB: POC_REJECTED_DOWN TRUE together with INSIDE_PRIOR_VALUE (a NEITHER carrier) TRUE -> disagreeing carriers resolve Neither (verdictResolutionNote on every design record).",
+  "BTC: every location tag FALSE - consistent with the recorded whole-day absence of prior-session TPO profiles (memory: prior-tpo-missing-whole-days); not investigated here."
+ ]
+}

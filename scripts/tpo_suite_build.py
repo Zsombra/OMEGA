@@ -68,7 +68,7 @@ from dataclasses import dataclass
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from omega.conditions import (  # noqa: E402
-    all_of, between, condition, entry_gates, held, in_, market_read_text, num, ref, report_headers,
+    all_of, between, condition, entry_gates, held, in_, is_, market_read_text, num, ref, report_headers,
     validate_conditions, validate_entry_gate, validate_market_read,
 )
 from omega.generate import ENTRY_MIRROR, StrategyPlan, Thesis  # noqa: E402
@@ -241,6 +241,18 @@ POC_DEFENCE = [
               verdict="DOWN"),
 ]
 
+# S8 (2026-10-13): the platform's own reading of what S6 approximates. `levelInteraction` (v100) classifies the newest
+# bar against a level - "A reject - the range pierced the level and the close came back - reports reject" - and was
+# measured on PRIOR_TPO_POC at contract 108.4.0 (the 2026-10-13 re-extraction; header pTpoPOC_lvl). It is NOT S6: the
+# platform takes the side from where the PRIOR CLOSE stood against the prior bar's level, S6 from where the bar OPENED,
+# so a bar that gaps across the POC reads differently. Kept beside S6, not instead of it, so the two can be compared.
+POC_REJECT = [
+    condition("POC_REJECTED_UP", "Prior close above the prior POC; the bar pierced it and closed back above",
+              is_("pTpoPOC_lvl", "reject_from_above", section_key=SK), verdict="UP"),
+    condition("POC_REJECTED_DOWN", "Prior close below the prior POC; the bar pierced it and closed back below",
+              is_("pTpoPOC_lvl", "reject_from_below", section_key=SK), verdict="DOWN"),
+]
+
 DEVELOPING = [
     condition("VALUE_MIGRATING_UP", "Developing POC above the prior POC",
               num("tpoPOC_pTpoPOC_spread", "gte", BIN, section_key=SK), verdict="NEITHER"),
@@ -334,6 +346,14 @@ SUITE = [
          null="SEVERE - all three added columns are null 00:00-01:00 UTC, and the developing area is "
               "structurally narrow all morning (measured 40-48% of prior width at the 12:00 midpoint). "
               "A silent FALSE both ways. Every condition here is verdict NEITHER so it cannot flip a direction."),
+    dict(id="S8", name="POC Reject",
+         thesis="The bar pierced the prior POC and closed back on the side the prior close stood - the platform's own "
+                "levelInteraction reject over PRIOR_TPO_POC.",
+         extra=[c("PRIOR_TPO_POC", "levelInteraction")],
+         conds=ordered(LOC + POC_REJECT),
+         teaches="Whether the platform's native reject reads the same bars as S6's OHLC reconstruction - they differ "
+                 "exactly on a bar that gaps across the POC (side from the prior close vs from the open).",
+         null="ZERO - a prior-session level is never null after the 00:00Z roll; the series' first bar has no prior bar."),
 ]
 
 
