@@ -23,8 +23,11 @@
   ],
   "study": "multiTimeframeChange",
   "spreadOperands": [
-    "PPO",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
     "ROC12",
+    "ROC15",
     "CLOSE_CHANGE",
     "CHG_15M",
     "CHG_1H",

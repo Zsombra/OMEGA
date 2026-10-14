@@ -1,0 +1,51 @@
+{
+  "metric": "MACD_HIST",
+  "label": "MACD histogram",
+  "code": "MACDhist",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    }
+  ],
+  "study": "macd",
+  "spreadOperands": [
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "ATR",
+    "BB_WIDTH",
+    "CVD"
+  ]
+}

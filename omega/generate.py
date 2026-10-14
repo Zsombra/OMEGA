@@ -63,9 +63,12 @@ MODULE_RECIPES: dict[str, list[dict]] = {
         {"metric": "RSI14", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4, "bars": "closed"},
         {"metric": "RSI14", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}},
     ],
+    # Contract 110 (README "Contract history - v110"): `MACD` and `PPO` are refused; `MACD_HIST` / `PPO_HIST` are the
+    # same histograms, and `MACD_HIST x crossDetect` is the signal-line cross.
     "MACD": [
-        {"metric": "MACD", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4, "bars": "closed"},
-        {"metric": "MACD", "transformId": "crossDetect", "timeframe": {"rel": "anchor"}},
+        {"metric": "MACD_HIST", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4,
+         "bars": "closed"},
+        {"metric": "MACD_HIST", "transformId": "crossDetect", "timeframe": {"rel": "anchor"}},
     ],
     "STOCHASTIC": [
         {"metric": "STOCH_K", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 3, "bars": "closed"},
@@ -99,7 +102,8 @@ MODULE_RECIPES: dict[str, list[dict]] = {
         {"metric": "MFI14", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}},
     ],
     "RELATIVE_STRENGTH": [
-        {"metric": "PPO", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4, "bars": "closed"},
+        {"metric": "PPO_HIST", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4,
+         "bars": "closed"},
         {"metric": "ROC12", "transformId": "crossDetect", "timeframe": {"rel": "anchor"}},
     ],
     "SUPPORT_RESISTANCE": [
@@ -154,8 +158,8 @@ MODULE_CLAUSES: dict[str, dict] = {
                           "down": lambda: num("RSI14_now", "lt", 50),
                           "fade_up": lambda: num("RSI14_now", "lt", 35),
                           "fade_down": lambda: num("RSI14_now", "gt", 65)},
-    "MACD":              {"up": lambda: is_("MACD_trend", "rising"),
-                          "down": lambda: is_("MACD_trend", "falling")},
+    "MACD":              {"up": lambda: is_("MACDhist_trend", "rising"),
+                          "down": lambda: is_("MACDhist_trend", "falling")},
     "MOVING_AVERAGES":   {"up": lambda: is_("MAalign", "bullish"),
                           "down": lambda: is_("MAalign", "bearish")},
     "TREND_STRENGTH":    {"filter": lambda: num("ADX_now", "gte", 25)},
@@ -176,8 +180,8 @@ MODULE_CLAUSES: dict[str, dict] = {
                           "down": lambda: is_("K_zone", "oversold"),
                           "fade_up": lambda: is_("K_zone", "oversold"),
                           "fade_down": lambda: is_("K_zone", "overbought")},
-    "RELATIVE_STRENGTH": {"up": lambda: is_("PPO_trend", "rising"),
-                          "down": lambda: is_("PPO_trend", "falling")},
+    "RELATIVE_STRENGTH": {"up": lambda: is_("PPOhist_trend", "rising"),
+                          "down": lambda: is_("PPOhist_trend", "falling")},
     "SUPPORT_RESISTANCE": {"up": lambda: is_("zone", "near low"),
                            "down": lambda: is_("zone", "near high")},
     "PRICE_STRUCTURE":   {"up": lambda: num("zones_support_dist", "lt", 1.0),

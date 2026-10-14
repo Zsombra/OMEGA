@@ -161,13 +161,14 @@ def test_a_mixed_report_unions_both_routes():
     mixed = Report(anchor="1h", sections=[
         PlatformSection(sectionKey="includeRsi"),
         CustomSection(title="m", benchmarkTicker=None, columns=[
-            Column(metric="MACD", transformId="value", timeframe={"rel": "anchor"})]),
+            # MACD_HIST since contract 110: the same histogram, read through the MACD module (_moves_110.json)
+            Column(metric="MACD_HIST", transformId="value", timeframe={"rel": "anchor"})]),
     ])
     mem = analyse(mixed)
     assert mem.modules_in == {"RSI", "MACD"}
     assert len(mem.signals_in) == 12
     assert mem.sections == {"includeRsi"}
-    assert mem.metrics == {"MACD"}
+    assert mem.metrics == {"MACD_HIST"}
 
 
 # --- the helpers ------------------------------------------------------------

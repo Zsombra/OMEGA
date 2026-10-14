@@ -10,7 +10,7 @@ from omega.contract import DERIVED_DIR, load
 from omega.generate import (
     AXES, ENTRY_MIRROR, MODULE_RECIPES, PRESETS, Thesis, plan, plan_for_signals,
 )
-from omega.membership import signals_for
+from omega.membership import modules_for, signals_for
 from omega.types import Column
 
 MAP = json.loads((DERIVED_DIR / "signal_module_map.json").read_text(encoding="utf-8"))
@@ -65,11 +65,11 @@ def test_every_recipe_column_is_legal():
 
 
 def test_every_recipe_actually_feeds_its_module():
+    """Through omega.membership.modules_for, which reads a contract-110 same-series replacement (MACD_HIST, PPO_HIST)
+    through the retired key the map measured (data/contract/metrics/_moves_110.json)."""
     for module, specs in MODULE_RECIPES.items():
         metrics = {s["metric"] for s in specs}
-        assert module in {
-            k for k, v in MAP["moduleSatisfiedBy"].items() if set(v) & metrics
-        }, f"{module} recipe does not feed {module}"
+        assert module in modules_for(metrics), f"{module} recipe does not feed {module}"
 
 
 def test_squeeze_breakout_matches_the_live_connector():

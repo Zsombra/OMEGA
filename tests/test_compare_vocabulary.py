@@ -79,7 +79,7 @@ def test_main_exits_0_when_identical_and_1_when_an_enum_moved(tmp_path, capsys):
     assert main([str(moved)]) == 1
     printed = json.loads(capsys.readouterr().out)
     assert printed["results"]["sectionKeys"]["liveNotStored"] == ["newSection"]
-    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
+    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"   # 110.2.0
 
 
 def test_the_stored_enums_are_read_off_the_saved_108_stage_schema():

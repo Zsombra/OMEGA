@@ -1,0 +1,17 @@
+{
+ "_what": "What contract 110 moved in the metric roster, measured 2026-10-14 by the re-extraction at 110.2.0 (177 metrics; refresh_metric_contracts.py reported retired ['KC_MID', 'MACD', 'PPO']) and stated by the vendor changelog (battlegrid-mcp README 'Contract history - v110: a metric names the one line it reads'). omega.validate names a retired key's replacement; the history tests (signal membership, probe renders) read it so a measurement taken before 110 is replayed under the roster of its date.",
+ "contractVersion": "110.2.0",
+ "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
+ "retired": {
+  "MACD": {"author": "MACD_HIST", "sameSeries": true, "quote": "Author `MACD_HIST` and `PPO_HIST` - the same histograms."},
+  "PPO": {"author": "PPO_HIST", "sameSeries": true, "quote": "Author `MACD_HIST` and `PPO_HIST` - the same histograms."},
+  "KC_MID": {"author": "EMA20", "sameSeries": false, "quote": "The Keltner basis is the 20-period EMA: author `EMA20`."}
+ },
+ "_sameSeries": "true where the changelog says the replacement IS the retired series ('the same histograms'); omega.membership then reads the replacement through the retired key in pre-108 history. KC_MID -> EMA20 is the Keltner basis, a different metric: false.",
+ "added": ["MACD_HIST", "MACD_LINE", "MACD_SIGNAL", "PPO_HIST", "PPO_LINE", "PPO_SIGNAL", "ROC15", "DONCHIAN_BROKEN_HI", "DONCHIAN_BROKEN_LO"],
+ "headerCodes": {
+  "_what": "The header code a metric rendered with before 110, where it changed (the hints' metric.code at 108.4.0 vs 110.2.0). A render captured before 2026-10-14 named these.",
+  "before": {"MACD": "MACD", "PPO": "PPO", "KC_MID": "kcMid", "ROC12": "ROC"},
+  "since": {"MACD_HIST": "MACDhist", "PPO_HIST": "PPOhist", "ROC12": "ROC12"}
+ }
+}

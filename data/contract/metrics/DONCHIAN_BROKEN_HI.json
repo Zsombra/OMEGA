@@ -1,7 +1,7 @@
 {
-  "metric": "KC_MID",
-  "label": "Keltner basis",
-  "code": "kcMid",
+  "metric": "DONCHIAN_BROKEN_HI",
+  "label": "Broken 20-bar high",
+  "code": "donchianBrkHi",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",
@@ -27,14 +27,7 @@
       "id": "distance",
       "chainSuccessors": [
         "trajectory",
-        "aggregate",
-        "rank"
-      ],
-      "chainedRankOrderings": [
-        "hi",
-        "lo",
-        "far",
-        "near"
+        "aggregate"
       ]
     },
     {
@@ -60,7 +53,7 @@
       "id": "levelInteraction"
     }
   ],
-  "study": "keltnerChannels",
+  "study": "donchianChannels",
   "spreadOperands": [
     "OPEN",
     "HIGH",
@@ -85,6 +78,7 @@
     "EMA50",
     "DONCHIAN_UPPER",
     "DONCHIAN_LOWER",
+    "DONCHIAN_BROKEN_LO",
     "VWAP",
     "TPO_POC",
     "TPO_VAH",

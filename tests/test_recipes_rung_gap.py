@@ -31,6 +31,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.moves_110 import rewritten_at_110   # the body as the server holds it since 110
 from omega.contract import load, stage_schema
 from omega.generate import PRESETS, plan, plan_pre_108
 
@@ -105,8 +106,10 @@ def test_the_vocabulary_puts_the_rung_on_the_column_not_the_section():
 
 # --- the predictor against the committed body (step 2) --------------------------------
 
-COMMITTED = json.loads((FIXTURES / "current_7534b2ee_from_get_strategy_20261010T0634Z.json")
-                       .read_text(encoding="utf-8"))["draft"]["content"]
+
+
+COMMITTED = rewritten_at_110(json.loads((FIXTURES / "current_7534b2ee_from_get_strategy_20261010T0634Z.json")
+                                         .read_text(encoding="utf-8"))["draft"]["content"])
 
 
 def _committed_report_and_rules():

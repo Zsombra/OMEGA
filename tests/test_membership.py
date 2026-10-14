@@ -22,6 +22,9 @@ UNMEASURED = set(json.loads(
 MAP = json.loads((DERIVED_DIR / "signal_module_map.json").read_text(encoding="utf-8"))
 PROBES = [p for p in MAP["probes"] if "metrics" in p]
 CONTRACT = load()
+# Contract 110 (data/contract/metrics/_moves_110.json): the map is history - it may name a metric the platform has since
+# retired (MACD, PPO, KC_MID), and the metrics added at 110 were never probed (no signal module exists since 108).
+MOVES_110 = json.loads((CONTRACT_DIR / "metrics" / "_moves_110.json").read_text(encoding="utf-8"))
 
 # simplest legal transform per metric, so probe replay builds valid columns
 SPECIAL = {"STRUCT_ZONES": "count"}
@@ -68,7 +71,7 @@ def test_map_is_internally_consistent():
 def test_every_mapped_metric_exists_in_corpus():
     for module, metrics in MAP["moduleSatisfiedBy"].items():
         for m in metrics:
-            assert m in CONTRACT.metrics, f"{module} references unknown metric {m}"
+            assert m in CONTRACT.metrics or m in CONTRACT.retired_metrics, f"{module} references unknown metric {m}"
 
 
 def test_mapped_plus_dead_covers_the_whole_corpus():
@@ -92,8 +95,10 @@ def test_mapped_plus_dead_covers_the_whole_corpus():
     # probed and never can be - no signal module exists for them to feed.
     never_probed = set(json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(
         encoding="utf-8"))["formerlyUnmeasured"])
-    assert mapped | dead == set(CONTRACT.metrics) - never_probed, (
-        f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - never_probed - (mapped | dead))}")
+    never_probed |= set(MOVES_110["added"])
+    measured_then = (mapped | dead) - set(CONTRACT.retired_metrics)
+    assert measured_then == set(CONTRACT.metrics) - never_probed, (
+        f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - never_probed - measured_then)}")
 
 
 def test_coverage_counts_are_accurate():

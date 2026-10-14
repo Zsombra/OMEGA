@@ -47,7 +47,7 @@ import json
 from dataclasses import dataclass, field
 from functools import lru_cache
 
-from .contract import DERIVED_DIR, load
+from .contract import CONTRACT_DIR, DERIVED_DIR, load
 from .types import CustomSection, PlatformSection, Report
 from .validate import Finding
 
@@ -69,9 +69,13 @@ def _signal_data() -> dict[str, list[dict]]:
     """The (metric, rung) data each signal scores on, as BattleGrid's own draft diagnostics
     list it (the rung probe of 2026-10-06, contract 91.0.0: 83 of 84 signals). It replaces
     the 2026-08-28 partial map, data/derived/scoring_inputs_measured.json (12 of 84, kept
-    as history)."""
-    return json.loads(
+    as history). A metric contract 110 retired for the SAME series (MACD -> MACD_HIST, PPO -> PPO_HIST: "the same
+    histograms", data/contract/metrics/_moves_110.json) reads as its replacement: the column that shows that data
+    today is the replacement's."""
+    signals = json.loads(
         (DERIVED_DIR / "signal_data_rungs_91.json").read_text(encoding="utf-8"))["signals"]
+    same = {old: rec["author"] for old, rec in _moves_110().get("retired", {}).items() if rec.get("sameSeries")}
+    return {sid: [d | {"metric": same.get(d["metric"], d["metric"])} for d in data] for sid, data in signals.items()}
 
 
 # The three rungs the map names -> the three `rel` values a column's timeframe may carry
@@ -238,7 +242,19 @@ def _metric_to_module() -> dict[str, str]:
     for module, metrics in _map()["moduleSatisfiedBy"].items():
         for m in metrics:
             out[m] = module
+    # Contract 110 retired MACD and PPO for MACD_HIST and PPO_HIST - "the same histograms" (README v110,
+    # data/contract/metrics/_moves_110.json `sameSeries`) - so the replacement reads through the key the map measured.
+    # Only a same-series move: KC_MID -> EMA20 is a different metric and inherits nothing.
+    for retired, rec in _moves_110().get("retired", {}).items():
+        if rec.get("sameSeries") and retired in out and rec["author"] not in out:
+            out[rec["author"]] = out[retired]
     return out
+
+
+@lru_cache(maxsize=1)
+def _moves_110() -> dict:
+    path = CONTRACT_DIR / "metrics" / "_moves_110.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
 
 @lru_cache(maxsize=1)
