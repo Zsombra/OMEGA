@@ -219,11 +219,11 @@
    "domain": "oscillator",
    "columns": [
     {
-     "metric": "MACD",
+     "metric": "MACD_HIST",
      "transformId": "crossDetect"
     }
    ],
-   "note": "A discrete first derivative: the sign change between two consecutive bars.",
+   "note": "A discrete first derivative: the sign change between two consecutive bars. Contract 110 refuses `MACD`; MACD_HIST x crossDetect is the signal-line cross (README v110).",
    "gateability": "label-only"
   },
   {
@@ -489,7 +489,7 @@
      "transformId": "spread",
      "inputs": [
       {
-       "metric": "PPO"
+       "metric": "PPO_HIST"
       }
      ]
     }
@@ -835,7 +835,7 @@
      "transformId": "distance"
     },
     {
-     "metric": "KC_MID",
+     "metric": "EMA20",
      "transformId": "distance"
     },
     {
@@ -847,7 +847,7 @@
      "transformId": "value"
     }
    ],
-   "note": "The platform publishes the indicator as native metrics, so the family is selected, not constructed. Was blocked (operator-absent: ATR could not be scaled onto an EMA) until KC_UPPER/MID/LOWER arrived at 46.1.0. dist_* reads where price sits against each band; kcSqueeze (on|off) is the BB-inside-KC squeeze label.",
+   "note": "The platform publishes the indicator as native metrics, so the family is selected, not constructed. Was blocked (operator-absent: ATR could not be scaled onto an EMA) until KC_UPPER/MID/LOWER arrived at 46.1.0. Contract 110 refuses KC_MID: the basis is the 20-period EMA, so the middle band is EMA20 (README v110). dist_* reads where price sits against each band; kcSqueeze (on|off) is the BB-inside-KC squeeze label.",
    "decidedOn": "2026-10-12"
   },
   {

@@ -34,7 +34,7 @@ SURFACE_104_1 = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/f
 
 def test_the_corpus_is_the_whole_served_enum_and_the_unmeasured_record_is_empty():
     c = load()
-    assert set(c.metrics) == set(SERVED) and len(SERVED) == 171
+    assert set(c.metrics) == set(SERVED) and len(SERVED) == 177      # 171 at 108; 177 since 110 (_moves_110.json)
     assert RECORD["metrics"] == {} and c.unmeasured_metrics == {}
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
 
@@ -95,4 +95,8 @@ def test_the_served_171_compare_as_stored_and_none_is_unmeasured():
 def test_the_stored_104_1_surface_reports_nothing_missing_and_nothing_unmeasured():
     surface = json.loads(SURFACE_104_1.read_text(encoding="utf-8"))
     result = compare(live_enums(surface), stored_enums(), stored_unmeasured())
-    assert result["metrics"]["liveNotStored"] == [] and result["metrics"]["storedUnmeasured"] == []
+    # History since contract 110: the 104.1.0 surface still lists exactly the three keys v110 retired, and nothing else
+    # is missing (data/contract/metrics/_moves_110.json).
+    retired = json.loads((Path(__file__).resolve().parents[1] / "data/contract/metrics/_moves_110.json")
+                         .read_text(encoding="utf-8"))["retired"]
+    assert result["metrics"]["liveNotStored"] == sorted(retired) and result["metrics"]["storedUnmeasured"] == []

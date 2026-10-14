@@ -102,6 +102,11 @@ def validate_column(
                         f"{column.metric!r} is served at contract {rec['servedAt']} (added {rec['addedAt']}) but its "
                         f"transform admissibility is UNMEASURED offline; omega does not emit it until "
                         f"`{rec['measuredBy']}` is read and the corpus re-extracted")]
+    if column.metric in c.retired_metrics:
+        rec = c.retired_metrics[column.metric]
+        return [Finding("error", "METRIC_RETIRED", f"{path}.metric",
+                        f"{column.metric!r} was retired at contract 110 (README v110; measured at {rec['retiredAt']}): "
+                        f"author {rec['author']!r} instead - {rec['quote']}")]
     if column.metric not in c.metrics:
         return [Finding("error", "UNKNOWN_METRIC", f"{path}.metric",
                         f"{column.metric!r} is not one of the {len(c.metrics)} catalogued "

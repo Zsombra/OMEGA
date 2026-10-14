@@ -16,7 +16,10 @@ import pytest
 from omega import condition_vocabulary as CV
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
+# The schema the manifest names: the 110.2.0 capture since 2026-10-14 (was the 108.0.0 one, kept below as history).
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
+SCHEMA_108 = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
+MOVES_110 = json.loads((ROOT / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))
 DOC = json.loads(SCHEMA.read_text(encoding="utf-8"))
 V = CV.vocabulary()
 G = V["grammar"]
@@ -42,9 +45,9 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "108.0.0",
-                           "buildSha": "1076c4e78456424dd92242eeb30701099c6b9146",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "110.2.0",
+                           "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -160,8 +163,9 @@ def test_what_is_served_per_header_names_the_same_thirteen_operators():
 
 # --- the column enums -----------------------------------------------------------------------------
 def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
+    """171 at 108; 177 since 110 (MACD, PPO, KC_MID retired, nine added - data/contract/metrics/_moves_110.json)."""
     col = V["reportColumn"]
-    assert col["metric"]["count"] == 171 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["count"] == 177 == len(set(col["metric"]["enum"]))
     assert col["transformId"]["enum"] == [
         "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "crossDetect", "aggregate",
         "efficiency", "maxShare", "rank", "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist",
@@ -175,7 +179,19 @@ def test_the_108_stage_metric_enum_is_the_104_1_hints_enum():
     surface = json.loads(HINTS_104_1.read_text(encoding="utf-8"))
     hints = {t["name"]: t for t in surface["tools"]}["get_metric_construction_hints"]
     assert surface["contractVersion"] == "104.1.0"
-    assert hints["inputSchema"]["properties"]["metric"]["enum"] == V["reportColumn"]["metric"]["enum"]
+    # History: the 108.0.0 stage schema's enum (kept on disk) against the 104.1.0 hints enum.
+    assert hints["inputSchema"]["properties"]["metric"]["enum"] == _enum_108()
+
+
+def _enum_108() -> list[str]:
+    return CV.resolve(json.loads(SCHEMA_108.read_text(encoding="utf-8")), V["reportColumn"]["metric"]["pointer"])["enum"]
+
+
+def test_the_110_enum_is_the_108_enum_moved_exactly_as_v110_says():
+    old, new = _enum_108(), V["reportColumn"]["metric"]["enum"]
+    assert set(old) - set(new) == set(MOVES_110["retired"])
+    assert set(new) - set(old) == set(MOVES_110["added"])
+    assert [m for m in old if m in new] == [m for m in new if m in old]      # the survivors keep their platform order
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------

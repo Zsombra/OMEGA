@@ -42,8 +42,11 @@
   ],
   "study": null,
   "spreadOperands": [
-    "PPO",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
     "ROC12",
+    "ROC15",
     "CHG_5M",
     "CHG_15M",
     "CHG_1H",

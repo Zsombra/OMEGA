@@ -95,6 +95,9 @@ class Contract:
     # Served at contract 108 and known by NAME only (data/contract/metrics/_unmeasured_108.json): never in `metrics`,
     # so nothing that enumerates the corpus can select one; validate_column refuses them (METRIC_UNMEASURED).
     unmeasured_metrics: dict[str, dict] = field(default_factory=dict)
+    # Retired by the platform (data/contract/metrics/_moves_110.json: MACD, PPO, KC_MID at contract 110): never in
+    # `metrics`; validate_column refuses one naming what to author instead (METRIC_RETIRED).
+    retired_metrics: dict[str, dict] = field(default_factory=dict)
     # Both DERIVED from the write schema's column `transformId` enum (data/derived/condition_vocabulary_108.json),
     # never typed. Retired: extracted at 61.2.0 and no longer served (v100 retired `bandTouch`) - dropped from every
     # Metric.transforms, so omega.space never enumerates one; `transforms` above keeps the extraction's catalogue as
@@ -178,6 +181,11 @@ def load() -> Contract:
     overlap = set(unmeasured) & set(metrics)
     if overlap:
         raise RuntimeError(f"measured AND listed unmeasured: {sorted(overlap)} - drop them from {unmeasured_path.name}")
+    moves_path = CONTRACT_DIR / "metrics" / "_moves_110.json"
+    moves = _load(moves_path) if moves_path.exists() else {}
+    retired_metrics = {name: rec | {"retiredAt": moves["contractVersion"]} for name, rec in moves.get("retired", {}).items()}
+    if set(retired_metrics) & set(metrics):
+        raise RuntimeError(f"retired AND in the corpus: {sorted(set(retired_metrics) & set(metrics))} - a half-done refresh")
 
     return Contract(
         metrics=metrics,
@@ -188,6 +196,7 @@ def load() -> Contract:
         shared=shared,
         platform_templates={t["sectionKey"]: t for t in templates["templates"]},
         unmeasured_metrics=unmeasured,
+        retired_metrics=retired_metrics,
         retired_transforms=retired,
         unmeasured_transforms=unmeasured_transforms,
     )

@@ -36,7 +36,8 @@ RSI_REPORT = _report(
 @pytest.mark.parametrize("spec,expected", [
     ({"metric": "RSI14", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}}, "RSI14_zone"),
     ({"metric": "MFI14", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}}, "MFI14_zone"),
-    ({"metric": "MACD", "transformId": "crossDetect", "timeframe": {"rel": "anchor"}}, "MACD_cross"),
+    # MACD_HIST since contract 110 (MACD retired); rendered live 2026-10-14 (_coverage_sweep_2026-10-14.json)
+    ({"metric": "MACD_HIST", "transformId": "crossDetect", "timeframe": {"rel": "anchor"}}, "MACDhist_cross"),
     ({"metric": "BB_TOUCH", "transformId": "value", "timeframe": {"rel": "anchor"}}, "BBtouch"),
     ({"metric": "MA_ALIGN", "transformId": "value", "timeframe": {"rel": "anchor"}}, "MAalign"),
     ({"metric": "SMA200", "transformId": "distance", "timeframe": {"rel": "anchor"}}, "dist_SMA200"),
@@ -262,14 +263,15 @@ def test_axes_include_conditions_and_market_read():
 
 # --- live-verified fixture ------------------------------------------------
 def test_trend_continuation_conditions_match_the_live_render():
-    """Recorded from preview_strategy_report; both conditions resolved with evidence."""
+    """Recorded from preview_strategy_report; both conditions resolved with evidence. Since contract 110 the MACD
+    clause reads MACD_HIST, header `MACDhist_trend` (rendered live 2026-10-14, _coverage_sweep_2026-10-14.json)."""
     p = plan(PRESETS["trend-continuation"])
     keys = [c["conditionKey"] for c in p.conditions]
     assert keys[-2:] == ["TC_UP", "TC_DOWN"]
     core = [c for c in p.conditions if c["conditionKey"] == "TC_CORE_UP"][0]
     headers = {cl["column"]["header"] for cl in core["definition"]["members"][0]["members"]}
     # every clause header appeared in the live conditionColumns for that report
-    assert headers == {"MAalign", "MACD_trend", "OBV_trend"}
+    assert headers == {"MAalign", "MACDhist_trend", "OBV_trend"}
 
 
 def test_token_estimate_is_labelled_approximate():

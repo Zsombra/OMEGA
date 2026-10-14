@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
-  "sha256": "b9b5a9e2cd675d6fea5b8866b6276f1ed6af09d9f979daefe71c9730f42eac3c",
-  "contractVersion": "108.0.0",
-  "buildSha": "1076c4e78456424dd92242eeb30701099c6b9146",
-  "observedAt": "2026-10-10T21:53:26.241602+00:00"
+  "schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
+  "sha256": "79a669f2010433509a80ba34c81ece0b6953dae6af7ff56cbe88ecce403165a3",
+  "contractVersion": "110.2.0",
+  "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
+  "observedAt": "2026-10-13T20:06:21.070642+00:00"
  },
  "clauseOperators": [
   "lt",
@@ -46,41 +46,41 @@
    "additionalProperties": false,
    "fields": {
     "conditionKey": {
-     "pattern": "^[A-Z][A-Z0-9_]{1,39}$",
-     "type": "string"
+     "type": "string",
+     "pattern": "^[A-Z][A-Z0-9_]{1,39}$"
     },
-    "exitSide": {
+    "name": {
+     "type": "string",
+     "minLength": 1,
+     "maxLength": 80
+    },
+    "verdict": {
      "anyOf": [
       {
+       "type": "string",
        "enum": [
-        "LONG",
-        "SHORT",
-        "BOTH"
-       ],
-       "type": "string"
+        "UP",
+        "DOWN",
+        "NEITHER"
+       ]
       },
       {
        "type": "null"
       }
      ]
     },
-    "name": {
-     "maxLength": 80,
-     "minLength": 1,
-     "type": "string"
-    },
     "required": {
      "type": "boolean"
     },
-    "verdict": {
+    "exitSide": {
      "anyOf": [
       {
+       "type": "string",
        "enum": [
-        "UP",
-        "DOWN",
-        "NEITHER"
-       ],
-       "type": "string"
+        "LONG",
+        "SHORT",
+        "BOTH"
+       ]
       },
       {
        "type": "null"
@@ -126,14 +126,14 @@
     ],
     "opPointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/op",
     "operands": {
-     "high": {
-      "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/high",
+     "low": {
+      "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/low",
       "schema": {
        "type": "number"
       }
      },
-     "low": {
-      "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/low",
+     "high": {
+      "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/high",
       "schema": {
        "type": "number"
       }
@@ -161,9 +161,9 @@
      "label": {
       "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/2/properties/label",
       "schema": {
-       "maxLength": 80,
+       "type": "string",
        "minLength": 1,
-       "type": "string"
+       "maxLength": 80
       }
      }
     },
@@ -186,14 +186,14 @@
      "labels": {
       "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/3/properties/labels",
       "schema": {
+       "type": "array",
        "items": {
-        "maxLength": 80,
+        "type": "string",
         "minLength": 1,
-        "type": "string"
+        "maxLength": 80
        },
-       "maxItems": 32,
        "minItems": 1,
-       "type": "array"
+       "maxItems": 32
       }
      }
     },
@@ -365,52 +365,52 @@
   "column": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/column",
    "schema": {
-    "additionalProperties": false,
+    "type": "object",
     "properties": {
-     "header": {
-      "maxLength": 120,
-      "minLength": 1,
-      "type": "string"
-     },
      "sectionKey": {
       "anyOf": [
        {
-        "maxLength": 120,
+        "type": "string",
         "minLength": 1,
-        "type": "string"
+        "maxLength": 120
        },
        {
         "type": "null"
        }
       ]
+     },
+     "header": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
      }
     },
     "required": [
      "sectionKey",
      "header"
     ],
-    "type": "object"
+    "additionalProperties": false
    }
   },
   "hold": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/hold",
    "schema": {
-    "additionalProperties": false,
+    "type": "object",
     "properties": {
      "atLeast": {
-      "minimum": 1,
-      "type": "integer"
+      "type": "integer",
+      "minimum": 1
      },
      "of": {
-      "minimum": 1,
-      "type": "integer"
+      "type": "integer",
+      "minimum": 1
      }
     },
     "required": [
      "atLeast",
      "of"
     ],
-    "type": "object"
+    "additionalProperties": false
    }
   },
   "conditionRef": {
@@ -421,13 +421,13 @@
    ],
    "additionalProperties": false,
    "fields": {
-    "conditionKey": {
-     "pattern": "^[A-Z][A-Z0-9_]{1,39}$",
-     "type": "string"
-    },
     "kind": {
-     "const": "conditionRef",
-     "type": "string"
+     "type": "string",
+     "const": "conditionRef"
+    },
+    "conditionKey": {
+     "type": "string",
+     "pattern": "^[A-Z][A-Z0-9_]{1,39}$"
     }
    }
   },
@@ -456,9 +456,9 @@
    "n": {
     "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/1/properties/n",
     "schema": {
+     "type": "integer",
      "exclusiveMinimum": 0,
-     "maximum": 64,
-     "type": "integer"
+     "maximum": 64
     }
    },
    "holdPointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/hold"
@@ -560,7 +560,7 @@
   ],
   "metric": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/metric",
-   "count": 171,
+   "count": 177,
    "enum": [
     "OPEN",
     "HIGH",
@@ -587,12 +587,17 @@
     "RSI14",
     "RSI7",
     "RSI2",
-    "MACD",
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
     "STOCH_K",
     "STOCH_D",
     "MFI14",
-    "PPO",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
     "ROC12",
+    "ROC15",
     "CCI20",
     "CLOSE_CHANGE",
     "CHG_5M",
@@ -622,6 +627,8 @@
     "BB_PCT_B",
     "DONCHIAN_UPPER",
     "DONCHIAN_LOWER",
+    "DONCHIAN_BROKEN_HI",
+    "DONCHIAN_BROKEN_LO",
     "VWAP",
     "PRICE_ZONE",
     "BB_TOUCH",
@@ -649,7 +656,6 @@
     "BB_UPPER",
     "BB_LOWER",
     "KC_UPPER",
-    "KC_MID",
     "KC_LOWER",
     "ST_LINE",
     "ST_DIR",

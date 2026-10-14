@@ -1,12 +1,12 @@
 {
-  "metric": "PPO",
-  "label": "PPO histogram",
-  "code": "PPO",
+  "metric": "MACD_LINE",
+  "label": "MACD line",
+  "code": "MACDline",
   "family": "momentum",
   "nativeOutput": {
     "kind": "numeric",
-    "unit": "percent",
-    "precision": 2
+    "unit": "signedPrice",
+    "precision": 4
   },
   "outputKind": "scalar",
   "timeframeMode": "candle",
@@ -38,32 +38,14 @@
       "maximums": {
         "window": 32
       }
-    },
-    {
-      "id": "rank"
     }
   ],
   "study": "macd",
   "spreadOperands": [
-    "ROC12",
-    "CLOSE_CHANGE",
-    "CHG_5M",
-    "CHG_15M",
-    "CHG_1H",
-    "CHG_4H",
-    "CHG_24H",
-    "ATR_PCT",
-    "BB_WIDTH_PCT",
-    "HIGH_DEV",
-    "LOW_DEV",
-    "FUNDING_RATE",
-    "FUNDING_ANN",
-    "OI_CHG"
-  ],
-  "rankOrderings": [
-    "hi",
-    "lo",
-    "far",
-    "near"
+    "MACD_HIST",
+    "MACD_SIGNAL",
+    "ATR",
+    "BB_WIDTH",
+    "CVD"
   ]
 }

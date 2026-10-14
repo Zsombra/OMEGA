@@ -50,6 +50,10 @@ SEEN_FILES = [
     # on 43 levels. 1,394 previously-unrendered shapes, 2,672 headers minted, zero refusals, zero predicted-but-not-
     # rendered (data/audit/coverage_sweep_2026-10-13.json).
     "_coverage_sweep_2026-10-13.json",
+    # 2026-10-14: the 177-metric re-extraction at contract 110.2.0 - the nine v110 metrics and ROC12's new code
+    # (`ROC` -> `ROC12`, so every ROC12 shape was unrendered under its new header). 924 shapes, 1,804 headers minted,
+    # zero refusals, zero predicted-but-not-rendered (data/audit/coverage_sweep_2026-10-14.json).
+    "_coverage_sweep_2026-10-14.json",
 ]
 
 

@@ -20,6 +20,10 @@ CAPTURE = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.jso
 CAPTURE_91 = ROOT / "data/contract/stage_strategy_draft/schema_20261005T194629Z.json"
 FIXTURE = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/fixtures/2026-10-11-surface-108.0.0/"
                "manager_schemas_108.0.0.json")
+# Today's plan is walked against the CURRENT capture (omega's own 110.2.0 schema file, 2026-10-14): it emits
+# MACD_HIST, which the 108 capture never served; the axes these tests are about did not move at 110.
+DOC_110 = json.loads((Path(__file__).resolve().parents[1] / "data/contract/stage_strategy_draft/"
+                                                          "schema_20261013T200621Z.json").read_text(encoding="utf-8"))
 TOOLS = ("stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft", "list_strategy_drafts",
          "preview_strategy_report", "get_strategy")
 DOC = json.loads(CAPTURE.read_text(encoding="utf-8"))
@@ -103,7 +107,7 @@ def test_the_preflight_refuses_the_two_removed_axes_as_undeclared():
     MISSING_REQUIRED."""
     from omega import preflight as P
     from omega.generate import PRESETS, plan
-    axis_schemas, root = P.resolve_axes(DOC)
+    axis_schemas, root = P.resolve_axes(DOC_110)
     body = dict(plan(PRESETS["trend-continuation"]).axes())
     body["SETUP_GATES"] = {"minAggregateScore": 0.6, "minRequiredCount": 0, "minAtrPct": 0.5}
     body["SIGNAL_RULES"] = {"rules": []}
@@ -127,7 +131,8 @@ def test_the_preview_input_did_not_move_at_108_and_the_dry_run_body_walks_it():
     old = FIXTURE.parent / "manager_schemas_acked_106.0.0.json"
     if old.exists():
         assert json.loads(old.read_text(encoding="utf-8"))["tools"]["preview_strategy_report"]["inputSchema"] == schema
+    current = DOC_110["preview_strategy_report"]["inputSchema"]       # today's plan walks the current schema
     for name in PRESETS:
         body = plan(PRESETS[name]).preview_request()
         assert "detail" not in body
-        assert [f for f in P.diff_schema(body, schema, schema) if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
+        assert [f for f in P.diff_schema(body, current, current) if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []

@@ -1,7 +1,7 @@
 {
   "metric": "ROC12",
   "label": "ROC (12)",
-  "code": "ROC",
+  "code": "ROC12",
   "family": "momentum",
   "nativeOutput": {
     "kind": "numeric",
@@ -45,7 +45,10 @@
   ],
   "study": null,
   "spreadOperands": [
-    "PPO",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC15",
     "CLOSE_CHANGE",
     "CHG_5M",
     "CHG_15M",

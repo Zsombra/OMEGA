@@ -240,13 +240,19 @@ def test_fanout_predicts_every_rendered_header_exactly():
     for payload in load_all_renders():
         section = payload["request"]["sections"][0]
         predicted = []
+        back: dict[str, str] = {}
         for spec in section["columns"]:
+            if payload["capturedAt"] < "2026-10-14":
+                spec, codes = _pre_110(spec)
+                back |= codes
             col = Column(**spec)
             if payload["capturedAt"] < "2026-10-13":
                 # Captured before the header token (<code>[_<tf>][_dev][_o<N>], 2026-10-13): then an offset, a stored
                 # Developing selector and a pinned timeframe named nothing - replay under the naming of the date.
                 col = _pre_token(col)
             predicted += [o.header for o in outputs_for(col)]
+        for new, old in back.items():             # the codes of the capture's date (_pre_110)
+            predicted = [h.replace(new, old) for h in predicted]
 
         custom = [cc for cc in payload["response"]["conditionColumns"]
                   if cc["sectionKey"].startswith("custom:")]
@@ -308,13 +314,14 @@ def test_every_transform_places_the_timeframe_infix():
     # infix-carrying - these four were the bugs
     assert header(metric="CLOSE", transformId="bandTouch", rel="lower") == "close_ltf_touch"
     assert header(metric="ADX", transformId="classifyZone", rel="lower") == "ADX_ltf_zone"
-    assert header(metric="MACD", transformId="crossDetect", rel="lower") == "MACD_ltf_cross"
+    # MACD_HIST since contract 110 (MACD retired; MACDhist_cross rendered live 2026-10-14)
+    assert header(metric="MACD_HIST", transformId="crossDetect", rel="lower") == "MACDhist_ltf_cross"
     assert header(metric="ADX", transformId="rank", rel="lower") == "ADX_ltf_rank_hi"
 
     # and unchanged at anchor
     assert header(metric="CLOSE", transformId="bandTouch", rel="anchor") == "close_touch"
     assert header(metric="ADX", transformId="classifyZone", rel="anchor") == "ADX_zone"
-    assert header(metric="MACD", transformId="crossDetect", rel="anchor") == "MACD_cross"
+    assert header(metric="MACD_HIST", transformId="crossDetect", rel="anchor") == "MACDhist_cross"
     assert header(metric="ADX", transformId="rank", rel="anchor") == "ADX_rank_hi"
 
 
@@ -347,3 +354,29 @@ def _pre_token(col):
         update["timeframe"] = RelTimeframe(rel="anchor")
     return col.model_copy(update=update)
 
+
+# A render captured before contract 110 (2026-10-14) named metrics and codes the roster has since moved
+# (data/contract/metrics/_moves_110.json). A header is formed from the metric's code and the transform alone, so the
+# column is predicted with a metric of the same transform set today and the code is put back to the capture's:
+# MACD -> MACD_HIST and PPO -> PPO_HIST (the same series), KC_MID -> EMA20 (both price levels with the same seven
+# transforms - a replay device, not a claim they are one series), and ROC12's code ROC12 -> ROC.
+_STAND_INS = {"MACD": "MACD_HIST", "PPO": "PPO_HIST", "KC_MID": "EMA20"}
+
+
+def _pre_110(spec: dict) -> tuple[dict, dict[str, str]]:
+    import json
+    from pathlib import Path
+    moves = json.loads((Path(__file__).resolve().parents[1] / "data/contract/metrics/_moves_110.json")
+                       .read_text(encoding="utf-8"))["headerCodes"]["before"]
+    from omega.contract import load
+    c = load()
+    spec = json.loads(json.dumps(spec))
+    codes: dict[str, str] = {}
+    for node in [spec] + list(spec.get("inputs") or []):
+        m = node.get("metric")
+        if m in _STAND_INS:
+            node["metric"] = _STAND_INS[m]
+            codes[c.metric(_STAND_INS[m]).code] = moves[m]
+        elif m in moves:                                  # still served, but its code changed (ROC12)
+            codes[c.metric(m).code] = moves[m]
+    return spec, codes

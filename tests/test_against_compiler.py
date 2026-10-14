@@ -28,7 +28,14 @@ def test_the_retired_probes_are_exactly_the_section_override():
 
 
 def _column(case) -> Column:
-    return Column.model_validate(case["column"])
+    """The probe's column under today's roster: a probe recorded on a metric contract 110 retired for the SAME series
+    (MACD -> MACD_HIST, PPO -> PPO_HIST: "the same histograms", data/contract/metrics/_moves_110.json) is replayed on
+    its replacement, so the recorded verdict is checked against the series it measured."""
+    spec = dict(case["column"])
+    rec = CONTRACT.retired_metrics.get(spec.get("metric"))
+    if rec and rec.get("sameSeries"):
+        spec["metric"] = rec["author"]
+    return Column.model_validate(spec)
 
 
 @pytest.mark.parametrize("case", PROBES, ids=[c["id"] for c in PROBES])
@@ -63,7 +70,8 @@ def test_corpus_is_complete():
     # 156 as of the 2026-09-20 refresh (contract 61.2.0); 144 on 2026-09-09 at 54.1.0;
     # 86 on 2026-08-24. The twelve added are all prior-session structure (TPO, naked POC, PDO).
     # 171 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); the 15 are v100's twelve bar-geometry metrics and v101.1's three swing ones.
-    assert len(CONTRACT.metrics) == 171
+    # 177 since the re-extraction at 110.2.0, 2026-10-14: MACD, PPO, KC_MID retired, nine added (_moves_110.json).
+    assert len(CONTRACT.metrics) == 177
 
 
 def test_every_privileged_pair_is_rejected():

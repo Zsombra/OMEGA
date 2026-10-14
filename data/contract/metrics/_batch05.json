@@ -1,5 +1,515 @@
 [
  {
+  "metric": "PDL",
+  "label": "Previous-day low",
+  "code": "pdl",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "priorDay",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "PDO",
+  "label": "Previous-day open",
+  "code": "pdo",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "priorDay",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "PIVOT_S3",
+  "label": "Pivot S3",
+  "code": "pivotS3",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "floorPivots",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO"
+  ]
+ },
+ {
+  "metric": "DI_PLUS",
+  "label": "DI+",
+  "code": "DIplus",
+  "family": "trend",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 31
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate"
+    ]
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "maxShare",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "directionalMovement",
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "DI_MINUS",
+   "REGIME_TREND_MARGIN",
+   "REGIME_DI_SPREAD",
+   "REGIME_CRASH_MARGIN"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "DI_MINUS",
+  "label": "DI−",
+  "code": "DIminus",
+  "family": "trend",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 31
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate"
+    ]
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "maxShare",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "directionalMovement",
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "DI_PLUS",
+   "REGIME_TREND_MARGIN",
+   "REGIME_DI_SPREAD",
+   "REGIME_CRASH_MARGIN"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "VOLUME",
+  "label": "Volume",
+  "code": "volBase",
+  "family": "volumeFlow",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "largeCount",
+   "precision": 1,
+   "range": {
+    "min": 0
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 31
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate"
+    ]
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 32
+    }
+   },
+   {
+    "id": "maxShare",
+    "maximums": {
+     "window": 32
+    }
+   }
+  ],
+  "study": "barVolume",
+  "spreadOperands": [
+   "VOL_SMA20",
+   "BUY_VOLUME",
+   "SELL_VOLUME",
+   "OBV"
+  ]
+ },
+ {
   "metric": "VOL_SMA20",
   "label": "Volume SMA (20)",
   "code": "volSMA20",
@@ -410,7 +920,9 @@
   ],
   "study": null,
   "spreadOperands": [
-   "MACD",
+   "MACD_HIST",
+   "MACD_LINE",
+   "MACD_SIGNAL",
    "ATR",
    "BB_WIDTH"
   ]
@@ -685,8 +1197,11 @@
   ],
   "study": "funding",
   "spreadOperands": [
-   "PPO",
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
    "ROC12",
+   "ROC15",
    "CLOSE_CHANGE",
    "CHG_5M",
    "CHG_15M",
@@ -732,8 +1247,11 @@
   ],
   "study": "funding",
   "spreadOperands": [
-   "PPO",
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
    "ROC12",
+   "ROC15",
    "CLOSE_CHANGE",
    "CHG_5M",
    "CHG_15M",
@@ -857,8 +1375,11 @@
   ],
   "study": "openInterest",
   "spreadOperands": [
-   "PPO",
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
    "ROC12",
+   "ROC15",
    "CLOSE_CHANGE",
    "CHG_5M",
    "CHG_15M",
@@ -1079,211 +1600,5 @@
    }
   ],
   "study": "regimeVerdict"
- },
- {
-  "metric": "REGIME_RUN_BARS",
-  "label": "Regime · run length",
-  "code": "regBars",
-  "family": "regime",
-  "nativeOutput": {
-   "kind": "numeric",
-   "unit": "count",
-   "precision": 0
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   },
-   {
-    "id": "spread"
-   }
-  ],
-  "study": "regimeVerdict",
-  "spreadOperands": [
-   "TRADES",
-   "BUY_TRADES",
-   "SELL_TRADES",
-   "REGIME_MOM_BULL_VOTES",
-   "REGIME_MOM_BEAR_VOTES"
-  ]
- },
- {
-  "metric": "REGIME_TREND_GATE",
-  "label": "Regime · trend gate",
-  "code": "regGate",
-  "family": "regime",
-  "nativeOutput": {
-   "kind": "classification",
-   "vocab": [
-    "cleared",
-    "held",
-    "dropped"
-   ]
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   }
-  ],
-  "study": "regimeTrendEvidence"
- },
- {
-  "metric": "REGIME_TREND_MARGIN",
-  "label": "Regime · trend margin",
-  "code": "regMargin",
-  "family": "regime",
-  "nativeOutput": {
-   "kind": "numeric",
-   "unit": "oscillator",
-   "precision": 1,
-   "range": {
-    "min": 0,
-    "max": 100
-   }
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   },
-   {
-    "id": "spread"
-   }
-  ],
-  "study": "regimeTrendEvidence",
-  "spreadOperands": [
-   "RSI14",
-   "RSI7",
-   "RSI2",
-   "STOCH_K",
-   "STOCH_D",
-   "MFI14",
-   "CCI20",
-   "ADX",
-   "WT1",
-   "WT2",
-   "QQE_RSI_MA",
-   "QQE_STOP",
-   "WILLR14",
-   "DI_PLUS",
-   "DI_MINUS",
-   "REGIME_DI_SPREAD",
-   "REGIME_CRASH_MARGIN"
-  ]
- },
- {
-  "metric": "REGIME_TREND_SOURCE",
-  "label": "Regime · trend source",
-  "code": "regSrc",
-  "family": "regime",
-  "nativeOutput": {
-   "kind": "classification",
-   "vocab": [
-    "di spread",
-    "ema fallback"
-   ]
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   }
-  ],
-  "study": "regimeTrendEvidence"
- },
- {
-  "metric": "REGIME_DI_SPREAD",
-  "label": "Regime · DI spread",
-  "code": "regDI",
-  "family": "regime",
-  "nativeOutput": {
-   "kind": "numeric",
-   "unit": "oscillator",
-   "precision": 1,
-   "range": {
-    "min": -100,
-    "max": 100
-   }
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   },
-   {
-    "id": "spread"
-   }
-  ],
-  "study": "regimeTrendEvidence",
-  "spreadOperands": [
-   "RSI14",
-   "RSI7",
-   "RSI2",
-   "STOCH_K",
-   "STOCH_D",
-   "MFI14",
-   "CCI20",
-   "ADX",
-   "WT1",
-   "WT2",
-   "QQE_RSI_MA",
-   "QQE_STOP",
-   "WILLR14",
-   "DI_PLUS",
-   "DI_MINUS",
-   "REGIME_TREND_MARGIN",
-   "REGIME_CRASH_MARGIN"
-  ]
- },
- {
-  "metric": "REGIME_VOL_ATR_RATIO",
-  "label": "Regime · ATR ratio",
-  "code": "regAtrR",
-  "family": "regime",
-  "nativeOutput": {
-   "kind": "numeric",
-   "unit": "ratio",
-   "precision": 2
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   },
-   {
-    "id": "spread"
-   }
-  ],
-  "study": "regimeVolatilityEvidence",
-  "spreadOperands": [
-   "RVOL",
-   "REGIME_VOL_BBW_RATIO"
-  ]
  }
 ]

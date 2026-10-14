@@ -45,7 +45,9 @@
   ],
   "study": "bollingerWidth",
   "spreadOperands": [
-    "MACD",
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
     "ATR",
     "CVD"
   ]

@@ -1,0 +1,72 @@
+{
+  "metric": "ROC15",
+  "label": "ROC (15)",
+  "code": "ROC15",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 31
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate"
+      ]
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 32
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": null,
+  "spreadOperands": [
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC12",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

@@ -52,8 +52,8 @@ def test_weights_stay_and_still_choose_the_report_modules():
     assert "weights" in _names()
     t = PRESETS["trend-continuation"]
     metrics = {c.metric for s in plan(t).report.sections for c in s.columns}
-    assert {"MA_ALIGN", "ADX", "MACD", "OBV"} <= metrics
-    assert {"MACD", "OBV"}.isdisjoint({c.metric for s in plan(Thesis(
+    assert {"MA_ALIGN", "ADX", "MACD_HIST", "OBV"} <= metrics      # MACD_HIST since contract 110 (MACD retired)
+    assert {"MACD_HIST", "OBV"}.isdisjoint({c.metric for s in plan(Thesis(
         name="Trend Continuation", weights={"MOVING_AVERAGES": 3, "TREND_STRENGTH": 2})).report.sections
         for c in s.columns})
 

@@ -39,12 +39,17 @@
         "RSI14",
         "RSI7",
         "RSI2",
-        "MACD",
+        "MACD_HIST",
+        "MACD_LINE",
+        "MACD_SIGNAL",
         "STOCH_K",
         "STOCH_D",
         "MFI14",
-        "PPO",
+        "PPO_HIST",
+        "PPO_LINE",
+        "PPO_SIGNAL",
         "ROC12",
+        "ROC15",
         "CCI20",
         "CLOSE_CHANGE",
         "CHG_5M",
@@ -71,6 +76,8 @@
         "BB_PCT_B",
         "DONCHIAN_UPPER",
         "DONCHIAN_LOWER",
+        "DONCHIAN_BROKEN_HI",
+        "DONCHIAN_BROKEN_LO",
         "VWAP",
         "TPO_POC",
         "TPO_VAH",
@@ -93,7 +100,6 @@
         "BB_UPPER",
         "BB_LOWER",
         "KC_UPPER",
-        "KC_MID",
         "KC_LOWER",
         "ST_LINE",
         "SWING_FRACTAL_HIGH",
@@ -158,7 +164,7 @@
         "CROWD_CAPT_LIVE"
       ],
       "vocabularies": {},
-      "metricCount": 135
+      "metricCount": 141
     },
     "classification": {
       "conditionOperators": [

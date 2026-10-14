@@ -26,8 +26,11 @@
   ],
   "study": "openInterest",
   "spreadOperands": [
-    "PPO",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
     "ROC12",
+    "ROC15",
     "CLOSE_CHANGE",
     "CHG_5M",
     "CHG_15M",
