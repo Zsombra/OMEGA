@@ -293,7 +293,10 @@ def derive(doc: dict, *, source: str, source_sha256: str) -> dict:
 
 
 def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    """The schema file's sha256 with line endings normalised to LF. git stores these JSON captures with LF and a Windows
+    checkout (core.autocrlf) writes CRLF, so a byte hash named a different file per checkout (2026-10-14: the inventory
+    derived in one worktree failed its own hash check on the main checkout)."""
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def schema_path() -> Path:
