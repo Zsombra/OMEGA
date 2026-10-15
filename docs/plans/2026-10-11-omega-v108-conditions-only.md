@@ -88,6 +88,25 @@ was already history. The TPO suite's `GATE_MIRROR` is retired; each member's des
    refreshed; `freshness_checks` must stop requiring it.
 5. Any `current` it hands `axes_update` may be pre-108 — accepted as is.
 
+## Measured 2026-10-15 at contract 110.8.0 (the user's yes, A7/A8; manager actions 86 and two executor stages)
+
+The probe: OMEGA v0.8.0's `trend-continuation` preset renamed "OMEGA-TEST: 110.8 stage probe", staged as a CREATE
+draft (`87dac9ab-e86d-4304-9845-74a4e14c49de`), **never committed, bound to nothing**.
+
+- **An eight-axis stage draws no errors and no `NO_ENTRY_CONDITION`:** version 1, `diagnostics {errors: [], warnings: []}`
+  (and the same on the draft read after it). MEASURED.
+- **A strategy whose only verdict carriers are `NEITHER` is counted as gated:** the CONDITIONS axis restaged with
+  `O1_UP` and `O1_DOWN` both `NEITHER` - version 2, `{errors: [], warnings: []}`, no `NO_ENTRY_CONDITION`. MEASURED.
+  Whether it can ever enter is NOT measured - that needs a live evaluation on a bound agent.
+- **A refused stage:** the REPORT axis with two `MACD_HIST` columns written as the retired `MACD` - refused at schema
+  validation (`MCP -32602`, `invalid_enum_value`, the served enum listed), the replacement NOT named; the draft stayed at
+  version 2. omega's own `METRIC_RETIRED` is what names `MACD_HIST`. MEASURED.
+- **`minAtrPct` across the 106 -> 108 migration is kept:** "Trend Continuation" (`7534b2ee`, revision 3) reads
+  `minAtrPct = 0.5` (first seen moved into TRADE_LEVEL_POLICY on 2026-10-11, `battlegrid-manager docs/phase-4/4a-first-live.md:71`).
+  MEASURED.
+- **How the gate treats a required condition that reads UNRESOLVED:** still NOT measured - a stage cannot show it; it
+  needs a bound agent's qualification read.
+
 ## Still unmeasured (each a platform call, so each is the user's word)
 
 - That a stage of the eight axes draws no `errors` and no `NO_ENTRY_CONDITION` warning (the 108 analogue of M1).
