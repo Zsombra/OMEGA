@@ -107,10 +107,12 @@ Compose sections, columns and conditions **only** from vocabulary returned in th
 field you remember from another strategy is not discovery.
 
 **Conditions are the only deterministic entry gate.** A condition gates an entry when it is
-`required` or carries a verdict (UP, DOWN or NEITHER); a building block — neither required nor a
-verdict carrier — gates nothing, and an exit rule never counts. A strategy whose entry conditions
-include no required and no verdict-carrying condition never routes a trade: every coin fails first
-with `NO_ENTRY_CONDITION`, and its draft carries the warning of the same name. It stays a valid
+`required` or carries a verdict (UP, DOWN or NEITHER); a building block — a condition with no
+verdict — gates nothing unless it is itself marked `required`, and an exit rule never counts.
+Whether a sub-rule should be a building block or inlined is answered by the `strategy-examples`
+skill's **Building block or inline** paragraph. A strategy whose entry conditions include no
+required and no verdict-carrying condition never routes a trade: every coin fails first with
+`NO_ENTRY_CONDITION`, and its draft carries the warning of the same name. It stays a valid
 strategy — Market Grid reads it as context — so a strategy the player means to trade needs at least
 one. Before any condition is read, a coin must clear the ATR floor, `minAtrPct`, the
 TRADE_LEVEL_POLICY dial beside the stop-loss band.

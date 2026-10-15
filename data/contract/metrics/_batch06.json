@@ -1,5 +1,181 @@
 [
  {
+  "metric": "OI_PX_REGIME",
+  "label": "OI · price regime",
+  "code": "oiRegime",
+  "family": "derivatives",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "new longs",
+    "new shorts",
+    "short covering",
+    "long liquidation"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "openInterest"
+ },
+ {
+  "metric": "REGIME_TREND",
+  "label": "Regime · trend",
+  "code": "regTrend",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "trending up",
+    "trending down",
+    "ranging"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 32
+    }
+   }
+  ],
+  "study": "regimeContext"
+ },
+ {
+  "metric": "REGIME_VOL",
+  "label": "Regime · volatility",
+  "code": "regVol",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "expanding",
+    "contracting",
+    "normal"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 32
+    }
+   }
+  ],
+  "study": "regimeContext"
+ },
+ {
+  "metric": "REGIME_MOM",
+  "label": "Regime · momentum",
+  "code": "regMom",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "bullish",
+    "bearish",
+    "neutral",
+    "diverging"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 32
+    }
+   }
+  ],
+  "study": "regimeContext"
+ },
+ {
+  "metric": "REGIME_STATE",
+  "label": "Regime · state",
+  "code": "regState",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "bull expansion",
+    "bear expansion",
+    "bull ranging",
+    "bear ranging",
+    "contraction",
+    "volatile",
+    "fallback"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "regimeVerdict"
+ },
+ {
+  "metric": "REGIME_CONVICTION",
+  "label": "Regime · conviction",
+  "code": "regConv",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "maximum",
+    "high",
+    "medium",
+    "low",
+    "uncertain"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "regimeVerdict"
+ },
+ {
   "metric": "REGIME_RUN_BARS",
   "label": "Regime · run length",
   "code": "regBars",
@@ -745,77 +921,5 @@
    }
   ],
   "study": null
- },
- {
-  "metric": "PERP_SPOT_FLOW",
-  "label": "Perp/spot flow",
-  "code": "perpSpotFlow",
-  "family": "derived",
-  "nativeOutput": {
-   "kind": "classification",
-   "vocab": [
-    "confirmed_bull",
-    "confirmed_bear",
-    "perp_led_fragile",
-    "spot_led_accumulation",
-    "neutral"
-   ]
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   }
-  ],
-  "study": "perpSpotFlow"
- },
- {
-  "metric": "PERP_SPOT_STRENGTH",
-  "label": "Perp/spot strength",
-  "code": "perpSpotStr",
-  "family": "derived",
-  "nativeOutput": {
-   "kind": "classification",
-   "vocab": [
-    "high",
-    "moderate",
-    "low"
-   ]
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   }
-  ],
-  "study": "perpSpotFlow"
- },
- {
-  "metric": "PERP_SPOT_CONFIRMS",
-  "label": "Perp/spot confirms",
-  "code": "perpSpotConf",
-  "family": "derived",
-  "nativeOutput": {
-   "kind": "boolean"
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   }
-  ],
-  "study": "perpSpotFlow"
  }
 ]

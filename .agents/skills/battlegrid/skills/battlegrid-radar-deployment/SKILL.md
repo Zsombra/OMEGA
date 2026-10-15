@@ -316,26 +316,28 @@ Four reads, cheapest first. Stop as soon as the player's question is answered.
    and read the verdict's `reading` as step 2 of the deploy flow describes it: `live` is what the
    agent reads now, and `lastClose` is the decision its row names as its last close, with the reading
    that bar was decided on.
-2. **`get_radar_activity_summary`** for everything else about "why is it quiet", in ONE call. It
-   carries three parts and they answer three different questions, each on its own scope:
+2. **`get_radar_activity_summary`** for everything else about "why is it quiet", in ONE call. Pass
+   `agentId` when the question is about one agent — "why isn't Hawk firing on SOL?" — and the read is
+   that agent's history on the coin. Without it the read is the **coin feed**: the deployment's
+   lifecycle, status changes, duty changes and fires, with no agent's gates, an empty `curveDigest`
+   and no curve agent. An `agentId` the player cannot access is answered as not found. It carries
+   three parts and they answer three different questions, each on its own scope:
    - `groups` — which cause recurs and how often, over the window the response names. Quote the
-     counts with that window; never sum them across calls.
-   - `curveDigest` — how often the pair qualified, over the FIRST on-duty agent's ring (the
-     lowest-numbered slot on duty now, named in `curveAgentName`): `qualifiedCount` of
-     `sampleCount`, and the latest ATR% with how many samples read one. A pair that qualified on no
-     sample is one whose strategy does not fit this coin as it trades now; the `groups` above name the
-     gate that blocked it. Its `ringStartAt` / `ringEndAt` describe the ring, NOT the cause window
-     above.
-   - `recentEvents` — the last ten key events, lean. Deliberately NOT bounded by the cause window, so
-     a pair quiet for longer returns no groups beside populated older rows. That is correct, not a
-     contradiction; each row carries its own `occurredAt`.
+     counts with that window; never sum them across calls. On the coin feed a blocked status counts
+     by its idle reason, never by an agent's gate; an agent's history counts its own gates.
+   - `curveDigest` — with `agentId`, how often that agent qualified on this coin, over its own ring
+     (named in `curveAgentName`): `qualifiedCount` of `sampleCount`, and the latest ATR% with how many
+     samples read one. A pair that qualified on no sample is one whose strategy does not fit this
+     coin as it trades now; the `groups` above name the gate that blocked it. Its `ringStartAt` /
+     `ringEndAt` describe the ring, NOT the cause window above.
+   - `recentEvents` — the last ten key events of the same scope, lean. Deliberately NOT bounded by the
+     cause window, so a pair quiet for longer returns no groups beside populated older rows. That is
+     correct, not a contradiction; each row carries its own `occurredAt`.
 
-   The groups and rows span every on-duty agent — each row names its own — while the digest describes
-   the first one. For about one sweep after the on-duty set changes the digest can name the new first
-   agent while the rows still show the old one — the two halves are read from different stores. Say
-   "duty just changed" rather than reporting a contradiction. Joins and departures are journaled as
-   `ON_DUTY_JOINED` / `ON_DUTY_LEFT`, one row per agent, and a lost coin as
-   `EDGE_PRESERVED_COIN_CLAIMED`.
+   With `agentId` the groups, the digest and the rows all describe that one agent. Two agents on duty
+   are two reads, one per `agentId`. Joins and departures are journaled as `ON_DUTY_JOINED` /
+   `ON_DUTY_LEFT`, one row per agent, in both the coin feed and that agent's history, and a lost coin
+   as `EDGE_PRESERVED_COIN_CLAIMED`.
 3. **`get_radar_close_decisions`** when the question is about ONE close — "why didn't the 14:00 bar
    fire?", "why did it fire there?", "what did it see at that close?". Every bar the close step
    decided has one record, whether a policy's agent or a manual request's watch decided it: its
@@ -350,13 +352,16 @@ Four reads, cheapest first. Stop as soon as the player's question is answered.
    refused it and nothing was traded. It is the only history of not-qualifying closes: the journal
    writes no row for one, and `resolvesNow` keeps only each agent's last decision — the one
    `reading.lastClose` (step 1) carries; this read holds every decision before it. Narrow with
-   `agentId`; page back by passing the oldest returned `bar.barStart` as `before`. A bar still
+   `agentId`; page back by passing the response's `nextBefore` as `before`, and stop when
+   `nextBefore` is null — that is the end of the history. A bar still
    waiting inside its window has no record yet (`resolvesNow` shows its `closeDecision.state` as
    `DEFERRED`), and records are kept 90 days.
 4. **`get_radar_activity`** only for what steps 2 and 3 cannot do: more rows than its ten, a
-   FIRES-only view, paging back through history, or ONE occurrence's full margins. Rows are lean by
-   default — pass `detail: 'FULL'` for the margin surface, and `includeCurve: true` only if something
-   will actually plot the points.
+   FIRES-only view, paging back through history, or ONE occurrence's full margins. Its scope is step
+   2's: pass `agentId` for one agent's rows, and omit it for the coin feed, which carries no agent's
+   gate crossings, verdict flips or regime changes. Rows are lean by default — pass `detail: 'FULL'`
+   for the margin surface, and `includeCurve: true` only if something will actually plot the points;
+   `includeCurve` requires `agentId`, and is refused without it.
 
 **Neither of the first two substitutes for the other, and the reason is structural.** The journal is
 a TRANSITION log, not a state log: a gate that has blocked continuously without crossing again

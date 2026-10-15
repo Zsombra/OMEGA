@@ -1,26 +1,26 @@
 {
- "extractedOn": "2026-10-14",
+ "extractedOn": "2026-10-15",
  "supersedes": {
-  "extractedOn": "2026-10-13",
-  "servedContractVersion": "108.4.0",
+  "extractedOn": "2026-10-14",
+  "servedContractVersion": "110.2.0",
   "counts": {
-   "metrics": 171,
+   "metrics": 177,
    "families": 10,
    "authorableTransforms": 16,
    "platformSectionTemplates": 25,
    "customSectionTemplates": 2,
-   "composabilityCells": 2736,
-   "composabilityLegal": 670,
-   "composabilityDensityPct": 24.5,
-   "structuralShapes": 899,
-   "structuralAtoms": 670,
-   "operandExpandedShapes": 8575,
+   "composabilityCells": 2832,
+   "composabilityLegal": 705,
+   "composabilityDensityPct": 24.9,
+   "structuralShapes": 947,
+   "structuralAtoms": 705,
+   "operandExpandedShapes": 9103,
    "platformPrivilegedPairsUnique": 3,
    "metricsWithADeclaredAnchor": 0
   },
   "supersedes": {
-   "extractedOn": "2026-09-20",
-   "servedContractVersion": "61.2.0",
+   "extractedOn": "2026-10-13",
+   "servedContractVersion": "108.4.0",
    "counts": {
     "metrics": 171,
     "families": 10,
@@ -36,19 +36,38 @@
     "platformPrivilegedPairsUnique": 3,
     "metricsWithADeclaredAnchor": 0
    },
-   "batches": "data/contract/metrics/archive_20260920_extraction/",
-   "previous": {
-    "extractedOn": "2026-09-09",
-    "servedContractVersion": "54.1.0",
-    "note": "The 2026-09-09 extraction at contract 54.1.0. Its raw batches are kept at data/contract/metrics/archive_20260909_extraction/ because the September measurements were built from them.",
-    "supersedes": {
-     "extractedOn": "2026-08-24",
-     "note": "The 2026-08-24 extraction. Its raw batches are kept at data/contract/metrics/archive_20260824_extraction/ because every August measurement was built from them."
+   "supersedes": {
+    "extractedOn": "2026-09-20",
+    "servedContractVersion": "61.2.0",
+    "counts": {
+     "metrics": 171,
+     "families": 10,
+     "authorableTransforms": 16,
+     "platformSectionTemplates": 25,
+     "customSectionTemplates": 2,
+     "composabilityCells": 2736,
+     "composabilityLegal": 670,
+     "composabilityDensityPct": 24.5,
+     "structuralShapes": 899,
+     "structuralAtoms": 670,
+     "operandExpandedShapes": 8575,
+     "platformPrivilegedPairsUnique": 3,
+     "metricsWithADeclaredAnchor": 0
+    },
+    "batches": "data/contract/metrics/archive_20260920_extraction/",
+    "previous": {
+     "extractedOn": "2026-09-09",
+     "servedContractVersion": "54.1.0",
+     "note": "The 2026-09-09 extraction at contract 54.1.0. Its raw batches are kept at data/contract/metrics/archive_20260909_extraction/ because the September measurements were built from them.",
+     "supersedes": {
+      "extractedOn": "2026-08-24",
+      "note": "The 2026-08-24 extraction. Its raw batches are kept at data/contract/metrics/archive_20260824_extraction/ because every August measurement was built from them."
+     }
     }
    }
   }
  },
- "servedContractVersion": "110.2.0",
+ "servedContractVersion": "110.8.0",
  "contractVersionSource": "manager auth status and the manager's watch job, both read 2026-09-20: contract 61.2.0, build 7722a45be989b7c6b44a72f7e0a0469bc9e8f7e7",
  "source": "BattleGrid MCP connector (account ANBUJEFF), read-only tools only, via the mcporter CLI",
  "warning": "This is a dated snapshot of a LIVE system. The connector's instructions state that cached capability lists are not authoritative after a deployment. Re-run the extraction before trusting the matrix against a changed platform.",
@@ -64,17 +83,17 @@
  ],
  "writeToolsUsed": [],
  "counts": {
-  "metrics": 177,
+  "metrics": 183,
   "families": 10,
   "authorableTransforms": 16,
   "platformSectionTemplates": 25,
   "customSectionTemplates": 2,
-  "composabilityCells": 2832,
-  "composabilityLegal": 705,
-  "composabilityDensityPct": 24.9,
-  "structuralShapes": 947,
-  "structuralAtoms": 705,
-  "operandExpandedShapes": 9103,
+  "composabilityCells": 2928,
+  "composabilityLegal": 731,
+  "composabilityDensityPct": 25.0,
+  "structuralShapes": 981,
+  "structuralAtoms": 731,
+  "operandExpandedShapes": 10257,
   "platformPrivilegedPairsUnique": 3,
   "metricsWithADeclaredAnchor": 0
  },
@@ -84,18 +103,18 @@
   "familyCountsReconcileWithConnector": true,
   "_familyNote": "structure 32 -> 44; every other family unchanged",
   "transformAuthoringInvariance": "re-verified at 61.2.0: exactly one authoring variant per transform across all 681 metric x transform pairs",
-  "liveRenderCoverage": "complete at 110.2.0: 653 structural and 9083 operand-expanded mechanisms, zero uncovered (data/audit/coverage_sweep_2026-10-14.json)",
+  "liveRenderCoverage": "complete at 110.8.0: 677 structural and 10237 operand-expanded mechanisms, zero uncovered (data/audit/coverage_sweep_2026-10-15.json)",
   "compilerProbeAgreement": "1,266 previously-unrendered shapes rendered with ZERO refusals and ZERO predicted-but-not-rendered - omega.fanout.outputs_for described the twelve new metrics correctly on the first pass",
   "signalModuleMembership": "re-probed over all 681 cells with zero failures: 84 metrics feed a module, 72 feed none, membership still not transform-dependent (data/audit/module_membership_full_2026-09-20.json)",
   "_whatMoved": "144 -> 156 metrics, none retired; timeless 62 -> 83 because the twelve arrivals are all timeless and PDH, PDL and the seven pivots changed from candle; those nine also lost trajectory, aggregate and efficiency, so the metric-level anchor field is now absent from every metric in the corpus"
  },
- "refreshedBy": "2026-10-14: get_metric_construction_hints x 177 at contract 110.2.0 (build c70a41d8) over the mcporter CLI, read-only, two workers; scripts/refresh_metric_contracts.py (retired KC_MID, MACD, PPO; nine added; every authoring block invariant) then scripts/build_corpus.py; list_strategy_categories + list_strategy_vocabulary x 10 (momentum 22 -> 27, structure 47 -> 48; two platform templates moved: includeMacd, includeRelativeStrength); render-coverage sweep 2026-10-14 (924 shapes, 1,804 headers, 0 refusals, 0 mispredicted). Moves recorded in data/contract/metrics/_moves_110.json. Previous: 2026-10-13: get_metric_construction_hints x 171 at contract 108.4.0 (build 21747aa9) over the mcporter CLI, read-only; scripts/refresh_metric_contracts.py then scripts/build_corpus.py; render-coverage sweep 2026-10-13 (1,394 shapes, 0 refusals, 0 mispredicted). Record: docs/plans/2026-10-13-omega-reextraction-108-4.md",
- "_manifestRefreshedAt": "2026-10-14",
+ "refreshedBy": "2026-10-15: get_metric_construction_hints x 183 at contract 110.8.0 (build 6cf1bd70) over the mcporter CLI, read-only, two workers, 0 failed; scripts/refresh_metric_contracts.py (retired none; six added: DONCHIAN_UPPER/LOWER_PRIOR, NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW; every authoring block invariant; levelInteraction's authoring text changed, README v110.6) then scripts/build_corpus.py; list_strategy_categories + list_strategy_vocabulary x 10 (structure 48 -> 54; no platform template moved; no saved section in the account); render-coverage sweep 2026-10-15 (1,154 shapes, 1,738 headers, 0 refusals, 0 mispredicted). Moves recorded in data/contract/metrics/_moves_110_8.json. Record: docs/plans/2026-10-15-omega-reextraction-110-8.md. Previous: 2026-10-14: get_metric_construction_hints x 177 at contract 110.2.0 (build c70a41d8) over the mcporter CLI, read-only, two workers; scripts/refresh_metric_contracts.py (retired KC_MID, MACD, PPO; nine added; every authoring block invariant) then scripts/build_corpus.py; list_strategy_categories + list_strategy_vocabulary x 10 (momentum 22 -> 27, structure 47 -> 48; two platform templates moved: includeMacd, includeRelativeStrength); render-coverage sweep 2026-10-14 (924 shapes, 1,804 headers, 0 refusals, 0 mispredicted). Moves recorded in data/contract/metrics/_moves_110.json. Previous: 2026-10-13: get_metric_construction_hints x 171 at contract 108.4.0 (build 21747aa9) over the mcporter CLI, read-only; scripts/refresh_metric_contracts.py then scripts/build_corpus.py; render-coverage sweep 2026-10-13 (1,394 shapes, 0 refusals, 0 mispredicted). Record: docs/plans/2026-10-13-omega-reextraction-108-4.md",
+ "_manifestRefreshedAt": "2026-10-15",
  "writeSurface": {
-  "_what": "The WRITE surface omega authors against, separate from the 61.2.0 metric/transform/vocabulary extraction above (which this note does not refresh). Since contract 85.0.0 a strategy changes only through its draft: get_strategy_draft -> stage_strategy_draft -> commit_strategy_draft. Since 108.0.0 the stage takes eight axes: SIGNAL_RULES and SETUP_GATES are refused as unrecognized keys and minAtrPct is required on TRADE_LEVEL_POLICY (README 'Contract history - v108', vendored at .agents/skills/battlegrid/README.md, pack 31.2.94). Since 110.0.0 (README 'Contract history - v110') the metric keys MACD, PPO and KC_MID are refused (MACD_HIST, PPO_HIST, EMA20) and nine keys are added; the schema moved to the 110.2.0 capture on 2026-10-14.",
-  "servedContractVersion": "110.2.0",
-  "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
-  "schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
+  "_what": "The WRITE surface omega authors against, separate from the 61.2.0 metric/transform/vocabulary extraction above (which this note does not refresh). Since contract 85.0.0 a strategy changes only through its draft: get_strategy_draft -> stage_strategy_draft -> commit_strategy_draft. Since 108.0.0 the stage takes eight axes: SIGNAL_RULES and SETUP_GATES are refused as unrecognized keys and minAtrPct is required on TRADE_LEVEL_POLICY (README 'Contract history - v108', vendored at .agents/skills/battlegrid/README.md, pack 31.2.94). Since 110.0.0 (README 'Contract history - v110') the metric keys MACD, PPO and KC_MID are refused (MACD_HIST, PPO_HIST, EMA20) and nine keys are added; the schema moved to the 110.2.0 capture on 2026-10-14. Since 110.6 (README 'Contract history - v110.6') DONCHIAN_UPPER_PRIOR and DONCHIAN_LOWER_PRIOR are added, and by 110.8.0 NAKED_SINGLE_PRINT_ABOVE/BELOW and TPO_SINGLE_PRINT_ABOVE/BELOW (undocumented); nothing refused; the schema moved to the 110.8.0 capture on 2026-10-15.",
+  "servedContractVersion": "110.8.0",
+  "buildSha": "6cf1bd7015f136f3a380cc506511002977c831e2",
+  "schema": "data/contract/stage_strategy_draft/schema_20261015T015244Z.json",
   "tools": [
    "stage_strategy_draft",
    "get_strategy_draft",
@@ -104,29 +123,45 @@
    "preview_strategy_report",
    "get_strategy"
   ],
-  "readFrom": "battlegrid-manager tests/fixtures/2026-10-11-surface-108.0.0/manager_schemas_108.0.0.json (manager commit d7889bb; observed 2026-10-10T21:53:26Z) - input and output schemas, no platform call by omega",
-  "plan": "docs/plans/2026-10-11-omega-v108-conditions-only.md",
-  "notedAt": "2026-10-11",
+  "readFrom": "battlegrid-manager tests/fixtures/2026-10-15-surface-110.8.0/manager_schemas.json (manager commit 2825893; observed 2026-10-15T01:52:44Z) - input and output schemas, no platform call by omega",
+  "plan": "docs/plans/2026-10-15-omega-reextraction-110-8.md",
+  "notedAt": "2026-10-15",
   "supersedes": {
-   "servedContractVersion": "108.0.0",
-   "buildSha": "1076c4e78456424dd92242eeb30701099c6b9146",
-   "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
+   "servedContractVersion": "110.2.0",
+   "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
+   "schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
+   "tools": [
+    "stage_strategy_draft",
+    "get_strategy_draft",
+    "commit_strategy_draft",
+    "list_strategy_drafts",
+    "preview_strategy_report",
+    "get_strategy"
+   ],
+   "readFrom": "battlegrid-manager tests/fixtures/2026-10-14-surface-110.2.0/manager_schemas.json (manager commit ef5bf24; observed 2026-10-13T20:06:21Z)",
+   "plan": "docs/plans/2026-10-14-omega-reextraction-110-2.md",
+   "notedAt": "2026-10-14",
    "supersedes": {
-    "servedContractVersion": "91.0.0",
-    "buildSha": "c8a39a0c1104ccc6a3aa51085845c14ae0c6c0fd",
-    "schema": "data/contract/stage_strategy_draft/schema_20261005T194629Z.json",
-    "tools": [
-     "stage_strategy_draft",
-     "get_strategy_draft",
-     "commit_strategy_draft",
-     "discard_strategy_draft",
-     "list_strategy_drafts",
-     "preview_strategy_report"
-    ],
-    "readFrom": "battlegrid-manager system_state.surface_tools (watch), observed 2026-10-05T19:46:29Z - input schemas only, no platform call by omega",
-    "plan": "docs/plans/2026-10-06-omega-draft-lifecycle-re-extraction.md",
-    "notedAt": "2026-10-06",
-    "note": "The 91.0.0 write surface (ten axes, SIGNAL_RULES and SETUP_GATES among them). Kept as history; never read as the current write surface."
+    "servedContractVersion": "108.0.0",
+    "buildSha": "1076c4e78456424dd92242eeb30701099c6b9146",
+    "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
+    "supersedes": {
+     "servedContractVersion": "91.0.0",
+     "buildSha": "c8a39a0c1104ccc6a3aa51085845c14ae0c6c0fd",
+     "schema": "data/contract/stage_strategy_draft/schema_20261005T194629Z.json",
+     "tools": [
+      "stage_strategy_draft",
+      "get_strategy_draft",
+      "commit_strategy_draft",
+      "discard_strategy_draft",
+      "list_strategy_drafts",
+      "preview_strategy_report"
+     ],
+     "readFrom": "battlegrid-manager system_state.surface_tools (watch), observed 2026-10-05T19:46:29Z - input schemas only, no platform call by omega",
+     "plan": "docs/plans/2026-10-06-omega-draft-lifecycle-re-extraction.md",
+     "notedAt": "2026-10-06",
+     "note": "The 91.0.0 write surface (ten axes, SIGNAL_RULES and SETUP_GATES among them). Kept as history; never read as the current write surface."
+    }
    }
   }
  },

@@ -71,7 +71,8 @@ def test_corpus_is_complete():
     # 86 on 2026-08-24. The twelve added are all prior-session structure (TPO, naked POC, PDO).
     # 171 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); the 15 are v100's twelve bar-geometry metrics and v101.1's three swing ones.
     # 177 since the re-extraction at 110.2.0, 2026-10-14: MACD, PPO, KC_MID retired, nine added (_moves_110.json).
-    assert len(CONTRACT.metrics) == 177
+    # 183 since the re-extraction at 110.8.0, 2026-10-15: none retired, six added (_moves_110_8.json).
+    assert len(CONTRACT.metrics) == 183
 
 
 def test_every_privileged_pair_is_rejected():

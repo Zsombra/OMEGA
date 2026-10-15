@@ -46,7 +46,7 @@ Run these in order. Skip a step only when the player's question makes it irrelev
    coin selection and the funding / open-interest / positioning sections chosen — one coin is a
    one-row report, not a different tool. Then `get_coin_candles` for the price action. For momentum
    across timeframes, add the Relative Strength section — it carries the PPO trajectory and its
-   zero-crossing — or author `PPO` columns at the intervals you want pinned; that is the same read
+   zero-crossing — or author `PPO_HIST` columns at the intervals you want pinned; that is the same read
    at the precision the catalog declares, in the call you are already making. Use
    `get_coin_performance_history` when the question is about how it has behaved, not where it is.
    Coin symbols are case-insensitive and exchange symbols are accepted (`btc`, `kPEPE`,

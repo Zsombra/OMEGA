@@ -2,7 +2,7 @@
   "digestVersion": 1,
   "server": {
     "name": "battlegrid",
-    "contractVersion": "108.2.0"
+    "contractVersion": "110.4.0"
   },
   "axes": {
     "create": [
@@ -229,6 +229,8 @@
     "CVD",
     "DI_MINUS",
     "DI_PLUS",
+    "DONCHIAN_BROKEN_HI",
+    "DONCHIAN_BROKEN_LO",
     "DONCHIAN_LOWER",
     "DONCHIAN_UPPER",
     "EMA13",
@@ -256,13 +258,14 @@
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
     "KC_LOWER",
-    "KC_MID",
     "KC_SQUEEZE",
     "KC_UPPER",
     "LAST",
     "LOW",
     "LOW_DEV",
-    "MACD",
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
     "MARK",
     "MA_ALIGN",
     "MFI14",
@@ -290,7 +293,9 @@
     "PIVOT_S1",
     "PIVOT_S2",
     "PIVOT_S3",
-    "PPO",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
     "PRICE_ZONE",
     "PRIOR_TPO_IB_HIGH",
     "PRIOR_TPO_IB_LOW",
@@ -321,6 +326,7 @@
     "REGIME_VOL_ATR_RATIO",
     "REGIME_VOL_BBW_RATIO",
     "ROC12",
+    "ROC15",
     "RSI14",
     "RSI2",
     "RSI7",
