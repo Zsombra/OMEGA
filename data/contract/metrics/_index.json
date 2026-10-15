@@ -1,5 +1,5 @@
 {
-  "metricCount": 177,
+  "metricCount": 183,
   "byFamily": {
     "crowd": [
       "CROWD_ACC",
@@ -109,11 +109,15 @@
       "DONCHIAN_BROKEN_HI",
       "DONCHIAN_BROKEN_LO",
       "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
       "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
       "KC_LOWER",
       "KC_UPPER",
       "NAKED_POC_ABOVE",
       "NAKED_POC_BELOW",
+      "NAKED_SINGLE_PRINT_ABOVE",
+      "NAKED_SINGLE_PRINT_BELOW",
       "PDH",
       "PDL",
       "PDO",
@@ -144,6 +148,8 @@
       "TPO_IB_LOW",
       "TPO_POC",
       "TPO_SHAPE",
+      "TPO_SINGLE_PRINT_ABOVE",
+      "TPO_SINGLE_PRINT_BELOW",
       "TPO_VAH",
       "TPO_VAL",
       "TPO_VPOC",

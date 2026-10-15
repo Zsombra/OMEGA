@@ -30,8 +30,9 @@ def test_matrix_is_the_full_metric_by_transform_grid():
     # 171 x 16 since the re-extraction at 108.4.0, 2026-10-13 - still 16 transforms: the served list swapped bandTouch for
     # levelInteraction (data/contract/vocabulary/_shared.json, list_strategy_vocabulary)
     # 177 x 16 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): MACD, PPO, KC_MID out, nine in.
-    assert len(rows) == 2832
-    assert len({r["metric"] for r in rows}) == 177
+    # 183 x 16 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): six in, none out.
+    assert len(rows) == 2928
+    assert len({r["metric"] for r in rows}) == 183
     assert len({r["transform"] for r in rows}) == 16
     assert "levelInteraction" in {r["transform"] for r in rows} and "bandTouch" not in {r["transform"] for r in rows}
 
@@ -63,9 +64,12 @@ def test_structural_shape_count_is_1018():
     # (SPOT_CVD's spread) = 670. Chained: efficiency left every distance/spread chain, 301 -> 229. 920 on 2026-10-12.
     # 705 + 242 = 947 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): atoms 670 - 18 (MACD 5, PPO 6, KC_MID 7) + 53 (the nine new metrics);
     # chained 229 -> 242 (the new metrics' distance/spread chains, less KC_MID's).
-    assert len(atoms) == 705
-    assert len(chained) == 242
-    assert len(shapes) == 947
+    # 731 + 250 = 981 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): atoms + 26 (the two prior-bar Donchian edges
+    # 7 each with levelInteraction; the four single-print edges value/distance/spread, 3 each); chained + 8 (the Donchian
+    # edges' distance and spread chains; the single-print edges are timeless and chain nothing).
+    assert len(atoms) == 731
+    assert len(chained) == 250
+    assert len(shapes) == 981
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -101,7 +105,8 @@ def test_chain_successors_split_93_and_19():
     two_rank = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate", "rank"}]
     assert (len(three), len(four)) == (0, 0)
     # 91 and 20 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): KC_MID's distance -> rank left with it.
-    assert len(two) == 91
+    # 95 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): the Donchian prior edges' distance and spread.
+    assert len(two) == 95
     assert len(two_rank) == 20
 
 
@@ -126,7 +131,8 @@ def test_expanding_operands_and_orderings_gives_8999():
     """
     # 8,575 since the re-extraction at 108.4.0, 2026-10-13; 8,367 on 2026-10-12 (bandTouch retired).
     # 9,103 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json).
-    assert len(enumerate_shapes(expand_operands=True)) == 9103
+    # 10,257 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json).
+    assert len(enumerate_shapes(expand_operands=True)) == 10257
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -223,9 +229,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 947
+    assert len(unused) + len(used) == 981
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 947                       # 899 at 108.4.0
-    assert len(query(expand_operands=True)) == 9103   # 8575 at 108.4.0
+    assert len(query()) == 981                       # 899 at 108.4.0, 947 at 110.2.0
+    assert len(query(expand_operands=True)) == 10257  # 8575 at 108.4.0, 9103 at 110.2.0

@@ -64,8 +64,8 @@ def test_the_gaps_name_only_the_retired_section_field():
 # --- transforms: retired and unmeasured, both derived from the served enum ---------------------------
 def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert set(C.retired_transforms) == {"bandTouch"}
-    # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.2.0 capture since 2026-10-14
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "110.2.0"
+    # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.8.0 capture since 2026-10-15
+    assert C.retired_transforms["bandTouch"]["servedAt"] == "110.8.0"
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -73,16 +73,18 @@ def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
     """levelInteraction was served-but-unmeasured from 2026-10-12 until the 2026-10-13 re-extraction read it per metric
     (43 metrics offer it). classifyState is served too, and is the platform-privileged one. 44 since the re-extraction at
     110.2.0 (2026-10-14): KC_MID retired, the two Donchian break levels (DONCHIAN_BROKEN_HI/LO) offer it - unlike the
-    Donchian rails - and their headers rendered live (_coverage_sweep_2026-10-14.json)."""
+    Donchian rails - and their headers rendered live (_coverage_sweep_2026-10-14.json). 46 since 110.8.0 (2026-10-15):
+    the two prior-bar Donchian edges (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6: "They take `levelInteraction`");
+    the four single-print zone edges do not (value, distance, spread only)."""
     assert C.unmeasured_transforms == {}
-    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 44
+    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 46
 
 
 def test_a_retired_transform_is_refused_naming_its_replacement():
     f = validate_column(col("OPEN", "bandTouch"), contract=C)
     assert codes(f) == {"TRANSFORM_RETIRED"}
     msg = f[0].message
-    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "110.2.0" in msg
+    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "110.8.0" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():
@@ -108,7 +110,7 @@ def test_level_interaction_headers_are_the_measured_ones():
 def test_the_space_never_enumerates_a_retired_transform_and_does_enumerate_level_interaction():
     shapes = enumerate_shapes(expand_operands=True)
     assert not [s for s in shapes if "bandTouch" in (s.transform, s.chained)]
-    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 44       # 43 at 108.4.0
+    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 46       # 43 at 108.4.0, 44 at 110.2.0
 
 
 # --- buffer ----------------------------------------------------------------------------------------

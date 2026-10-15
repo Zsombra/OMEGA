@@ -34,7 +34,7 @@ SURFACE_104_1 = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/f
 
 def test_the_corpus_is_the_whole_served_enum_and_the_unmeasured_record_is_empty():
     c = load()
-    assert set(c.metrics) == set(SERVED) and len(SERVED) == 177      # 171 at 108; 177 since 110 (_moves_110.json)
+    assert set(c.metrics) == set(SERVED) and len(SERVED) == 183      # 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json)
     assert RECORD["metrics"] == {} and c.unmeasured_metrics == {}
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
 

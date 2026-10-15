@@ -54,6 +54,7 @@ SEEN_FILES = [
     # (`ROC` -> `ROC12`, so every ROC12 shape was unrendered under its new header). 924 shapes, 1,804 headers minted,
     # zero refusals, zero predicted-but-not-rendered (data/audit/coverage_sweep_2026-10-14.json).
     "_coverage_sweep_2026-10-14.json",
+    "_coverage_sweep_2026-10-15.json",   # the re-extraction at 110.8.0: 1,154 shapes, 1,738 headers, 0 refusals
 ]
 
 

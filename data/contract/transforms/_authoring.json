@@ -322,8 +322,8 @@
   },
   "levelInteraction": {
    "calculationSummary": "Classify what the newest bar did against a price level: a touch within the buffer, or a rejection that pierced the level and closed back, on the side the prior close stood.",
-   "formula": "output = levelInteraction(bar t, close t−1, {base}[t], {base}[t−1], buffer {buffer} bps)",
-   "nullBehavior": "Returns null when the series holds no prior bar, a price or the level is absent, or either bar's level is not positive.",
+   "formula": "output = levelInteraction(bar t, close t−1, {base}[t], {base} in force when bar t opened, buffer {buffer} bps)",
+   "nullBehavior": "Returns null when the series holds no prior bar, a price or the level at the newest bar is absent, the level in force when the bar opened is absent (the prior bar's level, for a level computed from its own bar), or either level is not positive.",
    "operandOrder": [
     "base"
    ],

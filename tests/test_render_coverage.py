@@ -41,7 +41,7 @@ from scripts.render_coverage import (
 # 8302 since the re-extraction at 110.2.0, 2026-10-14: 5262 unchained and 3040 chained - pools lost MACD, PPO and
 # KC_MID and gained the seven v110 oscillator metrics and the two Donchian break levels (CLOSE's 66 operands became 67),
 # and the nine new metrics offer their own spread atoms (data/contract/metrics/_moves_110.json).
-EXPANDED_SPREAD_SHAPES = 8302
+EXPANDED_SPREAD_SHAPES = 9432   # 8302 at 110.2.0; the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json)
 
 
 @pytest.fixture(scope="module")
@@ -70,7 +70,7 @@ def test_expanded_spread_header_names_both_sides(contract):
 
 def test_rendered_headers_spans_every_cache():
     """Bug 2: a single cache is not the record of what was rendered."""
-    assert len(SEEN_FILES) == 15   # 11 until the 09-09 sweep, 13 since the 09-20 one, 14 since 10-13, 15 since 10-14
+    assert len(SEEN_FILES) == 16   # 11 until the 09-09 sweep, 13 since the 09-20 one, 14 since 10-13, 15 since 10-14, 16 since 10-15
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -159,7 +159,7 @@ def test_structural_coverage_is_complete(contract):
     cov, unc, _ = coverage(False, contract)
     # 623 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md): the new metrics and levelInteraction on 43 levels, all rendered by that day's
     # sweep; bandTouch's 62 had already left, and the efficiency cells 108.4 removed left with the corpus.
-    assert (cov, len(unc)) == (653, 0), (     # 623 at 108.4.0; 653 at 110.2.0 (2026-10-14)
+    assert (cov, len(unc)) == (677, 0), (     # 623 at 108.4.0; 653 at 110.2.0 (2026-10-14); 677 at 110.8.0 (2026-10-15)
         "every metric x transform mechanism has been rendered live at least once")
 
 
@@ -188,6 +188,6 @@ def test_live_coverage_is_complete(contract):
     cov, unc, byt = coverage(True, contract)
     # 8,347 since 2026-10-12: the 62 bandTouch shapes left with the transform at v100 (all had rendered live)
     # 8,555 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md) (1,394 shapes rendered that day, 0 refusals, 0 mispredicted)
-    assert (cov, len(unc)) == (9083, 0), (    # 8555 at 108.4.0; 9083 at 110.2.0 (2026-10-14)
+    assert (cov, len(unc)) == (10237, 0), (   # 8555 at 108.4.0; 9083 at 110.2.0 (2026-10-14); 10237 at 110.8.0 (2026-10-15, 1,154 shapes rendered, 0 refusals, 0 mispredicted)
         "live coverage regressed - a shape is enumerated that has never been rendered")
     assert not byt

@@ -83,7 +83,9 @@ def test_every_timeless_metric_is_covered(contract):
     # data/audit/timeless_column_timeframe.json's _honesty note for the same caveat.
     timeless = [n for n in contract.metrics
                 if contract.metric(n).is_timeless and n not in UNMEASURED]
-    assert len(timeless) == 52
+    # 56 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): the four single-print zone edges are timeless (served
+    # timeframeMode) and the rule holds for each, offline (this loop).
+    assert len(timeless) == 56
     for name in timeless:
         codes = [f.code for f in _findings(name, {"rel": "regime"}, contract)]
         assert "REPORT_COLUMN_CONSTRUCTION_FAILED" in codes, name

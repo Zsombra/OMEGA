@@ -16,10 +16,13 @@ import pytest
 from omega import condition_vocabulary as CV
 
 ROOT = Path(__file__).resolve().parents[1]
-# The schema the manifest names: the 110.2.0 capture since 2026-10-14 (was the 108.0.0 one, kept below as history).
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
+# The schema the manifest names: the 110.8.0 capture since 2026-10-15 (the 110.2.0 one of 2026-10-14 and the 108.0.0 one
+# are kept below as history).
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
+SCHEMA_110_2 = ROOT / "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
 SCHEMA_108 = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
 MOVES_110 = json.loads((ROOT / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))
+MOVES_110_8 = json.loads((ROOT / "data/contract/metrics/_moves_110_8.json").read_text(encoding="utf-8"))
 DOC = json.loads(SCHEMA.read_text(encoding="utf-8"))
 V = CV.vocabulary()
 G = V["grammar"]
@@ -45,9 +48,9 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "110.2.0",
-                           "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261015T015244Z.json",
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "110.8.0",
+                           "buildSha": "6cf1bd7015f136f3a380cc506511002977c831e2",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -163,9 +166,10 @@ def test_what_is_served_per_header_names_the_same_thirteen_operators():
 
 # --- the column enums -----------------------------------------------------------------------------
 def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
-    """171 at 108; 177 since 110 (MACD, PPO, KC_MID retired, nine added - data/contract/metrics/_moves_110.json)."""
+    """171 at 108; 177 since 110 (MACD, PPO, KC_MID retired, nine added - data/contract/metrics/_moves_110.json); 183
+    since 110.8 (six added, none retired - _moves_110_8.json)."""
     col = V["reportColumn"]
-    assert col["metric"]["count"] == 177 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["count"] == 183 == len(set(col["metric"]["enum"]))
     assert col["transformId"]["enum"] == [
         "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "crossDetect", "aggregate",
         "efficiency", "maxShare", "rank", "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist",
@@ -190,8 +194,17 @@ def _enum_108() -> list[str]:
 def test_the_110_enum_is_the_108_enum_moved_exactly_as_v110_says():
     old, new = _enum_108(), V["reportColumn"]["metric"]["enum"]
     assert set(old) - set(new) == set(MOVES_110["retired"])
-    assert set(new) - set(old) == set(MOVES_110["added"])
+    assert set(new) - set(old) == set(MOVES_110["added"]) | set(MOVES_110_8["added"])
     assert [m for m in old if m in new] == [m for m in new if m in old]      # the survivors keep their platform order
+
+
+def test_the_110_8_enum_is_the_110_2_enum_plus_the_six():
+    pointer = V["reportColumn"]["metric"]["pointer"]
+    old = CV.resolve(json.loads(SCHEMA_110_2.read_text(encoding="utf-8")), pointer)["enum"]
+    new = V["reportColumn"]["metric"]["enum"]
+    assert MOVES_110_8["retired"] == {} and set(old) <= set(new)
+    assert set(new) - set(old) == set(MOVES_110_8["added"])
+    assert [m for m in new if m in old] == old                                 # the 177 keep their platform order
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------

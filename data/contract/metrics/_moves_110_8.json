@@ -1,0 +1,60 @@
+{
+ "_what": "What contracts 110.3.0-110.8.0 moved in the metric roster, measured 2026-10-15 by the re-extraction at 110.8.0 (183 metrics; refresh_metric_contracts.py reported retired [] and 183 written) and, for the two Donchian keys only, stated by the vendor changelog (battlegrid-mcp README 'Contract history - v110.6: the Donchian channel as of the bar before'); the four single-print keys are undocumented and described here from the served hints (gloss, study, timeframeMode). Nothing is retired, so omega.validate has nothing new to refuse; the history tests read `added` as never probed (no signal module exists since 108).",
+ "contractVersion": "110.8.0",
+ "buildSha": "6cf1bd7015f136f3a380cc506511002977c831e2",
+ "retired": {},
+ "added": [
+  "DONCHIAN_UPPER_PRIOR",
+  "DONCHIAN_LOWER_PRIOR",
+  "NAKED_SINGLE_PRINT_ABOVE",
+  "NAKED_SINGLE_PRINT_BELOW",
+  "TPO_SINGLE_PRINT_ABOVE",
+  "TPO_SINGLE_PRINT_BELOW"
+ ],
+ "added_detail": {
+  "DONCHIAN_UPPER_PRIOR": {
+   "code": "donchianHiPrior",
+   "study": "donchianChannels",
+   "timeframeMode": "candle",
+   "source": "README v110.6",
+   "gloss": "the highest high of the 20-bar window ending at the bar before this one — the upper edge a close at this bar can break (Pine's ta.highest(high, 20)[1])"
+  },
+  "DONCHIAN_LOWER_PRIOR": {
+   "code": "donchianLoPrior",
+   "study": "donchianChannels",
+   "timeframeMode": "candle",
+   "source": "README v110.6",
+   "gloss": "the lowest low of the 20-bar window ending at the bar before this one — the lower edge a close at this bar can break (Pine's ta.lowest(low, 20)[1])"
+  },
+  "TPO_SINGLE_PRINT_ABOVE": {
+   "code": "tpoSpAbove",
+   "study": "singlePrints",
+   "timeframeMode": "timeless",
+   "source": "served hints only",
+   "gloss": "the low edge of the nearest single-print zone above the price in the current UTC session's letter profile, excluding a zone the price has reached since the fold — read live, because the price decides which zone is nearest — and its dist_tpoSpAbove composition carries the platform's shared distance sign, (price - level) / level x 100, so this one reads negative"
+  },
+  "TPO_SINGLE_PRINT_BELOW": {
+   "code": "tpoSpBelow",
+   "study": "singlePrints",
+   "timeframeMode": "timeless",
+   "source": "served hints only",
+   "gloss": "the high edge of the nearest single-print zone below the price in the current UTC session's letter profile, excluding a zone the price has reached since the fold — read live, because the price decides which zone is nearest — and its dist_tpoSpBelow composition carries the platform's shared distance sign, (price - level) / level x 100, so this one reads positive"
+  },
+  "NAKED_SINGLE_PRINT_ABOVE": {
+   "code": "nSpAbove",
+   "study": "singlePrints",
+   "timeframeMode": "timeless",
+   "source": "served hints only",
+   "gloss": "the low edge of the nearest earlier session's single-print zone above the price that no later trading has touched, over the retained sessions whose single prints were measured, back to the newest gap — read live, because the live range and the price decide which zone qualifies — and its dist_nSpAbove composition carries the platform's shared distance sign, (price - level) / level x 100, so this one reads negative"
+  },
+  "NAKED_SINGLE_PRINT_BELOW": {
+   "code": "nSpBelow",
+   "study": "singlePrints",
+   "timeframeMode": "timeless",
+   "source": "served hints only",
+   "gloss": "the high edge of the nearest earlier session's single-print zone below the price that no later trading has touched, over the retained sessions whose single prints were measured, back to the newest gap — read live, because the live range and the price decide which zone qualifies — and its dist_nSpBelow composition carries the platform's shared distance sign, (price - level) / level x 100, so this one reads positive"
+  }
+ },
+ "behaviour": "README v110.6: levelInteraction decides the side and the break against the level in force when the bar opened; labels move on DONCHIAN_BROKEN_HI/LO, SWING_FRACTAL_HIGH/LOW, ICHI_SPAN_A/B, ICHI_LAG only. The levelInteraction authoring block's text changed accordingly (refresh_metric_contracts.py: 'authoring changed on [levelInteraction]'); its schema did not.",
+ "_glossNote": "each gloss is the served hints' metric.gloss verbatim"
+}

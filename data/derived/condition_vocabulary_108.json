@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
-  "sha256": "79a669f2010433509a80ba34c81ece0b6953dae6af7ff56cbe88ecce403165a3",
-  "contractVersion": "110.2.0",
-  "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
-  "observedAt": "2026-10-13T20:06:21.070642+00:00"
+  "schema": "data/contract/stage_strategy_draft/schema_20261015T015244Z.json",
+  "sha256": "626f9cfa8446bb4d817fefda2165a7119f775bb6a4caf897530f119a03f9b7e1",
+  "contractVersion": "110.8.0",
+  "buildSha": "6cf1bd7015f136f3a380cc506511002977c831e2",
+  "observedAt": "2026-10-15T01:52:44.650912+00:00"
  },
  "clauseOperators": [
   "lt",
@@ -560,7 +560,7 @@
   ],
   "metric": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/metric",
-   "count": 177,
+   "count": 183,
    "enum": [
     "OPEN",
     "HIGH",
@@ -627,6 +627,8 @@
     "BB_PCT_B",
     "DONCHIAN_UPPER",
     "DONCHIAN_LOWER",
+    "DONCHIAN_UPPER_PRIOR",
+    "DONCHIAN_LOWER_PRIOR",
     "DONCHIAN_BROKEN_HI",
     "DONCHIAN_BROKEN_LO",
     "VWAP",
@@ -653,6 +655,10 @@
     "PRIOR_TPO_VVAL",
     "NAKED_POC_ABOVE",
     "NAKED_POC_BELOW",
+    "TPO_SINGLE_PRINT_ABOVE",
+    "TPO_SINGLE_PRINT_BELOW",
+    "NAKED_SINGLE_PRINT_ABOVE",
+    "NAKED_SINGLE_PRINT_BELOW",
     "BB_UPPER",
     "BB_LOWER",
     "KC_UPPER",
