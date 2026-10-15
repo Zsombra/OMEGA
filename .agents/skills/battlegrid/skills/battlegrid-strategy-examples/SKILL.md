@@ -77,7 +77,7 @@ add. Either way you never invent one. To section-qualify a duplicated header, re
 `detail: "detailed"` preview's `authoring.conditionColumns` or from the qualified candidates a
 `CONDITION_COLUMN_AMBIGUOUS` refusal offers.
 
-**Event columns print only on their event.** `MACD_cross` and `EMA5_13` (Bullish/Bearish) carry a
+**Event columns print only on their event.** `MACDhist_cross` and `EMA5_13` (Bullish/Bearish) carry a
 value on the crossing bar and are null on every other one, which reads as UNRESOLVED. Use an event
 column as a TRIGGER inside a carrier, and pair it with a persistent state — a spread sign,
 `MAalign` — for regime. A condition that treats an event column as a standing state is unresolved on
@@ -163,13 +163,55 @@ setups block and from the `decide_trade` contract, not merely discouraged in the
 declares no verdict-carrying condition resolves `null` and constrains no side.
 
 **A strategy without an entry condition never routes.** An entry condition gates when it is
-`required: true` or carries a verdict (`UP`, `DOWN` or `NEITHER`); a building block gates nothing,
-and an exit rule never counts. A strategy whose conditions include neither never trades: every coin
-fails first with `NO_ENTRY_CONDITION`, before the trade levels, the ATR floor or any condition is
-read, and its draft carries the `NO_ENTRY_CONDITION` warning. It stays a valid strategy — Market Grid
+`required: true` or carries a verdict (`UP`, `DOWN` or `NEITHER`); a building block not marked
+`required` gates nothing, and an exit rule never counts. A strategy whose conditions include neither
+never trades: every coin fails first with `NO_ENTRY_CONDITION`, before the trade levels, the ATR
+floor or any condition is read, and its draft carries the `NO_ENTRY_CONDITION` warning. It stays a valid strategy — Market Grid
 reads it as context — so this is a choice to state, never an accident. When the agent decides a
 routed trade, its `decide_trade` call cites 1–8 of the evaluated entry conditions in
 `conditionChecklist`, and only a condition that read TRUE may be cited as `CONFIRM`.
+
+**Building block or inline — the same logic, different reach.** A `conditionRef` reads the
+referenced condition's one answer for the bar being decided — TRUE, FALSE or UNRESOLVED, exactly what
+its tree reads in place — so moving a subtree into a building block, or back, never by itself changes
+a coin's result. What differs is what each form can reach and what each costs.
+
+Make it a building block when:
+
+- **The tree nests past the depth cap.** "Not a breakout", where a breakout is an `ANY` of `ALL`s,
+  is a `NOT` over a group over groups; inside another condition's `ALL` that is one level too deep,
+  so the breakout becomes its own building block and the carrier reads `NOT [UP_BREAKOUT]`
+  (`CONDITION_GROUP_DEPTH_EXCEEDED` names this remedy).
+- **One condition would pass `budgets.conditionClauses`** (served by `list_strategy_vocabulary`). A
+  reference spends no clause and no frame read, so a sub-rule referenced from several conditions is
+  counted once; every pasted copy is counted again, against `budgets.conditionFrameReads` too.
+- **The gate is "either side".** Every `required` condition must read TRUE, so marking `RANGE_LONG`
+  and `RANGE_SHORT` both required demands both at once. The gate is one building block,
+  `SETUP_VALID` = `ANY [RANGE_LONG, RANGE_SHORT]`, marked `required: true`. It is not redundant with
+  the carriers' verdicts: the verdict that binds direction is held through a contrary reading until
+  that reading repeats for the dwell the binding records (`verdictDwellRequired` on a signal log's
+  `verdictBinding`), while a required condition reads the decided bar alone — so the required block
+  is what insists the setup is present now.
+- **The sub-rule should be read by name.** A building block's outcome renders under its own key in
+  the prompt the agent reads, in the signal log's condition evaluation and in the studio's per-coin
+  readout; an inlined clause shows only as evidence under the condition holding it.
+  `AT_DEMAND TRUE · FLOW_LONG_OK FALSE` tells the agent and the player why; `RANGE_LONG FALSE` alone
+  does not.
+- **It must read TRUE without voting.** Verdict resolution skips a building block, so a location or
+  flow test never sets a side and never contradicts a carrier into `NEITHER`.
+
+Inline it when:
+
+- **It is one clause used once.** As a building block it spends a whole condition slot out of
+  `budgets.strategyConditions` for nothing but its name.
+- **The composite must be counted across closes.** A group holding more than Once holds no
+  `conditionRef`, so "together on 3 closes in a row" over a sub-rule needs its clauses inline.
+
+Inlining a `NOT` is not always a flipped operator. A clause whose read ran and found no value reads
+FALSE, so `NOT [dist_donchianHi gt -0.52]` reads TRUE on a coin with no channel value while
+`dist_donchianHi lte -0.52` reads FALSE; `NOT [CVD_state is "bearish"]` and
+`CVD_state in ["bullish", "neutral"]` part the same way. Flip only a header that always carries a
+value, or choose deliberately which answer a missing value gives.
 
 A verdict carrier must read no DEVELOPING bar. A verdict is refused over any closure that reads a
 column selecting Developing above the strategy timeframe (`CONDITION_VERDICT_READ_ILLEGAL`). The
@@ -344,7 +386,8 @@ within the buffer of the level is `touch_from_below`. From above is the mirror o
   crossing 0: `dist_bbUpper crossesAbove 0` from below, `crossesBelow 0` from above. On the strategy's
   own rung a `…_from_below` label never holds on a bar where `crossesAbove 0` holds.
 - **Which levels take it.** A candle-homed level — a band (`BB_UPPER`, `BB_LOWER`, `KC_UPPER`,
-  `KC_MID`, `KC_LOWER`), `VWAP`, a moving average (`SMA20`, `EMA20`, …), `ST_LINE`, `PSAR`, the
+  `KC_LOWER`), `VWAP`, a moving average (`SMA20`, `EMA20`, …), `ST_LINE`, `PSAR`, the Donchian break
+  memory (`DONCHIAN_BROKEN_HI`, `DONCHIAN_BROKEN_LO`), the
   Ichimoku lines, the swing levels (`SWING_FRACTAL_HIGH`, `SWING_FRACTAL_LOW`) — reads its own value at
   each of the two bars. A prior-session level or pivot (`PDH`,
   `PDL`, `PDO`, `PIVOT_P`, `PRIOR_TPO_POC`, …) has one reading for the session, used as both bars' level;

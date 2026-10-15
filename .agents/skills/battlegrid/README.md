@@ -24,6 +24,62 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
+## Contract history — v110.6 (the Donchian channel as of the bar before)
+
+**Additive at v110.6: two Donchian metric keys, and level-interaction labels judged against the level in
+force when the bar opened.** v110.6 is the contract on top of v110.5. Nothing you send is refused.
+
+### Widened enum — something new you can send
+
+- **`DONCHIAN_UPPER_PRIOR` and `DONCHIAN_LOWER_PRIOR`** (codes `donchianHiPrior`, `donchianLoPrior`)
+  in every tool that takes a column (`stage_strategy_draft`, `preview_strategy_report`,
+  `get_strategy_column_contract`, `get_metric_construction_hints`): the 20-bar channel edges as of the
+  bar before, Pine's `ta.highest(high, 20)[1]` and `ta.lowest(low, 20)[1]`. The close-based Donchian
+  breakout is `dist_donchianHiPrior crossesAbove 0`; the state "close above the prior 20-bar high" is
+  `dist_donchianHiPrior gt 0`; a failed breakout is `donchianHiPrior_lvl is reject_from_below`. They take
+  `levelInteraction` and not the cross-coin `rank`. Their history begins when the server deployed them.
+
+### Behaviour behind unchanged schemas
+
+- **`levelInteraction` decides the side and the break against the level in force when the bar opened**:
+  the bar's own reading for a level fixed before the bar, the previous bar's reading for a level computed
+  from its own bar. Labels move on `DONCHIAN_BROKEN_HI`, `DONCHIAN_BROKEN_LO`, `SWING_FRACTAL_HIGH`,
+  `SWING_FRACTAL_LOW`, `ICHI_SPAN_A`, `ICHI_SPAN_B` and `ICHI_LAG`, only on bars where the level stepped
+  across the prior close and on the bar a level first appears (null becomes a label). No other level's
+  label moves. The transform's `formula` and `nullBehavior` text say so.
+
+## Contract history — v110 (a metric names the one line it reads)
+
+**Breaking at v110: the metric keys `MACD`, `PPO` and `KC_MID` are refused.** v110 is the contract on
+top of v109. The catalog now offers each oscillator's line and signal beside its histogram, so the
+histogram keys say which line they read, and every indicator member the server publishes is a metric
+or reads through one.
+
+### Rejected input — something you send is no longer accepted
+
+- **The metric keys `MACD` and `PPO`** are refused by every tool that takes a column
+  (`stage_strategy_draft`, `preview_strategy_report`, `get_strategy_column_contract`,
+  `get_metric_construction_hints`). Author `MACD_HIST` and `PPO_HIST` — the same histograms.
+- **The metric key `KC_MID`** is refused. The Keltner basis is the 20-period EMA: author `EMA20`.
+- **The header codes `MACD`, `PPO` and `ROC`** render as `MACDhist`, `PPOhist` and `ROC12`, so a
+  condition or Market Read marker naming `MACD_cross`, `PPO_trend` or `ROC_1h` is refused; address
+  `MACDhist_cross`, `PPOhist_trend`, `ROC12_1h`. Strategies, agents and drafts already stored are
+  rewritten by the server; only what you send changes.
+
+### Widened enum — something new you can send
+
+- **Seven metric keys**, each reading a member the server already computes: `MACD_LINE` and
+  `MACD_SIGNAL` (codes `MACDline`, `MACDsig`), `PPO_LINE` and `PPO_SIGNAL`, `ROC15`, and the Donchian
+  break memory `DONCHIAN_BROKEN_HI` and `DONCHIAN_BROKEN_LO`. The MACD line's zero cross is
+  `MACD_LINE × crossDetect`; the signal-line cross is `MACD_HIST × crossDetect`.
+
+### Widened output
+
+- **`gloss` is required on every catalog metric entry** (`get_metric_construction_hints`), every
+  vocabulary metric and every study (`list_strategy_vocabulary`): what the metric is, and what a
+  study reads and each number in its label means — `MACD (12, 26, 9)` is the 12- and 26-period EMAs
+  and the 9-period signal.
+
 ## Contract history — v109 (a player's picks are entered through their entry draft)
 
 **Breaking at v109: `submit_market_grid` and `update_market_grid` are removed.** v109 is the contract on

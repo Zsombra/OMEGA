@@ -1,12 +1,16 @@
 ---
 name: battlegrid-arena-play
-description: Enter the player into Market Grid sessions — find an open session, read its coin pool and live market context, compose a grid with real per-coin reasoning or have one of their agents generate it, submit it against the session's entry fee, then read the results and the player's own entry record after settlement. Activate whenever the player wants to play, enter, join or submit to a session, wants their agent to enter one, asks what is open to play, or asks how a session they entered turned out.
+description: Enter the player into Market Grid sessions — find an open session, read its coin pool and live market context, read the player's entry draft and stage picks with real per-coin reasoning into it or have one of their agents generate a grid, commit it against the session's entry fee, then read the results and the player's own entry record after settlement. Activate whenever the player wants to play, enter, join or submit to a session, asks what their grid looks like or to fill it in, wants their agent to enter one, asks what is open to play, or asks how a session they entered turned out.
 ---
 
 # Arena Play
 
-A submission is a **wager**. On a paid session the entry fee moves as part of the submit call, and
-the grid you submit is the one that gets scored. There is no draft state and no undo.
+A player's picks for a session live in their **entry draft**, one axis per grid position (`CELL_0` is
+the captain) plus a `RATIONALE`. Their builder on the session page writes the same draft as they pick,
+so the draft is the shared grid: you read it to know what they have picked and stage into it to propose
+picks. Staging is free and enters nothing. **Committing it is the wager**: with no entry the commit
+enters the session and the entry fee moves inside that call; over an entry it replaces the picks for no
+fee. The grid you commit is the one that gets scored, and there is no undo.
 
 ## The three failures this flow exists to prevent
 
@@ -54,23 +58,31 @@ the enablement path there.
 3. `get_market_context` for that session — the indicators, rankings and trends the picks will
    actually be reasoned from.
 4. `check_market_grid_submission` — **before composing anything.** If a submission already exists,
-   report it (with its id and time) and offer `update_market_grid` where the session still permits
-   it. Never compose a duplicate.
+   report it (with its id and time); while the session is still PENDING, a commit of the draft
+   replaces its picks. Never compose a duplicate.
+5. `get_market_grid_entry_draft({ request: { sessionId } })` — what the draft holds now, the player's
+   own picks included, with the `draftVersion` and `committedRevision` your stage and commit name.
+   Answer "what does my grid look like" from this read, never from a pick count.
 
-### 3. Compose — the reasoning is yours to get right
+### 3. Compose — stage into the draft, and the reasoning is yours to get right
 
-A direct submission carries `grid`, `reasoning`, `confidenceScore`, `modelName` and
-`pickReasoning`, and all of them are required.
+`stage_market_grid_entry_draft({ request: { sessionId, draftVersion, axes } })`, naming the
+`draftVersion` the read returned. Each cell axis is `{ cell: { coinId, prediction } }` — `coinId` the
+pool coin's `id` — or `{ cell: null }` to empty it. **Compose on top of what the draft holds**: a cell
+you do not stage keeps the player's pick, and you never discard their picks to start over unless they
+ask. The commit requires a `RATIONALE` axis — `reasoning`, `confidenceScore`, `modelName` and
+`pickReasoning` — covering the whole grid it composes. Complete stage payloads are in
+`references/entry-stage-examples.md`.
 
-- **Exactly one cell is captain.** The session's preset sets what that is worth: a correct captain's
+- **`CELL_0` is the captain.** The session's preset sets what that is worth: a correct captain's
   points are multiplied by its `captainMultiplier`, and a wrong captain's penalty by its
   `captainWrongPenaltyMultiplier` — both published by `list_game_presets`, and different per preset.
   Read them rather than assuming a number, and captain the pick you are most confident in among
   those with a move worth amplifying.
 - **`pickReasoning` carries one entry per grid cell — every cell, no coin twice.** Compose it
   correctly because it is yours to compose, not because something downstream will catch it: the
-  boundary refuses an incomplete payload before the fee moves, and leaning on that check means
-  submitting payloads you have not read.
+  read reports an incomplete one as a diagnostic and the commit refuses it before the fee moves, and
+  leaning on that check means committing payloads you have not read.
 - Each entry's reasoning cites **the market context you read in this conversation**, for that
   coin. Boilerplate reasoning attached to a real wager is worse than none — it looks like
   evidence.
@@ -85,12 +97,16 @@ Present the generation as a card: the agent, its confidence against the threshol
 (`confidenceThreshold: null` means no deployment declares a bar here, so the grid is **ungated** —
 say that rather than inventing a bar), whether it meets the threshold, and the per-coin picks.
 
-### 4. Confirm, then submit promptly
+### 4. Read again, confirm, then commit promptly
 
-One confirmation naming **the session, its entry fee, and the confidence** — then submit on an
-explicit pick.
+`get_market_grid_entry_draft` again after staging: show the player the diff, any diagnostic, and the
+`impact` — `ENTER` with the `entryFee` the commit charges, or `REPLACE` for none. One confirmation
+naming **the session, that fee, and the confidence** — then commit on an explicit pick.
 
-- Direct → `submit_market_grid`.
+- Direct → `commit_market_grid_entry_draft({ request: { sessionId, draftVersion, expectedRevision } })`,
+  naming exactly the `draftVersion` and `committedRevision` the last read returned (`null` with no
+  entry). A refusal naming `get_draft` means the draft or the entry moved: read again and confirm
+  again — never retry with a bumped number.
 - Agent → `submit_agent_grid`, which consumes the cached generation for that (session, agent).
 
 **A regeneration voids any prior confirm.** The submit takes no generation token — it reads
@@ -98,10 +114,14 @@ whatever is currently cached — so a grid regenerated after the player confirme
 under a confirmation given for different picks. Re-present the confirm for the new generation,
 every time, and submit promptly after the confirmed one.
 
+**If the submit is refused with `CONFLICT`**, the player's entry changed after the grid was generated —
+replaced, cancelled, re-placed, or placed where there was none. No fee moved. The recovery is
+`generate_agent_grid` again, a fresh confirm of the new grid, then `submit_agent_grid`.
+
 **If the submit is refused for a missing pending generation**, the ten-minute window lapsed. The
 recovery is `generate_agent_grid` again and a fresh confirm. **Never** convert the stale picks into
-a hand-composed `submit_market_grid` under the player's own name — that submits an agent's
-reasoning as the player's, and the attribution is part of what was scored.
+a hand-staged draft committed under the player's own name — that enters an agent's reasoning as the
+player's, and the attribution is part of what was scored.
 
 ### 5. After settlement
 
@@ -113,25 +133,33 @@ reasoning as the player's, and the attribution is part of what was scored.
   typed CONFLICT naming the current status: **report it and stop**. Do not poll it in a loop; the
   op budget is finite and a settling session is not a failure.
 - `get_my_market_grid_entry` on request — the player's own entry in that session: its picks, who
-  authored it, whether another author has rewritten it (`edited`), and the reasoning and confidence
-  recorded at submit. Compare the outcome against what was actually reasoned, and say where the
-  reasoning was wrong. `reasoning` is null once the entry was edited — the record no longer describes
-  the picks, so say that rather than reconstructing one. `list_my_market_grid_entries` is the history
-  across sessions. An agent's decisions are a different record, `get_agent_journal`.
+  authored the current picks (`source`; `COMMANDER_ASSIST` with `keptPicks` when the player and
+  Commander authored it together), whether that differs from who first entered (`edited`), and the
+  reasoning that describes the current picks, with one entry per reasoned pick in `reasoning.picks`.
+  Compare the outcome against what was actually reasoned, and say where the reasoning was wrong.
+  `reasoning` is null when no record describes the current picks — say that rather than
+  reconstructing one, and a pick missing from `reasoning.picks` is one the player chose.
+  `list_my_market_grid_entries` is the history across sessions. An agent's decisions are a different
+  record, `get_agent_journal`.
 
 ## On the arena's session page
 
 When the conversation is embedded in the player's Market Grid session page, the round on screen
 arrives as the attached scope, and the session it names is the one in scope.
 
-- **Propose, do not submit.** When the player asks for a grid, call `generate_agent_grid` for the
-  session in scope (the billed-inference warning in step 3 still applies). The result reaches them
-  as a card with **LOAD INTO GRID**, which puts the picks into their own builder as a starting point.
-- **A loaded grid they have not changed is the agent's.** Their builder will not place it as theirs.
-  If they want the agent's grid entered as it stands, run step 4: one confirmation, then
-  `submit_agent_grid` on their explicit pick, never on free text.
-- **Once they change a pick, the grid is theirs.** They place it themselves from their ticket. Do not
-  submit it for them, and do not describe it as the agent's.
+- **Stage, do not enter.** When the player asks you to pick or fill in their grid, read the draft and
+  stage the cells into it (step 3). Each staged pick appears in their builder at once, labelled as
+  yours; nothing is entered and no fee or deposit is needed. Their own **PLACE ENTRY** places it;
+  offer to place it for them only through step 4's confirmation and the draft commit.
+- **Their picks are in the draft.** A pick they make in the builder lands there as they make it, so
+  read the draft before answering what they have picked or staging over it. A pick their builder
+  rewrote after you staged it is their answer — stage it again only when they ask.
+- **An agent's grid is proposed, not staged.** When they ask for their agent's grid, call
+  `generate_agent_grid` for the session in scope (the billed-inference warning in step 3 still
+  applies). The result reaches them as a card with **LOAD INTO GRID**, which puts the picks into their
+  builder as a starting point. A loaded grid they have not changed is the agent's: if they want it
+  entered as it stands, run step 4, then `submit_agent_grid` on their explicit pick, never on free
+  text. Once they change a pick, the grid is theirs.
 - **A newer generation for the same agent replaces the older card.** The older one reads SUPERSEDED;
   only the newest is what `submit_agent_grid` would enter.
 
@@ -160,8 +188,10 @@ Each is typed and distinguishable. Read the code, do not paraphrase:
   a permission check, do not add a wager gate of your own, and do not treat free text typed while a
   confirmation is open as consent — in chat or in the form's own answer-in-your-own-words box. Only
   an explicit pick from the options you offered confirms.
-- **Never re-submit over an unknown outcome.** An interrupted submit may have committed the fee.
-  Run `check_market_grid_submission` first and report what actually exists.
+- **Never re-commit over an unknown outcome.** An interrupted commit may have moved the fee. A retry
+  of the same `draftVersion` returns the first commit's receipt; otherwise run
+  `check_market_grid_submission` and `get_market_grid_entry_draft` first and report what actually
+  exists.
 
 ## Reporting discipline
 

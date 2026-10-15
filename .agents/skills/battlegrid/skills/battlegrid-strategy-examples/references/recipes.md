@@ -41,7 +41,7 @@ rather than events all live there. This document assumes them.
 and is null otherwise:
 
 ```json
-{ "metric": "MACD", "transformId": "crossDetect", "timeframe": { "rel": "anchor" } }
+{ "metric": "MACD_HIST", "transformId": "crossDetect", "timeframe": { "rel": "anchor" } }
 ```
 
 An event column is a trigger inside a carrier, never a standing state; pair it with a persistent

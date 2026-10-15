@@ -45,7 +45,7 @@ rules about the columns themselves, not about porting — they live in the skill
   `ST_DIR enters "bullish"` is TRUE on the one completed bar the direction turned, and
   `ST_DIR exits "bullish"` on the bar it turned back — see `## Conditions` in the skill body.
 - **MACD + 200 MA filter** → `ABOVE_200` building block (`dist_SMA200 gt 0`) referenced by a
-  carrier with `MACD_cross is "Bullish"`; swing-trend geometry.
+  carrier with `MACDhist_cross is "Bullish"`; swing-trend geometry.
 - **Golden / Death Cross** → `SMA50 spread SMA200 × trajectory` gives state and freshness:
   `SMA50_SMA200_spread_now gt 0` AND `_trend is "rising"`; optional breadth gate on
   `mktBreadth_crypto gte 0` — every published scope resolves, not only `all`, because the leg reads
@@ -84,7 +84,11 @@ rules about the columns themselves, not about porting — they live in the skill
   script ports onto the two-bar swing, and the spec-lock question says so.
 - **Now native, formerly substituted** — WaveTrend (`WT1`/`WT2`), QQE (`QQE_RSI_MA`/`QQE_STOP`),
   Hull (`HMA20`), Ichimoku (`ICHI_CONV`/`ICHI_BASE`/`ICHI_SPAN_A`/`ICHI_SPAN_B`/`ICHI_LAG`),
-  Parabolic SAR (`PSAR`), Keltner (`KC_UPPER`/`KC_MID`/`KC_LOWER`), daily pivots
+  Parabolic SAR (`PSAR`), Keltner (`KC_UPPER`/`KC_LOWER`, its basis is `EMA20`), the MACD and PPO lines
+  and signals (`MACD_LINE`/`MACD_SIGNAL`, `PPO_LINE`/`PPO_SIGNAL` — the line's zero cross is
+  `MACD_LINE × crossDetect`, and the signal-line cross is `MACD_HIST × crossDetect`, the histogram being
+  line minus signal), the 15-bar rate of change (`ROC15`), the Donchian break memory
+  (`DONCHIAN_BROKEN_HI`/`DONCHIAN_BROKEN_LO`), daily pivots
   (`PIVOT_P`/`PIVOT_R1`–`R3`/`PIVOT_S1`–`S3`), Williams %R (`WILLR14`), Stochastic RSI
   (`STOCH_RSI14`), the TTM squeeze (`KC_SQUEEZE`), Connors RSI-2 (`RSI2`), the 9/21/50 EMAs
   (`EMA9`/`EMA21`/`EMA50`), literal previous-session levels (`PDH`/`PDL`/`PDO`), and fractal swing
