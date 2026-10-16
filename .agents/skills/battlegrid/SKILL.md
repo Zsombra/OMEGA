@@ -9,7 +9,7 @@ BattleGrid is a real-time cryptocurrency prediction gaming and trading platform.
 
 ## The other nine skills
 
-This skill covers **connection**: how to reach BattleGrid, the request envelope, and what each scope
+This skill covers **connection**: how to reach BattleGrid, the `account` argument, and what each scope
 grants. Everything about *using* the platform lives in the nine skills installed beside it, exported
 from BattleGrid's own server so they name exactly the tools you reach here:
 
@@ -32,14 +32,14 @@ to connect and to know which one to open.
 
 **Tools, prompts, and resources are discovered live from this MCP connection.** Always read the current `tools/list`, `prompts/list`, and `resources/list` before acting — a cached capability list is not authoritative after a server deployment. This skill teaches the workflows and the strict request contracts; it deliberately does not copy the server's tool catalog, metric/transform vocabulary, formulas, or default values. Discover those from the live tools (`list_strategy_categories`, `list_strategy_vocabulary`, `list_strategy_signals`, `get_strategy_signal_definition`, …). Never guess a metric, transform, parameter, template, signal, or enabled-timeframe fact.
 
-## Single-account vs multi-account request shape
+## Single-account vs multi-account arguments
 
-The draft lifecycle tools — `stage_<kind>_draft`, `get_<kind>_draft`, `commit_<kind>_draft`, `discard_<kind>_draft` and `list_<kind>_drafts` for the `strategy` and `agent` kinds — and `get_strategy_section_template` use one strict server-owned envelope, `{ request: canonicalPayload }`.
+Call every tool with the arguments its live `tools/list` schema publishes. This skill states no tool's arguments; the exported skills below carry each workflow's calls, and discovery is the authority.
 
-- **Single account:** call them as the server publishes them, e.g. `stage_strategy_draft({ request })`.
-- **Multiple accounts (proxy):** live discovery adds a sibling `account`, so the shape is exactly `{ account, request }`. Select the account in the outer field; keep `request` exactly as discovered. The proxy strips only `account` and forwards the unchanged `{ request }`.
+- **Single account:** send exactly the published arguments.
+- **Multiple accounts (proxy):** live discovery adds a required `account` beside each tool's own published arguments. Select the account there. The proxy strips only `account` and forwards every other argument unchanged — it never unwraps, moves or rebuilds one.
 
-Never put `account` inside `request`, and never flatten request fields beside it. Other tools keep whatever input shape live discovery reports for them.
+Never put `account` inside another argument.
 
 ## Scopes
 
@@ -56,19 +56,18 @@ that arc.
 Four facts about transport, which are this skill's to state because they are about the wire rather
 than about authoring:
 
-- **The envelope is `{ request }`, or `{ account, request }` on a multi-account proxy** (see above).
-  It applies to every draft lifecycle tool and to `get_strategy_section_template`.
+- **A tool's arguments are what discovery publishes, plus `account` on a multi-account proxy** (see
+  above).
 - **Every change goes through the entity's draft** — an agent's, a strategy's, and an Arena or radar
-  deployment's. `stage_<kind>_draft({ request: { <id>?, draftVersion, axes } })` writes proposed axes
-  into the player's unsaved draft and commits nothing. For an agent or a strategy, omit the id to open a
-  new create draft, whose minted id the response carries; a deployment draft is keyed by its `presetId`
-  or `coinId`, which every call names.
-  `get_<kind>_draft({ request: { <id> } })` returns the draft, its `draftVersion`, the live
-  `committedRevision`, a per-axis `diff`, `diagnostics` and `impact`.
-- **A commit names exactly the two numbers that read returned.**
-  `commit_<kind>_draft({ request: { <id>, draftVersion, expectedRevision } })` — `expectedRevision`
-  is `null` for an entity not created yet. Commit only after the player has seen the diff and impact
-  and said yes. `discard_<kind>_draft({ request: { <id>, draftVersion } })` is the same fence. The two
+  deployment's. `stage_<kind>_draft` writes proposed axes into the player's unsaved draft and commits
+  nothing. For an agent or a strategy, omit the id to open a new create draft, whose minted id the
+  response carries; a deployment draft is keyed by its `presetId` or `coinId`, which every call names.
+  `get_<kind>_draft` returns the draft, its `draftVersion`, the live `committedRevision`, a per-axis
+  `diff`, `diagnostics` and `impact`.
+- **A commit names exactly the two numbers that read returned.** `commit_<kind>_draft` takes that
+  `draftVersion` and, as `expectedRevision`, that `committedRevision` — `null` for an entity not
+  created yet. Commit only after the player has seen the diff and impact and said yes.
+  `discard_<kind>_draft` is the same fence on the `draftVersion`. The two
   deployment commits arm wagers and require `mcp:wager`; a deployment's resume and delete name the
   `expectedPolicyId` and `expectedRevision` a `COMMITTED` preview returned.
 - **The proxy forwards numbers and `null` unchanged.** It never fills in a version, never retries a
@@ -94,7 +93,7 @@ The `play-market-grid` prompt (discover via `prompts/list`) provides a guided en
 
 ## Retired operations
 
-`create_strategy`, the plan tools (`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`), `update_strategy_signal_rule`, the signal-rule tools (`simulate_aggregate_score`, `list_strategy_signals`, `get_strategy_signal_definition`, `derive_strategy_rule_view`, `get_coin_signal_preview`), the direct agent writers (`create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent`), and the direct grid writers (`submit_market_grid`, `update_market_grid`) are **retired** — they are absent from discovery and cannot be invoked. Stage into the entity's draft, read it back, and commit the version you read; a strategy's entry gate is its conditions (a required or verdict-carrying condition — a strategy with none never trades, and its draft warns `NO_ENTRY_CONDITION`), its ATR floor `minAtrPct` is part of the `TRADE_LEVEL_POLICY` axis, a strategy binding is the agent draft's `STRATEGY_BINDING` axis, and a player's Market Grid picks are the entry draft's `CELL_n` and `RATIONALE` axes. A deployment preview's `previewToken`, and the `confirm` on a deployment commit, resume, delete or draft discard, are retired the same way: a strict input refuses either key. Do not attempt flat legacy payloads; the server enforces a closed-world request root and the proxy never reconstructs them.
+`create_strategy`, the plan tools (`compile_strategy_plan`, `stage_strategy_plan`, `apply_strategy_plan`), `update_strategy_signal_rule`, the signal-rule tools (`simulate_aggregate_score`, `list_strategy_signals`, `get_strategy_signal_definition`, `derive_strategy_rule_view`, `get_coin_signal_preview`), the direct agent writers (`create_intelligence_agent`, `update_intelligence_agent`, `rebind_intelligence_agent`), and the direct grid writers (`submit_market_grid`, `update_market_grid`) are **retired** — they are absent from discovery and cannot be invoked. Stage into the entity's draft, read it back, and commit the version you read; a strategy's entry gate is its conditions (a required or verdict-carrying condition — a strategy with none never trades, and its draft warns `NO_ENTRY_CONDITION`), its ATR floor `minAtrPct` is part of the `TRADE_LEVEL_POLICY` axis, a strategy binding is the agent draft's `STRATEGY_BINDING` axis, and a player's Market Grid picks are the entry draft's `CELL_n` and `RATIONALE` axes. A deployment preview's `previewToken`, and the `confirm` on a deployment commit, resume, delete or draft discard, are retired the same way: a strict input refuses either key. Do not attempt a retired argument shape; the server's strict inputs refuse it, and the proxy never reconstructs one.
 
 ## Common errors
 
@@ -103,7 +102,7 @@ The `play-market-grid` prompt (discover via `prompts/list`) provides a guided en
 | `BATTLEGRID_API_KEY is required` | Missing API key | Set `BATTLEGRID_API_KEY` (or `BATTLEGRID_API_KEYS`) |
 | `API key must start with "bg_live_"` | Invalid key format | Generate a new key at battlegrid.trade → Profile → MCP |
 | Authentication failed (401/403) | Key revoked/rotated | Generate a new key and **restart** the proxy (keys read once at startup) |
-| `"account" parameter is required` | Multi-account call missing `account` | Add the outer `account`; keep `request` unchanged |
+| `"account" parameter is required` | Multi-account call missing `account` | Add `account` beside the tool's own arguments; keep them unchanged |
 | `DRAFT_VERSION_MOVED` | The draft changed after you read it, or no draft is held (`details.draftVersion` null) | Call `get_<kind>_draft` again, show the player what it now holds, and commit only on their word |
 | `DRAFT_AXIS_CONTESTED` | The player changed `details.contestedAxes` in their open form after the version you staged against | Read the draft again and propose against what they now have |
 | `CONFLICT` on a commit | The live revision moved after the draft read | Read the draft again, show the player the new diff and impact, and commit at the new `committedRevision` only on their word |

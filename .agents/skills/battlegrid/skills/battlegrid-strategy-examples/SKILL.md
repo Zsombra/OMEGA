@@ -153,6 +153,16 @@ Recipes — each one clause:
 - **Squeeze released** — `kcSqueeze exits "on"`, over a `KC_SQUEEZE` value column.
 - **New 20-bar high** — `donchianHi increased`, over a `DONCHIAN_UPPER` value column: the 20-bar
   upper channel rises exactly when the decided bar's high exceeds every high of the 20 bars before it.
+- **Close above the prior 20-bar high (Donchian / Turtle breakout)** — `dist_donchianHiPrior crossesAbove 0`,
+  over a `DONCHIAN_UPPER_PRIOR × distance` column: Pine's `ta.crossover(close, ta.highest(high, 20)[1])`,
+  TRUE on the first close of a breakout run. `dist_donchianHiPrior gt 0` is Pine's
+  `close > ta.highest(high, 20)[1]` and holds on every close of the run. Mirror with
+  `dist_donchianLoPrior crossesBelow 0` / `lt 0` over `DONCHIAN_LOWER_PRIOR`.
+- **Failed breakout of the prior 20-bar high** — `donchianHiPrior_lvl is "reject_from_below"`, over a
+  `DONCHIAN_UPPER_PRIOR × levelInteraction` column: the high pierced the prior 20-bar high and the close
+  came back under it. `dist_donchianHiPrior crossesBelow 0` is NOT "fell back into the channel": the rail
+  rises to each breakout bar's high, so it fires once on the first bar of a breakout run that does not
+  close above the raised rail — the run of new closing highs ended.
 - **RSI crossed above 50 within the last 3 closes** — `RSI14_now crossesAbove 50` holding
   `{ "atLeast": 1, "of": 3 }`.
 
@@ -371,9 +381,12 @@ column: it takes a timeframe reference and the Confirmed / Developing selector l
 
 **`levelInteraction` — what the bar did at a level.** It classifies the newest bar of the column as
 one of five labels: `touch_from_below`, `touch_from_above`, `reject_from_below`, `reject_from_above`,
-`none`. The side is where the PRIOR close stood against the PRIOR bar's level — from below when it
-closed at or under it — so a level that moved between the two bars is judged on the bar it stood at.
-From below: a bar that closes through the level is a break and reads `none`; a bar whose high
+`none`. The side is where the PRIOR close stood against the level IN FORCE WHEN THE BAR OPENED — from
+below when it closed at or under it. For a level computed from its own bar (a band, `VWAP`, a moving
+average, `ST_LINE`, `PSAR`, the Ichimoku conversion and base lines) that is the prior bar's level, so a
+level that moved between the two bars is judged on the bar it stood at; for a level whose price was fixed
+before the bar (a prior-bar Donchian rail, the break memory, a swing level, the displaced Ichimoku lines, a
+prior-session level or pivot) it is the bar's own level. From below: a bar that closes through the level is a break and reads `none`; a bar whose high
 reached the level and whose close came back under it is `reject_from_below`; a bar whose high came
 within the buffer of the level is `touch_from_below`. From above is the mirror on the low.
 
@@ -385,18 +398,22 @@ within the buffer of the level is `touch_from_below`. From above is the mirror o
 - **A break is a crossing, never a label.** The break of a level is `distance` over the same level
   crossing 0: `dist_bbUpper crossesAbove 0` from below, `crossesBelow 0` from above. On the strategy's
   own rung a `…_from_below` label never holds on a bar where `crossesAbove 0` holds.
-- **Which levels take it.** A candle-homed level — a band (`BB_UPPER`, `BB_LOWER`, `KC_UPPER`,
-  `KC_LOWER`), `VWAP`, a moving average (`SMA20`, `EMA20`, …), `ST_LINE`, `PSAR`, the Donchian break
-  memory (`DONCHIAN_BROKEN_HI`, `DONCHIAN_BROKEN_LO`), the
-  Ichimoku lines, the swing levels (`SWING_FRACTAL_HIGH`, `SWING_FRACTAL_LOW`) — reads its own value at
-  each of the two bars. A prior-session level or pivot (`PDH`,
-  `PDL`, `PDO`, `PIVOT_P`, `PRIOR_TPO_POC`, …) has one reading for the session, used as both bars' level;
-  a clause over it is a single read with no hold, because the session profile keeps no earlier
-  reading. A developing-session level (`TPO_POC`, `TPO_VAH`, …) and the naked points of control move
-  between bars with no earlier reading kept, so they are not offered it; neither are the Donchian
-  rails (`DONCHIAN_UPPER`, `DONCHIAN_LOWER`), each the extreme of the window ending at the very bar it
-  would classify, which a close can never pass. A price fact (`CLOSE`, `HLC3`, `MARK`) is refused: it
-  is the price, not a level.
+- **Which levels take it.**
+  - **Offered:** a candle-homed level — a band (`BB_UPPER`, `BB_LOWER`, `KC_UPPER`, `KC_LOWER`),
+    `VWAP`, a moving average (`SMA20`, `EMA20`, …), `ST_LINE`, `PSAR`, the prior-bar Donchian rails
+    (`DONCHIAN_UPPER_PRIOR`, `DONCHIAN_LOWER_PRIOR`), the Donchian break memory (`DONCHIAN_BROKEN_HI`,
+    `DONCHIAN_BROKEN_LO`), the Ichimoku lines, the swing levels (`SWING_FRACTAL_HIGH`,
+    `SWING_FRACTAL_LOW`) — reads its own value at each bar. A prior-session level or pivot (`PDH`, `PDL`,
+    `PDO`, `PIVOT_P`, `PRIOR_TPO_POC`, …) has one reading for the session; a clause over it is a single
+    read with no hold, because the session profile keeps no earlier reading. On `PSAR` a wick that
+    trades through the SAR flips it on that bar, so a rejection needs the low (high) to meet the SAR
+    exactly and a touch needs a buffer; its flip is `dist_PSAR crossesAbove 0` / `crossesBelow 0`.
+  - **Not offered:** a developing-session level (`TPO_POC`, `TPO_VAH`, …), the naked points of
+    control and the single prints (`TPO_SINGLE_PRINT_ABOVE`/`_BELOW`, `NAKED_SINGLE_PRINT_ABOVE`/`_BELOW`),
+    which move between bars with no earlier reading kept; and the same-bar Donchian rails
+    (`DONCHIAN_UPPER`, `DONCHIAN_LOWER`), each the extreme of the window ending at the very bar it would
+    classify, which a close can never pass — read `DONCHIAN_UPPER_PRIOR` / `DONCHIAN_LOWER_PRIOR`. A
+    price fact (`CLOSE`, `HLC3`, `MARK`) is refused: it is the price, not a level.
 - **A higher-rung level reads that rung's completed bar.** `bbUpper_htf_lvl` classifies the last
   completed regime-rung bar from its own high, low and close, never the strategy bar's price — so
   compose its break on the same rung, `dist_bbUpper_htf crossesAbove 0`.
@@ -479,8 +496,8 @@ its side replaces it.
   clause over it reads FALSE.
 - **A swing level does not remember a broken level.** Two to four bars after a break the level steps
   to the next swing, so a retest of the BROKEN level is not a swing-level read.
-- **The two levels take what every candle level takes** — `distance`, `spread`, `aggregate`,
-  `trajectory`, `efficiency` and `levelInteraction` — and both rank across the board
+- **The two levels take** `distance`, `spread`, `aggregate`, `trajectory`, `efficiency` and
+  `levelInteraction`, and both rank across the board
   (`dist_fractalHi_rank_near`: the coins closest to their own last swing high).
 - **The break is the crossing toward the level.** `dist_fractalHi crossesAbove 0` is a close through the
   last swing high and never fires when the level steps onto a new swing, because the bar that confirms

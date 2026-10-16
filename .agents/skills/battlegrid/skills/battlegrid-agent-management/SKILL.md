@@ -36,8 +36,8 @@ step named beside it before doing anything else.
 `list_strategies` and `get_strategy` are yours — the binding lookup is part of commissioning, and
 which strategy an agent is bound to is the agent's own STRATEGY_BINDING axis (step 4).
 `stage_strategy_draft`, `commit_strategy_draft`, `discard_strategy_draft`, `fork_strategy`,
-`archive_strategy` and `restore_strategy` are **not**, even though activating this skill makes them
-visible in the conversation.
+`archive_strategy`, `restore_strategy`, `save_report_section` and `remove_saved_report_section` are
+**not**, even though activating this skill makes them visible in the conversation.
 
 When the work is a strategy change, activate `strategy-authoring` and let its arc run — its
 evidence, spec-lock, stage-review and confirm rules bind from that point. Do not drive a strategy
