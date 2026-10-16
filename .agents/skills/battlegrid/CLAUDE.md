@@ -9,7 +9,7 @@ agents how to connect. This file is for whoever is changing the code in this rep
 ## What this package is, and is not
 
 `src/index.ts` is the whole proxy. It **embeds no schemas**, hardcodes no tool catalog, and pins no
-contract version — it authenticates, connects upstream, and forwards `{ request }` verbatim. Almost
+contract version — it authenticates, connects upstream, and forwards every argument but `account` verbatim. Almost
 every "the server changed" question therefore needs **nothing here**.
 
 Before adding anything to this package, check whether it belongs in `battlegrid-app` instead. Tool
@@ -36,7 +36,7 @@ the server's own document, and needed a gate of its own to notice. One author, o
 
 | Path | Owner |
 |---|---|
-| `SKILL.md` (repo root) | **this repository** — connection, the `{ account, request }` envelope, scopes, and pointers into the exported skills. There is no upstream source for it. |
+| `SKILL.md` (repo root) | **this repository** — connection, the multi-account `account` argument, scopes, and pointers into the exported skills. There is no upstream source for it. |
 | `skills/battlegrid-*/` | the export lane |
 | `skills/EXPORT.json` | the export lane (sha256 per exported file) |
 | `src/__fixtures__/authoring-contract-digest.json` | the export lane (vendored beside the documents it gates) |
@@ -269,8 +269,8 @@ hand-publish with no tag is the exact silence this workflow was built to remove.
 
 ```
 src/index.ts           the entire proxy
-src/__tests__/         announced-version, identity, shipped-paths, skill-contract,
-                       skill-package, skill-provenance, startup-ordering,
+src/__tests__/         announced-version, hand-authored-docs, identity, shipped-paths,
+                       skill-contract, skill-package, skill-provenance, startup-ordering,
                        strategy-authoring-proxy, validate-env
 src/__fixtures__/      the vendored authoring-contract digest (generated — see above)
 AGENTS.md              discovery file for external agents — how to CONNECT

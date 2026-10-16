@@ -1,20 +1,28 @@
 /**
- * Protocol harness for the strict strategy-authoring proxy contract.
+ * Protocol harness for the proxy's account contract over the authoring tools.
  *
  * These tests drive `tools/list` and `tools/call` over a real in-memory MCP
  * transport pair (client ⇄ proxy Server), with a faithful fake upstream in
- * place of the remote BattleGrid server. They prove — at the protocol level,
- * not via helper-function unit tests — that the proxy:
+ * place of the remote BattleGrid server. The fixture mirrors the two input
+ * conventions the server publishes — and the server, never this package, owns
+ * which tool takes which (`battlegrid-app`, `mcp-client-parity` "One
+ * publication-envelope authority"):
  *
- *   - publishes the enveloped authoring tools as exactly `{ account, request }` in
- *     multi-account mode, preserving the server-owned nested `request`
- *     (unions, discriminators, required fields, bounds, additionalProperties);
- *   - publishes the server-native `{ request }` unchanged in single-account mode;
- *   - strips ONLY the outer `account` on a call and forwards the unchanged
- *     `{ request }` with the routed Bearer token;
- *   - covers the strategy draft lifecycle — stage (into an existing strategy's draft
- *     and into a new create draft), get, commit, and discard — plus section-template;
- *   - never reconstructs flat legacy payloads into the envelope;
+ *   - FLAT: the strategy draft tools publish their arguments at the top level;
+ *   - ENVELOPED: `get_strategy_section_template`, whose payload is a union,
+ *     publishes `{ request }`.
+ *
+ * They prove — at the protocol level, not via helper-function unit tests — that
+ * the proxy:
+ *
+ *   - adds `account` beside a tool's own top-level properties in multi-account
+ *     mode, preserving every server-owned property (unions, discriminators,
+ *     required fields, bounds, additionalProperties);
+ *   - publishes every schema unchanged in single-account mode;
+ *   - strips ONLY `account` on a call and forwards every other argument
+ *     unchanged with the routed Bearer token;
+ *   - forwards a retired shape verbatim — an enveloped payload to a flat tool,
+ *     or a flat payload to an enveloped one — and lets the server refuse it;
  *   - does not expose or reintroduce the retired `create_strategy` operation;
  *   - preserves structured content and JSON-text results consistently.
  */
@@ -178,21 +186,17 @@ const GET_ACCOUNT_STATE_SCHEMA: JsonSchema = {
   additionalProperties: false,
 };
 
-const ENVELOPE_TOOL_NAMES = [
-  'get_strategy_section_template',
-  'stage_strategy_draft',
-  'get_strategy_draft',
-  'commit_strategy_draft',
-  'discard_strategy_draft',
-] as const;
-
-const ENVELOPE_SCHEMAS: Record<string, JsonSchema> = {
-  get_strategy_section_template: TEMPLATE_REQUEST_SCHEMA,
+/** The strategy draft tools: their arguments are the top-level properties of one strict root. */
+const FLAT_DRAFT_SCHEMAS: Record<string, JsonSchema> = {
   stage_strategy_draft: STAGE_REQUEST_SCHEMA,
   get_strategy_draft: GET_DRAFT_REQUEST_SCHEMA,
   commit_strategy_draft: COMMIT_REQUEST_SCHEMA,
   discard_strategy_draft: DISCARD_REQUEST_SCHEMA,
 };
+const FLAT_DRAFT_TOOL_NAMES = Object.keys(FLAT_DRAFT_SCHEMAS);
+
+/** The enveloped tool: a union payload the server publishes under `request`. */
+const ENVELOPED_TOOL = 'get_strategy_section_template';
 
 interface ToolShape {
   name: string;
@@ -203,11 +207,11 @@ interface ToolShape {
 const SERVER_TOOLS: ToolShape[] = [
   { name: 'list_strategies', description: 'List strategies.', inputSchema: LIST_STRATEGIES_SCHEMA },
   { name: 'get_account_state', description: 'Get account state.', inputSchema: GET_ACCOUNT_STATE_SCHEMA },
-  { name: 'get_strategy_section_template', description: 'Get one section template.', inputSchema: requestEnvelope(TEMPLATE_REQUEST_SCHEMA) },
-  { name: 'stage_strategy_draft', description: 'Stage axes into a strategy draft.', inputSchema: requestEnvelope(STAGE_REQUEST_SCHEMA) },
-  { name: 'get_strategy_draft', description: 'Read a strategy draft with its diff.', inputSchema: requestEnvelope(GET_DRAFT_REQUEST_SCHEMA) },
-  { name: 'commit_strategy_draft', description: 'Commit the draft version read.', inputSchema: requestEnvelope(COMMIT_REQUEST_SCHEMA) },
-  { name: 'discard_strategy_draft', description: 'Discard the draft version read.', inputSchema: requestEnvelope(DISCARD_REQUEST_SCHEMA) },
+  { name: ENVELOPED_TOOL, description: 'Get one section template.', inputSchema: requestEnvelope(TEMPLATE_REQUEST_SCHEMA) },
+  { name: 'stage_strategy_draft', description: 'Stage axes into a strategy draft.', inputSchema: STAGE_REQUEST_SCHEMA },
+  { name: 'get_strategy_draft', description: 'Read a strategy draft with its diff.', inputSchema: GET_DRAFT_REQUEST_SCHEMA },
+  { name: 'commit_strategy_draft', description: 'Commit the draft version read.', inputSchema: COMMIT_REQUEST_SCHEMA },
+  { name: 'discard_strategy_draft', description: 'Discard the draft version read.', inputSchema: DISCARD_REQUEST_SCHEMA },
 ];
 
 const SERVER_PROMPTS = [
@@ -220,7 +224,6 @@ const SERVER_RESOURCES = [
 ];
 
 const KNOWN_TOOL_NAMES = new Set(SERVER_TOOLS.map(t => t.name));
-const ENVELOPE_TOOL_SET = new Set<string>(ENVELOPE_TOOL_NAMES);
 
 // Retired operations that must never appear in discovery or be reintroduced.
 const RETIRED_TOOLS = [
@@ -313,19 +316,16 @@ function makeUpstream(apiKey: string, calls: RecordedCall[]): Client {
         throw new Error(`MCP error -32601: Method not found: ${params.name}`);
       }
 
-      // Enveloped tools enforce a closed-world `{ request }` root. A flat legacy
-      // payload (or extra root keys) fails validation — the server never
-      // reconstructs it, so neither can the proxy.
-      if (ENVELOPE_TOOL_SET.has(params.name)) {
-        const args = params.arguments ?? {};
-        const keys = Object.keys(args);
-        const strictRequestOnly = keys.length === 1 && keys[0] === 'request' && args.request !== undefined;
-        if (!strictRequestOnly) {
-          return {
-            content: [{ type: 'text', text: JSON.stringify({ code: 'VALIDATION_ERROR', message: 'closed-world root: exactly { request } required' }) }],
-            isError: true,
-          };
-        }
+      // Every root is closed: a key the tool does not publish is refused by name, as the server's
+      // strict schema refuses it. The server never reconstructs a payload, so neither can the proxy.
+      const published = SERVER_TOOLS.find(t => t.name === params.name)!.inputSchema;
+      const declared = Object.keys(published.properties as Record<string, unknown>);
+      const unknownKeys = Object.keys(params.arguments ?? {}).filter(key => !declared.includes(key));
+      if (unknownKeys.length > 0) {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ code: 'VALIDATION_ERROR', message: `Unrecognized key(s) in object: ${unknownKeys.map(k => `'${k}'`).join(', ')}` }) }],
+          isError: true,
+        };
       }
 
       return {
@@ -396,22 +396,25 @@ async function toolMap(client: Client): Promise<Map<string, { name: string; inpu
 
 // --- Tests ---
 
-describe('multi-account discovery — strict { account, request }', () => {
-  it('publishes each authoring tool as exactly { account, request } with the nested request preserved', async () => {
+describe('multi-account discovery — account beside each tool\'s own properties', () => {
+  it('adds account beside a flat draft tool\'s own top-level properties, preserving each of them', async () => {
     const { client } = await setup(['alice', 'bob']);
     const tools = await toolMap(client);
 
-    for (const name of ENVELOPE_TOOL_NAMES) {
+    for (const name of FLAT_DRAFT_TOOL_NAMES) {
       const tool = tools.get(name);
       expect(tool, `missing authoring tool ${name}`).toBeDefined();
       const schema = tool!.inputSchema;
       const properties = schema.properties as Record<string, JsonSchema>;
+      const server = FLAT_DRAFT_SCHEMAS[name];
+      const serverProperties = server.properties as Record<string, JsonSchema>;
 
-      // Root shape: exactly { account, request }, both required, closed world.
+      // Root shape: account, then the tool's own properties; both required sets kept; closed world.
       expect(schema.type).toBe('object');
-      expect(Object.keys(properties)).toEqual(['account', 'request']);
-      expect(schema.required).toEqual(['account', 'request']);
+      expect(Object.keys(properties)).toEqual(['account', ...Object.keys(serverProperties)]);
+      expect(schema.required).toEqual(['account', ...((server.required as string[] | undefined) ?? [])]);
       expect(schema.additionalProperties).toBe(false);
+      expect(properties).not.toHaveProperty('request');
 
       // account is the only addition — a plain string enum of usernames.
       const account = properties.account as Record<string, unknown>;
@@ -419,16 +422,28 @@ describe('multi-account discovery — strict { account, request }', () => {
       expect(account.enum).toEqual(['alice', 'bob']);
       expect(typeof account.description).toBe('string');
 
-      // The nested request is byte-for-byte the server-owned payload.
-      expect(properties.request).toEqual(ENVELOPE_SCHEMAS[name]);
+      // Every server-owned property is byte-for-byte what the server published.
+      for (const [key, value] of Object.entries(serverProperties)) {
+        expect(properties[key]).toEqual(value);
+      }
     }
+  });
+
+  it('adds account beside an enveloped tool\'s request, preserving the nested union', async () => {
+    const { client } = await setup(['alice', 'bob']);
+    const schema = (await toolMap(client)).get(ENVELOPED_TOOL)!.inputSchema;
+    const properties = schema.properties as Record<string, JsonSchema>;
+
+    expect(Object.keys(properties)).toEqual(['account', 'request']);
+    expect(schema.required).toEqual(['account', 'request']);
+    expect(schema.additionalProperties).toBe(false);
+    expect(properties.request).toEqual(TEMPLATE_REQUEST_SCHEMA);
   });
 
   it('preserves the ENTRY trigger union unchanged inside the staged axes', async () => {
     const { client } = await setup(['alice', 'bob']);
     const tools = await toolMap(client);
-    const request = (tools.get('stage_strategy_draft')!.inputSchema.properties as Record<string, JsonSchema>).request;
-    const axes = (request.properties as Record<string, JsonSchema>).axes;
+    const axes = (tools.get('stage_strategy_draft')!.inputSchema.properties as Record<string, JsonSchema>).axes;
     const entryAxis = (axes.properties as Record<string, JsonSchema>).ENTRY;
     const entry = (entryAxis.properties as Record<string, JsonSchema>).entry;
 
@@ -447,7 +462,7 @@ describe('multi-account discovery — strict { account, request }', () => {
     expect(((branches[1].properties as Record<string, JsonSchema>).validForBars as JsonSchema).minimum).toBe(1);
   });
 
-  it('injects account as the sole addition on flat (non-enveloped) tools too', async () => {
+  it('injects account as the sole addition on the other flat tools too', async () => {
     const { client } = await setup(['alice', 'bob']);
     const tools = await toolMap(client);
 
@@ -469,103 +484,111 @@ describe('multi-account discovery — strict { account, request }', () => {
   });
 });
 
-describe('single-account discovery — server-native { request }', () => {
-  it('publishes the authoring tools with the strict { request } schema and no account field', async () => {
+describe('single-account discovery — every schema as the server published it', () => {
+  it('publishes the flat and the enveloped tools unchanged, with no account field', async () => {
     const { client } = await setup(['solo']);
     const tools = await toolMap(client);
 
-    for (const name of ENVELOPE_TOOL_NAMES) {
-      const schema = tools.get(name)!.inputSchema;
-      expect(Object.keys(schema.properties as Record<string, unknown>)).toEqual(['request']);
-      expect(schema.required).toEqual(['request']);
-      expect(schema.additionalProperties).toBe(false);
-      expect((schema.properties as Record<string, JsonSchema>).request).toEqual(ENVELOPE_SCHEMAS[name]);
+    for (const name of FLAT_DRAFT_TOOL_NAMES) {
+      expect(tools.get(name)!.inputSchema).toEqual(FLAT_DRAFT_SCHEMAS[name]);
     }
-
-    // Flat tools are passed through unchanged as well.
+    expect(tools.get(ENVELOPED_TOOL)!.inputSchema).toEqual(requestEnvelope(TEMPLATE_REQUEST_SCHEMA));
     expect(tools.get('list_strategies')!.inputSchema).toEqual(LIST_STRATEGIES_SCHEMA);
   });
 });
 
-describe('exact forwarding — strip only account, forward unchanged { request }', () => {
-  const cases: { label: string; tool: string; request: Record<string, unknown> }[] = [
-    { label: 'stage_strategy_draft (edit)', tool: 'stage_strategy_draft', request: { ...STAGE_EDIT_REQUEST } },
-    { label: 'stage_strategy_draft (create)', tool: 'stage_strategy_draft', request: { ...STAGE_CREATE_REQUEST } },
-    { label: 'get_strategy_draft', tool: 'get_strategy_draft', request: { ...GET_DRAFT_REQUEST } },
-    { label: 'commit_strategy_draft (edit)', tool: 'commit_strategy_draft', request: { ...COMMIT_REQUEST } },
-    { label: 'commit_strategy_draft (create)', tool: 'commit_strategy_draft', request: { ...COMMIT_CREATE_REQUEST } },
-    { label: 'discard_strategy_draft', tool: 'discard_strategy_draft', request: { ...DISCARD_REQUEST } },
-    { label: 'get_strategy_section_template', tool: 'get_strategy_section_template', request: { ...TEMPLATE_REQUEST } },
+describe('exact forwarding — strip only account, forward every other argument unchanged', () => {
+  const cases: { label: string; tool: string; args: Record<string, unknown> }[] = [
+    { label: 'stage_strategy_draft (edit)', tool: 'stage_strategy_draft', args: { ...STAGE_EDIT_REQUEST } },
+    { label: 'stage_strategy_draft (create)', tool: 'stage_strategy_draft', args: { ...STAGE_CREATE_REQUEST } },
+    { label: 'get_strategy_draft', tool: 'get_strategy_draft', args: { ...GET_DRAFT_REQUEST } },
+    { label: 'commit_strategy_draft (edit)', tool: 'commit_strategy_draft', args: { ...COMMIT_REQUEST } },
+    { label: 'commit_strategy_draft (create)', tool: 'commit_strategy_draft', args: { ...COMMIT_CREATE_REQUEST } },
+    { label: 'discard_strategy_draft', tool: 'discard_strategy_draft', args: { ...DISCARD_REQUEST } },
+    { label: ENVELOPED_TOOL, tool: ENVELOPED_TOOL, args: { request: { ...TEMPLATE_REQUEST } } },
   ];
 
-  for (const { label, tool, request } of cases) {
-    it(`routes ${label} to the selected account and forwards { request } verbatim`, async () => {
+  for (const { label, tool, args } of cases) {
+    it(`routes ${label} to the selected account and forwards its arguments verbatim`, async () => {
       const { client, calls } = await setup(['alice', 'bob']);
 
-      const result = await client.callTool({ name: tool, arguments: { account: 'bob', request } });
+      const result = await client.callTool({ name: tool, arguments: { account: 'bob', ...args } });
 
       // Exactly one upstream call, routed to bob's key.
       expect(calls).toHaveLength(1);
       expect(calls[0]).toMatchObject({ apiKey: 'bg_live_bob', kind: 'tool', name: tool });
-      // Account consumed; request forwarded unchanged (no unwrap, no reshape).
-      expect(calls[0].arguments).toEqual({ request });
+      // Account consumed; every other argument forwarded unchanged (no wrap, no unwrap, no reshape).
+      expect(calls[0].arguments).toEqual(args);
       expect(calls[0].arguments).not.toHaveProperty('account');
 
       // Structured + text results are preserved consistently.
       expect(result.isError).toBeFalsy();
       expect(result.content).toEqual([{ type: 'text', text: `RESULT_TEXT:${tool}` }]);
-      expect(result.structuredContent).toEqual({ tool, marker: 'structured-ok', echoed: { request } });
+      expect(result.structuredContent).toEqual({ tool, marker: 'structured-ok', echoed: args });
     });
   }
 
   it('routes to the primary account when it is selected', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    await client.callTool({ name: 'stage_strategy_draft', arguments: { account: 'alice', request: { ...STAGE_CREATE_REQUEST } } });
+    await client.callTool({ name: 'stage_strategy_draft', arguments: { account: 'alice', ...STAGE_CREATE_REQUEST } });
     expect(calls).toHaveLength(1);
     expect(calls[0].apiKey).toBe('bg_live_alice');
-    expect(calls[0].arguments).toEqual({ request: { ...STAGE_CREATE_REQUEST } });
+    expect(calls[0].arguments).toEqual({ ...STAGE_CREATE_REQUEST });
   });
 
   it('rejects a missing account without contacting the upstream server', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { request: { ...STAGE_CREATE_REQUEST } } });
+    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { ...STAGE_CREATE_REQUEST } });
     expect(result.isError).toBe(true);
     expect(calls).toHaveLength(0);
   });
 
   it('rejects an unknown account without contacting the upstream server', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { account: 'carol', request: { ...STAGE_CREATE_REQUEST } } });
+    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { account: 'carol', ...STAGE_CREATE_REQUEST } });
     expect(result.isError).toBe(true);
     expect(calls).toHaveLength(0);
   });
 });
 
 describe('single-account forwarding', () => {
-  it('forwards the server-native { request } with no account field', async () => {
+  it('forwards the published arguments with no account field', async () => {
     const { client, calls } = await setup(['solo']);
-    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { request: { ...STAGE_CREATE_REQUEST } } });
+    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: { ...STAGE_CREATE_REQUEST } });
 
     expect(calls).toHaveLength(1);
     expect(calls[0].apiKey).toBe('bg_live_solo');
-    expect(calls[0].arguments).toEqual({ request: { ...STAGE_CREATE_REQUEST } });
+    expect(calls[0].arguments).toEqual({ ...STAGE_CREATE_REQUEST });
     expect(result.structuredContent).toMatchObject({ tool: 'stage_strategy_draft', marker: 'structured-ok' });
   });
 });
 
-describe('no reconstruction of flat legacy payloads', () => {
-  it('forwards a flat stage payload verbatim and lets the server reject it', async () => {
+describe('no reconstruction of a retired shape', () => {
+  it('forwards an enveloped legacy payload to a flat draft tool verbatim and lets the server refuse it', async () => {
     const { client, calls } = await setup(['alice', 'bob']);
-    // A client that sends the request fields flat (no { request } wrapper).
-    const legacyFlat = { account: 'alice', draftVersion: 0, axes: { TIMEFRAME_PROFILE: { timeframe: '1h' } } };
-    const result = await client.callTool({ name: 'stage_strategy_draft', arguments: legacyFlat });
+    // A client still sending the pre-111 envelope to a tool that now publishes its arguments flat.
+    const result = await client.callTool({
+      name: 'stage_strategy_draft',
+      arguments: { account: 'alice', request: { ...STAGE_CREATE_REQUEST } },
+    });
+
+    // Proxy stripped only account; it did NOT unwrap request.
+    expect(calls).toHaveLength(1);
+    expect(calls[0].arguments).toEqual({ request: { ...STAGE_CREATE_REQUEST } });
+    // The server's closed root refuses the envelope by name.
+    expect(result.isError).toBe(true);
+    expect(JSON.stringify(result.content)).toContain("Unrecognized key(s) in object: 'request'");
+  });
+
+  it('forwards a flat payload to the enveloped tool verbatim and lets the server refuse it', async () => {
+    const { client, calls } = await setup(['alice', 'bob']);
+    const result = await client.callTool({ name: ENVELOPED_TOOL, arguments: { account: 'alice', ...TEMPLATE_REQUEST } });
 
     // Proxy stripped only account; it did NOT wrap the rest into { request }.
     expect(calls).toHaveLength(1);
-    expect(calls[0].arguments).toEqual({ draftVersion: 0, axes: { TIMEFRAME_PROFILE: { timeframe: '1h' } } });
-    expect(calls[0].arguments).not.toHaveProperty('request');
-    // Server enforces the closed-world root and rejects it.
+    expect(calls[0].arguments).toEqual({ ...TEMPLATE_REQUEST });
     expect(result.isError).toBe(true);
+    expect(JSON.stringify(result.content)).toContain("Unrecognized key(s) in object: 'kind', 'sectionKey'");
   });
 
   it('surfaces retired create_strategy as an unavailable method — forwarded verbatim, never rebuilt', async () => {

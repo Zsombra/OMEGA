@@ -24,6 +24,52 @@ Seeing package `31.x` alongside handshake `battlegrid@33.x` — the package **be
 
 **What this changes for you:** nothing about how you call anything. Upgrading the package no longer waits on a server deploy, and a server deploy no longer strands you on a package that names the wrong contract — reconnect and the announcement follows. **Contract breaking-change notes are no longer keyed to package versions**, since a contract move is no longer a release here; the v11-and-earlier notes below are kept as history, and the live vocabulary is always discovery.
 
+## Contract history — v111 (the draft tools take their arguments at the top level)
+
+**Breaking at v111: every draft-lifecycle tool takes its id, `draftVersion` and payload as top-level
+arguments.** v111 is the contract on top of v110.12. Reconnect the proxy, or restart it, so discovery
+reads the new schemas.
+
+### Rejected input — something you send is no longer accepted
+
+- **The `request` envelope on the twenty-five draft-lifecycle tools** — `stage_`, `get_`, `commit_` and
+  `discard_<kind>_draft`, and `list_<kind>_drafts`, for the agent, strategy, Arena deployment, radar deployment
+  and Market Grid entry kinds. The fields that sat under `request` — the kind's id (`agentId`, `strategyId`,
+  `presetId`, `coinId` or `sessionId`), `draftVersion`, `axes`, `expectedRevision` and `cursor` — are now the
+  tool's own top-level arguments. A call that still wraps them in `request` is refused as an unrecognised key
+  naming `request`; nothing translates it. A refusal's path into the payload loses its leading `request`.
+- **A number sent as a string** stays refused at the new top level, as it was under `request`: a
+  `draftVersion` of `"0"` is refused naming `draftVersion`.
+
+### Behaviour behind unchanged schemas
+
+- **`request` stays exactly where its payload is a union or a refinement**: `get_strategy_section_template`,
+  `preview_radar_resolution`, `preview_deployment_resolution` and `test_generate_deployment_grid`. A draft
+  preview's `draftVersion` stays inside their `request`. Their schemas do not move.
+- **A retried commit replays across the cutover.** Its idempotency key is still the entity id and the
+  `draftVersion`, so a commit retried in the new shape returns the first commit's receipt.
+- **On a multi-account proxy, `account` sits beside a draft tool's own arguments**, as it does beside every
+  other flat tool's. The proxy still strips only `account`.
+- **Each `get_<kind>_draft` description states how long a `draftVersion` holds** — every write to the draft
+  moves it — and, for every kind but the strategy, the event that ends the kind's drafts: a Market Grid
+  session leaving PENDING, an agent's deletion, a deployment's un-deploy.
+
+## Contract history — v110.9 (the price zone reads the channel of the bars before)
+
+**Served values move at v110.9; no schema moves.** v110.9 is the contract on top of v110.8. Nothing you send
+is refused.
+
+### Behaviour behind unchanged schemas
+
+- **`zone` (`PRICE_ZONE`) classifies the price against the channel of the 20 bars before the classified one**
+  (`DONCHIAN_UPPER_PRIOR` / `DONCHIAN_LOWER_PRIOR`). `breakout high` and `breakdown low` now hold on a close
+  beyond that channel: they are the label form of `dist_donchianHiPrior gt 0` and `dist_donchianLoPrior lt 0`.
+  Against the same-bar channel, which includes the bar's own high and low, they could never be read. A `zone`
+  clause's condition levels are the two prior rails.
+- **`near high` and `near low` are the outer fifth of that channel by position**: at least 0.8 of the way from
+  the low to the high, or at most 0.2. Before, they meant within 1% of price of an edge. The nearer edge wins,
+  and the band widens with the channel. A channel with an absent rail or no width reads `null`.
+
 ## Contract history — v110.6 (the Donchian channel as of the bar before)
 
 **Additive at v110.6: two Donchian metric keys, and level-interaction labels judged against the level in

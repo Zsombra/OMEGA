@@ -55,15 +55,15 @@ Tools, prompts, and resources are **discovered live** from the connected server 
 
 Capability areas exposed by the server include: Market Grid game play, market context, account state, leaderboards, intelligence agents + automation, strategy discovery/authoring, and trading signals/decisions.
 
-## Multi-account request envelope
+## Multi-account `account` argument
 
-When multiple keys resolve, the proxy injects a required `account` enum into every tool as a **sibling** of the existing input. The draft lifecycle tools (`stage_`, `get_`, `commit_`, `discard_<kind>_draft` and `list_<kind>_drafts`, for the `strategy` and `agent` kinds) and `get_strategy_section_template` publish `{ request: canonicalPayload }`; multi-account discovery makes that exactly `{ account, request }`. The proxy strips only `account` and forwards the unchanged `{ request }`. Never nest `account` inside `request`.
+When multiple keys resolve, the proxy injects a required `account` enum into every tool as a **sibling** of the tool's own published top-level properties. The proxy strips only `account` and forwards every other argument unchanged. A tool's own arguments are what live discovery publishes — this file states none of them. Never nest `account` inside another argument.
 
 ## Strategy and agent authoring
 
-Strategies and intelligence agents change only through their drafts, with one tool family per kind: `stage_<kind>_draft({ request: { <id>?, draftVersion, axes } })` → `get_<kind>_draft({ request: { <id> } })` → `commit_<kind>_draft({ request: { <id>, draftVersion, expectedRevision } })`, where `<kind>` is `strategy` or `agent`.
+Strategies, intelligence agents, Arena and radar deployments, and a player's Market Grid picks change only through their drafts, with one tool family per kind: `stage_<kind>_draft` → `get_<kind>_draft` → `commit_<kind>_draft`. Their arguments are what live discovery publishes; the exported skills carry each workflow's calls.
 
-**Stage reports; commit enforces.** A stage writes the proposed axes into the player's unsaved draft, commits nothing, and returns the composed draft's `diagnostics`; omit the id to open a new create draft, whose minted id the response carries. The read returns the draft, its `draftVersion` (0 when none is held), the live `committedRevision` (null for an entity not created yet), a per-axis `diff` against live, `diagnostics` and `impact`. Show the player the diff and impact, and on their explicit word commit exactly the `draftVersion` and `committedRevision` that read returned — `expectedRevision: null` creates the entity at revision 1. `discard_<kind>_draft({ request: { <id>, draftVersion } })` takes the same fence.
+**Stage reports; commit enforces.** A stage writes the proposed axes into the player's unsaved draft, commits nothing, and returns the composed draft's `diagnostics`; omit the id to open a new create draft, whose minted id the response carries. The read returns the draft, its `draftVersion` (0 when none is held), the live `committedRevision` (null for an entity not created yet), a per-axis `diff` against live, `diagnostics` and `impact`. Show the player the diff and impact, and on their explicit word commit exactly the `draftVersion` and `committedRevision` that read returned — `expectedRevision: null` creates the entity at revision 1. `discard_<kind>_draft` takes the same fence on the `draftVersion`.
 
 **Refusals name the next act.** `DRAFT_VERSION_MOVED` (the draft moved after the read, or no draft is held — `details.draftVersion` is then null) and `DRAFT_AXIS_CONTESTED` (the player's own form changed `details.contestedAxes` after the version staged against) carry `details.nextAct: "get_draft"` from every tool. From `stage_<kind>_draft` and `commit_<kind>_draft` only, a revision `CONFLICT` also carries `"get_draft"` and a validation refusal `"stage"`; a `preview_strategy_report` refusal over its result cap or its deadline carries `"narrow"` — preview again asking for less, in the order the tool's description gives; every other refusal carries no hint. After reading the draft again, show the player what it now holds and commit only on their word. A commit is idempotent on `{ id, draftVersion }`, so a retried commit replays its outcome.
 
@@ -79,7 +79,7 @@ Nine skills ship from this repo (and inside the npm tarball, under `SKILL.md` + 
 
 | Skill | Teaches |
 |---|---|
-| `battlegrid` (repo root) | Connection, the `{ account, request }` envelope, scopes, and where the rest lives — authored here |
+| `battlegrid` (repo root) | Connection, the multi-account `account` argument, scopes, and where the rest lives — authored here |
 | `battlegrid-agent-management` | Commission and govern intelligence agents: interview and create one against a committed strategy and an approved model, change configuration and risk limits, rebind, halt, resume, archive, and act on live positions |
 | `battlegrid-arena-play` | Enter Market Grid sessions: find an open session, read its coin pool and live market context, compose a grid with real per-coin reasoning or have an agent generate it, submit, then read results and the reasoning journal |
 | `battlegrid-market-analysis` | Read the current crypto market — regime, funding and open interest, leaders and laggards, a deep-dive on any named coin — and close with the levels worth watching |

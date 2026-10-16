@@ -12,13 +12,12 @@
  * enum parameter is injected into every tool so the AI agent can choose
  * which account to act as. Tool calls are routed with the matching Bearer token.
  *
- * Strategy authoring (v3): the strategy-authoring tools publish one strict
- * server-owned outer object, `{ request: canonicalPayload }`. In multi-account
- * mode the proxy adds `account` only as a sibling of `request`, producing
- * exactly `{ account, request }`; on a call it strips only `account` and
- * forwards the unchanged `{ request }`. It never descends into or reconstructs
- * the nested request — the server owns every required field, bound, union
- * discriminator, and `additionalProperties:false` constraint.
+ * Every tool's input is the server's published schema. In multi-account mode
+ * the proxy adds `account` beside a tool's own top-level properties; on a call
+ * it strips only `account` and forwards every other argument unchanged. It
+ * never descends into or reconstructs an argument — the server owns every
+ * required field, bound, union discriminator, and `additionalProperties:false`
+ * constraint.
  *
  * Versions (two of them, describing two different things):
  *   - PACKAGE_VERSION — this proxy's own code. Sent UPSTREAM as the client identity.
@@ -65,7 +64,7 @@ import {
  * being asked. Move it for a change to THIS package — a proxy fix, a dependency bump, a docs
  * correction. Never move it to track the server.
  */
-export const PACKAGE_VERSION = '31.2.103';
+export const PACKAGE_VERSION = '31.2.108';
 export const DEFAULT_URL = 'https://mcp.battlegrid.trade/mcp';
 const MAX_RETRIES = 3;
 const RETRY_DELAYS_MS = [2000, 4000, 8000];
@@ -254,11 +253,9 @@ export interface ToolDefinition {
 
 /**
  * Add a required `account` enum to every discovered tool, as a sibling of the
- * existing top-level properties. For the strict authoring tools whose schema is
- * `{ request: canonicalPayload }`, this produces exactly `{ account, request }`
- * with `required: ["account", "request"]`; the server-owned root
- * `additionalProperties:false` and the entire nested `request` (unions,
- * required fields, bounds) are preserved by reference, never rewritten.
+ * existing top-level properties. The server-owned root
+ * `additionalProperties:false` and every existing property (unions, required
+ * fields, bounds) are preserved by reference, never rewritten.
  */
 export function injectAccountParam(tools: ToolDefinition[], accountNames: string[]): ToolDefinition[] {
   return tools.map(tool => ({
@@ -563,7 +560,7 @@ export async function createProxyServer(options: CreateProxyServerOptions): Prom
           };
         }
         targetKey = keyByAccount.get(selectedAccount)!;
-        delete args.account; // Strip ONLY account before forwarding; request is forwarded unchanged
+        delete args.account; // Strip ONLY account before forwarding; every other argument is forwarded unchanged
       }
 
       const client = await getClientForKey(targetKey);

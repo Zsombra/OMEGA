@@ -2,7 +2,7 @@
   "digestVersion": 1,
   "server": {
     "name": "battlegrid",
-    "contractVersion": "110.4.0"
+    "contractVersion": "110.10.0"
   },
   "axes": {
     "create": [
@@ -232,7 +232,9 @@
     "DONCHIAN_BROKEN_HI",
     "DONCHIAN_BROKEN_LO",
     "DONCHIAN_LOWER",
+    "DONCHIAN_LOWER_PRIOR",
     "DONCHIAN_UPPER",
+    "DONCHIAN_UPPER_PRIOR",
     "EMA13",
     "EMA20",
     "EMA21",
@@ -271,6 +273,8 @@
     "MFI14",
     "NAKED_POC_ABOVE",
     "NAKED_POC_BELOW",
+    "NAKED_SINGLE_PRINT_ABOVE",
+    "NAKED_SINGLE_PRINT_BELOW",
     "NOTIONAL_VOLUME_1D",
     "OBV",
     "OHLC4",
@@ -354,6 +358,8 @@
     "TPO_IB_LOW",
     "TPO_POC",
     "TPO_SHAPE",
+    "TPO_SINGLE_PRINT_ABOVE",
+    "TPO_SINGLE_PRINT_BELOW",
     "TPO_VAH",
     "TPO_VAL",
     "TPO_VPOC",

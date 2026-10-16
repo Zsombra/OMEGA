@@ -60,10 +60,15 @@ rules about the columns themselves, not about porting — they live in the skill
 - **VWAP reversion** → `dist_VWAP` band + `dist_VWAP_rank_far lte 5` for board-relative
   stretch; required `NOT [ADX_state in ["trending","extreme"]]` veto; scalp geometry +
   aggressive timeDecay (VWAP anchors daily at 00:00 UTC).
-- **Donchian / Turtle breakout** → `zone is "breakout high"` + `dist_donchianHi gte 0` +
-  `RVOL gte 1.5`; turtle exits = trend preset (trail from
-  1R, giveback 50). Mirror with `"breakdown low"`. **Daily-breakout variant on any anchor:**
-  pin the structure at 1d — `zone_1d is "breakout high"`, `dist_donchianHi_1d gte 0` (validated).
+- **Donchian / Turtle breakout** (`close > ta.highest(high, 20)[1]`) → `dist_donchianHiPrior crossesAbove 0`
+  over `DONCHIAN_UPPER_PRIOR × distance` (the breakout bar; `dist_donchianHiPrior gt 0` holds on every
+  close of the run) + `RVOL gte 1.5`; turtle exits = trend preset (trail from 1R, giveback 50). Mirror with
+  `dist_donchianLoPrior crossesBelow 0`. The same-bar rail (`dist_donchianHi`) includes the breakout bar's
+  own high, so it can never confirm a close-based break — do not AND it in. `zone is "breakout high"` reads
+  the prior-bar rail: it is the label form of the `dist_donchianHiPrior gt 0` state, holds on every close of
+  the run, and adds nothing to the crossing; `"breakdown low"` mirrors it.
+  **Daily-breakout variant on any anchor:** pin the rail at 1d — `dist_donchianHiPrior_1d crossesAbove 0`
+  (`gt 0` for the held state).
   **Literal previous-day levels are native**: `dist_PDH gte 0` composes directly. They are TIMELESS
   and take `{rel: 'anchor'}` — see `## Header grammar` in the skill body.
 - **ICT / SMC (FVG + order blocks)** → `STRUCT_ZONES` is the native zone engine:
