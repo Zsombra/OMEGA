@@ -192,11 +192,17 @@ def strip_pointers(node: Any) -> Any:
     return node
 
 
+def _envelope(doc: dict) -> list:
+    """The pointer parts of the stage tool's `request` envelope: `["properties", "request"]` in a capture from before
+    contract v111, none since (README v111: "the draft tools take their arguments at the top level")."""
+    return ["properties", "request"] if "request" in doc[STAGE]["inputSchema"].get("properties", {}) else []
+
+
 def _custom_section(doc: dict) -> list:
     """Pointer parts of the REPORT axis's one custom-section arm (the arm that carries `columns`)."""
     base = [STAGE, "inputSchema"]
-    sections = base + ["properties", "request", "properties", "axes", "properties", "REPORT", "properties",
-                       "sections", "items"]
+    sections = base + _envelope(doc) + ["properties", "axes", "properties", "REPORT", "properties",
+                                        "sections", "items"]
     custom = [p for p, arm in _flatten(doc, base, sections) if "columns" in arm.get("properties", {})]
     if len(custom) != 1:
         raise ValueError(f"expected one custom-section arm on the REPORT axis, got {len(custom)}")
@@ -257,7 +263,7 @@ def _served_per_header(doc: dict) -> dict:
 
 def derive(doc: dict, *, source: str, source_sha256: str) -> dict:
     """The inventory of one saved write-schema document (the multi-tool capture keyed by tool)."""
-    stage_items = [STAGE, "inputSchema", "properties", "request", "properties", "axes", "properties", "CONDITIONS",
+    stage_items = [STAGE, "inputSchema", *_envelope(doc), "properties", "axes", "properties", "CONDITIONS",
                    "properties", "conditions", "items"]
     stage = _grammar(doc, STAGE, stage_items)
     conditions_array = resolve(doc, pointer(stage_items[:-1]))
