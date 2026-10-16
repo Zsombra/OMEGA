@@ -976,8 +976,9 @@ def emit_plan(plan_obj: StrategyPlan, name: str, *, out_dir=None) -> str:
     target = out_dir or (ROOT / "out")
     target.mkdir(parents=True, exist_ok=True)
     path = target / f"{name}.strategy.json"
-    # The request of a CREATE stage_strategy_draft (v85: no strategyId opens a new create
-    # draft; draftVersion 0 when there is no draft), plus local metadata.
+    # The arguments of a CREATE stage_strategy_draft (v85: no strategyId opens a new create
+    # draft; draftVersion 0 when there is no draft), plus local metadata. Top-level, never
+    # wrapped: since contract v111 (110.13.0) a stage wrapped in `request` is refused.
     payload: dict = {"draftVersion": 0, "axes": plan_obj.axes()}
     payload["_generatedBy"] = "omega.generate - LOCAL ONLY, not submitted"
     payload["_critique"] = plan_obj.critique()

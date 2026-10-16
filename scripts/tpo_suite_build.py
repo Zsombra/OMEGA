@@ -9,7 +9,7 @@ THREE FILES PER STRATEGY, BECAUSE ONE FILE CANNOT BE ALL OF THEM (measured 2026-
     <id>.json          the DESIGN RECORD: thesis, what it teaches, null exposure, threshold
                        provenance, predicted headers, offline validation, the v91 mappings this
                        port applied. Human-facing. NEVER sent.
-    <id>.stage.json    `{draftVersion: 0, axes}` - the `request` of a CREATE stage_strategy_draft
+    <id>.stage.json    `{draftVersion: 0, axes}` - the arguments of a CREATE stage_strategy_draft
                        (no strategyId: v85 "omit strategyId to open a NEW create draft"). The
                        eight axes (contract 108) are exactly what omega.generate.StrategyPlan.axes() returns, so
                        the manager stages them as it stages a generated plan.
@@ -575,8 +575,8 @@ def build() -> list[Built]:
 
 
 def stage_request(b: Built) -> dict:
-    """The `request` of a CREATE stage_strategy_draft: no strategyId, draftVersion 0, the eight
-    axes whole (contract 108). A stage is a WRITE into the player's draft; writing this file is not making it."""
+    """The arguments of a CREATE stage_strategy_draft: no strategyId, draftVersion 0, the eight
+    axes whole (contract 108), top-level since v111 (110.13.0: no `request` envelope). A stage is a WRITE into the player's draft; writing this file is not making it."""
     return {"draftVersion": 0, "axes": b.axes}
 
 

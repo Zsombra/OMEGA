@@ -67,3 +67,42 @@ outer 20%". omega stores no gloss for the metric and its vocabulary is unchanged
 SUPPORT_RESISTANCE module reads `zone is "near low"` (up) / `"near high"` (down): a body that weights that module now
 fires on the outer fifth of the prior channel - a wider trigger than when it was written. No live strategy weights it
 (10-16: VWAP Reject 4h, Trend Continuation, VWAP Reject 15m carry no PRICE_ZONE column).
+
+## After: contract v111 / 110.13.0 (2026-10-16)
+
+Served as 110.13.0 (build `86df42d3`) since 2026-10-16 03:18Z. README "Contract history - v111": every draft-lifecycle
+tool takes its id, `draftVersion` and payload as top-level arguments; a call that still wraps them in `request` is
+refused, and a refusal's path into the payload loses its leading `request`. `request` stays only on
+get_strategy_section_template, preview_radar_resolution, preview_deployment_resolution and test_generate_deployment_grid.
+
+**Measured against the 110.8.0 capture** (`schema_20261016T031811Z.json`, read from battlegrid-manager's stored
+surface, observed 2026-10-16T03:18:11Z; no platform call by omega):
+
+- `stage_strategy_draft` input: `{strategyId?, draftVersion, axes}` at the root, `required [draftVersion, axes]`,
+  `additionalProperties: false`. With the 110.8.0 local `$ref`s re-rooted (`#/properties/request/...` → `#/...`) the
+  110.8.0 `request` object and the 110.13.0 input are identical: no axis, enum or bound moved
+  (`tests/test_condition_vocabulary_108.py::test_v111_moved_no_column_enum_only_the_envelope`). get_strategy_draft,
+  commit_strategy_draft and list_strategy_drafts lost the envelope the same way; preview_strategy_report and
+  get_strategy never had one and did not move. No output schema moved.
+- No vocabulary moved, so no re-extraction: 183 metrics, the same transform enums, 25 platform sections.
+
+**What omega changed** (branch `fix/v111-flat-write-surface`):
+
+- The manifest's `writeSurface` names the 110.13.0 capture; 110.8.0 → 110.2.0 → 108.0.0 → 91.0.0 are kept under
+  `supersedes`, each still read through its own envelope.
+- `omega.preflight.resolve_request` and `omega.condition_vocabulary` read both shapes (the envelope when the schema has
+  one, else the root); `data/derived/condition_vocabulary_108.json` re-derived (its pointers lost `/properties/request`).
+- The body omega emits was already the stage's arguments: `emit_plan` writes `{draftVersion: 0, axes}` (plus
+  `_`-prefixed local metadata, never sent), `scripts/tpo_suite_build.py` writes `{draftVersion: 0, axes}`.
+  `scripts/preview_dry_run.py stage` printed `{request: {...}}` and now prints the flat arguments.
+  `scripts/preflight.py` still unwraps a pre-v111 body file.
+- Tests walk the flat body against the 110.13.0 schema and pin that the 110.8.0 envelope is refused by it
+  (`UNDECLARED request`, `MISSING_REQUIRED draftVersion/axes`) while the flat body is refused by the 110.8.0 one
+  (`MISSING_REQUIRED request`).
+
+**What a consumer must change** (battlegrid-manager): send the stage, get, commit, discard and list draft calls with
+flat arguments, `stage_strategy_draft {strategyId?, draftVersion, axes}` (`omega.generate.StrategyPlan.axes()` /
+`axes_update()` unchanged); read the axis schemas through `omega.preflight.resolve_axes` (or the flat
+`properties.axes.properties`) rather than `properties.request.properties.axes.properties`; and re-pin to an omega tag
+that carries this change - the earlier `resolve_request` raises `KeyError: 'request'` on a 110.13.0 surface, which
+breaks the manager's pin-drift check (`scripts/compare_vocabulary.py`).

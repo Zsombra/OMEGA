@@ -13,9 +13,10 @@ import pytest
 from scripts.compare_vocabulary import compare, first_enum, live_enums, main, stored_enums
 
 
-def _surface(metrics, sections, *, drop_tool: str | None = None) -> dict:
+def _surface(metrics, sections, *, drop_tool: str | None = None, envelope: bool = False) -> dict:
     """At contract 108 the sectionKey enum lives on stage_strategy_draft's REPORT axis; there is no SIGNAL_RULES
-    axis (README "Contract history - v108")."""
+    axis (README "Contract history - v108"). Since v111 (110.13.0) `axes` is a top-level argument; `envelope` builds
+    the pre-v111 shape, `{request: {axes}}`."""
     axes = {
         "REPORT": {"type": "object", "properties": {"sections": {"type": "array", "items": {"anyOf": [
             {"type": "object", "properties": {"kind": {"const": "platform"},
@@ -25,9 +26,10 @@ def _surface(metrics, sections, *, drop_tool: str | None = None) -> dict:
         {"name": "get_metric_construction_hints",
          "inputSchema": {"type": "object", "properties": {"metric": {"type": "string", "enum": sorted(metrics)}}}},
         {"name": "stage_strategy_draft",
-         "inputSchema": {"type": "object", "properties": {"request": {"type": "object", "properties": {
-             "axes": {"type": "object", "properties": axes}}}}}},
+         "inputSchema": {"type": "object", "properties": {"axes": {"type": "object", "properties": axes}}}},
     ]
+    if envelope:
+        tools[1]["inputSchema"] = {"type": "object", "properties": {"request": tools[1]["inputSchema"]}}
     return {"contractVersion": "0.0.0", "buildSha": "test", "observedAt": "2026-10-11T00:00:00Z",
             "tools": [t for t in tools if t["name"] != drop_tool]}
 
@@ -48,6 +50,13 @@ def test_the_extraction_against_itself_is_identical_and_not_empty():
     for name, r in results.items():
         assert r["live"] == r["stored"] > 0, name
         assert r["liveNotStored"] == [] and r["storedNotLive"] == [], name
+
+
+def test_a_pre_v111_surface_with_the_request_envelope_still_compares():
+    """A surface stored before 110.13.0 wraps the stage's arguments in `request`; it reads the same enums."""
+    stored = stored_enums()
+    flat = live_enums(_surface(stored["metrics"], stored["sectionKeys"]))
+    assert live_enums(_surface(stored["metrics"], stored["sectionKeys"], envelope=True)) == flat
 
 
 def test_an_added_and_a_dropped_value_are_named_on_the_right_side():
@@ -79,7 +88,7 @@ def test_main_exits_0_when_identical_and_1_when_an_enum_moved(tmp_path, capsys):
     assert main([str(moved)]) == 1
     printed = json.loads(capsys.readouterr().out)
     assert printed["results"]["sectionKeys"]["liveNotStored"] == ["newSection"]
-    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"   # 110.8.0
+    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"   # 110.13.0
 
 
 def test_the_stored_enums_are_read_off_the_saved_108_stage_schema():

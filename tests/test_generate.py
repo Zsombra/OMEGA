@@ -227,7 +227,7 @@ def test_axes_walk_clean_against_the_v108_stage_schema(name):
     from omega import preflight as P
     from omega.contract import stage_schema
     root = stage_schema()["stage_strategy_draft"]["inputSchema"]
-    findings = P.diff_schema({"request": {"draftVersion": 0, "axes": plan(PRESETS[name]).axes()}},
+    findings = P.diff_schema({"draftVersion": 0, "axes": plan(PRESETS[name]).axes()},
                              root, root)
     assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL"] == []
     assert [f for f in findings if f.cls == "UNSUPPORTED"] == []

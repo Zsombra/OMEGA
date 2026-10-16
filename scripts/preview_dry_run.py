@@ -54,10 +54,11 @@ def preview_request(*, small: bool = False, anchor: str | None = None) -> dict:
 
 
 def stage_request(*, small: bool = False) -> dict:
-    """The CREATE stage_strategy_draft arguments: {request: {draftVersion: 0, axes}}. No
-    strategyId - v85: "Omit strategyId to open a NEW create draft". A stage is a WRITE
-    into the player's draft; printing it is not making it."""
-    return {"request": {"draftVersion": 0, "axes": plan(_thesis(small=small)).axes()}}
+    """The CREATE stage_strategy_draft arguments: {draftVersion: 0, axes}, top-level since
+    contract v111 (110.13.0, 2026-10-16: "A call that still wraps them in `request` is
+    refused"). No strategyId - v85: "Omit strategyId to open a NEW create draft". A stage is
+    a WRITE into the player's draft; printing it is not making it."""
+    return {"draftVersion": 0, "axes": plan(_thesis(small=small)).axes()}
 
 
 def main(argv: list[str] | None = None) -> int:

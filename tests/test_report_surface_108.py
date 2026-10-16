@@ -64,8 +64,8 @@ def test_the_gaps_name_only_the_retired_section_field():
 # --- transforms: retired and unmeasured, both derived from the served enum ---------------------------
 def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert set(C.retired_transforms) == {"bandTouch"}
-    # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.8.0 capture since 2026-10-15
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "110.8.0"
+    # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.13.0 (v111) capture since 2026-10-16
+    assert C.retired_transforms["bandTouch"]["servedAt"] == "110.13.0"
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -84,7 +84,7 @@ def test_a_retired_transform_is_refused_naming_its_replacement():
     f = validate_column(col("OPEN", "bandTouch"), contract=C)
     assert codes(f) == {"TRANSFORM_RETIRED"}
     msg = f[0].message
-    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "110.8.0" in msg
+    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "110.13.0" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():

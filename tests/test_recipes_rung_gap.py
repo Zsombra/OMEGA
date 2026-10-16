@@ -88,7 +88,7 @@ def test_the_vocabulary_puts_the_rung_on_the_column_not_the_section():
     {rel: anchor|lower|regime} or {abs}. The platform's own higher-timeframe template is the
     three metrics at {rel: regime}; the confluence template holds MA_ALIGN at all three rels."""
     from omega.contract import stage_schema
-    arms = (stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]
+    arms = (stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]
             ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["anyOf"])
     custom = arms[1]
     assert "timeframe" not in custom["properties"] and custom["additionalProperties"] is False
@@ -308,7 +308,7 @@ def test_every_added_column_is_a_vocabulary_value():
     enum - and the non-anchor MA_ALIGN / ADX / RSI14 columns are the platform's own template
     columns (includeHigherTimeframe at regime, includeMtfConfluence at lower)."""
     c = load()
-    rel_enum = (stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]
+    rel_enum = (stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]
                 ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["anyOf"][1]["properties"]
                 ["columns"]["items"]["properties"]["timeframe"]["anyOf"][0]["properties"]["rel"]["enum"])
     templated = {(x["metric"], x["transformId"], x["timeframe"]["rel"])
@@ -332,7 +332,7 @@ def test_the_reports_walk_the_schema_and_stay_in_budget(name):
     from omega import preflight as P
     p = plan(PRESETS[name])
     root = stage_schema()["stage_strategy_draft"]["inputSchema"]
-    findings = P.diff_schema({"request": {"draftVersion": 0, "axes": p.axes()}}, root, root)
+    findings = P.diff_schema({"draftVersion": 0, "axes": p.axes()}, root, root)
     assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL"] == []
     assert p.validation().ok, p.validation().report()
     cost = p.cost()

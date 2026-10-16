@@ -115,7 +115,7 @@ def test_the_retired_schema_bounds_warn_and_never_gate():
     The v91 and v108 axis schemas declare no bound on any dial, and since v89 a create is judged at
     the operator bounds configured now, in the draft's diagnostics and at commit."""
     from omega.contract import stage_schema
-    axes = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
+    axes = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["axes"]["properties"]
     for axis in ("TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"):
         for name, node in axes[axis]["properties"].items():
             assert not {"minimum", "maximum", "multipleOf"} & set(node), (axis, name)
