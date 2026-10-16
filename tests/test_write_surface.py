@@ -55,8 +55,9 @@ def contract():
 
 
 def _axis_schemas():
-    root = C.stage_schema()["stage_strategy_draft"]["inputSchema"]
-    return root["properties"]["request"]["properties"]["axes"]["properties"]
+    # since v111 (110.13.0) the stage tool takes `axes` at the top level; resolve_request reads either shape
+    from omega.preflight import resolve_axes
+    return resolve_axes(C.stage_schema())[0]
 
 
 @pytest.mark.parametrize("preset", sorted(PRESETS))
@@ -218,17 +219,22 @@ SCHEMA_91 = "data/contract/stage_strategy_draft/schema_20261005T194629Z.json"
 SCHEMA_108 = "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
 SCHEMA_110 = "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
 SCHEMA_110_8 = "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
+SCHEMA_110_13 = "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
     manifest = json.loads((ROOT / "data/contract/_manifest.json").read_text(encoding="utf-8"))
     ws = manifest["writeSurface"]
-    # the 110.8.0 capture since 2026-10-15; the 110.2.0 one under `supersedes`, then 108.0.0, then 91.0.0
-    assert ws["servedContractVersion"] == "110.8.0"
-    assert ws["buildSha"].startswith("6cf1bd70")
-    assert ws["schema"] == SCHEMA_110_8
+    # the 110.13.0 (v111, flat arguments) capture since 2026-10-16; 110.8.0 under `supersedes`, then 110.2.0,
+    # then 108.0.0, then 91.0.0
+    assert ws["servedContractVersion"] == "110.13.0"
+    assert ws["buildSha"].startswith("86df42d3")
+    assert ws["schema"] == SCHEMA_110_13
     assert (ROOT / ws["schema"]).is_file()
-    prev = ws["supersedes"]
+    v110_8 = ws["supersedes"]
+    assert v110_8["servedContractVersion"] == "110.8.0" and v110_8["buildSha"].startswith("6cf1bd70")
+    assert v110_8["schema"] == SCHEMA_110_8 and (ROOT / SCHEMA_110_8).is_file()
+    prev = v110_8["supersedes"]
     assert prev["servedContractVersion"] == "110.2.0" and prev["buildSha"].startswith("c70a41d8")
     assert prev["schema"] == SCHEMA_110 and (ROOT / SCHEMA_110).is_file()
     assert prev["supersedes"]["servedContractVersion"] == "108.0.0"
@@ -260,8 +266,45 @@ def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
 
 def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     doc = C.stage_schema()
-    assert doc["contractVersion"] == "110.8.0"          # the eight axes did not move at 110 or 110.8
+    assert doc["contractVersion"] == "110.13.0"         # the eight axes did not move at 110, 110.8 or 110.13
     assert V108_TOOLS <= set(doc)
-    axes = doc["stage_strategy_draft"]["inputSchema"]["properties"]["request"]["properties"]["axes"]
+    # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
+    assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]
+    axes = doc["stage_strategy_draft"]["inputSchema"]["properties"]["axes"]
     assert set(axes["properties"]) == V108_AXES
     assert axes["additionalProperties"] is False
+
+
+# --- contract v111 (served as 110.13.0, 2026-10-16): no `request` envelope ----------------------------------------
+# README "Contract history - v111": "every draft-lifecycle tool takes its id, `draftVersion` and payload as top-level
+# arguments ... A call that still wraps them in `request` is refused".
+
+def _emitted_body(tmp_path, preset: str) -> dict:
+    """What emit_plan writes, minus its "_"-prefixed local metadata: the stage's arguments as sent."""
+    from omega.generate import emit_plan
+    doc = json.loads(Path(emit_plan(plan(PRESETS[preset]), preset, out_dir=tmp_path)).read_text(encoding="utf-8"))
+    return {k: v for k, v in doc.items() if not k.startswith("_")}
+
+
+@pytest.mark.parametrize("preset", sorted(PRESETS))
+def test_the_emitted_body_is_the_flat_v111_stage_and_walks_clean(tmp_path, preset):
+    from omega import preflight as P
+    body = _emitted_body(tmp_path, preset)
+    assert set(body) == {"draftVersion", "axes"} and body["draftVersion"] == 0
+    root = json.loads((ROOT / SCHEMA_110_13).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
+    findings = P.diff_schema(body, root, root)
+    assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
+
+
+def test_the_pre_v111_envelope_is_refused_by_the_110_13_schema_and_the_flat_body_by_the_110_8_one(tmp_path):
+    from omega import preflight as P
+    body = _emitted_body(tmp_path, "trend-continuation")
+    root = json.loads((ROOT / SCHEMA_110_13).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
+    fails = {(f.cls, f.path) for f in P.diff_schema({"request": body}, root, root) if f.verdict == "FAIL"}
+    assert ("UNDECLARED", "request") in fails
+    assert {("MISSING_REQUIRED", "draftVersion"), ("MISSING_REQUIRED", "axes")} <= fails
+    old = json.loads((ROOT / SCHEMA_110_8).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
+    assert ("MISSING_REQUIRED", "request") in {(f.cls, f.path) for f in P.diff_schema(body, old, old)
+                                                if f.verdict == "FAIL"}
+    # the 110.8.0 capture stays readable through its envelope: the same body walks clean inside it
+    assert [f for f in P.diff_schema({"request": body}, old, old) if f.verdict == "FAIL"] == []

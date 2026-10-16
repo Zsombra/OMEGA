@@ -441,7 +441,7 @@ ONE = {"atLeast": 1, "of": 1}
 
 def _conditions_axis():
     root = stage_schema()["stage_strategy_draft"]["inputSchema"]
-    axis = root["properties"]["request"]["properties"]["axes"]["properties"]["CONDITIONS"]
+    axis = root["properties"]["axes"]["properties"]["CONDITIONS"]
     return axis, root
 
 

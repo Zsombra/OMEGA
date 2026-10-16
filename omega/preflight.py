@@ -96,9 +96,15 @@ def _input_root(definition: dict) -> dict:
 
 
 def resolve_request(definition: dict) -> tuple[dict, dict]:
-    """The `request` object schema of a stage_strategy_draft definition, plus its root."""
+    """The `request` object schema of a stage_strategy_draft definition, plus its root. Since contract v111 (served
+    as 110.13.0, 2026-10-16; README "Contract history - v111: the draft tools take their arguments at the top level")
+    the draft tools carry no `request` envelope - the input root IS the request object; a capture from before keeps
+    its envelope and is read through it."""
     root = _input_root(definition)
-    return deref(root["properties"]["request"], root), root
+    props = root.get("properties", {})
+    if "request" in props:
+        return deref(props["request"], root), root
+    return root, root
 
 
 def resolve_axes(definition: dict) -> tuple[dict[str, dict], dict]:

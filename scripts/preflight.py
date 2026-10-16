@@ -16,8 +16,9 @@ SETUP_GATES are refused since 108.0.0; the signalId fingerprint went with them).
       Exit 0 only if the receipt is PASS, the body sha matches, it has not expired and
       it is not voided.
 
-The body file is a stage request - {"request": {draftVersion, axes, strategyId?}} or the
-request object itself, as omega.generate.emit_plan writes it; top-level "_"-prefixed keys
+The body file is a stage request - the tool's arguments {draftVersion, axes, strategyId?}, as
+omega.generate.emit_plan writes it and as the stage takes them since contract v111 (110.13.0),
+or a pre-v111 {"request": {...}} envelope, unwrapped; top-level "_"-prefixed keys
 are local metadata and are stripped before the walk and the sha.
 
 compile_strategy_plan was removed at contract 85.0.0, and the read-back mirror is retired

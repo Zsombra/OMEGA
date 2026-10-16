@@ -35,7 +35,7 @@ def _body(tmp_path, axes=None, name="body.json", **extra) -> Path:
     req = {"draftVersion": 0, "axes": axes if axes is not None else plan(PRESETS["trend-continuation"]).axes()}
     req.update(extra)
     bp = tmp_path / name
-    bp.write_text(json.dumps({"request": req}), encoding="utf-8")
+    bp.write_text(json.dumps(req), encoding="utf-8")    # v111: the arguments, no `request` envelope
     return bp
 
 
@@ -92,7 +92,7 @@ def test_run_fails_a_body_carrying_the_retired_condition_keys_and_gate_refuses(t
 
 def test_run_refuses_a_transcription_suspect_schema(tmp_path, capsys):
     definition = copy.deepcopy(stage_schema()["stage_strategy_draft"])
-    axes = definition["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
+    axes = definition["inputSchema"]["properties"]["axes"]["properties"]
     # a truncated platform sectionKey enum on the REPORT axis (the signalId enum went with SIGNAL_RULES at 108)
     axes["REPORT"]["properties"]["sections"]["items"]["anyOf"][0]["properties"]["sectionKey"]["enum"].pop()
     out = tmp_path / "receipt.json"
@@ -126,7 +126,7 @@ def test_an_emitted_plan_file_is_a_body_and_its_metadata_is_stripped(tmp_path, c
 
 def test_previous_schema_adds_changelog_info_only(tmp_path, capsys):
     prev = copy.deepcopy(stage_schema()["stage_strategy_draft"])
-    ax = prev["inputSchema"]["properties"]["request"]["properties"]["axes"]["properties"]
+    ax = prev["inputSchema"]["properties"]["axes"]["properties"]
     ax["TIMEFRAME_PROFILE"]["properties"]["timeframe"]["enum"].remove("1w")
     out = tmp_path / "receipt.json"
     assert _run(_body(tmp_path), "--schema", _capture(tmp_path), "--previous-schema",

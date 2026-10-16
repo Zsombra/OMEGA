@@ -33,8 +33,8 @@ def test_the_small_body_names_the_three_harness_tickers():
 def test_the_stage_body_is_a_create_request_and_walks_clean():
     """No strategyId: v85 "Omit strategyId to open a NEW create draft"; draftVersion 0."""
     body = D.stage_request(small=True)
-    assert set(body["request"]) == {"draftVersion", "axes"} and body["request"]["draftVersion"] == 0
-    assert body["request"]["axes"] == plan(PRESETS[D.PRESET]).axes()
+    assert set(body) == {"draftVersion", "axes"} and body["draftVersion"] == 0     # v111: no `request` envelope
+    assert body["axes"] == plan(PRESETS[D.PRESET]).axes()
     assert _fails(body, "stage_strategy_draft") == []
 
 

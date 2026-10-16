@@ -16,9 +16,10 @@ import pytest
 from omega import condition_vocabulary as CV
 
 ROOT = Path(__file__).resolve().parents[1]
-# The schema the manifest names: the 110.8.0 capture since 2026-10-15 (the 110.2.0 one of 2026-10-14 and the 108.0.0 one
-# are kept below as history).
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
+# The schema the manifest names: the 110.13.0 (v111) capture since 2026-10-16 (the 110.8.0 one of 2026-10-15, the
+# 110.2.0 one of 2026-10-14 and the 108.0.0 one are kept below as history).
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
+SCHEMA_110_8 = ROOT / "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
 SCHEMA_110_2 = ROOT / "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
 SCHEMA_108 = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
 MOVES_110 = json.loads((ROOT / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))
@@ -37,6 +38,21 @@ ADDED_SINCE_61_2 = ["BAR_CONTAINMENT", "CANDLE_DOJI", "CANDLE_ENGULFING", "CANDL
                     "SWING_FRACTAL_LABEL", "SWING_FRACTAL_LOW"]
 
 
+def _in(doc: dict, ptr: str) -> str:
+    """The inventory's pointer (rooted at the flat v111 input) re-rooted in `doc`: a capture from before v111 holds
+    the stage's arguments under its `request` envelope (README v111: "A refusal's path into the payload loses its
+    leading `request`" - the schema's own paths moved the same way)."""
+    head = "/stage_strategy_draft/inputSchema"
+    if "request" in doc["stage_strategy_draft"]["inputSchema"].get("properties", {}) and ptr.startswith(head + "/"):
+        return head + "/properties/request" + ptr[len(head):]
+    return ptr
+
+
+def _enum_in(path: Path, key: str = "metric") -> list[str]:
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    return CV.resolve(doc, _in(doc, V["reportColumn"][key]["pointer"]))["enum"]
+
+
 def _arm(op: str) -> dict:
     return G["clauseArms"][G["operators"][op]["arm"]]
 
@@ -48,9 +64,9 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261015T015244Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "110.8.0",
-                           "buildSha": "6cf1bd7015f136f3a380cc506511002977c831e2",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261016T031811Z.json",
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "110.13.0",
+                           "buildSha": "86df42d3dd143c87be57490ba78b2005a0527bb7",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -188,7 +204,7 @@ def test_the_108_stage_metric_enum_is_the_104_1_hints_enum():
 
 
 def _enum_108() -> list[str]:
-    return CV.resolve(json.loads(SCHEMA_108.read_text(encoding="utf-8")), V["reportColumn"]["metric"]["pointer"])["enum"]
+    return _enum_in(SCHEMA_108)
 
 
 def test_the_110_enum_is_the_108_enum_moved_exactly_as_v110_says():
@@ -199,12 +215,23 @@ def test_the_110_enum_is_the_108_enum_moved_exactly_as_v110_says():
 
 
 def test_the_110_8_enum_is_the_110_2_enum_plus_the_six():
-    pointer = V["reportColumn"]["metric"]["pointer"]
-    old = CV.resolve(json.loads(SCHEMA_110_2.read_text(encoding="utf-8")), pointer)["enum"]
-    new = V["reportColumn"]["metric"]["enum"]
+    old, new = _enum_in(SCHEMA_110_2), _enum_in(SCHEMA_110_8)
     assert MOVES_110_8["retired"] == {} and set(old) <= set(new)
     assert set(new) - set(old) == set(MOVES_110_8["added"])
     assert [m for m in new if m in old] == old                                 # the 177 keep their platform order
+
+
+def test_v111_moved_no_column_enum_only_the_envelope():
+    """110.13.0 (v111): the stage's arguments left the `request` envelope; every column enum is the 110.8.0 one, and
+    the eight axes are byte-identical once the 110.8.0 local $refs are re-rooted (measured 2026-10-16)."""
+    for key in ("metric", "transformId", "chainedTransformId"):
+        assert _enum_in(SCHEMA_110_8, key) == V["reportColumn"][key]["enum"], key
+    old = json.loads(SCHEMA_110_8.read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
+    new = DOC["stage_strategy_draft"]["inputSchema"]
+    assert set(old["properties"]) == {"request"} and old["required"] == ["request"]
+    assert set(new["properties"]) == {"strategyId", "draftVersion", "axes"} and new["required"] == ["draftVersion", "axes"]
+    flat = json.dumps(old["properties"]["request"], sort_keys=True).replace("#/properties/request/", "#/")
+    assert json.loads(flat) == new
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------

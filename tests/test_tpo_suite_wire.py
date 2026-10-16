@@ -95,7 +95,7 @@ def test_axes_are_the_eight_of_108_and_the_stage_request_walks_clean(sid):
     assert set(request) == {"draftVersion", "axes"} and request["draftVersion"] == 0
     assert "strategyId" not in request          # a CREATE: v85 "omit strategyId to open a NEW create draft"
     stage_root = SCHEMA["stage_strategy_draft"]["inputSchema"]
-    assert _fails(P.diff_schema({"request": request}, stage_root, stage_root)) == []
+    assert _fails(P.diff_schema(request, stage_root, stage_root)) == []
 
 
 @pytest.mark.parametrize("sid", IDS)
