@@ -55,3 +55,15 @@ bind or trade.
 - `tests/test_saved_sections_110.py`: a player's saved section (`kind: "saved"`, account state since 110.x) never enters a
   stored vocabulary snapshot or the platform templates.
 - The battlegrid-manager re-pins to this tag; its preflight then reads `pin drift: none` at 110.8.0.
+
+## After: contract 110.9-110.11 (reviewed 2026-10-16 by battlegrid-manager, `docs/status/2026-10-16-battlegrid-110-11-0-review.md`)
+
+No enum moved (`pin drift: none`), so no re-extraction. One served meaning moved, behind an unchanged schema (README
+"Contract history - v110.9"): `PRICE_ZONE` classifies against the channel of the 20 bars BEFORE the classified one
+(`DONCHIAN_UPPER_PRIOR`/`LOWER_PRIOR`); `breakout high`/`breakdown low` can now hold (a close beyond that channel);
+`near high`/`near low` are the outer fifth of the channel by position (before: within 1 % of price of an edge). The
+hints' gloss read 2026-10-16: "price location against the channel of the 20 bars before this one, near an edge in its
+outer 20%". omega stores no gloss for the metric and its vocabulary is unchanged, but `omega.generate`'s
+SUPPORT_RESISTANCE module reads `zone is "near low"` (up) / `"near high"` (down): a body that weights that module now
+fires on the outer fifth of the prior channel - a wider trigger than when it was written. No live strategy weights it
+(10-16: VWAP Reject 4h, Trend Continuation, VWAP Reject 15m carry no PRICE_ZONE column).
