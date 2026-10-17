@@ -172,10 +172,18 @@ MODULE_CLAUSES: dict[str, dict] = {
     "VOLUME":            {"up": lambda: is_("OBV_trend", "rising"),
                           "down": lambda: is_("OBV_trend", "falling")},
     "VOLATILITY":        {"filter": lambda: is_("ATR_trend", "rising")},
-    "MFI":               {"up": lambda: is_("MFI14_zone", "overbought"),
-                          "down": lambda: is_("MFI14_zone", "oversold"),
-                          "fade_up": lambda: is_("MFI14_zone", "oversold"),
-                          "fade_down": lambda: is_("MFI14_zone", "overbought")},
+    # v0.8.2: MFI14_zone cannot carry a condition - it declares overbought/oversold/neutral and
+    # emits only bullish/bearish (data/contract/columns/_observed_vocabulary.json, measured
+    # 2026-08-24), so a zone clause was refused or FALSE forever and MFI never gated. MFI14_now
+    # is served numeric with lt/lte/gte/gt/between (data/audit/compile_dry_run_2026-08-29-
+    # deep-tail-fade.json), and its 50 midline is the measured numeric replacement that
+    # reproduced the zone live ("MFI14 lt 50 (bearish) / MFI14 gte 50 (bullish)"). No
+    # overbought/oversold cut-off was ever measured, so the fade reads mirror the midline, the
+    # way BOLLINGER and STOCHASTIC mirror theirs.
+    "MFI":               {"up": lambda: num("MFI14_now", "gte", 50),
+                          "down": lambda: num("MFI14_now", "lt", 50),
+                          "fade_up": lambda: num("MFI14_now", "lt", 50),
+                          "fade_down": lambda: num("MFI14_now", "gte", 50)},
     "STOCHASTIC":        {"up": lambda: is_("K_zone", "overbought"),
                           "down": lambda: is_("K_zone", "oversold"),
                           "fade_up": lambda: is_("K_zone", "oversold"),
@@ -885,6 +893,44 @@ def _clause_for(module: str, side: str, fade: bool) -> dict:
     return spec[side]()
 
 
+CONDITION_PREFIX_FALLBACK = "SETUP"
+
+
+_LEGACY_PREFIX = re.compile(r"^[A-Z][A-Z0-9_]{0,3}$")
+
+
+def condition_prefix(name: str) -> str:
+    """The `<P>` of every generated condition key.
+
+    Until v0.8.2 the prefix was the first CHARACTER of each of the name's first two words,
+    uppercased. The platform refuses any key off ^[A-Z][A-Z0-9_]{1,39}$, so a digit-led name
+    ("4h Low-Vol Fade") gave `4L_CORE_UP` and the stage was refused; a punctuation- or
+    non-ASCII-led first word did the same.
+
+    The rule now, in order:
+      1. that legacy prefix, whenever the platform accepts it ("Trend Continuation" -> "TC",
+         "PVM 15m" -> "P1"), so no stored strategy's keys move;
+      2. otherwise the first ASCII letter of each of the name's first two whitespace-separated
+         words that HAVE one, uppercased ("4h Low-Vol Fade" -> "HL", "1h Breakout" -> "HB",
+         "-- Fade --" -> "F", "Élan Vital" -> "LV");
+      3. otherwise "SETUP" ("", "*** !!!", "2024 365").
+
+    At most four characters (or the five of the fallback), so the longest key the generator
+    emits, CLOSE_ON_<P>_CORE_DOWN, is at most 24 characters."""
+    legacy = "".join(w[0] for w in name.split()[:2]).upper()
+    if _LEGACY_PREFIX.match(legacy):
+        return legacy
+    initials = []
+    for word in name.split():
+        letter = next((ch for ch in word if ch.isascii() and ch.isalpha()), None)
+        if letter is None:
+            continue
+        initials.append(letter.upper())
+        if len(initials) == 2:
+            break
+    return "".join(initials) or CONDITION_PREFIX_FALLBACK
+
+
 def _build_conditions(thesis: Thesis) -> list[dict]:
     """A layered condition DAG, not one flat checklist.
 
@@ -910,7 +956,7 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
     if len(directional) < 2:
         return []
 
-    prefix = "".join(w[0] for w in thesis.name.split()[:2]).upper() or "SETUP"
+    prefix = condition_prefix(thesis.name)
     n = max(2, (len(directional) * 2) // 3)          # two-thirds of the checklist
     fade = thesis.stance == "FADE"
 
