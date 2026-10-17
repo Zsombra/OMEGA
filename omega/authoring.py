@@ -19,7 +19,7 @@ MODULE_DESCRIPTIONS = {
     "FLOW_DIVERGENCE": "perp-vs-spot flow agreement or divergence (crypto-only)",
     "FUNDING": "perp funding rate level and direction",
     "MACD": "MACD momentum: histogram trend and signal-line crosses",
-    "MFI": "money flow index - volume-weighted overbought/oversold",
+    "MFI": "money flow index (volume-weighted RSI) - reads the 50 midline; its zone column is display-only",
     "MOVING_AVERAGES": "EMA/SMA stack alignment and distance from the SMA200",
     "OPEN_INTEREST": "open interest level and trend",
     "PRICE_STRUCTURE": "swing highs/lows and position within the recent range",

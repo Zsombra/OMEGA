@@ -172,10 +172,18 @@ MODULE_CLAUSES: dict[str, dict] = {
     "VOLUME":            {"up": lambda: is_("OBV_trend", "rising"),
                           "down": lambda: is_("OBV_trend", "falling")},
     "VOLATILITY":        {"filter": lambda: is_("ATR_trend", "rising")},
-    "MFI":               {"up": lambda: is_("MFI14_zone", "overbought"),
-                          "down": lambda: is_("MFI14_zone", "oversold"),
-                          "fade_up": lambda: is_("MFI14_zone", "oversold"),
-                          "fade_down": lambda: is_("MFI14_zone", "overbought")},
+    # v0.8.2: MFI14_zone cannot carry a condition - it declares overbought/oversold/neutral and
+    # emits only bullish/bearish (data/contract/columns/_observed_vocabulary.json, measured
+    # 2026-08-24), so a zone clause was refused or FALSE forever and MFI never gated. MFI14_now
+    # is served numeric with lt/lte/gte/gt/between (data/audit/compile_dry_run_2026-08-29-
+    # deep-tail-fade.json), and its 50 midline is the measured numeric replacement that
+    # reproduced the zone live ("MFI14 lt 50 (bearish) / MFI14 gte 50 (bullish)"). No
+    # overbought/oversold cut-off was ever measured, so the fade reads mirror the midline, the
+    # way BOLLINGER and STOCHASTIC mirror theirs.
+    "MFI":               {"up": lambda: num("MFI14_now", "gte", 50),
+                          "down": lambda: num("MFI14_now", "lt", 50),
+                          "fade_up": lambda: num("MFI14_now", "lt", 50),
+                          "fade_down": lambda: num("MFI14_now", "gte", 50)},
     "STOCHASTIC":        {"up": lambda: is_("K_zone", "overbought"),
                           "down": lambda: is_("K_zone", "oversold"),
                           "fade_up": lambda: is_("K_zone", "oversold"),
