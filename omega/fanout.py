@@ -75,9 +75,11 @@ def _token(column: Column, contract: Contract) -> str:
     data/contract/columns/header_tokens_2026-10-13.json; the vendor pack 31.2.98 states the same order).
 
     - the timeframe part: `_ltf` / `_htf` for rel lower / regime (REL_INFIX), `_<tf>` for ANY pinned `abs` - even one
-      equal to the anchor (`ADX_1h` at a 1h anchor) - and nothing at rel anchor;
+      equal to the anchor (`ADX14_1h` at a 1h anchor) - and nothing at rel anchor;
     - `_dev` when the column STORES `bars: "all"` (Developing), at any timeframe; `closed` or unset adds nothing;
     - `_o<N>` for an `offset` N > 0, which only `value` reads.
+    `<code>` is the metric file's `code`; since contract v123 the eighteen indicator codes carry their length (`ADX14`,
+    `pctB20`, `RVOL20`, ... - data/contract/metrics/_moves_123.json), and omega.contract.load refuses a stale one.
     Until 2026-10-13 omega emitted only the rel part, so `RSI14_1d`, `RSI7_o1` and `ADX_dev_t2` were mispredicted -
     and offset no longer collides two `value` columns (cookbook trap 20 is history)."""
     code = contract.metric(column.metric).code
@@ -92,7 +94,8 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     """Header produced by the first transform stage (before any chaining): the token, shaped by the transform.
 
     Every branch is the token plus the transform's suffix (live renders: close_ltf_er, ADX_ltf_zone, MACD_ltf_cross,
-    ADX_ltf_rank_hi, dist_VWAP_4h, EMA5_4h_EMA13_spread, high_4h_dev_mean10, bbUpper_4h_lvl_b25); `distance` is the one
+    ADX_ltf_rank_hi, dist_VWAP_4h, EMA5_4h_EMA13_spread, high_4h_dev_mean10, bbUpper_4h_lvl_b25 - each ADX / bbUpper one
+    `ADX14` / `bbUpper20` since v123); `distance` is the one
     PREFIX shape (`dist_<token>`)."""
     token, tid = _token(column, contract), column.transformId
 

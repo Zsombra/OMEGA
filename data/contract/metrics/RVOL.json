@@ -1,7 +1,7 @@
 {
   "metric": "RVOL",
   "label": "RVOL (relative volume)",
-  "code": "RVOL",
+  "code": "RVOL20",
   "family": "volumeFlow",
   "nativeOutput": {
     "kind": "numeric",

@@ -13,6 +13,7 @@ from omega.contract import DERIVED_DIR, load
 from omega.fanout import outputs_for
 from omega.types import Column
 from omega.validate import validate_column
+from tests.moves_123 import header_at_123
 
 ALL_PROBES = json.loads((DERIVED_DIR / "compiler_probes.json").read_text(encoding="utf-8"))["cases"]
 # A retired case describes a surface the platform removed (its `retiredBecause` quotes the changelog); it stays in
@@ -61,9 +62,12 @@ def test_validator_agrees_with_compiler(case):
     ids=[c["id"] for c in PROBES if c["expect"] == "legal" and "headers" in c],
 )
 def test_predicted_headers_match_compiler(case):
+    # The probes were recorded before v123; the compiler renders the same column under today's codes
+    # (tests/moves_123.py: `buyPres_pctB_spread` -> `buyPres_pctB20_spread`).
     predicted = [o.header for o in outputs_for(_column(case), CONTRACT)]
-    assert predicted == case["headers"], (
-        f"header mismatch\n  predicted: {predicted}\n  compiler:  {case['headers']}")
+    expected = [header_at_123(h) for h in case["headers"]]
+    assert predicted == expected, (
+        f"header mismatch\n  predicted: {predicted}\n  compiler:  {expected}")
 
 
 def test_corpus_is_complete():

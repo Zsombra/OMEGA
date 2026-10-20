@@ -29,7 +29,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Literal
 
-from .contract import DERIVED_DIR, load
+from .contract import DERIVED_DIR, header_since_123, load
 from .fanout import outputs_for
 from .types import CustomSection, PlatformSection, Report
 
@@ -120,7 +120,7 @@ def observed_vocabulary() -> dict[str, dict]:
 
     The platform publishes a `conditionVocabulary` per categorical header, and for
     two `classifyZone` columns that published set is disjoint from reality:
-    `ADX_zone` emits trending / developing / weak, `MFI14_zone` emits bearish /
+    `ADX14_zone` (`ADX_zone` before v123) emits trending / developing / weak, `MFI14_zone` emits bearish /
     bullish, and neither ever emits the overbought / oversold / neutral it declares.
 
     A condition written from the declared set is permanently FALSE - not an error,
@@ -129,9 +129,19 @@ def observed_vocabulary() -> dict[str, dict]:
     """
     try:
         import json as _json
-        return _json.loads(OBSERVED_VOCAB.read_text(encoding="utf-8"))["headers"]
+        headers = _json.loads(OBSERVED_VOCAB.read_text(encoding="utf-8"))["headers"]
     except (OSError, KeyError, ValueError):
         return {}
+    # Measured 2026-08-24, before contract v123 renamed ADX's code to ADX14 (data/contract/metrics/_moves_123.json):
+    # the record says `ADX_zone` and "ADX gte 25"; the same column renders `ADX14_zone` and its value `ADX14` now.
+    # The file stays verbatim; the lookup is keyed by today's header.
+    out = {}
+    for header, m in headers.items():
+        m = dict(m)
+        if "numericReplacement" in m:
+            m["numericReplacement"] = " ".join(header_since_123(w) for w in m["numericReplacement"].split(" "))
+        out[header_since_123(header)] = m
+    return out
 
 
 @lru_cache(maxsize=1)
@@ -533,6 +543,31 @@ def _anchor_side(column, anchor: str, order: list[str]) -> tuple[bool, bool]:
     return here > there, here < there
 
 
+# Contract v117 (battlegrid-mcp README "Contract history - v117 (decided changes read at their horizon bar)"):
+#   "A verdict carrier or hold that reads a change over a horizon above the strategy timeframe is refused. That is
+#    `chg4h` and `chg24h` on a `1h` strategy, and `oiRegime` (the `1h` change) below `1h`. Such a change is a
+#    developing read whatever its selector."
+#   "Where it is refused: a strategy save, draft stage or preview, refused `CONDITION_VERDICT_READ_ILLEGAL` or
+#    `CONDITION_HOLD_ILLEGAL`."
+# The vendor skill (battlegrid-strategy-examples, 122.0.0) states the horizon is the metric's own: "A change (`chg5m`
+# ... `chg24h`, and `oiRegime`'s `1h` change) carries its horizon in the metric, so above the strategy timeframe it
+# is Developing at every rung and under every selector." Each horizon below is the one the metric's label names
+# (data/contract/metrics/CHG_*.json: "Change (5m)" ... "Change (1d)"); OI_PX_REGIME's is the README's "1h change".
+# The metrics are timeless, so the column's timeframe and `bars` never move the horizon.
+CHANGE_HORIZON = {"CHG_5M": "5m", "CHG_15M": "15m", "CHG_1H": "1h", "CHG_4H": "4h", "CHG_24H": "1d",
+                  "OI_PX_REGIME": "1h"}
+HORIZON_REMEDY = ("read a horizon at or below the strategy timeframe instead, or a Confirmed CLOSE_CHANGE on the "
+                  "higher timeframe")
+
+
+def _horizon_above(metric: str, anchor: str, order: list[str]) -> str | None:
+    """The change horizon `metric` reads when it is above the strategy timeframe `anchor` (v117), else None."""
+    horizon = CHANGE_HORIZON.get(metric)
+    if horizon is None or horizon not in order or anchor not in order:
+        return None
+    return horizon if order.index(horizon) > order.index(anchor) else None
+
+
 def report_headers(report: Report) -> dict[str, dict]:
     """Every header the report exposes to conditions, ambient headers included.
 
@@ -551,6 +586,10 @@ def report_headers(report: Report) -> dict[str, dict]:
                     progress at the strategy close, which REPAINTS until it completes.
                     Left unset, bars above the anchor default to Confirmed, so an unset
                     column is never developing (vendor pack 31.2.28 § Conditions).
+                    Since v117 also any change over a horizon above the anchor (CHANGE_HORIZON:
+                    chg4h / chg24h on a 1h strategy, oiRegime below 1h), whatever its selector.
+      horizon_above that horizon ("4h", "1d", ...) when v117 makes the read Developing, else
+                    None; a verdict carrier or a hold reading it is an error, not a warning.
     """
     c = load()
     order = list(c.shared["absoluteTimeframes"])
@@ -564,7 +603,10 @@ def report_headers(report: Report) -> dict[str, dict]:
             from .types import Column
             for spec in tmpl["columns"]:
                 try:
-                    for o in outputs_for(Column.model_validate(spec), c):
+                    column = Column.model_validate(spec)
+                    # v117 is about the metric, not the section: a platform section's chg4h is the same read
+                    horizon = _horizon_above(column.metric, report.anchor, order)
+                    for o in outputs_for(column, c):
                         # conservative: the published hold rule names "a header
                         # resolved from this coin's own candle series"; only
                         # custom-candle-section headers are treated as eligible
@@ -575,7 +617,8 @@ def report_headers(report: Report) -> dict[str, dict]:
                                          "vocab": list(o.vocabulary), "meaning": "",
                                          "kind": o.kind, "moved": False, "candle": False,
                                          "above_anchor": False,
-                                         "below_anchor": False, "developing": False}
+                                         "below_anchor": False, "developing": horizon is not None,
+                                         "horizon_above": horizon}
                 except Exception:
                     continue
         elif isinstance(section, CustomSection):
@@ -585,14 +628,17 @@ def report_headers(report: Report) -> dict[str, dict]:
                 moved = not c.metric(column.metric).is_timeless
                 candle = moved and (column.offset or 0) == 0
                 above, below = _anchor_side(column, report.anchor, order)
-                developing = above and column.bars == "all"
+                # v117: a change over a horizon above the strategy timeframe is Developing whatever its selector
+                horizon = _horizon_above(column.metric, report.anchor, order)
+                developing = (above and column.bars == "all") or horizon is not None
                 for o in outputs_for(column, c):
                     out[o.header] = {"sectionKey": section.sectionKey,
                                      "ops": o.condition_operators,
                                      "vocab": list(o.vocabulary), "meaning": "",
                                      "kind": o.kind, "moved": moved, "candle": candle,
                                      "above_anchor": above,
-                                     "below_anchor": below, "developing": developing}
+                                     "below_anchor": below, "developing": developing,
+                                     "horizon_above": horizon}
     return out
 
 
@@ -779,7 +825,14 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"(nor ambient). Add a column that emits it, or fix the name."))
         return 1
 
-    if window > 1 and not _holdable(spec):
+    if window > 1 and spec.get("horizon_above"):
+        # v117 makes this one an error, not the warning below: the README names the refusal outright.
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"{key!r} holds {header!r} over {window} bars, a change over a {spec['horizon_above']} horizon above "
+            f"the strategy timeframe: since contract v117 that is a Developing read whatever its selector, and the "
+            f"platform refuses the hold (CONDITION_HOLD_ILLEGAL). Remedy: {HORIZON_REMEDY}"))
+    elif window > 1 and not _holdable(spec):
         out.append(ConditionFinding(
             "warning", key, path,
             f"{header!r} is read over {window} bars: at 61.0.1 a hold above 1 was legal "
@@ -1070,7 +1123,14 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
                 if spec is None:
                     continue            # unknown header: already reported at its clause
                 where = cpath if owner == key else f"{cpath} (in {owner})"
-                if carrier and spec.get("developing"):
+                if carrier and spec.get("horizon_above"):
+                    out.append(ConditionFinding(
+                        "error", key, where,
+                        f"verdict carrier {key!r} reads {header!r}, a change over a {spec['horizon_above']} "
+                        f"horizon above the strategy timeframe: since contract v117 that is a Developing read "
+                        f"whatever its selector, and the platform refuses it (CONDITION_VERDICT_READ_ILLEGAL). "
+                        f"Remedy: {HORIZON_REMEDY}"))
+                elif carrier and spec.get("developing"):
                     out.append(ConditionFinding(
                         "error", key, where,
                         f"{header!r} reads a Developing higher-timeframe bar; a verdict "
@@ -1173,12 +1233,25 @@ def _find_reference_cycles(conditions: list[dict]) -> list[list[str]]:
     return cycles
 
 
+# README v123: "`list_strategy_vocabulary`'s `budgets` gains required `marketReadChars`, the Market Read bound. A
+# strategy's `marketReadText` now runs to 4,000 characters, where 2,000 was the bound." The stored vocabulary
+# (data/contract/vocabulary/_shared.json) predates v123 and serves no `marketReadChars`; when a re-extraction brings
+# it, the served value wins (market_read_cap).
+MARKET_READ_CHARS = 4000
+
+
+def market_read_cap() -> int:
+    """The Market Read bound: the served `budgets.marketReadChars` when the corpus has it, else README v123's 4000."""
+    return int(load().budgets.get("marketReadChars", MARKET_READ_CHARS))
+
+
 def validate_market_read(text: str, conditions: list[dict], report: Report) -> list[ConditionFinding]:
     """Check every {TOKEN} in marketReadText resolves to a condition key or a header."""
     out: list[ConditionFinding] = []
-    if len(text) > 2000:
+    cap = market_read_cap()
+    if len(text) > cap:
         out.append(ConditionFinding("error", "<marketReadText>", "",
-                                    f"{len(text)} characters exceeds the 2000 cap"))
+                                    f"{len(text)} characters exceeds the {cap} cap"))
     keys = {c.get("conditionKey") for c in conditions}
     headers = report_headers(report)
     for token in re.findall(r"\{([A-Za-z_][A-Za-z0-9_]*)\}", text):

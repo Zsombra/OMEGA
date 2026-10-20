@@ -220,6 +220,34 @@ def test_market_read_tokens_must_resolve():
     assert any("neither a conditionKey nor a header" in f.message for f in bad)
 
 
+def test_the_market_read_cap_is_4000_since_v123(monkeypatch):
+    """README v123: "A strategy's `marketReadText` now runs to 4,000 characters, where 2,000 was the bound"."""
+    import omega.conditions as C
+    from dataclasses import replace
+    assert C.MARKET_READ_CHARS == 4000 and C.market_read_cap() == 4000
+    conds = [condition("OK", "fine", num("RSI14_now", "gt", 30), verdict="UP")]
+    assert not validate_market_read("x" * 2001, conds, RSI_REPORT)          # refused until v0.8.3
+    assert not validate_market_read("x" * 4000, conds, RSI_REPORT)
+    over = validate_market_read("x" * 4001, conds, RSI_REPORT)
+    assert [f.message for f in over] == ["4001 characters exceeds the 4000 cap"]
+    # a re-extraction that serves budgets.marketReadChars wins over the constant
+    served = replace(C.load(), budgets=C.load().budgets | {"marketReadChars": 3000})
+    monkeypatch.setattr(C, "load", lambda: served)
+    assert C.market_read_cap() == 3000
+    assert validate_market_read("x" * 3001, conds, RSI_REPORT)
+
+
+def test_a_market_read_marker_on_a_retired_header_is_refused():
+    """README v123: "a `{…}` Market Read marker naming a retired header is refused"."""
+    from omega.types import Column, CustomSection, RelTimeframe, Report
+    adx = Report(anchor="1h", sections=[CustomSection(kind="custom", title="a", benchmarkTicker=None, columns=[
+        Column(metric="ADX", transformId="trajectory", timeframe=RelTimeframe(rel="anchor"), window=4)])])
+    conds = [condition("OK", "fine", num("ADX14_now", "gt", 25), verdict="UP")]
+    assert not validate_market_read("Trend {ADX14_now}.", conds, adx)
+    assert any("neither a conditionKey nor a header" in f.message
+               for f in validate_market_read("Trend {ADX_now}.", conds, adx))
+
+
 def test_generated_market_read_text_resolves():
     conds = [condition("A", "first", num("RSI14_now", "gt", 30), verdict="UP"),
              condition("B", "second", num("RSI14_now", "lt", 70), verdict="DOWN")]
@@ -341,8 +369,8 @@ def test_fade_and_align_select_opposite_readings():
 
     fade = core_up("mean-reversion")
     align = core_up("squeeze-breakout")
-    assert ("pctB_now", "lt", 0.05) in fade      # buy the lower band
-    assert ("pctB_now", "gt", 0.95) in align     # buy the breakout
+    assert ("pctB20_now", "lt", 0.05) in fade    # buy the lower band (pctB_now before contract v123)
+    assert ("pctB20_now", "gt", 0.95) in align   # buy the breakout
     assert ("RSI14_now", "lt", 35) in fade       # oversold, not "above midline"
 
 
@@ -362,7 +390,7 @@ def test_market_read_references_only_verdict_conditions():
 
 
 # --- the declared vocabulary is not always the real one ----------------------
-# Measured 2026-08-24. ADX_zone and MFI14_zone declare
+# Measured 2026-08-24. ADX_zone (ADX14_zone since contract v123) and MFI14_zone declare
 # ["overbought","oversold","neutral"] and emit none of them. Worse, the platform
 # REFUSES the labels they do emit (CONDITION_LITERAL_UNSUPPORTED). So no label
 # works: every legal one is FALSE forever, every useful one is rejected. omega
@@ -384,8 +412,11 @@ def _findings(report, defn):
 def test_a_disjoint_zone_header_cannot_carry_a_condition_at_all():
     """Not a warning - there is no working label, so the clause is refused."""
     from omega.conditions import is_
-    f = _findings(_zone_report("ADX"), is_("ADX_zone", "neutral"))
-    assert [x for x in f if x.severity == "error"], "must refuse, not warn"
+    f = _findings(_zone_report("ADX"), is_("ADX14_zone", "neutral"))
+    errors = [x for x in f if x.severity == "error"]
+    assert errors, "must refuse, not warn"
+    # refused for the measured reason - not because the header is unknown - and the way out names today's header
+    assert "cannot carry a condition" in errors[0].message and "ADX14 gte 25" in errors[0].message
 
 
 def test_the_refusal_names_the_numeric_replacement():
@@ -398,7 +429,7 @@ def test_the_refusal_names_the_numeric_replacement():
 def test_the_observed_labels_are_still_rejected_because_the_platform_rejects_them():
     """omega must not emit a payload the platform refuses."""
     from omega.conditions import in_
-    f = _findings(_zone_report("ADX"), in_("ADX_zone", ["trending", "developing"]))
+    f = _findings(_zone_report("ADX"), in_("ADX14_zone", ["trending", "developing"]))
     assert [x for x in f if x.severity == "error"]
 
 

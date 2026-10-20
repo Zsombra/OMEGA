@@ -1,7 +1,7 @@
 {
   "metric": "DI_PLUS",
   "label": "DI+",
-  "code": "DIplus",
+  "code": "DIplus14",
   "family": "trend",
   "nativeOutput": {
     "kind": "numeric",

@@ -1,7 +1,7 @@
 {
   "metric": "DONCHIAN_UPPER_PRIOR",
   "label": "Prior 20-bar high",
-  "code": "donchianHiPrior",
+  "code": "donchianHiPrior20",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",

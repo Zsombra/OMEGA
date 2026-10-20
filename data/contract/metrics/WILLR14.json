@@ -1,7 +1,7 @@
 {
   "metric": "WILLR14",
   "label": "Williams %R (14)",
-  "code": "willR",
+  "code": "willR14",
   "family": "momentum",
   "nativeOutput": {
     "kind": "numeric",

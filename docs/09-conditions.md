@@ -157,12 +157,17 @@ rather than a lattice.
 
 ### Stance decides which reading a module gets
 
+Every clause header below is derived from the module's recipe column (`omega.generate.recipe_header`, built by
+`omega.fanout.outputs_for`), never typed. Since contract v123 eighteen indicator codes carry their length (`ADX14`,
+`pctB20`, `ATR14`, `RVOL20`, ... — `data/contract/metrics/_moves_123.json`); measurement records quoted in this
+document keep the codes of their date.
+
 A `Thesis` carries a `stance`, and it is not cosmetic. The same module means opposite
 things to opposite theses:
 
 | module | `ALIGN` (trend) | `FADE` (contrarian) |
 |---|---|---|
-| `BOLLINGER` | `pctB_now > 0.95` — buy the breakout | `pctB_now < 0.05` — buy the lower band |
+| `BOLLINGER` | `pctB20_now > 0.95` — buy the breakout | `pctB20_now < 0.05` — buy the lower band |
 | `RSI` | `RSI14_now > 50` — buy strength | `RSI14_now < 35` — buy the oversold |
 | `MFI` / `STOCHASTIC` | zone `overbought` | zone `oversold` |
 
@@ -623,7 +628,7 @@ per condition probe (a refusal refuses the whole preview); raw requests and resp
 |---|---|---|
 | `RSI14` (numeric, candle) | `lt lte gte gt between crossesAbove crossesBelow increased decreased` | 1h, maxWindow 195 |
 | `chg24h` (numeric, timeless) | `lt lte gte gt between` | maxWindow 1, `NOT_REWINDABLE` |
-| `RSI14_zone` (classification), `ADX_trend` (direction), `doji` (boolean), `bbUpper_lvl` | `is in enters exits` | ~188–199 |
+| `RSI14_zone` (classification), `ADX14_trend` (direction), `doji` (boolean), `bbUpper20_lvl` | `is in enters exits` | ~188–199 |
 | `EMA5_13` (event) | `is in` | maxWindow 191, **maxAtLeast 1** |
 | `RSI14_rank_hi` (rank) | `lt lte gte gt between` | maxWindow 1, `NOT_REWINDABLE` |
 | `settledAt` (date) | **none** | maxWindow 1, `NOT_REWINDABLE` |

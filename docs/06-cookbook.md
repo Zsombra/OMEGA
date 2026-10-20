@@ -247,7 +247,9 @@ Every `classifyZone` column declares the same `conditionVocabulary`:
 ["overbought", "oversold", "neutral"]
 ```
 
-Two of the five never emit any of those. Measured across 12 coins on 2026-08-24:
+Two of the five never emit any of those. Measured across 12 coins on 2026-08-24 (before contract v123 renamed
+ADX's code: the column is `ADX14_zone` and its value `ADX14` today; `omega.conditions.observed_vocabulary` keys the
+measurement by today's header):
 
 | column | declared | actually emits | in vocabulary |
 |---|---|---|---|

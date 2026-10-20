@@ -14,6 +14,7 @@ from omega.probe import (
 )
 from omega.space import ColumnShape
 from omega.validate import validate_column
+from tests.moves_123 import header_at_123
 
 BANNED_IMPORTS = {"requests", "httpx", "urllib", "socket", "aiohttp", "http"}
 
@@ -158,7 +159,8 @@ def test_the_known_formula_defect_is_stored_verbatim():
 
 
 def test_headers_use_the_metric_code_not_its_key():
-    """CCI20 renders as CCI_*. The header stem is the metric's `code`, not its key."""
+    """CCI20 rendered as CCI_* (this capture predates v123, which made the code `CCI20`). The header stem is the
+    metric's `code`, not its key - the key did not move at v123, the code did."""
     case = next(c for c in load_contracts()
                 if c["request"]["column"]["metric"] == "CCI20")
     assert all(h.startswith("CCI_") for h in headers(case))
@@ -173,9 +175,10 @@ def test_omega_fanout_predicts_the_live_headers_exactly():
     for case in load_contracts():
         normalized = case["response"]["contract"]["normalizedColumn"]
         predicted = [o.header for o in outputs_for(Column(**normalized))]
-        assert predicted == headers(case), (
+        live = [header_at_123(h) for h in headers(case)]       # captured before v123 (tests/moves_123.py)
+        assert predicted == live, (
             f"{normalized['metric']} x {normalized['transformId']}: "
-            f"predicted {predicted}, live {headers(case)}")
+            f"predicted {predicted}, live {live}")
 
 
 def test_renders_carry_real_values():
@@ -265,7 +268,8 @@ def test_fanout_predicts_every_rendered_header_exactly():
                 f"collision to explain it: {payload['capturedAt']}")
             continue
 
-        live = [o["header"] for o in custom[0]["outputs"]]
+        # every capture predates v123: the same column renders under today's codes (tests/moves_123.py)
+        live = [header_at_123(o["header"]) for o in custom[0]["outputs"]]
         assert predicted == live, f"predicted {predicted}\nlive      {live}"
 
 
@@ -313,16 +317,16 @@ def test_every_transform_places_the_timeframe_infix():
 
     # infix-carrying - these four were the bugs
     assert header(metric="CLOSE", transformId="bandTouch", rel="lower") == "close_ltf_touch"
-    assert header(metric="ADX", transformId="classifyZone", rel="lower") == "ADX_ltf_zone"
+    assert header(metric="ADX", transformId="classifyZone", rel="lower") == "ADX14_ltf_zone"   # ADX_ before v123
     # MACD_HIST since contract 110 (MACD retired; MACDhist_cross rendered live 2026-10-14)
     assert header(metric="MACD_HIST", transformId="crossDetect", rel="lower") == "MACDhist_ltf_cross"
-    assert header(metric="ADX", transformId="rank", rel="lower") == "ADX_ltf_rank_hi"
+    assert header(metric="ADX", transformId="rank", rel="lower") == "ADX14_ltf_rank_hi"
 
     # and unchanged at anchor
     assert header(metric="CLOSE", transformId="bandTouch", rel="anchor") == "close_touch"
-    assert header(metric="ADX", transformId="classifyZone", rel="anchor") == "ADX_zone"
+    assert header(metric="ADX", transformId="classifyZone", rel="anchor") == "ADX14_zone"
     assert header(metric="MACD_HIST", transformId="crossDetect", rel="anchor") == "MACDhist_cross"
-    assert header(metric="ADX", transformId="rank", rel="anchor") == "ADX_rank_hi"
+    assert header(metric="ADX", transformId="rank", rel="anchor") == "ADX14_rank_hi"
 
 
 def test_rank_denominator_is_the_universe_not_the_report():

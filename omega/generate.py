@@ -147,31 +147,55 @@ MODULE_RECIPES: dict[str, list[dict]] = {
     ],
 }
 
-# Directional reads per module, expressed over headers the recipes above produce.
+def recipe_header(module: str, slot: str | None = None, *, contract=None, **match) -> str:
+    """The header a module recipe column compiles to, built by omega.fanout.outputs_for - never typed.
+
+    `match` picks the module's recipe column by its fields (metric=, side=, transformId=); `slot` picks one output of
+    a fanned-out column by its suffix ("now", "trend", "zone"). Exactly one header must answer, or this raises: a
+    clause must never silently read a different column.
+
+    Why (contract v123, 2026-10-20): eighteen header codes were renamed (`ADX` -> `ADX14`, `pctB` -> `pctB20`,
+    `ATR` -> `ATR14`, ...; data/contract/metrics/_moves_123.json). Until v0.8.3 MODULE_CLAUSES typed `ADX_now`,
+    `pctB_now` and `ATR_trend` by hand, so re-extracting the codes would have left the clauses on retired headers,
+    refused at stage. A clause header is now whatever the column builder says the recipe produces."""
+    cols = [spec for spec in MODULE_RECIPES[module]
+            if all(spec.get(k) == v for k, v in match.items())]
+    headers = [o.header for spec in cols for o in outputs_for(Column(**spec), contract)]
+    if slot is not None:
+        headers = [h for h in headers if h.endswith(f"_{slot}")]
+    if len(headers) != 1:
+        raise LookupError(f"{module} {match} slot={slot!r}: expected one recipe header, got {headers}")
+    return headers[0]
+
+
+_h = recipe_header
+
+# Directional reads per module, expressed over headers the recipes above produce - each header DERIVED from the
+# recipe column by recipe_header (omega.fanout), never written by hand.
 # `up` / `down` are clause factories; `filter` is non-directional.
 # Every one of these is type-checked against predicted headers in the tests.
 MODULE_CLAUSES: dict[str, dict] = {
     # `up`/`down` are the ALIGN (trend) reading; `fade_up`/`fade_down` the contrarian
     # one. Without this split a reversion thesis would buy strength and a breakout
     # thesis would buy the lower band - both legal, both backwards.
-    "RSI":               {"up": lambda: num("RSI14_now", "gt", 50),
-                          "down": lambda: num("RSI14_now", "lt", 50),
-                          "fade_up": lambda: num("RSI14_now", "lt", 35),
-                          "fade_down": lambda: num("RSI14_now", "gt", 65)},
-    "MACD":              {"up": lambda: is_("MACDhist_trend", "rising"),
-                          "down": lambda: is_("MACDhist_trend", "falling")},
-    "MOVING_AVERAGES":   {"up": lambda: is_("MAalign", "bullish"),
-                          "down": lambda: is_("MAalign", "bearish")},
-    "TREND_STRENGTH":    {"filter": lambda: num("ADX_now", "gte", 25)},
-    "BOLLINGER":         {"up": lambda: num("pctB_now", "gt", 0.95),
-                          "down": lambda: num("pctB_now", "lt", 0.05),
-                          "fade_up": lambda: num("pctB_now", "lt", 0.05),
-                          "fade_down": lambda: num("pctB_now", "gt", 0.95)},
-    "CVD":               {"up": lambda: is_("CVD_trend", "rising"),
-                          "down": lambda: is_("CVD_trend", "falling")},
-    "VOLUME":            {"up": lambda: is_("OBV_trend", "rising"),
-                          "down": lambda: is_("OBV_trend", "falling")},
-    "VOLATILITY":        {"filter": lambda: is_("ATR_trend", "rising")},
+    "RSI":               {"up": lambda: num(_h("RSI", "now", metric="RSI14"), "gt", 50),
+                          "down": lambda: num(_h("RSI", "now", metric="RSI14"), "lt", 50),
+                          "fade_up": lambda: num(_h("RSI", "now", metric="RSI14"), "lt", 35),
+                          "fade_down": lambda: num(_h("RSI", "now", metric="RSI14"), "gt", 65)},
+    "MACD":              {"up": lambda: is_(_h("MACD", "trend", metric="MACD_HIST"), "rising"),
+                          "down": lambda: is_(_h("MACD", "trend", metric="MACD_HIST"), "falling")},
+    "MOVING_AVERAGES":   {"up": lambda: is_(_h("MOVING_AVERAGES", metric="MA_ALIGN"), "bullish"),
+                          "down": lambda: is_(_h("MOVING_AVERAGES", metric="MA_ALIGN"), "bearish")},
+    "TREND_STRENGTH":    {"filter": lambda: num(_h("TREND_STRENGTH", "now", metric="ADX"), "gte", 25)},
+    "BOLLINGER":         {"up": lambda: num(_h("BOLLINGER", "now", metric="BB_PCT_B"), "gt", 0.95),
+                          "down": lambda: num(_h("BOLLINGER", "now", metric="BB_PCT_B"), "lt", 0.05),
+                          "fade_up": lambda: num(_h("BOLLINGER", "now", metric="BB_PCT_B"), "lt", 0.05),
+                          "fade_down": lambda: num(_h("BOLLINGER", "now", metric="BB_PCT_B"), "gt", 0.95)},
+    "CVD":               {"up": lambda: is_(_h("CVD", "trend", metric="CVD"), "rising"),
+                          "down": lambda: is_(_h("CVD", "trend", metric="CVD"), "falling")},
+    "VOLUME":            {"up": lambda: is_(_h("VOLUME", "trend", metric="OBV"), "rising"),
+                          "down": lambda: is_(_h("VOLUME", "trend", metric="OBV"), "falling")},
+    "VOLATILITY":        {"filter": lambda: is_(_h("VOLATILITY", "trend", metric="ATR"), "rising")},
     # v0.8.2: MFI14_zone cannot carry a condition - it declares overbought/oversold/neutral and
     # emits only bullish/bearish (data/contract/columns/_observed_vocabulary.json, measured
     # 2026-08-24), so a zone clause was refused or FALSE forever and MFI never gated. MFI14_now
@@ -180,29 +204,31 @@ MODULE_CLAUSES: dict[str, dict] = {
     # reproduced the zone live ("MFI14 lt 50 (bearish) / MFI14 gte 50 (bullish)"). No
     # overbought/oversold cut-off was ever measured, so the fade reads mirror the midline, the
     # way BOLLINGER and STOCHASTIC mirror theirs.
-    "MFI":               {"up": lambda: num("MFI14_now", "gte", 50),
-                          "down": lambda: num("MFI14_now", "lt", 50),
-                          "fade_up": lambda: num("MFI14_now", "lt", 50),
-                          "fade_down": lambda: num("MFI14_now", "gte", 50)},
-    "STOCHASTIC":        {"up": lambda: is_("K_zone", "overbought"),
-                          "down": lambda: is_("K_zone", "oversold"),
-                          "fade_up": lambda: is_("K_zone", "oversold"),
-                          "fade_down": lambda: is_("K_zone", "overbought")},
-    "RELATIVE_STRENGTH": {"up": lambda: is_("PPOhist_trend", "rising"),
-                          "down": lambda: is_("PPOhist_trend", "falling")},
-    "SUPPORT_RESISTANCE": {"up": lambda: is_("zone", "near low"),
-                           "down": lambda: is_("zone", "near high")},
-    "PRICE_STRUCTURE":   {"up": lambda: num("zones_support_dist", "lt", 1.0),
-                          # `resist`, not `resistance` - verified against a live render
-                          "down": lambda: num("zones_resist_dist", "gt", -1.0)},
-    "FUNDING":           {"up": lambda: num("rate", "lt", 0),
-                          "down": lambda: num("rate", "gt", 0)},
-    "OPEN_INTEREST":     {"up": lambda: is_("OI_trend", "rising"),
-                          "down": lambda: is_("OI_trend", "falling")},
-    "REGIME":            {"up": lambda: is_("regTrend_now", "trending up"),
-                          "down": lambda: is_("regTrend_now", "trending down")},
-    "FLOW_DIVERGENCE":   {"up": lambda: is_("perpSpotFlow", "spot_led_accumulation"),
-                          "down": lambda: is_("perpSpotFlow", "perp_led_fragile")},
+    "MFI":               {"up": lambda: num(_h("MFI", "now", metric="MFI14"), "gte", 50),
+                          "down": lambda: num(_h("MFI", "now", metric="MFI14"), "lt", 50),
+                          "fade_up": lambda: num(_h("MFI", "now", metric="MFI14"), "lt", 50),
+                          "fade_down": lambda: num(_h("MFI", "now", metric="MFI14"), "gte", 50)},
+    "STOCHASTIC":        {"up": lambda: is_(_h("STOCHASTIC", "zone", metric="STOCH_K"), "overbought"),
+                          "down": lambda: is_(_h("STOCHASTIC", "zone", metric="STOCH_K"), "oversold"),
+                          "fade_up": lambda: is_(_h("STOCHASTIC", "zone", metric="STOCH_K"), "oversold"),
+                          "fade_down": lambda: is_(_h("STOCHASTIC", "zone", metric="STOCH_K"), "overbought")},
+    "RELATIVE_STRENGTH": {"up": lambda: is_(_h("RELATIVE_STRENGTH", "trend", metric="PPO_HIST"), "rising"),
+                          "down": lambda: is_(_h("RELATIVE_STRENGTH", "trend", metric="PPO_HIST"), "falling")},
+    "SUPPORT_RESISTANCE": {"up": lambda: is_(_h("SUPPORT_RESISTANCE", metric="PRICE_ZONE"), "near low"),
+                           "down": lambda: is_(_h("SUPPORT_RESISTANCE", metric="PRICE_ZONE"), "near high")},
+    # the header says `resist`, not `resistance` - verified against a live render; fanout builds it that way
+    "PRICE_STRUCTURE":   {"up": lambda: num(_h("PRICE_STRUCTURE", metric="STRUCT_ZONES", side="support"), "lt", 1.0),
+                          "down": lambda: num(_h("PRICE_STRUCTURE", metric="STRUCT_ZONES", side="resistance"),
+                                              "gt", -1.0)},
+    "FUNDING":           {"up": lambda: num(_h("FUNDING", metric="FUNDING_RATE", transformId="value"), "lt", 0),
+                          "down": lambda: num(_h("FUNDING", metric="FUNDING_RATE", transformId="value"), "gt", 0)},
+    "OPEN_INTEREST":     {"up": lambda: is_(_h("OPEN_INTEREST", "trend", metric="OI"), "rising"),
+                          "down": lambda: is_(_h("OPEN_INTEREST", "trend", metric="OI"), "falling")},
+    "REGIME":            {"up": lambda: is_(_h("REGIME", "now", metric="REGIME_TREND"), "trending up"),
+                          "down": lambda: is_(_h("REGIME", "now", metric="REGIME_TREND"), "trending down")},
+    "FLOW_DIVERGENCE":   {"up": lambda: is_(_h("FLOW_DIVERGENCE", metric="PERP_SPOT_FLOW"),
+                                            "spot_led_accumulation"),
+                          "down": lambda: is_(_h("FLOW_DIVERGENCE", metric="PERP_SPOT_FLOW"), "perp_led_fragile")},
 }
 
 # Modules whose oscillators substantially agree. Taking more than two is paying

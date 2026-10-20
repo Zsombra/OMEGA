@@ -21,12 +21,14 @@ from dataclasses import replace
 from pathlib import Path
 
 from tests.moves_110 import rewritten_at_110
+from tests.moves_123 import rewritten_at_123
 from omega.generate import PRESETS, plan
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / "data/contract/stage_strategy_draft/current_7534b2ee_from_get_strategy_20261010T0634Z.json"
-# as the server holds it since contract 110 (tests/moves_110.py): MACD -> MACD_HIST, `MACD_trend` -> `MACDhist_trend`
-CURRENT = rewritten_at_110(json.loads(FIXTURE.read_text(encoding="utf-8"))["draft"]["content"])
+# as the server holds it since contract 110 (tests/moves_110.py): MACD -> MACD_HIST, `MACD_trend` -> `MACDhist_trend`;
+# and since v123 (tests/moves_123.py, "Stored strategies ... are rewritten on the server"): `ADX_now` -> `ADX14_now`
+CURRENT = rewritten_at_123(rewritten_at_110(json.loads(FIXTURE.read_text(encoding="utf-8"))["draft"]["content"]))
 CUSTOM_KEY = re.compile(r"^custom:[0-9a-fA-F-]{36}$")
 
 SIGNALS_KEY = "custom:854d0e89-aefa-847e-8d24-9697100f2ddd"
@@ -132,7 +134,7 @@ def test_a_changed_metric_does_not_inherit_a_key():
         assert by_header["MAalign"] is None
         assert by_header["MACDhist_trend"] == SIGNALS_KEY      # MACD_trend before contract 110
         assert by_header["OBV_trend"] == SIGNALS_KEY
-        assert by_header["ADX_now"] == SIGNALS_KEY
+        assert by_header["ADX14_now"] == SIGNALS_KEY       # ADX_now before contract v123
     assert dict(keys["TC_CTX_UP"])["mktBreadth_all"] == "market-breadth"
 
 

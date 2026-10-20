@@ -726,7 +726,7 @@
  {
   "metric": "BB_UPPER",
   "label": "Bollinger upper band",
-  "code": "bbUpper",
+  "code": "bbUpper20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -858,7 +858,7 @@
  {
   "metric": "BB_LOWER",
   "label": "Bollinger lower band",
-  "code": "bbLower",
+  "code": "bbLower20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -2966,7 +2966,7 @@
  {
   "metric": "WILLR14",
   "label": "Williams %R (14)",
-  "code": "willR",
+  "code": "willR14",
   "family": "momentum",
   "nativeOutput": {
    "kind": "numeric",
@@ -3039,7 +3039,7 @@
  {
   "metric": "STOCH_RSI14",
   "label": "Stochastic RSI (14)",
-  "code": "stochRSI",
+  "code": "stochRSI14",
   "family": "momentum",
   "nativeOutput": {
    "kind": "numeric",

@@ -97,10 +97,11 @@ def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact()
 
 
 def test_level_interaction_headers_are_the_measured_ones():
-    """get_strategy_column_contract, 2026-10-13 (data/contract/columns/levelInteraction_108_4_2026-10-13.json)."""
+    """get_strategy_column_contract, 2026-10-13 (data/contract/columns/levelInteraction_108_4_2026-10-13.json), under
+    the code v123 gave BB_UPPER (`bbUpper` -> `bbUpper20`; the measurement read `bbUpper_lvl`, `bbUpper_lvl_b25`)."""
     from omega.fanout import outputs_for
-    assert [o.header for o in outputs_for(col("BB_UPPER", "levelInteraction"))] == ["bbUpper_lvl"]
-    assert [o.header for o in outputs_for(col("BB_UPPER", "levelInteraction", buffer=25))] == ["bbUpper_lvl_b25"]
+    assert [o.header for o in outputs_for(col("BB_UPPER", "levelInteraction"))] == ["bbUpper20_lvl"]
+    assert [o.header for o in outputs_for(col("BB_UPPER", "levelInteraction", buffer=25))] == ["bbUpper20_lvl_b25"]
     lower = Column(metric="VWAP", transformId="levelInteraction", timeframe=RelTimeframe(rel="lower"))
     out = outputs_for(lower)
     assert [(o.header, o.kind) for o in out] == [("VWAP_ltf_lvl", "classification")]
