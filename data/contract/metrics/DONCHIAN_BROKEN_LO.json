@@ -1,7 +1,7 @@
 {
   "metric": "DONCHIAN_BROKEN_LO",
   "label": "Broken 20-bar low",
-  "code": "donchianBrkLo",
+  "code": "donchianBrkLo20",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",

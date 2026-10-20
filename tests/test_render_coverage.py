@@ -54,7 +54,7 @@ def test_unexpanded_spread_header_is_a_placeholder(contract):
     shape = ColumnShape("ADX", "spread")
     assert shape.operand is None
     headers = [o.header for o in outputs_for(shape.to_column(), contract)]
-    assert headers == ["ADX_?_spread"]
+    assert headers == ["ADX14_?_spread"]          # the code is ADX14 since v123
     assert "?" in headers[0], (
         "an unexpanded spread no longer emits a placeholder; the skip in "
         "scripts.render_coverage.coverage() may now be hiding real shapes")
@@ -65,7 +65,7 @@ def test_expanded_spread_header_names_both_sides(contract):
                 if s.transform == "spread"]
     assert len(expanded) == EXPANDED_SPREAD_SHAPES
     shape = next(s for s in expanded if s.metric == "ADX" and s.operand == "RSI14")
-    assert [o.header for o in outputs_for(shape.to_column(), contract)] == ["ADX_RSI14_spread"]
+    assert [o.header for o in outputs_for(shape.to_column(), contract)] == ["ADX14_RSI14_spread"]
 
 
 def test_rendered_headers_spans_every_cache():

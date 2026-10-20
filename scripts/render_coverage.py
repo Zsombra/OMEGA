@@ -73,10 +73,14 @@ def _walk(obj, out: set[str]) -> None:
 
 
 def rendered_headers() -> set[str]:
+    """Every header the caches recorded, under today's codes. Each cache predates contract v123 (2026-10-20), which
+    renamed eighteen codes and kept every affix (data/contract/metrics/_moves_123.json), so a recorded `CCI_now` is
+    counted as the `CCI20_now` the same column renders now (omega.contract.header_since_123). That is the changelog's
+    rule applied to old renders, not a new render: no post-v123 sweep has been run yet."""
     out: set[str] = set()
     for name in SEEN_FILES:
         _walk(json.loads((CACHE / name).read_text(encoding="utf-8")), out)
-    return out
+    return {C.header_since_123(h) for h in out}
 
 
 # Declared legal by the contract, INTERNAL_ERROR on every render. They cannot be covered,

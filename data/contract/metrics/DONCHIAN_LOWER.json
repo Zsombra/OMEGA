@@ -1,7 +1,7 @@
 {
   "metric": "DONCHIAN_LOWER",
   "label": "20-bar low",
-  "code": "donchianLo",
+  "code": "donchianLo20",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",

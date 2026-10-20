@@ -1,7 +1,7 @@
 {
   "metric": "BB_PCT_B",
   "label": "Bollinger %B",
-  "code": "pctB",
+  "code": "pctB20",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",

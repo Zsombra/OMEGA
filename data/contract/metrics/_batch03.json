@@ -108,7 +108,7 @@
  {
   "metric": "BB_PCT_B",
   "label": "Bollinger %B",
-  "code": "pctB",
+  "code": "pctB20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -162,7 +162,7 @@
  {
   "metric": "DONCHIAN_UPPER",
   "label": "20-bar high",
-  "code": "donchianHi",
+  "code": "donchianHi20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -298,7 +298,7 @@
  {
   "metric": "DONCHIAN_LOWER",
   "label": "20-bar low",
-  "code": "donchianLo",
+  "code": "donchianLo20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -434,7 +434,7 @@
  {
   "metric": "DONCHIAN_UPPER_PRIOR",
   "label": "Prior 20-bar high",
-  "code": "donchianHiPrior",
+  "code": "donchianHiPrior20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -566,7 +566,7 @@
  {
   "metric": "DONCHIAN_LOWER_PRIOR",
   "label": "Prior 20-bar low",
-  "code": "donchianLoPrior",
+  "code": "donchianLoPrior20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -698,7 +698,7 @@
  {
   "metric": "DONCHIAN_BROKEN_HI",
   "label": "Broken 20-bar high",
-  "code": "donchianBrkHi",
+  "code": "donchianBrkHi20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",
@@ -830,7 +830,7 @@
  {
   "metric": "DONCHIAN_BROKEN_LO",
   "label": "Broken 20-bar low",
-  "code": "donchianBrkLo",
+  "code": "donchianBrkLo20",
   "family": "structure",
   "nativeOutput": {
    "kind": "numeric",

@@ -1,7 +1,7 @@
 {
   "metric": "ADX",
   "label": "ADX (14)",
-  "code": "ADX",
+  "code": "ADX14",
   "family": "trend",
   "nativeOutput": {
     "kind": "numeric",

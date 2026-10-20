@@ -144,7 +144,7 @@ def effective_parameters(case: dict) -> dict:
 def headers(case: dict) -> list[str]:
     """Output header names, in the order the compiler returned them.
 
-    Note the stem is the metric's `code`, not its key: CCI20 renders as CCI_t3,
-    CCI_now, CCI_trend.
+    Note the stem is the metric's `code`, not its key: CCI20 rendered as CCI_t3,
+    CCI_now, CCI_trend in these captures (before contract v123 made the code `CCI20`).
     """
     return [o["header"] for o in case["response"]["contract"]["outputs"]]

@@ -29,7 +29,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Literal
 
-from .contract import DERIVED_DIR, load
+from .contract import DERIVED_DIR, header_since_123, load
 from .fanout import outputs_for
 from .types import CustomSection, PlatformSection, Report
 
@@ -120,7 +120,7 @@ def observed_vocabulary() -> dict[str, dict]:
 
     The platform publishes a `conditionVocabulary` per categorical header, and for
     two `classifyZone` columns that published set is disjoint from reality:
-    `ADX_zone` emits trending / developing / weak, `MFI14_zone` emits bearish /
+    `ADX14_zone` (`ADX_zone` before v123) emits trending / developing / weak, `MFI14_zone` emits bearish /
     bullish, and neither ever emits the overbought / oversold / neutral it declares.
 
     A condition written from the declared set is permanently FALSE - not an error,
@@ -129,9 +129,19 @@ def observed_vocabulary() -> dict[str, dict]:
     """
     try:
         import json as _json
-        return _json.loads(OBSERVED_VOCAB.read_text(encoding="utf-8"))["headers"]
+        headers = _json.loads(OBSERVED_VOCAB.read_text(encoding="utf-8"))["headers"]
     except (OSError, KeyError, ValueError):
         return {}
+    # Measured 2026-08-24, before contract v123 renamed ADX's code to ADX14 (data/contract/metrics/_moves_123.json):
+    # the record says `ADX_zone` and "ADX gte 25"; the same column renders `ADX14_zone` and its value `ADX14` now.
+    # The file stays verbatim; the lookup is keyed by today's header.
+    out = {}
+    for header, m in headers.items():
+        m = dict(m)
+        if "numericReplacement" in m:
+            m["numericReplacement"] = " ".join(header_since_123(w) for w in m["numericReplacement"].split(" "))
+        out[header_since_123(header)] = m
+    return out
 
 
 @lru_cache(maxsize=1)

@@ -1,7 +1,7 @@
 {
   "metric": "DONCHIAN_BROKEN_HI",
   "label": "Broken 20-bar high",
-  "code": "donchianBrkHi",
+  "code": "donchianBrkHi20",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",

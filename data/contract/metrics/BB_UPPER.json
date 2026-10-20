@@ -1,7 +1,7 @@
 {
   "metric": "BB_UPPER",
   "label": "Bollinger upper band",
-  "code": "bbUpper",
+  "code": "bbUpper20",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",

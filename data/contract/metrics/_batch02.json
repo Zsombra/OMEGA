@@ -442,7 +442,7 @@
  {
   "metric": "CCI20",
   "label": "CCI (20)",
-  "code": "CCI",
+  "code": "CCI20",
   "family": "momentum",
   "nativeOutput": {
    "kind": "numeric",
@@ -801,7 +801,7 @@
  {
   "metric": "ADX",
   "label": "ADX (14)",
-  "code": "ADX",
+  "code": "ADX14",
   "family": "trend",
   "nativeOutput": {
    "kind": "numeric",
@@ -2191,7 +2191,7 @@
  {
   "metric": "ATR",
   "label": "ATR (14)",
-  "code": "ATR",
+  "code": "ATR14",
   "family": "volatility",
   "nativeOutput": {
    "kind": "numeric",
@@ -2320,7 +2320,7 @@
  {
   "metric": "BB_WIDTH",
   "label": "Bollinger width",
-  "code": "BBwidth",
+  "code": "BBwidth20",
   "family": "volatility",
   "nativeOutput": {
    "kind": "numeric",

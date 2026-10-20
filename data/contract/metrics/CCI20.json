@@ -1,7 +1,7 @@
 {
   "metric": "CCI20",
   "label": "CCI (20)",
-  "code": "CCI",
+  "code": "CCI20",
   "family": "momentum",
   "nativeOutput": {
     "kind": "numeric",

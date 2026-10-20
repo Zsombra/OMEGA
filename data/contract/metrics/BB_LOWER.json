@@ -1,7 +1,7 @@
 {
   "metric": "BB_LOWER",
   "label": "Bollinger lower band",
-  "code": "bbLower",
+  "code": "bbLower20",
   "family": "structure",
   "nativeOutput": {
     "kind": "numeric",

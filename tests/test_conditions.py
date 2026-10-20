@@ -341,8 +341,8 @@ def test_fade_and_align_select_opposite_readings():
 
     fade = core_up("mean-reversion")
     align = core_up("squeeze-breakout")
-    assert ("pctB_now", "lt", 0.05) in fade      # buy the lower band
-    assert ("pctB_now", "gt", 0.95) in align     # buy the breakout
+    assert ("pctB20_now", "lt", 0.05) in fade    # buy the lower band (pctB_now before contract v123)
+    assert ("pctB20_now", "gt", 0.95) in align   # buy the breakout
     assert ("RSI14_now", "lt", 35) in fade       # oversold, not "above midline"
 
 
@@ -362,7 +362,7 @@ def test_market_read_references_only_verdict_conditions():
 
 
 # --- the declared vocabulary is not always the real one ----------------------
-# Measured 2026-08-24. ADX_zone and MFI14_zone declare
+# Measured 2026-08-24. ADX_zone (ADX14_zone since contract v123) and MFI14_zone declare
 # ["overbought","oversold","neutral"] and emit none of them. Worse, the platform
 # REFUSES the labels they do emit (CONDITION_LITERAL_UNSUPPORTED). So no label
 # works: every legal one is FALSE forever, every useful one is rejected. omega
@@ -384,8 +384,11 @@ def _findings(report, defn):
 def test_a_disjoint_zone_header_cannot_carry_a_condition_at_all():
     """Not a warning - there is no working label, so the clause is refused."""
     from omega.conditions import is_
-    f = _findings(_zone_report("ADX"), is_("ADX_zone", "neutral"))
-    assert [x for x in f if x.severity == "error"], "must refuse, not warn"
+    f = _findings(_zone_report("ADX"), is_("ADX14_zone", "neutral"))
+    errors = [x for x in f if x.severity == "error"]
+    assert errors, "must refuse, not warn"
+    # refused for the measured reason - not because the header is unknown - and the way out names today's header
+    assert "cannot carry a condition" in errors[0].message and "ADX14 gte 25" in errors[0].message
 
 
 def test_the_refusal_names_the_numeric_replacement():
@@ -398,7 +401,7 @@ def test_the_refusal_names_the_numeric_replacement():
 def test_the_observed_labels_are_still_rejected_because_the_platform_rejects_them():
     """omega must not emit a payload the platform refuses."""
     from omega.conditions import in_
-    f = _findings(_zone_report("ADX"), in_("ADX_zone", ["trending", "developing"]))
+    f = _findings(_zone_report("ADX"), in_("ADX14_zone", ["trending", "developing"]))
     assert [x for x in f if x.severity == "error"]
 
 

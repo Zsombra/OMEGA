@@ -1,7 +1,7 @@
 {
   "metric": "BB_WIDTH",
   "label": "Bollinger width",
-  "code": "BBwidth",
+  "code": "BBwidth20",
   "family": "volatility",
   "nativeOutput": {
     "kind": "numeric",

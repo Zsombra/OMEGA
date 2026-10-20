@@ -1,7 +1,7 @@
 {
   "metric": "ATR",
   "label": "ATR (14)",
-  "code": "ATR",
+  "code": "ATR14",
   "family": "volatility",
   "nativeOutput": {
     "kind": "numeric",

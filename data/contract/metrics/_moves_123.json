@@ -1,0 +1,31 @@
+{
+ "_what": "What contract v123 moved in the metric catalog: eighteen header CODES (stems), no metric key. Taken verbatim from the vendor changelog (battlegrid-mcp README 'Contract history - v123 (a metric's code states its indicator's length)', section 'Rejected input'), read 2026-10-20 from a local copy; NOT yet confirmed by a re-extraction (get_metric_construction_hints) - when one runs, refresh_metric_contracts.py must reproduce every `since` code below. data/contract/metrics/<KEY>.json carries the `since` code; omega.contract.load refuses a corpus that still carries a `before` code, so a half-applied rename cannot load.",
+ "contractVersion": "123",
+ "source": "battlegrid-mcp README, Contract history - v123, Rejected input",
+ "quote": "A condition column or a `{…}` Market Read marker naming a retired header is refused. A metric's code now ends with its indicator's single length",
+ "affixesKept": "Every suffix and prefix is kept (`ADX14_state`, `dist_donchianLo20`, `RVOL20_rank_hi`). Metric **keys** do not move (`ADX`, `RVOL`, `DONCHIAN_UPPER`), so a column you author by key is unchanged.",
+ "marketReadChars": {"before": 2000, "since": 4000, "quote": "A strategy's `marketReadText` now runs to 4,000 characters, where 2,000 was the bound."},
+ "headerCodes": {
+  "_what": "metric key -> the header code it rendered with before v123 and the one it renders with since. Keys are OMEGA's corpus keys (unchanged by v123); the codes are the README's, verbatim.",
+  "CCI20":                {"before": "CCI",             "since": "CCI20"},
+  "ADX":                  {"before": "ADX",             "since": "ADX14"},
+  "ATR":                  {"before": "ATR",             "since": "ATR14"},
+  "BB_WIDTH":             {"before": "BBwidth",         "since": "BBwidth20"},
+  "BB_PCT_B":             {"before": "pctB",            "since": "pctB20"},
+  "DONCHIAN_UPPER":       {"before": "donchianHi",      "since": "donchianHi20"},
+  "DONCHIAN_LOWER":       {"before": "donchianLo",      "since": "donchianLo20"},
+  "DONCHIAN_UPPER_PRIOR": {"before": "donchianHiPrior", "since": "donchianHiPrior20"},
+  "DONCHIAN_LOWER_PRIOR": {"before": "donchianLoPrior", "since": "donchianLoPrior20"},
+  "DONCHIAN_BROKEN_HI":   {"before": "donchianBrkHi",   "since": "donchianBrkHi20"},
+  "DONCHIAN_BROKEN_LO":   {"before": "donchianBrkLo",   "since": "donchianBrkLo20"},
+  "BB_UPPER":             {"before": "bbUpper",         "since": "bbUpper20"},
+  "BB_LOWER":             {"before": "bbLower",         "since": "bbLower20"},
+  "WILLR14":              {"before": "willR",           "since": "willR14"},
+  "STOCH_RSI14":          {"before": "stochRSI",        "since": "stochRSI14"},
+  "DI_PLUS":              {"before": "DIplus",          "since": "DIplus14"},
+  "DI_MINUS":             {"before": "DIminus",         "since": "DIminus14"},
+  "RVOL":                 {"before": "RVOL",            "since": "RVOL20"}
+ },
+ "added": ["CLOSE_LOCATION", "PRIOR_SWING_FRACTAL_HIGH", "PRIOR_SWING_FRACTAL_LOW", "SWING_FRACTAL_HIGH_BARS_AGO", "SWING_FRACTAL_LOW_BARS_AGO", "CMF20", "EMA8"],
+ "_added": "Stated by the README; not in OMEGA's corpus (never extracted), so nothing here can select one."
+}

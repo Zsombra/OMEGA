@@ -186,6 +186,13 @@ def load() -> Contract:
     retired_metrics = {name: rec | {"retiredAt": moves["contractVersion"]} for name, rec in moves.get("retired", {}).items()}
     if set(retired_metrics) & set(metrics):
         raise RuntimeError(f"retired AND in the corpus: {sorted(set(retired_metrics) & set(metrics))} - a half-done refresh")
+    # v123 renamed eighteen header codes (data/contract/metrics/_moves_123.json). A metric file still carrying its
+    # `before` code - a half-applied rename, or a re-extraction that disagrees with the changelog - must not load:
+    # every header omega predicts and every clause it derives from those headers would be refused at stage.
+    stale = {key: (metrics[key].code, move["since"]) for key, move in header_code_moves().items()
+             if key in metrics and metrics[key].code != move["since"]}
+    if stale:
+        raise RuntimeError(f"v123 header codes not applied (key: corpus code, v123 code): {stale}")
 
     return Contract(
         metrics=metrics,
@@ -200,6 +207,29 @@ def load() -> Contract:
         retired_transforms=retired,
         unmeasured_transforms=unmeasured_transforms,
     )
+
+
+@lru_cache(maxsize=1)
+def header_code_moves() -> dict[str, dict[str, str]]:
+    """metric key -> {"before", "since"}: the header codes contract v123 renamed, verbatim from the vendor changelog
+    (battlegrid-mcp README "Contract history - v123", recorded in data/contract/metrics/_moves_123.json). Keys do not
+    move; only the code a header is built from does."""
+    path = CONTRACT_DIR / "metrics" / "_moves_123.json"
+    if not path.exists():
+        return {}
+    return {k: v for k, v in _load(path)["headerCodes"].items() if not k.startswith("_")}
+
+
+def header_since_123(header: str) -> str:
+    """A header rendered before v123, under the codes served since: `CCI_now` -> `CCI20_now`, `dist_donchianHi_4h` ->
+    `dist_donchianHi20_4h`, `buyPres_pctB_spread` -> `buyPres_pctB20_spread`. README v123: "Every suffix and prefix
+    is kept". A header is `_`-separated tokens and no renamed code holds a `_`, so a code is replaced only as a whole
+    token (`donchianHiPrior` never matches `donchianHi`). A header that names no renamed code is returned unchanged.
+
+    For replaying a record captured before 2026-10-20 (a live render, a stored body) - the rename is the changelog's
+    rule applied, not a re-measurement."""
+    codes = {m["before"]: m["since"] for m in header_code_moves().values()}
+    return "_".join(codes.get(token, token) for token in header.split("_"))
 
 
 def _transform_drift(extracted: dict, privileged_pairs: set[tuple[str, str]]) -> tuple[dict, dict]:

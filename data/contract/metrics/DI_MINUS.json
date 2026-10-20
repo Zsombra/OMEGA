@@ -1,7 +1,7 @@
 {
   "metric": "DI_MINUS",
   "label": "DI−",
-  "code": "DIminus",
+  "code": "DIminus14",
   "family": "trend",
   "nativeOutput": {
     "kind": "numeric",

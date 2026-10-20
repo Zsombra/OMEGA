@@ -956,7 +956,7 @@
  {
   "metric": "DI_PLUS",
   "label": "DI+",
-  "code": "DIplus",
+  "code": "DIplus14",
   "family": "trend",
   "nativeOutput": {
    "kind": "numeric",
@@ -1033,7 +1033,7 @@
  {
   "metric": "DI_MINUS",
   "label": "DI−",
-  "code": "DIminus",
+  "code": "DIminus14",
   "family": "trend",
   "nativeOutput": {
    "kind": "numeric",
@@ -1423,7 +1423,7 @@
  {
   "metric": "RVOL",
   "label": "RVOL (relative volume)",
-  "code": "RVOL",
+  "code": "RVOL20",
   "family": "volumeFlow",
   "nativeOutput": {
    "kind": "numeric",
