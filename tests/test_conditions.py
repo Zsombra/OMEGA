@@ -220,6 +220,34 @@ def test_market_read_tokens_must_resolve():
     assert any("neither a conditionKey nor a header" in f.message for f in bad)
 
 
+def test_the_market_read_cap_is_4000_since_v123(monkeypatch):
+    """README v123: "A strategy's `marketReadText` now runs to 4,000 characters, where 2,000 was the bound"."""
+    import omega.conditions as C
+    from dataclasses import replace
+    assert C.MARKET_READ_CHARS == 4000 and C.market_read_cap() == 4000
+    conds = [condition("OK", "fine", num("RSI14_now", "gt", 30), verdict="UP")]
+    assert not validate_market_read("x" * 2001, conds, RSI_REPORT)          # refused until v0.8.3
+    assert not validate_market_read("x" * 4000, conds, RSI_REPORT)
+    over = validate_market_read("x" * 4001, conds, RSI_REPORT)
+    assert [f.message for f in over] == ["4001 characters exceeds the 4000 cap"]
+    # a re-extraction that serves budgets.marketReadChars wins over the constant
+    served = replace(C.load(), budgets=C.load().budgets | {"marketReadChars": 3000})
+    monkeypatch.setattr(C, "load", lambda: served)
+    assert C.market_read_cap() == 3000
+    assert validate_market_read("x" * 3001, conds, RSI_REPORT)
+
+
+def test_a_market_read_marker_on_a_retired_header_is_refused():
+    """README v123: "a `{…}` Market Read marker naming a retired header is refused"."""
+    from omega.types import Column, CustomSection, RelTimeframe, Report
+    adx = Report(anchor="1h", sections=[CustomSection(kind="custom", title="a", benchmarkTicker=None, columns=[
+        Column(metric="ADX", transformId="trajectory", timeframe=RelTimeframe(rel="anchor"), window=4)])])
+    conds = [condition("OK", "fine", num("ADX14_now", "gt", 25), verdict="UP")]
+    assert not validate_market_read("Trend {ADX14_now}.", conds, adx)
+    assert any("neither a conditionKey nor a header" in f.message
+               for f in validate_market_read("Trend {ADX_now}.", conds, adx))
+
+
 def test_generated_market_read_text_resolves():
     conds = [condition("A", "first", num("RSI14_now", "gt", 30), verdict="UP"),
              condition("B", "second", num("RSI14_now", "lt", 70), verdict="DOWN")]

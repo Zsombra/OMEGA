@@ -1183,12 +1183,25 @@ def _find_reference_cycles(conditions: list[dict]) -> list[list[str]]:
     return cycles
 
 
+# README v123: "`list_strategy_vocabulary`'s `budgets` gains required `marketReadChars`, the Market Read bound. A
+# strategy's `marketReadText` now runs to 4,000 characters, where 2,000 was the bound." The stored vocabulary
+# (data/contract/vocabulary/_shared.json) predates v123 and serves no `marketReadChars`; when a re-extraction brings
+# it, the served value wins (market_read_cap).
+MARKET_READ_CHARS = 4000
+
+
+def market_read_cap() -> int:
+    """The Market Read bound: the served `budgets.marketReadChars` when the corpus has it, else README v123's 4000."""
+    return int(load().budgets.get("marketReadChars", MARKET_READ_CHARS))
+
+
 def validate_market_read(text: str, conditions: list[dict], report: Report) -> list[ConditionFinding]:
     """Check every {TOKEN} in marketReadText resolves to a condition key or a header."""
     out: list[ConditionFinding] = []
-    if len(text) > 2000:
+    cap = market_read_cap()
+    if len(text) > cap:
         out.append(ConditionFinding("error", "<marketReadText>", "",
-                                    f"{len(text)} characters exceeds the 2000 cap"))
+                                    f"{len(text)} characters exceeds the {cap} cap"))
     keys = {c.get("conditionKey") for c in conditions}
     headers = report_headers(report)
     for token in re.findall(r"\{([A-Za-z_][A-Za-z0-9_]*)\}", text):

@@ -23,7 +23,7 @@ from pathlib import Path
 import pytest
 
 from omega import preflight as P
-from omega.conditions import CONDITION_FIELDS, RETIRED_CONDITION_FIELDS, validate_market_read
+from omega.conditions import CONDITION_FIELDS, RETIRED_CONDITION_FIELDS, market_read_cap, validate_market_read
 from omega.contract import stage_schema
 from omega.generate import ENTRY_MIRROR
 
@@ -129,7 +129,7 @@ def test_preview_body_is_a_fields_preview_of_the_same_report_and_conditions(sid)
     assert src["sections"] == b.axes["REPORT"]["sections"]
     assert src["conditions"] == b.axes["CONDITIONS"]["conditions"]
     assert src["marketReadText"] == b.axes["MARKET_READ"]["marketReadText"]
-    assert 0 < len(src["marketReadText"]) <= 2000
+    assert 0 < len(src["marketReadText"]) <= market_read_cap()      # 4000 since v123 (2000 before)
 
 
 @pytest.mark.parametrize("sid", IDS)
