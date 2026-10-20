@@ -543,6 +543,31 @@ def _anchor_side(column, anchor: str, order: list[str]) -> tuple[bool, bool]:
     return here > there, here < there
 
 
+# Contract v117 (battlegrid-mcp README "Contract history - v117 (decided changes read at their horizon bar)"):
+#   "A verdict carrier or hold that reads a change over a horizon above the strategy timeframe is refused. That is
+#    `chg4h` and `chg24h` on a `1h` strategy, and `oiRegime` (the `1h` change) below `1h`. Such a change is a
+#    developing read whatever its selector."
+#   "Where it is refused: a strategy save, draft stage or preview, refused `CONDITION_VERDICT_READ_ILLEGAL` or
+#    `CONDITION_HOLD_ILLEGAL`."
+# The vendor skill (battlegrid-strategy-examples, 122.0.0) states the horizon is the metric's own: "A change (`chg5m`
+# ... `chg24h`, and `oiRegime`'s `1h` change) carries its horizon in the metric, so above the strategy timeframe it
+# is Developing at every rung and under every selector." Each horizon below is the one the metric's label names
+# (data/contract/metrics/CHG_*.json: "Change (5m)" ... "Change (1d)"); OI_PX_REGIME's is the README's "1h change".
+# The metrics are timeless, so the column's timeframe and `bars` never move the horizon.
+CHANGE_HORIZON = {"CHG_5M": "5m", "CHG_15M": "15m", "CHG_1H": "1h", "CHG_4H": "4h", "CHG_24H": "1d",
+                  "OI_PX_REGIME": "1h"}
+HORIZON_REMEDY = ("read a horizon at or below the strategy timeframe instead, or a Confirmed CLOSE_CHANGE on the "
+                  "higher timeframe")
+
+
+def _horizon_above(metric: str, anchor: str, order: list[str]) -> str | None:
+    """The change horizon `metric` reads when it is above the strategy timeframe `anchor` (v117), else None."""
+    horizon = CHANGE_HORIZON.get(metric)
+    if horizon is None or horizon not in order or anchor not in order:
+        return None
+    return horizon if order.index(horizon) > order.index(anchor) else None
+
+
 def report_headers(report: Report) -> dict[str, dict]:
     """Every header the report exposes to conditions, ambient headers included.
 
@@ -561,6 +586,10 @@ def report_headers(report: Report) -> dict[str, dict]:
                     progress at the strategy close, which REPAINTS until it completes.
                     Left unset, bars above the anchor default to Confirmed, so an unset
                     column is never developing (vendor pack 31.2.28 § Conditions).
+                    Since v117 also any change over a horizon above the anchor (CHANGE_HORIZON:
+                    chg4h / chg24h on a 1h strategy, oiRegime below 1h), whatever its selector.
+      horizon_above that horizon ("4h", "1d", ...) when v117 makes the read Developing, else
+                    None; a verdict carrier or a hold reading it is an error, not a warning.
     """
     c = load()
     order = list(c.shared["absoluteTimeframes"])
@@ -574,7 +603,10 @@ def report_headers(report: Report) -> dict[str, dict]:
             from .types import Column
             for spec in tmpl["columns"]:
                 try:
-                    for o in outputs_for(Column.model_validate(spec), c):
+                    column = Column.model_validate(spec)
+                    # v117 is about the metric, not the section: a platform section's chg4h is the same read
+                    horizon = _horizon_above(column.metric, report.anchor, order)
+                    for o in outputs_for(column, c):
                         # conservative: the published hold rule names "a header
                         # resolved from this coin's own candle series"; only
                         # custom-candle-section headers are treated as eligible
@@ -585,7 +617,8 @@ def report_headers(report: Report) -> dict[str, dict]:
                                          "vocab": list(o.vocabulary), "meaning": "",
                                          "kind": o.kind, "moved": False, "candle": False,
                                          "above_anchor": False,
-                                         "below_anchor": False, "developing": False}
+                                         "below_anchor": False, "developing": horizon is not None,
+                                         "horizon_above": horizon}
                 except Exception:
                     continue
         elif isinstance(section, CustomSection):
@@ -595,14 +628,17 @@ def report_headers(report: Report) -> dict[str, dict]:
                 moved = not c.metric(column.metric).is_timeless
                 candle = moved and (column.offset or 0) == 0
                 above, below = _anchor_side(column, report.anchor, order)
-                developing = above and column.bars == "all"
+                # v117: a change over a horizon above the strategy timeframe is Developing whatever its selector
+                horizon = _horizon_above(column.metric, report.anchor, order)
+                developing = (above and column.bars == "all") or horizon is not None
                 for o in outputs_for(column, c):
                     out[o.header] = {"sectionKey": section.sectionKey,
                                      "ops": o.condition_operators,
                                      "vocab": list(o.vocabulary), "meaning": "",
                                      "kind": o.kind, "moved": moved, "candle": candle,
                                      "above_anchor": above,
-                                     "below_anchor": below, "developing": developing}
+                                     "below_anchor": below, "developing": developing,
+                                     "horizon_above": horizon}
     return out
 
 
@@ -789,7 +825,14 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"(nor ambient). Add a column that emits it, or fix the name."))
         return 1
 
-    if window > 1 and not _holdable(spec):
+    if window > 1 and spec.get("horizon_above"):
+        # v117 makes this one an error, not the warning below: the README names the refusal outright.
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"{key!r} holds {header!r} over {window} bars, a change over a {spec['horizon_above']} horizon above "
+            f"the strategy timeframe: since contract v117 that is a Developing read whatever its selector, and the "
+            f"platform refuses the hold (CONDITION_HOLD_ILLEGAL). Remedy: {HORIZON_REMEDY}"))
+    elif window > 1 and not _holdable(spec):
         out.append(ConditionFinding(
             "warning", key, path,
             f"{header!r} is read over {window} bars: at 61.0.1 a hold above 1 was legal "
@@ -1080,7 +1123,14 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
                 if spec is None:
                     continue            # unknown header: already reported at its clause
                 where = cpath if owner == key else f"{cpath} (in {owner})"
-                if carrier and spec.get("developing"):
+                if carrier and spec.get("horizon_above"):
+                    out.append(ConditionFinding(
+                        "error", key, where,
+                        f"verdict carrier {key!r} reads {header!r}, a change over a {spec['horizon_above']} "
+                        f"horizon above the strategy timeframe: since contract v117 that is a Developing read "
+                        f"whatever its selector, and the platform refuses it (CONDITION_VERDICT_READ_ILLEGAL). "
+                        f"Remedy: {HORIZON_REMEDY}"))
+                elif carrier and spec.get("developing"):
                     out.append(ConditionFinding(
                         "error", key, where,
                         f"{header!r} reads a Developing higher-timeframe bar; a verdict "
