@@ -216,7 +216,8 @@ def header_code_moves() -> dict[str, dict[str, str]]:
     move; only the code a header is built from does."""
     path = CONTRACT_DIR / "metrics" / "_moves_123.json"
     if not path.exists():
-        return {}
+        # Fail closed: without the table the loader's "no metric still carries a retired code" guard would be off.
+        raise FileNotFoundError(f"{path} is missing: the v123 header-code table the corpus guard depends on")
     return {k: v for k, v in _load(path)["headerCodes"].items() if not k.startswith("_")}
 
 
