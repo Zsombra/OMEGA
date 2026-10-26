@@ -1,0 +1,186 @@
+{
+  "metric": "CLOSE_LOCATION",
+  "label": "Close location",
+  "code": "closeLoc",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "fraction",
+    "precision": 2,
+    "range": {
+      "min": 0,
+      "max": 1
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "BB_PCT_B",
+            "STOCH_RSI14",
+            "BUY_PRESSURE"
+          ]
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "maxShare",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "candlePatterns",
+  "spreadOperands": [
+    "BB_PCT_B",
+    "STOCH_RSI14",
+    "BUY_PRESSURE"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

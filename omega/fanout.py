@@ -8,7 +8,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .contract import Contract, load
+from functools import lru_cache
+
+from .contract import CONTRACT_DIR, Contract, _load as _load_json, load
 from .types import Column, CustomSection, PlatformSection, Report
 
 REL_INFIX = {"anchor": "", "lower": "_ltf_", "regime": "_htf_"}
@@ -90,6 +92,38 @@ def _token(column: Column, contract: Contract) -> str:
     return f"{code}{tf}{dev}{off}"
 
 
+# The six series statistics of contract v135, and the suffix each header carries with its window (default 20).
+# Measured 2026-10-26 at 135.2.0 (preview_strategy_report, BTC 1h): RSI14_z20, RSI14_sd10, RSI14_slope10, RSI14_pctl10,
+# RSI14_min10, RSI14_max10 on an atom; dist_EMA20_z10, EMA5_EMA13_spread_max10 as a chain outer
+# (data/audit/statistics_probe_135_2026-10-26.json).
+STATISTIC_SUFFIX = {"zscore": "z", "stddev": "sd", "linregSlope": "slope", "pctl": "pctl",
+                    "rollingMin": "min", "rollingMax": "max"}
+STATISTIC_DEFAULT_WINDOW = 20
+
+
+ZONE_VOCABULARY = CONTRACT_DIR / "columns" / "zone_vocabulary_135_2026-10-26.json"
+_ZONE_DEFAULT = ("overbought", "oversold", "neutral")
+
+
+@lru_cache(maxsize=1)
+def _zone_vocabularies() -> dict[str, tuple[str, ...]]:
+    try:
+        return {m: tuple(v) for m, v in _load_json(ZONE_VOCABULARY)["byMetric"].items()}
+    except (OSError, KeyError, ValueError):
+        return {}
+
+
+def zone_vocabulary(metric: str) -> tuple[str, ...]:
+    """The labels a `metric x classifyZone` header serves, as rendered at 135.2.0: overbought / oversold / neutral on
+    the RSIs, stochastics and CCI20, weak / developing / trending / extreme on ADX, and MFI14's five (bullish and bearish
+    among them). A metric the measurement did not cover keeps the three-label default."""
+    return _zone_vocabularies().get(metric, _ZONE_DEFAULT)
+
+
+def _statistic(base: str, column: Column, transform_id: str) -> str:
+    return f"{base}_{STATISTIC_SUFFIX[transform_id]}{column.window or STATISTIC_DEFAULT_WINDOW}"
+
+
 def _stage1_header(column: Column, contract: Contract) -> str:
     """Header produced by the first transform stage (before any chaining): the token, shaped by the transform.
 
@@ -106,6 +140,8 @@ def _stage1_header(column: Column, contract: Contract) -> str:
         return f"{token}_{operand}_spread"
     if tid == "efficiency":
         return f"{token}_er"
+    if tid in STATISTIC_SUFFIX:
+        return _statistic(token, column, tid)
     if tid == "maxShare":
         return f"{token}_maxShare"
     if tid == "aggregate":
@@ -162,6 +198,8 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
 
     if effective in ("efficiency", "maxShare"):
         return [Output(base if column.chainedTransformId is None else f"{base}_er", "numeric")]
+    if effective in STATISTIC_SUFFIX:
+        return [Output(base if column.chainedTransformId is None else _statistic(base, column, effective), "numeric")]
     if effective == "aggregate" and column.chainedTransformId:
         return [Output(f"{base}_mean{column.window or 24}", "numeric")]
 
@@ -180,7 +218,7 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
     if tid == "bandTouch":
         vocab = ("upper", "lower", "none")
     elif tid == "classifyZone":
-        vocab = ("overbought", "oversold", "neutral")
+        vocab = zone_vocabulary(column.metric)
     elif tid == "crossDetect":
         vocab = ("Bullish", "Bearish")
     elif tid == "levelInteraction":       # measured 2026-10-13, conditionOperators is/in/enters/exits

@@ -124,7 +124,7 @@
      "timeframe": {
       "rel": "lower"
      },
-     "window": 5,
+     "window": 4,
      "bars": "closed"
     },
     {
@@ -762,75 +762,6 @@
    ]
   },
   {
-   "sectionKey": "includeMtfConfluence",
-   "title": "Multi-Timeframe Confluence",
-   "columns": [
-    {
-     "metric": "MA_ALIGN",
-     "transformId": "value",
-     "timeframe": {
-      "rel": "lower"
-     }
-    },
-    {
-     "metric": "MA_ALIGN",
-     "transformId": "value",
-     "timeframe": {
-      "rel": "anchor"
-     }
-    },
-    {
-     "metric": "MA_ALIGN",
-     "transformId": "value",
-     "timeframe": {
-      "rel": "regime"
-     }
-    },
-    {
-     "metric": "RSI14",
-     "transformId": "classifyZone",
-     "timeframe": {
-      "rel": "lower"
-     }
-    },
-    {
-     "metric": "RSI14",
-     "transformId": "classifyZone",
-     "timeframe": {
-      "rel": "anchor"
-     }
-    },
-    {
-     "metric": "RSI14",
-     "transformId": "classifyZone",
-     "timeframe": {
-      "rel": "regime"
-     }
-    },
-    {
-     "metric": "ADX",
-     "transformId": "classifyState",
-     "timeframe": {
-      "rel": "lower"
-     }
-    },
-    {
-     "metric": "ADX",
-     "transformId": "classifyState",
-     "timeframe": {
-      "rel": "anchor"
-     }
-    },
-    {
-     "metric": "ADX",
-     "transformId": "classifyState",
-     "timeframe": {
-      "rel": "regime"
-     }
-    }
-   ]
-  },
-  {
    "sectionKey": "includeRegimeContext",
    "title": "Regime Context",
    "columns": [
@@ -1105,6 +1036,13 @@
      }
     },
     {
+     "metric": "PERP_SPOT_GAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
      "metric": "PERP_SPOT_STRENGTH",
      "transformId": "value",
      "timeframe": {
@@ -1148,24 +1086,34 @@
   }
  ],
  "_refreshed": {
-  "at": "2026-10-14T01:56Z",
-  "contractVersion": "110.2.0",
-  "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), read 2026-10-14 over mcporter (read-only)",
+  "at": "2026-10-26T07:08Z",
+  "contractVersion": "135.2.0",
+  "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261026T0708Z/ (mcporter, read-only)",
   "moved": [
-   "includeMacd: MACD -> MACD_HIST (both columns)",
-   "includeRelativeStrength: PPO -> PPO_HIST (both columns); README v110 refuses MACD and PPO"
+   "includeMtfConfluence RETIRED (README v134: refused wherever a platform section is named; its lower-rung reads are the custom columns MA_ALIGN x value, RSI14 x classifyZone, ADX x classifyZone at {rel: lower})",
+   "includeSubTimeframe: CLOSE x efficiency window 5 -> 4 (README v135: a window counts bar-to-bar changes; stored windows moved to w - 1, the same 5 bars)",
+   "includePerpSpotFlow gained {metric: PERP_SPOT_GAP, transformId: value, timeframe: {rel: anchor}} (README v134)"
   ],
   "previous": {
-   "at": "2026-10-13T03:37Z",
-   "contractVersion": "108.4.0",
-   "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261013T0337Z/",
+   "at": "2026-10-14T01:56Z",
+   "contractVersion": "110.2.0",
+   "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), read 2026-10-14 over mcporter (read-only)",
    "moved": [
-    "includeSupportResistance gained {metric: BAR_FORMING, transformId: value, timeframe: {rel: anchor}}"
+    "includeMacd: MACD -> MACD_HIST (both columns)",
+    "includeRelativeStrength: PPO -> PPO_HIST (both columns); README v110 refuses MACD and PPO"
    ],
    "previous": {
-    "at": "2026-09-09T08:03:07Z",
-    "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
-    "note": "contract 54.1.0. includeSupportResistance now names DONCHIAN_UPPER/DONCHIAN_LOWER where it named SWING_HIGH/SWING_LOW; the two metrics were renamed, not removed - same nativeOutput, timeframeMode and transform set, code swingHi->donchianHi and swingLo->donchianLo, label 'Swing high'->'20-bar high'."
+    "at": "2026-10-13T03:37Z",
+    "contractVersion": "108.4.0",
+    "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261013T0337Z/",
+    "moved": [
+     "includeSupportResistance gained {metric: BAR_FORMING, transformId: value, timeframe: {rel: anchor}}"
+    ],
+    "previous": {
+     "at": "2026-09-09T08:03:07Z",
+     "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+     "note": "contract 54.1.0. includeSupportResistance now names DONCHIAN_UPPER/DONCHIAN_LOWER where it named SWING_HIGH/SWING_LOW; the two metrics were renamed, not removed - same nativeOutput, timeframeMode and transform set, code swingHi->donchianHi and swingLo->donchianLo, label 'Swing high'->'20-bar high'."
+    }
    }
   }
  },

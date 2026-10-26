@@ -114,6 +114,36 @@
    "transform": "levelInteraction",
    "at": "2026-10-13",
    "why": "Served at 108.4.0 as a classifier the platform names - `output = levelInteraction(bar t, close t-1, {base}[t], {base}[t-1], buffer {buffer} bps)` - not arithmetic omega can recompute from a rendered row. Measured: its header ({code}_lvl, _ltf_ infix, _b<buffer>), kind (classification) and five-label vocabulary (data/contract/columns/levelInteraction_108_4_2026-10-13.json); its labels on real bars are unmeasured."
+  },
+  {
+   "transform": "zscore",
+   "at": "2026-10-26",
+   "why": "Added at contract v135. Served formula: `output = ({base}[t] - mean) / stdev, mean and population stdev over the present values of the newest {window} bars`. Measured: its header (base + _{suffix}{window}, default 20), numeric kind and operators on an atom and as a chain outer (data/audit/statistics_probe_135_2026-10-26.json, and the 2026-10-26 coverage sweep). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "stddev",
+   "at": "2026-10-26",
+   "why": "Added at contract v135. Served formula: `output = sqrt(sum(({base}[i] - mean)^2) / count) over the present values of the newest {window} bars`. Measured: its header (base + _{suffix}{window}, default 20), numeric kind and operators on an atom and as a chain outer (data/audit/statistics_probe_135_2026-10-26.json, and the 2026-10-26 coverage sweep). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "linregSlope",
+   "at": "2026-10-26",
+   "why": "Added at contract v135. Served formula: `output = least-squares slope of {base}[i] against its bar position i over the present values of the newest {window} bars`. Measured: its header (base + _{suffix}{window}, default 20), numeric kind and operators on an atom and as a chain outer (data/audit/statistics_probe_135_2026-10-26.json, and the 2026-10-26 coverage sweep). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "pctl",
+   "at": "2026-10-26",
+   "why": "Added at contract v135. Served formula: `output = 100 * count({base}[t - k] <= {base}[t]) / count(present {base}[t - k]), k = 1 .. {window}`. Measured: its header (base + _{suffix}{window}, default 20), numeric kind and operators on an atom and as a chain outer (data/audit/statistics_probe_135_2026-10-26.json, and the 2026-10-26 coverage sweep). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "rollingMin",
+   "at": "2026-10-26",
+   "why": "Added at contract v135. Served formula: `output = min(nonNull({base}[-{window}:]))`. Measured: its header (base + _{suffix}{window}, default 20), numeric kind and operators on an atom and as a chain outer (data/audit/statistics_probe_135_2026-10-26.json, and the 2026-10-26 coverage sweep). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "rollingMax",
+   "at": "2026-10-26",
+   "why": "Added at contract v135. Served formula: `output = max(nonNull({base}[-{window}:]))`. Measured: its header (base + _{suffix}{window}, default 20), numeric kind and operators on an atom and as a chain outer (data/audit/statistics_probe_135_2026-10-26.json, and the 2026-10-26 coverage sweep). Not yet recomputed from cached candles."
   }
  ],
  "operationalFindings": [

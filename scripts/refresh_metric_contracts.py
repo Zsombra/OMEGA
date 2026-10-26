@@ -22,6 +22,7 @@ first run pinned to one session's scratch directory, which no longer exists.
 import glob
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -46,8 +47,14 @@ os.makedirs(RAW, exist_ok=True)
 # 108 writes neither, and that is fine - omega.contract.requires_operand / requires_side, omega.validate
 # and both corpus builders read the requirement from the transform's authoring block, which this
 # script still collects (tests/test_v103_transform_entry.py runs the checks on a flag-less corpus).
+# v135 (README "Contract history - v135") replaced rankableSpreadOperands with chainedOuters: present exactly when
+# chainSuccessors is, keyed by its members, each {operands, windowMaximum}. The old flag is kept in the tuple so a
+# pre-135 raw dir still refreshes as it did.
 TRANSFORM_FLAGS = ("operandRequired", "chainSuccessors", "chainedRankOrderings",
-                   "sideRequired", "rankableSpreadOperands")
+                   "sideRequired", "rankableSpreadOperands", "chainedOuters")
+
+
+OWN_LENGTH = re.compile(r" (Separate from .+? own \d+-bar length\.)$")
 
 
 def call(tool, args, timeout=120):
@@ -81,6 +88,7 @@ records = {}
 labels = {}           # transformId -> label (served on the transform entry, beside its authoring block)
 
 authoring_seen = {}   # transformId -> {json of authoring block: [metrics]}
+outer_params_seen = {}  # v135 chainOuterParameters (served once per response, beside `metric`): {json: [metrics]}
 written, failed = [], []
 
 for i, name in enumerate(names, 1):
@@ -95,6 +103,8 @@ for i, name in enumerate(names, 1):
             continue
         json.dump(resp, open(rawp, "w", encoding="utf-8"), ensure_ascii=False)
     m = resp["metric"] if isinstance(resp, dict) and "metric" in resp and isinstance(resp["metric"], dict) else resp
+    if isinstance(resp, dict) and "chainOuterParameters" in resp:
+        outer_params_seen.setdefault(json.dumps(resp["chainOuterParameters"], sort_keys=True), []).append(name)
     rec = {
         "metric": m["metric"],
         "label": m["label"],
@@ -125,6 +135,15 @@ for i, name in enumerate(names, 1):
                     maxima[pname] = pspec.pop("maximum")
             if maxima:
                 entry["maximums"] = maxima
+            # 135.x: a series window's description ends, on a metric with its own indicator length, with a sentence
+            # naming it ("Separate from ADX (14)'s own 14-bar length."). It is served per metric like the maxima, so
+            # it goes on the metric's entry and the catalogue keeps the invariant rest.
+            win = (auth.get("parameters") or {}).get("window")
+            if isinstance(win, dict) and isinstance(win.get("description"), str):
+                found = OWN_LENGTH.search(win["description"])
+                if found:
+                    entry["windowOwnLength"] = found.group(1)
+                    win["description"] = win["description"][:found.start()]
             blob = json.dumps(auth, sort_keys=True)
             authoring_seen.setdefault(t["id"], {}).setdefault(blob, []).append(m["metric"])
     if m.get("spreadOperands"):
@@ -187,6 +206,20 @@ for b in range(0, len(ordered), 30):
         json.dump(ordered[b:b + 30], f, indent=1, ensure_ascii=False)
         f.write("\n")
 print(f"batches: {len(old)} archived to {os.path.basename(arch)}; {-(-len(ordered) // 30)} written")
+
+# v135's chainOuterParameters, the parameters each chain outer takes (window with its `unit`, bars): recorded only
+# when every response serves the same block, like the authoring catalogue below.
+if outer_params_seen:
+    if len(outer_params_seen) != 1:
+        sys.exit(f"chainOuterParameters VARY across metrics ({len(outer_params_seen)} variants) - not recorded")
+    with open(os.path.join(ROOT, "data", "contract", "transforms", "_chain_outer_parameters.json"), "w",
+              encoding="utf-8") as f:
+        json.dump({"_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's "
+                            "parameters, served identically on every metric of extraction " + STAMP,
+                   "chainOuterParameters": json.loads(next(iter(outer_params_seen)))},
+                  f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    print(f"chainOuterParameters: invariant across {len(next(iter(outer_params_seen.values())))} metrics")
 
 # The transform catalogue (data/contract/transforms/_authoring.json): only when every transform's authoring block is
 # invariant across the metrics that serve it - otherwise the catalogue's own claim is false and nothing is written.

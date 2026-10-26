@@ -1,0 +1,33 @@
+{
+  "metric": "PERP_SPOT_GAP",
+  "label": "Perp/spot rate gap",
+  "code": "perpSpotGap",
+  "family": "derived",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 3,
+    "range": {
+      "min": 0,
+      "max": 2
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "perpSpotFlow",
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

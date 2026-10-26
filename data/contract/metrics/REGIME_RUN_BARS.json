@@ -23,6 +23,10 @@
   ],
   "study": "regimeVerdict",
   "spreadOperands": [
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
     "TRADES",
     "BUY_TRADES",
     "SELL_TRADES",

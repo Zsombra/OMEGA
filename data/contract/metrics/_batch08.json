@@ -1,0 +1,454 @@
+[
+ {
+  "metric": "CROWD_UPBIAS",
+  "label": "Crowd up-bias",
+  "code": "upBias",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC",
+  "label": "Crowd accuracy",
+  "code": "crowdAcc",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT",
+  "label": "Crowd captain rate",
+  "code": "captRate",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdSettled",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_PICK_LIVE",
+  "label": "Crowd pick rate (live)",
+  "code": "pickLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_UPBIAS_LIVE",
+  "label": "Crowd up-bias (live)",
+  "code": "upBiasLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC_LIVE",
+  "label": "Crowd accuracy (live)",
+  "code": "crowdAccLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT_LIVE",
+  "label": "Crowd captain rate (live)",
+  "code": "captRateLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "crowdLive",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "SETTLED_AT",
+  "label": "Settled at",
+  "code": "settledAt",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "date"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "crowdSettled"
+ },
+ {
+  "metric": "FLOW_ALIGN",
+  "label": "Flow alignment",
+  "code": "flowAlign",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "aligned bullish",
+    "aligned bearish",
+    "divergent",
+    "neutral"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": null
+ },
+ {
+  "metric": "SMART_RETAIL",
+  "label": "Smart vs retail",
+  "code": "smartRetail",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "hidden accumulation",
+    "hidden distribution",
+    "confirmed"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": null
+ },
+ {
+  "metric": "CAPTAIN_CONF",
+  "label": "Captain confidence",
+  "code": "captainConf",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": null
+ },
+ {
+  "metric": "CONFIDENCE",
+  "label": "Convergence confidence",
+  "code": "conf",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "high",
+    "moderate",
+    "low"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": null
+ },
+ {
+  "metric": "PERP_SPOT_FLOW",
+  "label": "Perp/spot flow",
+  "code": "perpSpotFlow",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "confirmed_bull",
+    "confirmed_bear",
+    "perp_led_fragile",
+    "spot_led_accumulation",
+    "neutral"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "perpSpotFlow"
+ },
+ {
+  "metric": "PERP_SPOT_STRENGTH",
+  "label": "Perp/spot strength",
+  "code": "perpSpotStr",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "high",
+    "moderate",
+    "low"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "perpSpotFlow"
+ },
+ {
+  "metric": "PERP_SPOT_GAP",
+  "label": "Perp/spot rate gap",
+  "code": "perpSpotGap",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 3,
+   "range": {
+    "min": 0,
+    "max": 2
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "perpSpotFlow",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "PERP_SPOT_CONFIRMS",
+  "label": "Perp/spot confirms",
+  "code": "perpSpotConf",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "perpSpotFlow"
+ }
+]

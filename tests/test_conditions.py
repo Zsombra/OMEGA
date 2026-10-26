@@ -206,7 +206,7 @@ def test_between_bounds_are_checked():
 
 
 def test_condition_budget_is_enforced():
-    conds = [condition(f"C{i}", "x", num("RSI14_now", "gt", 1)) for i in range(20)]
+    conds = [condition(f"C{i}", "x", num("RSI14_now", "gt", 1)) for i in range(40)]   # served cap 32 at 135.2.0 (16 at 108.4.0)
     assert any("exceeds the budget" in f.message
                for f in validate_conditions(RSI_REPORT, conds))
 
@@ -409,28 +409,27 @@ def _findings(report, defn):
     return validate_conditions(report, [condition("TEST_ZONE", "t", defn)])
 
 
-def test_a_disjoint_zone_header_cannot_carry_a_condition_at_all():
-    """Not a warning - there is no working label, so the clause is refused."""
+# The 2026-08-24 zone trap (ADX14_zone / MFI14_zone declared overbought / oversold / neutral and emitted other labels)
+# is gone at 135.2.0: each header serves the labels it emits, and a condition preview read `ADX14_zone is trending`
+# TRUE on 9 of 12 coins (data/contract/columns/zone_vocabulary_135_2026-10-26.json).
+def test_a_formerly_disjoint_zone_header_takes_its_served_labels():
+    from omega.conditions import in_, is_
+    assert not _findings(_zone_report("ADX"), is_("ADX14_zone", "trending"))
+    assert not _findings(_zone_report("ADX"), in_("ADX14_zone", ["trending", "developing"]))
+    assert not _findings(_zone_report("MFI14"), is_("MFI14_zone", "bullish"))
+
+
+def test_a_label_outside_the_served_vocabulary_is_refused():
+    """`neutral` was ADX's declared label at 08-24; ADX14_zone serves weak / developing / trending / extreme now."""
     from omega.conditions import is_
-    f = _findings(_zone_report("ADX"), is_("ADX14_zone", "neutral"))
-    errors = [x for x in f if x.severity == "error"]
-    assert errors, "must refuse, not warn"
-    # refused for the measured reason - not because the header is unknown - and the way out names today's header
-    assert "cannot carry a condition" in errors[0].message and "ADX14 gte 25" in errors[0].message
+    [f] = [x for x in _findings(_zone_report("ADX"), is_("ADX14_zone", "neutral")) if x.severity == "error"]
+    assert "not in 'ADX14_zone' vocabulary ['weak', 'developing', 'trending', 'extreme']" in f.message
 
 
-def test_the_refusal_names_the_numeric_replacement():
-    """A refusal that does not say what to do instead is half a finding."""
-    from omega.conditions import is_
-    msg = _findings(_zone_report("MFI14"), is_("MFI14_zone", "neutral"))[0].message
-    assert "MFI14 lt 50" in msg and "trap 13" in msg
-
-
-def test_the_observed_labels_are_still_rejected_because_the_platform_rejects_them():
-    """omega must not emit a payload the platform refuses."""
-    from omega.conditions import in_
-    f = _findings(_zone_report("ADX"), in_("ADX14_zone", ["trending", "developing"]))
-    assert [x for x in f if x.severity == "error"]
+def test_the_135_measurement_supersedes_the_disjoint_record():
+    from omega.conditions import observed_vocabulary
+    # the 135 render covered every header the 08-24 record names (ADX14, MFI14, RSI14, RSI7, K), so none is left
+    assert observed_vocabulary() == {}
 
 
 def test_a_consistent_zone_header_draws_nothing():

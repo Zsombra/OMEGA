@@ -1,0 +1,142 @@
+{
+ "_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's parameters, served identically on every metric of extraction 20261026",
+ "chainOuterParameters": {
+  "aggregate": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 24,
+    "description": "How many of this column's newest bars are averaged into one value.",
+    "minimum": 1,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "efficiency": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 20,
+    "description": "How many bar-to-bar changes of this column the ratio measures; it reads one more bar than that. Null when the newest or oldest bar it reads has no value.",
+    "minimum": 1,
+    "required": false,
+    "unit": "seriesChanges"
+   }
+  },
+  "linregSlope": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 20,
+    "description": "How many of this column's newest bars the regression is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+    "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "maxShare": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 24,
+    "description": "How many of this column's newest bars the share is taken over. Bars with no value are left out.",
+    "minimum": 1,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "pctl": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 20,
+    "description": "How many of this column's bars before the newest the newest is ranked against; it reads the newest bar too. Null when the newest or oldest bar it reads has no value.",
+    "minimum": 1,
+    "required": false,
+    "unit": "priorElements"
+   }
+  },
+  "rank": {
+   "ordering": {
+    "defaultValue": "hi",
+    "description": "Which end of the ranked set rank 1 names: Highest, Lowest, Furthest from zero, or Closest to zero. The magnitude pair is offered only where the metric can be negative.",
+    "required": false
+   }
+  },
+  "rollingMax": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 20,
+    "description": "How many of this column's newest bars the maximum is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+    "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "rollingMin": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 20,
+    "description": "How many of this column's newest bars the minimum is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+    "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "stddev": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 20,
+    "description": "How many of this column's newest bars the standard deviation is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+    "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "trajectory": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 4,
+    "description": "How many of this column's newest bars the trajectory shows, including bars with no value — at least 2, because the trend compares the oldest present reading with the newest.",
+    "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "zscore": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "defaultValue": 20,
+    "description": "How many of this column's newest bars the z-score is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+    "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  }
+ }
+}

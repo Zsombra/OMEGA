@@ -1107,40 +1107,165 @@
    ],
    "note": "The platform publishes the indicator as native metrics, so the family is selected, not constructed. Both legs are non-negative 0-100 indices of comparable size, so the spread's sign is the dominant side.",
    "decidedOn": "2026-10-12"
-  }
- ],
- "blocked": [
+  },
   {
    "id": "zscore",
    "name": "Z-score / standardisation",
-   "cause": "operator-absent",
-   "needs": "stddev",
-   "note": "The single most consequential absence. Blocks every statistical-arbitrage normalisation."
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "zscore",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "zscore",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    }
+   ],
+   "note": "v135 zscore: (x - mean) / sigma (population) over the window, served with five zoneBands (extreme low < -2 ... extreme high > 2); rendered close_z20 / dist_VWAP_z20.",
+   "supersedes": {
+    "cause": "operator-absent",
+    "needs": "stddev",
+    "note": "The single most consequential absence. Blocks every statistical-arbitrage normalisation.",
+    "until": "contract 135 (2026-10-26)"
+   }
   },
+  {
+   "id": "vol-of-vol",
+   "name": "Volatility of volatility",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "ATR_PCT",
+     "transformId": "stddev",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    }
+   ],
+   "note": "v135 stddev over the ATR% series.",
+   "supersedes": {
+    "cause": "operator-absent",
+    "needs": "stddev",
+    "until": "contract 135 (2026-10-26)"
+   }
+  },
+  {
+   "id": "ls-slope",
+   "name": "Least-squares trend slope",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "linregSlope",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    }
+   ],
+   "note": "v135 linregSlope: a fitted least-squares slope, not trajectory's first-and-last comparison.",
+   "supersedes": {
+    "cause": "operator-absent",
+    "needs": "slope",
+    "note": "trajectory gives a first-and-last comparison, not a fitted slope.",
+    "until": "contract 135 (2026-10-26)"
+   }
+  },
+  {
+   "id": "ts-percentile",
+   "name": "Value in its own historical percentile",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "pctl",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    }
+   ],
+   "note": "v135 pctl: the newest value's percentile among the window's prior elements (unit priorElements); window up to 63 since columnLookback is 64.",
+   "supersedes": {
+    "cause": "operator-absent",
+    "needs": "percentile over a window",
+    "note": "Bounded by the 32-bar lookback cap even if added.",
+    "until": "contract 135 (2026-10-26)"
+   }
+  },
+  {
+   "id": "rolling-minmax",
+   "name": "Rolling min / max of a series",
+   "domain": "statistical",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "rollingMin",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "rollingMax",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    }
+   ],
+   "note": "v135 rollingMin / rollingMax return the extreme itself.",
+   "supersedes": {
+    "cause": "operator-absent",
+    "needs": "min / max",
+    "note": "maxShare returns a share, never the max itself.",
+    "until": "contract 135 (2026-10-26)"
+   }
+  }
+ ],
+ "blocked": [
   {
    "id": "bollinger-derived",
    "name": "Bollinger Bands on a derived series",
    "attribution": "Bollinger",
    "cause": "operator-absent",
-   "needs": "stddev + a coefficient term"
+   "needs": "mean +- k x stddev as one column (stddev and aggregate exist since v135, but no column multiplies by a coefficient or adds two columns)",
+   "supersedes": {
+    "needs": "stddev + a coefficient term",
+    "until": "contract 135 (2026-10-26)"
+   }
   },
   {
    "id": "sharpe",
    "name": "Sharpe / information ratio",
    "cause": "operator-absent",
-   "needs": "stddev"
-  },
-  {
-   "id": "vol-of-vol",
-   "name": "Volatility of volatility",
-   "cause": "operator-absent",
-   "needs": "stddev"
+   "needs": "a ratio of two windowed statistics (mean / stddev); both exist as columns since v135, but no column divides one by the other",
+   "supersedes": {
+    "needs": "stddev",
+    "until": "contract 135 (2026-10-26)"
+   }
   },
   {
    "id": "vol-cones",
    "name": "Historical-volatility cones",
    "cause": "operator-absent",
-   "needs": "stddev + percentile"
+   "needs": "a term structure of stddev windows beside a pctl of each - each piece exists since v135; a cone across windows is a composition no column builds",
+   "supersedes": {
+    "needs": "stddev + percentile",
+    "until": "contract 135 (2026-10-26)"
+   }
   },
   {
    "id": "correlation",
@@ -1188,13 +1313,6 @@
    "needs": "slope"
   },
   {
-   "id": "ls-slope",
-   "name": "Least-squares trend slope",
-   "cause": "operator-absent",
-   "needs": "slope",
-   "note": "trajectory gives a first-and-last comparison, not a fitted slope."
-  },
-  {
    "id": "hurst",
    "name": "Hurst exponent / R-S analysis",
    "attribution": "Mandelbrot",
@@ -1208,24 +1326,10 @@
    "needs": "slope + log"
   },
   {
-   "id": "ts-percentile",
-   "name": "Value in its own historical percentile",
-   "cause": "operator-absent",
-   "needs": "percentile over a window",
-   "note": "Bounded by the 32-bar lookback cap even if added."
-  },
-  {
    "id": "percentile-vol-regime",
    "name": "Percentile-based volatility regime",
    "cause": "operator-absent",
    "needs": "percentile"
-  },
-  {
-   "id": "rolling-minmax",
-   "name": "Rolling min / max of a series",
-   "cause": "operator-absent",
-   "needs": "min / max",
-   "note": "maxShare returns a share, never the max itself."
   },
   {
    "id": "higher-moments",
@@ -1345,5 +1449,6 @@
   "The 2026-09-09 caveat that these 'feed no signal module' and so are not scoreable is moot since contract 108:",
   "there is no score, and a condition over any of them is a full entry gate."
  ],
- "_reextraction_2026-10-13": "Three families re-specified against the 108.4.0 corpus (scale-dependent-efficiency, flow-toxicity, perp-spot-cvd); each keeps its previous spec under `supersedes`."
+ "_reextraction_2026-10-13": "Three families re-specified against the 108.4.0 corpus (scale-dependent-efficiency, flow-toxicity, perp-spot-cvd); each keeps its previous spec under `supersedes`.",
+ "_reextraction_2026-10-26": "Contract v135 added zscore, stddev, linregSlope, pctl, rollingMin and rollingMax: five operator-absent families (zscore, vol-of-vol, ls-slope, ts-percentile, rolling-minmax) moved to buildable, each keeping its blocked record under `supersedes`; bollinger-derived, sharpe and vol-cones stay blocked on the composition that is still missing. Every column shape involved is rendered in the 2026-10-26 coverage sweep."
 }

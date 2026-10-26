@@ -31,7 +31,8 @@ because a silently-ignored `window` usually means you meant a different transfor
 |---|---|---|
 | `bars` | `"all"` | **includes the live forming bar** |
 | `window` (trajectory) | 4 | 5 headers |
-| `window` (efficiency) | 21 | needs 21 *points* — N moves needs N+1 |
+| `window` (efficiency) | 20 | counts bar-to-bar **changes** since contract v135 and reads `window + 1` bars (the default reads the same 21 bars as before); an explicit `w` written before v135 means `w − 1` now |
+| `window` (zscore, stddev, linregSlope, pctl, rollingMin, rollingMax) | 20 | v135; the header carries it: `RSI14_z20`, `dist_EMA20_slope10` |
 | `window` (aggregate/maxShare) | 24 | |
 | `offset` | 0 | current resolved value — and **capped at 8 in practice**, see below |
 | `ordering` | `"hi"` | rejected outright if the metric doesn't offer `hi` |
@@ -242,7 +243,9 @@ Each metric×transform pair documents its own null behaviour, and several are wo
 internalising because they are *silent*, not errors:
 
 - `efficiency` returns null when the window holds fewer than two non-null points, **or when
-  every consecutive delta is zero** — a perfectly flat series has no efficiency.
+  every consecutive delta is zero** — a perfectly flat series has no efficiency. Since v135 it is also null when the
+  newest or oldest bar it reads is missing, or the series is shorter than `window + 1` (coins with session gaps,
+  young listings).
 - `maxShare` returns null when the window totals zero — a share of nothing is not a number.
 - `spread` returns null when the **second** operand is zero.
 - `rank` returns null when the ranked universe has no entry for the asset.

@@ -16,14 +16,16 @@ import pytest
 from omega import condition_vocabulary as CV
 
 ROOT = Path(__file__).resolve().parents[1]
-# The schema the manifest names: the 110.13.0 (v111) capture since 2026-10-16 (the 110.8.0 one of 2026-10-15, the
-# 110.2.0 one of 2026-10-14 and the 108.0.0 one are kept below as history).
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
+# The schema the manifest names: the 135.2.0 capture since 2026-10-26 (the 110.13.0 one of 2026-10-16, the 110.8.0
+# one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the 108.0.0 one are kept below as history).
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
+SCHEMA_110_13 = ROOT / "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
 SCHEMA_110_8 = ROOT / "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
 SCHEMA_110_2 = ROOT / "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
 SCHEMA_108 = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
 MOVES_110 = json.loads((ROOT / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))
 MOVES_110_8 = json.loads((ROOT / "data/contract/metrics/_moves_110_8.json").read_text(encoding="utf-8"))
+MOVES_135 = json.loads((ROOT / "data/contract/metrics/_moves_135.json").read_text(encoding="utf-8"))
 DOC = json.loads(SCHEMA.read_text(encoding="utf-8"))
 V = CV.vocabulary()
 G = V["grammar"]
@@ -49,8 +51,10 @@ def _in(doc: dict, ptr: str) -> str:
 
 
 def _enum_in(path: Path, key: str = "metric") -> list[str]:
+    """`key`'s column enum in the capture at `path`, from that capture's OWN derivation: since v115.1 a discriminated
+    union is `oneOf`, so today's pointers do not re-root into a capture from before it."""
     doc = json.loads(path.read_text(encoding="utf-8"))
-    return CV.resolve(doc, _in(doc, V["reportColumn"][key]["pointer"]))["enum"]
+    return CV.derive(doc, source=path.name, source_sha256="")["reportColumn"][key]["enum"]
 
 
 def _arm(op: str) -> dict:
@@ -64,9 +68,9 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261016T031811Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "110.13.0",
-                           "buildSha": "86df42d3dd143c87be57490ba78b2005a0527bb7",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261026T062718Z.json",
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "135.2.0",
+                           "buildSha": "98d29c45221aa16a7a0160173c0105220160119d",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -83,7 +87,9 @@ def test_every_pointer_resolves_to_what_the_inventory_says_is_there():
     assert CV.resolve(DOC, G["hold"]["pointer"]) == G["hold"]["schema"]
     assert CV.resolve(DOC, G["group"]["opPointer"])["enum"] == G["group"]["ops"]
     assert CV.resolve(DOC, G["group"]["holdPointer"]) == G["hold"]["schema"]
-    assert G["group"]["members"]["itemsRef"] == G["definitionPointer"]          # members are definitions again
+    # members are definitions again: since v116 both name the shared shape, #/$defs/conditionNode
+    assert CV.resolve(DOC, G["definitionPointer"]) == {"$ref": "#/$defs/conditionNode"}
+    assert G["group"]["members"]["itemsRef"] == "/stage_strategy_draft/inputSchema/$defs/conditionNode"
     assert CV.resolve(DOC, G["conditionRef"]["pointer"])["properties"]["kind"]["const"] == "conditionRef"
     for key in ("metric", "transformId", "chainedTransformId"):
         entry = V["reportColumn"][key]
@@ -145,9 +151,12 @@ def test_the_older_arms_are_unchanged_since_91():
 
 
 def test_every_clause_and_group_carries_the_same_hold_and_a_ref_carries_none():
+    # v115.1: an integer publishes the safe-integer maximum (9,007,199,254,740,991) - acceptance did not move
     assert G["hold"]["schema"] == {"additionalProperties": False,
-                                   "properties": {"atLeast": {"minimum": 1, "type": "integer"},
-                                                  "of": {"minimum": 1, "type": "integer"}},
+                                   "properties": {"atLeast": {"maximum": 9007199254740991, "minimum": 1,
+                                                              "type": "integer"},
+                                                  "of": {"maximum": 9007199254740991, "minimum": 1,
+                                                         "type": "integer"}},
                                    "required": ["atLeast", "of"], "type": "object"}
     assert all("hold" in arm["required"] for arm in G["clauseArms"])
     assert "hold" in G["group"]["required"]
@@ -183,14 +192,16 @@ def test_what_is_served_per_header_names_the_same_thirteen_operators():
 # --- the column enums -----------------------------------------------------------------------------
 def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
     """171 at 108; 177 since 110 (MACD, PPO, KC_MID retired, nine added - data/contract/metrics/_moves_110.json); 183
-    since 110.8 (six added, none retired - _moves_110_8.json)."""
+    since 110.8 (six added, none retired - _moves_110_8.json); 226 since 135 (43 added, none retired - _moves_135.json:
+    seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1) and the six v135 statistics in both transform enums."""
     col = V["reportColumn"]
-    assert col["metric"]["count"] == 183 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["count"] == 226 == len(set(col["metric"]["enum"]))
+    stats = ["zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"]
     assert col["transformId"]["enum"] == [
         "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "crossDetect", "aggregate",
-        "efficiency", "maxShare", "rank", "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist",
+        "efficiency", "maxShare", *stats, "rank", "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist",
         "nearestZoneAge", "levelInteraction"]
-    assert col["chainedTransformId"]["enum"] == ["trajectory", "aggregate", "efficiency", "maxShare", "rank"]
+    assert col["chainedTransformId"]["enum"] == ["trajectory", "aggregate", "efficiency", "maxShare", *stats, "rank"]
     assert "buffer" in col["fields"]       # v100: "buffer, a column knob declared by levelInteraction only"
 
 
@@ -208,7 +219,7 @@ def _enum_108() -> list[str]:
 
 
 def test_the_110_enum_is_the_108_enum_moved_exactly_as_v110_says():
-    old, new = _enum_108(), V["reportColumn"]["metric"]["enum"]
+    old, new = _enum_108(), _enum_in(SCHEMA_110_13)
     assert set(old) - set(new) == set(MOVES_110["retired"])
     assert set(new) - set(old) == set(MOVES_110["added"]) | set(MOVES_110_8["added"])
     assert [m for m in old if m in new] == [m for m in new if m in old]      # the survivors keep their platform order
@@ -225,13 +236,20 @@ def test_v111_moved_no_column_enum_only_the_envelope():
     """110.13.0 (v111): the stage's arguments left the `request` envelope; every column enum is the 110.8.0 one, and
     the eight axes are byte-identical once the 110.8.0 local $refs are re-rooted (measured 2026-10-16)."""
     for key in ("metric", "transformId", "chainedTransformId"):
-        assert _enum_in(SCHEMA_110_8, key) == V["reportColumn"][key]["enum"], key
+        assert _enum_in(SCHEMA_110_8, key) == _enum_in(SCHEMA_110_13, key), key
     old = json.loads(SCHEMA_110_8.read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
-    new = DOC["stage_strategy_draft"]["inputSchema"]
+    new = json.loads(SCHEMA_110_13.read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
     assert set(old["properties"]) == {"request"} and old["required"] == ["request"]
     assert set(new["properties"]) == {"strategyId", "draftVersion", "axes"} and new["required"] == ["draftVersion", "axes"]
     flat = json.dumps(old["properties"]["request"], sort_keys=True).replace("#/properties/request/", "#/")
     assert json.loads(flat) == new
+
+
+def test_the_135_enum_is_the_110_13_enum_plus_the_43():
+    old, new = _enum_in(SCHEMA_110_13), V["reportColumn"]["metric"]["enum"]
+    assert MOVES_135["retired"] == {} and set(old) <= set(new)
+    assert set(new) - set(old) == set(MOVES_135["added"]) and len(MOVES_135["added"]) == 43
+    assert [m for m in new if m in old] == old                                 # the 183 keep their platform order
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------

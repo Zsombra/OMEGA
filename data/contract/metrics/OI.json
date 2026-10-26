@@ -20,7 +20,7 @@
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
@@ -29,13 +29,49 @@
     {
       "id": "aggregate",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
       "id": "efficiency",
       "maximums": {
-        "window": 32
+        "window": 63
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
       }
     },
     {

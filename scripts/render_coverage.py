@@ -55,6 +55,11 @@ SEEN_FILES = [
     # zero refusals, zero predicted-but-not-rendered (data/audit/coverage_sweep_2026-10-14.json).
     "_coverage_sweep_2026-10-14.json",
     "_coverage_sweep_2026-10-15.json",   # the re-extraction at 110.8.0: 1,154 shapes, 1,738 headers, 0 refusals
+    # 2026-10-26: the 226-metric re-extraction at contract 135.2.0 - the 43 added metrics, the six v135 statistics on
+    # every series home and as chain outers, efficiency back over distance / spread. The first sweep after v123, so
+    # its headers carry today's codes. 19,450 shapes, 20,697 headers, zero refusals, zero predicted-but-not-rendered
+    # (data/audit/coverage_sweep_2026-10-26.json).
+    "_coverage_sweep_2026-10-26.json",
 ]
 
 

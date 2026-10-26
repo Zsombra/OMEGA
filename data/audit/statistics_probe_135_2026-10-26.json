@@ -1,0 +1,1121 @@
+{
+ "_what": "Contract v135/v134 probe: one preview_strategy_report render per column (BTC, 1h anchor, detail detailed), read-only over the mcporter CLI, 2026-10-26 at 135.2.0 (build 98d29c45). The six v135 statistics on an atom and as a chain outer, efficiency windows, and the v134 MTF replacement columns.",
+ "capturedAt": "2026-10-26",
+ "contractVersion": "135.2.0",
+ "renders": [
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "zscore",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_z20",
+     "meaning": "RSI14_z20: z-score over the last 20 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 176,
+      "maxAtLeast": 176,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "zscore",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "RSI14_z10",
+     "meaning": "RSI14_z10: z-score over the last 10 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 186,
+      "maxAtLeast": 186,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "chainedTransformId": "zscore",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "dist_EMA20_z10",
+     "meaning": "dist_EMA20: % from current price to EMA20. dist_EMA20_z10: z-score over the last 10 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 180,
+      "maxAtLeast": 180,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ],
+    "chainedTransformId": "zscore",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "EMA5_EMA13_spread_z10",
+     "meaning": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. EMA5_EMA13_spread_z10: z-score over the last 10 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 187,
+      "maxAtLeast": 187,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "stddev",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_sd20",
+     "meaning": "RSI14_sd20: population standard deviation over the last 20 points, in RSI14's own units; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 176,
+      "maxAtLeast": 176,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "stddev",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "RSI14_sd10",
+     "meaning": "RSI14_sd10: population standard deviation over the last 10 points, in RSI14's own units; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 186,
+      "maxAtLeast": 186,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "chainedTransformId": "stddev",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "dist_EMA20_sd10",
+     "meaning": "dist_EMA20: % from current price to EMA20. dist_EMA20_sd10: population standard deviation over the last 10 points, in dist_EMA20's own units; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 180,
+      "maxAtLeast": 180,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ],
+    "chainedTransformId": "stddev",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "EMA5_EMA13_spread_sd10",
+     "meaning": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. EMA5_EMA13_spread_sd10: population standard deviation over the last 10 points, in EMA5_EMA13_spread's own units; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 187,
+      "maxAtLeast": 187,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "linregSlope",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_slope20",
+     "meaning": "RSI14_slope20: least-squares slope over the last 20 points, per bar, in RSI14's own units — positive is rising; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 176,
+      "maxAtLeast": 176,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "linregSlope",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "RSI14_slope10",
+     "meaning": "RSI14_slope10: least-squares slope over the last 10 points, per bar, in RSI14's own units — positive is rising; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 186,
+      "maxAtLeast": 186,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "chainedTransformId": "linregSlope",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "dist_EMA20_slope10",
+     "meaning": "dist_EMA20: % from current price to EMA20. dist_EMA20_slope10: least-squares slope over the last 10 points, per bar, in dist_EMA20's own units — positive is rising; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 180,
+      "maxAtLeast": 180,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ],
+    "chainedTransformId": "linregSlope",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "EMA5_EMA13_spread_slope10",
+     "meaning": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. EMA5_EMA13_spread_slope10: least-squares slope over the last 10 points, per bar, in EMA5_EMA13_spread's own units — positive is rising; null when the newest or oldest point is missing or fewer than two are present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 187,
+      "maxAtLeast": 187,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "pctl",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_pctl20",
+     "meaning": "RSI14_pctl20: percentile of the newest value among the 20 values before it, 0–100, ties counted at or below; null when the newest or oldest of them is missing or no prior value is present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 175,
+      "maxAtLeast": 175,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "pctl",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "RSI14_pctl10",
+     "meaning": "RSI14_pctl10: percentile of the newest value among the 10 values before it, 0–100, ties counted at or below; null when the newest or oldest of them is missing or no prior value is present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 185,
+      "maxAtLeast": 185,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "chainedTransformId": "pctl",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "dist_EMA20_pctl10",
+     "meaning": "dist_EMA20: % from current price to EMA20. dist_EMA20_pctl10: percentile of the newest value among the 10 values before it, 0–100, ties counted at or below; null when the newest or oldest of them is missing or no prior value is present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 179,
+      "maxAtLeast": 179,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ],
+    "chainedTransformId": "pctl",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "EMA5_EMA13_spread_pctl10",
+     "meaning": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. EMA5_EMA13_spread_pctl10: percentile of the newest value among the 10 values before it, 0–100, ties counted at or below; null when the newest or oldest of them is missing or no prior value is present.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 186,
+      "maxAtLeast": 186,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rollingMin",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_min20",
+     "meaning": "RSI14_min20: lowest value over the last 20 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 176,
+      "maxAtLeast": 176,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rollingMin",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "RSI14_min10",
+     "meaning": "RSI14_min10: lowest value over the last 10 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 186,
+      "maxAtLeast": 186,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "chainedTransformId": "rollingMin",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "dist_EMA20_min10",
+     "meaning": "dist_EMA20: % from current price to EMA20. dist_EMA20_min10: lowest value over the last 10 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 180,
+      "maxAtLeast": 180,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ],
+    "chainedTransformId": "rollingMin",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "EMA5_EMA13_spread_min10",
+     "meaning": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. EMA5_EMA13_spread_min10: lowest value over the last 10 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 187,
+      "maxAtLeast": 187,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rollingMax",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_max20",
+     "meaning": "RSI14_max20: highest value over the last 20 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 176,
+      "maxAtLeast": 176,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rollingMax",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "RSI14_max10",
+     "meaning": "RSI14_max10: highest value over the last 10 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 186,
+      "maxAtLeast": 186,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "chainedTransformId": "rollingMax",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "dist_EMA20_max10",
+     "meaning": "dist_EMA20: % from current price to EMA20. dist_EMA20_max10: highest value over the last 10 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 180,
+      "maxAtLeast": 180,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ],
+    "chainedTransformId": "rollingMax",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "EMA5_EMA13_spread_max10",
+     "meaning": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. EMA5_EMA13_spread_max10: highest value over the last 10 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 187,
+      "maxAtLeast": 187,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "close_er",
+     "meaning": "close_er: efficiency ratio over the last 20 changes, |last − first| ÷ Σ|change| — 1 is a straight move, near 0 is chop.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 189,
+      "maxAtLeast": 189,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 63
+   },
+   "outputs": [
+    {
+     "header": "close_er",
+     "meaning": "close_er: efficiency ratio over the last 63 changes, |last − first| ÷ Σ|change| — 1 is a straight move, near 0 is chop.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 146,
+      "maxAtLeast": 146,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "RSI14_er",
+     "meaning": "RSI14_er: efficiency ratio over the last 10 changes, |last − first| ÷ Σ|change| — 1 is a straight move, near 0 is chop.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 185,
+      "maxAtLeast": 185,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "EMA20",
+    "transformId": "distance",
+    "chainedTransformId": "efficiency",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "dist_EMA20_er",
+     "meaning": "dist_EMA20: % from current price to EMA20. dist_EMA20_er: efficiency ratio over the last 10 changes, |last − first| ÷ Σ|change| — 1 is a straight move, near 0 is chop.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 179,
+      "maxAtLeast": 179,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "MA_ALIGN",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "lower"
+    }
+   },
+   "outputs": [
+    {
+     "header": "MAalign_ltf",
+     "meaning": "MAalign_ltf: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "bullish",
+      "bearish",
+      "mixed"
+     ],
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 52,
+      "maxAtLeast": 52,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "lower"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_ltf_zone",
+     "meaning": "RSI14_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "overbought",
+      "oversold",
+      "neutral"
+     ],
+     "conditionHold": {
+      "timeframe": "15m",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "ADX",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "lower"
+    }
+   },
+   "outputs": [
+    {
+     "header": "ADX14_ltf_zone",
+     "meaning": "ADX14_ltf_zone: thresholded regime (weak / developing / trending / extreme), banded weak < 20 ≤ developing < 25 ≤ trending < 50 ≤ extreme.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "weak",
+      "developing",
+      "trending",
+      "extreme"
+     ],
+     "conditionHold": {
+      "timeframe": "15m",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     }
+    }
+   ]
+  },
+  {
+   "column": {
+    "metric": "PERP_SPOT_GAP",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "perpSpotGap",
+     "meaning": "perpSpotGap: value.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     }
+    }
+   ]
+  }
+ ]
+}

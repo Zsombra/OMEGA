@@ -123,7 +123,8 @@ def test_families_blocked_groups_by_cause(capsys):
     assert main(["families", "--blocked"]) == 0
     out = capsys.readouterr().out
     assert "operator-absent" in out and "data-absent" in out
-    assert "needs stddev" in out, "a blocked family must say which operator it wants"
+    # since v135 stddev exists; the stddev families that stay blocked name the composition still missing
+    assert "needs covariance" in out, "a blocked family must say which operator it wants"
 
 
 def test_families_blocked_can_filter_to_one_cause(capsys):

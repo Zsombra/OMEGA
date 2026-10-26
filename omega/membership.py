@@ -83,7 +83,7 @@ def _signal_data() -> dict[str, list[dict]]:
 # enum [anchor, lower, regime]; a custom section carries no timeframe of its own). `lower` is
 # the same word on both sides. `signalHigher` is the vocabulary's one rel above the anchor:
 # the platform's own includeHigherTimeframe template is ADX / RSI14 / MA_ALIGN `value` at
-# {rel: regime} and includeMtfConfluence holds MA_ALIGN at lower, anchor and regime
+# {rel: regime} and includeMtfConfluence held MA_ALIGN at lower, anchor and regime (retired at v134)
 # (data/contract/templates/platform/_all.json); a regime column renders with the `_htf` infix
 # (RSI14_htf, data/contract/columns/_renders_tfvariants.json), the stem of the `htf_*` ids
 # whose data sits at `signalHigher`. That a rel:regime column clears an `htf_*` mismatch is

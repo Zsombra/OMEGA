@@ -105,5 +105,6 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     # the oscillators; levelInteraction on 43 levels); 920 / 8367 on 2026-10-12 (bandTouch retired)
     # 947 / 9103 since the re-extraction at 110.2.0, 2026-10-14 (177 metrics, data/contract/metrics/_moves_110.json).
     # 981 / 10257 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json).
-    assert len(enumerate_shapes(contract=contract)) == 981
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 10257
+    # 2604 / 30761 since the re-extraction at 135.2.0, 2026-10-26 (data/contract/metrics/_moves_135.json).
+    assert len(enumerate_shapes(contract=contract)) == 2604
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 30761

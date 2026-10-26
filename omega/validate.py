@@ -12,13 +12,32 @@ from typing import Iterable
 from .contract import Contract, load
 from .types import Column, CustomSection, PlatformSection, Report, Section
 
+# The six series statistics contract v135 added (README "Contract history - v135"), offered on every metric with a
+# series home and as a chain outer over every relation.
+SERIES_STATISTICS = {"zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"}
+
 # Transforms that walk a series and therefore honour `bars` / `window`.
-SERIES_TRANSFORMS = {"trajectory", "efficiency", "maxShare", "aggregate"}
+SERIES_TRANSFORMS = {"trajectory", "efficiency", "maxShare", "aggregate"} | SERIES_STATISTICS
 
 # The chain successors `spread` offers that BUILD A SERIES, as opposed to `rank`, which
-# reduces to an ordinal and is restricted separately by rankableSpreadOperands. Chaining
-# into one of these needs a per-bar series on both sides of the spread.
-SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"}
+# reduces to an ordinal. Chaining into one of these needs a per-bar series on both sides of the spread. Since v135
+# the operands each outer accepts are served (chainedOuters.<outer>.operands; rankableSpreadOperands before).
+SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"} | SERIES_STATISTICS
+
+
+def chained_operands(spec: dict, outer: str) -> list | None:
+    """The spread operands a chain into `outer` accepts, or None where nothing narrows them. Since v135 the transform
+    entry serves `chainedOuters` (keyed by its chainSuccessors, each {operands, windowMaximum}; operands null where the
+    inner names none); a corpus extracted before v135 carries `rankableSpreadOperands`, rank's list alone."""
+    outers = spec.get("chainedOuters")
+    if outers is not None:
+        return (outers.get(outer) or {}).get("operands")
+    return spec.get("rankableSpreadOperands") if outer == "rank" else None
+
+
+def chained_window_maximum(spec: dict, outer: str) -> int | None:
+    """The largest `window` a chain into `outer` accepts (v135 chainedOuters.<outer>.windowMaximum), else None."""
+    return ((spec.get("chainedOuters") or {}).get(outer) or {}).get("windowMaximum")
 
 # A bare `CLOSE x value` column - no window, no offset - already reports
 # columnLookback 24/32. The contract publishes `value` as taking ONLY `offset` and no
@@ -266,7 +285,7 @@ def validate_column(
                     "error", "REPORT_COLUMN_CHAIN_UNSUPPORTED", f"{path}.ordering",
                     f"chained rank on {m.metric} x {tid} does not offer {ordering!r}. "
                     f"Allowed: {allowed}"))
-            rankable = spec.get("rankableSpreadOperands")
+            rankable = chained_operands(spec, "rank")
             if rankable is not None:
                 operand = column.inputs[0].metric if column.inputs else None
                 if operand not in rankable:
@@ -296,6 +315,23 @@ def validate_column(
                     f"sides, and {operand!r} is timeframe-inert - it resolves from the "
                     f"bundle, so the relation is a single scalar with no series to "
                     f"build. Use a candle-backed operand, or drop the chain."))
+            else:
+                # v135: "A series chain over a spread operand with no per-bar value is no longer offered" - the
+                # operands each outer accepts are served, so the served list is the rule where it exists.
+                served = chained_operands(spec, chained)
+                if served is not None and operand not in served:
+                    out.append(Finding(
+                        "error", "REPORT_COLUMN_CHAIN_UNSUPPORTED", f"{path}.inputs[0]",
+                        f"({m.metric} x spread x {chained}) is only offered over the operands "
+                        f"{served}, not {operand!r} (chainedOuters.{chained}.operands)."))
+        window_max = chained_window_maximum(spec, chained)
+        if window_max is not None and column.window is not None and column.window > window_max:
+            # v135: efficiency's largest window is one below columnLookback (it reads window + 1 bars), and pctl's
+            # likewise; each outer's maximum is served (chainedOuters.<outer>.windowMaximum).
+            out.append(Finding(
+                "error", "LOOKBACK_EXCEEDED", f"{path}.window",
+                f"window={column.window} exceeds the maximum {window_max} the platform serves for the "
+                f"{chained} chain on {m.metric} x {tid} (chainedOuters.{chained}.windowMaximum)"))
 
     # --- offset that did nothing (BG-13), fixed at contract 94.0.0 --------------
     # Measured 2026-08-26 across 78 coins at a 4h anchor: MA_ALIGN, BB_TOUCH, EMA_CROSS

@@ -14,33 +14,168 @@
     {
       "id": "value",
       "maximums": {
-        "offset": 31
+        "offset": 63
       }
     },
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
-      }
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
     },
     {
       "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate"
-      ]
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "BUY_VOLUME",
+            "SELL_VOLUME",
+            "OBV"
+          ]
+        }
+      }
     },
     {
       "id": "aggregate",
       "maximums": {
-        "window": 32
-      }
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
     },
     {
       "id": "efficiency",
       "maximums": {
-        "window": 32
-      }
+        "window": 63
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Volume SMA (20)’s own 20-bar length."
     }
   ],
   "study": "relativeVolume",

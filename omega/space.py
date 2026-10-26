@@ -19,7 +19,8 @@ PARAMETERS ARE NOT ENUMERATED, DELIBERATELY
 to four metrics. Materialising that cross-product would produce millions of rows of
 no value. Parameters are axes you vary on a shape you have already chosen - and
 their EFFECTIVE values are not guessable, so ask the platform via omega.probe
-rather than assuming. `trajectory` defaults to window 4, `efficiency` to 21, and
+rather than assuming. `trajectory` defaults to window 4, `efficiency` to 20 changes (21 bars since v135; it was
+21 bars counted as 21 before), the six v135 statistics to 20, and
 `bars` to "all", which includes the live forming bar (cookbook trap #1).
 
 Pure local computation - performs no network or MCP calls.
@@ -31,11 +32,11 @@ from dataclasses import dataclass
 from .contract import Contract, Metric, load
 from .fanout import outputs_for
 from .types import Column, Operand, RelTimeframe
+from .validate import SERIES_CHAINS as _SERIES_CHAINS, chained_operands
 
-# Chain successors of `spread` that build a SERIES. Chaining into one needs a per-bar
-# series on both sides; `rank` reduces to an ordinal instead and is restricted by the
-# contract's own rankableSpreadOperands. Mirrors omega.validate.SERIES_CHAINS.
-_SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"}
+# Chain successors of `spread` that build a SERIES (omega.validate.SERIES_CHAINS). Chaining into one needs a per-bar
+# series on both sides; `rank` reduces to an ordinal instead. The operands each outer accepts are served
+# (chainedOuters since v135, rankableSpreadOperands for rank before).
 
 
 @dataclass(frozen=True)
@@ -104,12 +105,13 @@ def enumerate_shapes(expand_operands: bool = False,
                 for succ in (flags.get("chainSuccessors") or ()):
                     if succ == "rank" and expand_operands:
                         # Chaining to rank NARROWS the legal operand set. The contract
-                        # publishes rankableSpreadOperands: for EMA5 x spread that is
+                        # publishes the rankable operands (rankableSpreadOperands; chainedOuters.rank.operands
+                        # since v135): for EMA5 x spread that is
                         # ['EMA13'] alone, because "raw price-unit metrics never rank -
                         # rank the composition, not the level". Pairing the chain with
                         # all of spread's operands emitted 64 shapes omega's own
                         # validator refuses. See tests/test_space_validate_agreement.py.
-                        rankable = flags.get("rankableSpreadOperands")
+                        rankable = chained_operands(flags, "rank")
                         if rankable is not None and operand not in rankable:
                             continue
                         for o in (flags.get("chainedRankOrderings") or (None,)):
@@ -123,6 +125,10 @@ def enumerate_shapes(expand_operands: bool = False,
                         # for 357 enumerated shapes the platform refuses. See
                         # data/audit/spread_chain_operand.json.
                         continue
+                    elif (transform == "spread" and expand_operands and operand is not None
+                          and chained_operands(flags, succ) is not None
+                          and operand not in chained_operands(flags, succ)):
+                        continue        # v135: the outer is not offered over this operand
                     else:
                         out.append(ColumnShape(name, transform, succ, operand, ordering))
     return out

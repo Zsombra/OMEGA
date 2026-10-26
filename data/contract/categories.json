@@ -2,7 +2,7 @@
   "categories": [
     {
       "category": "price",
-      "metricCount": 22,
+      "metricCount": 26,
       "label": "Price",
       "purpose": "Read the raw traded price, the individual bar’s own open, high, low and close, its price sources (HL2, HLC3, OHLC4), and what the bar did: its candle shape, whether it gapped from the bar before, and how many bars ran one way.",
       "whenToUse": [
@@ -70,7 +70,7 @@
     },
     {
       "category": "trend",
-      "metricCount": 21,
+      "metricCount": 22,
       "label": "Trend",
       "purpose": "Describe direction, persistence, and price location relative to trend references.",
       "whenToUse": [
@@ -134,7 +134,7 @@
     },
     {
       "category": "volumeFlow",
-      "metricCount": 13,
+      "metricCount": 14,
       "label": "Volume & Flow",
       "purpose": "Describe participation and the balance of buying and selling pressure.",
       "whenToUse": [
@@ -203,7 +203,7 @@
     },
     {
       "category": "structure",
-      "metricCount": 54,
+      "metricCount": 90,
       "label": "Structure",
       "purpose": "Describe price location, reference levels, and active support or resistance zones.",
       "whenToUse": [
@@ -338,7 +338,7 @@
     },
     {
       "category": "derived",
-      "metricCount": 7,
+      "metricCount": 8,
       "label": "Derived",
       "purpose": "Describe platform-owned cross-family classifications and convergence facts.",
       "whenToUse": [
@@ -562,17 +562,6 @@
       ]
     },
     {
-      "sectionKey": "includeMtfConfluence",
-      "moduleName": "mtfConfluence",
-      "displayName": "Multi-Timeframe Confluence",
-      "description": "Values-only per-rung view of MA alignment, RSI zone, and ADX zone across the lower, primary, and higher timeframes for cross-timeframe confluence",
-      "bulletPoints": [
-        "MA alignment at lower/primary/higher TF",
-        "RSI zone at lower/primary/higher TF",
-        "ADX zone at lower/primary/higher TF"
-      ]
-    },
-    {
       "sectionKey": "includeRegimeContext",
       "moduleName": "regimeContext",
       "displayName": "Regime Detection",
@@ -626,7 +615,7 @@
       "description": "Perp-vs-spot order-flow state: composite centralized-exchange spot CVD compared against perp CVD to classify spot-led accumulation, perp-led fragility, or confirmed moves (crypto coins a spot venue lists)",
       "bulletPoints": [
         "Flow state: confirmed, perp-led fragile, spot-led accumulation, or neutral",
-        "Divergence strength bucket from bounded rate gap",
+        "Bounded rate gap, and the divergence strength bucket read from it",
         "Volume-confirms flag from the composite read",
         "Crypto coins a spot venue lists only: every other coin renders null"
       ]
@@ -660,5 +649,18 @@
       ]
     }
   ],
-  "_refreshed": "2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+  "_refreshed": {
+    "at": "2026-10-26T07:08Z",
+    "contractVersion": "135.2.0",
+    "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261026T0708Z/_categories.json",
+    "moved": [
+      "price 22 -> 26",
+      "trend 21 -> 22",
+      "volumeFlow 13 -> 14",
+      "structure 54 -> 90",
+      "derived 7 -> 8",
+      "modules: includeMtfConfluence retired (README v134)"
+    ],
+    "previous": "2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+  }
 }
