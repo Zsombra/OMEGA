@@ -33,9 +33,10 @@
     },
     "window": {
      "defaultValue": 4,
-     "description": "Number of bars the trajectory spans: the newest `window` bars, present or not — at least 2, because the trend compares the oldest present reading with the newest.",
+     "description": "How many of this column's newest bars the trajectory shows, including bars with no value — at least 2, because the trend compares the oldest present reading with the newest.",
      "minimum": 2,
-     "required": false
+     "required": false,
+     "unit": "seriesElements"
     }
    },
    "calculationSummary": "Render the recent build-up plus its rising, falling, or flat direction.",
@@ -87,7 +88,7 @@
     "base",
     "inputs[0]"
    ],
-   "nullBehavior": "Returns null when either operand is null or the second operand is zero.",
+   "nullBehavior": "Returns null when either operand is null or the second operand is zero. A day or trading-session level met with a bar's own value reads null on a bar outside the UTC day or trading session the level was bound to, so a spread against a bar is null across the roll.",
    "operandRequired": true,
    "emits": 1,
    "chainSuccessorsWhenCandle": [
@@ -104,18 +105,19 @@
      "required": false
     },
     "window": {
-     "defaultValue": 21,
-     "description": "Number of bars in the window — N moves needs window N+1. The ratio reduces the values present among the newest `window` bars.",
+     "defaultValue": 20,
+     "description": "How many bar-to-bar changes of this column the ratio measures; it reads one more bar than that. Null when the newest or oldest bar it reads has no value.",
      "minimum": 1,
-     "required": false
+     "required": false,
+     "unit": "seriesChanges"
     }
    },
    "calculationSummary": "Measure how directly the series travelled: net movement divided by the total distance covered.",
-   "formula": "output = |{base}[last] - {base}[first]| / sum(|{base}[i] - {base}[i-1]|) over the newest {window} bars",
+   "formula": "output = |{base}[t] - {base}[t - {window}]| / sum(|{base}[i] - {base}[i-1]|) over the newest {window} changes",
    "operandOrder": [
     "base"
    ],
-   "nullBehavior": "Returns null when the window holds fewer than two non-null points, or when every consecutive delta is zero (a flat series has no efficiency).",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window reads (its changes plus one), when the newest or the oldest of them has no value, when fewer than two hold a value, or when every consecutive change is zero (a flat series has no efficiency).",
    "emits": 1,
    "range": [
     0,
@@ -160,9 +162,10 @@
     },
     "window": {
      "defaultValue": 24,
-     "description": "Number of bars in the window. The share reduces the values present among the newest `window` bars.",
+     "description": "How many of this column's newest bars the share is taken over. Bars with no value are left out.",
      "minimum": 1,
-     "required": false
+     "required": false,
+     "unit": "seriesElements"
     }
    },
    "calculationSummary": "Report how much of the window total sits in its single largest observation.",
@@ -183,16 +186,16 @@
    "parameters": {
     "ordering": {
      "defaultValue": "hi",
-     "description": "Which end of the universe rank 1 names: Highest, Lowest, Furthest from zero, or Closest to zero. The magnitude pair is offered only where the metric can be negative.",
+     "description": "Which end of the ranked set rank 1 names: Highest, Lowest, Furthest from zero, or Closest to zero. The magnitude pair is offered only where the metric can be negative.",
      "required": false
     }
    },
-   "calculationSummary": "Read the platform-computed ordinal for the base metric across the tracked universe. The ranked set holds current values only, so there is no historical ordinal to offset into.",
-   "formula": "output = ordinal({base} among the ranked universe, by the chosen ordering)",
+   "calculationSummary": "Read the ordinal of the base metric among its ranked set: the tracked universe for a metric the platform ranks exchange-wide, this report’s coins for a crowd metric. The ranked set holds current values only, so there is no historical ordinal to offset into.",
+   "formula": "output = ordinal({base} among its ranked set, by the chosen ordering)",
    "operandOrder": [
     "base"
    ],
-   "nullBehavior": "Returns null when the ranked universe carries no entry for the asset.",
+   "nullBehavior": "Returns null when the ranked set carries no entry for the asset.",
    "emits": 1,
    "note": "Current values only — no historical offset. Allowed orderings are per-metric policy (see rankOrderings), NOT derivable from whether the metric can be negative."
   },
@@ -221,9 +224,10 @@
     },
     "window": {
      "defaultValue": 24,
-     "description": "Number of observations included in the canonical mean.",
+     "description": "How many of this column's newest bars are averaged into one value.",
      "minimum": 1,
-     "required": false
+     "required": false,
+     "unit": "seriesElements"
     }
    },
    "calculationSummary": "Compute the mean of non-null values in the selected window.",
@@ -323,7 +327,7 @@
   "levelInteraction": {
    "calculationSummary": "Classify what the newest bar did against a price level: a touch within the buffer, or a rejection that pierced the level and closed back, on the side the prior close stood.",
    "formula": "output = levelInteraction(bar t, close t−1, {base}[t], {base} in force when bar t opened, buffer {buffer} bps)",
-   "nullBehavior": "Returns null when the series holds no prior bar, a price or the level at the newest bar is absent, the level in force when the bar opened is absent (the prior bar's level, for a level computed from its own bar), or either level is not positive.",
+   "nullBehavior": "Returns null when the series holds no prior bar, a price or the level at the newest bar is absent, the level in force when the bar opened is absent (the prior bar's level, for a level computed from its own bar), or either level is not positive. A day or trading-session level reads null on a bar outside the UTC day or trading session it was bound to, so the last bar before the roll is not classified against the next period's level.",
    "operandOrder": [
     "base"
    ],
@@ -341,6 +345,150 @@
    "label": "Level interaction",
    "emits": 1,
    "_emitsMeasured": "2026-10-13, get_strategy_column_contract at 108.4.0: one output on every case (plain, buffer 25, rel lower) - data/contract/columns/levelInteraction_108_4_2026-10-13.json"
+  },
+  "linregSlope": {
+   "calculationSummary": "Fit a straight line through the window and report its slope per bar, in the column’s own units.",
+   "formula": "output = least-squares slope of {base}[i] against its bar position i over the present values of the newest {window} bars",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window, when the newest or the oldest of them has no value, or when fewer than two hold a value.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "How many of this column's newest bars the regression is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+     "minimum": 2,
+     "required": false,
+     "unit": "seriesElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Regression slope",
+   "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "pctl": {
+   "calculationSummary": "Report what share of the prior values sit at or below the newest one, 0 to 100.",
+   "formula": "output = 100 * count({base}[t - k] <= {base}[t]) / count(present {base}[t - k]), k = 1 .. {window}",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window plus the newest, when the newest or the oldest of them has no value, or when no prior bar holds a value.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "How many of this column's bars before the newest the newest is ranked against; it reads the newest bar too. Null when the newest or oldest bar it reads has no value.",
+     "minimum": 1,
+     "required": false,
+     "unit": "priorElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Percentile",
+   "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "rollingMax": {
+   "calculationSummary": "Report the highest value of the window.",
+   "formula": "output = max(nonNull({base}[-{window}:]))",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window, or when the newest or the oldest of them has no value.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "How many of this column's newest bars the maximum is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+     "minimum": 2,
+     "required": false,
+     "unit": "seriesElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Rolling max",
+   "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "rollingMin": {
+   "calculationSummary": "Report the lowest value of the window.",
+   "formula": "output = min(nonNull({base}[-{window}:]))",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window, or when the newest or the oldest of them has no value.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "How many of this column's newest bars the minimum is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+     "minimum": 2,
+     "required": false,
+     "unit": "seriesElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Rolling min",
+   "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "stddev": {
+   "calculationSummary": "Measure how widely the window spreads around its mean, in the column’s own units.",
+   "formula": "output = sqrt(sum(({base}[i] - mean)^2) / count) over the present values of the newest {window} bars",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window, when the newest or the oldest of them has no value, or when fewer than two hold a value; a flat window reads 0.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "How many of this column's newest bars the standard deviation is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+     "minimum": 2,
+     "required": false,
+     "unit": "seriesElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Std deviation",
+   "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "zscore": {
+   "calculationSummary": "Measure how many standard deviations the newest value sits from its window's mean.",
+   "formula": "output = ({base}[t] - mean) / stdev, mean and population stdev over the present values of the newest {window} bars",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window, when the newest or the oldest of them has no value, when fewer than two hold a value, or when the window is flat (a standard deviation of 0).",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "How many of this column's newest bars the z-score is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
+     "minimum": 2,
+     "required": false,
+     "unit": "seriesElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Z-score",
+   "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   }
  },
  "privilegedTransforms": {

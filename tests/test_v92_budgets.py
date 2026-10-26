@@ -11,11 +11,15 @@ from omega.generate import PRESETS, plan
 
 SERVED_95 = {"sections": 32, "sectionColumns": 32, "columnLookback": 32, "distinctTimeframes": 8,
              "strategyConditions": 16, "conditionClauses": 16, "conditionFrameReads": 256, "reportNoteChars": 3200}
+# list_strategy_vocabulary at 135.2.0, 2026-10-26: columnLookback 64 (README v135), strategyConditions and
+# conditionClauses 32, and v123's required marketReadChars
+SERVED_135 = SERVED_95 | {"columnLookback": 64, "strategyConditions": 32, "conditionClauses": 32,
+                          "marketReadChars": 4000}
 
 
 def test_the_stored_budgets_are_the_served_ones():
     c = load()
-    assert c.budgets == SERVED_95
+    assert c.budgets == SERVED_135
     assert c.shared["previewExecutionLimits"] == {"maxResultChars": 150000, "deadlineMs": 15000}
 
 

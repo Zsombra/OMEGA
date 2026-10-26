@@ -79,8 +79,9 @@ def test_the_affected_set_is_exactly_the_candle_categoricals(contract):
     # fractal label are candle categoricals too. The 2026-08-28 probe measured the first seven; the eight joined after
     # v94 fixed the behaviour ("A candle label column at offset N reads bar t-N's label"), so they were never affected.
     MEASURED = ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "KC_SQUEEZE", "MA_ALIGN", "PRICE_ZONE", "ST_DIR"]
+    # and v135.1's TRADING_SESSION (asia / london / newYork / late, a fact of the read bar's open time)
     JOINED_AFTER_V94 = ["BAR_CONTAINMENT", "CANDLE_DOJI", "CANDLE_ENGULFING", "CANDLE_PIN", "GAP", "GAP_RANGE_CLEAR",
-                        "SWING_FRACTAL_LABEL"]
+                        "SWING_FRACTAL_LABEL", "TRADING_SESSION"]
     assert affected == sorted(MEASURED + JOINED_AFTER_V94)
     affected = MEASURED
     rec = json.loads(AUDIT.read_text(encoding="utf-8"))

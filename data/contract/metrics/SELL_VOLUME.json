@@ -17,32 +17,158 @@
     {
       "id": "value",
       "maximums": {
-        "offset": 31
+        "offset": 63
       }
     },
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
       "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate"
-      ]
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "BUY_VOLUME",
+            "OBV"
+          ]
+        }
+      }
     },
     {
       "id": "aggregate",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
       "id": "maxShare",
       "maximums": {
-        "window": 32
+        "window": 64
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
       }
     }
   ],

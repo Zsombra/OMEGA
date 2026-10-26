@@ -24,7 +24,7 @@
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     }
   ],

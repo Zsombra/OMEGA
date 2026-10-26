@@ -1,0 +1,26 @@
+{
+  "metric": "TRADING_SESSION",
+  "label": "Trading session",
+  "code": "tradingSession",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "asia",
+      "london",
+      "newYork",
+      "late"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    }
+  ],
+  "study": "barClock"
+}

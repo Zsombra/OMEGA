@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any
 
 from .contract import CONTRACT_DIR, DERIVED_DIR, ROOT
+from .preflight import union_key
 
 OUT = DERIVED_DIR / "condition_vocabulary_108.json"
 STAGE = "stage_strategy_draft"
@@ -95,12 +96,13 @@ def _ops(node: dict) -> list[str]:
 
 
 def _flatten(doc: dict, base: list, parts: list) -> list[tuple[list, dict]]:
-    """Every non-anyOf arm under a (possibly nested) anyOf, in schema order, as (pointer parts, node)."""
+    """Every non-union arm under a (possibly nested) anyOf / oneOf, in schema order, as (pointer parts, node)."""
     parts, node = _deref(doc, base, parts)
-    if "anyOf" in node:
+    key = union_key(node)
+    if key:
         out: list[tuple[list, dict]] = []
-        for i in range(len(node["anyOf"])):
-            out.extend(_flatten(doc, base, parts + ["anyOf", i]))
+        for i in range(len(node[key])):
+            out.extend(_flatten(doc, base, parts + [key, i]))
         return out
     return [(parts, node)]
 

@@ -14,27 +14,67 @@
     {
       "id": "value",
       "maximums": {
-        "offset": 31
+        "offset": 63
       }
     },
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
-      }
+        "window": 64
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
     },
     {
-      "id": "spread",
-      "chainSuccessors": [
-        "trajectory",
-        "aggregate"
-      ]
+      "id": "spread"
     },
     {
       "id": "aggregate",
       "maximums": {
-        "window": 32
-      }
+        "window": 64
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from RVOL (relative volume)’s own 20-bar length."
     },
     {
       "id": "rank"

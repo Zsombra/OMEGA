@@ -133,7 +133,8 @@ def effective_parameters(case: dict) -> dict:
     """The parameters the platform ACTUALLY applied - not the ones we sent.
 
     Defaults are not guessable and are not echoes of the request: `trajectory`
-    resolves window to 4, `efficiency` to 21, a chained `rank` resolves ordering to
+    resolves window to 4, `efficiency` to 21 (recorded before v135; since v135 the default is 20 CHANGES, the same
+    21 bars, and an explicit window w reads w + 1 bars), a chained `rank` resolves ordering to
     "hi", and `bars` resolves to "all" - which includes the live forming bar, so a
     trajectory's `now` slot repeats its last closed observation until that bar
     closes. Always read this rather than assuming.

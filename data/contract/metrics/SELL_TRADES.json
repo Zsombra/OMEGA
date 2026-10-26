@@ -17,32 +17,176 @@
     {
       "id": "value",
       "maximums": {
-        "offset": 31
+        "offset": 63
       }
     },
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
       "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate"
-      ]
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ]
+        }
+      }
     },
     {
       "id": "aggregate",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
       "id": "maxShare",
       "maximums": {
-        "window": 32
+        "window": 64
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
       }
     },
     {
@@ -51,6 +195,10 @@
   ],
   "study": "barTrades",
   "spreadOperands": [
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
     "TRADES",
     "BUY_TRADES",
     "REGIME_RUN_BARS",

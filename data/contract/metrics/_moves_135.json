@@ -1,0 +1,704 @@
+{
+ "_what": "What contracts 110.13.0-135.2.0 moved in the metric roster, measured 2026-10-26 by the re-extraction at 135.2.0 (226 metrics; refresh_metric_contracts.py reported retired [] and 226 written). The 35 v135.1 keys and PERP_SPOT_GAP are documented by the vendor changelog (battlegrid-mcp README 'Contract history - v135.1' / 'v134'); the other seven by 'Contract history - v123' (OMEGA v0.8.3 applied that contract's header renames, not its additions); details are the served hints. Nothing is retired.",
+ "contractVersion": "135.2.0",
+ "buildSha": "98d29c45221aa16a7a0160173c0105220160119d",
+ "retired": {},
+ "added": [
+  "UTC_HOUR",
+  "DAY_OF_WEEK",
+  "TRADING_SESSION",
+  "CLOSE_LOCATION",
+  "EMA8",
+  "ASIA_HIGH",
+  "ASIA_LOW",
+  "ASIA_OPEN",
+  "PRIOR_ASIA_HIGH",
+  "PRIOR_ASIA_LOW",
+  "PRIOR_ASIA_OPEN",
+  "PRIOR_ASIA_HIGH_SWEPT",
+  "PRIOR_ASIA_LOW_SWEPT",
+  "LONDON_HIGH",
+  "LONDON_LOW",
+  "LONDON_OPEN",
+  "PRIOR_LONDON_HIGH",
+  "PRIOR_LONDON_LOW",
+  "PRIOR_LONDON_OPEN",
+  "PRIOR_LONDON_HIGH_SWEPT",
+  "PRIOR_LONDON_LOW_SWEPT",
+  "NEW_YORK_HIGH",
+  "NEW_YORK_LOW",
+  "NEW_YORK_OPEN",
+  "PRIOR_NEW_YORK_HIGH",
+  "PRIOR_NEW_YORK_LOW",
+  "PRIOR_NEW_YORK_OPEN",
+  "PRIOR_NEW_YORK_HIGH_SWEPT",
+  "PRIOR_NEW_YORK_LOW_SWEPT",
+  "OR15_HIGH",
+  "OR15_LOW",
+  "OR30_HIGH",
+  "OR30_LOW",
+  "IB_EXT_UP_150",
+  "IB_EXT_DOWN_150",
+  "IB_EXT_UP_200",
+  "IB_EXT_DOWN_200",
+  "PRIOR_SWING_FRACTAL_HIGH",
+  "PRIOR_SWING_FRACTAL_LOW",
+  "SWING_FRACTAL_HIGH_BARS_AGO",
+  "SWING_FRACTAL_LOW_BARS_AGO",
+  "CMF20",
+  "PERP_SPOT_GAP"
+ ],
+ "added_detail": {
+  "UTC_HOUR": {
+   "code": "utcHour",
+   "family": "price",
+   "study": "barClock",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ],
+   "source": "README v135.1",
+   "gloss": "the hour of the UTC day the bar opened in, 0 to 23 — a fact of the bar's open time, never of when it is read"
+  },
+  "DAY_OF_WEEK": {
+   "code": "dayOfWeek",
+   "family": "price",
+   "study": "barClock",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ],
+   "source": "README v135.1",
+   "gloss": "the UTC weekday the bar opened on, as the index 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday — a fact of the bar's open time; a weekend is DAY_OF_WEEK outside 1 to 5"
+  },
+  "TRADING_SESSION": {
+   "code": "tradingSession",
+   "family": "price",
+   "study": "barClock",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value"
+   ],
+   "source": "README v135.1",
+   "gloss": "the trading session the bar opened in, fixed in UTC with no daylight-saving rule: asia (Asia 00–08 UTC), london (London 08–13 UTC), newYork (New York 13–21 UTC), late (Late 21–24 UTC) — a fact of the bar's open time"
+  },
+  "CLOSE_LOCATION": {
+   "code": "closeLoc",
+   "family": "price",
+   "study": "candlePatterns",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ],
+   "source": "README v123 ('Seven metric keys are added'; OMEGA v0.8.3 took v123's header renames only)",
+   "gloss": "where the bar closed within its own range, (close − low) / (high − low) — 0 at the low, 1 at the high; no value on a bar whose high equals its low"
+  },
+  "EMA8": {
+   "code": "EMA8",
+   "family": "trend",
+   "study": null,
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ],
+   "source": "README v123 ('Seven metric keys are added'; OMEGA v0.8.3 took v123's header renames only)",
+   "gloss": "8-period exponential moving average"
+  },
+  "ASIA_HIGH": {
+   "code": "asiaHi",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the highest price of the current Asia 00–08 UTC trading session so far (00:00–08:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "ASIA_LOW": {
+   "code": "asiaLo",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the lowest price of the current Asia 00–08 UTC trading session so far (00:00–08:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "ASIA_OPEN": {
+   "code": "asiaOpen",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the opening print of the current Asia 00–08 UTC trading session (00:00–08:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "PRIOR_ASIA_HIGH": {
+   "code": "pAsiaHi",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the high of the previous completed Asia 00–08 UTC trading session (00:00–08:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_ASIA_LOW": {
+   "code": "pAsiaLo",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the low of the previous completed Asia 00–08 UTC trading session (00:00–08:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_ASIA_OPEN": {
+   "code": "pAsiaOpen",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the opening print of the previous completed Asia 00–08 UTC trading session (00:00–08:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_ASIA_HIGH_SWEPT": {
+   "code": "pAsiaHiSwept",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value"
+   ],
+   "source": "README v135.1",
+   "gloss": "whether any price since the previous Asia 00–08 UTC trading session closed has traded strictly above its high: swept, else intact — a touch is not a sweep; read live, because the last price decides; absent while that instance, any trading session since it, or the current one has no fold, or the last price is unknown"
+  },
+  "PRIOR_ASIA_LOW_SWEPT": {
+   "code": "pAsiaLoSwept",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value"
+   ],
+   "source": "README v135.1",
+   "gloss": "whether any price since the previous Asia 00–08 UTC trading session closed has traded strictly below its low: swept, else intact — a touch is not a sweep; read live, because the last price decides; absent while that instance, any trading session since it, or the current one has no fold, or the last price is unknown"
+  },
+  "LONDON_HIGH": {
+   "code": "londonHi",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the highest price of the current London 08–13 UTC trading session so far (08:00–13:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "LONDON_LOW": {
+   "code": "londonLo",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the lowest price of the current London 08–13 UTC trading session so far (08:00–13:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "LONDON_OPEN": {
+   "code": "londonOpen",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the opening print of the current London 08–13 UTC trading session (08:00–13:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "PRIOR_LONDON_HIGH": {
+   "code": "pLondonHi",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the high of the previous completed London 08–13 UTC trading session (08:00–13:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_LONDON_LOW": {
+   "code": "pLondonLo",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the low of the previous completed London 08–13 UTC trading session (08:00–13:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_LONDON_OPEN": {
+   "code": "pLondonOpen",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the opening print of the previous completed London 08–13 UTC trading session (08:00–13:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_LONDON_HIGH_SWEPT": {
+   "code": "pLondonHiSwept",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value"
+   ],
+   "source": "README v135.1",
+   "gloss": "whether any price since the previous London 08–13 UTC trading session closed has traded strictly above its high: swept, else intact — a touch is not a sweep; read live, because the last price decides; absent while that instance, any trading session since it, or the current one has no fold, or the last price is unknown"
+  },
+  "PRIOR_LONDON_LOW_SWEPT": {
+   "code": "pLondonLoSwept",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value"
+   ],
+   "source": "README v135.1",
+   "gloss": "whether any price since the previous London 08–13 UTC trading session closed has traded strictly below its low: swept, else intact — a touch is not a sweep; read live, because the last price decides; absent while that instance, any trading session since it, or the current one has no fold, or the last price is unknown"
+  },
+  "NEW_YORK_HIGH": {
+   "code": "nyHi",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the highest price of the current New York 13–21 UTC trading session so far (13:00–21:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "NEW_YORK_LOW": {
+   "code": "nyLo",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the lowest price of the current New York 13–21 UTC trading session so far (13:00–21:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "NEW_YORK_OPEN": {
+   "code": "nyOpen",
+   "family": "structure",
+   "study": "tradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the opening print of the current New York 13–21 UTC trading session (13:00–21:00 UTC) — a point-in-time read at its own fold, absent outside that trading session"
+  },
+  "PRIOR_NEW_YORK_HIGH": {
+   "code": "pNyHi",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the high of the previous completed New York 13–21 UTC trading session (13:00–21:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_NEW_YORK_LOW": {
+   "code": "pNyLo",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the low of the previous completed New York 13–21 UTC trading session (13:00–21:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_NEW_YORK_OPEN": {
+   "code": "pNyOpen",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ],
+   "source": "README v135.1",
+   "gloss": "the opening print of the previous completed New York 13–21 UTC trading session (13:00–21:00 UTC), absent when that instance has no completed fold — never an older one"
+  },
+  "PRIOR_NEW_YORK_HIGH_SWEPT": {
+   "code": "pNyHiSwept",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value"
+   ],
+   "source": "README v135.1",
+   "gloss": "whether any price since the previous New York 13–21 UTC trading session closed has traded strictly above its high: swept, else intact — a touch is not a sweep; read live, because the last price decides; absent while that instance, any trading session since it, or the current one has no fold, or the last price is unknown"
+  },
+  "PRIOR_NEW_YORK_LOW_SWEPT": {
+   "code": "pNyLoSwept",
+   "family": "structure",
+   "study": "priorTradingSessions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value"
+   ],
+   "source": "README v135.1",
+   "gloss": "whether any price since the previous New York 13–21 UTC trading session closed has traded strictly below its low: swept, else intact — a touch is not a sweep; read live, because the last price decides; absent while that instance, any trading session since it, or the current one has no fold, or the last price is unknown"
+  },
+  "OR15_HIGH": {
+   "code": "or15Hi",
+   "family": "structure",
+   "study": "openingRange",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the highest price of the current UTC day's first 15 minutes — a point-in-time read at its own fold, absent until that range closes"
+  },
+  "OR15_LOW": {
+   "code": "or15Lo",
+   "family": "structure",
+   "study": "openingRange",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the lowest price of the current UTC day's first 15 minutes — a point-in-time read at its own fold, absent until that range closes"
+  },
+  "OR30_HIGH": {
+   "code": "or30Hi",
+   "family": "structure",
+   "study": "openingRange",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the highest price of the current UTC day's first 30 minutes — a point-in-time read at its own fold, absent until that range closes"
+  },
+  "OR30_LOW": {
+   "code": "or30Lo",
+   "family": "structure",
+   "study": "openingRange",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the lowest price of the current UTC day's first 30 minutes — a point-in-time read at its own fold, absent until that range closes"
+  },
+  "IB_EXT_UP_150": {
+   "code": "ibExtUp150",
+   "family": "structure",
+   "study": "ibExtensions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the current UTC day's initial-balance high plus 0.5 × its range (IB high − IB low), where the day's range from the IB low reaches 1.5× the initial balance, derived from the initial balance of the first 60 minutes — a point-in-time read at its own fold, absent until the initial balance closes or when it has no range"
+  },
+  "IB_EXT_DOWN_150": {
+   "code": "ibExtDown150",
+   "family": "structure",
+   "study": "ibExtensions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the current UTC day's initial-balance low minus 0.5 × its range (IB high − IB low), where the day's range from the IB high reaches 1.5× the initial balance, derived from the initial balance of the first 60 minutes — a point-in-time read at its own fold, absent until the initial balance closes or when it has no range"
+  },
+  "IB_EXT_UP_200": {
+   "code": "ibExtUp200",
+   "family": "structure",
+   "study": "ibExtensions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the current UTC day's initial-balance high plus 1 × its range (IB high − IB low), where the day's range from the IB low reaches 2× the initial balance, derived from the initial balance of the first 60 minutes — a point-in-time read at its own fold, absent until the initial balance closes or when it has no range"
+  },
+  "IB_EXT_DOWN_200": {
+   "code": "ibExtDown200",
+   "family": "structure",
+   "study": "ibExtensions",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "distance",
+    "spread"
+   ],
+   "source": "README v135.1",
+   "gloss": "the current UTC day's initial-balance low minus 1 × its range (IB high − IB low), where the day's range from the IB high reaches 2× the initial balance, derived from the initial balance of the first 60 minutes — a point-in-time read at its own fold, absent until the initial balance closes or when it has no range"
+  },
+  "PRIOR_SWING_FRACTAL_HIGH": {
+   "code": "pFractalHi",
+   "family": "structure",
+   "study": "swingFractal",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ],
+   "source": "README v123 ('Seven metric keys are added'; OMEGA v0.8.3 took v123's header renames only)",
+   "gloss": "the high of the decided swing high before the most recent one, while it is in reach — the pivot the structure label compares a swing high with"
+  },
+  "PRIOR_SWING_FRACTAL_LOW": {
+   "code": "pFractalLo",
+   "family": "structure",
+   "study": "swingFractal",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ],
+   "source": "README v123 ('Seven metric keys are added'; OMEGA v0.8.3 took v123's header renames only)",
+   "gloss": "the low of the decided swing low before the most recent one, while it is in reach — the pivot the structure label compares a swing low with"
+  },
+  "SWING_FRACTAL_HIGH_BARS_AGO": {
+   "code": "fractalHiAgo",
+   "family": "structure",
+   "study": "swingFractal",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ],
+   "source": "README v123 ('Seven metric keys are added'; OMEGA v0.8.3 took v123's header renames only)",
+   "gloss": "the bars from the most recent swing high's own bar to this bar — 2 on the bar that completes its right side, one more per bar after it"
+  },
+  "SWING_FRACTAL_LOW_BARS_AGO": {
+   "code": "fractalLoAgo",
+   "family": "structure",
+   "study": "swingFractal",
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "spread",
+    "aggregate",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ],
+   "source": "README v123 ('Seven metric keys are added'; OMEGA v0.8.3 took v123's header renames only)",
+   "gloss": "the bars from the most recent swing low's own bar to this bar — 2 on the bar that completes its right side, one more per bar after it"
+  },
+  "CMF20": {
+   "code": "CMF20",
+   "family": "volumeFlow",
+   "study": null,
+   "timeframeMode": "candle",
+   "transforms": [
+    "value",
+    "trajectory",
+    "spread",
+    "crossDetect",
+    "aggregate",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ],
+   "source": "README v123 ('Seven metric keys are added'; OMEGA v0.8.3 took v123's header renames only)",
+   "gloss": "20-period Chaikin money flow — each bar's volume weighted by where it closed in its range (−1 at the low, +1 at the high, 0 on a flat bar), summed over the 20 bars ending at this bar and divided by their volume; no value when that volume is zero"
+  },
+  "PERP_SPOT_GAP": {
+   "code": "perpSpotGap",
+   "family": "derived",
+   "study": "perpSpotFlow",
+   "timeframeMode": "timeless",
+   "transforms": [
+    "value",
+    "rank"
+   ],
+   "source": "README v134",
+   "gloss": "gap between the bounded self-normalized spot and perp CVD rates, |spot rate − perp rate| (0–2), compared unrounded; no value on the bar after the UTC-day reset or where the composite spot tape is unavailable (crypto coins a spot venue lists)"
+  }
+ },
+ "transformsAdded": [
+  "zscore",
+  "stddev",
+  "linregSlope",
+  "pctl",
+  "rollingMin",
+  "rollingMax"
+ ],
+ "platformSectionsRetired": {
+  "includeMtfConfluence": {
+   "at": "v134",
+   "replacement": "custom columns MA_ALIGN x value, RSI14 x classifyZone, ADX x classifyZone at {rel: lower} (headers MAalign_ltf, RSI14_ltf_zone, ADX14_ltf_zone, rendered 2026-10-26)"
+  }
+ }
+}

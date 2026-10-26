@@ -1,0 +1,773 @@
+{
+ "_what": "Run record for the 2026-10-26 live coverage sweep: what was asked for, what the platform refused, and every shape whose omega-predicted header did not turn up in the render. Kept OUT of data/contract/columns/ so none of these strings can be mistaken for a rendered header.",
+ "capturedAt": "2026-10-26T07:42:44Z",
+ "how": "preview_strategy_report via the mcporter CLI, read-only, BTC only, 32 columns per custom section, up to 4 sections per call; refused batches bisected to the offending column.",
+ "shapesRequested": 19450,
+ "batches": [
+  {
+   "batch": 1,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 2,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 3,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 4,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 5,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 6,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 7,
+   "columns": 128,
+   "headers": 140
+  },
+  {
+   "batch": 8,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 9,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 10,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 11,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 12,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 13,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 14,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 15,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 16,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 17,
+   "columns": 128,
+   "headers": 148
+  },
+  {
+   "batch": 18,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 19,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 20,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 21,
+   "columns": 128,
+   "headers": 168
+  },
+  {
+   "batch": 22,
+   "columns": 128,
+   "headers": 164
+  },
+  {
+   "batch": 23,
+   "columns": 128,
+   "headers": 148
+  },
+  {
+   "batch": 24,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 25,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 26,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 27,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 28,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 29,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 30,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 31,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 32,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 33,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 34,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 35,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 36,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 37,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 38,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 39,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 40,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 41,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 42,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 43,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 44,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 45,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 46,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 47,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 48,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 49,
+   "columns": 128,
+   "headers": 140
+  },
+  {
+   "batch": 50,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 51,
+   "columns": 128,
+   "headers": 164
+  },
+  {
+   "batch": 52,
+   "columns": 128,
+   "headers": 172
+  },
+  {
+   "batch": 53,
+   "columns": 128,
+   "headers": 148
+  },
+  {
+   "batch": 54,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 55,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 56,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 57,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 58,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 59,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 60,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 61,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 62,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 63,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 64,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 65,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 66,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 67,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 68,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 69,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 70,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 71,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 72,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 73,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 74,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 75,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 76,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 77,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 78,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 79,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 80,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 81,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 82,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 83,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 84,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 85,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 86,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 87,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 88,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 89,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 90,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 91,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 92,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 93,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 94,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 95,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 96,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 97,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 98,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 99,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 100,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 101,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 102,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 103,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 104,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 105,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 106,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 107,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 108,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 109,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 110,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 111,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 112,
+   "columns": 128,
+   "headers": 172
+  },
+  {
+   "batch": 113,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 114,
+   "columns": 128,
+   "headers": 160
+  },
+  {
+   "batch": 115,
+   "columns": 128,
+   "headers": 172
+  },
+  {
+   "batch": 116,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 117,
+   "columns": 128,
+   "headers": 160
+  },
+  {
+   "batch": 118,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 119,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 120,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 121,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 122,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 123,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 124,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 125,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 126,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 127,
+   "columns": 128,
+   "headers": 148
+  },
+  {
+   "batch": 128,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 129,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 130,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 131,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 132,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 133,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 134,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 135,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 136,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 137,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 138,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 139,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 140,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 141,
+   "columns": 128,
+   "headers": 156
+  },
+  {
+   "batch": 142,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 143,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 144,
+   "columns": 128,
+   "headers": 156
+  },
+  {
+   "batch": 145,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 146,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 147,
+   "columns": 128,
+   "headers": 160
+  },
+  {
+   "batch": 148,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 149,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 150,
+   "columns": 128,
+   "headers": 136
+  },
+  {
+   "batch": 151,
+   "columns": 128,
+   "headers": 132
+  },
+  {
+   "batch": 152,
+   "columns": 122,
+   "headers": 130
+  }
+ ],
+ "headersMinted": 20697,
+ "refusalCount": 0,
+ "refusals": [],
+ "predictedButNotRenderedCount": 0,
+ "predictedButNotRendered": []
+}

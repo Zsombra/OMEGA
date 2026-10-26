@@ -1,6 +1,6 @@
 {
   "metric": "PRIOR_TPO_SHAPE",
-  "label": "TPO profile shape (prior session)",
+  "label": "TPO profile shape (prior UTC day)",
   "code": "pTpoShape",
   "family": "structure",
   "nativeOutput": {

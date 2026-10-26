@@ -118,7 +118,10 @@ def test_the_retired_schema_bounds_warn_and_never_gate():
     axes = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["axes"]["properties"]
     for axis in ("TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"):
         for name, node in axes[axis]["properties"].items():
-            assert not {"minimum", "maximum", "multipleOf"} & set(node), (axis, name)
+            # v115.1: an integer publishes the safe-integer range (+-9,007,199,254,740,991) - a type bound, not a dial bound
+            bound = {k for k in ("minimum", "maximum", "multipleOf") if k in node
+                     and not (k != "multipleOf" and abs(node[k]) == 9007199254740991)}
+            assert not bound, (axis, name)
     lo, hi = SCHEMA_BOUNDS["breakEvenTriggerR"]
     found = [f for f in validate_execution({"breakEvenTriggerR": hi + 1})
              if f.code == "EXECUTION_OUT_OF_BOUNDS"]

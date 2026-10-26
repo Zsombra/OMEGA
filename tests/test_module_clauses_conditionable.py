@@ -42,7 +42,10 @@ def test_mfi_reads_the_measured_midline():
     assert {r: (c["column"]["header"], c["op"], c["value"]) for r, c in mfi.items()} == {
         "up": ("MFI14_now", "gte", 50), "down": ("MFI14_now", "lt", 50),
         "fade_up": ("MFI14_now", "lt", 50), "fade_down": ("MFI14_now", "gte", 50)}
-    assert observed_vocabulary()["MFI14_zone"]["numericReplacement"] == \
+    # the 08-24 record (superseded for conditions at 135.2.0, kept verbatim) names the same midline
+    import json
+    from omega.conditions import OBSERVED_VOCAB
+    assert json.loads(OBSERVED_VOCAB.read_text(encoding="utf-8"))["headers"]["MFI14_zone"]["numericReplacement"] == \
         "MFI14 lt 50 (bearish) / MFI14 gte 50 (bullish)"
 
 

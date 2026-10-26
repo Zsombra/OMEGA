@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261016T031811Z.json",
-  "sha256": "83a1256902acbba3f34e88e4f77914284970250ff49b55b553fbbdcb22a4867b",
-  "contractVersion": "110.13.0",
-  "buildSha": "86df42d3dd143c87be57490ba78b2005a0527bb7",
-  "observedAt": "2026-10-16T03:18:11.388330+00:00"
+  "schema": "data/contract/stage_strategy_draft/schema_20261026T062718Z.json",
+  "sha256": "0426f94d47b21f4a45c1e6159319188a3d4409b47563135f2c52e5f916dae0ce",
+  "contractVersion": "135.2.0",
+  "buildSha": "98d29c45221aa16a7a0160173c0105220160119d",
+  "observedAt": "2026-10-26T06:27:18.183639+00:00"
  },
  "clauseOperators": [
   "lt",
@@ -92,7 +92,7 @@
   "definitionPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition",
   "clauseArms": [
    {
-    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0",
+    "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/0",
     "ops": [
      "lt",
      "lte",
@@ -101,10 +101,10 @@
      "crossesAbove",
      "crossesBelow"
     ],
-    "opPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/op",
+    "opPointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/0/properties/op",
     "operands": {
      "value": {
-      "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/value",
+      "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/0/properties/value",
       "schema": {
        "type": "number"
       }
@@ -120,20 +120,20 @@
     "additionalProperties": false
    },
    {
-    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1",
+    "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/1",
     "ops": [
      "between"
     ],
-    "opPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/op",
+    "opPointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/1/properties/op",
     "operands": {
      "low": {
-      "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/low",
+      "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/1/properties/low",
       "schema": {
        "type": "number"
       }
      },
      "high": {
-      "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/1/properties/high",
+      "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/1/properties/high",
       "schema": {
        "type": "number"
       }
@@ -150,16 +150,16 @@
     "additionalProperties": false
    },
    {
-    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/2",
+    "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/2",
     "ops": [
      "is",
      "enters",
      "exits"
     ],
-    "opPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/2/properties/op",
+    "opPointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/2/properties/op",
     "operands": {
      "label": {
-      "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/2/properties/label",
+      "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/2/properties/label",
       "schema": {
        "type": "string",
        "minLength": 1,
@@ -177,23 +177,23 @@
     "additionalProperties": false
    },
    {
-    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/3",
+    "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/3",
     "ops": [
      "in"
     ],
-    "opPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/3/properties/op",
+    "opPointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/3/properties/op",
     "operands": {
      "labels": {
-      "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/3/properties/labels",
+      "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/3/properties/labels",
       "schema": {
+       "minItems": 1,
+       "maxItems": 32,
        "type": "array",
        "items": {
         "type": "string",
         "minLength": 1,
         "maxLength": 80
-       },
-       "minItems": 1,
-       "maxItems": 32
+       }
       }
      }
     },
@@ -207,12 +207,12 @@
     "additionalProperties": false
    },
    {
-    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/4",
+    "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/4",
     "ops": [
      "increased",
      "decreased"
     ],
-    "opPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/4/properties/op",
+    "opPointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/0/anyOf/4/properties/op",
     "operands": {},
     "required": [
      "kind",
@@ -363,7 +363,7 @@
    }
   },
   "column": {
-   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/column",
+   "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionColumn",
    "schema": {
     "type": "object",
     "properties": {
@@ -393,17 +393,19 @@
    }
   },
   "hold": {
-   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/hold",
+   "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionHold",
    "schema": {
     "type": "object",
     "properties": {
      "atLeast": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 9007199254740991
      },
      "of": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "maximum": 9007199254740991
      }
     },
     "required": [
@@ -414,7 +416,7 @@
    }
   },
   "conditionRef": {
-   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/1",
+   "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/0/anyOf/1",
    "required": [
     "kind",
     "conditionKey"
@@ -432,14 +434,14 @@
    }
   },
   "group": {
-   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/1",
+   "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/1",
    "ops": [
     "ALL",
     "ANY",
     "NOT",
     "N_OF"
    ],
-   "opPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/1/properties/op",
+   "opPointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/1/properties/op",
    "required": [
     "kind",
     "op",
@@ -448,24 +450,24 @@
    ],
    "additionalProperties": false,
    "members": {
-    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/1/properties/members",
+    "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/1/properties/members",
     "minItems": 1,
     "maxItems": 64,
-    "itemsRef": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition"
+    "itemsRef": "/stage_strategy_draft/inputSchema/$defs/conditionNode"
    },
    "n": {
-    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/1/properties/n",
+    "pointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/1/properties/n",
     "schema": {
      "type": "integer",
      "exclusiveMinimum": 0,
      "maximum": 64
     }
    },
-   "holdPointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions/items/properties/definition/anyOf/0/anyOf/0/anyOf/0/properties/hold"
+   "holdPointer": "/stage_strategy_draft/inputSchema/$defs/conditionHold"
   }
  },
  "previewConditions": {
-  "pointer": "/preview_strategy_report/inputSchema/properties/source/anyOf/0/properties/conditions/items",
+  "pointer": "/preview_strategy_report/inputSchema/properties/source/oneOf/0/properties/conditions/items",
   "sameGrammarAsStage": true
  },
  "servedPerHeader": {
@@ -478,6 +480,7 @@
    "markerToken",
    "conditionHold",
    "developingRead",
+   "family",
    "readBy"
   ],
   "conditionOperators": {
@@ -522,7 +525,7 @@
   }
  },
  "reportSection": {
-  "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/anyOf/1",
+  "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1",
   "fields": [
    "benchmarkTicker",
    "columns",
@@ -544,7 +547,7 @@
   }
  },
  "reportColumn": {
-  "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items",
+  "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items",
   "fields": [
    "bars",
    "buffer",
@@ -559,8 +562,8 @@
    "window"
   ],
   "metric": {
-   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/metric",
-   "count": 183,
+   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/metric",
+   "count": 226,
    "enum": [
     "OPEN",
     "HIGH",
@@ -572,10 +575,14 @@
     "SPOT_CLOSE_CB",
     "SPOT_CLOSE_BN",
     "BAR_FORMING",
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "TRADING_SESSION",
     "CANDLE_DOJI",
     "CANDLE_PIN",
     "CANDLE_ENGULFING",
     "BAR_CONTAINMENT",
+    "CLOSE_LOCATION",
     "GAP",
     "GAP_RANGE_CLEAR",
     "GAP_PCT",
@@ -611,6 +618,7 @@
     "SMA200",
     "EMA5",
     "EMA13",
+    "EMA8",
     "EMA20",
     "EMA9",
     "EMA21",
@@ -659,6 +667,38 @@
     "TPO_SINGLE_PRINT_BELOW",
     "NAKED_SINGLE_PRINT_ABOVE",
     "NAKED_SINGLE_PRINT_BELOW",
+    "ASIA_HIGH",
+    "ASIA_LOW",
+    "ASIA_OPEN",
+    "PRIOR_ASIA_HIGH",
+    "PRIOR_ASIA_LOW",
+    "PRIOR_ASIA_OPEN",
+    "PRIOR_ASIA_HIGH_SWEPT",
+    "PRIOR_ASIA_LOW_SWEPT",
+    "LONDON_HIGH",
+    "LONDON_LOW",
+    "LONDON_OPEN",
+    "PRIOR_LONDON_HIGH",
+    "PRIOR_LONDON_LOW",
+    "PRIOR_LONDON_OPEN",
+    "PRIOR_LONDON_HIGH_SWEPT",
+    "PRIOR_LONDON_LOW_SWEPT",
+    "NEW_YORK_HIGH",
+    "NEW_YORK_LOW",
+    "NEW_YORK_OPEN",
+    "PRIOR_NEW_YORK_HIGH",
+    "PRIOR_NEW_YORK_LOW",
+    "PRIOR_NEW_YORK_OPEN",
+    "PRIOR_NEW_YORK_HIGH_SWEPT",
+    "PRIOR_NEW_YORK_LOW_SWEPT",
+    "OR15_HIGH",
+    "OR15_LOW",
+    "OR30_HIGH",
+    "OR30_LOW",
+    "IB_EXT_UP_150",
+    "IB_EXT_DOWN_150",
+    "IB_EXT_UP_200",
+    "IB_EXT_DOWN_200",
     "BB_UPPER",
     "BB_LOWER",
     "KC_UPPER",
@@ -667,6 +707,10 @@
     "ST_DIR",
     "SWING_FRACTAL_HIGH",
     "SWING_FRACTAL_LOW",
+    "PRIOR_SWING_FRACTAL_HIGH",
+    "PRIOR_SWING_FRACTAL_LOW",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
     "SWING_FRACTAL_LABEL",
     "HMA20",
     "WT1",
@@ -701,6 +745,7 @@
     "NOTIONAL_VOLUME_1D",
     "RVOL",
     "OBV",
+    "CMF20",
     "CVD",
     "SPOT_CVD",
     "BUY_PRESSURE",
@@ -744,12 +789,13 @@
     "CONFIDENCE",
     "PERP_SPOT_FLOW",
     "PERP_SPOT_STRENGTH",
+    "PERP_SPOT_GAP",
     "PERP_SPOT_CONFIRMS"
    ]
   },
   "transformId": {
-   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/transformId",
-   "count": 17,
+   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/transformId",
+   "count": 23,
    "enum": [
     "value",
     "trajectory",
@@ -761,6 +807,12 @@
     "aggregate",
     "efficiency",
     "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
     "rank",
     "count",
     "nearestZoneType",
@@ -771,13 +823,19 @@
    ]
   },
   "chainedTransformId": {
-   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/chainedTransformId",
-   "count": 5,
+   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/chainedTransformId",
+   "count": 11,
    "enum": [
     "trajectory",
     "aggregate",
     "efficiency",
     "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
     "rank"
    ]
   },
@@ -787,10 +845,12 @@
     "maximum": 500
    },
    "offset": {
-    "minimum": 0
+    "minimum": 0,
+    "maximum": 9007199254740991
    },
    "window": {
-    "minimum": 1
+    "minimum": 1,
+    "maximum": 9007199254740991
    }
   }
  }

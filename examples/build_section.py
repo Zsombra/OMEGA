@@ -31,8 +31,9 @@ panel = CustomSection(
                window=4, bars="closed"),
         Column(metric="RSI14", transformId="classifyZone", timeframe={"rel": "anchor"}),
         # how straight was the move down into the stretch?  (chop vs impulse)
+        # since contract v135 an efficiency window counts bar-to-bar changes: 5 changes read the same 6 bars
         Column(metric="CLOSE", transformId="efficiency", timeframe={"rel": "lower"},
-               window=6, bars="closed"),
+               window=5, bars="closed"),
         # is positioning paying to hold the move?
         Column(metric="FUNDING_RATE", transformId="aggregate", timeframe={"rel": "anchor"},
                window=24),

@@ -141,7 +141,16 @@ def observed_vocabulary() -> dict[str, dict]:
         if "numericReplacement" in m:
             m["numericReplacement"] = " ".join(header_since_123(w) for w in m["numericReplacement"].split(" "))
         out[header_since_123(header)] = m
-    return out
+    # Superseded at 135.2.0 (data/contract/columns/zone_vocabulary_135_2026-10-26.json): ADX14_zone now serves weak /
+    # developing / trending / extreme and MFI14_zone five labels with bullish / bearish, and a condition preview read
+    # `ADX14_zone is trending` TRUE on 9 of 12 coins. A header that measurement covers is no longer disjoint.
+    try:
+        import json as _json
+        from .fanout import ZONE_VOCABULARY
+        current = _json.loads(ZONE_VOCABULARY.read_text(encoding="utf-8"))["headers"]
+    except (OSError, KeyError, ValueError):
+        current = {}
+    return {h: m for h, m in out.items() if h not in current}
 
 
 @lru_cache(maxsize=1)

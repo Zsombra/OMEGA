@@ -227,6 +227,13 @@ def test_all_sixteen_transforms_are_exercised_on_live_data():
     import json as _json
     for case in _json.loads((COLUMNS_DIR / "levelInteraction_108_4_2026-10-13.json").read_text(encoding="utf-8"))["cases"]:
         covered.add(case["request"]["column"]["transformId"])
+    # the six v135 statistics: preview_strategy_report, 2026-10-26 at 135.2.0, on an atom and as a chain outer
+    probe = _json.loads((COLUMNS_DIR.parents[1] / "audit" / "statistics_probe_135_2026-10-26.json")
+                        .read_text(encoding="utf-8"))
+    for case in probe["renders"]:
+        if case["outputs"]:
+            covered.add(case["column"]["transformId"])
+            covered.add(case["column"].get("chainedTransformId") or case["column"]["transformId"])
     missing = set(load().transform_ids()) - covered
     assert not missing, f"never exercised live: {sorted(missing)}"
 

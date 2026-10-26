@@ -14,26 +14,257 @@
     {
       "id": "value",
       "maximums": {
-        "offset": 31
+        "offset": 63
       }
     },
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
       "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate"
-      ]
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        }
+      }
     },
     {
       "id": "aggregate",
       "maximums": {
-        "window": 32
+        "window": 64
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
       }
     },
     {
@@ -56,6 +287,7 @@
     "WILLR14",
     "DI_PLUS",
     "DI_MINUS",
+    "CMF20",
     "REGIME_TREND_MARGIN",
     "REGIME_DI_SPREAD",
     "REGIME_CRASH_MARGIN"

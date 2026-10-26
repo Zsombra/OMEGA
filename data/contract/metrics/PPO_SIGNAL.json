@@ -14,21 +14,138 @@
     {
       "id": "value",
       "maximums": {
-        "offset": 31
+        "offset": 63
       }
     },
     {
       "id": "trajectory",
       "maximums": {
-        "window": 32
+        "window": 64
       }
     },
     {
       "id": "spread",
       "chainSuccessors": [
         "trajectory",
-        "aggregate"
-      ]
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        }
+      }
     },
     {
       "id": "crossDetect"
@@ -36,7 +153,49 @@
     {
       "id": "aggregate",
       "maximums": {
-        "window": 32
+        "window": 64
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
       }
     },
     {

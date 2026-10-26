@@ -85,8 +85,9 @@ def test_close_change_rank_does_not_offer_hi(contract):
 
 
 def test_chained_rank_narrows_spread_operands(contract):
-    """Bug 2's root fact. rankableSpreadOperands is the field the enumerator must honour."""
+    """Bug 2's root fact. rankableSpreadOperands is the field the enumerator must honour - chainedOuters.rank.operands
+    since v135 (README: "Rank's operands are chainedOuters.rank.operands")."""
     spec = contract.metric("EMA5").transforms["spread"]
-    assert spec.get("rankableSpreadOperands") == ["EMA13"]
+    assert spec["chainedOuters"]["rank"]["operands"] == ["EMA13"] and "rankableSpreadOperands" not in spec
     assert len(contract.metric("EMA5").spread_operands) > 1, (
         "spread offers many operands; only the rankable subset may chain to rank")

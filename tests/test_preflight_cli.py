@@ -94,7 +94,7 @@ def test_run_refuses_a_transcription_suspect_schema(tmp_path, capsys):
     definition = copy.deepcopy(stage_schema()["stage_strategy_draft"])
     axes = definition["inputSchema"]["properties"]["axes"]["properties"]
     # a truncated platform sectionKey enum on the REPORT axis (the signalId enum went with SIGNAL_RULES at 108)
-    axes["REPORT"]["properties"]["sections"]["items"]["anyOf"][0]["properties"]["sectionKey"]["enum"].pop()
+    axes["REPORT"]["properties"]["sections"]["items"]["oneOf"][0]["properties"]["sectionKey"]["enum"].pop()   # oneOf since v115.1
     out = tmp_path / "receipt.json"
     assert _run(_body(tmp_path), "--schema", _capture(tmp_path, definition), "--out", out) == 1
     receipt = json.loads(out.read_text(encoding="utf-8"))

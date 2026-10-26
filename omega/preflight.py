@@ -166,10 +166,23 @@ _KNOWN_TYPES = ("object", "array", "string", "boolean", "null", "number", "integ
 _MODELED_KEYWORDS = frozenset({
     "type", "properties", "required", "additionalProperties", "enum", "const",
     "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum",
-    "minLength", "maxLength", "minItems", "maxItems", "items", "anyOf", "$ref",
+    "minLength", "maxLength", "minItems", "maxItems", "items", "anyOf", "oneOf", "$ref",
     "multipleOf",
     "pattern", "format", "description", "title", "default", "examples", "$comment",
+    # The named shapes a local $ref points into (`#/$defs/conditionNode` since v116): a container, not a constraint -
+    # deref() follows the refs into it.
+    "$defs", "definitions",
 })
+
+
+def union_key(node: dict) -> str | None:
+    """The key a union's arms sit under: `anyOf`, or `oneOf` - since v115.1 (README "Contract history - v115.1") a
+    discriminated union is published as `oneOf` and a literal union as `anyOf`; acceptance did not move. Every union
+    omega walks is discriminated, so the two are walked alike (the first fitting arm)."""
+    for k in ("anyOf", "oneOf"):
+        if k in node:
+            return k
+    return None
 
 
 def _is_num(v: object) -> bool:
@@ -201,8 +214,8 @@ def _fits(value: dict, b: dict, root: dict, relaxed: bool = False) -> bool:
     the branch a value MEANS (an `is` clause that forgot its hold is still an `is`
     clause), so the walk reports the missing key there rather than a pile of noise
     against the first arm sharing its kind."""
-    if "anyOf" in b and "properties" not in b:
-        return _pick_branch(value, b["anyOf"], root, strict=True, relaxed=relaxed) is not None
+    if union_key(b) and "properties" not in b:
+        return _pick_branch(value, b[union_key(b)], root, strict=True, relaxed=relaxed) is not None
     if b.get("type", "object") != "object":
         return False
     props = b.get("properties", {})
@@ -273,8 +286,8 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
     # A loop, not an `if`: the 91.0.0 condition definition nests anyOf three deep (group |
     # (ref | (four clause arms))). Taking one level and walking the inner anyOf as a plain
     # object left every clause unvalidated with no finding at all - a silent skip.
-    while "anyOf" in schema:
-        branch = _pick_branch(value, schema["anyOf"], root)
+    while union_key(schema):
+        branch = _pick_branch(value, schema[union_key(schema)], root)
         if branch is None:
             # RULING: an unmatched anyOf branch leaves the subtree unvalidated - FAIL, not
             # WARN, unlike the WARN-and-keep-walking UNSUPPORTED cases below.
@@ -594,8 +607,8 @@ def schema_index(arm: dict, root: dict) -> dict[str, dict]:
         if id(node) in stack:
             return
         stack = stack + (id(node),)
-        if "anyOf" in node:
-            for i, b in enumerate(node["anyOf"]):
+        if union_key(node):
+            for i, b in enumerate(node[union_key(node)]):
                 visit(b, f"{path}|{i}" if path else f"|{i}", stack)
             return
         if "enum" in node:
@@ -649,7 +662,7 @@ def _enum_at(arm: dict, root: dict, *keys: str) -> list | None:
             node = node.get("items", {})
         elif k.startswith("anyOf:"):
             want = k.split(":", 1)[1]
-            for b in node.get("anyOf", []):
+            for b in node.get(union_key(node) or "anyOf", []):
                 b = deref(b, root)
                 kind = deref(b.get("properties", {}).get("kind", {}), root)
                 if kind.get("const") == want:

@@ -130,9 +130,10 @@ def test_coin_selection_default_is_class_aware():
 def test_offset_over_the_served_maximum_is_an_error(contract):
     """History: omega once compared offset against the raw 32 and accepted 16 and 32, both of which the platform then
     refused; the 2026-08-26 floor (below) made 8 the usable offset. Since the 2026-10-13 re-extraction at 108.4.0 the
-    platform SERVES the maximum per metric - value.parameters.offset.maximum is 31 on CLOSE - and omega reads it."""
-    assert contract.metric("CLOSE").transforms["value"]["maximums"] == {"offset": 31}
-    for offset, ok in ((0, True), (8, True), (9, True), (31, True), (32, False)):
+    platform SERVES the maximum per metric - value.parameters.offset.maximum is 31 on CLOSE - and omega reads it.
+    63 since v135 (columnLookback 64), read 2026-10-26 at 135.2.0."""
+    assert contract.metric("CLOSE").transforms["value"]["maximums"] == {"offset": 63}
+    for offset, ok in ((0, True), (8, True), (9, True), (31, True), (32, True), (63, True), (64, False)):
         col = Column.model_validate({"metric": "CLOSE", "transformId": "value",
                                      "timeframe": {"rel": "anchor"}, "offset": offset})
         errors = [f for f in validate_column(col, path="s",
@@ -143,8 +144,9 @@ def test_offset_over_the_served_maximum_is_an_error(contract):
 def test_the_floor_matches_the_measurement(contract):
     assert LOOKBACK_FLOOR == 24
     assert FLOOR["theDecidingProbe"]["budgetUsage"]["columnLookback"] == "24/32"
-    assert LOOKBACK_FLOOR + 8 == contract.budgets["columnLookback"], (
-        "usable offset is cap minus floor; if either moves this arithmetic must be redone")
+    # the arithmetic of the 32-bar budget the floor was measured under; since 108.4.0 the served per-metric maxima
+    # decide (31 then, 63 since v135's columnLookback 64), so the floor no longer judges a column
+    assert LOOKBACK_FLOOR + 8 == 32 and contract.budgets["columnLookback"] == 64
 
 
 def test_the_floor_record_does_not_overclaim():
@@ -188,7 +190,8 @@ def test_entry_keys_match_the_v91_entry_arm():
     the entry object, each time while omega still sent the key. v85 then made the entry a
     union on `trigger` whose ON_CANDLE_CLOSE arm is `trigger` ALONE ("naming either dial is
     refused"). Pin both directions against that arm of the saved 91.0.0 schema."""
-    arms = _axis_schemas()["ENTRY"]["properties"]["entry"]["anyOf"]
+    entry = _axis_schemas()["ENTRY"]["properties"]["entry"]
+    arms = entry.get("oneOf") or entry["anyOf"]          # a discriminated union is oneOf since v115.1
     [close_arm] = [a for a in arms if "ON_CANDLE_CLOSE" in a["properties"]["trigger"]["enum"]]
     assert set(close_arm["properties"]) == {"trigger"} and close_arm["additionalProperties"] is False
     for name in sorted(PRESETS):
@@ -220,18 +223,21 @@ SCHEMA_108 = "data/contract/stage_strategy_draft/schema_20261010T215326Z.json"
 SCHEMA_110 = "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
 SCHEMA_110_8 = "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
 SCHEMA_110_13 = "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
+SCHEMA_135 = "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
     manifest = json.loads((ROOT / "data/contract/_manifest.json").read_text(encoding="utf-8"))
     ws = manifest["writeSurface"]
-    # the 110.13.0 (v111, flat arguments) capture since 2026-10-16; 110.8.0 under `supersedes`, then 110.2.0,
-    # then 108.0.0, then 91.0.0
-    assert ws["servedContractVersion"] == "110.13.0"
-    assert ws["buildSha"].startswith("86df42d3")
-    assert ws["schema"] == SCHEMA_110_13
-    assert (ROOT / ws["schema"]).is_file()
-    v110_8 = ws["supersedes"]
+    # the 135.2.0 capture since 2026-10-26; 110.13.0 (v111, flat arguments) under `supersedes`, then 110.8.0, 110.2.0,
+    # 108.0.0 and 91.0.0
+    assert ws["servedContractVersion"] == "135.2.0"
+    assert ws["buildSha"].startswith("98d29c45")
+    assert ws["schema"] == SCHEMA_135 and (ROOT / ws["schema"]).is_file()
+    v110_13 = ws["supersedes"]
+    assert v110_13["servedContractVersion"] == "110.13.0" and v110_13["buildSha"].startswith("86df42d3")
+    assert v110_13["schema"] == SCHEMA_110_13 and (ROOT / SCHEMA_110_13).is_file()
+    v110_8 = v110_13["supersedes"]
     assert v110_8["servedContractVersion"] == "110.8.0" and v110_8["buildSha"].startswith("6cf1bd70")
     assert v110_8["schema"] == SCHEMA_110_8 and (ROOT / SCHEMA_110_8).is_file()
     prev = v110_8["supersedes"]
@@ -248,11 +254,12 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
         assert any((ROOT / path).glob("*.json")), path
     # the metric/transform extraction is a separate snapshot and keeps its own version: 108.4.0 since the 2026-10-13
     # re-extraction (61.2.0 before, kept under `supersedes`), while the write surface above is still the 108.0.0 capture
-    # 110.8.0 since the 2026-10-15 re-extraction; 110.2.0 under `supersedes`, then 108.4.0, then 61.2.0
-    assert manifest["servedContractVersion"] == "110.8.0"
-    assert manifest["supersedes"]["servedContractVersion"] == "110.2.0"
-    assert manifest["supersedes"]["supersedes"]["servedContractVersion"] == "108.4.0"
-    assert manifest["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "61.2.0"
+    # 135.2.0 since the 2026-10-26 re-extraction; 110.8.0 under `supersedes`, then 110.2.0, 108.4.0 and 61.2.0
+    assert manifest["servedContractVersion"] == "135.2.0"
+    assert manifest["supersedes"]["servedContractVersion"] == "110.8.0"
+    assert manifest["supersedes"]["supersedes"]["servedContractVersion"] == "110.2.0"
+    assert manifest["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "108.4.0"
+    assert manifest["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "61.2.0"
 
 
 def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
@@ -266,7 +273,7 @@ def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
 
 def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     doc = C.stage_schema()
-    assert doc["contractVersion"] == "110.13.0"         # the eight axes did not move at 110, 110.8 or 110.13
+    assert doc["contractVersion"] == "135.2.0"          # the eight axes did not move at 110, 110.8, 110.13 or 135
     assert V108_TOOLS <= set(doc)
     # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
     assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]

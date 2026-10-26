@@ -31,9 +31,9 @@ def test_matrix_is_the_full_metric_by_transform_grid():
     # levelInteraction (data/contract/vocabulary/_shared.json, list_strategy_vocabulary)
     # 177 x 16 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): MACD, PPO, KC_MID out, nine in.
     # 183 x 16 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): six in, none out.
-    assert len(rows) == 2928
-    assert len({r["metric"] for r in rows}) == 183
-    assert len({r["transform"] for r in rows}) == 16
+    assert len(rows) == 4972   # 226 x 22 since the re-extraction at 135.2.0, 2026-10-26 (2928 = 183 x 16 before)
+    assert len({r["metric"] for r in rows}) == 226
+    assert len({r["transform"] for r in rows}) == 22      # + the six v135 statistics
     assert "levelInteraction" in {r["transform"] for r in rows} and "bandTouch" not in {r["transform"] for r in rows}
 
 
@@ -67,9 +67,12 @@ def test_structural_shape_count_is_1018():
     # 731 + 250 = 981 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): atoms + 26 (the two prior-bar Donchian edges
     # 7 each with levelInteraction; the four single-print edges value/distance/spread, 3 each); chained + 8 (the Donchian
     # edges' distance and spread chains; the single-print edges are timeless and chain nothing).
-    assert len(atoms) == 731
-    assert len(chained) == 250
-    assert len(shapes) == 981
+    # 1449 + 1155 = 2604 since the re-extraction at 135.2.0, 2026-10-26 (data/contract/metrics/_moves_135.json): atoms + 718
+    # (43 metrics, and the six v135 statistics on every metric with a series home); chained: each distance / spread atom
+    # chains into nine series outers (efficiency is back, README v135) and 21 of them into rank too.
+    assert len(atoms) == 1449
+    assert len(chained) == 1155
+    assert len(shapes) == 2604
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -104,10 +107,15 @@ def test_chain_successors_split_93_and_19():
     two = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate"}]
     two_rank = [k for k, v in by_atom.items() if v == {"trajectory", "aggregate", "rank"}]
     assert (len(three), len(four)) == (0, 0)
+    # since the re-extraction at 135.2.0, 2026-10-26 the general successors are NINE (README v135: efficiency is accepted
+    # over distance and spread again, and six series statistics): 105 atoms take them, 21 also take rank.
+    nine = {"trajectory", "aggregate", "efficiency", "zscore", "stddev", "linregSlope", "pctl", "rollingMin",
+            "rollingMax"}
+    assert len([k for k, v in by_atom.items() if v == nine]) == 105
+    assert len([k for k, v in by_atom.items() if v == nine | {"rank"}]) == 21
     # 91 and 20 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): KC_MID's distance -> rank left with it.
     # 95 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): the Donchian prior edges' distance and spread.
-    assert len(two) == 95
-    assert len(two_rank) == 20
+    assert (len(two), len(two_rank)) == (0, 0)     # 95 and 20 at 110.8.0
 
 
 def test_expanding_operands_and_orderings_gives_8999():
@@ -132,7 +140,8 @@ def test_expanding_operands_and_orderings_gives_8999():
     # 8,575 since the re-extraction at 108.4.0, 2026-10-13; 8,367 on 2026-10-12 (bandTouch retired).
     # 9,103 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json).
     # 10,257 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json).
-    assert len(enumerate_shapes(expand_operands=True)) == 10257
+    # 30,761 since the re-extraction at 135.2.0, 2026-10-26: each spread chain into the nine outers over its served operands.
+    assert len(enumerate_shapes(expand_operands=True)) == 30761
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -144,7 +153,8 @@ def test_chained_rank_expands_over_its_own_ordering_axis():
     """
     expanded = enumerate_shapes(expand_operands=True)
     rank_chains = [s for s in expanded if s.chained == "rank"]
-    assert len(rank_chains) == 80      # 76 at 61.2.0; the swing fractals +8 (108.4); KC_MID's -4 at 110.2.0 (2026-10-14)
+    # 76 at 61.2.0; the swing fractals +8 (108.4); KC_MID's -4 at 110.2.0 (2026-10-14); the prior swing fractals +4 (135.2.0)
+    assert len(rank_chains) == 84
     assert {s.ordering for s in rank_chains} == {"hi", "lo", "far", "near"}
 
 
@@ -160,11 +170,10 @@ def test_expansion_produces_no_duplicate_rows():
 # operand is timeless is refused (REPORT_COLUMN_CHAIN_UNSUPPORTED, see
 # tests/test_spread_chain_operand.py), so every expansion of RVOL x spread x <successor>
 # is illegal and the shape drops out. The unchained RVOL x spread survives.
-EXPANSION_DEAD_ENDS = {
-    ("RVOL", "spread", "trajectory"),
-    ("RVOL", "spread", "aggregate"),
-    # ("RVOL", "spread", "efficiency") left with efficiency itself from every spread chain (re-extraction at 108.4.0, 2026-10-13)
-}
+# Since the re-extraction at 135.2.0, 2026-10-26 the set is EMPTY: v135 "A series chain over a spread operand with no
+# per-bar value ... is no longer offered", so RVOL x spread serves no chainSuccessors and the shapes never enumerate.
+# Before: ("RVOL", "spread", "trajectory"), ("RVOL", "spread", "aggregate").
+EXPANSION_DEAD_ENDS: set = set()
 
 
 def test_expansion_loses_only_the_measured_dead_ends():
@@ -229,9 +238,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 981
+    assert len(unused) + len(used) == 2604
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 981                       # 899 at 108.4.0, 947 at 110.2.0
-    assert len(query(expand_operands=True)) == 10257  # 8575 at 108.4.0, 9103 at 110.2.0
+    assert len(query()) == 2604                      # 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
+    assert len(query(expand_operands=True)) == 30761  # 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0

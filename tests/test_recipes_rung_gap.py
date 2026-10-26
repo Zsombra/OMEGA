@@ -89,7 +89,7 @@ def test_the_vocabulary_puts_the_rung_on_the_column_not_the_section():
     three metrics at {rel: regime}; the confluence template holds MA_ALIGN at all three rels."""
     from omega.contract import stage_schema
     arms = (stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]
-            ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["anyOf"])
+            ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["oneOf"])   # oneOf since v115.1
     custom = arms[1]
     assert "timeframe" not in custom["properties"] and custom["additionalProperties"] is False
     tf = custom["properties"]["columns"]["items"]["properties"]["timeframe"]["anyOf"]
@@ -99,9 +99,9 @@ def test_the_vocabulary_puts_the_rung_on_the_column_not_the_section():
     higher = c.platform_templates["includeHigherTimeframe"]["columns"]
     assert {(x["metric"], x["transformId"], x["timeframe"]["rel"]) for x in higher} >= {
         ("ADX", "value", "regime"), ("RSI14", "value", "regime"), ("MA_ALIGN", "value", "regime")}
-    mtf = c.platform_templates["includeMtfConfluence"]["columns"]
-    assert {(x["metric"], x["timeframe"]["rel"]) for x in mtf if x["metric"] == "MA_ALIGN"} == {
-        ("MA_ALIGN", "lower"), ("MA_ALIGN", "anchor"), ("MA_ALIGN", "regime")}
+    # v134 retired includeMtfConfluence (it held MA_ALIGN at lower, anchor and regime); its lower-rung reads are custom
+    # columns now, so the template is gone and the section key is refused
+    assert "includeMtfConfluence" not in c.platform_templates
 
 
 # --- the predictor against the committed body (step 2) --------------------------------
@@ -309,11 +309,13 @@ def test_every_added_column_is_a_vocabulary_value():
     columns (includeHigherTimeframe at regime, includeMtfConfluence at lower)."""
     c = load()
     rel_enum = (stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]
-                ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["anyOf"][1]["properties"]
+                ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["oneOf"][1]["properties"]
                 ["columns"]["items"]["properties"]["timeframe"]["anyOf"][0]["properties"]["rel"]["enum"])
     templated = {(x["metric"], x["transformId"], x["timeframe"]["rel"])
-                 for key in ("includeHigherTimeframe", "includeMtfConfluence")
-                 for x in c.platform_templates[key]["columns"]}
+                 for x in c.platform_templates["includeHigherTimeframe"]["columns"]}
+    # includeMtfConfluence (retired at v134) showed these at {rel: lower}; v134 names its lower-rung reads as custom
+    # columns: MA_ALIGN x value, RSI14 x classifyZone and ADX x classifyZone at {rel: lower}
+    templated |= {("MA_ALIGN", "value", "lower"), ("RSI14", "classifyZone", "lower"), ("ADX", "classifyZone", "lower")}
     for name, added in ADDED.items():
         for _, metric, transform, rel in added:
             assert metric in c.metrics, (name, metric)

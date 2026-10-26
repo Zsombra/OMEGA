@@ -1,6 +1,6 @@
 {
   "_note": "Pairs referenced by platform section templates that are ABSENT from the metric's authorable transform whitelist. Custom columns using these are rejected with REPORT_COLUMN_PAIR_UNSUPPORTED.",
-  "pairCount": 7,
+  "pairCount": 4,
   "pairs": [
     {
       "metric": "ADX",
@@ -10,11 +10,18 @@
       "authorableAlternatives": [
         "aggregate",
         "classifyZone",
+        "efficiency",
+        "linregSlope",
         "maxShare",
+        "pctl",
         "rank",
+        "rollingMax",
+        "rollingMin",
         "spread",
+        "stddev",
         "trajectory",
-        "value"
+        "value",
+        "zscore"
       ]
     },
     {
@@ -25,11 +32,18 @@
       "authorableAlternatives": [
         "aggregate",
         "classifyZone",
+        "efficiency",
+        "linregSlope",
         "maxShare",
+        "pctl",
         "rank",
+        "rollingMax",
+        "rollingMin",
         "spread",
+        "stddev",
         "trajectory",
-        "value"
+        "value",
+        "zscore"
       ]
     },
     {
@@ -40,9 +54,15 @@
       "authorableAlternatives": [
         "aggregate",
         "efficiency",
+        "linregSlope",
+        "pctl",
+        "rollingMax",
+        "rollingMin",
         "spread",
+        "stddev",
         "trajectory",
-        "value"
+        "value",
+        "zscore"
       ]
     },
     {
@@ -53,56 +73,18 @@
       "authorableAlternatives": [
         "aggregate",
         "classifyZone",
+        "efficiency",
+        "linregSlope",
         "maxShare",
+        "pctl",
         "rank",
+        "rollingMax",
+        "rollingMin",
         "spread",
+        "stddev",
         "trajectory",
-        "value"
-      ]
-    },
-    {
-      "metric": "ADX",
-      "transform": "classifyState",
-      "usedBySection": "includeMtfConfluence",
-      "sectionTitle": "Multi-Timeframe Confluence",
-      "authorableAlternatives": [
-        "aggregate",
-        "classifyZone",
-        "maxShare",
-        "rank",
-        "spread",
-        "trajectory",
-        "value"
-      ]
-    },
-    {
-      "metric": "ADX",
-      "transform": "classifyState",
-      "usedBySection": "includeMtfConfluence",
-      "sectionTitle": "Multi-Timeframe Confluence",
-      "authorableAlternatives": [
-        "aggregate",
-        "classifyZone",
-        "maxShare",
-        "rank",
-        "spread",
-        "trajectory",
-        "value"
-      ]
-    },
-    {
-      "metric": "ADX",
-      "transform": "classifyState",
-      "usedBySection": "includeMtfConfluence",
-      "sectionTitle": "Multi-Timeframe Confluence",
-      "authorableAlternatives": [
-        "aggregate",
-        "classifyZone",
-        "maxShare",
-        "rank",
-        "spread",
-        "trajectory",
-        "value"
+        "value",
+        "zscore"
       ]
     }
   ]

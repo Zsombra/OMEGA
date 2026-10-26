@@ -1,0 +1,24 @@
+{
+  "metric": "PRIOR_ASIA_HIGH_SWEPT",
+  "label": "Asia 00–08 UTC high swept",
+  "code": "pAsiaHiSwept",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "swept",
+      "intact"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    }
+  ],
+  "study": "priorTradingSessions"
+}
