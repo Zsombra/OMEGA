@@ -1,6 +1,7 @@
 # Learning loop, first build: verification record (2026-10-27)
 
-Branch `feat/learn-loop-1` in battlegrid-manager (19 commits on main `6e12804`, head `31446fa`). Plan:
+Branch `feat/learn-loop-1` in battlegrid-manager (19 commits on main `6e12804`, head `31446fa`), merged as
+PR #1 on the user's word at 2026-10-28 14:10Z (main `353dc40`); not deployed. Plan:
 `docs/superpowers/plans/2026-10-27-decision-learning-first-build.md`; spec:
 `docs/superpowers/specs/2026-10-27-decision-learning-loop-design.md`. This is Task 13 of the plan.
 
