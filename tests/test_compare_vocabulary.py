@@ -123,3 +123,58 @@ def test_a_91_surface_still_compares_its_two_enums():
     surface = _surface(stored["metrics"], stored["sectionKeys"])
     surface["tools"][1] = {"name": "stage_strategy_draft", **old["stage_strategy_draft"]}
     assert set(compare(live_enums(surface), stored)) == {"metrics", "sectionKeys"}
+
+
+def _surface_137_2(metrics, sections) -> dict:
+    """The hints tool as served since contract v137.2, read off the battlegrid-manager watch's stored 144.2.0 surface
+    (build 2012d43d, observed 2026-10-30T15:28:39Z): `properties.metric` is `{"$ref": "#/$defs/metricKey"}` with the
+    description "Canonical metric key returned by list_strategy_vocabulary.", and the enum sits once under
+    `$defs.metricKey` (302 there). Until v137.1 the enum was inline on the property (`_surface`)."""
+    surface = _surface(metrics, sections)
+    surface["tools"][0]["inputSchema"] = {
+        "type": "object",
+        "properties": {"metric": {"description": "Canonical metric key returned by list_strategy_vocabulary.",
+                                  "$ref": "#/$defs/metricKey"}},
+        "required": ["metric"], "additionalProperties": False,
+        "$defs": {"metricKey": {"type": "string", "enum": sorted(metrics)}}}
+    return surface
+
+
+def test_a_137_2_surface_names_the_metric_enum_once_under_defs_and_is_read_through_the_ref():
+    """Before this read the 144.2.0 surface was `SURFACE_UNREAD` to the manager ("no enum found on the surface for:
+    metrics", `manager strategy status` on 2026-10-30): the pointer is followed where the property is looked up."""
+    stored = stored_enums()
+    surface = _surface_137_2(stored["metrics"], stored["sectionKeys"])
+    assert first_enum(surface["tools"][0]["inputSchema"], "metric") == sorted(stored["metrics"])
+    results = compare(live_enums(surface), stored)
+    assert results["metrics"]["liveNotStored"] == results["metrics"]["storedNotLive"] == []
+    assert results["sectionKeys"]["liveNotStored"] == results["sectionKeys"]["storedNotLive"] == []
+
+
+def test_a_pointer_that_resolves_to_nothing_leaves_the_enum_unread():
+    """A `$ref` the schema does not define is not an empty enum: the surface stays unreadable (`live_enums` raises),
+    never "every stored metric removed"."""
+    stored = stored_enums()
+    surface = _surface_137_2(stored["metrics"], stored["sectionKeys"])
+    surface["tools"][0]["inputSchema"]["properties"]["metric"]["$ref"] = "#/$defs/metricKeys"
+    assert first_enum(surface["tools"][0]["inputSchema"], "metric") is None
+    with pytest.raises(ValueError, match="metrics"):
+        live_enums(surface)
+
+
+def test_the_saved_144_stage_schema_reads_through_its_recursive_defs_without_looping():
+    """The 144.0.0 stage capture carries `$defs` with `metricKey` and `conditionNode`, which refers to itself. The
+    pointer is resolved only at the property looked up, never while walking, so the self-reference cannot recurse;
+    the REPORT axis's column `metric` reads the 302-key enum through it when the schema it came from is the root."""
+    from omega.contract import stage_schema
+    stage = stage_schema()["stage_strategy_draft"]
+    assert {"metricKey", "conditionNode"} <= set(stage["inputSchema"]["$defs"])
+    stored = stored_enums()
+    surface = _surface_137_2(stored["metrics"], stored["sectionKeys"])
+    surface["tools"][1] = {"name": "stage_strategy_draft", **stage}
+    live = live_enums(surface)
+    assert live["sectionKeys"] == stored["sectionKeys"] and live["metrics"] == stored["metrics"]
+    from omega.preflight import resolve_axes
+    axes, _ = resolve_axes(stage)
+    assert first_enum(axes["REPORT"], "metric") is None                       # the axis alone holds no `$defs`
+    assert set(first_enum(axes["REPORT"], "metric", root=stage["inputSchema"])) == stored["metrics"]
