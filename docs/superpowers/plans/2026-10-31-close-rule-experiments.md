@@ -536,26 +536,28 @@ git checkout main && git merge --ff-only feat/experiments-d && git push
 docker build -t battlegrid-manager:main-$(git rev-parse --short HEAD) .
 ```
 
-- [ ] **Step 3: Dry-run against the live database from a one-off container, before the deploy**
+- [ ] **Step 3: Deploy under the guards**
 
-The DB-only learn steps ran from a one-off container on 10-29 (the image carries no tests dir; the host's Python is not on the Compose network). The run writes `experiments` rows and one state key only, after a read-only replay; it is the first week's build, made by hand:
-
-```bash
-docker run --rm --network battlegrid-manager_default --env-file .env -e DATABASE_URL=<the compose DATABASE_URL> battlegrid-manager:main-<sha> python -m manager experiments run --now
-```
-Expected: `experiments: N run, 0 skipped, A accepted over P positions (window ...)`. Record P against `trade_outcomes` (138 rows on 10-30, minus the unscored) and the excluded reasons. Then the same container with `python -m manager experiments show`; keep the text in the record. The 10-26 replay said `loss_r` moved +3.28R over 114 positions: say whether the `loss_r_*` rows agree in sign, and what every verdict is (expect INSUFFICIENT on most: a one-knob change fires on few positions). A second `run --now` must print `N skipped`.
-
-- [ ] **Step 4: Deploy under the guards**
+The CLI never calls `init_db`, so the `experiments` table exists only after a service start has run `init_db`'s `create_all`: the deploy comes before any CLI run against the live database.
 
 ```bash
 bash scripts/gated_deploy.sh main-$(git rev-parse --short HEAD) 24
 ```
-Expected: `DEPLOY DONE` in the deploy log; `docker compose ps` lists `experiments` running; its first beat `not due` (this week's build exists from Step 3); `manager contract status` unchanged (no platform read was added: the job reads the database only).
+Expected: `DEPLOY DONE` in the deploy log; `docker compose ps` lists `experiments` running; its first beat `not due` (the week's scorecards exist but the experiments build does not: on a Monday after 01:00Z with the cards built, the job makes the week's build itself and beats the counts line instead); `manager contract status` unchanged (no platform read was added: the job reads the database only).
+
+- [ ] **Step 4: Dry-run against the live database from a one-off container, after the deploy**
+
+The DB-only learn steps ran from a one-off container on 10-29 (the image carries no tests dir; the host's Python is not on the Compose network). The run writes `experiments` rows and one state key only, after a read-only replay; it is the first week's build, made by hand unless the job already made it:
+
+```bash
+docker run --rm --network battlegrid-manager_default --env-file .env -e DATABASE_URL=<the compose DATABASE_URL> battlegrid-manager:main-<sha> python -m manager experiments run --now
+```
+Expected: `experiments: N run, 0 skipped, A accepted over P positions (window ...)` (or `N skipped` when the job built the week already). Record P against `trade_outcomes` (138 rows on 10-30, minus the unscored) and the excluded reasons. Then the same container with `python -m manager experiments show`; keep the text in the record. The 10-26 replay said `loss_r` moved +3.28R over 114 positions: say whether the `loss_r_*` rows agree in sign, and what every verdict is (expect INSUFFICIENT on most: a one-knob change fires on few positions). A second `run --now` must print `N skipped`.
 
 - [ ] **Step 5: Verify the deploy live**
 
 Run: `docker compose exec -T postgres psql -U manager -d manager -At -F ' | ' -c "select job, at, ok, note from heartbeats where job='experiments' order by at desc limit 3"`
-Expected: an ok beat on the new image. `curl -s -H "Authorization: Bearer $MANAGER_TOKEN" http://127.0.0.1:8790/api/learn/latest | python -c "import json,sys; v=json.load(sys.stdin); print(v['experimentsBuiltAt'], v['openProposals'])"` prints Step 3's build and the count `show` printed.
+Expected: an ok beat on the new image. `curl -s -H "Authorization: Bearer $MANAGER_TOKEN" http://127.0.0.1:8790/api/learn/latest | python -c "import json,sys; v=json.load(sys.stdin); print(v['experimentsBuiltAt'], v['openProposals'])"` prints Step 4's build and the count `show` printed.
 
 - [ ] **Step 6: Write the records and commit both repos**
 
