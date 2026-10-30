@@ -1,0 +1,304 @@
+{
+  "metric": "ROC9",
+  "label": "ROC (9)",
+  "code": "ROC9",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
+        }
+      }
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from ROC (9)’s own 9-bar length."
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": null,
+  "provenance": "tradingView",
+  "rankScope": "exchangeWide",
+  "spreadOperands": [
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC12",
+    "ROC15",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

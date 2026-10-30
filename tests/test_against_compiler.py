@@ -77,7 +77,7 @@ def test_corpus_is_complete():
     # 177 since the re-extraction at 110.2.0, 2026-10-14: MACD, PPO, KC_MID retired, nine added (_moves_110.json).
     # 183 since the re-extraction at 110.8.0, 2026-10-15: none retired, six added (_moves_110_8.json).
     # 226 since the re-extraction at 135.2.0, 2026-10-26: none retired, 43 added (_moves_135.json).
-    assert len(CONTRACT.metrics) == 226
+    assert len(CONTRACT.metrics) == 302   # 226 at 135.2.0; 302 since 144.0.0, 2026-10-30 (_moves_144.json: 2 retired, 78 added)
 
 
 def test_every_privileged_pair_is_rejected():

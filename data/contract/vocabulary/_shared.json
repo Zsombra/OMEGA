@@ -18,6 +18,10 @@
    "label": "Spread vs metric"
   },
   {
+   "id": "relativeTo",
+   "label": "Relative to coin"
+  },
+  {
    "id": "aggregate",
    "label": "Windowed aggregate"
   },
@@ -165,28 +169,36 @@
  ],
  "nullSentinel": "—",
  "_refreshed": {
-  "at": "2026-10-26T07:08Z",
-  "contractVersion": "135.2.0",
-  "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261026T0708Z/",
+  "at": "2026-10-30T03:45Z",
+  "contractVersion": "144.0.0",
+  "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261030T0345Z/",
   "moved": [
-   "transforms",
-   "budgets"
+   "transforms"
   ],
   "previous": {
-   "at": "2026-10-13T03:37Z",
-   "contractVersion": "108.4.0",
-   "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only; the in-app connector was disconnected); raw responses in data/contract/vocabulary/20261013T0337Z/",
+   "at": "2026-10-26T07:08Z",
+   "contractVersion": "135.2.0",
+   "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261026T0708Z/",
    "moved": [
     "transforms",
-    "conditionGrammar (new)"
+    "budgets"
    ],
    "previous": {
-    "at": "2026-09-09T08:03:07Z",
-    "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
-    "fieldsUpdated": [
-     "budgets",
-     "transforms"
-    ]
+    "at": "2026-10-13T03:37Z",
+    "contractVersion": "108.4.0",
+    "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only; the in-app connector was disconnected); raw responses in data/contract/vocabulary/20261013T0337Z/",
+    "moved": [
+     "transforms",
+     "conditionGrammar (new)"
+    ],
+    "previous": {
+     "at": "2026-09-09T08:03:07Z",
+     "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+     "fieldsUpdated": [
+      "budgets",
+      "transforms"
+     ]
+    }
    }
   }
  },

@@ -51,6 +51,8 @@ def test_the_moves_file_is_the_readme_table():
 def test_the_corpus_carries_every_new_code_and_no_retired_one():
     c = load()
     for key, move in header_code_moves().items():
+        if key in c.retired_metrics:        # STOCH_RSI14 (v137) and BB_WIDTH (v138) left the roster after v123
+            continue
         assert c.metric(key).code == move["since"], key
     assert not {m.code for m in c.metrics.values()} & RETIRED
 

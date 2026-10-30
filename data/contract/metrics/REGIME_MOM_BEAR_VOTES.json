@@ -22,6 +22,8 @@
     }
   ],
   "study": "regimeMomentumVotes",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
   "spreadOperands": [
     "UTC_HOUR",
     "DAY_OF_WEEK",

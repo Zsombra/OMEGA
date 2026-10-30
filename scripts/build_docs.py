@@ -13,7 +13,7 @@ from omega.contract import CONTRACT_DIR, DERIVED_DIR, ROOT, load
 
 DOCS = ROOT / "docs"
 TRANSFORM_ORDER = [
-    "value", "trajectory", "distance", "spread", "efficiency", "aggregate",
+    "value", "trajectory", "distance", "spread", "relativeTo", "efficiency", "aggregate",
     "zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax", "maxShare", "rank", "classifyZone", "crossDetect", "levelInteraction", "bandTouch",
     "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist", "nearestZoneAge",
 ]

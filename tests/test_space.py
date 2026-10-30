@@ -31,9 +31,9 @@ def test_matrix_is_the_full_metric_by_transform_grid():
     # levelInteraction (data/contract/vocabulary/_shared.json, list_strategy_vocabulary)
     # 177 x 16 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): MACD, PPO, KC_MID out, nine in.
     # 183 x 16 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): six in, none out.
-    assert len(rows) == 4972   # 226 x 22 since the re-extraction at 135.2.0, 2026-10-26 (2928 = 183 x 16 before)
-    assert len({r["metric"] for r in rows}) == 226
-    assert len({r["transform"] for r in rows}) == 22      # + the six v135 statistics
+    assert len(rows) == 6946   # 302 x 23 since the re-extraction at 144.0.0, 2026-10-30 (4972 = 226 x 22 at 135.2.0; 2928 = 183 x 16 before)
+    assert len({r["metric"] for r in rows}) == 302
+    assert len({r["transform"] for r in rows}) == 23      # + the six v135 statistics; + relativeTo (v142.3)
     assert "levelInteraction" in {r["transform"] for r in rows} and "bandTouch" not in {r["transform"] for r in rows}
 
 
@@ -70,9 +70,11 @@ def test_structural_shape_count_is_1018():
     # 1449 + 1155 = 2604 since the re-extraction at 135.2.0, 2026-10-26 (data/contract/metrics/_moves_135.json): atoms + 718
     # (43 metrics, and the six v135 statistics on every metric with a series home); chained: each distance / spread atom
     # chains into nine series outers (efficiency is back, README v135) and 21 of them into rank too.
-    assert len(atoms) == 1449
-    assert len(chained) == 1155
-    assert len(shapes) == 2604
+    # 2429 + 3416 = 5845 since the re-extraction at 144.0.0, 2026-10-30 (_moves_144.json): 78 metrics, relativeTo on
+    # every metric with a series home and its nine outers (1449 + 1155 = 2604 at 135.2.0)
+    assert len(atoms) == 2429
+    assert len(chained) == 3416
+    assert len(shapes) == 5845
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -111,8 +113,8 @@ def test_chain_successors_split_93_and_19():
     # over distance and spread again, and six series statistics): 105 atoms take them, 21 also take rank.
     nine = {"trajectory", "aggregate", "efficiency", "zscore", "stddev", "linregSlope", "pctl", "rollingMin",
             "rollingMax"}
-    assert len([k for k, v in by_atom.items() if v == nine]) == 105
-    assert len([k for k, v in by_atom.items() if v == nine | {"rank"}]) == 21
+    assert len([k for k, v in by_atom.items() if v == nine]) == 344     # 105 at 135.2.0; relativeTo chains the nine, never rank
+    assert len([k for k, v in by_atom.items() if v == nine | {"rank"}]) == 32   # 21 at 135.2.0
     # 91 and 20 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): KC_MID's distance -> rank left with it.
     # 95 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): the Donchian prior edges' distance and spread.
     assert (len(two), len(two_rank)) == (0, 0)     # 95 and 20 at 110.8.0
@@ -141,7 +143,7 @@ def test_expanding_operands_and_orderings_gives_8999():
     # 9,103 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json).
     # 10,257 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json).
     # 30,761 since the re-extraction at 135.2.0, 2026-10-26: each spread chain into the nine outers over its served operands.
-    assert len(enumerate_shapes(expand_operands=True)) == 30761
+    assert len(enumerate_shapes(expand_operands=True)) == 113934   # 30761 at 135.2.0: the 78 added metrics as spread operands
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -154,7 +156,7 @@ def test_chained_rank_expands_over_its_own_ordering_axis():
     expanded = enumerate_shapes(expand_operands=True)
     rank_chains = [s for s in expanded if s.chained == "rank"]
     # 76 at 61.2.0; the swing fractals +8 (108.4); KC_MID's -4 at 110.2.0 (2026-10-14); the prior swing fractals +4 (135.2.0)
-    assert len(rank_chains) == 84
+    assert len(rank_chains) == 132   # 84 at 135.2.0
     assert {s.ordering for s in rank_chains} == {"hi", "lo", "far", "near"}
 
 
@@ -238,9 +240,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 2604
+    assert len(unused) + len(used) == 5845   # 2604 at 135.2.0
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 2604                      # 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
-    assert len(query(expand_operands=True)) == 30761  # 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0
+    assert len(query()) == 5845                      # 2604 at 135.2.0, 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
+    assert len(query(expand_operands=True)) == 113934  # 30761 at 135.2.0; 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0

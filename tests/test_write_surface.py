@@ -224,17 +224,21 @@ SCHEMA_110 = "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
 SCHEMA_110_8 = "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
 SCHEMA_110_13 = "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
 SCHEMA_135 = "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
+SCHEMA_144 = "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
     manifest = json.loads((ROOT / "data/contract/_manifest.json").read_text(encoding="utf-8"))
     ws = manifest["writeSurface"]
-    # the 135.2.0 capture since 2026-10-26; 110.13.0 (v111, flat arguments) under `supersedes`, then 110.8.0, 110.2.0,
-    # 108.0.0 and 91.0.0
-    assert ws["servedContractVersion"] == "135.2.0"
-    assert ws["buildSha"].startswith("98d29c45")
-    assert ws["schema"] == SCHEMA_135 and (ROOT / ws["schema"]).is_file()
-    v110_13 = ws["supersedes"]
+    # the 144.0.0 capture since 2026-10-30; 135.2.0 under `supersedes`, then 110.13.0 (v111, flat arguments), 110.8.0,
+    # 110.2.0, 108.0.0 and 91.0.0
+    assert ws["servedContractVersion"] == "144.0.0"
+    assert ws["buildSha"].startswith("beb6b930")
+    assert ws["schema"] == SCHEMA_144 and (ROOT / ws["schema"]).is_file()
+    v135 = ws["supersedes"]
+    assert v135["servedContractVersion"] == "135.2.0" and v135["buildSha"].startswith("98d29c45")
+    assert v135["schema"] == SCHEMA_135 and (ROOT / SCHEMA_135).is_file()
+    v110_13 = v135["supersedes"]
     assert v110_13["servedContractVersion"] == "110.13.0" and v110_13["buildSha"].startswith("86df42d3")
     assert v110_13["schema"] == SCHEMA_110_13 and (ROOT / SCHEMA_110_13).is_file()
     v110_8 = v110_13["supersedes"]
@@ -254,12 +258,13 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
         assert any((ROOT / path).glob("*.json")), path
     # the metric/transform extraction is a separate snapshot and keeps its own version: 108.4.0 since the 2026-10-13
     # re-extraction (61.2.0 before, kept under `supersedes`), while the write surface above is still the 108.0.0 capture
-    # 135.2.0 since the 2026-10-26 re-extraction; 110.8.0 under `supersedes`, then 110.2.0, 108.4.0 and 61.2.0
-    assert manifest["servedContractVersion"] == "135.2.0"
-    assert manifest["supersedes"]["servedContractVersion"] == "110.8.0"
-    assert manifest["supersedes"]["supersedes"]["servedContractVersion"] == "110.2.0"
-    assert manifest["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "108.4.0"
-    assert manifest["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "61.2.0"
+    # 144.0.0 since the 2026-10-30 re-extraction; 135.2.0 under `supersedes`, then 110.8.0, 110.2.0, 108.4.0 and 61.2.0
+    assert manifest["servedContractVersion"] == "144.0.0"
+    assert manifest["supersedes"]["servedContractVersion"] == "135.2.0"
+    assert manifest["supersedes"]["supersedes"]["servedContractVersion"] == "110.8.0"
+    assert manifest["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "110.2.0"
+    assert manifest["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "108.4.0"
+    assert manifest["supersedes"]["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "61.2.0"
 
 
 def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
@@ -273,7 +278,7 @@ def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
 
 def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     doc = C.stage_schema()
-    assert doc["contractVersion"] == "135.2.0"          # the eight axes did not move at 110, 110.8, 110.13 or 135
+    assert doc["contractVersion"] == "144.0.0"          # the eight axes did not move at 110, 110.8, 110.13, 135 or 144
     assert V108_TOOLS <= set(doc)
     # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
     assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]

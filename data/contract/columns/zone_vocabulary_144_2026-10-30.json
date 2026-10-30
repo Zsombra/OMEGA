@@ -1,0 +1,351 @@
+{
+ "_what": "The conditionVocabulary each classifyZone header serves at contract 144.0.0 (build beb6b930): every metric of the 2026-10-30 corpus that offers classifyZone, at the anchor and the lower rung. Read-only preview_strategy_report over the mcporter CLI, 2026-10-30, BTC, 1h anchor, one render. omega.fanout reads `byMetric` for a classifyZone header's vocabulary; omega.conditions no longer applies the 2026-08-24 disjoint trap to a header listed here. Supersedes zone_vocabulary_135_2026-10-26.json (whose condition preview over ADX14_zone / MFI14_zone stands as the record of the trap's end).",
+ "capturedAt": "2026-10-30",
+ "contractVersion": "144.0.0",
+ "byMetric": {
+  "ADX": [
+   "weak",
+   "developing",
+   "trending",
+   "extreme"
+  ],
+  "CCI20": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "MFI14": [
+   "overbought",
+   "oversold",
+   "bullish",
+   "bearish",
+   "neutral"
+  ],
+  "RSI14": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "RSI2": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "RSI7": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_D": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_K": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_RSI_D": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_RSI_K": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ]
+ },
+ "headers": {
+  "ADX14_zone": {
+   "conditionVocabulary": [
+    "weak",
+    "developing",
+    "trending",
+    "extreme"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "ADX14_zone: thresholded regime (weak / developing / trending / extreme), banded weak < 20 ≤ developing < 25 ≤ trending < 50 ≤ extreme."
+  },
+  "ADX14_ltf_zone": {
+   "conditionVocabulary": [
+    "weak",
+    "developing",
+    "trending",
+    "extreme"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "ADX14_ltf_zone: thresholded regime (weak / developing / trending / extreme), banded weak < 20 ≤ developing < 25 ≤ trending < 50 ≤ extreme."
+  },
+  "CCI20_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "CCI20_zone: thresholded regime (overbought / oversold / neutral), banded oversold < -100 ≤ neutral ≤ 100 < overbought."
+  },
+  "CCI20_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "CCI20_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < -100 ≤ neutral ≤ 100 < overbought."
+  },
+  "MFI14_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "bullish",
+    "bearish",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "MFI14_zone: thresholded regime (overbought / oversold / bullish / bearish / neutral), banded oversold < 20 ≤ bearish < neutral = 50 < bullish ≤ 80 < overbought."
+  },
+  "MFI14_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "bullish",
+    "bearish",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "MFI14_ltf_zone: thresholded regime (overbought / oversold / bullish / bearish / neutral), banded oversold < 20 ≤ bearish < neutral = 50 < bullish ≤ 80 < overbought."
+  },
+  "RSI14_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI14_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "RSI14_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI14_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "RSI2_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI2_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 10 ≤ neutral ≤ 90 < overbought."
+  },
+  "RSI2_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI2_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 10 ≤ neutral ≤ 90 < overbought."
+  },
+  "RSI7_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI7_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "RSI7_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI7_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "D_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "D_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "D_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "D_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "K_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "K_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "K_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "K_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiD_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiD_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiD_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiD_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiK_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiK_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiK_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiK_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  }
+ },
+ "conditionPreview": {
+  "see": "zone_vocabulary_135_2026-10-26.json conditionPreview (2026-10-26)"
+ }
+}

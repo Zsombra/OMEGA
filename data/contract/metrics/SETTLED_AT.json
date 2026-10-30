@@ -16,5 +16,7 @@
       }
     }
   ],
-  "study": "crowdSettled"
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

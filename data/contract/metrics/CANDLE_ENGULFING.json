@@ -21,5 +21,7 @@
       }
     }
   ],
-  "study": "candlePatterns"
+  "study": "candlePatterns",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

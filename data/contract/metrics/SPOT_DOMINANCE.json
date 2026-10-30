@@ -1,0 +1,254 @@
+{
+  "metric": "SPOT_DOMINANCE",
+  "label": "Spot dominance",
+  "code": "spotDom",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "fraction",
+    "precision": 2,
+    "range": {
+      "min": 0,
+      "max": 1
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BB_PCT_B",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN"
+          ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "maxShare",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "spotFlow",
+  "provenance": "battleGridDerived",
+  "rankScope": "exchangeWide",
+  "spreadOperands": [
+    "CLOSE_LOCATION",
+    "BB_PCT_B",
+    "BUY_PRESSURE",
+    "BUY_PRES_CB",
+    "BUY_PRES_BN"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

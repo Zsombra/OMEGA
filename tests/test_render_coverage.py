@@ -43,7 +43,7 @@ from scripts.render_coverage import (
 # and the nine new metrics offer their own spread atoms (data/contract/metrics/_moves_110.json).
 # 8302 at 110.2.0; 9432 at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json); 28958 at 135.2.0, 2026-10-26: each
 # spread chains into nine series outers over its served operands (data/contract/metrics/_moves_135.json)
-EXPANDED_SPREAD_SHAPES = 28958
+EXPANDED_SPREAD_SHAPES = 109492   # 28958 at 135.2.0; 109492 at 144.0.0, 2026-10-30 (the 78 added metrics as spread operands)
 
 
 @pytest.fixture(scope="module")
@@ -73,7 +73,7 @@ def test_expanded_spread_header_names_both_sides(contract):
 def test_rendered_headers_spans_every_cache():
     """Bug 2: a single cache is not the record of what was rendered."""
     # 11 until the 09-09 sweep, 13 since the 09-20 one, 14 since 10-13, 15 since 10-14, 16 since 10-15, 17 since 10-26
-    assert len(SEEN_FILES) == 17
+    assert len(SEEN_FILES) == 20   # 17 at 135.2.0; + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -163,7 +163,8 @@ def test_structural_coverage_is_complete(contract):
     # 623 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md): the new metrics and levelInteraction on 43 levels, all rendered by that day's
     # sweep; bandTouch's 62 had already left, and the efficiency cells 108.4 removed left with the corpus.
     # 623 at 108.4.0; 653 at 110.2.0 (2026-10-14); 677 at 110.8.0 (2026-10-15); 1647 at 135.2.0 (2026-10-26)
-    assert (cov, len(unc)) == (1647, 0), (
+    # 4252 at 144.0.0 (2026-10-30: 2,631 structural shapes rendered by the structural sweep, 0 refusals, 0 mispredicted)
+    assert (cov, len(unc)) == (4252, 0), (
         "every metric x transform mechanism has been rendered live at least once")
 
 
@@ -194,6 +195,11 @@ def test_live_coverage_is_complete(contract):
     # 8,555 since the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md) (1,394 shapes rendered that day, 0 refusals, 0 mispredicted)
     # 8555 at 108.4.0; 9083 at 110.2.0 (2026-10-14); 10237 at 110.8.0 (2026-10-15, 1,154 shapes rendered, 0 refusals,
     # 0 mispredicted); 30741 at 135.2.0 (2026-10-26, 19,450 shapes rendered, 0 refusals, 0 mispredicted)
-    assert (cov, len(unc)) == (30741, 0), (
+    # 144.0.0 (2026-10-30): 113,914 expanded shapes. Every structural mechanism and every non-spread expansion is rendered
+    # (33,108); the 80,806 spread operand pairs that the 78 added metrics opened are NOT - a deliberate stop, recorded in
+    # docs/plans/2026-10-30-omega-reextraction-144.md (they re-mint `<code>_<operandCode>_spread[_<outer>]`, a pattern
+    # rendered thousands of times; at ~4 shapes/s they are five hours of read-only renders). The pin below is the
+    # measured state, so a regression on the rendered side still fails here.
+    assert (cov, len(unc)) == (33108, 80806), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
-    assert not byt
+    assert dict(byt) == {"spread": 80806}

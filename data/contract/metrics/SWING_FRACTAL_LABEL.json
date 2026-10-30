@@ -23,5 +23,7 @@
       }
     }
   ],
-  "study": "swingFractal"
+  "study": "swingFractal",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

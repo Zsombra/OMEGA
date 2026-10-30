@@ -99,9 +99,14 @@ def _token(column: Column, contract: Contract) -> str:
 STATISTIC_SUFFIX = {"zscore": "z", "stddev": "sd", "linregSlope": "slope", "pctl": "pctl",
                     "rollingMin": "min", "rollingMax": "max"}
 STATISTIC_DEFAULT_WINDOW = 20
+# v142.3 relativeTo (measured 2026-10-30 at 144.0.0, data/audit/relative_to_probe_144_2026-10-30.json): the token,
+# the instrument as the platform spells it, `_rel` - RSI14_ETH_rel, close_BTC_rel (BTC when omitted), RSI14_ltf_ETH_rel,
+# RSI14_4h_ETH_rel; a chain outer follows: close_BTC_rel_z20, close_ETH_rel_t3 .. close_ETH_rel_trend. An instrument
+# typed `eth` rendered `ETH`: the platform resolves the symbol case-insensitively and prints the roster spelling.
+RELATIVE_DEFAULT_INSTRUMENT = "BTC"
 
 
-ZONE_VOCABULARY = CONTRACT_DIR / "columns" / "zone_vocabulary_135_2026-10-26.json"
+ZONE_VOCABULARY = CONTRACT_DIR / "columns" / "zone_vocabulary_144_2026-10-30.json"   # 135 file: 2026-10-26 record
 _ZONE_DEFAULT = ("overbought", "oversold", "neutral")
 
 
@@ -118,6 +123,25 @@ def zone_vocabulary(metric: str) -> tuple[str, ...]:
     the RSIs, stochastics and CCI20, weak / developing / trending / extreme on ADX, and MFI14's five (bullish and bearish
     among them). A metric the measurement did not cover keeps the three-label default."""
     return _zone_vocabularies().get(metric, _ZONE_DEFAULT)
+
+
+def instrument_token(instrument: str | None) -> str:
+    """The instrument as the header spells it (data/audit/relative_to_probe_144b_2026-10-30.json): the roster symbol
+    in the platform's own case whatever case the column named it in (`eth` -> `ETH`), without a venue namespace
+    (`xyz:BRENTOIL` -> `BRENTOIL`, `AAPL` -> `AAPL`) and without the exchange's `k` thousand-multiplier prefix
+    (`kPEPE` and `kpepe` -> `PEPE`). omega reproduces those four measured spellings: the part after the last `:`,
+    a leading lower-case `k` before an upper-case symbol dropped, then upper-cased. A roster spelling outside them
+    (a symbol the platform prints with lower-case letters) is a header omega cannot predict offline."""
+    raw = (instrument or RELATIVE_DEFAULT_INSTRUMENT).rsplit(":", 1)[-1]
+    if len(raw) > 1 and raw[0] == "k" and raw[1:].isupper():
+        raw = raw[1:]
+    return raw.upper()
+
+
+def scope_token(column: Column) -> str:
+    """v136: "A non-default scope adds an `_<scope>` token to the header" - after the ordering: RSI14_rank_hi_crypto,
+    EMA5_EMA13_spread_rank_hi_l1 (measured 2026-10-30); `all` and an omitted scope add nothing (RSI14_rank_lo)."""
+    return f"_{column.scope}" if column.scope and column.scope != "all" else ""
 
 
 def _statistic(base: str, column: Column, transform_id: str) -> str:
@@ -138,6 +162,8 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     if tid == "spread":
         operand = contract.metric(column.inputs[0].metric).code if column.inputs else "?"
         return f"{token}_{operand}_spread"
+    if tid == "relativeTo":
+        return f"{token}_{instrument_token(column.instrument)}_rel"
     if tid == "efficiency":
         return f"{token}_er"
     if tid in STATISTIC_SUFFIX:
@@ -159,7 +185,7 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     if tid == "classifyState":          # platform-only, listed for completeness
         return f"{token}_state"
     if tid == "rank":
-        return f"{token}_rank_{column.ordering or 'hi'}"
+        return f"{token}_rank_{column.ordering or 'hi'}{scope_token(column)}"
     if tid.startswith("nearestZone"):
         # Verified against live renders (data/contract/columns/_renders_coverage.json),
         # which corrected two guesses here:
@@ -185,7 +211,7 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
 
     # chained rank collapses the stage-1 series to a single ordinal
     if column.chainedTransformId == "rank":
-        return [Output(f"{base}_rank_{column.ordering or 'hi'}", "rank")]
+        return [Output(f"{base}_rank_{column.ordering or 'hi'}{scope_token(column)}", "rank")]
 
     if effective == "trajectory":
         window = column.window or 4

@@ -1,0 +1,463 @@
+{
+ "_what": "Contract v142.3 / v136 probe, second pass: the instrument token's casing (kPEPE, xyz:BRENTOIL, a TRADFI symbol), `bars: all` and the regime reference on relativeTo, efficiency and aggregate as chain outers over it, and a scoped rank with `bars`. One preview_strategy_report render per column (SOL, 1h anchor, detail detailed), read-only over the mcporter CLI, 2026-10-30 at 144.0.0.",
+ "capturedAt": "2026-10-30T03:51:27Z",
+ "contractVersion": "144.0.0",
+ "renders": [
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "kPEPE"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_PEPE_rel",
+     "meaning": "RSI14_PEPE_rel: RSI14 − PEPE's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_PEPE_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -7.704591890000003
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "kpepe"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_PEPE_rel",
+     "meaning": "RSI14_PEPE_rel: RSI14 − PEPE's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_PEPE_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -7.704591890000003
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "xyz:BRENTOIL"
+   },
+   "outputs": [
+    {
+     "header": "close_BRENTOIL_rel",
+     "meaning": "close_BRENTOIL_rel: close ÷ BRENTOIL's close (ratio).",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_BRENTOIL_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.8655427704932656
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "bars": "all"
+   },
+   "outputs": [
+    {
+     "header": "close_dev_ETH_rel",
+     "meaning": "close_dev_ETH_rel: close_dev ÷ ETH's close_dev (ratio).",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_dev_ETH_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.04342238331767128
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "regime"
+    },
+    "instrument": "ETH"
+   },
+   "outputs": [
+    {
+     "header": "close_htf_ETH_rel",
+     "meaning": "close_htf_ETH_rel: close_htf ÷ ETH's close_htf (ratio).",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_htf_ETH_rel",
+     "conditionHold": {
+      "timeframe": "4h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.04245081930813979
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "chainedTransformId": "efficiency",
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "close_ETH_rel_er",
+     "meaning": "close_ETH_rel: close ÷ ETH's close (ratio). close_ETH_rel_er: efficiency ratio over the last 10 changes, |last − first| ÷ Σ|change| — 1 is a straight move, near 0 is chop.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_ETH_rel_er",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 199,
+      "maxAtLeast": 199,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "fraction"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.11311905851551902
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "chainedTransformId": "aggregate",
+    "window": 12
+   },
+   "outputs": [
+    {
+     "header": "close_ETH_rel_mean12",
+     "meaning": "close_ETH_rel: close ÷ ETH's close (ratio). close_ETH_rel_mean12: windowed mean.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_ETH_rel_mean12",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 198,
+      "maxAtLeast": 198,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.04293830290273104
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "ordering": "hi",
+    "scope": "crypto",
+    "bars": "closed"
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'rank' does not accept params.bars\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"rank\", \"timeframe\": {\"rel\": \"anchor\"}, \"bars\": \"closed\", \"ordering\": \"hi\", \"scope\": \"crypto\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"ordering\", \"scope\"]}, \"context\": {\"sectionKey\": \"custom:53ddca7c-0009-8a31-87fa-3b8fe0ac",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "AAPL"
+   },
+   "outputs": [
+    {
+     "header": "close_AAPL_rel",
+     "meaning": "close_AAPL_rel: close ÷ AAPL's close (ratio).",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_AAPL_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.27755486968449933
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "window": 5
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'relativeTo' does not accept params.window\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"relativeTo\", \"timeframe\": {\"rel\": \"anchor\"}, \"window\": 5, \"instrument\": \"ETH\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"bars\", \"instrument\"]}, \"context\": {\"sectionKey\": \"custom:2e60f6f8-f94f-8b39-8540-72dc7a772e1d\",",
+   "outputs": []
+  }
+ ]
+}

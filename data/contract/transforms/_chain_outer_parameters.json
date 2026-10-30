@@ -1,5 +1,5 @@
 {
- "_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's parameters, served identically on every metric of extraction 20261026",
+ "_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's parameters, served identically on every metric of extraction 20261030",
  "chainOuterParameters": {
   "aggregate": {
    "bars": {
@@ -70,6 +70,11 @@
    "ordering": {
     "defaultValue": "hi",
     "description": "Which end of the ranked set rank 1 names: Highest, Lowest, Furthest from zero, or Closest to zero. The magnitude pair is offered only where the metric can be negative.",
+    "required": false
+   },
+   "scope": {
+    "defaultValue": "all",
+    "description": "Which coins of the ranked set the column ranks among: 'all' ranks every coin in the set, and a category scope ranks only the coins it holds — its asset class (crypto, tradfi) or its coins' main category — with the rank and its universe counted over those coins. A scope holding fewer than 5 coins in the set ranks none. Accepted only where the column ranks the tracked universe.",
     "required": false
    }
   },

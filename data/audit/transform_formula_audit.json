@@ -144,6 +144,11 @@
    "transform": "rollingMax",
    "at": "2026-10-26",
    "why": "Added at contract v135. Served formula: `output = max(nonNull({base}[-{window}:]))`. Measured: its header (base + _{suffix}{window}, default 20), numeric kind and operators on an atom and as a chain outer (data/audit/statistics_probe_135_2026-10-26.json, and the 2026-10-26 coverage sweep). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "relativeTo",
+   "at": "2026-10-30",
+   "why": "Served at 144.0.0 (README v142.3): `output = comparable(unit) ? {base} - {instrument}.{base} : {base} / {instrument}.{base}`, the other coin's series read bar by bar. Measured: its header ({code}_{INSTRUMENT}_rel, the timeframe infix inside the token, a chain outer after it), kind (numeric), units (`points` on an oscillator or percent base, `priceRatio` on a price - SOL/BTC 0.00124, SOL RSI14 - ETH RSI14 7.0 pts), the refusals (inputs, instrument off relativeTo, rank as its outer, an unknown symbol) - data/audit/relative_to_probe_144_2026-10-30.json. Not recomputed: the other coin's bars are not in the render, so the difference and the ratio were not re-derived from two tapes."
   }
  ],
  "operationalFindings": [

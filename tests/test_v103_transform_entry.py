@@ -39,7 +39,7 @@ def test_the_108_4_corpus_is_the_v103_shape_and_the_catalogue_carries_the_requir
             cells += 1
             assert "operandRequired" not in spec and "sideRequired" not in spec, (m.metric, tid)
     # 1449 at 135.2.0 (2026-10-26): + 718 (43 metrics added, six v135 statistics on every metric with a series home)
-    assert cells == 1449   # 670 at 108.4.0; 705 at 110.2.0 (2026-10-14): - 18 retired + 53 added; 731 at 110.8.0 (2026-10-15): + 26 added
+    assert cells == 2429   # 2429 at 144.0.0 (2026-10-30): + 980 (78 metrics added, 2 retired, relativeTo on every metric with a series home); 670 at 108.4.0; 705 at 110.2.0 (2026-10-14): - 18 retired + 53 added; 731 at 110.8.0 (2026-10-15): + 26 added
 
 
 def test_the_catalogue_names_exactly_spread_and_the_four_zone_transforms():

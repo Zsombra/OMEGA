@@ -1,6 +1,6 @@
 {
   "metric": "SPOT_CVD",
-  "label": "Spot CVD (composite)",
+  "label": "Order-flow spot CVD (composite, UTC day)",
   "code": "spotCVD",
   "family": "volumeFlow",
   "nativeOutput": {
@@ -9,18 +9,142 @@
     "precision": 0
   },
   "outputKind": "scalar",
-  "timeframeMode": "timeless",
+  "timeframeMode": "candle",
   "transforms": [
     {
       "id": "value",
       "maximums": {
-        "offset": 0
+        "offset": 63
       }
     },
     {
       "id": "trajectory",
       "maximums": {
         "window": 64
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ]
+        }
       }
     },
     {
@@ -72,5 +196,16 @@
       }
     }
   ],
-  "study": null
+  "study": "spotFlow",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "spreadOperands": [
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "SQZ_MOM",
+    "ATR",
+    "CVD",
+    "CUM_VOLUME_DELTA"
+  ]
 }

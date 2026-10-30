@@ -1,0 +1,19 @@
+{
+ "_what": "Run record for the 2026-10-30-expanded live coverage sweep: what was asked for, what the platform refused, and every shape whose omega-predicted header did not turn up in the render. Kept OUT of data/contract/columns/ so none of these strings can be mistaken for a rendered header.",
+ "capturedAt": "2026-10-30T04:40:35Z",
+ "how": "preview_strategy_report via the mcporter CLI, read-only, BTC only, 32 columns per custom section, up to 4 sections per call; refused batches bisected to the offending column.",
+ "scope": "nonspread",
+ "shapesRequested": 35,
+ "batches": [
+  {
+   "batch": 1,
+   "columns": 35,
+   "headers": 35
+  }
+ ],
+ "headersMinted": 35,
+ "refusalCount": 0,
+ "refusals": [],
+ "predictedButNotRenderedCount": 0,
+ "predictedButNotRendered": []
+}

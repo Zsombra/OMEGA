@@ -1,6 +1,6 @@
 {
   "metric": "CVD",
-  "label": "CVD (UTC day)",
+  "label": "Order-flow CVD (UTC day)",
   "code": "CVD",
   "family": "volumeFlow",
   "nativeOutput": {
@@ -43,8 +43,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "aggregate": {
@@ -53,8 +55,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "efficiency": {
@@ -63,8 +67,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "zscore": {
@@ -73,8 +79,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "stddev": {
@@ -83,8 +91,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "linregSlope": {
@@ -93,8 +103,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "pctl": {
@@ -103,8 +115,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "rollingMin": {
@@ -113,8 +127,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "rollingMax": {
@@ -123,8 +139,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH"
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         }
       }
@@ -179,11 +197,15 @@
     }
   ],
   "study": null,
+  "provenance": "battleGridDerived",
+  "rankScope": null,
   "spreadOperands": [
     "MACD_HIST",
     "MACD_LINE",
     "MACD_SIGNAL",
+    "SQZ_MOM",
     "ATR",
-    "BB_WIDTH"
+    "CUM_VOLUME_DELTA",
+    "SPOT_CVD"
   ]
 }
