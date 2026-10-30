@@ -1,0 +1,59 @@
+[
+ {
+  "metric": "PERP_SPOT_GAP",
+  "label": "Perp/spot rate gap",
+  "code": "perpSpotGap",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 3,
+   "range": {
+    "min": 0,
+    "max": 2
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "perpSpotFlow",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "PERP_SPOT_CONFIRMS",
+  "label": "Perp/spot confirms",
+  "code": "perpSpotConf",
+  "family": "derived",
+  "nativeOutput": {
+   "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "perpSpotFlow",
+  "provenance": "battleGridDerived",
+  "rankScope": null
+ }
+]

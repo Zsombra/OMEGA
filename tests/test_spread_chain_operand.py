@@ -42,7 +42,7 @@ def _errors(base, operand, chained, contract):
 
 
 @pytest.mark.parametrize("base,operand", [
-    ("ATR", "SPOT_CVD"),        # flow metric - the case that surfaced it
+    ("CLOSE", "LAST"),        # a timeless operand; ATR x spread(SPOT_CVD) surfaced the rule, but SPOT_CVD reads per bar since v136.1 (candle at 144.0.0, 2026-10-30)
     ("CLOSE", "MARK"),          # price read - proves it is not about CVD
     ("ATR_PCT", "CHG_24H"),     # published change - a third kind
 ])
@@ -106,5 +106,6 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     # 947 / 9103 since the re-extraction at 110.2.0, 2026-10-14 (177 metrics, data/contract/metrics/_moves_110.json).
     # 981 / 10257 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json).
     # 2604 / 30761 since the re-extraction at 135.2.0, 2026-10-26 (data/contract/metrics/_moves_135.json).
-    assert len(enumerate_shapes(contract=contract)) == 2604
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 30761
+    # 5845 / 113934 since the re-extraction at 144.0.0, 2026-10-30 (data/contract/metrics/_moves_144.json).
+    assert len(enumerate_shapes(contract=contract)) == 5845
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 113934

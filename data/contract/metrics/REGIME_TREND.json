@@ -27,5 +27,7 @@
       }
     }
   ],
-  "study": "regimeContext"
+  "study": "regimeContext",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

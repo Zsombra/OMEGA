@@ -16,9 +16,11 @@ import pytest
 from omega import condition_vocabulary as CV
 
 ROOT = Path(__file__).resolve().parents[1]
-# The schema the manifest names: the 135.2.0 capture since 2026-10-26 (the 110.13.0 one of 2026-10-16, the 110.8.0
-# one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the 108.0.0 one are kept below as history).
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
+# The schema the manifest names: the 144.0.0 capture since 2026-10-30 (the 135.2.0 one of 2026-10-26, the 110.13.0 one
+# of 2026-10-16, the 110.8.0 one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the 108.0.0 one are kept below as
+# history).
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
+SCHEMA_135 = ROOT / "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
 SCHEMA_110_13 = ROOT / "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
 SCHEMA_110_8 = ROOT / "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
 SCHEMA_110_2 = ROOT / "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
@@ -26,6 +28,7 @@ SCHEMA_108 = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.
 MOVES_110 = json.loads((ROOT / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))
 MOVES_110_8 = json.loads((ROOT / "data/contract/metrics/_moves_110_8.json").read_text(encoding="utf-8"))
 MOVES_135 = json.loads((ROOT / "data/contract/metrics/_moves_135.json").read_text(encoding="utf-8"))
+MOVES_144 = json.loads((ROOT / "data/contract/metrics/_moves_144.json").read_text(encoding="utf-8"))
 DOC = json.loads(SCHEMA.read_text(encoding="utf-8"))
 V = CV.vocabulary()
 G = V["grammar"]
@@ -68,9 +71,9 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261026T062718Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "135.2.0",
-                           "buildSha": "98d29c45221aa16a7a0160173c0105220160119d",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261029T152942Z.json",
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "144.0.0",
+                           "buildSha": "beb6b930bcf01c914c01d528aa88dc05c32d1d76",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -193,16 +196,20 @@ def test_what_is_served_per_header_names_the_same_thirteen_operators():
 def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
     """171 at 108; 177 since 110 (MACD, PPO, KC_MID retired, nine added - data/contract/metrics/_moves_110.json); 183
     since 110.8 (six added, none retired - _moves_110_8.json); 226 since 135 (43 added, none retired - _moves_135.json:
-    seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1) and the six v135 statistics in both transform enums."""
+    seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1) and the six v135 statistics in both transform enums; 302 since
+    144 (78 added, STOCH_RSI14 and BB_WIDTH retired - _moves_144.json) and v142.3's relativeTo in the transform enum."""
     col = V["reportColumn"]
-    assert col["metric"]["count"] == 226 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["count"] == 302 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["pointer"] == "/stage_strategy_draft/inputSchema/$defs/metricKey"   # v137.2: named once
+    assert set(MOVES_144["retired"]).isdisjoint(col["metric"]["enum"]) and set(MOVES_144["added"]) <= set(col["metric"]["enum"])
     stats = ["zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"]
     assert col["transformId"]["enum"] == [
-        "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "crossDetect", "aggregate",
+        "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "relativeTo", "crossDetect", "aggregate",
         "efficiency", "maxShare", *stats, "rank", "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist",
         "nearestZoneAge", "levelInteraction"]
     assert col["chainedTransformId"]["enum"] == ["trajectory", "aggregate", "efficiency", "maxShare", *stats, "rank"]
     assert "buffer" in col["fields"]       # v100: "buffer, a column knob declared by levelInteraction only"
+    assert "instrument" in col["fields"] and "scope" in col["fields"]      # v142.3 relativeTo's coin; v136 rank's scope
 
 
 @pytest.mark.skipif(not HINTS_104_1.exists(), reason="the battlegrid-manager checkout is not beside this repo")
@@ -246,10 +253,20 @@ def test_v111_moved_no_column_enum_only_the_envelope():
 
 
 def test_the_135_enum_is_the_110_13_enum_plus_the_43():
-    old, new = _enum_in(SCHEMA_110_13), V["reportColumn"]["metric"]["enum"]
+    old, new = _enum_in(SCHEMA_110_13), _enum_in(SCHEMA_135)
     assert MOVES_135["retired"] == {} and set(old) <= set(new)
     assert set(new) - set(old) == set(MOVES_135["added"]) and len(MOVES_135["added"]) == 43
     assert [m for m in new if m in old] == old                                 # the 183 keep their platform order
+
+
+def test_the_144_enum_is_the_135_enum_minus_the_two_plus_the_78():
+    """v137 retired STOCH_RSI14, v138 BB_WIDTH; 78 keys arrived (v136.1, v137, v137.2, v137.3, v138, two undocumented) -
+    _moves_144.json. The kept 224 keep their platform order; the enum is read at $defs/metricKey (v137.2)."""
+    old, new = _enum_in(SCHEMA_135), V["reportColumn"]["metric"]["enum"]
+    assert set(old) - set(new) == set(MOVES_144["retired"]) == {"STOCH_RSI14", "BB_WIDTH"}
+    assert set(new) - set(old) == set(MOVES_144["added"]) and len(MOVES_144["added"]) == 78
+    assert [m for m in new if m in old] == [m for m in old if m in new]
+    assert set(MOVES_144["retiredBetweenExtractions"]).isdisjoint(old) and set(MOVES_144["retiredBetweenExtractions"]).isdisjoint(new)
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------

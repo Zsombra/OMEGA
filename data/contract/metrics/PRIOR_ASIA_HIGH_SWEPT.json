@@ -20,5 +20,7 @@
       }
     }
   ],
-  "study": "priorTradingSessions"
+  "study": "priorTradingSessions",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

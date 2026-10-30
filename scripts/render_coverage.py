@@ -60,6 +60,16 @@ SEEN_FILES = [
     # its headers carry today's codes. 19,450 shapes, 20,697 headers, zero refusals, zero predicted-but-not-rendered
     # (data/audit/coverage_sweep_2026-10-26.json).
     "_coverage_sweep_2026-10-26.json",
+    # 2026-10-30: the 302-metric re-extraction at contract 144.0.0 - the 78 added metrics, relativeTo (v142.3) on every
+    # metric with a series home and as a chain inner, structural shapes only (SWEEP_SCOPE=structural: the operand
+    # expansions of the 78 new metrics as spread operands are 80k+ re-mints of measured patterns, left unrendered).
+    "_coverage_sweep_2026-10-30.json",
+    # 2026-10-30, second pass (SWEEP_SCOPE=nonspread): the 35 uncovered expansions that were not spread pairs (rank
+    # orderings and distance variants of the added metrics), 35 headers, zero refusals, zero mispredicted
+    "_coverage_sweep_2026-10-30-expanded.json",
+    # 2026-10-30: the targeted probes (relativeTo with an instrument, at each rung, as a chain inner; scoped ranks; the
+    # v137 / v138 replacements) and the classifyZone vocabulary render
+    "_probe_144_2026-10-30.json",
 ]
 
 

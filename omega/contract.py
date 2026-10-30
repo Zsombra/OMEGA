@@ -55,6 +55,11 @@ class Metric:
     refused with "metric 'pivotP' is anchored to '1d' - it accepts only that absolute
     timeframe reference". See data/audit/metric_anchor_rule_2026-09-09.json.
     """
+    # Served since v136 / v138 and recorded by the 2026-10-30 refresh: the ranked set a `rank` column reads
+    # (`exchangeWide` where the platform ranks the metric; a `scope` is accepted only there) and whether TradingView
+    # publishes the same value (`tradingView` / `battleGridDerived`). None on a record that serves neither.
+    rank_scope: str | None = None
+    provenance: str | None = None
 
     @property
     def is_timeless(self) -> bool:
@@ -95,8 +100,9 @@ class Contract:
     # Served at contract 108 and known by NAME only (data/contract/metrics/_unmeasured_108.json): never in `metrics`,
     # so nothing that enumerates the corpus can select one; validate_column refuses them (METRIC_UNMEASURED).
     unmeasured_metrics: dict[str, dict] = field(default_factory=dict)
-    # Retired by the platform (data/contract/metrics/_moves_110.json: MACD, PPO, KC_MID at contract 110): never in
-    # `metrics`; validate_column refuses one naming what to author instead (METRIC_RETIRED).
+    # Retired by the platform (every data/contract/metrics/_moves_*.json `retired` block: MACD, PPO, KC_MID at
+    # contract 110; STOCH_RSI14, BB_WIDTH at 137 / 138): never in `metrics`; validate_column refuses one naming what
+    # to author instead (METRIC_RETIRED).
     retired_metrics: dict[str, dict] = field(default_factory=dict)
     # Both DERIVED from the write schema's column `transformId` enum (data/derived/condition_vocabulary_108.json),
     # never typed. Retired: extracted at 61.2.0 and no longer served (v100 retired `bandTouch`) - dropped from every
@@ -165,6 +171,8 @@ def load() -> Contract:
             spread_operands=tuple(rec.get("spreadOperands", ())),
             rank_orderings=tuple(rec.get("rankOrderings", ())),
             anchor=rec.get("anchor"),
+            rank_scope=rec.get("rankScope"),
+            provenance=rec.get("provenance"),
         )
 
     # The roster size is the platform's to choose, not ours to pin: it went 86 (2026-08-24)
@@ -181,9 +189,13 @@ def load() -> Contract:
     overlap = set(unmeasured) & set(metrics)
     if overlap:
         raise RuntimeError(f"measured AND listed unmeasured: {sorted(overlap)} - drop them from {unmeasured_path.name}")
-    moves_path = CONTRACT_DIR / "metrics" / "_moves_110.json"
-    moves = _load(moves_path) if moves_path.exists() else {}
-    retired_metrics = {name: rec | {"retiredAt": moves["contractVersion"]} for name, rec in moves.get("retired", {}).items()}
+    # Every re-extraction record's `retired` block (data/contract/metrics/_moves_*.json): MACD, PPO, KC_MID at 110
+    # (_moves_110.json); STOCH_RSI14 and BB_WIDTH at 137 / 138, measured at 144.0.0 (_moves_144.json).
+    retired_metrics: dict[str, dict] = {}
+    for moves_path in sorted((CONTRACT_DIR / "metrics").glob("_moves_*.json")):
+        moves = _load(moves_path)
+        for name, rec in (moves.get("retired") or {}).items():
+            retired_metrics[name] = rec | {"retiredAt": moves["contractVersion"], "record": moves_path.name}
     if set(retired_metrics) & set(metrics):
         raise RuntimeError(f"retired AND in the corpus: {sorted(set(retired_metrics) & set(metrics))} - a half-done refresh")
     # v123 renamed eighteen header codes (data/contract/metrics/_moves_123.json). A metric file still carrying its

@@ -71,10 +71,14 @@ def _signal_data() -> dict[str, list[dict]]:
     the 2026-08-28 partial map, data/derived/scoring_inputs_measured.json (12 of 84, kept
     as history). A metric contract 110 retired for the SAME series (MACD -> MACD_HIST, PPO -> PPO_HIST: "the same
     histograms", data/contract/metrics/_moves_110.json) reads as its replacement: the column that shows that data
-    today is the replacement's."""
+    today is the replacement's. So does BB_WIDTH -> BB_WIDTH_PCT (v138, _moves_144.json): not the same series (price
+    units against a percent), but the platform moved "every saved column, Market Read marker and doctrine mention" to
+    it before deploy, so the column that shows bollinger_squeeze's data today is BB_WIDTH_PCT's. The 2026-10-06 rung
+    record itself is left as measured."""
     signals = json.loads(
         (DERIVED_DIR / "signal_data_rungs_91.json").read_text(encoding="utf-8"))["signals"]
     same = {old: rec["author"] for old, rec in _moves_110().get("retired", {}).items() if rec.get("sameSeries")}
+    same["BB_WIDTH"] = "BB_WIDTH_PCT"
     return {sid: [d | {"metric": same.get(d["metric"], d["metric"])} for d in data] for sid, data in signals.items()}
 
 

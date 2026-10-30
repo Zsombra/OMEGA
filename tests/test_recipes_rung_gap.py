@@ -258,7 +258,8 @@ ADDED = {
     # preset: {(section, metric, transformId, rel)} - the columns 2026-10-10 adds to the recipes
     "mean-reversion": {
         ("Mean Reversion at Extremes Signals", "CCI20", "value", "anchor"),       # bollinger_cci_*
-        ("Mean Reversion at Extremes Signals", "BB_WIDTH", "value", "anchor"),    # bollinger_squeeze
+        # bollinger_squeeze scored BB_WIDTH, added here until v138 retired it for BB_WIDTH_PCT (2026-10-30): the recipe
+        # already shows BB_WIDTH_PCT x value, so the history path now adds nothing for it
         ("Mean Reversion at Extremes Signals", "RSI14", "value", "regime"),       # htf_rsi_*
         ("Mean Reversion at Extremes Signals", "RSI14", "value", "lower"),        # ltf_rsi_*
         ("Mean Reversion at Extremes Context", "FUNDING_ANN", "value", "anchor"),  # funding_extreme_*
@@ -273,7 +274,7 @@ ADDED = {
     },
     "squeeze-breakout": {
         ("Squeeze Breakout Signals", "CCI20", "value", "anchor"),
-        ("Squeeze Breakout Signals", "BB_WIDTH", "value", "anchor"),
+        # BB_WIDTH until v138 (2026-10-30): BB_WIDTH_PCT is already a recipe column
     },
     "flow-divergence": {
         ("Spot-Led Accumulation Context", "FUNDING_ANN", "value", "anchor"),

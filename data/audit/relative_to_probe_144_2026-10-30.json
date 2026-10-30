@@ -1,0 +1,1857 @@
+{
+ "_what": "Contract v136 / v137 / v138 / v140 / v142.3 probe: one preview_strategy_report render per column (SOL, 1h anchor, detail detailed), read-only over the mcporter CLI, 2026-10-30 at 144.0.0 (build beb6b930). relativeTo on a comparable unit and a price, with and without an instrument, at each timeframe reference and as a chain inner; the instrument knob off relativeTo; rank scope on an exchange-wide and a report-scoped rank and off rank; the v137 / v138 replacement metrics; OBV's refused level reads; the retired keys refused.",
+ "capturedAt": "2026-10-30T03:39:25Z",
+ "contractVersion": "144.0.0",
+ "renders": [
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_ETH_rel",
+     "meaning": "RSI14_ETH_rel: RSI14 − ETH's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_ETH_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      7.005108550000003
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "RSI14_BTC_rel",
+     "meaning": "RSI14_BTC_rel: RSI14 − BTC's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_BTC_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      4.411049230000003
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "close_BTC_rel",
+     "meaning": "close_BTC_rel: close ÷ BTC's close (ratio).",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_BTC_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.0012406467164140832
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "zscore"
+   },
+   "outputs": [
+    {
+     "header": "close_BTC_rel_z20",
+     "meaning": "close_BTC_rel: close ÷ BTC's close (ratio). close_BTC_rel_z20: z-score over the last 20 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_BTC_rel_z20",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 190,
+      "maxAtLeast": 190,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "oscillator"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -0.1210607239817614
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "chainedTransformId": "zscore",
+    "window": 10
+   },
+   "outputs": [
+    {
+     "header": "close_BTC_rel_z10",
+     "meaning": "close_BTC_rel: close ÷ BTC's close (ratio). close_BTC_rel_z10: z-score over the last 10 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_BTC_rel_z10",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 200,
+      "maxAtLeast": 200,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "oscillator"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      1.288091328165977
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "chainedTransformId": "trajectory",
+    "window": 4,
+    "bars": "closed"
+   },
+   "outputs": [
+    {
+     "header": "close_ETH_rel_t3",
+     "meaning": "Trajectory value 3 bars before the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_ETH_rel_t3",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    },
+    {
+     "header": "close_ETH_rel_t2",
+     "meaning": "Trajectory value 2 bars before the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_ETH_rel_t2",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    },
+    {
+     "header": "close_ETH_rel_t1",
+     "meaning": "Trajectory value 1 bar before the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_ETH_rel_t1",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    },
+    {
+     "header": "close_ETH_rel_now",
+     "meaning": "Trajectory value on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "close_ETH_rel_now",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    },
+    {
+     "header": "close_ETH_rel_trend",
+     "meaning": "Trajectory direction: rising | falling | flat. The direction compares the oldest and newest readings before display rounding, so slots that look equal can still read rising or falling; read it, never recompute it from the slots.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "rising",
+      "falling",
+      "flat"
+     ],
+     "markerToken": "close_ETH_rel_trend",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "price",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "unit": "priceRatio"
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0.04245081930813979,
+      0.04270070692061777,
+      0.04280634573304158,
+      0.043182414995246075,
+      "rising"
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "lower"
+    },
+    "instrument": "ETH"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_ltf_ETH_rel",
+     "meaning": "RSI14_ltf_ETH_rel: RSI14_ltf − ETH's RSI14_ltf in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_ltf_ETH_rel",
+     "conditionHold": {
+      "timeframe": "15m",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      10.839350660000001
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "abs": "4h"
+    },
+    "instrument": "ETH"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_4h_ETH_rel",
+     "meaning": "RSI14_4h_ETH_rel: RSI14_4h − ETH's RSI14_4h in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_4h_ETH_rel",
+     "conditionHold": {
+      "timeframe": "4h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -1.7917645300000018
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "eth"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_ETH_rel",
+     "meaning": "RSI14_ETH_rel: RSI14 − ETH's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_ETH_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      6.717325250000002
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "SOL"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_SOL_rel",
+     "meaning": "RSI14_SOL_rel: RSI14 − SOL's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_SOL_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      0
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CLOSE",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "chainedTransformId": "rank"
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[report-column] draft preview section 'custom:829fab41-d89f-865e-8b7a-935f2f0b7fe0': (CLOSE \\u00d7 relativeTo \\u00d7 rank) is not a composable chain \\u2014 the engine has no resolution home for it \\u2014 raw price-unit metrics never rank: an ordinal over a price level sorts by token denomination, so BTC beats DOGE every bar whatever the metric measures. The comparable form is the ranked COMPOSITION (`VWAP \\u00d7 distance \\u00d7 rank` earns the `dist_VWAP` ordinal without VWAP itself ranking); where no composition can produce the quantity, a catalogued p",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "RSI7"
+     }
+    ]
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'relativeTo' does not accept params.inputs\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"relativeTo\", \"timeframe\": {\"rel\": \"anchor\"}, \"inputs\": [{\"metric\": \"RSI7\"}]}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"bars\", \"instrument\"]}, \"context\": {\"sectionKey\": \"custom:1ec27d22-cffc-829a-8058-cb593c45ebe5\", \"",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH"
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'value' does not accept params.instrument\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"value\", \"timeframe\": {\"rel\": \"anchor\"}, \"instrument\": \"ETH\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"bars\", \"offset\"]}, \"context\": {\"sectionKey\": \"custom:5f4954ba-7077-87a6-8fd3-6e7937f2222e\", \"metric\": \"RSI14\", \"tr",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "NOPE_NOT_A_COIN"
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"Unknown coin symbol: 'NOPE_NOT_A_COIN'. Name a coin by a symbol the coin directory lists.\", \"details\": {\"field\": \"source.sections[0].columns[0].instrument\", \"correlationId\": \"84ba5a4f-c33a-4e48-8235-a4a163a63ea0\"}}",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "VOLUME",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH"
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[report-column] draft preview section 'custom:0b5c1f0f-65e7-8ef0-8890-14e668cbcc71': (VOLUME \\u00d7 relativeTo) is not a composable pair \\u2014 the engine has no resolution home for it\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_PAIR_UNSUPPORTED\", \"path\": [\"sections\", 0, \"columns\", 0, \"transformId\"], \"receivedValue\": {\"metric\": \"VOLUME\", \"transformId\": \"relativeTo\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"transformId must be executable for the selected metric\", \"candidates\": [\"value\", \"trajectory\", \"spread\", \"aggregate\", \"maxShare\", \"zscore\", ",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "BB_WIDTH_PCT",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH"
+   },
+   "outputs": [
+    {
+     "header": "bbWidthPct_ETH_rel",
+     "meaning": "bbWidthPct_ETH_rel: bbWidthPct − ETH's bbWidthPct in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "bbWidthPct_ETH_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volatility",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      1.6078477781470912
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "ordering": "hi",
+    "scope": "crypto"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_rank_hi_crypto",
+     "meaning": "RSI14_rank_hi_crypto: ordinal across the crypto coins of the tracked universe (a scope holding fewer than 5 coins ranks none), 1 = highest value, rendered as rank/universe-size; the standing as of the last close, unchanged until the next one.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_rank_hi_crypto",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      11
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "ordering": "lo",
+    "scope": "all"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_rank_lo",
+     "meaning": "RSI14_rank_lo: ordinal across the tracked universe, 1 = lowest value, rendered as rank/universe-size; the standing as of the last close, unchanged until the next one.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_rank_lo",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      43
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "scope": "defi"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_rank_hi_defi",
+     "meaning": "RSI14_rank_hi_defi: ordinal across the DeFi coins of the tracked universe (a scope holding fewer than 5 coins ranks none), 1 = highest value, rendered as rank/universe-size; the standing as of the last close, unchanged until the next one.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_rank_hi_defi",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      null
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "EMA5",
+    "transformId": "spread",
+    "chainedTransformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "EMA13"
+     }
+    ],
+    "ordering": "hi",
+    "scope": "l1"
+   },
+   "outputs": [
+    {
+     "header": "EMA5_EMA13_spread_rank_hi_l1",
+     "meaning": "EMA5_EMA13_spread: % gap EMA5 vs EMA13. EMA5_EMA13_spread_rank_hi_l1: ordinal across the Layer 1 coins of the tracked universe (a scope holding fewer than 5 coins ranks none), 1 = highest value, rendered as rank/universe-size; the standing as of the last close, unchanged until the next one.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "EMA5_EMA13_spread_rank_hi_l1",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "family": "trend",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      8
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "scope": "crypto"
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'value' does not accept params.scope\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"value\", \"timeframe\": {\"rel\": \"anchor\"}, \"scope\": \"crypto\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"bars\", \"offset\"]}, \"context\": {\"sectionKey\": \"custom:263f0e14-807b-8e07-856e-343e6aa1603a\", \"metric\": \"RSI14\", \"transform",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "CROWD_UPBIAS",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "scope": "crypto"
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[report-column] draft preview section 'custom:7669553b-ac7b-8596-84fc-5b83ed504ae9': 'upBias_rank_hi_crypto' ranks this report's coins, so it takes no category scope \\u2014 a scope narrows a rank of the tracked universe\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_PAIR_UNSUPPORTED\", \"path\": [\"sections\", 0, \"columns\", 0, \"scope\"], \"receivedValue\": \"crypto\", \"allowedDomain\": {\"kind\": \"enum\", \"values\": [\"all\"]}, \"context\": {\"sectionKey\": \"custom:7669553b-ac7b-8596-84fc-5b83ed504ae9\", \"metric\": \"CROWD_UPBIAS\"}, \"correlationId\": \"29473e30-a015-4b8b-9385-bb2",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "STOCH_RSI_K",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "stochRsiK_zone",
+     "meaning": "stochRsiK_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "overbought",
+      "oversold",
+      "neutral"
+     ],
+     "markerToken": "stochRsiK_zone",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 175,
+      "maxAtLeast": 175,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      "neutral"
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "STOCH_RSI_D",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "stochRsiD_zone",
+     "meaning": "stochRsiD_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "overbought",
+      "oversold",
+      "neutral"
+     ],
+     "markerToken": "stochRsiD_zone",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 175,
+      "maxAtLeast": 175,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      "oversold"
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "STOCH_RSI_K",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "stochRsiK",
+     "meaning": "stochRsiK: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "stochRsiK",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 175,
+      "maxAtLeast": 175,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "oscillator"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      21.70462201
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "BB_WIDTH_PCT",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "bbWidthPct",
+     "meaning": "bbWidthPct: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "bbWidthPct",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volatility",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "percent"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      10.553162095971205
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CUM_VOLUME_DELTA",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "cumVolDelta",
+     "meaning": "cumVolDelta: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "cumVolDelta",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "signedPrice"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      7854.68
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "CUM_VOLUME_DELTA",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 4,
+    "bars": "closed"
+   },
+   "outputs": [
+    {
+     "header": "cumVolDelta_t3",
+     "meaning": "Trajectory value 3 bars before the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "cumVolDelta_t3",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    },
+    {
+     "header": "cumVolDelta_t2",
+     "meaning": "Trajectory value 2 bars before the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "cumVolDelta_t2",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    },
+    {
+     "header": "cumVolDelta_t1",
+     "meaning": "Trajectory value 1 bar before the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "cumVolDelta_t1",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    },
+    {
+     "header": "cumVolDelta_now",
+     "meaning": "Trajectory value on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "cumVolDelta_now",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    },
+    {
+     "header": "cumVolDelta_trend",
+     "meaning": "Trajectory direction: rising | falling | flat. The direction compares the oldest and newest readings before display rounding, so slots that look equal can still read rising or falling; read it, never recompute it from the slots.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "rising",
+      "falling",
+      "flat"
+     ],
+     "markerToken": "cumVolDelta_trend",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 206,
+      "maxAtLeast": 206,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "signedPrice"
+    },
+    {
+     "unit": "signedPrice"
+    },
+    {
+     "unit": "signedPrice"
+    },
+    {
+     "unit": "signedPrice"
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -760836.62,
+      -5889.65,
+      -13008.97,
+      7854.68,
+      "rising"
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "OBV",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[report-column] draft preview section 'custom:6d807ebc-46fd-805b-89ea-95902b3b65d6': (OBV \\u00d7 value) is not a composable pair \\u2014 the engine has no resolution home for it\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_PAIR_UNSUPPORTED\", \"path\": [\"sections\", 0, \"columns\", 0, \"transformId\"], \"receivedValue\": {\"metric\": \"OBV\", \"transformId\": \"value\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"transformId must be executable for the selected metric\", \"candidates\": [\"trajectory\", \"efficiency\", \"zscore\", \"stddev\", \"linregSlope\", \"pctl\"]}, \"context\": ",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "OBV",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[report-column] draft preview section 'custom:bac67f16-3240-8882-844b-d8b60c88afd8': (OBV \\u00d7 rank) is not a composable pair \\u2014 the engine has no resolution home for it\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_PAIR_UNSUPPORTED\", \"path\": [\"sections\", 0, \"columns\", 0, \"transformId\"], \"receivedValue\": {\"metric\": \"OBV\", \"transformId\": \"rank\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"transformId must be executable for the selected metric\", \"candidates\": [\"trajectory\", \"efficiency\", \"zscore\", \"stddev\", \"linregSlope\", \"pctl\"]}, \"context\": {\"",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "OBV",
+    "transformId": "zscore",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "OBV_z20",
+     "meaning": "OBV_z20: z-score over the last 20 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "OBV_z20",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 190,
+      "maxAtLeast": 190,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "oscillator"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -1.557752238144951
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "STOCH_RSI14",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"Unknown metric code: name a metric the strategy vocabulary lists\", \"details\": {\"issueCount\": 1, \"issues\": [{\"path\": [\"source\", \"sections\", 0, \"columns\", 0, \"metric\"], \"message\": \"Unknown metric code: name a metric the strategy vocabulary lists\"}], \"correlationId\": \"525f630f-44cd-4942-a98f-06f869dbe25e\"}}",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "BB_WIDTH",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"Unknown metric code: name a metric the strategy vocabulary lists\", \"details\": {\"issueCount\": 1, \"issues\": [{\"path\": [\"source\", \"sections\", 0, \"columns\", 0, \"metric\"], \"message\": \"Unknown metric code: name a metric the strategy vocabulary lists\"}], \"correlationId\": \"003d2104-d5c6-4bea-8e6f-a4b82afc1f5d\"}}",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "SPOT_CLOSE_BYB",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"Unknown metric code: name a metric the strategy vocabulary lists\", \"details\": {\"issueCount\": 1, \"issues\": [{\"path\": [\"source\", \"sections\", 0, \"columns\", 0, \"metric\"], \"message\": \"Unknown metric code: name a metric the strategy vocabulary lists\"}], \"correlationId\": \"409ca8c4-8316-4f99-acaa-0d42758ada9e\"}}",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "DI_PLUS",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     {
+      "metric": "DI_MINUS"
+     }
+    ]
+   },
+   "outputs": [
+    {
+     "header": "DIplus14_DIminus14_spread",
+     "meaning": "DIplus14_DIminus14_spread: DIplus14 − DIminus14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "DIplus14_DIminus14_spread",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "trend",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -22.005862210000004
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "QUOTE_VOL",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "quoteVol",
+     "meaning": "quoteVol: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "quoteVol",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "volumeFlow",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "usdLargeCount"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      13586420.677170001
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "VWAP_WEEK_UB2",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "vwapWUb2",
+     "meaning": "vwapWUb2: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "vwapWUb2",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "structure",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "price"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      104.6583751
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "VWAP_WEEK_UB2",
+    "transformId": "levelInteraction",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "vwapWUb2_lvl",
+     "meaning": "vwapWUb2_lvl: what the bar did at vwapWUb2 — touch or reject, from below or above (a close through it reads none).",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "touch_from_below",
+      "touch_from_above",
+      "reject_from_below",
+      "reject_from_above",
+      "none"
+     ],
+     "markerToken": "vwapWUb2_lvl",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 208,
+      "maxAtLeast": 208,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "structure",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      "none"
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "PWH",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    }
+   },
+   "outputs": [
+    {
+     "header": "dist_pwh",
+     "meaning": "dist_pwh: % from current price to pwh.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "dist_pwh",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "family": "structure",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "percent"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      -11.25652532283176
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "VWAP",
+    "transformId": "value",
+    "timeframe": {
+     "abs": "1d"
+    }
+   },
+   "outputs": [
+    {
+     "header": "VWAP_1d",
+     "meaning": "VWAP_1d: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "VWAP_1d",
+     "conditionHold": {
+      "timeframe": "1d",
+      "maxWindow": 209,
+      "maxAtLeast": 209,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "structure",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "price"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      null
+     ]
+    }
+   ],
+   "columnContracts": null
+  }
+ ]
+}

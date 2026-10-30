@@ -1,0 +1,119 @@
+{
+ "_what": "Run record for the 2026-10-30 live coverage sweep: what was asked for, what the platform refused, and every shape whose omega-predicted header did not turn up in the render. Kept OUT of data/contract/columns/ so none of these strings can be mistaken for a rendered header.",
+ "capturedAt": "2026-10-30T04:39:20Z",
+ "how": "preview_strategy_report via the mcporter CLI, read-only, BTC only, 32 columns per custom section, up to 4 sections per call; refused batches bisected to the offending column.",
+ "scope": "structural",
+ "shapesRequested": 2631,
+ "batches": [
+  {
+   "batch": 1,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 2,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 3,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 4,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 5,
+   "columns": 128,
+   "headers": 168
+  },
+  {
+   "batch": 6,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 7,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 8,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 9,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 10,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 11,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 12,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 13,
+   "columns": 128,
+   "headers": 184
+  },
+  {
+   "batch": 14,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 15,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 16,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 17,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 18,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 19,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 20,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 21,
+   "columns": 71,
+   "headers": 95
+  }
+ ],
+ "headersMinted": 3639,
+ "refusalCount": 0,
+ "refusals": [],
+ "predictedButNotRenderedCount": 0,
+ "predictedButNotRendered": []
+}

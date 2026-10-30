@@ -20,6 +20,9 @@ REL = Literal["anchor", "lower", "regime"]
 ORDERING = Literal["hi", "lo", "far", "near"]
 SIDE = Literal["support", "resistance"]
 BARS = Literal["closed", "all"]
+# v136 (README "Contract history - v136"): the category scope of an exchange-wide `rank`; the enum is the 144.0.0
+# stage schema's (data/contract/stage_strategy_draft/schema_20261029T152942Z.json, columns.items.properties.scope).
+SCOPE = Literal["all", "crypto", "l1", "memes", "defi", "tradfi", "stocks", "indices", "commodities"]
 
 
 class RelTimeframe(BaseModel):
@@ -59,6 +62,14 @@ class Column(BaseModel):
     # v100: "whole basis points of the level, 0-500, default 0 ... declared by levelInteraction only"; the bounds are
     # the 108 schema's (data/derived/condition_vocabulary_108.json reportColumn.bounds.buffer).
     buffer: Annotated[int, Field(ge=0, le=500)] | None = None
+    # v142.3: the roster instrument a `relativeTo` column reads its metric against, `BTC` when omitted; the shape is
+    # the 144.0.0 stage schema's (minLength 1, maxLength 20, pattern ^[A-Za-z0-9][A-Za-z0-9._:-]*$, "case-insensitive").
+    # Refused on every other transform (measured 2026-10-30: "transform 'value' does not accept params.instrument",
+    # data/audit/relative_to_probe_144_2026-10-30.json).
+    instrument: str | None = Field(default=None, min_length=1, max_length=20, pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+    # v136: a `rank` column's category scope, `all` when omitted. Refused off rank ("transform 'value' does not accept
+    # params.scope") and on a rank of the report's own coins (measured 2026-10-30 on CROWD_UPBIAS).
+    scope: SCOPE | None = None
 
     def wire(self) -> dict:
         """The exact JSON the connector expects."""

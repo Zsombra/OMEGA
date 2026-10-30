@@ -20,5 +20,7 @@
       }
     }
   ],
-  "study": "emaCross"
+  "study": "emaCross",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

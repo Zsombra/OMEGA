@@ -397,17 +397,40 @@
    "columns": [
     {
      "metric": "OBV",
-     "transformId": "spread",
-     "inputs": [
-      {
-       "metric": "VOLUME"
-      }
-     ]
+     "transformId": "linregSlope",
+     "window": 20
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "linregSlope",
+     "window": 20
+    },
+    {
+     "metric": "OBV",
+     "transformId": "trajectory",
+     "window": 4,
+     "bars": "closed"
     }
    ],
    "cryptoOnly": [
     "OBV"
-   ]
+   ],
+   "supersedes": {
+    "columns": [
+     {
+      "metric": "OBV",
+      "transformId": "spread",
+      "inputs": [
+       {
+        "metric": "VOLUME"
+       }
+      ]
+     }
+    ],
+    "until": "contract 138 (OBV's level reads refused: value, rank, spread and every transform outside trajectory / zscore / stddev / linregSlope / pctl / efficiency; measured 2026-10-30 at 144.0.0)"
+   },
+   "note": "README v138: OBV's series is the running sum of each bar's step from the first bar a column reads, so its level is arbitrary and a level read (value, rank, spread ...) is refused; its changes equal TradingView's. A divergence is price direction against OBV direction: OBV_slope20 against close_slope20 (opposite signs), with OBV_trend as the coarse read. The pre-138 spec (OBV x spread(VOLUME)) is kept under `supersedes`. Re-specified 2026-10-30.",
+   "respecifiedOn": "2026-10-30"
   },
   {
    "id": "basis",
@@ -1077,18 +1100,42 @@
    "domain": "oscillator",
    "columns": [
     {
-     "metric": "STOCH_RSI14",
+     "metric": "STOCH_RSI_K",
      "transformId": "value"
     },
     {
-     "metric": "STOCH_RSI14",
+     "metric": "STOCH_RSI_D",
+     "transformId": "value"
+    },
+    {
+     "metric": "STOCH_RSI_K",
+     "transformId": "classifyZone"
+    },
+    {
+     "metric": "STOCH_RSI_K",
      "transformId": "trajectory",
      "window": 4,
      "bars": "closed"
     }
    ],
-   "note": "The platform publishes the indicator as native metrics, so the family is selected, not constructed.",
-   "decidedOn": "2026-10-12"
+   "note": "The platform publishes the indicator as native metrics, so the family is selected, not constructed. v137 retired STOCH_RSI14 (one 0-1 position) for TradingView's %K and %D (14,14,3,3) on 0-100 with Stochastic %K's zone vocabulary; stochRsiK_zone serves overbought / oversold / neutral (rendered 2026-10-30).",
+   "decidedOn": "2026-10-12",
+   "supersedes": {
+    "columns": [
+     {
+      "metric": "STOCH_RSI14",
+      "transformId": "value"
+     },
+     {
+      "metric": "STOCH_RSI14",
+      "transformId": "trajectory",
+      "window": 4,
+      "bars": "closed"
+     }
+    ],
+    "until": "contract 137 (STOCH_RSI14 retired; measured at 144.0.0, 2026-10-30)"
+   },
+   "respecifiedOn": "2026-10-30"
   },
   {
    "id": "directional-movement",
@@ -1233,6 +1280,40 @@
     "note": "maxShare returns a share, never the max itself.",
     "until": "contract 135 (2026-10-26)"
    }
+  },
+  {
+   "id": "relative-strength",
+   "name": "Relative strength line / ratio chart (coin vs coin)",
+   "domain": "cross-sectional",
+   "columns": [
+    {
+     "metric": "CLOSE",
+     "transformId": "relativeTo",
+     "instrument": "BTC"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "relativeTo",
+     "instrument": "BTC",
+     "chainedTransformId": "zscore",
+     "window": 20
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "relativeTo",
+     "instrument": "ETH",
+     "chainedTransformId": "trajectory",
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "relativeTo",
+     "instrument": "ETH"
+    }
+   ],
+   "note": "v142.3's relativeTo reads a metric against the same metric of another roster coin bar by bar: a price gives the ratio (close_BTC_rel = SOL/BTC, TradingView's SOLUSDT/BTCUSDT, unit priceRatio), a comparable unit the difference (RSI14_ETH_rel in points). The ratio chains the series statistics (close_BTC_rel_z20: a pairs-style z-score of the ratio) and trajectory, never rank. Every column here rendered 2026-10-30 (data/audit/relative_to_probe_144_2026-10-30.json). Cointegration stays blocked: a ratio's z-score is not a regression residual and no stationarity test exists.",
+   "decidedOn": "2026-10-30"
   }
  ],
  "blocked": [
@@ -1450,5 +1531,6 @@
   "there is no score, and a condition over any of them is a full entry gate."
  ],
  "_reextraction_2026-10-13": "Three families re-specified against the 108.4.0 corpus (scale-dependent-efficiency, flow-toxicity, perp-spot-cvd); each keeps its previous spec under `supersedes`.",
- "_reextraction_2026-10-26": "Contract v135 added zscore, stddev, linregSlope, pctl, rollingMin and rollingMax: five operator-absent families (zscore, vol-of-vol, ls-slope, ts-percentile, rolling-minmax) moved to buildable, each keeping its blocked record under `supersedes`; bollinger-derived, sharpe and vol-cones stay blocked on the composition that is still missing. Every column shape involved is rendered in the 2026-10-26 coverage sweep."
+ "_reextraction_2026-10-26": "Contract v135 added zscore, stddev, linregSlope, pctl, rollingMin and rollingMax: five operator-absent families (zscore, vol-of-vol, ls-slope, ts-percentile, rolling-minmax) moved to buildable, each keeping its blocked record under `supersedes`; bollinger-derived, sharpe and vol-cones stay blocked on the composition that is still missing. Every column shape involved is rendered in the 2026-10-26 coverage sweep.",
+ "_reextraction_2026-10-30": "Contract v142.3 added relativeTo: relative-strength (the coin-vs-coin ratio / difference line, with its z-score and trajectory) is buildable from rendered columns. v137 retired STOCH_RSI14: stoch-rsi re-specified on STOCH_RSI_K / STOCH_RSI_D (its 135 spec under `supersedes`). v138 retired BB_WIDTH for BB_WIDTH_PCT (no family named BB_WIDTH). bollinger-derived, sharpe, vol-cones, beta, cointegration stay blocked on the compositions still missing."
 }

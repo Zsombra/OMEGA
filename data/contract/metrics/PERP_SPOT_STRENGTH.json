@@ -21,5 +21,7 @@
       }
     }
   ],
-  "study": "perpSpotFlow"
+  "study": "perpSpotFlow",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

@@ -66,8 +66,8 @@ def test_the_gaps_name_only_the_retired_section_field():
 def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert set(C.retired_transforms) == {"bandTouch"}
     # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.13.0 (v111) capture since 2026-10-16
-    # (the 135.2.0 capture since 2026-10-26)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "135.2.0"
+    # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30)
+    assert C.retired_transforms["bandTouch"]["servedAt"] == "144.0.0"
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -79,14 +79,14 @@ def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
     the two prior-bar Donchian edges (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6: "They take `levelInteraction`");
     the four single-print zone edges do not (value, distance, spread only)."""
     assert C.unmeasured_transforms == {}
-    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 58   # 46 at 110.8.0
+    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 118   # 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
 
 
 def test_a_retired_transform_is_refused_naming_its_replacement():
     f = validate_column(col("OPEN", "bandTouch"), contract=C)
     assert codes(f) == {"TRANSFORM_RETIRED"}
     msg = f[0].message
-    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "135.2.0" in msg
+    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "144.0.0" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():
@@ -113,7 +113,7 @@ def test_level_interaction_headers_are_the_measured_ones():
 def test_the_space_never_enumerates_a_retired_transform_and_does_enumerate_level_interaction():
     shapes = enumerate_shapes(expand_operands=True)
     assert not [s for s in shapes if "bandTouch" in (s.transform, s.chained)]
-    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 58       # 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
+    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 118      # 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
 
 
 # --- buffer ----------------------------------------------------------------------------------------

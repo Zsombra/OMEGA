@@ -22,6 +22,8 @@
     }
   ],
   "study": "regimeVolatilityEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
   "spreadOperands": [
     "RVOL",
     "REGIME_VOL_ATR_RATIO"

@@ -1,0 +1,337 @@
+{
+ "_what": "Contract 144.0.0 probe, third pass: whether the platform refuses a knob the transform never consumed (`window` on value / rank / distance, `bars` on value / classifyZone, `offset` on trajectory), which omega has warned IGNORED on since contract 108, or only on the v136 / v142.3 knobs; plus `offset`, `bars` and a mixed-case instrument on relativeTo and a statistic outer with `bars`. One preview_strategy_report render per column (SOL, 1h anchor, detail detailed), read-only over the mcporter CLI, 2026-10-30 at 144.0.0.",
+ "capturedAt": "2026-10-30T04:03:42Z",
+ "contractVersion": "144.0.0",
+ "renders": [
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 5
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'value' does not accept params.window\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"value\", \"timeframe\": {\"rel\": \"anchor\"}, \"window\": 5}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"bars\", \"offset\"]}, \"context\": {\"sectionKey\": \"custom:b6b7e121-815e-8f4e-8a4f-c59c2ea2d643\", \"metric\": \"RSI14\", \"transformId\": ",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "bars": "all"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_dev",
+     "meaning": "RSI14_dev: value. Taken on the newest bar it reads.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_dev",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "oscillator"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      42.53282299
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "rank",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 5
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'rank' does not accept params.window\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"rank\", \"timeframe\": {\"rel\": \"anchor\"}, \"window\": 5}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"ordering\", \"scope\"]}, \"context\": {\"sectionKey\": \"custom:72c601b7-7299-827e-8c41-256194696646\", \"metric\": \"RSI14\", \"transformId\":",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "classifyZone",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "bars": "closed"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_zone",
+     "meaning": "RSI14_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought.",
+     "conditionOperators": [
+      "is",
+      "in",
+      "enters",
+      "exits"
+     ],
+     "conditionVocabulary": [
+      "overbought",
+      "oversold",
+      "neutral"
+     ],
+     "markerToken": "RSI14_zone",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": null
+    },
+    {
+     "firstRow": [
+      "SOL",
+      "neutral"
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 5
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[report-column] draft preview section 'custom:ea6a7211-766a-83d3-85c0-f883ecf9e423': (RSI14 \\u00d7 distance) is not a composable pair \\u2014 the engine has no resolution home for it\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_PAIR_UNSUPPORTED\", \"path\": [\"sections\", 0, \"columns\", 0, \"transformId\"], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"distance\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"transformId must be executable for the selected metric\", \"candidates\": [\"value\", \"trajectory\", \"classifyZone\", \"spread\", \"relativeTo\", \"aggregate\"",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "window": 4,
+    "offset": 2
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'trajectory' does not accept params.offset\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"trajectory\", \"timeframe\": {\"rel\": \"anchor\"}, \"window\": 4, \"offset\": 2}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"bars\", \"window\"]}, \"context\": {\"sectionKey\": \"custom:46a4ab94-0a0f-8583-8602-f30c8d337671\", \"metric\": \"",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "offset": 2
+   },
+   "refused": "{\"code\": \"VALIDATION_ERROR\", \"message\": \"[column-grammar] transform 'relativeTo' does not accept params.offset\", \"details\": {\"authoringCode\": \"REPORT_COLUMN_CONSTRUCTION_FAILED\", \"path\": [\"sections\", 0, \"columns\", 0], \"receivedValue\": {\"metric\": \"RSI14\", \"transformId\": \"relativeTo\", \"timeframe\": {\"rel\": \"anchor\"}, \"offset\": 2, \"instrument\": \"ETH\"}, \"allowedDomain\": {\"kind\": \"relation\", \"rule\": \"column parameters, operands, and timeframe must satisfy the canonical transform contract\", \"candidates\": [\"bars\", \"instrument\"]}, \"context\": {\"sectionKey\": \"custom:aaed2756-e292-805e-8b37-09237ba3c96f\",",
+   "outputs": []
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "bars": "closed"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_ETH_rel",
+     "meaning": "RSI14_ETH_rel: RSI14 − ETH's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_ETH_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      6.252920579999994
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "Eth"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_ETH_rel",
+     "meaning": "RSI14_ETH_rel: RSI14 − ETH's RSI14 in pts.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_ETH_rel",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 195,
+      "maxAtLeast": 195,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      6.523994340000002
+     ]
+    }
+   ],
+   "columnContracts": null
+  },
+  {
+   "column": {
+    "metric": "RSI14",
+    "transformId": "relativeTo",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "instrument": "ETH",
+    "chainedTransformId": "rollingMax",
+    "window": 12,
+    "bars": "closed"
+   },
+   "outputs": [
+    {
+     "header": "RSI14_ETH_rel_max12",
+     "meaning": "RSI14_ETH_rel: RSI14 − ETH's RSI14 in pts. RSI14_ETH_rel_max12: highest value over the last 12 points; null when the newest or oldest point is missing.",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between",
+      "crossesAbove",
+      "crossesBelow",
+      "increased",
+      "decreased"
+     ],
+     "conditionVocabulary": [],
+     "markerToken": "RSI14_ETH_rel_max12",
+     "conditionHold": {
+      "timeframe": "1h",
+      "maxWindow": 184,
+      "maxAtLeast": 184,
+      "refusal": null
+     },
+     "developingRead": false,
+     "family": "momentum",
+     "readBy": []
+    }
+   ],
+   "rendered": [
+    {
+     "unit": null
+    },
+    {
+     "unit": "points"
+    },
+    {
+     "firstRow": [
+      "SOL",
+      6.252920579999994
+     ]
+    }
+   ],
+   "columnContracts": null
+  }
+ ]
+}

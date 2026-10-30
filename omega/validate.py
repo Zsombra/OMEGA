@@ -55,6 +55,18 @@ RETIRED_TRANSFORM_REPLACEMENT = {
 # v100: "`buffer`, a column knob declared by `levelInteraction` only ... `buffer` on any other transform is refused
 # as an undeclared parameter."
 BUFFER_TRANSFORMS = {"levelInteraction"}
+# v142.3: `instrument` is relativeTo's own knob; v136: `scope` is rank's. Each is refused anywhere else - measured
+# 2026-10-30 at 144.0.0 ("transform 'value' does not accept params.instrument" / "params.scope",
+# REPORT_COLUMN_CONSTRUCTION_FAILED; data/audit/relative_to_probe_144_2026-10-30.json).
+INSTRUMENT_TRANSFORMS = {"relativeTo"}
+SCOPE_TRANSFORMS = {"rank"}
+# The served default (get_metric_construction_hints relativeTo.authoring.parameters.instrument.defaultValue).
+RELATIVE_DEFAULT_INSTRUMENT = "BTC"
+# `bars` measured 2026-10-30 at 144.0.0 (data/audit/relative_to_probe_144c_2026-10-30.json): accepted on value (RSI14_dev),
+# classifyZone (RSI14_zone) and relativeTo (RSI14_ETH_rel) as on every series transform; refused on rank ("transform
+# 'rank' does not accept params.bars", REPORT_COLUMN_CONSTRUCTION_FAILED). The rest is unmeasured and still warned.
+BARS_ACCEPTED_TRANSFORMS = SERIES_TRANSFORMS | {"value", "classifyZone", "relativeTo"}
+BARS_REFUSED_TRANSFORMS = {"rank"}
 # 48.0.0 (`remove-section-anchor-override`): "a section whose anchor is the strategy timeframe, which it now always
 # is"; the 108 custom-section arm has no `timeframe` and additionalProperties false.
 SECTION_TIMEFRAME_RETIRED_AT = "48.0.0"
@@ -124,8 +136,9 @@ def validate_column(
     if column.metric in c.retired_metrics:
         rec = c.retired_metrics[column.metric]
         return [Finding("error", "METRIC_RETIRED", f"{path}.metric",
-                        f"{column.metric!r} was retired at contract 110 (README v110; measured at {rec['retiredAt']}): "
-                        f"author {rec['author']!r} instead - {rec['quote']}")]
+                        f"{column.metric!r} was retired by the platform ({rec.get('readme', 'README v110')}; measured "
+                        f"at {rec['retiredAt']}, {rec.get('record', '_moves_110.json')}): author {rec['author']!r} "
+                        f"instead - {rec['quote']}")]
     if column.metric not in c.metrics:
         return [Finding("error", "UNKNOWN_METRIC", f"{path}.metric",
                         f"{column.metric!r} is not one of the {len(c.metrics)} catalogued "
@@ -181,6 +194,18 @@ def validate_column(
             "error", "BUFFER_UNDECLARED", f"{path}.buffer",
             f"`buffer` is declared by {sorted(BUFFER_TRANSFORMS)} only; on {tid!r} it is refused as an undeclared "
             f'parameter (README "Contract history - v100")'))
+    if column.instrument is not None and tid not in INSTRUMENT_TRANSFORMS:
+        out.append(Finding(
+            "error", "INSTRUMENT_UNDECLARED", f"{path}.instrument",
+            f"`instrument` is declared by {sorted(INSTRUMENT_TRANSFORMS)} only; on {tid!r} it is refused "
+            f"(\"transform {tid!r} does not accept params.instrument\", REPORT_COLUMN_CONSTRUCTION_FAILED, "
+            f"measured 2026-10-30 at 144.0.0)"))
+    if column.scope is not None and tid not in SCOPE_TRANSFORMS and column.chainedTransformId not in SCOPE_TRANSFORMS:
+        out.append(Finding(
+            "error", "SCOPE_UNDECLARED", f"{path}.scope",
+            f"`scope` is declared by a `rank` stage only (README v136); on {tid!r} it is refused "
+            f"(\"transform {tid!r} does not accept params.scope\", REPORT_COLUMN_CONSTRUCTION_FAILED, "
+            f"measured 2026-10-30 at 144.0.0)"))
 
     # --- metric x transform composability ----------------------------------
     if not m.offers(tid):
@@ -240,6 +265,13 @@ def validate_column(
                     "error", "OPERAND_NOT_ALLOWED", f"{path}.inputs[0]",
                     f"{operand} is not a valid spread operand for {m.metric} "
                     f"(unit '{m.unit}'). Allowed: {list(m.spread_operands)}"))
+    elif column.inputs and tid in INSTRUMENT_TRANSFORMS:
+        # v142.3: the other coin is named by `instrument`, never by an operand metric - measured 2026-10-30:
+        # "[column-grammar] transform 'relativeTo' does not accept params.inputs" (REPORT_COLUMN_CONSTRUCTION_FAILED)
+        out.append(Finding(
+            "error", "OPERAND_REFUSED", f"{path}.inputs",
+            f"{tid} does not accept `inputs`: it reads {m.metric} against the same metric of the coin named by "
+            f"`instrument` ({RELATIVE_DEFAULT_INSTRUMENT} when omitted)"))
     elif column.inputs:
         out.append(Finding(
             "warning", "OPERAND_IGNORED", f"{path}.inputs",
@@ -263,6 +295,14 @@ def validate_column(
                 "error", "REPORT_COLUMN_PAIR_UNSUPPORTED", f"{path}.ordering",
                 f"ranked column '{m.code}' does not offer the {ordering!r} ordering. "
                 f"Allowed: {list(m.rank_orderings)}"))
+        if column.scope is not None and m.rank_scope != "exchangeWide":
+            # v136: "`scope` is refused on a report-scoped rank, which ranks the report's own coins". The served
+            # `rankScope` names the set; measured 2026-10-30 on CROWD_UPBIAS: "'upBias_rank_hi_crypto' ranks this
+            # report's coins, so it takes no category scope - a scope narrows a rank of the tracked universe".
+            out.append(Finding(
+                "error", "REPORT_COLUMN_PAIR_UNSUPPORTED", f"{path}.scope",
+                f"'{m.code}_rank_{ordering}_{column.scope}' ranks this report's coins (rankScope {m.rank_scope!r}), "
+                f"so it takes no category scope - a scope narrows a rank of the tracked universe (exchangeWide)"))
 
     # --- chaining -----------------------------------------------------------
     if column.chainedTransformId:
@@ -364,9 +404,12 @@ def validate_column(
     lookback = c.budgets["columnLookback"]
     if column.window is not None:
         if tid not in SERIES_TRANSFORMS and column.chainedTransformId not in SERIES_TRANSFORMS:
+            # Until 144 a warning (WINDOW_IGNORED, the platform read past it). Measured 2026-10-30 at 144.0.0: "transform
+            # 'value' does not accept params.window", the same on rank (REPORT_COLUMN_CONSTRUCTION_FAILED, [column-grammar]).
             out.append(Finding(
-                "warning", "WINDOW_IGNORED", f"{path}.window",
-                f"{m.metric} x {tid} does not consume `window`"))
+                "error", "WINDOW_REFUSED", f"{path}.window",
+                f"transform {tid!r} does not accept params.window: {m.metric} x {tid} builds no series "
+                f"(REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 at 144.0.0)"))
         elif column.window > ((spec.get("maximums") or {}).get("window") or lookback):
             out.append(Finding(
                 "error", "LOOKBACK_EXCEEDED", f"{path}.window",
@@ -374,9 +417,12 @@ def validate_column(
     if column.offset is not None:
         served_max = (spec.get("maximums") or {}).get("offset")
         if tid != "value":
+            # Until 144 a warning (OFFSET_IGNORED). Measured 2026-10-30 at 144.0.0: "transform 'trajectory' does not
+            # accept params.offset", the same on relativeTo (REPORT_COLUMN_CONSTRUCTION_FAILED, [column-grammar]).
             out.append(Finding(
-                "warning", "OFFSET_IGNORED", f"{path}.offset",
-                f"`offset` applies to the `value` transform; {tid} ignores it"))
+                "error", "OFFSET_REFUSED", f"{path}.offset",
+                f"transform {tid!r} does not accept params.offset: `offset` is the `value` transform's "
+                f"(REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 at 144.0.0)"))
         elif served_max is not None:
             # 108.4.0 serves the maximum per metric (get_metric_construction_hints, value.parameters.offset.maximum:
             # 31 on most candle metrics, 30/21/12/11 on the bar-geometry ones, 0 on a timeless one). It supersedes
@@ -399,11 +445,17 @@ def validate_column(
                 f"{lookback}. The contract publishes `value` as taking only `offset` and "
                 f"no window, so the floor is invisible until the platform refuses the "
                 f"column. Usable offset is {lookback - LOOKBACK_FLOOR}."))
-    if column.bars is not None and tid not in SERIES_TRANSFORMS \
+    if column.bars is not None and tid in BARS_REFUSED_TRANSFORMS and column.chainedTransformId is None:
+        out.append(Finding(
+            "error", "BARS_REFUSED", f"{path}.bars",
+            f"transform {tid!r} does not accept params.bars (REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 "
+            f"at 144.0.0): a rank is read at the frame instant, closed or developing is not its choice"))
+    elif column.bars is not None and tid not in BARS_ACCEPTED_TRANSFORMS \
             and column.chainedTransformId not in SERIES_TRANSFORMS:
         out.append(Finding(
             "warning", "BARS_IGNORED", f"{path}.bars",
-            f"{m.metric} x {tid} does not read a bar series; `bars` will be ignored"))
+            f"{m.metric} x {tid} does not read a bar series; `bars` is unmeasured there (accepted on value, "
+            f"classifyZone, relativeTo and every series transform; refused on rank - 2026-10-30 at 144.0.0)"))
 
     # --- forming-bar honesty check -----------------------------------------
     if (tid in SERIES_TRANSFORMS and column.bars in (None, "all")

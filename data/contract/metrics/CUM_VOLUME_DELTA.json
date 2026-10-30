@@ -1,0 +1,211 @@
+{
+  "metric": "CUM_VOLUME_DELTA",
+  "label": "Cumulative Volume Delta (UTC day)",
+  "code": "cumVolDelta",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "SPOT_CVD"
+          ]
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      }
+    }
+  ],
+  "study": null,
+  "provenance": "tradingView",
+  "rankScope": null,
+  "spreadOperands": [
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "SQZ_MOM",
+    "ATR",
+    "CVD",
+    "SPOT_CVD"
+  ]
+}

@@ -46,7 +46,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "aggregate": {
@@ -55,7 +55,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "efficiency": {
@@ -64,7 +64,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "zscore": {
@@ -73,7 +73,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "stddev": {
@@ -82,7 +82,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "linregSlope": {
@@ -91,7 +91,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "pctl": {
@@ -100,7 +100,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "rollingMin": {
@@ -109,7 +109,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "rollingMax": {
@@ -118,7 +118,7 @@
             "VOL_SMA20",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         }
       }
@@ -173,10 +173,12 @@
     }
   ],
   "study": "barVolume",
+  "provenance": "tradingView",
+  "rankScope": null,
   "spreadOperands": [
     "VOL_SMA20",
     "BUY_VOLUME",
     "SELL_VOLUME",
-    "OBV"
+    "SPOT_AVG_TRADE"
   ]
 }

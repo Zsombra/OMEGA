@@ -103,11 +103,17 @@ def bisect(columns, refusals, depth=0):
 c = load()
 seen_before = rendered_headers()
 
-# every uncovered shape, structural and operand-expanded, deduped by its column payload
+# every uncovered shape, structural and operand-expanded, deduped by its column payload. SWEEP_SCOPE=structural renders
+# the structural shapes only, SWEEP_SCOPE=nonspread every uncovered shape that is not a spread pair (2026-10-30: the 144.0.0 corpus left 83,480 uncovered expanded shapes - the 78 added metrics as
+# spread operands - against 3,3xx structural ones; every new header pattern is structural, the expansions re-mint it
+# with another operand code).
+SWEEP_SCOPE = os.environ.get("SWEEP_SCOPE", "all")
 targets, keys = [], set()
-for expand in (False, True):
+for expand in ((False,) if SWEEP_SCOPE == "structural" else (False, True)):
     _, unc, _ = coverage(expand, c)
     for s in unc:
+        if SWEEP_SCOPE == "nonspread" and s.transform == "spread":
+            continue        # the 2026-10-30 second pass: every uncovered expansion that is not a spread operand pair
         col = s.to_column().model_dump(exclude_none=True)
         k = json.dumps(col, sort_keys=True)
         if k in keys:
@@ -156,7 +162,7 @@ json.dump({"_what": (f"Run record for the {SWEEP_DATE} live coverage sweep: what
            "how": ("preview_strategy_report via the mcporter CLI, read-only, BTC only, "
                    f"{COLS_PER_SECTION} columns per custom section, up to {SECTIONS_PER_CALL} "
                    "sections per call; refused batches bisected to the offending column."),
-           "shapesRequested": len(targets), "batches": batches,
+           "scope": SWEEP_SCOPE, "shapesRequested": len(targets), "batches": batches,
            "headersMinted": len(headers),
            "refusalCount": len(refusals), "refusals": refusals,
            "predictedButNotRenderedCount": len(mismatches),
