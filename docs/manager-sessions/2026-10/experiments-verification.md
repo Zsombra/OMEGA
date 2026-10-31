@@ -55,9 +55,18 @@ after the clean re-review; its ledger's rulings are below.
 9. Parked without a second fix wave: a hand run whose spec and window equal the grid's takes the slot until the window
    moves; non-canonical OPEN rows list under "Open proposals from earlier builds" (wording).
 
+## 2026-10-31: ruling 9's parked slot fixed on the user's word ("Yes, fix here")
+
+battlegrid-manager main `6fc2624`: a non-canonical run's window key ends in `/hand`; a canonical run skips only an
+earlier canonical row, a hand run skips a spec judged on the window by either kind; the report's standing proposals sit
+under "Open proposals from other runs", each with its origin. Suite 5737 passed, 6 skipped. Deployed under the
+guards (armed 04:40:16Z, check OK 04:40:26Z, DEPLOY DONE 04:41:12Z, 20 services on `77c0f7f32de5`, restarts 0; the
+`experiments` beat ok 04:41:13Z). The 23 live rows are canonical keys, nothing migrated. Live proof from a one-off
+container: `experiments run --spec` with the grid's `loss_r_1.0` spec printed "0 run, 1 skipped ... (.../118/s0.05/hand)",
+the row count stayed 23 and the build state did not move. Record: the manager's status doc, section "2026-10-31".
+
 ## What is not done
 
 - Design step 6 (`rule_versions`, `manager review take` on PROPOSE_RULE_VERSION) and step 8 (the analyst) — nothing can
   apply a rule; the loop is report-first as decided.
-- Follow-up from ruling 9: carry the canonical flag in the skip key.
 - The next canonical build is Monday 2026-11-02 after the 01:00Z scorecards, on whatever window the openings make.
