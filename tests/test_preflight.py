@@ -599,8 +599,10 @@ def test_fingerprint_axes_passes_the_saved_schema_and_flags_a_truncated_enum():
     old_axes, old_root = P.resolve_axes(old)
     f, mtf = P.fingerprint_axes(old_axes, old_root, **kw)
     assert f.path == "axes" and "eight of 108.0.0" in f.detail
-    # v134 retired includeMtfConfluence, so the repo's 24 templates read the 91 capture's 25 as one extra
-    assert mtf.path == "axes.REPORT.sections[].platform.sectionKey" and "extra ['includeMtfConfluence']" in mtf.detail
+    # v134 retired includeMtfConfluence and 146.0.0 includeMarketBreadth / includeReferencePairs, so the repo's 22
+    # templates read the 91 capture's 25 as three extras
+    assert mtf.path == "axes.REPORT.sections[].platform.sectionKey" and \
+        "extra ['includeMarketBreadth', 'includeMtfConfluence', 'includeReferencePairs']" in mtf.detail
     assert not hasattr(cli, "repo_signal_ids")
 
 

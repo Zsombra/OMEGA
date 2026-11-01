@@ -20,10 +20,11 @@ CAPTURE = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.jso
 CAPTURE_91 = ROOT / "data/contract/stage_strategy_draft/schema_20261005T194629Z.json"
 FIXTURE = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/fixtures/2026-10-11-surface-108.0.0/"
                "manager_schemas_108.0.0.json")
-# Today's plan is walked against the CURRENT capture (omega's own 110.2.0 schema file, 2026-10-14): it emits
-# MACD_HIST, which the 108 capture never served; the axes these tests are about did not move at 110.
+# Today's plan is walked against the CURRENT capture (the schema the manifest names: 146.0.0 since 2026-11-01, whose
+# custom-section arm REQUIRES the `marketScope` omega now emits; the 110.2.0 file of 2026-10-14 until then): it emits
+# MACD_HIST, which the 108 capture never served; the axes these tests are about did not move at 110 or since.
 DOC_110 = json.loads((Path(__file__).resolve().parents[1] / "data/contract/stage_strategy_draft/"
-                                                          "schema_20261013T200621Z.json").read_text(encoding="utf-8"))
+                                                          "schema_20261101T061733Z.json").read_text(encoding="utf-8"))
 TOOLS = ("stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft", "list_strategy_drafts",
          "preview_strategy_report", "get_strategy")
 DOC = json.loads(CAPTURE.read_text(encoding="utf-8"))

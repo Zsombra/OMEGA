@@ -23,6 +23,10 @@ BARS = Literal["closed", "all"]
 # v136 (README "Contract history - v136"): the category scope of an exchange-wide `rank`; the enum is the 144.0.0
 # stage schema's (data/contract/stage_strategy_draft/schema_20261029T152942Z.json, columns.items.properties.scope).
 SCOPE = Literal["all", "crypto", "l1", "memes", "defi", "tradfi", "stocks", "indices", "commodities"]
+# Contract 146.0.0 (2026-11-01, undocumented in the vendor README): a custom section's `marketScope`, REQUIRED (null
+# allowed); the enum is the 146.0.0 stage schema's (data/contract/stage_strategy_draft/schema_20261101T061733Z.json,
+# axes.REPORT.sections.items.oneOf[1].properties.marketScope) - the same nine category names as SCOPE.
+MARKET_SCOPE = Literal["all", "crypto", "l1", "memes", "defi", "tradfi", "stocks", "indices", "commodities"]
 
 
 class RelTimeframe(BaseModel):
@@ -84,6 +88,14 @@ class CustomSection(BaseModel):
     # The 108 schema's coin symbol (v103 holds get_strategy_column_contract's ticker to the same charset).
     benchmarkTicker: str | None = Field(default=None, min_length=1, max_length=20,
                                         pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
+    # REQUIRED by the 146.0.0 stage schema (2026-11-01; `'marketScope' is a required property` without it, so every
+    # plan failed battlegrid-manager's preflight from 06:12Z). null = a PER-COIN section, the shape every section
+    # OMEGA builds has always had (probed live 2026-11-01T07:58Z with the manager's panel request: accepted, one
+    # rendered section). A named scope makes a MARKET section, which refuses per-coin metrics - the live refusal:
+    # "a market section cannot carry this column — metric 'PRIOR_TPO_POC' is not read on a market section's bars" -
+    # so a named scope is only for a section built from the v146 market metrics (MKT_*, CROWD_*_Z), none of which
+    # OMEGA has extracted yet. wire() always emits the key.
+    marketScope: MARKET_SCOPE | None = None
     # No fixed ceiling since v103; the served `sectionColumns` budget judges the count (omega.validate).
     columns: list[Column] = Field(min_length=1)
     # RETIRED at contract 48.0.0 (`remove-section-anchor-override`): "no section can be overridden", and the 108
@@ -99,8 +111,9 @@ class CustomSection(BaseModel):
     def wire(self) -> dict:
         d = self.model_dump(exclude_none=True)
         d["columns"] = [c.wire() for c in self.columns]
-        # benchmarkTicker and notes are required by the schema even when null
+        # benchmarkTicker, marketScope (146.0.0) and notes are required by the schema even when null
         d.setdefault("benchmarkTicker", None)
+        d.setdefault("marketScope", None)
         d.setdefault("notes", None)
         return d
 

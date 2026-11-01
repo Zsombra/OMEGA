@@ -16,10 +16,11 @@ import pytest
 from omega import condition_vocabulary as CV
 
 ROOT = Path(__file__).resolve().parents[1]
-# The schema the manifest names: the 144.0.0 capture since 2026-10-30 (the 135.2.0 one of 2026-10-26, the 110.13.0 one
-# of 2026-10-16, the 110.8.0 one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the 108.0.0 one are kept below as
-# history).
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
+# The schema the manifest names: the 146.0.0 capture since 2026-11-01 (the 144.0.0 one of 2026-10-30, the 135.2.0 one
+# of 2026-10-26, the 110.13.0 one of 2026-10-16, the 110.8.0 one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the
+# 108.0.0 one are kept below as history).
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
+SCHEMA_144 = ROOT / "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
 SCHEMA_135 = ROOT / "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
 SCHEMA_110_13 = ROOT / "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
 SCHEMA_110_8 = ROOT / "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
@@ -71,9 +72,9 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261029T152942Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "144.0.0",
-                           "buildSha": "beb6b930bcf01c914c01d528aa88dc05c32d1d76",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "146.0.0",
+                           "buildSha": "1cd4466aace4e047a44672b6d531e4deabc8fe12",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -197,9 +198,10 @@ def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
     """171 at 108; 177 since 110 (MACD, PPO, KC_MID retired, nine added - data/contract/metrics/_moves_110.json); 183
     since 110.8 (six added, none retired - _moves_110_8.json); 226 since 135 (43 added, none retired - _moves_135.json:
     seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1) and the six v135 statistics in both transform enums; 302 since
-    144 (78 added, STOCH_RSI14 and BB_WIDTH retired - _moves_144.json) and v142.3's relativeTo in the transform enum."""
+    144 (78 added, STOCH_RSI14 and BB_WIDTH retired - _moves_144.json) and v142.3's relativeTo in the transform enum;
+    326 since 146 (24 added, none retired; served, known by name only - data/contract/metrics/_unmeasured_108.json)."""
     col = V["reportColumn"]
-    assert col["metric"]["count"] == 302 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["count"] == 326 == len(set(col["metric"]["enum"]))
     assert col["metric"]["pointer"] == "/stage_strategy_draft/inputSchema/$defs/metricKey"   # v137.2: named once
     assert set(MOVES_144["retired"]).isdisjoint(col["metric"]["enum"]) and set(MOVES_144["added"]) <= set(col["metric"]["enum"])
     stats = ["zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"]
@@ -262,11 +264,21 @@ def test_the_135_enum_is_the_110_13_enum_plus_the_43():
 def test_the_144_enum_is_the_135_enum_minus_the_two_plus_the_78():
     """v137 retired STOCH_RSI14, v138 BB_WIDTH; 78 keys arrived (v136.1, v137, v137.2, v137.3, v138, two undocumented) -
     _moves_144.json. The kept 224 keep their platform order; the enum is read at $defs/metricKey (v137.2)."""
-    old, new = _enum_in(SCHEMA_135), V["reportColumn"]["metric"]["enum"]
+    old, new = _enum_in(SCHEMA_135), _enum_in(SCHEMA_144)
     assert set(old) - set(new) == set(MOVES_144["retired"]) == {"STOCH_RSI14", "BB_WIDTH"}
     assert set(new) - set(old) == set(MOVES_144["added"]) and len(MOVES_144["added"]) == 78
     assert [m for m in new if m in old] == [m for m in old if m in new]
     assert set(MOVES_144["retiredBetweenExtractions"]).isdisjoint(old) and set(MOVES_144["retiredBetweenExtractions"]).isdisjoint(new)
+
+
+def test_the_146_enum_is_the_144_enum_plus_the_24_market_crowd_and_warning_keys():
+    """Contract 146.0.0 (2026-11-01, undocumented in the README): 24 keys added, none retired; the 302 keep their
+    platform order. The 24 are served and UNMEASURED (data/contract/metrics/_unmeasured_108.json)."""
+    from omega.contract import load
+    old, new = _enum_in(SCHEMA_144), V["reportColumn"]["metric"]["enum"]
+    assert not set(old) - set(new) and len(new) == 326
+    assert set(new) - set(old) == set(load().unmeasured_metrics) and len(set(new) - set(old)) == 24
+    assert [m for m in new if m in old] == old
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------
@@ -288,8 +300,10 @@ def test_the_gaps_between_the_schema_and_omega():
     assert gaps["groupOperators"] == {"schemaOnly": [], "omegaOnly": []}
     # known by name since 2026-10-11 (data/contract/metrics/_unmeasured_108.json); before, schemaOnly was these 15
     assert gaps["metrics"] == {"schemaOnly": [], "omegaOnly": []}
-    # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2)
-    assert gaps["metricsUnmeasured"] == []
+    # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2);
+    # since 2026-11-01 the 24 keys contract 146.0.0 added, served and known by name only (OMEGA v0.10.2, no extraction)
+    from omega.contract import load
+    assert gaps["metricsUnmeasured"] == sorted(load().unmeasured_metrics) and len(gaps["metricsUnmeasured"]) == 24
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
     # the enum and was platform-privileged at the 61.2.0 extraction (data/derived/platform_privileged.json)
     # The extraction's catalogue still lists bandTouch; since 2026-10-12 omega.contract derives it as RETIRED from this

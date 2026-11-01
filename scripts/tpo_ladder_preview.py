@@ -152,7 +152,7 @@ CONDITIONS = [
 
 SECTION = {"kind": "custom", "sectionKey": SK,
            "title": "TPO value migration",
-           "benchmarkTicker": None,
+           "benchmarkTicker": None, "marketScope": None,
            "notes": ("Developing (current UTC session) value area against the prior "
                      "completed session's. Positive spread means the first metric sits "
                      "above the second."),

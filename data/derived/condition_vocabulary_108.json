@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261029T152942Z.json",
-  "sha256": "f4be6e3fe3ac36cc1fd49f3e24f7b9ed5b145dfc6f2ccacafa77442edf20f7e8",
-  "contractVersion": "144.0.0",
-  "buildSha": "beb6b930bcf01c914c01d528aa88dc05c32d1d76",
-  "observedAt": "2026-10-29T15:29:42.440788+00:00"
+  "schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
+  "sha256": "49daf6915c8693bf666a5673ce8de3eb036464654d0ef9b1ba36540776c0978e",
+  "contractVersion": "146.0.0",
+  "buildSha": "1cd4466aace4e047a44672b6d531e4deabc8fe12",
+  "observedAt": "2026-11-01T06:17:33.505770+00:00"
  },
  "clauseOperators": [
   "lt",
@@ -530,6 +530,7 @@
    "benchmarkTicker",
    "columns",
    "kind",
+   "marketScope",
    "notes",
    "sectionKey",
    "title"
@@ -538,6 +539,7 @@
    "kind",
    "title",
    "benchmarkTicker",
+   "marketScope",
    "notes",
    "columns"
   ],
@@ -565,7 +567,7 @@
   ],
   "metric": {
    "pointer": "/stage_strategy_draft/inputSchema/$defs/metricKey",
-   "count": 302,
+   "count": 326,
    "enum": [
     "OPEN",
     "HIGH",
@@ -575,6 +577,7 @@
     "MARK",
     "ORACLE",
     "SPOT_CLOSE_CB",
+    "PAR_DEV",
     "SPOT_CLOSE_BN",
     "BAR_FORMING",
     "UTC_HOUR",
@@ -852,6 +855,8 @@
     "REGIME_MOM_BEAR_VOTES",
     "REGIME_CRASH_MARGIN",
     "REGIME_CRASH_LATCH",
+    "REGIME_WARNING_CRASH",
+    "REGIME_WARNING_DIVERGENCE",
     "CROWD_PICK",
     "CROWD_UPBIAS",
     "CROWD_ACC",
@@ -860,6 +865,14 @@
     "CROWD_UPBIAS_LIVE",
     "CROWD_ACC_LIVE",
     "CROWD_CAPT_LIVE",
+    "CROWD_UP_LEAN_Z",
+    "CROWD_UP_EXCESS_Z",
+    "CROWD_CAPT_EXCESS_Z",
+    "CROWD_ACC_EDGE_Z",
+    "CROWD_UP_LEAN_Z_LIVE",
+    "CROWD_UP_EXCESS_Z_LIVE",
+    "CROWD_CAPT_EXCESS_Z_LIVE",
+    "CROWD_ACC_EDGE_Z_LIVE",
     "SETTLED_AT",
     "FLOW_ALIGN",
     "SMART_RETAIL",
@@ -868,7 +881,20 @@
     "PERP_SPOT_FLOW",
     "PERP_SPOT_STRENGTH",
     "PERP_SPOT_GAP",
-    "PERP_SPOT_CONFIRMS"
+    "PERP_SPOT_CONFIRMS",
+    "MKT_UP",
+    "MKT_DOWN",
+    "MKT_NET",
+    "MKT_AVG_CHG",
+    "MKT_DISPERSION",
+    "MKT_PPO_UP",
+    "MKT_PPO_DOWN",
+    "MKT_PPO_NET",
+    "MKT_AVG_PPO",
+    "MKT_VOL_NET",
+    "MKT_STRETCH",
+    "MKT_ABOVE_EMA",
+    "MKT_UNIVERSE"
    ]
   },
   "transformId": {

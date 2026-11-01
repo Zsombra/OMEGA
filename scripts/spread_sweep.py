@@ -80,7 +80,7 @@ def payload(sections, contract, index):
     for i, sec in enumerate(sections, 1):
         cols = [s.to_column().wire() | {"timeframe": {"rel": "anchor"}} for s in sec]
         out.append({"kind": "custom", "title": f"Spread sweep {index}.{i}",
-                    "benchmarkTicker": None, "columns": cols})
+                    "benchmarkTicker": None, "marketScope": None, "columns": cols})
     return out
 
 

@@ -90,7 +90,11 @@ def test_the_round_trip_restages_the_committed_body_exactly():
     identical - the 14-line diff of action 62 collapses to nothing."""
     u = plan(COMMITTED_THESIS).axes_update(CURRENT)
     assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY]
-    assert u["REPORT"] == CURRENT["REPORT"]
+    # the read-back is from 2026-10-10 (contract 108); since 146.0.0 (2026-11-01) a custom section REQUIRES
+    # `marketScope`, which omega wires null (a per-coin section), so the re-stage carries that one key more
+    expected = {**CURRENT["REPORT"], "sections": [{**s, "marketScope": None} if s["kind"] == "custom" else s
+                                                   for s in CURRENT["REPORT"]["sections"]]}
+    assert u["REPORT"] == expected
     assert _clause_keys(u) == _clause_keys(CURRENT)
     assert u["CONDITIONS"] == CURRENT["CONDITIONS"]
 

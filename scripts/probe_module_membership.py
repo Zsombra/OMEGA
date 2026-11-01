@@ -38,7 +38,7 @@ def call(tool, args, timeout=240):
 
 def signals_for(columns, label):
     d, err = call("derive_strategy_rule_view", {"sections": [
-        {"kind": "custom", "title": label, "benchmarkTicker": None,
+        {"kind": "custom", "title": label, "benchmarkTicker": None, "marketScope": None,
          "notes": "OMEGA read-only module-membership probe 2026-09-09",
          "columns": columns}]})
     if d is None:

@@ -63,7 +63,7 @@ def render(columns):
     secs = []
     for i in range(0, len(columns), COLS_PER_SECTION):
         secs.append({"kind": "custom", "title": f"sweep {len(secs) + 1}",
-                     "benchmarkTicker": None, "notes": NOTE,
+                     "benchmarkTicker": None, "marketScope": None, "notes": NOTE,
                      "columns": columns[i:i + COLS_PER_SECTION]})
     # The request at v85+ (`source.kind: "FIELDS"`) and the read at v92+ (`conditionColumns` left the top level for
     # `authoring`, served only at detail "detailed"); the 09-09 / 09-20 runs used the flat compile-era shape.

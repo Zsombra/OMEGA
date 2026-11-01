@@ -249,7 +249,10 @@ def test_the_committed_report_is_reproducible_by_plan_with_regime_as_context():
     """The body committed on 2026-10-09 (action 61) stays reproducible, keyless as a CREATE
     sends it - the axes_update round trip is tested against it. At 108 plan() adds no
     scoring-data column, so REGIME as context alone gives it; the pre-108 path agrees."""
-    committed = [{k: v for k, v in s.items() if k != "sectionKey"} for s in COMMITTED["REPORT"]["sections"]]
+    # the 2026-10-09 commit predates contract 146.0.0 (2026-11-01), which REQUIRES `marketScope` on a custom section;
+    # omega wires it null (a per-coin section), the one key the committed body lacks
+    committed = [{k: v for k, v in s.items() if k != "sectionKey"} | {"marketScope": None}
+                 for s in COMMITTED["REPORT"]["sections"]]
     assert plan(replace(PRESETS["trend-continuation"], context=["REGIME"])).axes()["REPORT"]["sections"] == committed
     assert _pre_1010("trend-continuation").axes()["REPORT"]["sections"] == committed
 

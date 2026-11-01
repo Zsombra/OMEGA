@@ -88,6 +88,7 @@ def render_request(shapes: Sequence[ColumnShape], tickers: Sequence[str],
             "kind": "custom",
             "title": title,
             "benchmarkTicker": None,
+            "marketScope": None,        # required since contract 146.0.0; null = a per-coin section
             "columns": [s.to_column().wire() for s in shapes],
         }],
     }

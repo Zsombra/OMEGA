@@ -106,7 +106,7 @@ def cmd_plan(_argv):
 def cmd_show(argv):
     b = json.loads(PLAN.read_text(encoding="utf-8"))[int(argv[0])]
     print(json.dumps([{"kind": "custom", "title": f"families {b['index']}",
-                       "benchmarkTicker": None, "columns": b["columns"]}]))
+                       "benchmarkTicker": None, "marketScope": None, "columns": b["columns"]}]))
     return 0
 
 
