@@ -1,0 +1,33 @@
+{
+  "metric": "CROWD_CAPT_EXCESS_Z",
+  "label": "Crowd captain excess (z)",
+  "code": "captExcessZ",
+  "family": "crowd",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

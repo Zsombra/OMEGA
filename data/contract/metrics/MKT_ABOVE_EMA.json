@@ -1,0 +1,244 @@
+{
+  "metric": "MKT_ABOVE_EMA",
+  "label": "Market · share above EMA 50",
+  "code": "mktAboveEma",
+  "family": "market",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 1,
+    "range": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "classifyZone"
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_PPO_NET",
+            "MKT_AVG_PPO"
+          ]
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "maxShare",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      }
+    }
+  ],
+  "study": "marketBreadth",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "spreadOperands": [
+    "MKT_UP",
+    "MKT_DOWN",
+    "MKT_NET",
+    "MKT_AVG_CHG",
+    "MKT_DISPERSION",
+    "MKT_PPO_UP",
+    "MKT_PPO_DOWN",
+    "MKT_PPO_NET",
+    "MKT_AVG_PPO"
+  ]
+}

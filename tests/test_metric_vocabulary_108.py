@@ -36,9 +36,14 @@ def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
     """EMPTY from 2026-10-13 to 2026-10-31 (the 15 served at 108 were measured). Since 2026-11-01 the record names the
     24 keys contract 146.0.0 added (tests/test_v146.py): served, known by name only, not in the corpus."""
     c = load()
-    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 326      # 326 at 146.0.0 (24 unmeasured); 302 at 144.0.0 (_moves_144.json); 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json); 226 at 135.2 (_moves_135.json)
-    assert len(c.metrics) == 302 and set(RECORD["metrics"]) == set(c.unmeasured_metrics) and len(c.unmeasured_metrics) == 24
+    # 326 at 146.0.0 (24 unmeasured 2026-11-01 .. 11-02, measured at 146.0.1 on 2026-11-02: _moves_146.json); 302 at
+    # 144.0.0 (_moves_144.json); 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json); 226 at
+    # 135.2 (_moves_135.json)
+    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 326
+    assert len(c.metrics) == 326 and set(RECORD["metrics"]) == set(c.unmeasured_metrics) == set()
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
+    assert len(RECORD["history146"]["formerlyUnmeasured"]) == 24 and RECORD["history146"]["measuredOn"] == "2026-11-02"
+    assert RECORD["servedAt"] == "146.0.1"
 
 
 def test_the_v100_metrics_are_what_the_changelog_says():

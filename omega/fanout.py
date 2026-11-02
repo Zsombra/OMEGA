@@ -106,7 +106,9 @@ STATISTIC_DEFAULT_WINDOW = 20
 RELATIVE_DEFAULT_INSTRUMENT = "BTC"
 
 
-ZONE_VOCABULARY = CONTRACT_DIR / "columns" / "zone_vocabulary_144_2026-10-30.json"   # 135 file: 2026-10-26 record
+# 146 file (2026-11-02): the 144 measurement carried forward plus MKT_ABOVE_EMA (risk-off / neutral / risk-on, rendered on
+# a market section); 144 file: 2026-10-30 record; 135 file: 2026-10-26 record
+ZONE_VOCABULARY = CONTRACT_DIR / "columns" / "zone_vocabulary_146_2026-11-02.json"
 _ZONE_DEFAULT = ("overbought", "oversold", "neutral")
 
 

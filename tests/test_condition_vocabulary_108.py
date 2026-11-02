@@ -30,6 +30,7 @@ MOVES_110 = json.loads((ROOT / "data/contract/metrics/_moves_110.json").read_tex
 MOVES_110_8 = json.loads((ROOT / "data/contract/metrics/_moves_110_8.json").read_text(encoding="utf-8"))
 MOVES_135 = json.loads((ROOT / "data/contract/metrics/_moves_135.json").read_text(encoding="utf-8"))
 MOVES_144 = json.loads((ROOT / "data/contract/metrics/_moves_144.json").read_text(encoding="utf-8"))
+MOVES_146 = json.loads((ROOT / "data/contract/metrics/_moves_146.json").read_text(encoding="utf-8"))
 DOC = json.loads(SCHEMA.read_text(encoding="utf-8"))
 V = CV.vocabulary()
 G = V["grammar"]
@@ -273,11 +274,13 @@ def test_the_144_enum_is_the_135_enum_minus_the_two_plus_the_78():
 
 def test_the_146_enum_is_the_144_enum_plus_the_24_market_crowd_and_warning_keys():
     """Contract 146.0.0 (2026-11-01, undocumented in the README): 24 keys added, none retired; the 302 keep their
-    platform order. The 24 are served and UNMEASURED (data/contract/metrics/_unmeasured_108.json)."""
+    platform order. The 24 were served and UNMEASURED from 2026-11-01 (data/contract/metrics/_unmeasured_108.json) to
+    2026-11-02, when the re-extraction at 146.0.1 measured them (_moves_146.json)."""
     from omega.contract import load
     old, new = _enum_in(SCHEMA_144), V["reportColumn"]["metric"]["enum"]
     assert not set(old) - set(new) and len(new) == 326
-    assert set(new) - set(old) == set(load().unmeasured_metrics) and len(set(new) - set(old)) == 24
+    assert set(new) - set(old) == set(MOVES_146["added"]) <= set(load().metrics) and len(set(new) - set(old)) == 24
+    assert not load().unmeasured_metrics
     assert [m for m in new if m in old] == old
 
 
@@ -301,9 +304,10 @@ def test_the_gaps_between_the_schema_and_omega():
     # known by name since 2026-10-11 (data/contract/metrics/_unmeasured_108.json); before, schemaOnly was these 15
     assert gaps["metrics"] == {"schemaOnly": [], "omegaOnly": []}
     # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2);
-    # since 2026-11-01 the 24 keys contract 146.0.0 added, served and known by name only (OMEGA v0.10.2, no extraction)
+    # from 2026-11-01 to 2026-11-02 the 24 keys contract 146.0.0 added, served and known by name only (OMEGA v0.10.2);
+    # measured 2026-11-02 at 146.0.1 (OMEGA v0.11.0, _moves_146.json): empty again
     from omega.contract import load
-    assert gaps["metricsUnmeasured"] == sorted(load().unmeasured_metrics) and len(gaps["metricsUnmeasured"]) == 24
+    assert gaps["metricsUnmeasured"] == sorted(load().unmeasured_metrics) == []
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
     # the enum and was platform-privileged at the 61.2.0 extraction (data/derived/platform_privileged.json)
     # The extraction's catalogue still lists bandTouch; since 2026-10-12 omega.contract derives it as RETIRED from this

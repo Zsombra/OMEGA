@@ -2,7 +2,7 @@
  "categories": [
   {
    "category": "price",
-   "metricCount": 26,
+   "metricCount": 27,
    "label": "Price",
    "purpose": "Read the raw traded price, the individual bar’s own open, high, low and close, its price sources (HL2, HLC3, OHLC4), and what the bar did: its candle shape, whether it gapped from the bar before, and how many bars ran one way.",
    "whenToUse": [
@@ -256,7 +256,7 @@
   },
   {
    "category": "regime",
-   "metricCount": 16,
+   "metricCount": 18,
    "label": "Regime",
    "purpose": "Describe the platform-classified trend, volatility, and momentum environment, the composite regime it resolves to, and the quantities the classifier read to decide.",
    "whenToUse": [
@@ -306,7 +306,7 @@
   },
   {
    "category": "crowd",
-   "metricCount": 9,
+   "metricCount": 17,
    "label": "Crowd",
    "purpose": "Describe aggregate player positioning, confidence, and historical accuracy.",
    "whenToUse": [
@@ -365,6 +365,45 @@
       }
      },
      "clause": null
+    }
+   ]
+  },
+  {
+   "category": "market",
+   "metricCount": 13,
+   "label": "Market",
+   "purpose": "Read the whole field at one breadth scope — how much of it closed up or down, carries momentum, participates, is extended, and trades above its own trend — on a section bound to the market at that scope.",
+   "whenToUse": [
+    "Gate an entry on the field not fighting it: a long when the scope is broadly green, a short when it is broadly red.",
+    "Read the field’s persistent trend state, which holds for runs of bars, as a risk-on or risk-off label.",
+    "Compare two scopes — crypto against TradFi, Layer 1 against memes — with one market section each."
+   ],
+   "bestPractices": [
+    "Read the share above EMA 50 for the field’s state, and net breadth for this bar’s move: net breadth flips almost every bar, the trend share does not.",
+    "Pin a market column to a timeframe when the strategy should read breadth at another one than its own.",
+    "Read the universe beside a share where a small scope makes one coin a large step."
+   ],
+   "commonMisuses": [
+    "Treating one bar’s net breadth as a regime — it carries almost no persistence.",
+    "Adding a market metric to a coin section — the market is its own subject, bound in the section dialog.",
+    "Expecting history before the breadth history began: a lookback before it reads absent."
+   ],
+   "examples": [
+    {
+     "title": "Share above EMA 50",
+     "description": "Hold the field’s trend state between the risk-off and risk-on lines.",
+     "column": {
+      "metric": "MKT_ABOVE_EMA",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     "clause": {
+      "op": "between",
+      "low": 20,
+      "high": 80
+     }
     }
    ]
   }
@@ -622,25 +661,37 @@
   }
  ],
  "_refreshed": {
-  "at": "2026-11-01T06:17:33Z",
-  "contractVersion": "146.0.0",
-  "how": "modules: the sectionKey enum of the 146.0.0 stage schema (data/contract/stage_strategy_draft/schema_20261101T061733Z.json), copied from the battlegrid-manager fixture; list_strategy_categories was NOT re-read (no platform call), so the ten categories' metricCount and the 22 remaining module entries are the 2026-10-30 read at 144.0.0",
+  "at": "2026-11-02T05:55Z",
+  "contractVersion": "146.0.1",
+  "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261102T0555Z/_categories.json",
   "moved": [
-   "modules: includeMarketBreadth and includeReferencePairs retired (contract 146.0.0, undocumented in the README; absent from the served sectionKey enums and from agent contextSources), 24 -> 22",
-   "the 24 metric keys 146.0.0 added ($defs/metricKey 302 -> 326) belong to no category file here until list_strategy_categories is re-read"
+   "price 26 -> 27",
+   "regime 16 -> 18",
+   "crowd 9 -> 17",
+   "market NEW (13 metrics: the MKT_* family, study marketBreadth)",
+   "modules: the 22 of 146.0.0, unchanged"
   ],
   "previous": {
-   "at": "2026-10-30T03:45Z",
-   "contractVersion": "144.0.0",
-   "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261030T0345Z/_categories.json",
+   "at": "2026-11-01T06:17:33Z",
+   "contractVersion": "146.0.0",
+   "how": "modules: the sectionKey enum of the 146.0.0 stage schema (data/contract/stage_strategy_draft/schema_20261101T061733Z.json), copied from the battlegrid-manager fixture; list_strategy_categories was NOT re-read (no platform call), so the ten categories' metricCount and the 22 remaining module entries are the 2026-10-30 read at 144.0.0",
    "moved": [
-    "momentum 27 -> 30",
-    "volatility 7 -> 6",
-    "volumeFlow 14 -> 22",
-    "structure 90 -> 156",
-    "modules: includePerpSpotFlow description and one bullet re-worded ('crypto coins a spot venue lists' -> 'crypto coins the spot lane lists', README v139)"
+    "modules: includeMarketBreadth and includeReferencePairs retired (contract 146.0.0, undocumented in the README; absent from the served sectionKey enums and from agent contextSources), 24 -> 22",
+    "the 24 metric keys 146.0.0 added ($defs/metricKey 302 -> 326) belong to no category file here until list_strategy_categories is re-read"
    ],
-   "previous": "2026-10-26 from list_strategy_categories at contract 135.2.0 (mcporter, read-only); price 22 -> 26; trend 21 -> 22; volumeFlow 13 -> 14; structure 54 -> 90; derived 7 -> 8; modules: includeMtfConfluence retired (README v134). Previous: 2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+   "previous": {
+    "at": "2026-10-30T03:45Z",
+    "contractVersion": "144.0.0",
+    "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261030T0345Z/_categories.json",
+    "moved": [
+     "momentum 27 -> 30",
+     "volatility 7 -> 6",
+     "volumeFlow 14 -> 22",
+     "structure 90 -> 156",
+     "modules: includePerpSpotFlow description and one bullet re-worded ('crypto coins a spot venue lists' -> 'crypto coins the spot lane lists', README v139)"
+    ],
+    "previous": "2026-10-26 from list_strategy_categories at contract 135.2.0 (mcporter, read-only); price 22 -> 26; trend 21 -> 22; volumeFlow 13 -> 14; structure 54 -> 90; derived 7 -> 8; modules: includeMtfConfluence retired (README v134). Previous: 2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+   }
   }
  }
 }

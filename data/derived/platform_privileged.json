@@ -55,6 +55,7 @@
       "sectionTitle": "Volume Delta (CVD)",
       "authorableAlternatives": [
         "aggregate",
+        "classifyZone",
         "efficiency",
         "linregSlope",
         "pctl",

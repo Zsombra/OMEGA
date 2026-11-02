@@ -1,0 +1,33 @@
+{
+  "metric": "CROWD_UP_EXCESS_Z_LIVE",
+  "label": "Crowd up-share excess (z, live)",
+  "code": "upExcessZLive",
+  "family": "crowd",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

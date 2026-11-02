@@ -7,10 +7,13 @@ column is caught here instead of at submit time. Each Finding carries the
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable
+from typing import Iterable, get_args
 
 from .contract import Contract, load
-from .types import Column, CustomSection, PlatformSection, Report, Section
+from .types import MARKET_SCOPE, Column, CustomSection, PlatformSection, Report, Section
+
+# The nine market scopes the 146.0.0 stage schema enumerates (omega.types.MARKET_SCOPE), for the subject message.
+MARKET_SCOPE_VALUES = get_args(MARKET_SCOPE)
 
 # The six series statistics contract v135 added (README "Contract history - v135"), offered on every metric with a
 # series home and as a chain outer over every relation.
@@ -145,6 +148,16 @@ def validate_column(
                         f"metrics (the roster grows with the platform; re-extract before "
                         f"concluding a metric does not exist)")]
     m = c.metric(column.metric)
+    if m.subject is None:
+        # Served (the enum, the vocabulary, a hint) but read by NO section subject: every preview refuses it on an
+        # evaluated-coin section AND on a market section (PAR_DEV, measured 2026-11-02 at 146.0.1,
+        # data/contract/metrics/_subjects_146.json). No column over it can render, so omega never emits one.
+        return [Finding("error", "METRIC_NO_SUBJECT", f"{path}.metric",
+                        f"{column.metric!r} is served but no section subject reads it: refused on an evaluated-coin "
+                        f"section (marketScope null) and on a market section alike (\"metric {column.metric!r} is not "
+                        f"read on a evaluated-coin section's bars\" / \"... on a market section's bars\", "
+                        f"REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED, measured 2026-11-02 at 146.0.1); no column over "
+                        f"it renders")]
 
 
     # --- metric-declared absolute anchor -------------------------------------
@@ -496,6 +509,30 @@ def validate_section(
 
     for i, col in enumerate(section.columns):
         out.extend(validate_column(col, path=f"{path}.columns[{i}]", contract=c))
+
+    # --- the section's subject (contract 146.0.0; measured 2026-11-02 at 146.0.1) -------------------------------
+    # `marketScope: null` is an evaluated-coin section; a named scope makes a MARKET section whose subject is the field
+    # at that scope. Each subject reads its own metric domain, served in the refusal
+    # (REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED, details.allowedDomain.candidates): the market section reads exactly
+    # the thirteen MKT_* metrics (family `market`, study marketBreadth) and the coin section every other one
+    # (data/audit/market_section_probe_146_2026-11-02.json). The split is the served family, not a typed list.
+    subject = "market" if section.marketScope is not None else "evaluated-coin"
+    for i, col in enumerate(section.columns):
+        m = c.metrics.get(col.metric)
+        if m is None or m.subject == subject or m.subject is None:
+            continue                          # validate_column reports an unknown metric and a metric with no subject
+        if subject == "market":
+            msg = (f"a market section cannot carry this column - metric {col.metric!r} is not read on a market "
+                   f"section's bars (marketScope {section.marketScope!r} reads the market subject's "
+                   f"{sum(1 for mm in c.metrics.values() if mm.subject == 'market')} metrics only: "
+                   f"{sorted(k for k, mm in c.metrics.items() if mm.subject == 'market')}; REPORT_COLUMN_SUBJECT_METRIC_"
+                   f"UNSUPPORTED, measured 2026-11-02 at 146.0.1). Put it in a section with marketScope null.")
+        else:
+            msg = (f"a evaluated-coin section cannot carry this column - metric {col.metric!r} is not read on a "
+                   f"evaluated-coin section's bars (a market metric renders only on a MARKET section: set marketScope "
+                   f"to one of {sorted(MARKET_SCOPE_VALUES)}; REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED, measured "
+                   f"2026-11-02 at 146.0.1)")
+        out.append(Finding("error", "SECTION_SUBJECT_METRIC_UNSUPPORTED", f"{path}.columns[{i}].metric", msg))
 
     # THE SILENT ONE. Two columns compiling to the same header do not raise on the
     # platform - it renders both under the duplicate name and then omits the whole

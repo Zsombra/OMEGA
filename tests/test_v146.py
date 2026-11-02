@@ -218,26 +218,32 @@ def test_a_retired_platform_section_is_refused_offline(key):
     assert [f.code for f in result.findings if f.severity == "error"] == ["UNKNOWN_SECTION_KEY"]
 
 
-# --- the 24 served, unmeasured metrics -----------------------------------------------------------------------------
-def test_the_added_metrics_are_served_known_by_name_and_refused_offline():
+# --- the 24 metrics 146.0.0 added -------------------------------------------------------------------------------------
+# Served and known by name only from 2026-11-01 (OMEGA v0.10.2: data/contract/metrics/_unmeasured_108.json, refused
+# offline as METRIC_UNMEASURED); measured 2026-11-02 by the re-extraction at 146.0.1 (OMEGA v0.11.0,
+# data/contract/metrics/_moves_146.json, tests/test_v146_1.py). These tests pin the history and the present state.
+def test_the_added_metrics_are_served_and_now_in_the_corpus():
     contract = load()
     served = set(DOC["stage_strategy_draft"]["inputSchema"]["$defs"]["metricKey"]["enum"])
     before = set(DOC_144["stage_strategy_draft"]["inputSchema"]["$defs"]["metricKey"]["enum"])
     assert served - before == ADDED_METRICS and not before - served and (len(before), len(served)) == (302, 326)
-    assert set(contract.unmeasured_metrics) == ADDED_METRICS
-    assert not ADDED_METRICS & set(contract.metrics)
-    assert set(contract.metrics) | ADDED_METRICS == served
+    assert not contract.unmeasured_metrics                           # 24 from 2026-11-01 to 2026-11-02
+    assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == served
     record = json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(encoding="utf-8"))
-    assert record["servedAt"] == "146.0.0" and record["source"]["schema"] == SCHEMA_146
+    assert record["metrics"] == {} and set(record["history146"]["formerlyUnmeasured"]) == ADDED_METRICS
+    assert record["history146"]["listedOn"] == "2026-11-01" and record["history146"]["measuredOn"] == "2026-11-02"
     for key in sorted(ADDED_METRICS):
         column = Column.model_validate({"metric": key, "transformId": "value", "timeframe": {"rel": "anchor"}})
-        [finding] = [f for f in validate_column(column, contract=contract) if f.severity == "error"]
-        assert finding.code == "METRIC_UNMEASURED" and "146.0.0" in finding.message, key
+        codes = [f.code for f in validate_column(column, contract=contract) if f.severity == "error"]
+        # PAR_DEV is measured (hints, vocabulary, 12 transforms) but read by NO section subject - refused live on an
+        # evaluated-coin section and on a market section alike (_subjects_146.json), so omega refuses it the same way
+        assert codes == (["METRIC_NO_SUBJECT"] if key == "PAR_DEV" else []), key
 
 
-def test_the_stored_capture_compares_identical_with_the_24_listed_as_unmeasured():
+def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
     """The stage tool entry as saved, in a surface, beside a v137.2-shaped hints tool that names the same `$defs`:
-    nothing moved on either kind, and the 24 are `storedUnmeasured`, so battlegrid-manager's pin-drift gate reads none."""
+    nothing moved on either kind and nothing is `storedUnmeasured` (the 24 were, from 2026-11-01 to 2026-11-02), so
+    battlegrid-manager's pin-drift gate reads none."""
     stage = DOC["stage_strategy_draft"]
     surface = {"contractVersion": DOC["contractVersion"], "buildSha": DOC["buildSha"], "observedAt": DOC["observedAt"],
                "tools": [dict(name="stage_strategy_draft", **stage),
@@ -249,8 +255,9 @@ def test_the_stored_capture_compares_identical_with_the_24_listed_as_unmeasured(
     for kind in ("metrics", "sectionKeys"):
         assert results[kind]["liveNotStored"] == [] and results[kind]["storedNotLive"] == [], kind
     assert (results["metrics"]["live"], results["sectionKeys"]["live"]) == (326, 22)
-    assert set(results["metrics"]["storedUnmeasured"]) == ADDED_METRICS
+    assert results["metrics"]["storedUnmeasured"] == []
 
 
-def test_the_version_is_v0_10_2():
-    assert 'version = "0.10.2"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+def test_the_version_moved_past_v0_10_2():
+    text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'version = "0.10.2"' not in text and 'version = "0.11.0"' in text

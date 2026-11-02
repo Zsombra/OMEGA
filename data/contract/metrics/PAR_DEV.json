@@ -1,0 +1,133 @@
+{
+  "metric": "PAR_DEV",
+  "label": "Deviation from par",
+  "code": "parDev",
+  "family": "price",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "classifyZone"
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      }
+    }
+  ],
+  "study": null,
+  "provenance": "battleGridDerived",
+  "rankScope": null
+}

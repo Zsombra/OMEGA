@@ -1,0 +1,7673 @@
+{
+ "_what": "Contract 146 probe: which section SUBJECT reads each of the 24 metric keys 146.0.0 added, and what the market",
+ "capturedAt": "2026-11-02T06:16:10Z",
+ "probes": [
+  {
+   "probe": "A.coinSection.domain",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:e9341a4c-d29c-887f-8bfa-f51dfd0cdb5c': a evaluated-coin section cannot carry this column — metric 'MKT_UP' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_UP",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_UP' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:e9341a4c-d29c-887f-8bfa-f51dfd0cdb5c",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_UP",
+     "transformId": "value"
+    }
+   },
+   "candidates": [
+    "ADX",
+    "ASIA_HIGH",
+    "ASIA_LOW",
+    "ASIA_OPEN",
+    "ATR",
+    "ATR_PCT",
+    "BAR_CONTAINMENT",
+    "BAR_FORMING",
+    "BB_LOWER",
+    "BB_PCT_B",
+    "BB_TOUCH",
+    "BB_UPPER",
+    "BB_WIDTH_PCT",
+    "BUY_PRESSURE",
+    "BUY_PRES_BN",
+    "BUY_PRES_CB",
+    "BUY_QUOTE_VOL",
+    "BUY_TRADES",
+    "BUY_VOLUME",
+    "CANDLE_DOJI",
+    "CANDLE_ENGULFING",
+    "CANDLE_PIN",
+    "CANDLE_RUN",
+    "CAPTAIN_CONF",
+    "CCI20",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_24H",
+    "CHG_4H",
+    "CHG_5M",
+    "CLOSE",
+    "CLOSE_CHANGE",
+    "CLOSE_LOCATION",
+    "CLOSE_RUN",
+    "CMF20",
+    "CONFIDENCE",
+    "CROWD_ACC",
+    "CROWD_ACC_EDGE_Z",
+    "CROWD_ACC_EDGE_Z_LIVE",
+    "CROWD_ACC_LIVE",
+    "CROWD_CAPT",
+    "CROWD_CAPT_EXCESS_Z",
+    "CROWD_CAPT_EXCESS_Z_LIVE",
+    "CROWD_CAPT_LIVE",
+    "CROWD_PICK",
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS",
+    "CROWD_UPBIAS_LIVE",
+    "CROWD_UP_EXCESS_Z",
+    "CROWD_UP_EXCESS_Z_LIVE",
+    "CROWD_UP_LEAN_Z",
+    "CROWD_UP_LEAN_Z_LIVE",
+    "CUM_VOLUME_DELTA",
+    "CVD",
+    "DAY_OF_WEEK",
+    "DI_MINUS",
+    "DI_PLUS",
+    "DONCHIAN_BROKEN_HI",
+    "DONCHIAN_BROKEN_LO",
+    "DONCHIAN_LOWER",
+    "DONCHIAN_LOWER_PRIOR",
+    "DONCHIAN_UPPER",
+    "DONCHIAN_UPPER_PRIOR",
+    "EMA13",
+    "EMA20",
+    "EMA21",
+    "EMA5",
+    "EMA50",
+    "EMA8",
+    "EMA9",
+    "EMA_CROSS",
+    "FLOW_ALIGN",
+    "FUNDING_ANN",
+    "FUNDING_LABEL",
+    "FUNDING_RATE",
+    "GAP",
+    "GAP_PCT",
+    "GAP_RANGE_CLEAR",
+    "HIGH",
+    "HIGH_DEV",
+    "HL2",
+    "HLC3",
+    "HMA20",
+    "IB_EXT_DOWN_150",
+    "IB_EXT_DOWN_200",
+    "IB_EXT_UP_150",
+    "IB_EXT_UP_200",
+    "ICHI_BASE",
+    "ICHI_CONV",
+    "ICHI_LAG",
+    "ICHI_SPAN_A",
+    "ICHI_SPAN_B",
+    "KC_LOWER",
+    "KC_SQUEEZE",
+    "KC_UPPER",
+    "LAST",
+    "LONDON_HIGH",
+    "LONDON_LOW",
+    "LONDON_OPEN",
+    "LOW",
+    "LOW_DEV",
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "MARK",
+    "MA_ALIGN",
+    "MFI14",
+    "MONTH_TPO_POC",
+    "MONTH_TPO_VAH",
+    "MONTH_TPO_VAL",
+    "NAKED_POC_ABOVE",
+    "NAKED_POC_BELOW",
+    "NAKED_SINGLE_PRINT_ABOVE",
+    "NAKED_SINGLE_PRINT_BELOW",
+    "NEW_YORK_HIGH",
+    "NEW_YORK_LOW",
+    "NEW_YORK_OPEN",
+    "NOTIONAL_VOLUME_1D",
+    "OBV",
+    "OHLC4",
+    "OI",
+    "OI_CHG",
+    "OI_PX_REGIME",
+    "OI_VELOCITY",
+    "OPEN",
+    "OR15_HIGH",
+    "OR15_LOW",
+    "OR30_HIGH",
+    "OR30_LOW",
+    "ORACLE",
+    "PDH",
+    "PDL",
+    "PDO",
+    "PERP_SPOT_CONFIRMS",
+    "PERP_SPOT_FLOW",
+    "PERP_SPOT_GAP",
+    "PERP_SPOT_STRENGTH",
+    "PIVOT_P",
+    "PIVOT_R1",
+    "PIVOT_R2",
+    "PIVOT_R3",
+    "PIVOT_S1",
+    "PIVOT_S2",
+    "PIVOT_S3",
+    "PMH",
+    "PML",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "PRICE_ZONE",
+    "PRIOR_ASIA_HIGH",
+    "PRIOR_ASIA_HIGH_SWEPT",
+    "PRIOR_ASIA_LOW",
+    "PRIOR_ASIA_LOW_SWEPT",
+    "PRIOR_ASIA_OPEN",
+    "PRIOR_LONDON_HIGH",
+    "PRIOR_LONDON_HIGH_SWEPT",
+    "PRIOR_LONDON_LOW",
+    "PRIOR_LONDON_LOW_SWEPT",
+    "PRIOR_LONDON_OPEN",
+    "PRIOR_MONTH_TPO_POC",
+    "PRIOR_MONTH_TPO_VAH",
+    "PRIOR_MONTH_TPO_VAL",
+    "PRIOR_NEW_YORK_HIGH",
+    "PRIOR_NEW_YORK_HIGH_SWEPT",
+    "PRIOR_NEW_YORK_LOW",
+    "PRIOR_NEW_YORK_LOW_SWEPT",
+    "PRIOR_NEW_YORK_OPEN",
+    "PRIOR_SWING_FRACTAL_HIGH",
+    "PRIOR_SWING_FRACTAL_LOW",
+    "PRIOR_TPO_IB_HIGH",
+    "PRIOR_TPO_IB_LOW",
+    "PRIOR_TPO_POC",
+    "PRIOR_TPO_SHAPE",
+    "PRIOR_TPO_VAH",
+    "PRIOR_TPO_VAL",
+    "PRIOR_TPO_VPOC",
+    "PRIOR_TPO_VVAH",
+    "PRIOR_TPO_VVAL",
+    "PRIOR_WEEK_TPO_POC",
+    "PRIOR_WEEK_TPO_VAH",
+    "PRIOR_WEEK_TPO_VAL",
+    "PSAR",
+    "PWH",
+    "PWL",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "QUOTE_VOL",
+    "REGIME_CONVICTION",
+    "REGIME_CRASH_LATCH",
+    "REGIME_CRASH_MARGIN",
+    "REGIME_DI_SPREAD",
+    "REGIME_MOM",
+    "REGIME_MOM_BEAR_VOTES",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_RUN_BARS",
+    "REGIME_STATE",
+    "REGIME_TREND",
+    "REGIME_TREND_GATE",
+    "REGIME_TREND_MARGIN",
+    "REGIME_TREND_SOURCE",
+    "REGIME_VOL",
+    "REGIME_VOL_ATR_RATIO",
+    "REGIME_VOL_BBW_RATIO",
+    "REGIME_WARNING_CRASH",
+    "REGIME_WARNING_DIVERGENCE",
+    "ROC12",
+    "ROC15",
+    "ROC9",
+    "RSI14",
+    "RSI2",
+    "RSI7",
+    "RVOL",
+    "SELL_QUOTE_VOL",
+    "SELL_TRADES",
+    "SELL_VOLUME",
+    "SETTLED_AT",
+    "SMA20",
+    "SMA200",
+    "SMA50",
+    "SMART_RETAIL",
+    "SPOT_AVG_TRADE",
+    "SPOT_CLOSE_BN",
+    "SPOT_CLOSE_CB",
+    "SPOT_CVD",
+    "SPOT_DOMINANCE",
+    "SQZ_MOM",
+    "STOCH_D",
+    "STOCH_K",
+    "STOCH_RSI_D",
+    "STOCH_RSI_K",
+    "STRUCT_ZONES",
+    "ST_DIR",
+    "ST_LINE",
+    "SWING_FRACTAL_HIGH",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LABEL",
+    "SWING_FRACTAL_LOW",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "TPO_IB_HIGH",
+    "TPO_IB_LOW",
+    "TPO_POC",
+    "TPO_SHAPE",
+    "TPO_SINGLE_PRINT_ABOVE",
+    "TPO_SINGLE_PRINT_BELOW",
+    "TPO_VAH",
+    "TPO_VAL",
+    "TPO_VPOC",
+    "TPO_VVAH",
+    "TPO_VVAL",
+    "TRADES",
+    "TRADING_SESSION",
+    "UTC_HOUR",
+    "VOLUME",
+    "VOL_SMA20",
+    "VWAP",
+    "VWAP_LB1",
+    "VWAP_LB2",
+    "VWAP_LB3",
+    "VWAP_MONTH",
+    "VWAP_MONTH_LB1",
+    "VWAP_MONTH_LB2",
+    "VWAP_MONTH_LB3",
+    "VWAP_MONTH_UB1",
+    "VWAP_MONTH_UB2",
+    "VWAP_MONTH_UB3",
+    "VWAP_ROLLING_1H",
+    "VWAP_ROLLING_1H_LB1",
+    "VWAP_ROLLING_1H_LB2",
+    "VWAP_ROLLING_1H_LB3",
+    "VWAP_ROLLING_1H_UB1",
+    "VWAP_ROLLING_1H_UB2",
+    "VWAP_ROLLING_1H_UB3",
+    "VWAP_ROLLING_24H",
+    "VWAP_ROLLING_24H_LB1",
+    "VWAP_ROLLING_24H_LB2",
+    "VWAP_ROLLING_24H_LB3",
+    "VWAP_ROLLING_24H_UB1",
+    "VWAP_ROLLING_24H_UB2",
+    "VWAP_ROLLING_24H_UB3",
+    "VWAP_ROLLING_4H",
+    "VWAP_ROLLING_4H_LB1",
+    "VWAP_ROLLING_4H_LB2",
+    "VWAP_ROLLING_4H_LB3",
+    "VWAP_ROLLING_4H_UB1",
+    "VWAP_ROLLING_4H_UB2",
+    "VWAP_ROLLING_4H_UB3",
+    "VWAP_SWING_HIGH",
+    "VWAP_SWING_LOW",
+    "VWAP_TRADING_SESSION",
+    "VWAP_TRADING_SESSION_LB1",
+    "VWAP_TRADING_SESSION_LB2",
+    "VWAP_TRADING_SESSION_LB3",
+    "VWAP_TRADING_SESSION_UB1",
+    "VWAP_TRADING_SESSION_UB2",
+    "VWAP_TRADING_SESSION_UB3",
+    "VWAP_UB1",
+    "VWAP_UB2",
+    "VWAP_UB3",
+    "VWAP_WEEK",
+    "VWAP_WEEK_LB1",
+    "VWAP_WEEK_LB2",
+    "VWAP_WEEK_LB3",
+    "VWAP_WEEK_UB1",
+    "VWAP_WEEK_UB2",
+    "VWAP_WEEK_UB3",
+    "WEEK_TPO_POC",
+    "WEEK_TPO_VAH",
+    "WEEK_TPO_VAL",
+    "WILLR14",
+    "WT1",
+    "WT2"
+   ]
+  },
+  {
+   "probe": "A.marketSection.domain",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:33e7f0e3-0743-862a-87de-fbd96deec5ff': a market section cannot carry this column — metric 'CLOSE' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CLOSE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CLOSE' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:33e7f0e3-0743-862a-87de-fbd96deec5ff",
+     "subjectKind": "market",
+     "metric": "CLOSE",
+     "transformId": "value"
+    }
+   },
+   "candidates": [
+    "MKT_ABOVE_EMA",
+    "MKT_AVG_CHG",
+    "MKT_AVG_PPO",
+    "MKT_DISPERSION",
+    "MKT_DOWN",
+    "MKT_NET",
+    "MKT_PPO_DOWN",
+    "MKT_PPO_NET",
+    "MKT_PPO_UP",
+    "MKT_STRETCH",
+    "MKT_UNIVERSE",
+    "MKT_UP",
+    "MKT_VOL_NET"
+   ]
+  },
+  {
+   "probe": "B.MKT_UP.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:c9ef6029-e331-81b1-8f39-26d040c8a228': a evaluated-coin section cannot carry this column — metric 'MKT_UP' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_UP",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_UP' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:c9ef6029-e331-81b1-8f39-26d040c8a228",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_UP",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_UP.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:a929cad4-5391-8005-8f52-c24cfad91bde",
+      "shape": "table",
+      "title": "market MKT_UP (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_UP",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_DOWN.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_DOWN",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:06c3719a-7899-82a6-8a4f-c82b71b5bcdf': a evaluated-coin section cannot carry this column — metric 'MKT_DOWN' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_DOWN",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_DOWN' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:06c3719a-7899-82a6-8a4f-c82b71b5bcdf",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_DOWN",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_DOWN.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_DOWN",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:18dd39af-1239-8a4a-8820-6aded86df5d9",
+      "shape": "table",
+      "title": "market MKT_DOWN (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktDown",
+        "group": "mktDown",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_DOWN",
+      "header": "mktDown",
+      "meaning": "mktDown: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktDown",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_NET.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_NET",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:e52e0d22-2e78-85ab-8e0d-ddc37be912f9': a evaluated-coin section cannot carry this column — metric 'MKT_NET' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_NET",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_NET' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:e52e0d22-2e78-85ab-8e0d-ddc37be912f9",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_NET",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_NET.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_NET",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:777d50c5-f67d-8b2e-8975-f7b633faf348",
+      "shape": "table",
+      "title": "market MKT_NET (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktBreadth",
+        "group": "mktBreadth",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_NET",
+      "header": "mktBreadth",
+      "meaning": "mktBreadth: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktBreadth",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_AVG_CHG.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_AVG_CHG",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:ec729f41-63ce-80f2-8687-35a085ccd052': a evaluated-coin section cannot carry this column — metric 'MKT_AVG_CHG' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_AVG_CHG",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_AVG_CHG' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:ec729f41-63ce-80f2-8687-35a085ccd052",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_AVG_CHG",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_AVG_CHG.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_AVG_CHG",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:08803a64-47fd-8697-83d2-3ce14833c17f",
+      "shape": "table",
+      "title": "market MKT_AVG_CHG (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktAvgChg",
+        "group": "mktAvgChg",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_AVG_CHG",
+      "header": "mktAvgChg",
+      "meaning": "mktAvgChg: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktAvgChg",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_DISPERSION.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_DISPERSION",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:5f9fb982-5558-803a-8998-30c844812444': a evaluated-coin section cannot carry this column — metric 'MKT_DISPERSION' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_DISPERSION",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_DISPERSION' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:5f9fb982-5558-803a-8998-30c844812444",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_DISPERSION",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_DISPERSION.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_DISPERSION",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:1e18feb5-14ab-8803-8b33-f39e8fb072aa",
+      "shape": "table",
+      "title": "market MKT_DISPERSION (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktDispersion",
+        "group": "mktDispersion",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_DISPERSION",
+      "header": "mktDispersion",
+      "meaning": "mktDispersion: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktDispersion",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_PPO_UP.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_PPO_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:1ce22568-174f-8586-80c4-726fe5d762d5': a evaluated-coin section cannot carry this column — metric 'MKT_PPO_UP' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_PPO_UP",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_PPO_UP' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:1ce22568-174f-8586-80c4-726fe5d762d5",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_PPO_UP",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_PPO_UP.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_PPO_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:c90263b1-03d3-8026-8846-15edab844a30",
+      "shape": "table",
+      "title": "market MKT_PPO_UP (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktPpoUp",
+        "group": "mktPpoUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_PPO_UP",
+      "header": "mktPpoUp",
+      "meaning": "mktPpoUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktPpoUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_PPO_DOWN.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_PPO_DOWN",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:972a4e03-ceab-8626-8130-aabbc7fd7b86': a evaluated-coin section cannot carry this column — metric 'MKT_PPO_DOWN' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_PPO_DOWN",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_PPO_DOWN' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:972a4e03-ceab-8626-8130-aabbc7fd7b86",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_PPO_DOWN",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_PPO_DOWN.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_PPO_DOWN",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:74a6fbff-88f1-80f5-8305-2b0c61566e22",
+      "shape": "table",
+      "title": "market MKT_PPO_DOWN (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktPpoDown",
+        "group": "mktPpoDown",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_PPO_DOWN",
+      "header": "mktPpoDown",
+      "meaning": "mktPpoDown: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktPpoDown",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_PPO_NET.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_PPO_NET",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:3e7eed0d-6782-82ab-8b8c-22d790c1b6b4': a evaluated-coin section cannot carry this column — metric 'MKT_PPO_NET' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_PPO_NET",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_PPO_NET' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:3e7eed0d-6782-82ab-8b8c-22d790c1b6b4",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_PPO_NET",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_PPO_NET.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_PPO_NET",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:8607e13a-5d96-810e-86d0-94b2773923fc",
+      "shape": "table",
+      "title": "market MKT_PPO_NET (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktPpoNet",
+        "group": "mktPpoNet",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_PPO_NET",
+      "header": "mktPpoNet",
+      "meaning": "mktPpoNet: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktPpoNet",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_AVG_PPO.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_AVG_PPO",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:a72be57d-2e30-8928-84a8-122357d2d38e': a evaluated-coin section cannot carry this column — metric 'MKT_AVG_PPO' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_AVG_PPO",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_AVG_PPO' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:a72be57d-2e30-8928-84a8-122357d2d38e",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_AVG_PPO",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_AVG_PPO.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_AVG_PPO",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:efaeb36b-49ec-87c4-80ae-97439deb4f28",
+      "shape": "table",
+      "title": "market MKT_AVG_PPO (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktAvgPpo",
+        "group": "mktAvgPpo",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_AVG_PPO",
+      "header": "mktAvgPpo",
+      "meaning": "mktAvgPpo: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktAvgPpo",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_VOL_NET.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_VOL_NET",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:69340052-3b35-89e4-8277-8e5be0d921ad': a evaluated-coin section cannot carry this column — metric 'MKT_VOL_NET' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_VOL_NET",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_VOL_NET' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:69340052-3b35-89e4-8277-8e5be0d921ad",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_VOL_NET",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_VOL_NET.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_VOL_NET",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:1591a715-9b89-84af-88ae-061cf5a0b083",
+      "shape": "table",
+      "title": "market MKT_VOL_NET (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktVolNet",
+        "group": "mktVolNet",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "ratio",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_VOL_NET",
+      "header": "mktVolNet",
+      "meaning": "mktVolNet: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktVolNet",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_STRETCH.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_STRETCH",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:aac6b6b2-858e-8907-82d3-6d68f68af2ba': a evaluated-coin section cannot carry this column — metric 'MKT_STRETCH' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_STRETCH",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_STRETCH' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:aac6b6b2-858e-8907-82d3-6d68f68af2ba",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_STRETCH",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_STRETCH.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_STRETCH",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:ca7e4ad8-f9d4-8936-8d02-9e5787394bf7",
+      "shape": "table",
+      "title": "market MKT_STRETCH (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktStretch",
+        "group": "mktStretch",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "oscillator",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_STRETCH",
+      "header": "mktStretch",
+      "meaning": "mktStretch: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktStretch",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_ABOVE_EMA.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_ABOVE_EMA",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:5b4793fc-42fc-8097-8578-9d16e31b409e': a evaluated-coin section cannot carry this column — metric 'MKT_ABOVE_EMA' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_ABOVE_EMA",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_ABOVE_EMA' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:5b4793fc-42fc-8097-8578-9d16e31b409e",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_ABOVE_EMA",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_ABOVE_EMA.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_ABOVE_EMA",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:2f192a17-aaa0-81af-8a4d-6602c9ca263e",
+      "shape": "table",
+      "title": "market MKT_ABOVE_EMA (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktAboveEma",
+        "group": "mktAboveEma",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_ABOVE_EMA",
+      "header": "mktAboveEma",
+      "meaning": "mktAboveEma: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktAboveEma",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.MKT_UNIVERSE.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "MKT_UNIVERSE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:0e205a25-8ec3-86d8-8295-1e0b954c8cbe': a evaluated-coin section cannot carry this column — metric 'MKT_UNIVERSE' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MKT_UNIVERSE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'MKT_UNIVERSE' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:0e205a25-8ec3-86d8-8295-1e0b954c8cbe",
+     "subjectKind": "evaluated-coin",
+     "metric": "MKT_UNIVERSE",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.MKT_UNIVERSE.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UNIVERSE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:5629fd81-40b8-830f-84b2-00d2aacc29c6",
+      "shape": "table",
+      "title": "market MKT_UNIVERSE (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUniverse",
+        "group": "mktUniverse",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "count",
+        "precision": 0
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market MKT_UNIVERSE",
+      "header": "mktUniverse",
+      "meaning": "mktUniverse: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUniverse",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_UP_LEAN_Z.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:32b274bb-48c9-8d91-8679-3d9589ba7284",
+      "shape": "table",
+      "title": "coin CROWD_UP_LEAN_Z",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "upLeanZ",
+        "group": "upLeanZ",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -1.3416407864998738
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_UP_LEAN_Z",
+      "header": "upLeanZ",
+      "meaning": "upLeanZ: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "upLeanZ",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_UP_LEAN_Z.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:1e8ad68c-0f6f-89cb-8992-8e939cbd2231': a market section cannot carry this column — metric 'CROWD_UP_LEAN_Z' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_UP_LEAN_Z",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_UP_LEAN_Z' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:1e8ad68c-0f6f-89cb-8992-8e939cbd2231",
+     "subjectKind": "market",
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.CROWD_UP_EXCESS_Z.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_EXCESS_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:2ec733ca-ac9e-8f93-8e40-2d77b8865c2f",
+      "shape": "table",
+      "title": "coin CROWD_UP_EXCESS_Z",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "upExcessZ",
+        "group": "upExcessZ",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -1.3288849514578287
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_UP_EXCESS_Z",
+      "header": "upExcessZ",
+      "meaning": "upExcessZ: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "upExcessZ",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_UP_EXCESS_Z.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_UP_EXCESS_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:88f3b1c5-b957-8867-8f6c-465c7e7cdea8': a market section cannot carry this column — metric 'CROWD_UP_EXCESS_Z' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_UP_EXCESS_Z",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_UP_EXCESS_Z' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:88f3b1c5-b957-8867-8f6c-465c7e7cdea8",
+     "subjectKind": "market",
+     "metric": "CROWD_UP_EXCESS_Z",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.CROWD_CAPT_EXCESS_Z.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_CAPT_EXCESS_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:75aa5131-1e5d-8c0e-80fe-f676a30f5f3e",
+      "shape": "table",
+      "title": "coin CROWD_CAPT_EXCESS_Z",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "captExcessZ",
+        "group": "captExcessZ",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.8032193289024988
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_CAPT_EXCESS_Z",
+      "header": "captExcessZ",
+      "meaning": "captExcessZ: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "captExcessZ",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_CAPT_EXCESS_Z.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_CAPT_EXCESS_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:9a8d99bb-ee94-83a5-83aa-1d78ea476aed': a market section cannot carry this column — metric 'CROWD_CAPT_EXCESS_Z' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_CAPT_EXCESS_Z",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_CAPT_EXCESS_Z' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:9a8d99bb-ee94-83a5-83aa-1d78ea476aed",
+     "subjectKind": "market",
+     "metric": "CROWD_CAPT_EXCESS_Z",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.CROWD_ACC_EDGE_Z.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_ACC_EDGE_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:d4b667dd-f973-85fc-87b8-d4a3def2e53e",
+      "shape": "table",
+      "title": "coin CROWD_ACC_EDGE_Z",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "accEdgeZ",
+        "group": "accEdgeZ",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.4472135954999579
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_ACC_EDGE_Z",
+      "header": "accEdgeZ",
+      "meaning": "accEdgeZ: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "accEdgeZ",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_ACC_EDGE_Z.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_ACC_EDGE_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:e8155310-4450-8a3d-806b-d82aadb8f211': a market section cannot carry this column — metric 'CROWD_ACC_EDGE_Z' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_ACC_EDGE_Z",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_ACC_EDGE_Z' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:e8155310-4450-8a3d-806b-d82aadb8f211",
+     "subjectKind": "market",
+     "metric": "CROWD_ACC_EDGE_Z",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.CROWD_UP_LEAN_Z_LIVE.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:b6a366b5-c47d-8f21-8da6-86e58beca21c",
+      "shape": "table",
+      "title": "coin CROWD_UP_LEAN_Z_LIVE",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "upLeanZLive",
+        "group": "upLeanZLive",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_UP_LEAN_Z_LIVE",
+      "header": "upLeanZLive",
+      "meaning": "upLeanZLive: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "upLeanZLive",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_UP_LEAN_Z_LIVE.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:13372719-7cc7-8be1-8547-64589a7f2345': a market section cannot carry this column — metric 'CROWD_UP_LEAN_Z_LIVE' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_UP_LEAN_Z_LIVE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_UP_LEAN_Z_LIVE' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:13372719-7cc7-8be1-8547-64589a7f2345",
+     "subjectKind": "market",
+     "metric": "CROWD_UP_LEAN_Z_LIVE",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.CROWD_UP_EXCESS_Z_LIVE.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_EXCESS_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:e9a0ee7a-1d3e-8405-850f-5ab8155d3b37",
+      "shape": "table",
+      "title": "coin CROWD_UP_EXCESS_Z_LIVE",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "upExcessZLive",
+        "group": "upExcessZLive",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_UP_EXCESS_Z_LIVE",
+      "header": "upExcessZLive",
+      "meaning": "upExcessZLive: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "upExcessZLive",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_UP_EXCESS_Z_LIVE.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_UP_EXCESS_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:9052d2c3-b332-8e10-8499-40f3eb4f3e41': a market section cannot carry this column — metric 'CROWD_UP_EXCESS_Z_LIVE' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_UP_EXCESS_Z_LIVE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_UP_EXCESS_Z_LIVE' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:9052d2c3-b332-8e10-8499-40f3eb4f3e41",
+     "subjectKind": "market",
+     "metric": "CROWD_UP_EXCESS_Z_LIVE",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.CROWD_CAPT_EXCESS_Z_LIVE.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:b0591a4a-4596-8892-815f-1e5a07a2f220",
+      "shape": "table",
+      "title": "coin CROWD_CAPT_EXCESS_Z_LIVE",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "captExcessZLive",
+        "group": "captExcessZLive",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_CAPT_EXCESS_Z_LIVE",
+      "header": "captExcessZLive",
+      "meaning": "captExcessZLive: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "captExcessZLive",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_CAPT_EXCESS_Z_LIVE.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:acb3a16f-425f-8b4f-82c7-1a897e30cb15': a market section cannot carry this column — metric 'CROWD_CAPT_EXCESS_Z_LIVE' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_CAPT_EXCESS_Z_LIVE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_CAPT_EXCESS_Z_LIVE' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:acb3a16f-425f-8b4f-82c7-1a897e30cb15",
+     "subjectKind": "market",
+     "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.CROWD_ACC_EDGE_Z_LIVE.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_ACC_EDGE_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:7243bfe1-bc33-83cd-80b7-e1b4c9bf277b",
+      "shape": "table",
+      "title": "coin CROWD_ACC_EDGE_Z_LIVE",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "accEdgeZLive",
+        "group": "accEdgeZLive",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin CROWD_ACC_EDGE_Z_LIVE",
+      "header": "accEdgeZLive",
+      "meaning": "accEdgeZLive: value.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "accEdgeZLive",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.CROWD_ACC_EDGE_Z_LIVE.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "CROWD_ACC_EDGE_Z_LIVE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:81fb3062-a5d1-8dce-8bcc-8e4a6009c955': a market section cannot carry this column — metric 'CROWD_ACC_EDGE_Z_LIVE' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_ACC_EDGE_Z_LIVE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_ACC_EDGE_Z_LIVE' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:81fb3062-a5d1-8dce-8bcc-8e4a6009c955",
+     "subjectKind": "market",
+     "metric": "CROWD_ACC_EDGE_Z_LIVE",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.PAR_DEV.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:7e1502af-687d-8218-89f6-b0b8926af791': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:7e1502af-687d-8218-89f6-b0b8926af791",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.PAR_DEV.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:c4ddcacb-053b-8277-8739-c3d40200dc10': a market section cannot carry this column — metric 'PAR_DEV' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:c4ddcacb-053b-8277-8739-c3d40200dc10",
+     "subjectKind": "market",
+     "metric": "PAR_DEV",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.REGIME_WARNING_CRASH.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_CRASH",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:65e089fb-06e4-841d-8853-991043fc3928",
+      "shape": "table",
+      "title": "coin REGIME_WARNING_CRASH",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "regWCrash",
+        "group": "regWCrash",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       "clear"
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin REGIME_WARNING_CRASH",
+      "header": "regWCrash",
+      "meaning": "regWCrash: value.",
+      "conditionOperators": [
+       "is",
+       "in",
+       "enters",
+       "exits"
+      ],
+      "conditionVocabulary": [
+       "raised",
+       "clear"
+      ],
+      "markerToken": "regWCrash",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 50,
+       "maxAtLeast": 50,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "regime",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.REGIME_WARNING_CRASH.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_CRASH",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:94106571-da02-8d6d-8077-58caff6a4ecc': a market section cannot carry this column — metric 'REGIME_WARNING_CRASH' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "REGIME_WARNING_CRASH",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'REGIME_WARNING_CRASH' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:94106571-da02-8d6d-8077-58caff6a4ecc",
+     "subjectKind": "market",
+     "metric": "REGIME_WARNING_CRASH",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "B.REGIME_WARNING_DIVERGENCE.coin",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_DIVERGENCE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:6fbfe378-5596-896e-8063-8264b5c008c6",
+      "shape": "table",
+      "title": "coin REGIME_WARNING_DIVERGENCE",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "regWDiv",
+        "group": "regWDiv",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       "clear"
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin REGIME_WARNING_DIVERGENCE",
+      "header": "regWDiv",
+      "meaning": "regWDiv: value.",
+      "conditionOperators": [
+       "is",
+       "in",
+       "enters",
+       "exits"
+      ],
+      "conditionVocabulary": [
+       "raised",
+       "clear"
+      ],
+      "markerToken": "regWDiv",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 50,
+       "maxAtLeast": 50,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "regime",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "B.REGIME_WARNING_DIVERGENCE.market",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_DIVERGENCE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:a7629197-7c8c-8cfd-8d78-3feae23bf9a2': a market section cannot carry this column — metric 'REGIME_WARNING_DIVERGENCE' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "REGIME_WARNING_DIVERGENCE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'REGIME_WARNING_DIVERGENCE' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:a7629197-7c8c-8cfd-8d78-3feae23bf9a2",
+     "subjectKind": "market",
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "C.MKT_UP.all",
+   "sections": [
+    {
+     "marketScope": "all",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:f6f9ebfc-d168-8e55-8221-512b58f38afb",
+      "shape": "table",
+      "title": "scope all (Whole market)",
+      "provenance": [
+       "Every reading below describes the market — Whole market, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Whole market",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope all",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.crypto",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:c7f551d4-94f5-8a40-879f-527307110d9e",
+      "shape": "table",
+      "title": "scope crypto (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope crypto",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.l1",
+   "sections": [
+    {
+     "marketScope": "l1",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:b01c0338-acec-847b-80d0-ea0c0a29451b",
+      "shape": "table",
+      "title": "scope l1 (Layer 1)",
+      "provenance": [
+       "Every reading below describes the market — Layer 1, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Layer 1",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope l1",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.memes",
+   "sections": [
+    {
+     "marketScope": "memes",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:9a624ed6-85c0-8f91-88e0-ea51de14d36c",
+      "shape": "table",
+      "title": "scope memes (Memes)",
+      "provenance": [
+       "Every reading below describes the market — Memes, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Memes",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope memes",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.defi",
+   "sections": [
+    {
+     "marketScope": "defi",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:8e2f6d3f-d00b-8bd4-8741-1fc7dcd6d964",
+      "shape": "table",
+      "title": "scope defi (DeFi)",
+      "provenance": [
+       "Every reading below describes the market — DeFi, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "DeFi",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope defi",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.tradfi",
+   "sections": [
+    {
+     "marketScope": "tradfi",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:926b461c-4c6e-808d-8f29-4f8356e8747d",
+      "shape": "table",
+      "title": "scope tradfi (TradFi)",
+      "provenance": [
+       "Every reading below describes the market — TradFi, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "TradFi",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope tradfi",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.stocks",
+   "sections": [
+    {
+     "marketScope": "stocks",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:2db4b719-e364-8431-80a2-bb3b0f5f1252",
+      "shape": "table",
+      "title": "scope stocks (Stocks)",
+      "provenance": [
+       "Every reading below describes the market — Stocks, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Stocks",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope stocks",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.indices",
+   "sections": [
+    {
+     "marketScope": "indices",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:1c1e0f2f-daaa-88aa-88fd-f558decd8b6e",
+      "shape": "table",
+      "title": "scope indices (Indices)",
+      "provenance": [
+       "Every reading below describes the market — Indices, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Indices",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope indices",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "C.MKT_UP.commodities",
+   "sections": [
+    {
+     "marketScope": "commodities",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:b13ad3f8-9566-8ba8-8b31-26b060eadb14",
+      "shape": "table",
+      "title": "scope commodities (Commodities)",
+      "provenance": [
+       "Every reading below describes the market — Commodities, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Commodities",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "scope commodities",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.rank",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "rank",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "ordering": "hi"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:0a132a3f-6a1e-805e-8573-8023254508ed': a market section cannot carry this column — transform 'rank' is a cross-sectional ordinal over the evaluated cohort, which a market subject is not part of",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "transformId"
+    ],
+    "receivedValue": "rank",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "transform 'rank' is a cross-sectional ordinal over the evaluated cohort, which a market subject is not part of",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:0a132a3f-6a1e-805e-8573-8023254508ed",
+     "subjectKind": "market",
+     "metric": "MKT_UP",
+     "transformId": "rank"
+    }
+   }
+  },
+  {
+   "probe": "D.MKT_UP.relativeTo",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "relativeTo",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "instrument": "ETH"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:e7de7baf-51ee-8beb-8303-6f999f198a68': a market section cannot carry this column — every instrument reads the same market value on a bar, so a market reading has no cross-instrument relation",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "transformId"
+    ],
+    "receivedValue": "relativeTo",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "every instrument reads the same market value on a bar, so a market reading has no cross-instrument relation",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:e7de7baf-51ee-8beb-8303-6f999f198a68",
+     "subjectKind": "market",
+     "metric": "MKT_UP",
+     "transformId": "relativeTo"
+    }
+   }
+  },
+  {
+   "probe": "D.MKT_UP.distance",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "distance",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:d763d9f6-a5af-8777-8d2d-d5e5aa305937': (MKT_UP × distance) is not a composable pair — the engine has no resolution home for it",
+    "authoringCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "transformId"
+    ],
+    "receivedValue": {
+     "metric": "MKT_UP",
+     "transformId": "distance"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "transformId must be executable for the selected metric",
+    "candidateCount": 12,
+    "context": {
+     "sectionKey": "custom:d763d9f6-a5af-8777-8d2d-d5e5aa305937"
+    }
+   }
+  },
+  {
+   "probe": "D.MKT_UP.value.scopeKnob",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "scope": "crypto"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'value' does not accept params.scope",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "MKT_UP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "scope": "crypto"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:e32090e2-a268-8d4e-8a39-8db426e9e1f5",
+     "metric": "MKT_UP",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "D.MKT_UP.value.offset1",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "offset": 1
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:b5e86f1f-adf6-857b-885e-27dc5d945cb1",
+      "shape": "table",
+      "title": "D.MKT_UP.value.offset1 (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_o1",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       13.9
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.value.offset1",
+      "header": "mktUp_o1",
+      "meaning": "mktUp_o1: value. Taken 1 bar before the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_o1",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "OFFSET"
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.value.abs4h",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "abs": "4h"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:539cfa1a-085e-8489-83c0-b4a3643845b9",
+      "shape": "table",
+      "title": "D.MKT_UP.value.abs4h (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_4h",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "4h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       77.8
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.value.abs4h",
+      "header": "mktUp_4h",
+      "meaning": "mktUp_4h: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_4h",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.value.higher",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "higher"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "candidateCount": null,
+    "context": null
+   }
+  },
+  {
+   "probe": "D.MKT_UP.value.lower",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "lower"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:528ed6a6-76f0-833c-86bc-18ab60cb01f0",
+      "shape": "table",
+      "title": "D.MKT_UP.value.lower (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_ltf",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "15m",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.value.lower",
+      "header": "mktUp_ltf",
+      "meaning": "mktUp_ltf: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_ltf",
+      "conditionHold": {
+       "timeframe": "15m",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.trajectory",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "trajectory",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 4
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:eb571b6b-6e21-8b26-8e89-cc792ee1b988",
+      "shape": "table",
+      "title": "D.MKT_UP.trajectory (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_t3",
+        "group": "mktUp",
+        "role": "trajectory",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       },
+       {
+        "key": "mktUp_t2",
+        "group": "mktUp",
+        "role": "trajectory",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       },
+       {
+        "key": "mktUp_t1",
+        "group": "mktUp",
+        "role": "trajectory",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       },
+       {
+        "key": "mktUp_now",
+        "group": "mktUp",
+        "role": "trajectory",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       },
+       {
+        "key": "mktUp_trend",
+        "group": "mktUp",
+        "role": "trajectory",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       27.8,
+       91.7,
+       13.9,
+       null,
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.trajectory",
+      "header": "mktUp_t3",
+      "meaning": "Trajectory value 3 bars before the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_t3",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.trajectory",
+      "header": "mktUp_t2",
+      "meaning": "Trajectory value 2 bars before the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_t2",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.trajectory",
+      "header": "mktUp_t1",
+      "meaning": "Trajectory value 1 bar before the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_t1",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.trajectory",
+      "header": "mktUp_now",
+      "meaning": "Trajectory value on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_now",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.trajectory",
+      "header": "mktUp_trend",
+      "meaning": "Trajectory direction: rising | falling | flat. The direction compares the oldest and newest readings before display rounding, so slots that look equal can still read rising or falling; read it, never recompute it from the slots.",
+      "conditionOperators": [
+       "is",
+       "in",
+       "enters",
+       "exits"
+      ],
+      "conditionVocabulary": [
+       "rising",
+       "falling",
+       "flat"
+      ],
+      "markerToken": "mktUp_trend",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.zscore",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "zscore",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:7922f928-2271-8c5f-83b2-8db3a7283380",
+      "shape": "table",
+      "title": "D.MKT_UP.zscore (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_z20",
+        "group": "mktUp",
+        "role": "zscore",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "oscillator",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.zscore",
+      "header": "mktUp_z20",
+      "meaning": "mktUp_z20: z-score over the last 20 points, (x − mean) ÷ σ (population), banded extreme low < -2 ≤ low < -1 ≤ neutral ≤ 1 < high ≤ 2 < extreme high; null when the newest or oldest point is missing, fewer than two are present, or the window is flat.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_z20",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 190,
+       "maxAtLeast": 190,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.spread.MKT_DOWN",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "MKT_DOWN"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:05794b64-90b8-8297-8b4c-1218e1d8a936",
+      "shape": "table",
+      "title": "D.MKT_UP.spread.MKT_DOWN (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_mktDown_spread",
+        "group": "mktUp",
+        "role": "spread",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "points",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.spread.MKT_DOWN",
+      "header": "mktUp_mktDown_spread",
+      "meaning": "mktUp_mktDown_spread: mktUp − mktDown in pts.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_mktDown_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.spread.CROWD_ACC",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CROWD_ACC"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:f638ff2d-38ea-8a0d-8259-7adde8557e5f': a market section cannot carry this column — metric 'CROWD_ACC' is not read on a market section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CROWD_ACC",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'CROWD_ACC' is not read on a market section's bars",
+    "candidateCount": 13,
+    "context": {
+     "sectionKey": "custom:f638ff2d-38ea-8a0d-8259-7adde8557e5f",
+     "subjectKind": "market",
+     "metric": "CROWD_ACC",
+     "transformId": "spread"
+    }
+   }
+  },
+  {
+   "probe": "D.MKT_UP.spread.chain.trajectory",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "chainedTransformId": "trajectory",
+       "inputs": [
+        {
+         "metric": "MKT_DOWN"
+        }
+       ],
+       "window": 4
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:8b07813d-e0d3-8989-8128-57ff8ee250b9",
+      "shape": "table",
+      "title": "D.MKT_UP.spread.chain.trajectory (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_mktDown_spread_t3",
+        "group": "mktUp",
+        "role": "spread",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "points",
+        "precision": 2
+       },
+       {
+        "key": "mktUp_mktDown_spread_t2",
+        "group": "mktUp",
+        "role": "spread",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "points",
+        "precision": 2
+       },
+       {
+        "key": "mktUp_mktDown_spread_t1",
+        "group": "mktUp",
+        "role": "spread",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "points",
+        "precision": 2
+       },
+       {
+        "key": "mktUp_mktDown_spread_now",
+        "group": "mktUp",
+        "role": "spread",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "points",
+        "precision": 2
+       },
+       {
+        "key": "mktUp_mktDown_spread_trend",
+        "group": "mktUp",
+        "role": "spread",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       -44.400000000000006,
+       83.4,
+       -72.19999999999999,
+       null,
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.spread.chain.trajectory",
+      "header": "mktUp_mktDown_spread_t3",
+      "meaning": "Trajectory value 3 bars before the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_mktDown_spread_t3",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.spread.chain.trajectory",
+      "header": "mktUp_mktDown_spread_t2",
+      "meaning": "Trajectory value 2 bars before the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_mktDown_spread_t2",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.spread.chain.trajectory",
+      "header": "mktUp_mktDown_spread_t1",
+      "meaning": "Trajectory value 1 bar before the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_mktDown_spread_t1",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.spread.chain.trajectory",
+      "header": "mktUp_mktDown_spread_now",
+      "meaning": "Trajectory value on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_mktDown_spread_now",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "D.MKT_UP.spread.chain.trajectory",
+      "header": "mktUp_mktDown_spread_trend",
+      "meaning": "Trajectory direction: rising | falling | flat. The direction compares the oldest and newest readings before display rounding, so slots that look equal can still read rising or falling; read it, never recompute it from the slots.",
+      "conditionOperators": [
+       "is",
+       "in",
+       "enters",
+       "exits"
+      ],
+      "conditionVocabulary": [
+       "rising",
+       "falling",
+       "flat"
+      ],
+      "markerToken": "mktUp_mktDown_spread_trend",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UP.maxShare",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "maxShare",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 4
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:434f2049-fcfa-81f1-86b7-16f4125ff08a",
+      "shape": "table",
+      "title": "D.MKT_UP.maxShare (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp_maxShare",
+        "group": "mktUp",
+        "role": "maxShare",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "fraction",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       0.6874062968515742
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UP.maxShare",
+      "header": "mktUp_maxShare",
+      "meaning": "mktUp_maxShare: largest share of the last 4 observations, max ÷ Σ — 1 is one bar carrying everything, 1/4 is perfectly even.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp_maxShare",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 206,
+       "maxAtLeast": 206,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_ABOVE_EMA.classifyZone",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_ABOVE_EMA",
+       "transformId": "classifyZone",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:eebb7f0f-98d9-8624-8bb0-546e5b15abe0",
+      "shape": "table",
+      "title": "D.MKT_ABOVE_EMA.classifyZone (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktAboveEma_zone",
+        "group": "mktAboveEma",
+        "role": "classifyZone",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_ABOVE_EMA.classifyZone",
+      "header": "mktAboveEma_zone",
+      "meaning": "mktAboveEma_zone: thresholded regime (risk-off / neutral / risk-on), banded risk-off ≤ 20 < neutral < 80 ≤ risk-on.",
+      "conditionOperators": [
+       "is",
+       "in",
+       "enters",
+       "exits"
+      ],
+      "conditionVocabulary": [
+       "risk-off",
+       "neutral",
+       "risk-on"
+      ],
+      "markerToken": "mktAboveEma_zone",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_UNIVERSE.value",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UNIVERSE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:95da2f7e-0e98-83cf-81eb-2f2b80aa4461",
+      "shape": "table",
+      "title": "D.MKT_UNIVERSE.value (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUniverse",
+        "group": "mktUniverse",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "count",
+        "precision": 0
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_UNIVERSE.value",
+      "header": "mktUniverse",
+      "meaning": "mktUniverse: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUniverse",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.MKT_VOL_NET.efficiency",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_VOL_NET",
+       "transformId": "efficiency",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 4
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:d2825320-1f1d-8883-8da8-7e370a948b44",
+      "shape": "table",
+      "title": "D.MKT_VOL_NET.efficiency (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktVolNet_er",
+        "group": "mktVolNet",
+        "role": "efficiency",
+        "timeframe": "1h",
+        "window": 4,
+        "bars": "Confirmed",
+        "unit": "fraction",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.MKT_VOL_NET.efficiency",
+      "header": "mktVolNet_er",
+      "meaning": "mktVolNet_er: efficiency ratio over the last 4 changes, |last − first| ÷ Σ|change| — 1 is a straight move, near 0 is chop.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktVolNet_er",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 205,
+       "maxAtLeast": 205,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.CROWD_UP_LEAN_Z.rank.hi",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z",
+       "transformId": "rank",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "ordering": "hi"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:9ef5af7e-3aa5-8e3f-8a24-fd2e5a4e26a1",
+      "shape": "table",
+      "title": "D.CROWD_UP_LEAN_Z.rank.hi",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "upLeanZ_rank_hi",
+        "group": "upLeanZ",
+        "role": "rank",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       1
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.CROWD_UP_LEAN_Z.rank.hi",
+      "header": "upLeanZ_rank_hi",
+      "meaning": "upLeanZ_rank_hi: ordinal across THIS REPORT’s coins, 1 = highest value, rendered as rank/report-size; computed per request, so it reflects the coins in this report and not the wider market.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "upLeanZ_rank_hi",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.CROWD_UP_LEAN_Z.rank.scope",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z",
+       "transformId": "rank",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "ordering": "hi",
+       "scope": "crypto"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:3db09ee6-8269-8458-855b-9a09e0a4e9f8': 'upLeanZ_rank_hi_crypto' ranks this report's coins, so it takes no category scope — a scope narrows a rank of the tracked universe",
+    "authoringCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "scope"
+    ],
+    "receivedValue": "crypto",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:3db09ee6-8269-8458-855b-9a09e0a4e9f8",
+     "metric": "CROWD_UP_LEAN_Z"
+    }
+   }
+  },
+  {
+   "probe": "D.CROWD_UP_LEAN_Z.value.offset1",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "offset": 1
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] metric 'upLeanZ' is timeframe-inert (a bundle read) — it holds one value and no series, so it accepts only offset 0, not 1",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "offset": 1
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:3ec2f304-debc-836a-8444-2962d102bd7a",
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "D.CROWD_UP_LEAN_Z.trajectory",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z",
+       "transformId": "trajectory",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 4
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:c2578126-dcfb-8340-8e13-5d0b1bc19b6c': (CROWD_UP_LEAN_Z × trajectory) is not a composable pair — the engine has no resolution home for it",
+    "authoringCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "transformId"
+    ],
+    "receivedValue": {
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "trajectory"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "transformId must be executable for the selected metric",
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:c2578126-dcfb-8340-8e13-5d0b1bc19b6c"
+    }
+   }
+  },
+  {
+   "probe": "D.CROWD_UP_LEAN_Z_LIVE.rank.lo",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_UP_LEAN_Z_LIVE",
+       "transformId": "rank",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "ordering": "lo"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:e42320fb-8bbe-8e4a-8372-6b065ee7c398",
+      "shape": "table",
+      "title": "D.CROWD_UP_LEAN_Z_LIVE.rank.lo",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "upLeanZLive_rank_lo",
+        "group": "upLeanZLive",
+        "role": "rank",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.CROWD_UP_LEAN_Z_LIVE.rank.lo",
+      "header": "upLeanZLive_rank_lo",
+      "meaning": "upLeanZLive_rank_lo: ordinal across THIS REPORT’s coins, 1 = lowest value, rendered as rank/report-size; computed per request, so it reflects the coins in this report and not the wider market.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "upLeanZLive_rank_lo",
+      "conditionHold": {
+       "timeframe": null,
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "NOT_REWINDABLE"
+      },
+      "developingRead": false,
+      "family": "crowd",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.CROWD_ACC_EDGE_Z.value.abs4h",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CROWD_ACC_EDGE_Z",
+       "transformId": "value",
+       "timeframe": {
+        "abs": "4h"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] metric 'accEdgeZ' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '4h'",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CROWD_ACC_EDGE_Z",
+     "transformId": "value",
+     "timeframe": {
+      "abs": "4h"
+     }
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:76546210-9d97-8dfc-8011-9c4f6647291c",
+     "metric": "CROWD_ACC_EDGE_Z",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "D.PAR_DEV.relativeTo.ETH",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "relativeTo",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "instrument": "ETH"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:4168b3ec-8bf5-87cf-8e88-d61bc5b545f5': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:4168b3ec-8bf5-87cf-8e88-d61bc5b545f5",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "relativeTo"
+    }
+   }
+  },
+  {
+   "probe": "D.PAR_DEV.relativeTo.default",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "relativeTo",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:233051e4-61e1-8d40-89cf-1a814fbc0b4a': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:233051e4-61e1-8d40-89cf-1a814fbc0b4a",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "relativeTo"
+    }
+   }
+  },
+  {
+   "probe": "D.PAR_DEV.classifyZone",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "classifyZone",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:294ea782-a249-8a10-8b7d-ef1db13f1290': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:294ea782-a249-8a10-8b7d-ef1db13f1290",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "classifyZone"
+    }
+   }
+  },
+  {
+   "probe": "D.PAR_DEV.value.lower",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "lower"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:d25398a9-74db-8773-8bdb-fa3bf5faf4de': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:d25398a9-74db-8773-8bdb-fa3bf5faf4de",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "D.PAR_DEV.rank",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "rank",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "ordering": "hi"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:ac1fb9db-138b-8f85-825a-5c22e563b1a0': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:ac1fb9db-138b-8f85-825a-5c22e563b1a0",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "rank"
+    }
+   }
+  },
+  {
+   "probe": "D.PAR_DEV.distance",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "distance",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:e2780f8a-9d3f-8292-896f-174ae74a42a4': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:e2780f8a-9d3f-8292-896f-174ae74a42a4",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "distance"
+    }
+   }
+  },
+  {
+   "probe": "D.PAR_DEV.spread.ATR_PCT",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "PAR_DEV",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "ATR_PCT"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:56aa9d1e-3b66-8cd7-8ef9-8c5a3711df9f': a evaluated-coin section cannot carry this column — metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PAR_DEV",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "metric 'PAR_DEV' is not read on a evaluated-coin section's bars",
+    "candidateCount": 312,
+    "context": {
+     "sectionKey": "custom:56aa9d1e-3b66-8cd7-8ef9-8c5a3711df9f",
+     "subjectKind": "evaluated-coin",
+     "metric": "PAR_DEV",
+     "transformId": "spread"
+    }
+   }
+  },
+  {
+   "probe": "D.REGIME_WARNING_CRASH.value",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_CRASH",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:f6d1dbba-8c62-8317-82c3-44b25084deef",
+      "shape": "table",
+      "title": "D.REGIME_WARNING_CRASH.value",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "regWCrash",
+        "group": "regWCrash",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       "clear"
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "D.REGIME_WARNING_CRASH.value",
+      "header": "regWCrash",
+      "meaning": "regWCrash: value.",
+      "conditionOperators": [
+       "is",
+       "in",
+       "enters",
+       "exits"
+      ],
+      "conditionVocabulary": [
+       "raised",
+       "clear"
+      ],
+      "markerToken": "regWCrash",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 50,
+       "maxAtLeast": 50,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "regime",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "D.REGIME_WARNING_CRASH.trajectory",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_CRASH",
+       "transformId": "trajectory",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 4
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:cf7a0940-1eae-8a54-8436-c5a4a5ef68c6': (REGIME_WARNING_CRASH × trajectory) is not a composable pair — the engine has no resolution home for it",
+    "authoringCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "transformId"
+    ],
+    "receivedValue": {
+     "metric": "REGIME_WARNING_CRASH",
+     "transformId": "trajectory"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "transformId must be executable for the selected metric",
+    "candidateCount": 1,
+    "context": {
+     "sectionKey": "custom:cf7a0940-1eae-8a54-8436-c5a4a5ef68c6"
+    }
+   }
+  },
+  {
+   "probe": "D.REGIME_WARNING_DIVERGENCE.value.offset1",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_DIVERGENCE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "offset": 1
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] metric 'regWDiv' is timeframe-inert (a bundle read) — it holds one value and no series, so it accepts only offset 0, not 1",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "offset": 1
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:f4a1218d-c2c8-8b33-8594-677fe0239b27",
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "value"
+    }
+   }
+  },
+  {
+   "probe": "D.REGIME_WARNING_DIVERGENCE.classifyZone",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "REGIME_WARNING_DIVERGENCE",
+       "transformId": "classifyZone",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:a44b164b-8499-8b46-8629-6ff90fdaa56a': (REGIME_WARNING_DIVERGENCE × classifyZone) is not a composable pair — the engine has no resolution home for it",
+    "authoringCode": "REPORT_COLUMN_PAIR_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "transformId"
+    ],
+    "receivedValue": {
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "classifyZone"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "transformId must be executable for the selected metric",
+    "candidateCount": 1,
+    "context": {
+     "sectionKey": "custom:a44b164b-8499-8b46-8629-6ff90fdaa56a"
+    }
+   }
+  },
+  {
+   "probe": "E.coin+market",
+   "sections": [
+    {
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    },
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:244dc447-cc36-813e-8a1a-300443d56807",
+      "shape": "table",
+      "title": "coin",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "close",
+        "group": "close",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Developing",
+        "unit": "price",
+        "precision": 2
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       null
+      ],
+      "rowCount": 1
+     },
+     {
+      "sectionKey": "custom:15639d81-5a38-87bc-8dba-b43023e573bd",
+      "shape": "table",
+      "title": "market (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "coin",
+      "header": "close",
+      "meaning": "close: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     },
+     {
+      "section": "market",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "E.market.crypto+tradfi",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    },
+    {
+     "marketScope": "tradfi",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:98bed750-ca27-82a2-8a46-36d601ffdf90",
+      "shape": "table",
+      "title": "crypto (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null
+      ],
+      "rowCount": 1
+     },
+     {
+      "sectionKey": "custom:605acca6-12cf-8805-8200-b68026f03950",
+      "shape": "table",
+      "title": "tradfi (TradFi)",
+      "provenance": [
+       "Every reading below describes the market — TradFi, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "TradFi",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "crypto",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "custom:98bed750-ca27-82a2-8a46-36d601ffdf90.mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "tradfi",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "custom:605acca6-12cf-8805-8200-b68026f03950.mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "E.market.crypto.twoCoins",
+   "sections": [
+    {
+     "marketScope": "crypto",
+     "columns": [
+      {
+       "metric": "MKT_UP",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "MKT_NET",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC",
+    "SOL"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:ab89da41-f6db-8a0b-806d-2d9e0b650de9",
+      "shape": "table",
+      "title": "market two coins (Crypto)",
+      "provenance": [
+       "Every reading below describes the market — Crypto, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktUp",
+        "group": "mktUp",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       },
+       {
+        "key": "mktBreadth",
+        "group": "mktBreadth",
+        "role": "value",
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       }
+      ],
+      "firstRow": [
+       "Crypto",
+       null,
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market two coins",
+      "header": "mktUp",
+      "meaning": "mktUp: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUp",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "market two coins",
+      "header": "mktBreadth",
+      "meaning": "mktBreadth: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktBreadth",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "E.market.all.4h",
+   "sections": [
+    {
+     "marketScope": "all",
+     "columns": [
+      {
+       "metric": "MKT_ABOVE_EMA",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      },
+      {
+       "metric": "MKT_UNIVERSE",
+       "transformId": "value",
+       "timeframe": {
+        "rel": "anchor"
+       }
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "4h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:8fae2860-423c-84c7-8f07-60f5d43f32a9",
+      "shape": "table",
+      "title": "market 4h (Whole market)",
+      "provenance": [
+       "Every reading below describes the market — Whole market, measured across its coins — not the coin being evaluated."
+      ],
+      "anchorTf": "4h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null
+       },
+       {
+        "key": "mktAboveEma",
+        "group": "mktAboveEma",
+        "role": "value",
+        "timeframe": "4h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 1
+       },
+       {
+        "key": "mktUniverse",
+        "group": "mktUniverse",
+        "role": "value",
+        "timeframe": "4h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "count",
+        "precision": 0
+       }
+      ],
+      "firstRow": [
+       "Whole market",
+       24.4,
+       78
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "market 4h",
+      "header": "mktAboveEma",
+      "meaning": "mktAboveEma: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktAboveEma",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     },
+     {
+      "section": "market 4h",
+      "header": "mktUniverse",
+      "meaning": "mktUniverse: value. Taken on the newest bar it reads.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "mktUniverse",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 209,
+       "maxAtLeast": 209,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "market",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  }
+ ],
+ "contractVersion": "146.0.1",
+ "how": "preview_strategy_report via the mcporter CLI, read-only, detail detailed, BTC at a 1h anchor unless the probe says otherwise; one custom section per probe (two in E), its marketScope as recorded",
+ "counts": {
+  "probes": 97,
+  "accepted": 50,
+  "refused": 47,
+  "headersMinted": 44
+ },
+ "_notes": [
+  "D.MKT_UP.value.higher sent timeframe {rel: 'higher'}, which is not a served timeframe reference (the refs are anchor, lower and regime: data/contract/vocabulary/_shared.json timeframeRefs); its 'Invalid input' refusal is the schema refusing the request, not a measurement of MKT_UP. D.MKT_UP.value.lower (mktUp_ltf) and D.MKT_UP.value.abs4h (mktUp_4h) are the timeframe measurements."
+ ]
+}
