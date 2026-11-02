@@ -1,0 +1,26 @@
+{
+  "metric": "REGIME_WARNING_CRASH",
+  "label": "Regime · crash warning",
+  "code": "regWCrash",
+  "family": "regime",
+  "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+      "raised",
+      "clear"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    }
+  ],
+  "study": "regimeVerdict",
+  "provenance": "battleGridDerived",
+  "rankScope": null
+}

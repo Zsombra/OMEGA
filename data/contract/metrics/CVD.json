@@ -24,6 +24,9 @@
       }
     },
     {
+      "id": "classifyZone"
+    },
+    {
       "id": "spread",
       "chainSuccessors": [
         "trajectory",

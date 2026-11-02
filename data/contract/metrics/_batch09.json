@@ -1,5 +1,397 @@
 [
  {
+  "metric": "DI_MINUS",
+  "label": "DI−",
+  "code": "DIminus14",
+  "family": "trend",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "RSI14",
+       "RSI7",
+       "RSI2",
+       "STOCH_K",
+       "STOCH_D",
+       "MFI14",
+       "CCI20",
+       "ADX",
+       "WT1",
+       "WT2",
+       "QQE_RSI_MA",
+       "QQE_STOP",
+       "WILLR14",
+       "STOCH_RSI_K",
+       "STOCH_RSI_D",
+       "DI_PLUS",
+       "CMF20"
+      ]
+     }
+    }
+   },
+   {
+    "id": "relativeTo",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "maxShare",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from DI−’s own 14-bar length."
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "directionalMovement",
+  "provenance": "tradingView",
+  "rankScope": "exchangeWide",
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "STOCH_RSI_K",
+   "STOCH_RSI_D",
+   "DI_PLUS",
+   "CMF20",
+   "REGIME_TREND_MARGIN",
+   "REGIME_CRASH_MARGIN"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
   "metric": "VOLUME",
   "label": "Volume",
   "code": "volBase",
@@ -2333,6 +2725,9 @@
     }
    },
    {
+    "id": "classifyZone"
+   },
+   {
     "id": "spread",
     "chainSuccessors": [
      "trajectory",
@@ -2544,6 +2939,9 @@
     }
    },
    {
+    "id": "classifyZone"
+   },
+   {
     "id": "spread",
     "chainSuccessors": [
      "trajectory",
@@ -2753,6 +3151,9 @@
     "maximums": {
      "window": 64
     }
+   },
+   {
+    "id": "classifyZone"
    },
    {
     "id": "spread",
@@ -5068,39 +5469,6 @@
    }
   ],
   "study": "openInterest",
-  "provenance": "battleGridDerived",
-  "rankScope": null
- },
- {
-  "metric": "REGIME_TREND",
-  "label": "Regime · trend",
-  "code": "regTrend",
-  "family": "regime",
-  "nativeOutput": {
-   "kind": "classification",
-   "vocab": [
-    "trending up",
-    "trending down",
-    "ranging"
-   ]
-  },
-  "outputKind": "scalar",
-  "timeframeMode": "timeless",
-  "transforms": [
-   {
-    "id": "value",
-    "maximums": {
-     "offset": 0
-    }
-   },
-   {
-    "id": "trajectory",
-    "maximums": {
-     "window": 64
-    }
-   }
-  ],
-  "study": "regimeContext",
   "provenance": "battleGridDerived",
   "rankScope": null
  }

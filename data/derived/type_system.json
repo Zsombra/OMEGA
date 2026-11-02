@@ -30,6 +30,7 @@
         "MARK",
         "ORACLE",
         "SPOT_CLOSE_CB",
+        "PAR_DEV",
         "SPOT_CLOSE_BN",
         "UTC_HOUR",
         "DAY_OF_WEEK",
@@ -280,10 +281,31 @@
         "CROWD_UPBIAS_LIVE",
         "CROWD_ACC_LIVE",
         "CROWD_CAPT_LIVE",
-        "PERP_SPOT_GAP"
+        "CROWD_UP_LEAN_Z",
+        "CROWD_UP_EXCESS_Z",
+        "CROWD_CAPT_EXCESS_Z",
+        "CROWD_ACC_EDGE_Z",
+        "CROWD_UP_LEAN_Z_LIVE",
+        "CROWD_UP_EXCESS_Z_LIVE",
+        "CROWD_CAPT_EXCESS_Z_LIVE",
+        "CROWD_ACC_EDGE_Z_LIVE",
+        "PERP_SPOT_GAP",
+        "MKT_UP",
+        "MKT_DOWN",
+        "MKT_NET",
+        "MKT_AVG_CHG",
+        "MKT_DISPERSION",
+        "MKT_PPO_UP",
+        "MKT_PPO_DOWN",
+        "MKT_PPO_NET",
+        "MKT_AVG_PPO",
+        "MKT_VOL_NET",
+        "MKT_STRETCH",
+        "MKT_ABOVE_EMA",
+        "MKT_UNIVERSE"
       ],
       "vocabularies": {},
-      "metricCount": 259
+      "metricCount": 281
     },
     "classification": {
       "conditionOperators": [
@@ -324,6 +346,8 @@
         "REGIME_TREND_GATE",
         "REGIME_TREND_SOURCE",
         "REGIME_CRASH_LATCH",
+        "REGIME_WARNING_CRASH",
+        "REGIME_WARNING_DIVERGENCE",
         "FLOW_ALIGN",
         "SMART_RETAIL",
         "CONFIDENCE",
@@ -466,12 +490,10 @@
           "diverging"
         ],
         "REGIME_STATE": [
-          "bull expansion",
-          "bear expansion",
-          "bull ranging",
-          "bear ranging",
-          "contraction",
-          "volatile",
+          "bull trend",
+          "bear trend",
+          "bull range",
+          "bear range",
           "fallback"
         ],
         "REGIME_CONVICTION": [
@@ -492,6 +514,14 @@
         ],
         "REGIME_CRASH_LATCH": [
           "armed",
+          "clear"
+        ],
+        "REGIME_WARNING_CRASH": [
+          "raised",
+          "clear"
+        ],
+        "REGIME_WARNING_DIVERGENCE": [
+          "raised",
           "clear"
         ],
         "FLOW_ALIGN": [
@@ -523,7 +553,7 @@
           "low"
         ]
       },
-      "metricCount": 37
+      "metricCount": 39
     },
     "boolean": {
       "conditionOperators": [

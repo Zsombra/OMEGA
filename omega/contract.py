@@ -60,6 +60,12 @@ class Metric:
     # publishes the same value (`tradingView` / `battleGridDerived`). None on a record that serves neither.
     rank_scope: str | None = None
     provenance: str | None = None
+    # Contract 146.0.0 (measured 2026-11-02 at 146.0.1, data/contract/metrics/_subjects_146.json): the section SUBJECT
+    # that reads this metric. A custom section's `marketScope` selects its subject: null is an `evaluated-coin` section,
+    # a named scope a `market` section; each refuses a column whose metric it does not read and serves, in the refusal,
+    # the whole domain it does read. `market` is exactly the thirteen MKT_*; `evaluated-coin` the other 312; None is a
+    # served metric NO subject reads (PAR_DEV - refused on both), which no column can render.
+    subject: str | None = None
 
     @property
     def is_timeless(self) -> bool:
@@ -154,6 +160,7 @@ def load() -> Contract:
     privileged_pairs = {(p["metric"], p["transform"]) for p in privileged["pairs"]}
     retired, unmeasured_transforms = _transform_drift(authoring["transforms"], privileged_pairs)
 
+    subjects = metric_subjects()
     metrics: dict[str, Metric] = {}
     for path in sorted((CONTRACT_DIR / "metrics").glob("*.json")):
         if path.name.startswith("_"):
@@ -173,6 +180,7 @@ def load() -> Contract:
             anchor=rec.get("anchor"),
             rank_scope=rec.get("rankScope"),
             provenance=rec.get("provenance"),
+            subject=subjects.get(rec["metric"]),
         )
 
     # The roster size is the platform's to choose, not ours to pin: it went 86 (2026-08-24)
@@ -219,6 +227,25 @@ def load() -> Contract:
         retired_transforms=retired,
         unmeasured_transforms=unmeasured_transforms,
     )
+
+
+@lru_cache(maxsize=1)
+def metric_subjects() -> dict[str, str]:
+    """metric -> the section subject that reads it (`evaluated-coin` or `market`), from the served domains recorded in
+    data/contract/metrics/_subjects_146.json (contract 146.0.0; measured 2026-11-02). A metric in neither domain is
+    absent here, and loads with `subject` None. Before 146 every metric read on the one section kind there was, so a
+    corpus without the file would have every subject None; fail closed instead, as header_code_moves does."""
+    path = CONTRACT_DIR / "metrics" / "_subjects_146.json"
+    if not path.exists():
+        raise RuntimeError(f"{path.name} is missing: every section subject would read as unmeasured")
+    doc = _load(path)
+    out: dict[str, str] = {}
+    for subject, block in doc["subjects"].items():
+        for name in block["metrics"]:
+            if name in out:
+                raise RuntimeError(f"{name} is listed under two subjects ({out[name]}, {subject})")
+            out[name] = subject
+    return out
 
 
 @lru_cache(maxsize=1)

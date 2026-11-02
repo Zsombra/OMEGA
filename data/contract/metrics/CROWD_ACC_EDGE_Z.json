@@ -1,0 +1,33 @@
+{
+  "metric": "CROWD_ACC_EDGE_Z",
+  "label": "Crowd accuracy edge (z)",
+  "code": "accEdgeZ",
+  "family": "crowd",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 0
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "rankOrderings": [
+    "hi",
+    "lo",
+    "far",
+    "near"
+  ]
+}

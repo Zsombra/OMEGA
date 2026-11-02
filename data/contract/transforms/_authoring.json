@@ -145,12 +145,12 @@
      "required": false
     }
    },
-   "calculationSummary": "Classify the oscillator into the zones its own classifier declares.",
-   "formula": "output = oscillatorZone({base})",
+   "calculationSummary": "Classify the reading into the zones its own classifier declares.",
+   "formula": "output = zoneOf({base})",
    "operandOrder": [
     "base"
    ],
-   "nullBehavior": "Returns null when the source oscillator is null.",
+   "nullBehavior": "Returns null when the source reading is null.",
    "emits": 1
   },
   "maxShare": {
@@ -510,7 +510,7 @@
     },
     "instrument": {
      "defaultValue": "BTC",
-     "description": "The roster instrument the base metric is read against, bar by bar — any active coin or TRADFI instrument. Left unset, BTC.",
+     "description": "The instrument the base metric is read against, bar by bar. On a coin section: any active coin or TRADFI instrument — left unset, BTC. On a section bound to a stablecoin pair: another declared pair, which must be named — that section has no default.",
      "required": false
     }
    },

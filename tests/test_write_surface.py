@@ -262,13 +262,16 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
         assert any((ROOT / path).glob("*.json")), path
     # the metric/transform extraction is a separate snapshot and keeps its own version: 108.4.0 since the 2026-10-13
     # re-extraction (61.2.0 before, kept under `supersedes`), while the write surface above is still the 108.0.0 capture
-    # 144.0.0 since the 2026-10-30 re-extraction; 135.2.0 under `supersedes`, then 110.8.0, 110.2.0, 108.4.0 and 61.2.0
-    assert manifest["servedContractVersion"] == "144.0.0"
-    assert manifest["supersedes"]["servedContractVersion"] == "135.2.0"
-    assert manifest["supersedes"]["supersedes"]["servedContractVersion"] == "110.8.0"
-    assert manifest["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "110.2.0"
-    assert manifest["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "108.4.0"
-    assert manifest["supersedes"]["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "61.2.0"
+    # 146.0.1 since the 2026-11-02 re-extraction; 144.0.0 under `supersedes`, then 135.2.0, 110.8.0, 110.2.0, 108.4.0
+    # and 61.2.0
+    assert manifest["servedContractVersion"] == "146.0.1"
+    chain = manifest["supersedes"]
+    assert chain["servedContractVersion"] == "144.0.0"
+    assert chain["supersedes"]["servedContractVersion"] == "135.2.0"
+    assert chain["supersedes"]["supersedes"]["servedContractVersion"] == "110.8.0"
+    assert chain["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "110.2.0"
+    assert chain["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "108.4.0"
+    assert chain["supersedes"]["supersedes"]["supersedes"]["supersedes"]["supersedes"]["servedContractVersion"] == "61.2.0"
 
 
 def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():

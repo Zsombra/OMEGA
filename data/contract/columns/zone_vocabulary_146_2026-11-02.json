@@ -1,0 +1,589 @@
+{
+ "_what": "The conditionVocabulary each classifyZone header serves. The 144.0.0 measurement (2026-10-30, build beb6b930: every metric of that corpus that offers classifyZone, at the anchor and the lower rung) carried forward verbatim, plus the one classifyZone home contract 146.0.0 added: MKT_ABOVE_EMA on a MARKET section (marketScope crypto, BTC, 1h anchor, 2026-11-02 at 146.0.1, build a07740c0; data/audit/market_section_probe_146_2026-11-02.json probe D.MKT_ABOVE_EMA.classifyZone) - risk-off / neutral / risk-on. PAR_DEV also serves classifyZone in its hint but no section subject reads it, so its zone header cannot be rendered (`_subjects_146.json`). omega.fanout reads `byMetric`. Supersedes zone_vocabulary_144_2026-10-30.json. Also the three classifyZone homes 146 added on existing metrics - CVD, CUM_VOLUME_DELTA and SPOT_CVD (their hints serve classifyZone since 146; bullish / bearish / neutral, banded at 0), rendered together with REGIME_STATE x value on an evaluated-coin section (BTC, 1h, 2026-11-02 at 146.0.1): `probe146` holds that render's outputs and first row verbatim.",
+ "capturedAt": "2026-11-02",
+ "contractVersion": "146.0.1",
+ "previous": {
+  "file": "zone_vocabulary_144_2026-10-30.json",
+  "capturedAt": "2026-10-30",
+  "contractVersion": "144.0.0"
+ },
+ "byMetric": {
+  "ADX": [
+   "weak",
+   "developing",
+   "trending",
+   "extreme"
+  ],
+  "CCI20": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "MFI14": [
+   "overbought",
+   "oversold",
+   "bullish",
+   "bearish",
+   "neutral"
+  ],
+  "RSI14": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "RSI2": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "RSI7": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_D": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_K": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_RSI_D": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "STOCH_RSI_K": [
+   "overbought",
+   "oversold",
+   "neutral"
+  ],
+  "MKT_ABOVE_EMA": [
+   "risk-off",
+   "neutral",
+   "risk-on"
+  ],
+  "CVD": [
+   "bullish",
+   "bearish",
+   "neutral"
+  ],
+  "CUM_VOLUME_DELTA": [
+   "bullish",
+   "bearish",
+   "neutral"
+  ],
+  "SPOT_CVD": [
+   "bullish",
+   "bearish",
+   "neutral"
+  ]
+ },
+ "headers": {
+  "ADX14_zone": {
+   "conditionVocabulary": [
+    "weak",
+    "developing",
+    "trending",
+    "extreme"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "ADX14_zone: thresholded regime (weak / developing / trending / extreme), banded weak < 20 ≤ developing < 25 ≤ trending < 50 ≤ extreme."
+  },
+  "ADX14_ltf_zone": {
+   "conditionVocabulary": [
+    "weak",
+    "developing",
+    "trending",
+    "extreme"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "ADX14_ltf_zone: thresholded regime (weak / developing / trending / extreme), banded weak < 20 ≤ developing < 25 ≤ trending < 50 ≤ extreme."
+  },
+  "CCI20_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "CCI20_zone: thresholded regime (overbought / oversold / neutral), banded oversold < -100 ≤ neutral ≤ 100 < overbought."
+  },
+  "CCI20_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "CCI20_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < -100 ≤ neutral ≤ 100 < overbought."
+  },
+  "MFI14_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "bullish",
+    "bearish",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "MFI14_zone: thresholded regime (overbought / oversold / bullish / bearish / neutral), banded oversold < 20 ≤ bearish < neutral = 50 < bullish ≤ 80 < overbought."
+  },
+  "MFI14_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "bullish",
+    "bearish",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "MFI14_ltf_zone: thresholded regime (overbought / oversold / bullish / bearish / neutral), banded oversold < 20 ≤ bearish < neutral = 50 < bullish ≤ 80 < overbought."
+  },
+  "RSI14_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI14_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "RSI14_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI14_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "RSI2_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI2_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 10 ≤ neutral ≤ 90 < overbought."
+  },
+  "RSI2_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI2_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 10 ≤ neutral ≤ 90 < overbought."
+  },
+  "RSI7_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI7_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "RSI7_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "RSI7_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 30 ≤ neutral ≤ 70 < overbought."
+  },
+  "D_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "D_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "D_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "D_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "K_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "K_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "K_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "K_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiD_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiD_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiD_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiD_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiK_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiK_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "stochRsiK_ltf_zone": {
+   "conditionVocabulary": [
+    "overbought",
+    "oversold",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "stochRsiK_ltf_zone: thresholded regime (overbought / oversold / neutral), banded oversold < 20 ≤ neutral ≤ 80 < overbought."
+  },
+  "mktAboveEma_zone": {
+   "conditionVocabulary": [
+    "risk-off",
+    "neutral",
+    "risk-on"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "mktAboveEma_zone: thresholded regime (risk-off / neutral / risk-on), banded risk-off ≤ 20 < neutral < 80 ≤ risk-on.",
+   "subject": "market"
+  },
+  "CVD_zone": {
+   "conditionVocabulary": [
+    "bullish",
+    "bearish",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "CVD_zone: thresholded regime (bullish / bearish / neutral), banded bearish < neutral = 0 < bullish.",
+   "subject": "evaluated-coin"
+  },
+  "cumVolDelta_zone": {
+   "conditionVocabulary": [
+    "bullish",
+    "bearish",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "cumVolDelta_zone: thresholded regime (bullish / bearish / neutral), banded bearish < neutral = 0 < bullish.",
+   "subject": "evaluated-coin"
+  },
+  "spotCVD_zone": {
+   "conditionVocabulary": [
+    "bullish",
+    "bearish",
+    "neutral"
+   ],
+   "conditionOperators": [
+    "is",
+    "in",
+    "enters",
+    "exits"
+   ],
+   "meaning": "spotCVD_zone: thresholded regime (bullish / bearish / neutral), banded bearish < neutral = 0 < bullish.",
+   "subject": "evaluated-coin"
+  }
+ },
+ "conditionPreview": {
+  "see": "zone_vocabulary_135_2026-10-26.json conditionPreview (2026-10-26)"
+ },
+ "probe146": {
+  "request": {
+   "coinSelection": {
+    "mode": "explicit",
+    "tickers": [
+     "BTC"
+    ]
+   },
+   "detail": "detailed",
+   "source": {
+    "kind": "FIELDS",
+    "timeframe": "1h",
+    "sections": [
+     {
+      "kind": "custom",
+      "title": "cvd zones",
+      "benchmarkTicker": null,
+      "marketScope": null,
+      "notes": "OMEGA read-only zone vocabulary probe 2026-11-02",
+      "columns": [
+       {
+        "metric": "CVD",
+        "transformId": "classifyZone",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "CUM_VOLUME_DELTA",
+        "transformId": "classifyZone",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "SPOT_CVD",
+        "transformId": "classifyZone",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "REGIME_STATE",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "outputs": [
+   {
+    "header": "CVD_zone",
+    "meaning": "CVD_zone: thresholded regime (bullish / bearish / neutral), banded bearish < neutral = 0 < bullish.",
+    "conditionOperators": [
+     "is",
+     "in",
+     "enters",
+     "exits"
+    ],
+    "conditionVocabulary": [
+     "bullish",
+     "bearish",
+     "neutral"
+    ],
+    "conditionHold": {
+     "timeframe": "1h",
+     "maxWindow": 209,
+     "maxAtLeast": 209,
+     "refusal": null
+    },
+    "family": "volumeFlow"
+   },
+   {
+    "header": "cumVolDelta_zone",
+    "meaning": "cumVolDelta_zone: thresholded regime (bullish / bearish / neutral), banded bearish < neutral = 0 < bullish.",
+    "conditionOperators": [
+     "is",
+     "in",
+     "enters",
+     "exits"
+    ],
+    "conditionVocabulary": [
+     "bullish",
+     "bearish",
+     "neutral"
+    ],
+    "conditionHold": {
+     "timeframe": "1h",
+     "maxWindow": 209,
+     "maxAtLeast": 209,
+     "refusal": null
+    },
+    "family": "volumeFlow"
+   },
+   {
+    "header": "spotCVD_zone",
+    "meaning": "spotCVD_zone: thresholded regime (bullish / bearish / neutral), banded bearish < neutral = 0 < bullish.",
+    "conditionOperators": [
+     "is",
+     "in",
+     "enters",
+     "exits"
+    ],
+    "conditionVocabulary": [
+     "bullish",
+     "bearish",
+     "neutral"
+    ],
+    "conditionHold": {
+     "timeframe": "1h",
+     "maxWindow": 209,
+     "maxAtLeast": 209,
+     "refusal": null
+    },
+    "family": "volumeFlow"
+   },
+   {
+    "header": "regState",
+    "meaning": "regState: value.",
+    "conditionOperators": [
+     "is",
+     "in",
+     "enters",
+     "exits"
+    ],
+    "conditionVocabulary": [
+     "bull trend",
+     "bear trend",
+     "bull range",
+     "bear range",
+     "fallback"
+    ],
+    "conditionHold": {
+     "timeframe": "4h",
+     "maxWindow": 50,
+     "maxAtLeast": 50,
+     "refusal": null
+    },
+    "family": "regime"
+   }
+  ],
+  "firstRow": [
+   "BTC",
+   "bearish",
+   "bearish",
+   "bullish",
+   "bear trend"
+  ]
+ }
+}
