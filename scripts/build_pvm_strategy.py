@@ -97,7 +97,7 @@ body = {
         "Radar is at 20 of 20 coins and this strategy is bound to no agent."),
     "timeframe": "1h",
     "coinSelection": {"mode": "explicit", "tickers": ["BTC", "ETH", "SOL", "HYPE", "XRP", "AVAX", "LINK", "DOGE"]},
-    "sections": [{"kind": "custom", "title": "Prior Value Location", "benchmarkTicker": None,
+    "sections": [{"kind": "custom", "title": "Prior Value Location", "benchmarkTicker": None, "marketScope": None,
                   "notes": "Prior-session value area versus the close and versus the Donchian levels, plus the developing profile skew.",
                   "columns": columns}],
     "conditions": conditions,

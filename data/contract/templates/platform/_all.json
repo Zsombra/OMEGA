@@ -1050,16 +1050,6 @@
      }
     }
    ]
-  },
-  {
-   "sectionKey": "includeMarketBreadth",
-   "title": "Market Breadth",
-   "columns": []
-  },
-  {
-   "sectionKey": "includeReferencePairs",
-   "title": "Reference Pairs",
-   "columns": []
   }
  ],
  "customTemplateSummaries": [
@@ -1086,41 +1076,50 @@
   }
  ],
  "_refreshed": {
-  "at": "2026-10-30T03:45Z",
-  "contractVersion": "144.0.0",
-  "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261030T0345Z/ (mcporter, read-only)",
+  "at": "2026-11-01T06:17:33Z",
+  "contractVersion": "146.0.0",
+  "how": "the sectionKey enum of the 146.0.0 stage schema (data/contract/stage_strategy_draft/schema_20261101T061733Z.json, axes.REPORT.sections.items.oneOf[0].properties.sectionKey; preview_strategy_report's FIELDS arm serves the same 22), copied from the battlegrid-manager fixture tests/fixtures/2026-11-01-surface-146.0.0/manager_schemas_146.0.0.json; list_strategy_vocabulary was NOT re-read (no platform call), so the 22 remaining templates' columns are the 2026-10-30 read at 144.0.0",
   "moved": [
-   "includeBollingerBands lost {\"metric\": \"BB_WIDTH\", \"transformId\": \"value\", \"timeframe\": {\"rel\": \"anchor\"}} (README v138: BB_WIDTH retired for BB_WIDTH_PCT, 'every saved column ... was moved to it before deploy')",
-   "custom template summary venue-dislocation ADDED (Where the spot venues and the perp disagree at the section anchor — the Coinbase premium over Binance, the perp basis over each venue, the cross-venue buy-share gap, and the composite spot tape.)"
+   "includeMarketBreadth RETIRED (contract 146.0.0, undocumented in the README: gone from the sectionKey enum of stage_strategy_draft and preview_strategy_report, 24 -> 22, and from get_intelligence_agent contextSources - battlegrid-manager tests/platform/test_contract_146.py; it shipped with zero columns)",
+   "includeReferencePairs RETIRED (contract 146.0.0, undocumented: the same enums and contextSources; it shipped with zero columns)"
   ],
   "previous": {
-   "at": "2026-10-26T07:08Z",
-   "contractVersion": "135.2.0",
-   "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261026T0708Z/ (mcporter, read-only)",
+   "at": "2026-10-30T03:45Z",
+   "contractVersion": "144.0.0",
+   "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261030T0345Z/ (mcporter, read-only)",
    "moved": [
-    "includeMtfConfluence RETIRED (README v134: refused wherever a platform section is named; its lower-rung reads are the custom columns MA_ALIGN x value, RSI14 x classifyZone, ADX x classifyZone at {rel: lower})",
-    "includeSubTimeframe: CLOSE x efficiency window 5 -> 4 (README v135: a window counts bar-to-bar changes; stored windows moved to w - 1, the same 5 bars)",
-    "includePerpSpotFlow gained {metric: PERP_SPOT_GAP, transformId: value, timeframe: {rel: anchor}} (README v134)"
+    "includeBollingerBands lost {\"metric\": \"BB_WIDTH\", \"transformId\": \"value\", \"timeframe\": {\"rel\": \"anchor\"}} (README v138: BB_WIDTH retired for BB_WIDTH_PCT, 'every saved column ... was moved to it before deploy')",
+    "custom template summary venue-dislocation ADDED (Where the spot venues and the perp disagree at the section anchor — the Coinbase premium over Binance, the perp basis over each venue, the cross-venue buy-share gap, and the composite spot tape.)"
    ],
    "previous": {
-    "at": "2026-10-14T01:56Z",
-    "contractVersion": "110.2.0",
-    "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), read 2026-10-14 over mcporter (read-only)",
+    "at": "2026-10-26T07:08Z",
+    "contractVersion": "135.2.0",
+    "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261026T0708Z/ (mcporter, read-only)",
     "moved": [
-     "includeMacd: MACD -> MACD_HIST (both columns)",
-     "includeRelativeStrength: PPO -> PPO_HIST (both columns); README v110 refuses MACD and PPO"
+     "includeMtfConfluence RETIRED (README v134: refused wherever a platform section is named; its lower-rung reads are the custom columns MA_ALIGN x value, RSI14 x classifyZone, ADX x classifyZone at {rel: lower})",
+     "includeSubTimeframe: CLOSE x efficiency window 5 -> 4 (README v135: a window counts bar-to-bar changes; stored windows moved to w - 1, the same 5 bars)",
+     "includePerpSpotFlow gained {metric: PERP_SPOT_GAP, transformId: value, timeframe: {rel: anchor}} (README v134)"
     ],
     "previous": {
-     "at": "2026-10-13T03:37Z",
-     "contractVersion": "108.4.0",
-     "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261013T0337Z/",
+     "at": "2026-10-14T01:56Z",
+     "contractVersion": "110.2.0",
+     "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), read 2026-10-14 over mcporter (read-only)",
      "moved": [
-      "includeSupportResistance gained {metric: BAR_FORMING, transformId: value, timeframe: {rel: anchor}}"
+      "includeMacd: MACD -> MACD_HIST (both columns)",
+      "includeRelativeStrength: PPO -> PPO_HIST (both columns); README v110 refuses MACD and PPO"
      ],
      "previous": {
-      "at": "2026-09-09T08:03:07Z",
-      "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
-      "note": "contract 54.1.0. includeSupportResistance now names DONCHIAN_UPPER/DONCHIAN_LOWER where it named SWING_HIGH/SWING_LOW; the two metrics were renamed, not removed - same nativeOutput, timeframeMode and transform set, code swingHi->donchianHi and swingLo->donchianLo, label 'Swing high'->'20-bar high'."
+      "at": "2026-10-13T03:37Z",
+      "contractVersion": "108.4.0",
+      "how": "the `templates` block list_strategy_vocabulary serves (identical across all ten categories), data/contract/vocabulary/20261013T0337Z/",
+      "moved": [
+       "includeSupportResistance gained {metric: BAR_FORMING, transformId: value, timeframe: {rel: anchor}}"
+      ],
+      "previous": {
+       "at": "2026-09-09T08:03:07Z",
+       "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+       "note": "contract 54.1.0. includeSupportResistance now names DONCHIAN_UPPER/DONCHIAN_LOWER where it named SWING_HIGH/SWING_LOW; the two metrics were renamed, not removed - same nativeOutput, timeframeMode and transform set, code swingHi->donchianHi and swingLo->donchianLo, label 'Swing high'->'20-bar high'."
+      }
      }
     }
    }

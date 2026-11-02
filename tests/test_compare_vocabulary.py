@@ -88,17 +88,19 @@ def test_main_exits_0_when_identical_and_1_when_an_enum_moved(tmp_path, capsys):
     assert main([str(moved)]) == 1
     printed = json.loads(capsys.readouterr().out)
     assert printed["results"]["sectionKeys"]["liveNotStored"] == ["newSection"]
-    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"   # 144.0.0
+    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"   # 146.0.0
 
 
 def test_the_stored_enums_are_read_off_the_saved_108_stage_schema():
     """25 platform sections on the REPORT axis of the saved 108.0.0 capture, as on the 91.0.0 one; 24 on the 135.2.0
-    capture (the newest): v134 retired includeMtfConfluence."""
+    and 144.0.0 captures (v134 retired includeMtfConfluence); 22 on the 146.0.0 capture (the newest): contract 146.0.0
+    retired includeMarketBreadth and includeReferencePairs (2026-11-01, undocumented in the README)."""
     from omega.contract import stage_schema
     from omega.preflight import resolve_axes
     stored = stored_enums()
     axes, _ = resolve_axes(stage_schema())
-    assert len(stored["sectionKeys"]) == 24 and "includeMtfConfluence" not in stored["sectionKeys"]
+    assert len(stored["sectionKeys"]) == 22 and not {"includeMtfConfluence", "includeMarketBreadth",
+                                                   "includeReferencePairs"} & stored["sectionKeys"]
     assert stored["sectionKeys"] == set(first_enum(axes["REPORT"], "sectionKey"))
     assert "SIGNAL_RULES" not in axes
 

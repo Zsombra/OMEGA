@@ -32,10 +32,12 @@ SURFACE_104_1 = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/f
                      "2026-10-08-surface-104.1.0/tool_definitions.json")
 
 
-def test_the_corpus_is_the_whole_served_enum_and_the_unmeasured_record_is_empty():
+def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
+    """EMPTY from 2026-10-13 to 2026-10-31 (the 15 served at 108 were measured). Since 2026-11-01 the record names the
+    24 keys contract 146.0.0 added (tests/test_v146.py): served, known by name only, not in the corpus."""
     c = load()
-    assert set(c.metrics) == set(SERVED) and len(SERVED) == 302      # 302 at 144.0.0 (_moves_144.json); 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json); 226 at 135.2 (_moves_135.json)
-    assert RECORD["metrics"] == {} and c.unmeasured_metrics == {}
+    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 326      # 326 at 146.0.0 (24 unmeasured); 302 at 144.0.0 (_moves_144.json); 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json); 226 at 135.2 (_moves_135.json)
+    assert len(c.metrics) == 302 and set(RECORD["metrics"]) == set(c.unmeasured_metrics) and len(c.unmeasured_metrics) == 24
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
 
 
@@ -83,12 +85,12 @@ def _surface(metrics: list[str], sections: set[str]) -> dict:
             "type": "object", "properties": {"axes": {"type": "object", "properties": axes}}}}}}]}
 
 
-def test_the_served_171_compare_as_stored_and_none_is_unmeasured():
+def test_the_served_enum_compares_as_stored_and_the_146_additions_are_unmeasured():
     stored = stored_enums()
     assert stored["metrics"] == set(SERVED)
     result = compare(live_enums(_surface(SERVED, stored["sectionKeys"])), stored, stored_unmeasured())
     assert result["metrics"]["liveNotStored"] == [] and result["metrics"]["storedNotLive"] == []
-    assert result["metrics"]["storedUnmeasured"] == []
+    assert result["metrics"]["storedUnmeasured"] == sorted(load().unmeasured_metrics)      # [] from 2026-10-13 to 10-31
 
 
 @pytest.mark.skipif(not SURFACE_104_1.exists(), reason="the battlegrid-manager checkout is not beside this repo")

@@ -68,7 +68,7 @@ def one(tickers):
     req = {"timeframe": "1h",
            "coinSelection": {"mode": "explicit", "tickers": tickers},
            "sections": [{"kind": "custom", "sectionKey": "custom:" + str(uuid.uuid4()),
-                         "title": "TPO-native column space", "benchmarkTicker": None,
+                         "title": "TPO-native column space", "benchmarkTicker": None, "marketScope": None,
                          "notes": "read-only measurement probe", "columns": cols}],
            "conditions": []}
     return call("preview_strategy_report", req)

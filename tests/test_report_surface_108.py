@@ -40,8 +40,9 @@ def codes(findings) -> set[str]:
 # --- the inventory derives the section, not only the column -----------------------------------------
 def test_the_inventory_carries_the_custom_section_arm():
     sec = V["reportSection"]
-    assert sec["fields"] == ["benchmarkTicker", "columns", "kind", "notes", "sectionKey", "title"]
-    assert sec["required"] == ["kind", "title", "benchmarkTicker", "notes", "columns"]
+    # marketScope since 146.0.0 (2026-11-01): required, null or one of nine category names (tests/test_v146.py)
+    assert sec["fields"] == ["benchmarkTicker", "columns", "kind", "marketScope", "notes", "sectionKey", "title"]
+    assert sec["required"] == ["kind", "title", "benchmarkTicker", "marketScope", "notes", "columns"]
     assert sec["additionalProperties"] is False
     # v103: "The fixed 64 maximums leave strategy authoring: ... a custom section's columns"
     assert sec["columns"] == {"minItems": 1}
@@ -66,8 +67,8 @@ def test_the_gaps_name_only_the_retired_section_field():
 def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert set(C.retired_transforms) == {"bandTouch"}
     # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.13.0 (v111) capture since 2026-10-16
-    # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "144.0.0"
+    # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30, the 146.0.0 one since 2026-11-01)
+    assert C.retired_transforms["bandTouch"]["servedAt"] == "146.0.0"
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -86,7 +87,7 @@ def test_a_retired_transform_is_refused_naming_its_replacement():
     f = validate_column(col("OPEN", "bandTouch"), contract=C)
     assert codes(f) == {"TRANSFORM_RETIRED"}
     msg = f[0].message
-    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "144.0.0" in msg
+    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "146.0.0" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():
