@@ -629,7 +629,7 @@ At 35% of its range the honest answer is not "near high". It is the offset-0 ans
 
 **Reconstruct it yourself.** The numeric inputs at an offset are correct, and
 `PRICE_ZONE`'s rule is known — percentage distance to the nearer swing
-([19](19-is-the-data-correct.md)). `omega.validate` now raises `OFFSET_IGNORED` as a
+([19](19-is-the-data-correct.md)). `omega.validate` now raises `OFFSET_REFUSED` (an error since 144.0.0, measured 2026-10-30; `OFFSET_IGNORED`, a warning, before) as a
 warning rather than an error, because the column does render; it just answers about a
 different bar than the one you asked for.
 

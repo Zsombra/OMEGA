@@ -1,6 +1,6 @@
 {
   "metric": "BB_WIDTH_PCT",
-  "label": "Bollinger width % of middle",
+  "label": "Bollinger BandWidth (20, 2)",
   "code": "bbWidthPct",
   "family": "volatility",
   "nativeOutput": {
@@ -43,6 +43,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -55,6 +56,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -67,6 +69,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -79,6 +82,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -91,6 +95,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -103,6 +108,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -115,6 +121,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -127,6 +134,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
@@ -139,11 +147,64 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC12",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT"
           ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
         }
       }
     },
@@ -199,11 +260,14 @@
       "id": "rank"
     }
   ],
-  "study": "bollingerWidth",
+  "study": null,
+  "provenance": "tradingView",
+  "rankScope": "exchangeWide",
   "spreadOperands": [
     "PPO_HIST",
     "PPO_LINE",
     "PPO_SIGNAL",
+    "ROC9",
     "ROC12",
     "ROC15",
     "CLOSE_CHANGE",

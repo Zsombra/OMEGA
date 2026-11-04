@@ -32,11 +32,18 @@ SURFACE_104_1 = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/f
                      "2026-10-08-surface-104.1.0/tool_definitions.json")
 
 
-def test_the_corpus_is_the_whole_served_enum_and_the_unmeasured_record_is_empty():
+def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
+    """EMPTY from 2026-10-13 to 2026-10-31 (the 15 served at 108 were measured). Since 2026-11-01 the record names the
+    24 keys contract 146.0.0 added (tests/test_v146.py): served, known by name only, not in the corpus."""
     c = load()
-    assert set(c.metrics) == set(SERVED) and len(SERVED) == 226      # 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json); 226 at 135.2 (_moves_135.json)
-    assert RECORD["metrics"] == {} and c.unmeasured_metrics == {}
+    # 326 at 146.0.0 (24 unmeasured 2026-11-01 .. 11-02, measured at 146.0.1 on 2026-11-02: _moves_146.json); 302 at
+    # 144.0.0 (_moves_144.json); 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json); 226 at
+    # 135.2 (_moves_135.json)
+    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 326
+    assert len(c.metrics) == 326 and set(RECORD["metrics"]) == set(c.unmeasured_metrics) == set()
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
+    assert len(RECORD["history146"]["formerlyUnmeasured"]) == 24 and RECORD["history146"]["measuredOn"] == "2026-11-02"
+    assert RECORD["servedAt"] == "146.0.1"
 
 
 def test_the_v100_metrics_are_what_the_changelog_says():
@@ -83,12 +90,12 @@ def _surface(metrics: list[str], sections: set[str]) -> dict:
             "type": "object", "properties": {"axes": {"type": "object", "properties": axes}}}}}}]}
 
 
-def test_the_served_171_compare_as_stored_and_none_is_unmeasured():
+def test_the_served_enum_compares_as_stored_and_the_146_additions_are_unmeasured():
     stored = stored_enums()
     assert stored["metrics"] == set(SERVED)
     result = compare(live_enums(_surface(SERVED, stored["sectionKeys"])), stored, stored_unmeasured())
     assert result["metrics"]["liveNotStored"] == [] and result["metrics"]["storedNotLive"] == []
-    assert result["metrics"]["storedUnmeasured"] == []
+    assert result["metrics"]["storedUnmeasured"] == sorted(load().unmeasured_metrics)      # [] from 2026-10-13 to 10-31
 
 
 @pytest.mark.skipif(not SURFACE_104_1.exists(), reason="the battlegrid-manager checkout is not beside this repo")
@@ -97,6 +104,9 @@ def test_the_stored_104_1_surface_reports_nothing_missing_and_nothing_unmeasured
     result = compare(live_enums(surface), stored_enums(), stored_unmeasured())
     # History since contract 110: the 104.1.0 surface still lists exactly the three keys v110 retired, and nothing else
     # is missing (data/contract/metrics/_moves_110.json).
-    retired = json.loads((Path(__file__).resolve().parents[1] / "data/contract/metrics/_moves_110.json")
-                         .read_text(encoding="utf-8"))["retired"]
+    # ... plus STOCH_RSI14 (v137) and BB_WIDTH (v138), which the 104.1.0 surface still lists and the 144.0.0 corpus no
+    # longer stores (_moves_144.json, 2026-10-30)
+    root = Path(__file__).resolve().parents[1]
+    retired = {**json.loads((root / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))["retired"],
+               **json.loads((root / "data/contract/metrics/_moves_144.json").read_text(encoding="utf-8"))["retired"]}
     assert result["metrics"]["liveNotStored"] == sorted(retired) and result["metrics"]["storedUnmeasured"] == []

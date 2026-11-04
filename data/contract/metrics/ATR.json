@@ -44,8 +44,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "aggregate": {
@@ -54,8 +56,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "efficiency": {
@@ -64,8 +68,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "zscore": {
@@ -74,8 +80,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "stddev": {
@@ -84,8 +92,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "linregSlope": {
@@ -94,8 +104,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "pctl": {
@@ -104,8 +116,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "rollingMin": {
@@ -114,8 +128,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "rollingMax": {
@@ -124,8 +140,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
-            "BB_WIDTH",
-            "CVD"
+            "SQZ_MOM",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         }
       }
@@ -188,11 +206,15 @@
     }
   ],
   "study": "atr",
+  "provenance": "tradingView",
+  "rankScope": null,
   "spreadOperands": [
     "MACD_HIST",
     "MACD_LINE",
     "MACD_SIGNAL",
-    "BB_WIDTH",
-    "CVD"
+    "SQZ_MOM",
+    "CVD",
+    "CUM_VOLUME_DELTA",
+    "SPOT_CVD"
   ]
 }

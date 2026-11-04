@@ -1,0 +1,225 @@
+{
+  "metric": "QUOTE_VOL",
+  "label": "Quote volume",
+  "code": "quoteVol",
+  "family": "volumeFlow",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "usdLargeCount",
+    "precision": 1,
+    "range": {
+      "min": 0
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "BUY_QUOTE_VOL",
+            "SELL_QUOTE_VOL"
+          ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "maxShare",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "barVolume",
+  "provenance": "battleGridDerived",
+  "rankScope": "exchangeWide",
+  "spreadOperands": [
+    "BUY_QUOTE_VOL",
+    "SELL_QUOTE_VOL",
+    "NOTIONAL_VOLUME_1D",
+    "OI"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

@@ -16,9 +16,12 @@ import pytest
 from omega import condition_vocabulary as CV
 
 ROOT = Path(__file__).resolve().parents[1]
-# The schema the manifest names: the 135.2.0 capture since 2026-10-26 (the 110.13.0 one of 2026-10-16, the 110.8.0
-# one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the 108.0.0 one are kept below as history).
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
+# The schema the manifest names: the 146.0.0 capture since 2026-11-01 (the 144.0.0 one of 2026-10-30, the 135.2.0 one
+# of 2026-10-26, the 110.13.0 one of 2026-10-16, the 110.8.0 one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the
+# 108.0.0 one are kept below as history).
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
+SCHEMA_144 = ROOT / "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
+SCHEMA_135 = ROOT / "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
 SCHEMA_110_13 = ROOT / "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
 SCHEMA_110_8 = ROOT / "data/contract/stage_strategy_draft/schema_20261015T015244Z.json"
 SCHEMA_110_2 = ROOT / "data/contract/stage_strategy_draft/schema_20261013T200621Z.json"
@@ -26,6 +29,8 @@ SCHEMA_108 = ROOT / "data/contract/stage_strategy_draft/schema_20261010T215326Z.
 MOVES_110 = json.loads((ROOT / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))
 MOVES_110_8 = json.loads((ROOT / "data/contract/metrics/_moves_110_8.json").read_text(encoding="utf-8"))
 MOVES_135 = json.loads((ROOT / "data/contract/metrics/_moves_135.json").read_text(encoding="utf-8"))
+MOVES_144 = json.loads((ROOT / "data/contract/metrics/_moves_144.json").read_text(encoding="utf-8"))
+MOVES_146 = json.loads((ROOT / "data/contract/metrics/_moves_146.json").read_text(encoding="utf-8"))
 DOC = json.loads(SCHEMA.read_text(encoding="utf-8"))
 V = CV.vocabulary()
 G = V["grammar"]
@@ -68,9 +73,9 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261026T062718Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "135.2.0",
-                           "buildSha": "98d29c45221aa16a7a0160173c0105220160119d",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "146.0.0",
+                           "buildSha": "1cd4466aace4e047a44672b6d531e4deabc8fe12",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -193,16 +198,21 @@ def test_what_is_served_per_header_names_the_same_thirteen_operators():
 def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
     """171 at 108; 177 since 110 (MACD, PPO, KC_MID retired, nine added - data/contract/metrics/_moves_110.json); 183
     since 110.8 (six added, none retired - _moves_110_8.json); 226 since 135 (43 added, none retired - _moves_135.json:
-    seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1) and the six v135 statistics in both transform enums."""
+    seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1) and the six v135 statistics in both transform enums; 302 since
+    144 (78 added, STOCH_RSI14 and BB_WIDTH retired - _moves_144.json) and v142.3's relativeTo in the transform enum;
+    326 since 146 (24 added, none retired; served, known by name only - data/contract/metrics/_unmeasured_108.json)."""
     col = V["reportColumn"]
-    assert col["metric"]["count"] == 226 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["count"] == 326 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["pointer"] == "/stage_strategy_draft/inputSchema/$defs/metricKey"   # v137.2: named once
+    assert set(MOVES_144["retired"]).isdisjoint(col["metric"]["enum"]) and set(MOVES_144["added"]) <= set(col["metric"]["enum"])
     stats = ["zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"]
     assert col["transformId"]["enum"] == [
-        "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "crossDetect", "aggregate",
+        "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "relativeTo", "crossDetect", "aggregate",
         "efficiency", "maxShare", *stats, "rank", "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist",
         "nearestZoneAge", "levelInteraction"]
     assert col["chainedTransformId"]["enum"] == ["trajectory", "aggregate", "efficiency", "maxShare", *stats, "rank"]
     assert "buffer" in col["fields"]       # v100: "buffer, a column knob declared by levelInteraction only"
+    assert "instrument" in col["fields"] and "scope" in col["fields"]      # v142.3 relativeTo's coin; v136 rank's scope
 
 
 @pytest.mark.skipif(not HINTS_104_1.exists(), reason="the battlegrid-manager checkout is not beside this repo")
@@ -246,10 +256,32 @@ def test_v111_moved_no_column_enum_only_the_envelope():
 
 
 def test_the_135_enum_is_the_110_13_enum_plus_the_43():
-    old, new = _enum_in(SCHEMA_110_13), V["reportColumn"]["metric"]["enum"]
+    old, new = _enum_in(SCHEMA_110_13), _enum_in(SCHEMA_135)
     assert MOVES_135["retired"] == {} and set(old) <= set(new)
     assert set(new) - set(old) == set(MOVES_135["added"]) and len(MOVES_135["added"]) == 43
     assert [m for m in new if m in old] == old                                 # the 183 keep their platform order
+
+
+def test_the_144_enum_is_the_135_enum_minus_the_two_plus_the_78():
+    """v137 retired STOCH_RSI14, v138 BB_WIDTH; 78 keys arrived (v136.1, v137, v137.2, v137.3, v138, two undocumented) -
+    _moves_144.json. The kept 224 keep their platform order; the enum is read at $defs/metricKey (v137.2)."""
+    old, new = _enum_in(SCHEMA_135), _enum_in(SCHEMA_144)
+    assert set(old) - set(new) == set(MOVES_144["retired"]) == {"STOCH_RSI14", "BB_WIDTH"}
+    assert set(new) - set(old) == set(MOVES_144["added"]) and len(MOVES_144["added"]) == 78
+    assert [m for m in new if m in old] == [m for m in old if m in new]
+    assert set(MOVES_144["retiredBetweenExtractions"]).isdisjoint(old) and set(MOVES_144["retiredBetweenExtractions"]).isdisjoint(new)
+
+
+def test_the_146_enum_is_the_144_enum_plus_the_24_market_crowd_and_warning_keys():
+    """Contract 146.0.0 (2026-11-01, undocumented in the README): 24 keys added, none retired; the 302 keep their
+    platform order. The 24 were served and UNMEASURED from 2026-11-01 (data/contract/metrics/_unmeasured_108.json) to
+    2026-11-02, when the re-extraction at 146.0.1 measured them (_moves_146.json)."""
+    from omega.contract import load
+    old, new = _enum_in(SCHEMA_144), V["reportColumn"]["metric"]["enum"]
+    assert not set(old) - set(new) and len(new) == 326
+    assert set(new) - set(old) == set(MOVES_146["added"]) <= set(load().metrics) and len(set(new) - set(old)) == 24
+    assert not load().unmeasured_metrics
+    assert [m for m in new if m in old] == old
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------
@@ -271,8 +303,11 @@ def test_the_gaps_between_the_schema_and_omega():
     assert gaps["groupOperators"] == {"schemaOnly": [], "omegaOnly": []}
     # known by name since 2026-10-11 (data/contract/metrics/_unmeasured_108.json); before, schemaOnly was these 15
     assert gaps["metrics"] == {"schemaOnly": [], "omegaOnly": []}
-    # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2)
-    assert gaps["metricsUnmeasured"] == []
+    # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2);
+    # from 2026-11-01 to 2026-11-02 the 24 keys contract 146.0.0 added, served and known by name only (OMEGA v0.10.2);
+    # measured 2026-11-02 at 146.0.1 (OMEGA v0.11.0, _moves_146.json): empty again
+    from omega.contract import load
+    assert gaps["metricsUnmeasured"] == sorted(load().unmeasured_metrics) == []
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
     # the enum and was platform-privileged at the 61.2.0 extraction (data/derived/platform_privileged.json)
     # The extraction's catalogue still lists bandTouch; since 2026-10-12 omega.contract derives it as RETIRED from this

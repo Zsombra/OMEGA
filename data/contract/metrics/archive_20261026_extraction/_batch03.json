@@ -1,0 +1,7248 @@
+[
+ {
+  "metric": "ATR",
+  "label": "ATR (14)",
+  "code": "ATR14",
+  "family": "volatility",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "signedPrice",
+   "precision": 4
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "BB_WIDTH",
+       "CVD"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from ATR (14)’s own 14-bar length."
+   }
+  ],
+  "study": "atr",
+  "spreadOperands": [
+   "MACD_HIST",
+   "MACD_LINE",
+   "MACD_SIGNAL",
+   "BB_WIDTH",
+   "CVD"
+  ]
+ },
+ {
+  "metric": "ATR_PCT",
+  "label": "ATR % of price",
+  "code": "atrPct",
+  "family": "volatility",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "BB_WIDTH_PCT"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    }
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    }
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "atr",
+  "spreadOperands": [
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
+   "ROC12",
+   "ROC15",
+   "CLOSE_CHANGE",
+   "CHG_5M",
+   "CHG_15M",
+   "CHG_1H",
+   "CHG_4H",
+   "CHG_24H",
+   "BB_WIDTH_PCT",
+   "HIGH_DEV",
+   "LOW_DEV",
+   "FUNDING_RATE",
+   "FUNDING_ANN",
+   "OI_CHG"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "BB_WIDTH",
+  "label": "Bollinger width",
+  "code": "BBwidth20",
+  "family": "volatility",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "signedPrice",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "MACD_HIST",
+       "MACD_LINE",
+       "MACD_SIGNAL",
+       "ATR",
+       "CVD"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+   }
+  ],
+  "study": "bollingerWidth",
+  "spreadOperands": [
+   "MACD_HIST",
+   "MACD_LINE",
+   "MACD_SIGNAL",
+   "ATR",
+   "CVD"
+  ]
+ },
+ {
+  "metric": "BB_WIDTH_PCT",
+  "label": "Bollinger width % of middle",
+  "code": "bbWidthPct",
+  "family": "volatility",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "PPO_HIST",
+       "PPO_LINE",
+       "PPO_SIGNAL",
+       "ROC12",
+       "ROC15",
+       "CLOSE_CHANGE",
+       "ATR_PCT"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    }
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    }
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "bollingerWidth",
+  "spreadOperands": [
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
+   "ROC12",
+   "ROC15",
+   "CLOSE_CHANGE",
+   "CHG_5M",
+   "CHG_15M",
+   "CHG_1H",
+   "CHG_4H",
+   "CHG_24H",
+   "ATR_PCT",
+   "HIGH_DEV",
+   "LOW_DEV",
+   "FUNDING_RATE",
+   "FUNDING_ANN",
+   "OI_CHG"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "KC_SQUEEZE",
+  "label": "TTM squeeze",
+  "code": "kcSqueeze",
+  "family": "volatility",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "on",
+    "off"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   }
+  ],
+  "study": null
+ },
+ {
+  "metric": "HIGH_DEV",
+  "label": "Bar high vs open",
+  "code": "highDev",
+  "family": "volatility",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "barDeviation",
+  "spreadOperands": [
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
+   "ROC12",
+   "ROC15",
+   "CLOSE_CHANGE",
+   "CHG_5M",
+   "CHG_15M",
+   "CHG_1H",
+   "CHG_4H",
+   "CHG_24H",
+   "ATR_PCT",
+   "BB_WIDTH_PCT",
+   "LOW_DEV",
+   "FUNDING_RATE",
+   "FUNDING_ANN",
+   "OI_CHG"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "LOW_DEV",
+  "label": "Bar low vs open",
+  "code": "lowDev",
+  "family": "volatility",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "barDeviation",
+  "spreadOperands": [
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
+   "ROC12",
+   "ROC15",
+   "CLOSE_CHANGE",
+   "CHG_5M",
+   "CHG_15M",
+   "CHG_1H",
+   "CHG_4H",
+   "CHG_24H",
+   "ATR_PCT",
+   "BB_WIDTH_PCT",
+   "HIGH_DEV",
+   "FUNDING_RATE",
+   "FUNDING_ANN",
+   "OI_CHG"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "BB_PCT_B",
+  "label": "Bollinger %B",
+  "code": "pctB20",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "fraction",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "CLOSE_LOCATION",
+       "STOCH_RSI14",
+       "BUY_PRESSURE"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Bollinger %B’s own 20-bar length."
+   },
+   {
+    "id": "rank"
+   }
+  ],
+  "study": "bollingerBands",
+  "spreadOperands": [
+   "CLOSE_LOCATION",
+   "STOCH_RSI14",
+   "BUY_PRESSURE"
+  ],
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "DONCHIAN_UPPER",
+  "label": "20-bar high",
+  "code": "donchianHi20",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "distance",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax",
+     "rank"
+    ],
+    "chainedRankOrderings": [
+     "hi",
+     "lo",
+     "far",
+     "near"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rank": {
+      "windowMaximum": null,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar high’s own 20-bar length."
+   }
+  ],
+  "study": "donchianChannels",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "DONCHIAN_LOWER",
+  "label": "20-bar low",
+  "code": "donchianLo20",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "distance",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax",
+     "rank"
+    ],
+    "chainedRankOrderings": [
+     "hi",
+     "lo",
+     "far",
+     "near"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rank": {
+      "windowMaximum": null,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from 20-bar low’s own 20-bar length."
+   }
+  ],
+  "study": "donchianChannels",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "DONCHIAN_UPPER_PRIOR",
+  "label": "Prior 20-bar high",
+  "code": "donchianHiPrior20",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "distance",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "donchianChannels",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "DONCHIAN_LOWER_PRIOR",
+  "label": "Prior 20-bar low",
+  "code": "donchianLoPrior20",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "distance",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Prior 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "donchianChannels",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "DONCHIAN_BROKEN_HI",
+  "label": "Broken 20-bar high",
+  "code": "donchianBrkHi20",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "distance",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_LO",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar high’s own 20-bar length."
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "donchianChannels",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "DONCHIAN_BROKEN_LO",
+  "label": "Broken 20-bar low",
+  "code": "donchianBrkLo20",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "distance",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "VWAP",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    },
+    "windowOwnLength": "Separate from Broken 20-bar low’s own 20-bar length."
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "donchianChannels",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "VWAP",
+  "label": "VWAP (UTC day)",
+  "code": "VWAP",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   },
+   {
+    "id": "trajectory",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "distance",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax",
+     "rank"
+    ],
+    "chainedRankOrderings": [
+     "hi",
+     "lo",
+     "far",
+     "near"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": null
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": null
+     },
+     "rank": {
+      "windowMaximum": null,
+      "operands": null
+     }
+    }
+   },
+   {
+    "id": "spread",
+    "chainSuccessors": [
+     "trajectory",
+     "aggregate",
+     "efficiency",
+     "zscore",
+     "stddev",
+     "linregSlope",
+     "pctl",
+     "rollingMin",
+     "rollingMax"
+    ],
+    "chainedOuters": {
+     "trajectory": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "aggregate": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "efficiency": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "zscore": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "stddev": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "linregSlope": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "pctl": {
+      "windowMaximum": 63,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMin": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     },
+     "rollingMax": {
+      "windowMaximum": 64,
+      "operands": [
+       "OPEN",
+       "HIGH",
+       "LOW",
+       "CLOSE",
+       "HL2",
+       "HLC3",
+       "OHLC4",
+       "SMA20",
+       "SMA50",
+       "SMA200",
+       "EMA5",
+       "EMA13",
+       "EMA8",
+       "EMA20",
+       "EMA9",
+       "EMA21",
+       "EMA50",
+       "DONCHIAN_UPPER",
+       "DONCHIAN_LOWER",
+       "DONCHIAN_UPPER_PRIOR",
+       "DONCHIAN_LOWER_PRIOR",
+       "DONCHIAN_BROKEN_HI",
+       "DONCHIAN_BROKEN_LO",
+       "BB_UPPER",
+       "BB_LOWER",
+       "KC_UPPER",
+       "KC_LOWER",
+       "ST_LINE",
+       "SWING_FRACTAL_HIGH",
+       "SWING_FRACTAL_LOW",
+       "PRIOR_SWING_FRACTAL_HIGH",
+       "PRIOR_SWING_FRACTAL_LOW",
+       "HMA20",
+       "PSAR",
+       "ICHI_CONV",
+       "ICHI_BASE",
+       "ICHI_SPAN_A",
+       "ICHI_SPAN_B",
+       "ICHI_LAG"
+      ]
+     }
+    }
+   },
+   {
+    "id": "aggregate",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "efficiency",
+    "maximums": {
+     "window": 63
+    }
+   },
+   {
+    "id": "zscore",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "stddev",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "linregSlope",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "pctl",
+    "maximums": {
+     "window": 63
+    }
+   },
+   {
+    "id": "rollingMin",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "rollingMax",
+    "maximums": {
+     "window": 64
+    }
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": null,
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "PRICE_ZONE",
+  "label": "Price zone",
+  "code": "zone",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "breakout high",
+    "breakdown low",
+    "near high",
+    "near low",
+    "mid-range"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   }
+  ],
+  "study": "donchianChannels"
+ },
+ {
+  "metric": "BB_TOUCH",
+  "label": "Band touch",
+  "code": "BBtouch",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "upper",
+    "lower",
+    "none"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 63
+    }
+   }
+  ],
+  "study": "bollingerBands"
+ },
+ {
+  "metric": "STRUCT_ZONES",
+  "label": "Structure zones",
+  "code": "zones",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "entitySet",
+   "entity": "structureZone"
+  },
+  "outputKind": "entitySet",
+  "timeframeMode": "candle",
+  "transforms": [
+   {
+    "id": "count"
+   },
+   {
+    "id": "nearestZoneType"
+   },
+   {
+    "id": "nearestZoneRange"
+   },
+   {
+    "id": "nearestZoneDist"
+   },
+   {
+    "id": "nearestZoneAge"
+   }
+  ],
+  "study": null
+ },
+ {
+  "metric": "TPO_POC",
+  "label": "TPO point of control",
+  "code": "tpoPOC",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "sessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "TPO_VAH",
+  "label": "TPO value-area high",
+  "code": "tpoVAH",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "sessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "TPO_VAL",
+  "label": "TPO value-area low",
+  "code": "tpoVAL",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "sessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "TPO_IB_HIGH",
+  "label": "Initial balance high",
+  "code": "tpoIBH",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "sessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "TPO_IB_LOW",
+  "label": "Initial balance low",
+  "code": "tpoIBL",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   }
+  ],
+  "study": "sessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "TPO_SHAPE",
+  "label": "TPO profile shape",
+  "code": "tpoShape",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "p-shape",
+    "b-shape",
+    "balanced"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "sessionProfile"
+ },
+ {
+  "metric": "PRIOR_TPO_POC",
+  "label": "TPO point of control (prior UTC day)",
+  "code": "pTpoPOC",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "priorSessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "PRIOR_TPO_VAH",
+  "label": "TPO value-area high (prior UTC day)",
+  "code": "pTpoVAH",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "priorSessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "PRIOR_TPO_VAL",
+  "label": "TPO value-area low (prior UTC day)",
+  "code": "pTpoVAL",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "priorSessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_IB_HIGH",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "PRIOR_TPO_SHAPE",
+  "label": "TPO profile shape (prior UTC day)",
+  "code": "pTpoShape",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "p-shape",
+    "b-shape",
+    "balanced"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   }
+  ],
+  "study": "priorSessionProfile"
+ },
+ {
+  "metric": "PRIOR_TPO_IB_HIGH",
+  "label": "Initial balance high (prior UTC day)",
+  "code": "pTpoIBH",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "priorSessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_LOW",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ },
+ {
+  "metric": "PRIOR_TPO_IB_LOW",
+  "label": "Initial balance low (prior UTC day)",
+  "code": "pTpoIBL",
+  "family": "structure",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "price",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "maximums": {
+     "offset": 0
+    }
+   },
+   {
+    "id": "distance"
+   },
+   {
+    "id": "spread"
+   },
+   {
+    "id": "levelInteraction"
+   }
+  ],
+  "study": "priorSessionProfile",
+  "spreadOperands": [
+   "OPEN",
+   "HIGH",
+   "LOW",
+   "CLOSE",
+   "LAST",
+   "MARK",
+   "ORACLE",
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN",
+   "HL2",
+   "HLC3",
+   "OHLC4",
+   "SMA20",
+   "SMA50",
+   "SMA200",
+   "EMA5",
+   "EMA13",
+   "EMA8",
+   "EMA20",
+   "EMA9",
+   "EMA21",
+   "EMA50",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER_PRIOR",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "VWAP",
+   "TPO_POC",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "PRIOR_TPO_POC",
+   "PRIOR_TPO_VAH",
+   "PRIOR_TPO_VAL",
+   "PRIOR_TPO_IB_HIGH",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "PRIOR_TPO_VPOC",
+   "PRIOR_TPO_VVAH",
+   "PRIOR_TPO_VVAL",
+   "NAKED_POC_ABOVE",
+   "NAKED_POC_BELOW",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "NAKED_SINGLE_PRINT_ABOVE",
+   "NAKED_SINGLE_PRINT_BELOW",
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "PRIOR_ASIA_HIGH",
+   "PRIOR_ASIA_LOW",
+   "PRIOR_ASIA_OPEN",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "PRIOR_LONDON_HIGH",
+   "PRIOR_LONDON_LOW",
+   "PRIOR_LONDON_OPEN",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "PRIOR_NEW_YORK_HIGH",
+   "PRIOR_NEW_YORK_LOW",
+   "PRIOR_NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "IB_EXT_UP_150",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_UP_200",
+   "IB_EXT_DOWN_200",
+   "BB_UPPER",
+   "BB_LOWER",
+   "KC_UPPER",
+   "KC_LOWER",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_LOW",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "HMA20",
+   "PSAR",
+   "ICHI_CONV",
+   "ICHI_BASE",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "ICHI_LAG",
+   "PIVOT_P",
+   "PIVOT_R1",
+   "PIVOT_R2",
+   "PIVOT_R3",
+   "PIVOT_S1",
+   "PIVOT_S2",
+   "PDH",
+   "PDL",
+   "PDO",
+   "PIVOT_S3"
+  ]
+ }
+]

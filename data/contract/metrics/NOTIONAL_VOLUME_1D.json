@@ -22,7 +22,12 @@
     }
   ],
   "study": null,
+  "provenance": "battleGridDerived",
+  "rankScope": null,
   "spreadOperands": [
+    "QUOTE_VOL",
+    "BUY_QUOTE_VOL",
+    "SELL_QUOTE_VOL",
     "OI"
   ]
 }

@@ -6,12 +6,10 @@
   "nativeOutput": {
     "kind": "classification",
     "vocab": [
-      "bull expansion",
-      "bear expansion",
-      "bull ranging",
-      "bear ranging",
-      "contraction",
-      "volatile",
+      "bull trend",
+      "bear trend",
+      "bull range",
+      "bear range",
       "fallback"
     ]
   },
@@ -25,5 +23,7 @@
       }
     }
   ],
-  "study": "regimeVerdict"
+  "study": "regimeVerdict",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

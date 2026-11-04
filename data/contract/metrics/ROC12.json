@@ -44,6 +44,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -56,6 +57,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -68,6 +70,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -80,6 +83,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -92,6 +96,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -104,6 +109,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -116,6 +122,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -128,6 +135,7 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
@@ -140,11 +148,64 @@
             "PPO_HIST",
             "PPO_LINE",
             "PPO_SIGNAL",
+            "ROC9",
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
           ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
         }
       }
     },
@@ -212,10 +273,13 @@
     }
   ],
   "study": null,
+  "provenance": "tradingView",
+  "rankScope": "exchangeWide",
   "spreadOperands": [
     "PPO_HIST",
     "PPO_LINE",
     "PPO_SIGNAL",
+    "ROC9",
     "ROC15",
     "CLOSE_CHANGE",
     "CHG_5M",

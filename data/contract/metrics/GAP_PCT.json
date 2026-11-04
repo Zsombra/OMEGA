@@ -18,5 +18,7 @@
       }
     }
   ],
-  "study": "gaps"
+  "study": "gaps",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

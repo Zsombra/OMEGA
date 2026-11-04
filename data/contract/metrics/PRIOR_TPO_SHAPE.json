@@ -21,5 +21,7 @@
       }
     }
   ],
-  "study": "priorSessionProfile"
+  "study": "priorSessionProfile",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

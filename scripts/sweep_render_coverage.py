@@ -37,6 +37,14 @@ SWEEP_DATE = os.environ.get("SWEEP_DATE", "2026-09-09")
 HEADERS_OUT = f"data/contract/columns/_coverage_sweep_{SWEEP_DATE}.json"
 RECORD_OUT = f"data/audit/coverage_sweep_{SWEEP_DATE}.json"
 NOTE = f"OMEGA read-only coverage sweep {SWEEP_DATE}"
+# 2026-11-02 (contract 146.0.1): the section's subject. A custom section with `marketScope: null` is an evaluated-coin
+# section and refuses a market metric ("metric 'MKT_UP' is not read on a evaluated-coin section's bars",
+# REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED); a named scope makes a MARKET section, which reads the thirteen MKT_*
+# metrics and refuses every other one. So the sweep sends one subject per run: SWEEP_MARKET_SCOPE names the scope of
+# every section it builds (unset = null, the per-coin sections every earlier sweep sent), and SWEEP_METRICS (a comma
+# list) restricts the shapes to those metrics, so a market pass renders the market family and nothing else.
+SWEEP_MARKET_SCOPE = os.environ.get("SWEEP_MARKET_SCOPE") or None
+SWEEP_METRICS = {m for m in os.environ.get("SWEEP_METRICS", "").split(",") if m} or None
 
 
 def call(tool, args, timeout=240):
@@ -63,7 +71,7 @@ def render(columns):
     secs = []
     for i in range(0, len(columns), COLS_PER_SECTION):
         secs.append({"kind": "custom", "title": f"sweep {len(secs) + 1}",
-                     "benchmarkTicker": None, "notes": NOTE,
+                     "benchmarkTicker": None, "marketScope": SWEEP_MARKET_SCOPE, "notes": NOTE,
                      "columns": columns[i:i + COLS_PER_SECTION]})
     # The request at v85+ (`source.kind: "FIELDS"`) and the read at v92+ (`conditionColumns` left the top level for
     # `authoring`, served only at detail "detailed"); the 09-09 / 09-20 runs used the flat compile-era shape.
@@ -103,11 +111,19 @@ def bisect(columns, refusals, depth=0):
 c = load()
 seen_before = rendered_headers()
 
-# every uncovered shape, structural and operand-expanded, deduped by its column payload
+# every uncovered shape, structural and operand-expanded, deduped by its column payload. SWEEP_SCOPE=structural renders
+# the structural shapes only, SWEEP_SCOPE=nonspread every uncovered shape that is not a spread pair (2026-10-30: the 144.0.0 corpus left 83,480 uncovered expanded shapes - the 78 added metrics as
+# spread operands - against 3,3xx structural ones; every new header pattern is structural, the expansions re-mint it
+# with another operand code).
+SWEEP_SCOPE = os.environ.get("SWEEP_SCOPE", "all")
 targets, keys = [], set()
-for expand in (False, True):
+for expand in ((False,) if SWEEP_SCOPE == "structural" else (False, True)):
     _, unc, _ = coverage(expand, c)
     for s in unc:
+        if SWEEP_SCOPE == "nonspread" and s.transform == "spread":
+            continue        # the 2026-10-30 second pass: every uncovered expansion that is not a spread operand pair
+        if SWEEP_METRICS is not None and s.metric not in SWEEP_METRICS:
+            continue        # 2026-11-02: one subject per run (see SWEEP_METRICS above)
         col = s.to_column().model_dump(exclude_none=True)
         k = json.dumps(col, sort_keys=True)
         if k in keys:
@@ -156,6 +172,8 @@ json.dump({"_what": (f"Run record for the {SWEEP_DATE} live coverage sweep: what
            "how": ("preview_strategy_report via the mcporter CLI, read-only, BTC only, "
                    f"{COLS_PER_SECTION} columns per custom section, up to {SECTIONS_PER_CALL} "
                    "sections per call; refused batches bisected to the offending column."),
+           "scope": SWEEP_SCOPE, "marketScope": SWEEP_MARKET_SCOPE,
+           "metricsRestrictedTo": sorted(SWEEP_METRICS) if SWEEP_METRICS else None,
            "shapesRequested": len(targets), "batches": batches,
            "headersMinted": len(headers),
            "refusalCount": len(refusals), "refusals": refusals,

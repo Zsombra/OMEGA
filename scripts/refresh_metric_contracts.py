@@ -117,6 +117,12 @@ for i, name in enumerate(names, 1):
     }
     if "study" in m:          # served since the v100 catalogue additions; recorded as served
         rec["study"] = m["study"]
+    # 144.0.0 (2026-10-30): two more served scalars, recorded as served. `provenance` (README v138: `tradingView`
+    # where TradingView publishes the same value at its default settings, `battleGridDerived` where it does not) and
+    # `rankScope` (v136: the ranked set a `rank` column reads - `exchangeWide` on a metric the platform ranks).
+    for served in ("provenance", "rankScope"):
+        if served in m:
+            rec[served] = m[served]
     for t in m.get("transforms", []):
         entry = {"id": t["id"]}
         for flag in TRANSFORM_FLAGS:

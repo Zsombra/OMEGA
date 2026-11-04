@@ -49,7 +49,9 @@ def test_the_transform_formula_comes_from_the_stored_authoring_contract():
     e = explain(_col("EMA5", "spread", inputs=[Operand(metric="EMA13")]))
     # the formula text served at 108.4.0 (refreshed into the catalogue 2026-10-13); it read
     # "output = (base - inputs[0]) / inputs[0] × 100" before
-    assert e.formula == "output = (({base} \u2212 {inputs[0]}) / {inputs[0]}) \u00d7 100"
+    # the formula text served at 144.0.0 (refreshed 2026-10-30; README v137: a spread over a comparable unit is a
+    # difference, a price-like base keeps the % gap); at 108.4.0 it read the second arm alone
+    assert e.formula == "output = comparable(unit) ? {base} − {inputs[0]} : (({base} − {inputs[0]}) / {inputs[0]}) × 100"
     assert e.operand_order == ["base", "inputs[0]"]
     assert "null" in e.null_behavior.lower()
 

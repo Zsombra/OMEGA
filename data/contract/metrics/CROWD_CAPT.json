@@ -26,6 +26,8 @@
     }
   ],
   "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
   "rankOrderings": [
     "hi",
     "lo"

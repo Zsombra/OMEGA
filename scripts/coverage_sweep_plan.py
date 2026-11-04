@@ -78,7 +78,7 @@ def main() -> int:
     for i, batch in enumerate(packed, 1):
         cols = [s.to_column().wire() | {"timeframe": {"rel": "anchor"}} for s in batch]
         section = [{"kind": "custom", "title": f"Coverage {which} {i}",
-                    "benchmarkTicker": None, "columns": cols}]
+                    "benchmarkTicker": None, "marketScope": None, "columns": cols}]
         headers = [o.header for s in batch for o in outputs_for(s.to_column(), c)]
         print(f"## batch {i}: {len(cols)} columns, {len(headers)} headers")
         print(json.dumps(section, separators=(",", ":")))

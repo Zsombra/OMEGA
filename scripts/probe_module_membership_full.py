@@ -95,7 +95,7 @@ def _call_once(tool, args, timeout=180):
 
 def signals_for(column, label):
     d, err = call("derive_strategy_rule_view", {"sections": [
-        {"kind": "custom", "title": label, "benchmarkTicker": None,
+        {"kind": "custom", "title": label, "benchmarkTicker": None, "marketScope": None,
          "notes": NOTE, "columns": [column]}]})
     if d is None:
         return None, err

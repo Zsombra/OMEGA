@@ -21,5 +21,7 @@
       }
     }
   ],
-  "study": "gaps"
+  "study": "gaps",
+  "provenance": "tradingView",
+  "rankScope": null
 }

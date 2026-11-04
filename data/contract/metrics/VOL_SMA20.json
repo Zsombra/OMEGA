@@ -44,7 +44,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "aggregate": {
@@ -53,7 +53,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "efficiency": {
@@ -62,7 +62,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "zscore": {
@@ -71,7 +71,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "stddev": {
@@ -80,7 +80,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "linregSlope": {
@@ -89,7 +89,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "pctl": {
@@ -98,7 +98,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "rollingMin": {
@@ -107,7 +107,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "rollingMax": {
@@ -116,7 +116,7 @@
             "VOLUME",
             "BUY_VOLUME",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         }
       }
@@ -179,10 +179,12 @@
     }
   ],
   "study": "relativeVolume",
+  "provenance": "tradingView",
+  "rankScope": null,
   "spreadOperands": [
     "VOLUME",
     "BUY_VOLUME",
     "SELL_VOLUME",
-    "OBV"
+    "SPOT_AVG_TRADE"
   ]
 }

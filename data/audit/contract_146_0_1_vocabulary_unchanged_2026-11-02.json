@@ -1,0 +1,35 @@
+{
+ "_what": "Does BattleGrid 146.0.1 (build a07740c0, the version served when OMEGA v0.11.0 re-extracted the 24 metric keys 146.0.0 added) move what this repo stores? ANSWER: no. The live surface listed 2026-11-02T05:54:05Z (151 tools, `mcporter list battlegrid-anbu --schema --all-parameters --json`) set-compared by scripts/compare_vocabulary.py against the 326 metric files and the 146.0.0 stage capture: both enums identical in both directions and nothing storedUnmeasured (the 24 were, from 2026-11-01 to 2026-11-02). The six draft tools listed live are byte-identical to the 146.0.0 capture (data/contract/_manifest.json writeSurface.liveCheckedAt).",
+ "measuredAt": "2026-11-02T05:54:05Z",
+ "method": {
+  "surface": "mcporter list battlegrid-anbu --schema --all-parameters --json at 2026-11-02T05:54:05Z (read-only; the cached mcporter 0.14.3 through a scratch npx shim)",
+  "version": "GET https://mcp.battlegrid.trade/mcp/version at 2026-11-02T05:54:31Z: contract 146.0.1, build a07740c0baaa1603e766c3f432d267c7b9fe1065",
+  "compare": "python scripts/compare_vocabulary.py <surface.json>, exit 0; its printed block is `compare` below, verbatim",
+  "signals": "not compared: derive_strategy_rule_view and signal rules left the surface at contract 108 (the signal arm of compare_vocabulary has nothing to read since)"
+ },
+ "compare": {
+  "contractVersion": "146.0.1",
+  "buildSha": "a07740c0baaa1603e766c3f432d267c7b9fe1065",
+  "observedAt": "2026-11-02T05:54:05Z",
+  "liveToolCount": 151,
+  "storedStageCapture": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
+  "results": {
+   "metrics": {
+    "live": 326,
+    "stored": 326,
+    "liveNotStored": [],
+    "storedNotLive": [],
+    "storedUnmeasured": []
+   },
+   "sectionKeys": {
+    "live": 22,
+    "stored": 22,
+    "liveNotStored": [],
+    "storedNotLive": [],
+    "storedUnmeasured": []
+   }
+  }
+ },
+ "conclusion": "Across 146.0.0 -> 146.0.1 no authoring enum moved. OMEGA v0.11.0's extraction (326 metrics measured, 22 section keys) matches the live surface; battlegrid-manager's pin-drift gate reads it as clean once it pins the tag.",
+ "notMeasured": "The compile path (stage_strategy_draft) was not exercised: every platform call of the 2026-11-02 re-extraction was a hint read, a vocabulary read or a preview_strategy_report render of an unsaved draft."
+}

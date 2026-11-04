@@ -22,5 +22,7 @@
       }
     }
   ],
-  "study": "barClock"
+  "study": "barClock",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

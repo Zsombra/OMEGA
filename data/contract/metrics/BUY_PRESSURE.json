@@ -46,7 +46,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "aggregate": {
@@ -54,7 +56,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "efficiency": {
@@ -62,7 +66,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "zscore": {
@@ -70,7 +76,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "stddev": {
@@ -78,7 +86,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "linregSlope": {
@@ -86,7 +96,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "pctl": {
@@ -94,7 +106,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "rollingMin": {
@@ -102,7 +116,9 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
         },
         "rollingMax": {
@@ -110,8 +126,62 @@
           "operands": [
             "CLOSE_LOCATION",
             "BB_PCT_B",
-            "STOCH_RSI14"
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
           ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
         }
       }
     },
@@ -168,10 +238,14 @@
     }
   ],
   "study": "barVolume",
+  "provenance": "battleGridDerived",
+  "rankScope": "exchangeWide",
   "spreadOperands": [
     "CLOSE_LOCATION",
     "BB_PCT_B",
-    "STOCH_RSI14"
+    "BUY_PRES_CB",
+    "BUY_PRES_BN",
+    "SPOT_DOMINANCE"
   ],
   "rankOrderings": [
     "hi",

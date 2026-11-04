@@ -22,10 +22,13 @@
     }
   ],
   "study": "multiTimeframeChange",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
   "spreadOperands": [
     "PPO_HIST",
     "PPO_LINE",
     "PPO_SIGNAL",
+    "ROC9",
     "ROC12",
     "ROC15",
     "CLOSE_CHANGE",

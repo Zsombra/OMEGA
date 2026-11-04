@@ -14,7 +14,10 @@ It prints the `results` block of a `data/audit/contract_<N>_vocabulary_*.json` r
 exits 0 when both enums are identical in both directions, 1 when either moved. Nothing
 is typed by hand: each live enum is read from the schema the platform serves, and each
 stored enum from the extraction this repo authors against.
-- metric: `get_metric_construction_hints` `properties.metric.enum`, against the
+- metric: `get_metric_construction_hints` `properties.metric.enum` - since contract v137.2 the
+  property is `{"$ref": "#/$defs/metricKey"}` and the enum is read through that pointer
+  (`first_enum`; measured on the watch's stored 144.2.0 surface on 2026-10-30, where the
+  inline read had left the manager's gate `SURFACE_UNREAD`) - against the
   `data/contract/metrics/<METRIC>.json` files;
 - sectionKey: the `sectionKey` enum on `stage_strategy_draft`'s REPORT axis, against the
   same enum in the newest `data/contract/stage_strategy_draft/schema_*.json` capture.
@@ -51,19 +54,49 @@ CONTRACT = ROOT / "data" / "contract"
 STAGE_TOOL = "stage_strategy_draft"
 
 
-def first_enum(node, prop: str) -> list | None:
-    """Depth-first: the `enum` of the first property named `prop` that carries one, else None."""
+def _pointer(root, ref):
+    """The node a local JSON pointer (`#/$defs/metricKey`) names in `root`, or None when any step is missing or the
+    reference is not local. `~1` and `~0` unescape as RFC 6901 says."""
+    if not isinstance(ref, str) or not ref.startswith("#/"):
+        return None
+    node = root
+    for part in ref[2:].split("/"):
+        part = part.replace("~1", "/").replace("~0", "~")
+        if isinstance(node, dict) and part in node:
+            node = node[part]
+        elif isinstance(node, list) and part.isdigit() and int(part) < len(node):
+            node = node[int(part)]
+        else:
+            return None
+    return node
+
+
+def first_enum(node, prop: str, root=None) -> list | None:
+    """Depth-first: the `enum` of the first property named `prop` that carries one, else None.
+
+    Since contract v137.2 the platform names the metric vocabulary once per schema: the property is
+    `{"$ref": "#/$defs/metricKey"}` and the enum sits under `$defs` (measured on the 144.2.0 surface, 2026-10-30).
+    Such a pointer is followed against `root` - the schema the search started in, by default `node` itself - at the
+    property looked up and nowhere else, so a self-referential `$defs` entry (conditionNode refers to conditionNode)
+    is never expanded while walking. A pointer that resolves to nothing, or to a node without `enum`, reads as no
+    enum here and the search goes on."""
+    if root is None:
+        root = node
     if isinstance(node, dict):
         props = node.get("properties")
-        if isinstance(props, dict) and isinstance(props.get(prop), dict) and "enum" in props[prop]:
-            return props[prop]["enum"]
+        if isinstance(props, dict) and isinstance(props.get(prop), dict):
+            target = props[prop]
+            if "enum" not in target and "$ref" in target:
+                target = _pointer(root, target["$ref"])
+            if isinstance(target, dict) and "enum" in target:
+                return target["enum"]
         for value in node.values():
-            found = first_enum(value, prop)
+            found = first_enum(value, prop, root)
             if found is not None:
                 return found
     elif isinstance(node, list):
         for value in node:
-            found = first_enum(value, prop)
+            found = first_enum(value, prop, root)
             if found is not None:
                 return found
     return None

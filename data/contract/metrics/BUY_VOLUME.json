@@ -46,7 +46,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "aggregate": {
@@ -55,7 +55,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "efficiency": {
@@ -64,7 +64,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "zscore": {
@@ -73,7 +73,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "stddev": {
@@ -82,7 +82,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "linregSlope": {
@@ -91,7 +91,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "pctl": {
@@ -100,7 +100,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "rollingMin": {
@@ -109,7 +109,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         },
         "rollingMax": {
@@ -118,7 +118,7 @@
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
-            "OBV"
+            "SPOT_AVG_TRADE"
           ]
         }
       }
@@ -173,10 +173,12 @@
     }
   ],
   "study": "barVolume",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
   "spreadOperands": [
     "VOLUME",
     "VOL_SMA20",
     "SELL_VOLUME",
-    "OBV"
+    "SPOT_AVG_TRADE"
   ]
 }

@@ -86,7 +86,10 @@ def test_every_timeless_metric_is_covered(contract):
     # 56 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): the four single-print zone edges are timeless (served
     # timeframeMode) and the rule holds for each, offline (this loop). 89 since the re-extraction at 135.2.0, 2026-10-26
     # (_moves_135.json): the trading-session levels, swept flags, opening ranges, IB extensions and PERP_SPOT_GAP.
-    assert len(timeless) == 89
+    # 102 since the re-extraction at 144.0.0, 2026-10-30 (_moves_144.json): the v137.2 week / month profiles and PWH/PWL/PMH/PML.
+    # 112 since the re-extraction at 146.0.1, 2026-11-02 (_moves_146.json): the eight CROWD_*_Z / _Z_LIVE and the two
+    # REGIME_WARNING_* are timeless (the 13 MKT_* and PAR_DEV keep a candle grid).
+    assert len(timeless) == 112
     for name in timeless:
         codes = [f.code for f in _findings(name, {"rel": "regime"}, contract)]
         assert "REPORT_COLUMN_CONSTRUCTION_FAILED" in codes, name

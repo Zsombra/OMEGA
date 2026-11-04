@@ -90,7 +90,7 @@ def build_request(timeframe, category, limit):
         "sections": [{
             "kind": "custom",
             "title": "TPO PANEL",
-            "benchmarkTicker": None,
+            "benchmarkTicker": None, "marketScope": None,
             "notes": "read-only forward panel; columns only, no conditions",
             "columns": cols,
         }],

@@ -1,12 +1,12 @@
 {
-  "metric": "BB_WIDTH",
-  "label": "Bollinger width",
-  "code": "BBwidth20",
-  "family": "volatility",
+  "metric": "CUM_VOLUME_DELTA",
+  "label": "Cumulative Volume Delta (UTC day)",
+  "code": "cumVolDelta",
+  "family": "volumeFlow",
   "nativeOutput": {
     "kind": "numeric",
     "unit": "signedPrice",
-    "precision": 2
+    "precision": 0
   },
   "outputKind": "scalar",
   "timeframeMode": "candle",
@@ -21,8 +21,10 @@
       "id": "trajectory",
       "maximums": {
         "window": 64
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
+    },
+    {
+      "id": "classifyZone"
     },
     {
       "id": "spread",
@@ -44,8 +46,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "aggregate": {
@@ -54,8 +58,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "efficiency": {
@@ -64,8 +70,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "zscore": {
@@ -74,8 +82,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "stddev": {
@@ -84,8 +94,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "linregSlope": {
@@ -94,8 +106,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "pctl": {
@@ -104,8 +118,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "rollingMin": {
@@ -114,8 +130,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         },
         "rollingMax": {
@@ -124,8 +142,10 @@
             "MACD_HIST",
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "CVD"
+            "CVD",
+            "SPOT_CVD"
           ]
         }
       }
@@ -134,65 +154,61 @@
       "id": "aggregate",
       "maximums": {
         "window": 64
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     },
     {
       "id": "efficiency",
       "maximums": {
         "window": 63
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     },
     {
       "id": "zscore",
       "maximums": {
         "window": 64
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     },
     {
       "id": "stddev",
       "maximums": {
         "window": 64
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     },
     {
       "id": "linregSlope",
       "maximums": {
         "window": 64
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     },
     {
       "id": "pctl",
       "maximums": {
         "window": 63
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     },
     {
       "id": "rollingMin",
       "maximums": {
         "window": 64
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     },
     {
       "id": "rollingMax",
       "maximums": {
         "window": 64
-      },
-      "windowOwnLength": "Separate from Bollinger width’s own 20-bar length."
+      }
     }
   ],
-  "study": "bollingerWidth",
+  "study": null,
+  "provenance": "tradingView",
+  "rankScope": null,
   "spreadOperands": [
     "MACD_HIST",
     "MACD_LINE",
     "MACD_SIGNAL",
+    "SQZ_MOM",
     "ATR",
-    "CVD"
+    "CVD",
+    "SPOT_CVD"
   ]
 }

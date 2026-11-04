@@ -20,5 +20,7 @@
       }
     }
   ],
-  "study": "regimeTrendEvidence"
+  "study": "regimeTrendEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

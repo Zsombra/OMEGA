@@ -42,9 +42,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "aggregate": {
@@ -52,9 +54,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "efficiency": {
@@ -62,9 +66,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "zscore": {
@@ -72,9 +78,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "stddev": {
@@ -82,9 +90,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "linregSlope": {
@@ -92,9 +102,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "pctl": {
@@ -102,9 +114,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "rollingMin": {
@@ -112,9 +126,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         },
         "rollingMax": {
@@ -122,9 +138,11 @@
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
+            "SQZ_MOM",
             "ATR",
-            "BB_WIDTH",
-            "CVD"
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
           ]
         }
       }
@@ -182,11 +200,15 @@
     }
   ],
   "study": "macd",
+  "provenance": "tradingView",
+  "rankScope": null,
   "spreadOperands": [
     "MACD_LINE",
     "MACD_SIGNAL",
+    "SQZ_MOM",
     "ATR",
-    "BB_WIDTH",
-    "CVD"
+    "CVD",
+    "CUM_VOLUME_DELTA",
+    "SPOT_CVD"
   ]
 }

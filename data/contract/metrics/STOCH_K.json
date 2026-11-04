@@ -59,6 +59,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -79,6 +81,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -99,6 +103,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -119,6 +125,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -139,6 +147,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -159,6 +169,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -179,6 +191,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -199,6 +213,8 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
@@ -219,10 +235,64 @@
             "QQE_RSI_MA",
             "QQE_STOP",
             "WILLR14",
+            "STOCH_RSI_K",
+            "STOCH_RSI_D",
             "DI_PLUS",
             "DI_MINUS",
             "CMF20"
           ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
         }
       }
     },
@@ -285,6 +355,8 @@
     }
   ],
   "study": "stochastic",
+  "provenance": "tradingView",
+  "rankScope": "exchangeWide",
   "spreadOperands": [
     "RSI14",
     "RSI7",
@@ -298,11 +370,12 @@
     "QQE_RSI_MA",
     "QQE_STOP",
     "WILLR14",
+    "STOCH_RSI_K",
+    "STOCH_RSI_D",
     "DI_PLUS",
     "DI_MINUS",
     "CMF20",
     "REGIME_TREND_MARGIN",
-    "REGIME_DI_SPREAD",
     "REGIME_CRASH_MARGIN"
   ],
   "rankOrderings": [

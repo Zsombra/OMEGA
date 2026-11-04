@@ -36,6 +36,8 @@ because a silently-ignored `window` usually means you meant a different transfor
 | `window` (aggregate/maxShare) | 24 | |
 | `offset` | 0 | current resolved value — and **capped at 8 in practice**, see below |
 | `ordering` | `"hi"` | rejected outright if the metric doesn't offer `hi` |
+| `scope` (rank) | `"all"` | v136; a category scope narrows an exchange-wide rank and lands in the header (`RSI14_rank_hi_crypto`); refused off `rank` and on a rank of the report's own coins |
+| `instrument` (relativeTo) | `"BTC"` | v142.3; the coin the metric is read against, bar by bar; refused off `relativeTo`; an unknown symbol is refused live (`Unknown coin symbol`) and cannot be checked offline |
 
 The `bars` default is the dangerous one. On a raw per-bar quantity like `VOLUME` or
 `TRADES`, the forming bar ramps from zero each interval, so `bars:"all"` makes every
@@ -207,12 +209,13 @@ value          {code}
 trajectory     {code}_t{n-1} … {code}_t1, {code}_now, {code}_trend
 distance       dist_{code}
 spread         {code}_{operandCode}_spread
+relativeTo     {code}_{INSTRUMENT}_rel              (v142.3; BTC when omitted; chains the series statistics: close_BTC_rel_z20)
 efficiency     {code}_er
 maxShare       {code}_maxShare
 aggregate      {code}_mean{window}
 bandTouch      {code}_touch                       (retired at v100 - history)
-rank           {code}_rank_{ordering}
-chained rank   {stage1Header}_rank_{ordering}
+rank           {code}_rank_{ordering}[_{scope}]      (v136; `all` adds nothing)
+chained rank   {stage1Header}_rank_{ordering}[_{scope}]
 nearestZone*   {code}_{side}_{dist|type|range|age}
 ```
 

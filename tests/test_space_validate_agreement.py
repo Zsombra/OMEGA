@@ -53,6 +53,11 @@ def test_every_enumerated_shape_validates(expand, contract):
     for shape in enumerate_shapes(expand_operands=expand, contract=contract):
         if is_placeholder(shape):
             continue
+        if contract.metric(shape.metric).subject is None:
+            # PAR_DEV since 146.0.1 (2026-11-02): the contract declares its transforms (12 cells) but no section subject
+            # reads it live, so the validator refuses every column over it (METRIC_NO_SUBJECT) on purpose - the same
+            # exemption scripts.render_coverage.coverage() applies; see test_the_subjectless_metric_fails_for_that_reason
+            continue
         errs = _errors(shape, contract)
         if errs:
             offenders.append(

@@ -23,5 +23,7 @@
       }
     }
   ],
-  "study": "donchianChannels"
+  "study": "donchianChannels",
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

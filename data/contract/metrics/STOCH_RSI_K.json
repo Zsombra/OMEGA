@@ -1,0 +1,385 @@
+{
+  "metric": "STOCH_RSI_K",
+  "label": "Stoch RSI %K",
+  "code": "stochRsiK",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 0,
+    "range": {
+      "min": 0,
+      "max": 100
+    }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "classifyZone"
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "RSI14",
+            "RSI7",
+            "RSI2",
+            "STOCH_K",
+            "STOCH_D",
+            "MFI14",
+            "CCI20",
+            "ADX",
+            "WT1",
+            "WT2",
+            "QQE_RSI_MA",
+            "QQE_STOP",
+            "WILLR14",
+            "STOCH_RSI_D",
+            "DI_PLUS",
+            "DI_MINUS",
+            "CMF20"
+          ]
+        }
+      }
+    },
+    {
+      "id": "relativeTo",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": null
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": null
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": null
+        }
+      }
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "maxShare",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      }
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      }
+    },
+    {
+      "id": "rank"
+    }
+  ],
+  "study": "stochRsi",
+  "provenance": "tradingView",
+  "rankScope": "exchangeWide",
+  "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "RSI2",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "CCI20",
+    "ADX",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "WILLR14",
+    "STOCH_RSI_D",
+    "DI_PLUS",
+    "DI_MINUS",
+    "CMF20",
+    "REGIME_TREND_MARGIN",
+    "REGIME_CRASH_MARGIN"
+  ],
+  "rankOrderings": [
+    "hi",
+    "lo"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+ "_what": "Run record for the 2026-11-02-market live coverage sweep: what was asked for, what the platform refused, and every shape whose omega-predicted header did not turn up in the render. Kept OUT of data/contract/columns/ so none of these strings can be mistaken for a rendered header.",
+ "capturedAt": "2026-11-02T06:38:25Z",
+ "how": "preview_strategy_report via the mcporter CLI, read-only, BTC only, 32 columns per custom section, up to 4 sections per call; refused batches bisected to the offending column.",
+ "scope": "all",
+ "marketScope": "crypto",
+ "metricsRestrictedTo": [
+  "MKT_ABOVE_EMA",
+  "MKT_AVG_CHG",
+  "MKT_AVG_PPO",
+  "MKT_DISPERSION",
+  "MKT_DOWN",
+  "MKT_NET",
+  "MKT_PPO_DOWN",
+  "MKT_PPO_NET",
+  "MKT_PPO_UP",
+  "MKT_STRETCH",
+  "MKT_UNIVERSE",
+  "MKT_UP",
+  "MKT_VOL_NET"
+ ],
+ "shapesRequested": 1015,
+ "batches": [
+  {
+   "batch": 1,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 2,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 3,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 4,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 5,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 6,
+   "columns": 128,
+   "headers": 176
+  },
+  {
+   "batch": 7,
+   "columns": 128,
+   "headers": 180
+  },
+  {
+   "batch": 8,
+   "columns": 119,
+   "headers": 163
+  }
+ ],
+ "headersMinted": 1419,
+ "refusalCount": 0,
+ "refusals": [],
+ "predictedButNotRenderedCount": 0,
+ "predictedButNotRendered": []
+}

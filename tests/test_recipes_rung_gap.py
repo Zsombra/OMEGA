@@ -249,7 +249,10 @@ def test_the_committed_report_is_reproducible_by_plan_with_regime_as_context():
     """The body committed on 2026-10-09 (action 61) stays reproducible, keyless as a CREATE
     sends it - the axes_update round trip is tested against it. At 108 plan() adds no
     scoring-data column, so REGIME as context alone gives it; the pre-108 path agrees."""
-    committed = [{k: v for k, v in s.items() if k != "sectionKey"} for s in COMMITTED["REPORT"]["sections"]]
+    # the 2026-10-09 commit predates contract 146.0.0 (2026-11-01), which REQUIRES `marketScope` on a custom section;
+    # omega wires it null (a per-coin section), the one key the committed body lacks
+    committed = [{k: v for k, v in s.items() if k != "sectionKey"} | {"marketScope": None}
+                 for s in COMMITTED["REPORT"]["sections"]]
     assert plan(replace(PRESETS["trend-continuation"], context=["REGIME"])).axes()["REPORT"]["sections"] == committed
     assert _pre_1010("trend-continuation").axes()["REPORT"]["sections"] == committed
 
@@ -258,7 +261,8 @@ ADDED = {
     # preset: {(section, metric, transformId, rel)} - the columns 2026-10-10 adds to the recipes
     "mean-reversion": {
         ("Mean Reversion at Extremes Signals", "CCI20", "value", "anchor"),       # bollinger_cci_*
-        ("Mean Reversion at Extremes Signals", "BB_WIDTH", "value", "anchor"),    # bollinger_squeeze
+        # bollinger_squeeze scored BB_WIDTH, added here until v138 retired it for BB_WIDTH_PCT (2026-10-30): the recipe
+        # already shows BB_WIDTH_PCT x value, so the history path now adds nothing for it
         ("Mean Reversion at Extremes Signals", "RSI14", "value", "regime"),       # htf_rsi_*
         ("Mean Reversion at Extremes Signals", "RSI14", "value", "lower"),        # ltf_rsi_*
         ("Mean Reversion at Extremes Context", "FUNDING_ANN", "value", "anchor"),  # funding_extreme_*
@@ -273,7 +277,7 @@ ADDED = {
     },
     "squeeze-breakout": {
         ("Squeeze Breakout Signals", "CCI20", "value", "anchor"),
-        ("Squeeze Breakout Signals", "BB_WIDTH", "value", "anchor"),
+        # BB_WIDTH until v138 (2026-10-30): BB_WIDTH_PCT is already a recipe column
     },
     "flow-divergence": {
         ("Spot-Led Accumulation Context", "FUNDING_ANN", "value", "anchor"),

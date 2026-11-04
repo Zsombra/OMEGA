@@ -60,6 +60,23 @@ SEEN_FILES = [
     # its headers carry today's codes. 19,450 shapes, 20,697 headers, zero refusals, zero predicted-but-not-rendered
     # (data/audit/coverage_sweep_2026-10-26.json).
     "_coverage_sweep_2026-10-26.json",
+    # 2026-10-30: the 302-metric re-extraction at contract 144.0.0 - the 78 added metrics, relativeTo (v142.3) on every
+    # metric with a series home and as a chain inner, structural shapes only (SWEEP_SCOPE=structural: the operand
+    # expansions of the 78 new metrics as spread operands are 80k+ re-mints of measured patterns, left unrendered).
+    "_coverage_sweep_2026-10-30.json",
+    # 2026-10-30, second pass (SWEEP_SCOPE=nonspread): the 35 uncovered expansions that were not spread pairs (rank
+    # orderings and distance variants of the added metrics), 35 headers, zero refusals, zero mispredicted
+    "_coverage_sweep_2026-10-30-expanded.json",
+    # 2026-10-30: the targeted probes (relativeTo with an instrument, at each rung, as a chain inner; scoped ranks; the
+    # v137 / v138 replacements) and the classifyZone vocabulary render
+    "_probe_144_2026-10-30.json",
+    # 2026-11-02: the re-extraction at contract 146.0.1 - the 24 metrics 146.0.0 added. Two sweeps, one per section
+    # subject: the eleven coin-section metrics (CROWD_*_Z, PAR_DEV, REGIME_WARNING_*) on evaluated-coin sections as every
+    # earlier sweep sent them, and the thirteen MKT_* on a MARKET section (marketScope crypto), the only subject that
+    # reads them; plus the targeted subject / scope / applicability probe (data/audit/market_section_probe_146_2026-11-02.json).
+    "_coverage_sweep_2026-11-02.json",
+    "_coverage_sweep_2026-11-02-market.json",
+    "_probe_146_2026-11-02.json",
 ]
 
 
@@ -118,6 +135,11 @@ def coverage(expand_operands: bool, contract=None):
     covered, uncovered, by_transform = 0, [], Counter()
     for s in space.enumerate_shapes(expand_operands=expand_operands, contract=c):
         if is_placeholder(s) or (s.metric, s.transform) in QUARANTINED:
+            continue
+        if c.metric(s.metric).subject is None:
+            # Served by the enum, the vocabulary and a hint, read by NO section subject (PAR_DEV since 146: refused on
+            # an evaluated-coin section and on a market section alike, data/contract/metrics/_subjects_146.json). Its
+            # shapes cannot render on any section, so they are not a coverage gap - the same reasoning as QUARANTINED.
             continue
         headers = [o.header for o in outputs_for(s.to_column(), c)]
         if headers and all(h in seen for h in headers):

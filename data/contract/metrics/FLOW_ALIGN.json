@@ -22,5 +22,7 @@
       }
     }
   ],
-  "study": null
+  "study": null,
+  "provenance": "battleGridDerived",
+  "rankScope": null
 }

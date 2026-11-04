@@ -233,6 +233,12 @@ def test_all_sixteen_transforms_are_exercised_on_live_data():
     for case in probe["renders"]:
         if case["outputs"]:
             covered.add(case["column"]["transformId"])
+    # relativeTo (v142.3): preview_strategy_report, 2026-10-30 at 144.0.0, on an atom and as a chain inner
+    probe = _json.loads((COLUMNS_DIR.parents[1] / "audit" / "relative_to_probe_144_2026-10-30.json")
+                        .read_text(encoding="utf-8"))
+    for case in probe["renders"]:
+        if case["outputs"]:
+            covered.add(case["column"]["transformId"])
             covered.add(case["column"].get("chainedTransformId") or case["column"]["transformId"])
     missing = set(load().transform_ids()) - covered
     assert not missing, f"never exercised live: {sorted(missing)}"

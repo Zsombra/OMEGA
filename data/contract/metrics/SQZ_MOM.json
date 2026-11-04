@@ -1,0 +1,223 @@
+{
+  "metric": "SQZ_MOM",
+  "label": "Squeeze momentum (20)",
+  "code": "sqzMom20",
+  "family": "momentum",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "maximums": {
+        "offset": 63
+      }
+    },
+    {
+      "id": "trajectory",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "aggregate",
+        "efficiency",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "aggregate": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "zscore": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "stddev": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "linregSlope": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "pctl": {
+          "windowMaximum": 63,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "rollingMin": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        },
+        "rollingMax": {
+          "windowMaximum": 64,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ]
+        }
+      }
+    },
+    {
+      "id": "crossDetect"
+    },
+    {
+      "id": "aggregate",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "efficiency",
+      "maximums": {
+        "window": 63
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "zscore",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "stddev",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "linregSlope",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "pctl",
+      "maximums": {
+        "window": 63
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "rollingMin",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    },
+    {
+      "id": "rollingMax",
+      "maximums": {
+        "window": 64
+      },
+      "windowOwnLength": "Separate from Squeeze momentum (20)’s own 20-bar length."
+    }
+  ],
+  "study": null,
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "spreadOperands": [
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "ATR",
+    "CVD",
+    "CUM_VOLUME_DELTA",
+    "SPOT_CVD"
+  ]
+}

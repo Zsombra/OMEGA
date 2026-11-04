@@ -26,6 +26,8 @@
     }
   ],
   "study": "regimeTrendEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
   "spreadOperands": [
     "RSI14",
     "RSI7",
@@ -40,10 +42,11 @@
     "QQE_RSI_MA",
     "QQE_STOP",
     "WILLR14",
+    "STOCH_RSI_K",
+    "STOCH_RSI_D",
     "DI_PLUS",
     "DI_MINUS",
     "CMF20",
-    "REGIME_DI_SPREAD",
     "REGIME_CRASH_MARGIN"
   ]
 }

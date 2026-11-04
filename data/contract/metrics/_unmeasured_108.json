@@ -1,10 +1,10 @@
 {
- "_what": "EMPTY since 2026-10-13: the 15 metrics served at 108 without a measured contract were measured and are in the corpus. The file stays so a future served-but-unmeasured metric has its place (omega.contract reads it).",
- "servedAt": "108.0.0",
+ "_what": "Metrics the write schema the manifest names serves (the stage schema's $defs/metricKey, data/derived/condition_vocabulary_108.json reportColumn.metric) that no metric extraction has measured. Known NAMES only: which transforms each composes, its native output kind, timeframe mode, header code and vocabulary are UNMEASURED offline (a re-extraction reads get_metric_construction_hints per metric, then renders: scripts/refresh_metric_contracts.py, scripts/build_corpus.py, the coverage sweep). omega.validate refuses a column over one (METRIC_UNMEASURED) and the generator never selects one, so no generated plan emits them until a re-extraction moves them into data/contract/metrics/<METRIC>.json. scripts/compare_vocabulary.py counts them as stored (so a served metric omega knows by name is not 'missing') and lists them under storedUnmeasured. 2026-11-02: EMPTY again - the 24 keys contract 146.0.0 added were measured by the re-extraction at 146.0.1 (history146; data/contract/metrics/_moves_146.json). 2026-11-01: the 24, read off the served enum (OMEGA v0.10.2, no platform call). 2026-10-13 .. 2026-10-31: EMPTY (the 15 served at 108 were measured on 2026-10-13; history108).",
+ "servedAt": "146.0.1",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
-  "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/metric",
-  "sameAs": "get_metric_construction_hints input metric enum at 104.0.0 and 104.1.0 (battlegrid-manager tests/fixtures/2026-10-08-surface-104.*/tool_definitions.json): identical 171 values, same order"
+  "schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
+  "pointer": "/stage_strategy_draft/inputSchema/$defs/metricKey/enum",
+  "sameAs": "get_metric_construction_hints input metric ($ref #/$defs/metricKey) on the live 146.0.1 surface (build a07740c0, mcporter list --schema 2026-11-02T05:54:05Z): identical 326 values, same order"
  },
  "readmeDescriptions": {
   "patterns": {
@@ -36,6 +36,11 @@
    "section": "v101.1",
    "quote": "SWING_FRACTAL_LABEL ... HH / LH for a high, HL / LL for a low, none when no comparable pair is in reach. A held state, value-only",
    "status": "DESCRIPTION, not measured - recorded, not modelled"
+  },
+  "v146": {
+   "section": "none - the vendor README stops at v143; 146.0.0 is undocumented",
+   "quote": "battlegrid-manager docs/status/2026-11-01-contract-146.md: MKT_* x12 (report-level market breadth), CROWD_*_Z and _Z_LIVE x8, PAR_DEV, REGIME_WARNING_CRASH, REGIME_WARNING_DIVERGENCE; a market section (marketScope named) refuses a per-coin metric",
+   "status": "DESCRIPTION, not measured - recorded, not modelled"
   }
  },
  "metrics": {},
@@ -57,5 +62,47 @@
   "SWING_FRACTAL_HIGH",
   "SWING_FRACTAL_LABEL",
   "SWING_FRACTAL_LOW"
- ]
+ ],
+ "history108": {
+  "_what": "EMPTY since 2026-10-13: the 15 metrics served at 108 without a measured contract were measured and are in the corpus. The file stays so a future served-but-unmeasured metric has its place (omega.contract reads it).",
+  "servedAt": "108.0.0",
+  "source": {
+   "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
+   "pointer": "/stage_strategy_draft/inputSchema/properties/request/properties/axes/properties/REPORT/properties/sections/items/anyOf/1/properties/columns/items/properties/metric",
+   "sameAs": "get_metric_construction_hints input metric enum at 104.0.0 and 104.1.0 (battlegrid-manager tests/fixtures/2026-10-08-surface-104.*/tool_definitions.json): identical 171 values, same order"
+  }
+ },
+ "history146": {
+  "_what": "EMPTY since 2026-11-02: the 24 metrics contract 146.0.0 added were listed here by name on 2026-11-01 (OMEGA v0.10.2) and measured on 2026-11-02 by the re-extraction at 146.0.1 (_moves_146.json; docs/plans/2026-11-02-omega-reextraction-146.md). The file stays so a future served-but-unmeasured metric has its place (omega.contract reads it).",
+  "servedAt": "146.0.0",
+  "listedOn": "2026-11-01",
+  "measuredOn": "2026-11-02",
+  "measuredBy": "get_metric_construction_hints x 326 at contract 146.0.1 (docs/plans/2026-11-02-omega-reextraction-146.md)",
+  "formerlyUnmeasured": [
+   "CROWD_ACC_EDGE_Z",
+   "CROWD_ACC_EDGE_Z_LIVE",
+   "CROWD_CAPT_EXCESS_Z",
+   "CROWD_CAPT_EXCESS_Z_LIVE",
+   "CROWD_UP_EXCESS_Z",
+   "CROWD_UP_EXCESS_Z_LIVE",
+   "CROWD_UP_LEAN_Z",
+   "CROWD_UP_LEAN_Z_LIVE",
+   "MKT_ABOVE_EMA",
+   "MKT_AVG_CHG",
+   "MKT_AVG_PPO",
+   "MKT_DISPERSION",
+   "MKT_DOWN",
+   "MKT_NET",
+   "MKT_PPO_DOWN",
+   "MKT_PPO_NET",
+   "MKT_PPO_UP",
+   "MKT_STRETCH",
+   "MKT_UNIVERSE",
+   "MKT_UP",
+   "MKT_VOL_NET",
+   "PAR_DEV",
+   "REGIME_WARNING_CRASH",
+   "REGIME_WARNING_DIVERGENCE"
+  ]
+ }
 }

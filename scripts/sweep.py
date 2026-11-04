@@ -151,7 +151,7 @@ def cmd_show(argv: list[str]) -> int:
     i = int(argv[0])
     b = json.loads(PLAN.read_text(encoding="utf-8"))[i]
     print(json.dumps([{"kind": "custom", "title": f"sweep {i}",
-                       "benchmarkTicker": None, "columns": b["columns"]}]))
+                       "benchmarkTicker": None, "marketScope": None, "columns": b["columns"]}]))
     return 0
 
 
