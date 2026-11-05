@@ -117,6 +117,12 @@ class Contract:
     # `levelInteraction`) - which metrics it composes is unmeasured offline.
     retired_transforms: dict[str, dict] = field(default_factory=dict)
     unmeasured_transforms: dict[str, dict] = field(default_factory=dict)
+    # Served by the write schema and known by NAME only (data/contract/metrics/_unmeasured_108.json `chainOuters` and
+    # `transformParameters`, 2026-11-05 at 148.1.0): a chain outer (`distance` after an offset rolling extreme, `ema`)
+    # and a transform knob (`offset` on rollingMax / rollingMin) no extraction has rendered. validate_column refuses a
+    # column using one (TRANSFORM_UNMEASURED / PARAMETER_UNMEASURED) instead of answering from the older corpus.
+    unmeasured_chain_outers: dict[str, dict] = field(default_factory=dict)
+    unmeasured_parameters: dict[str, dict[str, dict]] = field(default_factory=dict)
 
     # -- lookups -------------------------------------------------------------
     def metric(self, name: str) -> Metric:
@@ -193,7 +199,14 @@ def load() -> Contract:
             f"corpus incomplete: {len(metrics)} metric files, _index.json says {expected}")
 
     unmeasured_path = CONTRACT_DIR / "metrics" / "_unmeasured_108.json"
-    unmeasured = _load(unmeasured_path)["metrics"] if unmeasured_path.exists() else {}
+    unmeasured_doc = _load(unmeasured_path) if unmeasured_path.exists() else {}
+    unmeasured = unmeasured_doc.get("metrics") or {}
+    unmeasured_outers = unmeasured_doc.get("chainOuters") or {}
+    unmeasured_parameters = unmeasured_doc.get("transformParameters") or {}
+    served_outers = _served_chain_outers()
+    if served_outers is not None and set(unmeasured_outers) - served_outers:
+        raise RuntimeError(f"{unmeasured_path.name} lists chain outers the write schema does not serve: "
+                           f"{sorted(set(unmeasured_outers) - served_outers)}")
     overlap = set(unmeasured) & set(metrics)
     if overlap:
         raise RuntimeError(f"measured AND listed unmeasured: {sorted(overlap)} - drop them from {unmeasured_path.name}")
@@ -226,7 +239,17 @@ def load() -> Contract:
         retired_metrics=retired_metrics,
         retired_transforms=retired,
         unmeasured_transforms=unmeasured_transforms,
+        unmeasured_chain_outers=unmeasured_outers,
+        unmeasured_parameters=unmeasured_parameters,
     )
+
+
+def _served_chain_outers() -> set[str] | None:
+    """The write schema's column `chainedTransformId` enum (the derived inventory), or None with no inventory on disk."""
+    path = DERIVED_DIR / "condition_vocabulary_108.json"
+    if not path.exists():
+        return None
+    return set(_load(path)["reportColumn"]["chainedTransformId"]["enum"])
 
 
 @lru_cache(maxsize=1)

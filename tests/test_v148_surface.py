@@ -140,6 +140,72 @@ def test_ema_is_served_and_refused_as_unmeasured():
     assert _errors(validate_column(col, contract=contract)) == ["TRANSFORM_UNMEASURED"]
 
 
+# An unmeasured key is unmeasured wherever the column uses it - not only as its own metric / transformId. Each shape
+# below is served at 148.1.0 (the same day's hints: CLOSE serves 368 spread operands incl. PIVOT_WEEK_P; distance /
+# spread / relativeTo list `ema` among their chainSuccessors; rollingMax serves `offset` 0-44 and chains into
+# `distance` with offsetMinimum 1), and the 146.0.1 corpus refused each one with a platform-style code
+# (OPERAND_NOT_ALLOWED, REPORT_COLUMN_CHAIN_UNSUPPORTED, OFFSET_REFUSED) stated as measured fact.
+def test_the_unmeasured_chain_outers_are_the_served_enums_delta():
+    served = vocabulary()["reportColumn"]["chainedTransformId"]["enum"]
+    old = _column_node(_j(CAPTURE_146))["properties"]["chainedTransformId"]["enum"]
+    assert set(load().unmeasured_chain_outers) == set(served) - set(old) == {"distance", "ema"}
+    assert set(load().unmeasured_parameters) == {"rollingMax", "rollingMin"}
+    assert all(set(p) == {"offset"} for p in load().unmeasured_parameters.values())
+    assert "2026-11-05: 206" in UNMEASURED["_what"]
+
+
+@pytest.mark.parametrize("column,expected", [
+    ({"metric": "CLOSE", "transformId": "spread", "inputs": [{"metric": "PIVOT_WEEK_P"}]},
+     [("METRIC_UNMEASURED", "column.inputs[0]")]),
+    ({"metric": "CLOSE", "transformId": "spread", "inputs": [{"metric": "SWING_STRUCTURE_LEVEL"}],
+      "chainedTransformId": "zscore", "window": 20},
+     [("METRIC_UNMEASURED", "column.inputs[0]")]),
+    ({"metric": "HIGH", "transformId": "distance", "chainedTransformId": "ema", "window": 10},
+     [("TRANSFORM_UNMEASURED", "column.chainedTransformId")]),
+    ({"metric": "RSI14", "transformId": "spread", "inputs": [{"metric": "RSI7"}], "chainedTransformId": "ema",
+      "window": 10},
+     [("TRANSFORM_UNMEASURED", "column.chainedTransformId")]),
+    ({"metric": "HIGH", "transformId": "rollingMax", "window": 55, "offset": 1, "chainedTransformId": "distance"},
+     [("TRANSFORM_UNMEASURED", "column.chainedTransformId"), ("PARAMETER_UNMEASURED", "column.offset")]),
+    ({"metric": "LOW", "transformId": "rollingMin", "window": 20, "offset": 2},
+     [("PARAMETER_UNMEASURED", "column.offset")]),
+])
+def test_an_unmeasured_operand_chain_outer_or_knob_is_refused_as_unmeasured(column, expected):
+    col = Column.model_validate({**column, "timeframe": {"rel": "anchor"}})
+    errors = [(f.code, f.path) for f in validate_column(col) if f.severity == "error"]
+    assert errors == expected
+    assert not any(code in ("OPERAND_NOT_ALLOWED", "REPORT_COLUMN_CHAIN_UNSUPPORTED", "OFFSET_REFUSED",
+                            "WINDOW_REFUSED") for code, _ in errors)
+
+
+def test_a_section_with_an_unmeasured_operand_is_refused_not_crashed():
+    """validate_section predicts every column's header for the duplicate check; over an operand the corpus does not
+    hold that raised KeyError ('unknown metric PIVOT_WEEK_P') instead of returning the finding."""
+    from omega.types import CustomSection
+    from omega.validate import validate_section
+    section = CustomSection.model_validate({"kind": "custom", "title": "t", "marketScope": None, "columns": [
+        {"metric": "CLOSE", "transformId": "spread", "inputs": [{"metric": "PIVOT_WEEK_P"}], "timeframe": {"rel": "anchor"}},
+        {"metric": "HIGH", "transformId": "distance", "chainedTransformId": "ema", "window": 10,
+         "timeframe": {"rel": "anchor"}},
+        {"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "anchor"}}]})
+    assert [(f.code, f.path) for f in validate_section(section) if f.severity == "error"] == [
+        ("METRIC_UNMEASURED", "section.columns[0].inputs[0]"),
+        ("TRANSFORM_UNMEASURED", "section.columns[1].chainedTransformId")]
+
+
+def test_measured_operands_and_chains_still_answer_from_the_corpus():
+    """The unmeasured gate is not a blanket: what the corpus measured still gets its measured refusal."""
+    ok = Column.model_validate({"metric": "CLOSE", "transformId": "spread", "inputs": [{"metric": "HIGH"}],
+                                "timeframe": {"rel": "anchor"}})
+    assert _errors(validate_column(ok)) == []
+    bad = Column.model_validate({"metric": "CLOSE", "transformId": "spread", "inputs": [{"metric": "RSI14"}],
+                                 "timeframe": {"rel": "anchor"}})
+    assert _errors(validate_column(bad)) == ["OPERAND_NOT_ALLOWED"]
+    chain = Column.model_validate({"metric": "HIGH", "transformId": "distance", "chainedTransformId": "maxShare",
+                                   "window": 10, "timeframe": {"rel": "anchor"}})
+    assert "REPORT_COLUMN_CHAIN_UNSUPPORTED" in _errors(validate_column(chain))
+
+
 @pytest.mark.parametrize("knob,value", [("leftBars", 3), ("swingLength", 20), ("equalThreshold", 0.2),
                                         ("confluenceFilter", True)])
 def test_the_knobs_are_not_modelled_yet(knob, value):

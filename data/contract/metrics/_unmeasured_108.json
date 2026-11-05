@@ -1,5 +1,5 @@
 {
- "_what": "Metrics the write schema the manifest names serves (the stage schema's $defs/metricKey, data/derived/condition_vocabulary_108.json reportColumn.metric) that no metric extraction has measured. Known NAMES only: which transforms each composes, its native output kind, timeframe mode, header code and vocabulary are UNMEASURED offline (a re-extraction reads get_metric_construction_hints per metric, then renders: scripts/refresh_metric_contracts.py, scripts/build_corpus.py, the coverage sweep). omega.validate refuses a column over one (METRIC_UNMEASURED) and the generator never selects one, so no generated plan emits them until a re-extraction moves them into data/contract/metrics/<METRIC>.json. scripts/compare_vocabulary.py counts them as stored (so a served metric omega knows by name is not 'missing') and lists them under storedUnmeasured. 2026-11-02: EMPTY again - the 24 keys contract 146.0.0 added were measured by the re-extraction at 146.0.1 (history146; data/contract/metrics/_moves_146.json). 2026-11-01: the 24, read off the served enum (OMEGA v0.10.2, no platform call). 2026-10-13 .. 2026-10-31: EMPTY (the 15 served at 108 were measured on 2026-10-13; history108).",
+ "_what": "Metrics the write schema the manifest names serves (the stage schema's $defs/metricKey, data/derived/condition_vocabulary_108.json reportColumn.metric) that no metric extraction has measured. Known NAMES only: which transforms each composes, its native output kind, timeframe mode, header code and vocabulary are UNMEASURED offline (a re-extraction reads get_metric_construction_hints per metric, then renders: scripts/refresh_metric_contracts.py, scripts/build_corpus.py, the coverage sweep). omega.validate refuses a column over one (METRIC_UNMEASURED) and the generator never selects one, so no generated plan emits them until a re-extraction moves them into data/contract/metrics/<METRIC>.json. scripts/compare_vocabulary.py counts them as stored (so a served metric omega knows by name is not 'missing') and lists them under storedUnmeasured. 2026-11-05: 206 (OMEGA v0.12 branch, unreleased - pyproject 0.11.0): the keys v146.5 / .8 / .10 / .11 added, served at 148.1.0 and read off the 148.1.0 capture's $defs/metricKey; the re-extraction stopped at its hint step (170 / 532, none of the 206), see `why`. Beside them, `chainOuters` (distance, ema) and `transformParameters` (rollingMax / rollingMin offset): served at 148.1.0, never rendered by OMEGA, refused offline wherever a column uses one (as an operand, a chain outer or a knob as well as the column's own metric / transformId). 2026-11-02: EMPTY again - the 24 keys contract 146.0.0 added were measured by the re-extraction at 146.0.1 (history146; data/contract/metrics/_moves_146.json). 2026-11-01: the 24, read off the served enum (OMEGA v0.10.2, no platform call). 2026-10-13 .. 2026-10-31: EMPTY (the 15 served at 108 were measured on 2026-10-13; history108).",
  "servedAt": "148.1.0",
  "source": {
   "schema": "data/contract/stage_strategy_draft/schema_20261105T093843Z.json",
@@ -1485,6 +1485,38 @@
    "describedIn": "v146.11",
    "transformAdmissibility": "UNMEASURED",
    "measuredBy": "get_metric_construction_hints {metric: \"SWING_STRUCTURE_TREND\"}"
+  }
+ },
+ "chainOuters": {
+  "distance": {
+   "servedAt": "148.1.0",
+   "describedIn": "v146.6",
+   "source": "the 148.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 146.0.0 capture's); get_metric_construction_hints HIGH / LOW at 148.1.0 (read 2026-11-05 09:40-10:18Z, raw in the session scratchpad, not committed) serve it after rollingMax / rollingMin with chainedOuters.distance.offsetMinimum 1",
+   "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group B"
+  },
+  "ema": {
+   "servedAt": "148.1.0",
+   "describedIn": "v146.7",
+   "source": "the 148.1.0 capture's reportColumn chainedTransformId enum; the 148.1.0 hints serve it among the chainSuccessors of distance / spread / relativeTo (chainedOuters.ema.windowMaximum 269 on every metric read)",
+   "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group A"
+  }
+ },
+ "transformParameters": {
+  "rollingMax": {
+   "offset": {
+    "servedAt": "148.1.0",
+    "describedIn": "v146.6",
+    "source": "get_metric_construction_hints HIGH at 148.1.0 (2026-11-05): rollingMax.authoring.parameters.offset {defaultValue 0, minimum 0, maximum 44, bound lookback}; the stored 146.0.1 catalogue (transforms/_authoring.json) has no offset on it",
+    "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group B"
+   }
+  },
+  "rollingMin": {
+   "offset": {
+    "servedAt": "148.1.0",
+    "describedIn": "v146.6",
+    "source": "get_metric_construction_hints HIGH at 148.1.0 (2026-11-05): rollingMin.authoring.parameters.offset {defaultValue 0, minimum 0, maximum 44, bound lookback}; the stored 146.0.1 catalogue (transforms/_authoring.json) has no offset on it",
+    "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group B"
+   }
   }
  },
  "measuredOn": "2026-10-13",

@@ -75,6 +75,11 @@ BARS_REFUSED_TRANSFORMS = {"rank"}
 SECTION_TIMEFRAME_RETIRED_AT = "48.0.0"
 
 
+# The codes for a served key OMEGA knows by name only (data/contract/metrics/_unmeasured_108.json, or a transform the
+# served enum has and the extraction never read): the column is refused before any corpus rule is applied to it.
+UNMEASURED_CODES = {"METRIC_UNMEASURED", "TRANSFORM_UNMEASURED", "PARAMETER_UNMEASURED"}
+
+
 @dataclass(frozen=True)
 class Finding:
     severity: str          # "error" | "warning"
@@ -236,6 +241,16 @@ def validate_column(
         return out  # everything downstream depends on a valid pair
 
     spec = m.transforms[tid]
+
+    # --- an unmeasured key anywhere else in the column ------------------------------------------------------------
+    # The column's own metric and transformId are checked above. A served key OMEGA knows by name only can also sit in
+    # an operand, the chain outer or a transform knob; every check below that would see it compares against the older
+    # corpus (spreadOperands, chainSuccessors, the 144-era offset rule) and would answer with a measured-looking
+    # refusal for what the served contract offers (2026-11-05 at 148.1.0: CLOSE x spread [PIVOT_WEEK_P], HIGH x
+    # distance -> ema, HIGH x rollingMax(offset 1) -> distance are all served). So these are refused as unmeasured.
+    unmeasured_parts = _unmeasured_parts(column, tid, path, c)
+    if unmeasured_parts:
+        return out + unmeasured_parts
 
     # --- section timeframe compatibility: retired with the override at 48.0.0 ------------------
     # "REPORT_COLUMN_SECTION_TIMEFRAME_UNSUPPORTED leaves the authoringCode vocabulary" (README 48.0.0); measured
@@ -481,6 +496,39 @@ def validate_column(
     return out
 
 
+def _unmeasured_parts(column: Column, tid: str, path: str, c: Contract) -> list[Finding]:
+    """Findings for every served-but-unmeasured key a column uses outside its own metric / transformId: an operand
+    metric (`_unmeasured_108.json` metrics), the chain outer (`chainOuters`, or an unmeasured transform), a transform
+    knob (`transformParameters`)."""
+    out: list[Finding] = []
+    for i, operand in enumerate(column.inputs or []):
+        rec = c.unmeasured_metrics.get(operand.metric)
+        if rec is not None:
+            out.append(Finding(
+                "error", "METRIC_UNMEASURED", f"{path}.inputs[{i}]",
+                f"operand {operand.metric!r} is served at contract {rec['servedAt']} (added {rec['addedAt']}) but its "
+                f"contract is UNMEASURED offline (which metrics take it as an operand included); omega does not emit "
+                f"it until `{rec['measuredBy']}` is read and the corpus re-extracted"))
+    chained = column.chainedTransformId
+    if chained is not None:
+        rec = c.unmeasured_chain_outers.get(chained) or c.unmeasured_transforms.get(chained)
+        if rec is not None:
+            out.append(Finding(
+                "error", "TRANSFORM_UNMEASURED", f"{path}.chainedTransformId",
+                f"{chained!r} is served as a chain outer at contract {rec['servedAt']} but OMEGA never rendered it "
+                f"({column.metric} x {tid} -> {chained}): which inners it follows, its window maximum and its header "
+                f"are UNMEASURED offline; omega does not emit it until "
+                f"`{rec.get('measuredBy', 'get_strategy_column_contract')}` is read and the corpus re-extracted"))
+    for knob, rec in (c.unmeasured_parameters.get(tid) or {}).items():
+        if getattr(column, knob, None) is not None:
+            out.append(Finding(
+                "error", "PARAMETER_UNMEASURED", f"{path}.{knob}",
+                f"`{knob}` on {tid!r} is served at contract {rec['servedAt']} (README {rec['describedIn']}) but OMEGA "
+                f"never rendered it: its range and its header are UNMEASURED offline; omega does not emit it until "
+                f"`{rec['measuredBy']}` is read and the corpus re-extracted"))
+    return out
+
+
 def validate_section(
     section: Section, *, path: str = "section", contract: Contract | None = None
 ) -> list[Finding]:
@@ -507,8 +555,12 @@ def validate_section(
             f"refuses the key. Drop it; to read another timeframe, give each column its own `timeframe` "
             f"(rel lower/regime, or abs)."))
 
+    unmeasured_columns: set[int] = set()
     for i, col in enumerate(section.columns):
-        out.extend(validate_column(col, path=f"{path}.columns[{i}]", contract=c))
+        found = validate_column(col, path=f"{path}.columns[{i}]", contract=c)
+        if any(f.code in UNMEASURED_CODES for f in found):
+            unmeasured_columns.add(i)         # no header can be predicted for it (an operand may not be in the corpus)
+        out.extend(found)
 
     # --- the section's subject (contract 146.0.0; measured 2026-11-02 at 146.0.1) -------------------------------
     # `marketScope: null` is an evaluated-coin section; a named scope makes a MARKET section whose subject is the field
@@ -543,7 +595,7 @@ def validate_section(
     from .fanout import outputs_for          # local import: fanout imports nothing here
     first_seen: dict[str, int] = {}
     for i, col in enumerate(section.columns):
-        if col.metric not in c.metrics:
+        if col.metric not in c.metrics or i in unmeasured_columns:
             continue                          # validate_column already reported it
         for out_ in outputs_for(col, c):
             if out_.header in first_seen:
