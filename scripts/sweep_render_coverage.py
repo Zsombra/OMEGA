@@ -21,6 +21,7 @@ import os
 import subprocess
 import sys
 import time
+import urllib.request
 
 sys.path.insert(0, ".")
 from omega.contract import load                      # noqa: E402
@@ -51,8 +52,6 @@ SWEEP_METRICS = {m for m in os.environ.get("SWEEP_METRICS", "").split(",") if m}
 # `benchmark` section. SWEEP_BENCHMARK names the ticker of every section the run builds (unset = null, as before);
 # it is sent beside SWEEP_MARKET_SCOPE, never with it (a section has one subject).
 SWEEP_BENCHMARK = os.environ.get("SWEEP_BENCHMARK") or None
-if SWEEP_BENCHMARK and SWEEP_MARKET_SCOPE:
-    sys.exit("SWEEP_BENCHMARK and SWEEP_MARKET_SCOPE name two subjects; a section has one")
 # Stop the run at once on any of these in mcporter's stderr: the stored OAuth credential has no usable token and every
 # further call would start another interactive authorization (seen 2026-11-05 from ~10:18Z).
 AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthorized", "401")
@@ -66,7 +65,6 @@ class SweepStopped(RuntimeError):
 
 
 def version():
-    import urllib.request
     with urllib.request.urlopen("https://mcp.battlegrid.trade/mcp/version", timeout=30) as r:
         return json.loads(r.read().decode())
 
@@ -122,10 +120,10 @@ def render(columns):
     return hdrs, None
 
 
-def bisect(columns, refusals, depth=0):
+def bisect(columns, refusals, render_fn=render, depth=0):
     """Attribute a refusal to the exact column(s)."""
     if len(columns) == 1:
-        hdrs, err = render(columns)
+        hdrs, err = render_fn(columns)
         if err:
             refusals.append({"column": columns[0], "error": err[:300]})
             return []
@@ -133,95 +131,123 @@ def bisect(columns, refusals, depth=0):
     mid = len(columns) // 2
     out = []
     for half in (columns[:mid], columns[mid:]):
-        hdrs, err = render(half)
+        hdrs, err = render_fn(half)
         if err:
-            out += bisect(half, refusals, depth + 1)
+            out += bisect(half, refusals, render_fn, depth + 1)
         else:
             out += hdrs
     return out
 
 
-c = load()
-seen_before = rendered_headers()
+def collect_targets(c):
+    """Every uncovered shape, structural and operand-expanded, deduped by its column payload. SWEEP_SCOPE=structural
+    renders the structural shapes only, SWEEP_SCOPE=nonspread every uncovered shape that is not a spread pair
+    (2026-10-30: the 144.0.0 corpus left 83,480 uncovered expanded shapes - the 78 added metrics as spread operands -
+    against 3,3xx structural ones; every new header pattern is structural, the expansions re-mint it with another
+    operand code)."""
+    scope = os.environ.get("SWEEP_SCOPE", "all")
+    targets, keys = [], set()
+    for expand in ((False,) if scope == "structural" else (False, True)):
+        _, unc, _ = coverage(expand, c)
+        for s in unc:
+            if scope == "nonspread" and s.transform == "spread":
+                continue        # the 2026-10-30 second pass: every uncovered expansion that is not a spread operand pair
+            if SWEEP_METRICS is not None and s.metric not in SWEEP_METRICS:
+                continue        # 2026-11-02: one subject per run (see SWEEP_METRICS above)
+            col = s.to_column().model_dump(exclude_none=True)
+            k = json.dumps(col, sort_keys=True)
+            if k in keys:
+                continue
+            keys.add(k)
+            targets.append((s, col))
+    return scope, targets
 
-# every uncovered shape, structural and operand-expanded, deduped by its column payload. SWEEP_SCOPE=structural renders
-# the structural shapes only, SWEEP_SCOPE=nonspread every uncovered shape that is not a spread pair (2026-10-30: the 144.0.0 corpus left 83,480 uncovered expanded shapes - the 78 added metrics as
-# spread operands - against 3,3xx structural ones; every new header pattern is structural, the expansions re-mint it
-# with another operand code).
-SWEEP_SCOPE = os.environ.get("SWEEP_SCOPE", "all")
-targets, keys = [], set()
-for expand in ((False,) if SWEEP_SCOPE == "structural" else (False, True)):
-    _, unc, _ = coverage(expand, c)
-    for s in unc:
-        if SWEEP_SCOPE == "nonspread" and s.transform == "spread":
-            continue        # the 2026-10-30 second pass: every uncovered expansion that is not a spread operand pair
-        if SWEEP_METRICS is not None and s.metric not in SWEEP_METRICS:
-            continue        # 2026-11-02: one subject per run (see SWEEP_METRICS above)
-        col = s.to_column().model_dump(exclude_none=True)
-        k = json.dumps(col, sort_keys=True)
-        if k in keys:
-            continue
-        keys.add(k)
-        targets.append((s, col))
-print(f"uncovered shapes to render: {len(targets)}")
 
-per_call = COLS_PER_SECTION * SECTIONS_PER_CALL
-all_headers, refusals, batches = [], [], []
-aborted = None
-t0 = time.time()
-for i in range(0, len(targets), per_call):
-    chunk = targets[i:i + per_call]
-    cols = [col for _, col in chunk]
-    try:
-        hdrs, err = render(cols)
-        if err:
-            print(f"  batch {i // per_call + 1}: REFUSED, bisecting ({err[:90]})")
-            hdrs = bisect(cols, refusals)
-    except SweepStopped as exc:
-        # what rendered before the stop is kept; the record says where and why it stopped
-        aborted = {"message": str(exc)[:600], "afterBatches": len(batches),
-                   "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
-        print(f"STOPPED: {aborted['message']}")
-        break
-    all_headers += hdrs
-    batches.append({"batch": i // per_call + 1, "columns": len(cols), "headers": len(hdrs)})
-    done = min(i + per_call, len(targets))
-    print(f"  [{done}/{len(targets)}] headers so far {len(set(all_headers))} "
-          f"refusals {len(refusals)} ({round(time.time() - t0)}s)")
+def run_sweep(targets, render_fn=render, per_call=COLS_PER_SECTION * SECTIONS_PER_CALL):
+    """-> (all_headers, refusals, batches, aborted). One preview per `per_call` columns; a refused batch is bisected."""
+    all_headers, refusals, batches = [], [], []
+    aborted = None
+    t0 = time.time()
+    for i in range(0, len(targets), per_call):
+        chunk = targets[i:i + per_call]
+        cols = [col for _, col in chunk]
+        try:
+            hdrs, err = render_fn(cols)
+            if err:
+                print(f"  batch {i // per_call + 1}: REFUSED, bisecting ({err[:90]})")
+                hdrs = bisect(cols, refusals, render_fn)
+        except SweepStopped as exc:
+            # what rendered before the stop is kept; the record says where and why it stopped
+            aborted = {"message": str(exc)[:600], "afterBatches": len(batches),
+                       "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+            print(f"STOPPED: {aborted['message']}")
+            break
+        all_headers += hdrs
+        batches.append({"batch": i // per_call + 1, "columns": len(cols), "headers": len(hdrs)})
+        done = min(i + per_call, len(targets))
+        print(f"  [{done}/{len(targets)}] headers so far {len(set(all_headers))} "
+              f"refusals {len(refusals)} ({round(time.time() - t0)}s)")
+    return all_headers, refusals, batches, aborted
 
-headers = sorted(set(all_headers))
-os.makedirs(os.path.dirname(HEADERS_OUT), exist_ok=True)
-json.dump({"_what": ("Headers minted live by preview_strategy_report during the " + SWEEP_DATE + " "
-                     "coverage sweep. HEADERS ONLY - render_coverage treats every string in "
-                     "this file as a seen header, so nothing else may be added here."),
-           "headers": headers},
-          open(HEADERS_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
-# header agreement: does omega predict what the platform minted?
-mismatches = []
-for s, col in targets:
-    pred = [o.header for o in outputs_for(s.to_column(), c)]
-    missing = [h for h in pred if h not in set(headers) | seen_before]
-    if missing:
-        mismatches.append({"shape": f"{s.metric}|{s.transform}|{s.chained}|{s.operand}|{s.ordering}",
-                           "predicted": pred, "notRendered": missing})
-json.dump({"_what": (f"Run record for the {SWEEP_DATE} live coverage sweep: what was asked for, what "
-                     "the platform refused, and every shape whose omega-predicted header did not "
-                     "turn up in the render. Kept OUT of data/contract/columns/ so none of these "
-                     "strings can be mistaken for a rendered header."),
-           "capturedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "how": ("preview_strategy_report via the mcporter CLI, read-only, BTC only, "
-                   f"{COLS_PER_SECTION} columns per custom section, up to {SECTIONS_PER_CALL} "
-                   "sections per call; refused batches bisected to the offending column."),
-           "scope": SWEEP_SCOPE, "marketScope": SWEEP_MARKET_SCOPE, "benchmarkTicker": SWEEP_BENCHMARK,
-           "metricsRestrictedTo": sorted(SWEEP_METRICS) if SWEEP_METRICS else None,
-           "shapesRequested": len(targets), "batches": batches, "complete": aborted is None, "aborted": aborted,
-           "headersMinted": len(headers),
-           "refusalCount": len(refusals), "refusals": refusals,
-           "predictedButNotRenderedCount": len(mismatches),
-           "predictedButNotRendered": mismatches[:200]},
-          open(RECORD_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+def agreement(shapes, headers, seen_before, predict):
+    """Header agreement: does omega predict what the platform minted? `predict(shape)` -> the predicted headers."""
+    known = set(headers) | seen_before
+    mismatches = []
+    for s in shapes:
+        pred = predict(s)
+        missing = [h for h in pred if h not in known]
+        if missing:
+            mismatches.append({"shape": f"{s.metric}|{s.transform}|{s.chained}|{s.operand}|{s.ordering}",
+                               "predicted": pred, "notRendered": missing})
+    return mismatches
 
-print(f"\nrendered {len(headers)} distinct headers; refusals {len(refusals)}; "
-      f"predicted-but-not-rendered {len(mismatches)}")
-print(f"wrote {HEADERS_OUT} and {RECORD_OUT}")
+
+def run_record(scope, targets, headers, refusals, batches, aborted, mismatches):
+    return {"_what": (f"Run record for the {SWEEP_DATE} live coverage sweep: what was asked for, what "
+                      "the platform refused, and every shape whose omega-predicted header did not "
+                      "turn up in the render. Kept OUT of data/contract/columns/ so none of these "
+                      "strings can be mistaken for a rendered header."),
+            "capturedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "how": ("preview_strategy_report via the mcporter CLI, read-only, BTC only, "
+                    f"{COLS_PER_SECTION} columns per custom section, up to {SECTIONS_PER_CALL} "
+                    "sections per call; refused batches bisected to the offending column."),
+            "scope": scope, "marketScope": SWEEP_MARKET_SCOPE, "benchmarkTicker": SWEEP_BENCHMARK,
+            "metricsRestrictedTo": sorted(SWEEP_METRICS) if SWEEP_METRICS else None,
+            "shapesRequested": len(targets), "batches": batches, "complete": aborted is None, "aborted": aborted,
+            "headersMinted": len(headers),
+            "refusalCount": len(refusals), "refusals": refusals,
+            "predictedButNotRenderedCount": len(mismatches),
+            "predictedButNotRendered": mismatches[:200]}
+
+
+def main():
+    if SWEEP_BENCHMARK and SWEEP_MARKET_SCOPE:
+        sys.exit("SWEEP_BENCHMARK and SWEEP_MARKET_SCOPE name two subjects; a section has one")
+    c = load()
+    seen_before = rendered_headers()
+    scope, targets = collect_targets(c)
+    print(f"uncovered shapes to render: {len(targets)}")
+
+    all_headers, refusals, batches, aborted = run_sweep(targets)
+
+    headers = sorted(set(all_headers))
+    os.makedirs(os.path.dirname(HEADERS_OUT), exist_ok=True)
+    json.dump({"_what": ("Headers minted live by preview_strategy_report during the " + SWEEP_DATE + " "
+                         "coverage sweep. HEADERS ONLY - render_coverage treats every string in "
+                         "this file as a seen header, so nothing else may be added here."),
+               "headers": headers},
+              open(HEADERS_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+    mismatches = agreement([s for s, _ in targets], headers, seen_before,
+                           lambda s: [o.header for o in outputs_for(s.to_column(), c)])
+    json.dump(run_record(scope, targets, headers, refusals, batches, aborted, mismatches),
+              open(RECORD_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+
+    print(f"\nrendered {len(headers)} distinct headers; refusals {len(refusals)}; "
+          f"predicted-but-not-rendered {len(mismatches)}")
+    print(f"wrote {HEADERS_OUT} and {RECORD_OUT}")
+
+
+if __name__ == "__main__":
+    main()
