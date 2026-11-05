@@ -45,9 +45,39 @@ NOTE = f"OMEGA read-only coverage sweep {SWEEP_DATE}"
 # list) restricts the shapes to those metrics, so a market pass renders the market family and nothing else.
 SWEEP_MARKET_SCOPE = os.environ.get("SWEEP_MARKET_SCOPE") or None
 SWEEP_METRICS = {m for m in os.environ.get("SWEEP_METRICS", "").split(",") if m} or None
+# 2026-11-05 (contract 148.1.0): the other two section subjects every served metric now names in `subjectKinds`
+# (README v146). A `benchmarkTicker` makes the section read another instrument: a declared stablecoin pair
+# (USDT_USD, USDC_USDT) is a `reference` section - OPEN / HIGH / LOW / CLOSE / PAR_DEV - and any other ticker a
+# `benchmark` section. SWEEP_BENCHMARK names the ticker of every section the run builds (unset = null, as before);
+# it is sent beside SWEEP_MARKET_SCOPE, never with it (a section has one subject).
+SWEEP_BENCHMARK = os.environ.get("SWEEP_BENCHMARK") or None
+if SWEEP_BENCHMARK and SWEEP_MARKET_SCOPE:
+    sys.exit("SWEEP_BENCHMARK and SWEEP_MARKET_SCOPE name two subjects; a section has one")
+# Stop the run at once on any of these in mcporter's stderr: the stored OAuth credential has no usable token and every
+# further call would start another interactive authorization (seen 2026-11-05 from ~10:18Z).
+AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthorized", "401")
+SWEEP_CONTRACT = os.environ.get("SWEEP_CONTRACT")      # when set, GET /mcp/version every VERSION_EVERY previews
+VERSION_EVERY = 25
+_calls = [0]
+
+
+class SweepStopped(RuntimeError):
+    """The run cannot go on: no usable credential, or the served contract moved."""
+
+
+def version():
+    import urllib.request
+    with urllib.request.urlopen("https://mcp.battlegrid.trade/mcp/version", timeout=30) as r:
+        return json.loads(r.read().decode())
 
 
 def call(tool, args, timeout=240):
+    if SWEEP_CONTRACT and _calls[0] % VERSION_EVERY == 0:
+        served = version().get("contractVersion")
+        if served != SWEEP_CONTRACT:
+            raise SweepStopped(f"served contract {served} after {_calls[0]} previews, not {SWEEP_CONTRACT}")
+    _calls[0] += 1
+    time.sleep(0.45)                      # one worker, well under the account's 3 req/s
     p = subprocess.Popen(
         ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
          "--output", "json", "--args", "-"],
@@ -59,7 +89,10 @@ def call(tool, args, timeout=240):
         return None, "TIMEOUT"
     txt = out.decode(errors="replace")
     if not txt.strip():
-        return None, (err.decode(errors="replace") or "empty stdout")[:400]
+        msg = (err.decode(errors="replace") or "empty stdout")[:400]
+        if any(marker in msg for marker in AUTH_MARKERS):
+            raise SweepStopped(f"mcporter has no usable credential for battlegrid-anbu: {msg}")
+        return None, msg
     try:
         return json.loads(txt), None
     except json.JSONDecodeError:
@@ -71,7 +104,7 @@ def render(columns):
     secs = []
     for i in range(0, len(columns), COLS_PER_SECTION):
         secs.append({"kind": "custom", "title": f"sweep {len(secs) + 1}",
-                     "benchmarkTicker": None, "marketScope": SWEEP_MARKET_SCOPE, "notes": NOTE,
+                     "benchmarkTicker": SWEEP_BENCHMARK, "marketScope": SWEEP_MARKET_SCOPE, "notes": NOTE,
                      "columns": columns[i:i + COLS_PER_SECTION]})
     # The request at v85+ (`source.kind: "FIELDS"`) and the read at v92+ (`conditionColumns` left the top level for
     # `authoring`, served only at detail "detailed"); the 09-09 / 09-20 runs used the flat compile-era shape.
@@ -134,14 +167,22 @@ print(f"uncovered shapes to render: {len(targets)}")
 
 per_call = COLS_PER_SECTION * SECTIONS_PER_CALL
 all_headers, refusals, batches = [], [], []
+aborted = None
 t0 = time.time()
 for i in range(0, len(targets), per_call):
     chunk = targets[i:i + per_call]
     cols = [col for _, col in chunk]
-    hdrs, err = render(cols)
-    if err:
-        print(f"  batch {i // per_call + 1}: REFUSED, bisecting ({err[:90]})")
-        hdrs = bisect(cols, refusals)
+    try:
+        hdrs, err = render(cols)
+        if err:
+            print(f"  batch {i // per_call + 1}: REFUSED, bisecting ({err[:90]})")
+            hdrs = bisect(cols, refusals)
+    except SweepStopped as exc:
+        # what rendered before the stop is kept; the record says where and why it stopped
+        aborted = {"message": str(exc)[:600], "afterBatches": len(batches),
+                   "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+        print(f"STOPPED: {aborted['message']}")
+        break
     all_headers += hdrs
     batches.append({"batch": i // per_call + 1, "columns": len(cols), "headers": len(hdrs)})
     done = min(i + per_call, len(targets))
@@ -172,9 +213,9 @@ json.dump({"_what": (f"Run record for the {SWEEP_DATE} live coverage sweep: what
            "how": ("preview_strategy_report via the mcporter CLI, read-only, BTC only, "
                    f"{COLS_PER_SECTION} columns per custom section, up to {SECTIONS_PER_CALL} "
                    "sections per call; refused batches bisected to the offending column."),
-           "scope": SWEEP_SCOPE, "marketScope": SWEEP_MARKET_SCOPE,
+           "scope": SWEEP_SCOPE, "marketScope": SWEEP_MARKET_SCOPE, "benchmarkTicker": SWEEP_BENCHMARK,
            "metricsRestrictedTo": sorted(SWEEP_METRICS) if SWEEP_METRICS else None,
-           "shapesRequested": len(targets), "batches": batches,
+           "shapesRequested": len(targets), "batches": batches, "complete": aborted is None, "aborted": aborted,
            "headersMinted": len(headers),
            "refusalCount": len(refusals), "refusals": refusals,
            "predictedButNotRenderedCount": len(mismatches),
