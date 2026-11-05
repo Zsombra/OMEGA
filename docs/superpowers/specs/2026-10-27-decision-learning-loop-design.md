@@ -256,6 +256,18 @@ Retention: none of these are pruned (the 90-day prune stays on scans and gate bl
 5. **Lever B scope. Claude's call:** deferred. `stop_schedules` and the simulator are not in the
    first build. The audit-history read that would feed them is already in every dossier, so nothing
    is lost by waiting.
+   **Corrected 2026-11-05 (measured):** that premise was wrong. A dossier's
+   `document.platform_reads.audit_history` holds only `{initialStop, orderId, createdAt, cached}`;
+   0 of 235 dossiers carried an SL_REPLACED event. What made the deferral harmless is the platform:
+   `get_position_audit_history` still serves the full trail of a 7-week-old closed position
+   (94e4de58, opened 2026-09-19), so the trail can be read after the fact. Collection (step 7,
+   part 1) is live in `battlegrid-manager` since the 2026-11-05 13:38Z deploy of main 455096d
+   (`manager/learn/stops.py`, tables `stop_schedule_events`, `stop_schedules`,
+   `stop_schedule_reads`; from 7f33718): after the outcomes pass, each closed position's trail is
+   read into one row per served event plus a per-position summary, 40 reads per run. A trail with
+   no fill or close event is not stored and is read again later. A trail whose protective legs were
+   all abandoned at the close counts as final from c03712a, which awaits deploy. The simulator
+   (part 2) is still later.
 
 Calls 2, 4 and 5 keep the first build to tables and jobs that read, grade and report. The user can
 overrule any of them; none changes what the first build writes.
@@ -282,7 +294,7 @@ overrule any of them; none changes what the first build writes.
 | 4 | `condition_observations`, `condition_stats`; the strategist brief includes them | 1, 3 | **first** |
 | 5 | `experiments` + replay reads rule specs from the DB + forward holdout + acceptance rule | 1 | later |
 | 6 | `rule_versions` with meta-bounds; thresholds and skill text rendered from it; dossier scorecard section | 5 | later |
-| 7 | stop-schedule collection and simulator (lever B) | decision 8.5 | later |
+| 7 | stop-schedule collection and simulator (lever B) | decision 8.5 | collection **live 2026-11-05**; simulator later |
 | 8 | weekly analyst turn proposing experiments in schema | 2, 5 | later |
 
 ### 10.1 What the first build is, in one paragraph
@@ -345,3 +357,10 @@ user; each is settled here as Claude's call and can be overruled.
 6. **Public per-condition signal logs** are not in the daily pull. The probe (8.3) takes one page of
    `get_public_agent_signal_logs` and one `_detail` so their size and shape are on record for a
    later step; the daily pull is explorer, leaderboard, realized trades and signal performance.
+   **Superseded 2026-11-05:** they are in the daily pull now (`battlegrid-manager`
+   `manager/learn/public_logs.py`, main f01112a..455096d). For each public agent with trades (never
+   our own), the pull walks `get_public_agent_signal_logs` newest first by `createdAt` past a
+   per-agent floor, reads each new log's `_detail` under a per-run budget of 60, and writes
+   `condition_observations` with `source = public_log` and outcome `net_r` against the DECIDED stop.
+   A still-open trade holds the floor. `condition_stats` keeps grouping own agents only, so a public
+   row never joins our strategy's stats. First live run: the 02:00Z pull of 2026-11-06.
