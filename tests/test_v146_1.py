@@ -91,8 +91,8 @@ def test_the_24_are_in_the_corpus_and_nothing_is_unmeasured(contract):
     assert ADDED <= set(contract.metrics) and len(contract.metrics) == 326
     for key in sorted(ADDED):
         assert (CONTRACT_DIR / "metrics" / f"{key}.json").is_file(), key
-    assert not contract.unmeasured_metrics
-    assert UNMEASURED["metrics"] == {} and UNMEASURED["servedAt"] == "146.0.1"
+    # since 2026-11-05 the record lists the 206 keys of the 148.1.0 capture by name (none of these 24)
+    assert set(contract.unmeasured_metrics).isdisjoint(ADDED) and set(UNMEASURED["metrics"]).isdisjoint(ADDED)
     assert set(UNMEASURED["history146"]["formerlyUnmeasured"]) == ADDED
     assert (UNMEASURED["history146"]["listedOn"], UNMEASURED["history146"]["measuredOn"]) == ("2026-11-01", "2026-11-02")
 
@@ -103,7 +103,8 @@ def test_the_market_family_is_the_13_mkt_metrics(contract):
     categories = _j(CONTRACT_DIR / "categories.json")
     market = [c for c in categories["categories"] if c["category"] == "market"]
     assert len(categories["categories"]) == 11 and len(market) == 1 and market[0]["metricCount"] == 13
-    assert categories["_refreshed"]["contractVersion"] == "146.0.1"
+    # re-read 2026-11-05 at 148.1.0 (structure 156 -> 362, market unchanged); the 146.0.1 read under `previous`
+    assert categories["_refreshed"]["previous"]["contractVersion"] == "146.0.1"
     # a market metric spreads over market metrics only (the served spreadOperands of each of the ten that offer spread)
     for key in sorted(MKT):
         m = contract.metric(key)
@@ -282,7 +283,8 @@ def test_the_manifest_chain_and_the_templates():
     assert MANIFEST["servedContractVersion"] == "146.0.1" and MANIFEST["extractedOn"] == "2026-11-02"
     assert MANIFEST["supersedes"]["servedContractVersion"] == "144.0.0"
     assert MANIFEST["counts"]["metrics"] == 326 and MANIFEST["counts"]["families"] == 11
-    assert MANIFEST["writeSurface"]["liveCheckedAt"]["contractVersion"] == "146.0.1"
+    # the write surface moved to the 148.1.0 capture on 2026-11-05; the 146.0.1 live check is under `supersedes`
+    assert MANIFEST["writeSurface"]["supersedes"]["liveCheckedAt"]["contractVersion"] == "146.0.1"
     assert "derive_strategy_rule_view" not in MANIFEST["toolsUsed"]
     templates = _j(CONTRACT_DIR / "templates" / "platform" / "_all.json")
     by_key = {t["sectionKey"]: t for t in templates["templates"]}
@@ -291,7 +293,8 @@ def test_the_manifest_chain_and_the_templates():
     assert {(k, "value") for k in WARNINGS} <= regime
     crowd = {(c["metric"], c["transformId"]) for c in by_key["includeCrowdIntelligence"]["columns"]}
     assert {(k, "value") for k in CROWD_Z} <= crowd
-    assert _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]["contractVersion"] == "146.0.1"
+    # re-read 2026-11-05 at 148.1.0 (ema, conditionFrameReads 2048); the 146.0.1 read under `previous`
+    assert _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]["previous"]["contractVersion"] == "146.0.1"
 
 
 def test_the_version_is_0_11_0():

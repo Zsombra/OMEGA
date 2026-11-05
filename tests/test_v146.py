@@ -109,7 +109,8 @@ def test_the_capture_names_its_contract_build_and_source():
     for tool in ("stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft", "list_strategy_drafts",
                  "preview_strategy_report", "get_strategy"):
         assert {"inputSchema", "outputSchema", "description"} <= set(DOC[tool]), tool
-    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "146.0.0"
+    # superseded as the write surface by the 148.1.0 capture on 2026-11-05 (OMEGA v0.12.0); kept as history
+    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "148.1.0"
 
 
 @pytest.mark.skipif(not FIXTURE.exists(), reason="the battlegrid-manager checkout is not beside this repo")
@@ -227,10 +228,13 @@ def test_the_added_metrics_are_served_and_now_in_the_corpus():
     served = set(DOC["stage_strategy_draft"]["inputSchema"]["$defs"]["metricKey"]["enum"])
     before = set(DOC_144["stage_strategy_draft"]["inputSchema"]["$defs"]["metricKey"]["enum"])
     assert served - before == ADDED_METRICS and not before - served and (len(before), len(served)) == (302, 326)
-    assert not contract.unmeasured_metrics                           # 24 from 2026-11-01 to 2026-11-02
+    # 24 unmeasured from 2026-11-01 to 2026-11-02; since 2026-11-05 the record holds the 206 keys the 148.1.0 capture
+    # added (tests/test_condition_vocabulary_108.py), none of these
+    assert set(contract.unmeasured_metrics).isdisjoint(ADDED_METRICS)
     assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == served
     record = json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(encoding="utf-8"))
-    assert record["metrics"] == {} and set(record["history146"]["formerlyUnmeasured"]) == ADDED_METRICS
+    assert set(record["metrics"]).isdisjoint(ADDED_METRICS)
+    assert set(record["history146"]["formerlyUnmeasured"]) == ADDED_METRICS
     assert record["history146"]["listedOn"] == "2026-11-01" and record["history146"]["measuredOn"] == "2026-11-02"
     for key in sorted(ADDED_METRICS):
         column = Column.model_validate({"metric": key, "transformId": "value", "timeframe": {"rel": "anchor"}})
@@ -253,7 +257,11 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
                                           "$defs": {"metricKey": stage["inputSchema"]["$defs"]["metricKey"]}}}]}
     results = compare(live_enums(surface), stored_enums(), stored_unmeasured())
     for kind in ("metrics", "sectionKeys"):
-        assert results[kind]["liveNotStored"] == [] and results[kind]["storedNotLive"] == [], kind
+        assert results[kind]["liveNotStored"] == [], kind
+    assert results["sectionKeys"]["storedNotLive"] == []
+    # since 2026-11-05 the store also names the 206 keys the 148.1.0 capture added (unmeasured), which this 146.0.0
+    # surface does not serve
+    assert results["metrics"]["storedNotLive"] == sorted(load().unmeasured_metrics) and len(load().unmeasured_metrics) == 206
     assert (results["metrics"]["live"], results["sectionKeys"]["live"]) == (326, 22)
     assert results["metrics"]["storedUnmeasured"] == []
 

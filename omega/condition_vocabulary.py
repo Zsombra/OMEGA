@@ -230,9 +230,14 @@ def _column_enums(doc: dict) -> dict:
     for name in ("metric", "transformId", "chainedTransformId"):
         p, n = _deref(doc, base, column + ["properties", name])
         out[name] = {"pointer": pointer(p), "count": len(n["enum"]), "enum": list(n["enum"])}
-    # the integer fields' bounds: window/offset keep only their floors since v103; buffer is 0-500 (v100)
+    # the numeric fields' bounds: window/offset keep only their floors since v103; buffer is 0-500 (v100); since
+    # v146.9 / v146.11 the knobs leftBars / rightBars / swingLength / equalBars (integer >= 1) and equalThreshold (number
+    # >= 0, the one non-integer bound)
     out["bounds"] = {name: {k: spec[k] for k in ("minimum", "maximum") if k in spec}
-                     for name, spec in sorted(node["properties"].items()) if spec.get("type") == "integer"}
+                     for name, spec in sorted(node["properties"].items()) if spec.get("type") in ("integer", "number")}
+    # each column field's served JSON type where it names one (v146.11: confluenceFilter is the one boolean)
+    out["types"] = {name: spec["type"] for name, spec in sorted(node["properties"].items())
+                    if isinstance(spec.get("type"), str)}
     return out
 
 
