@@ -165,15 +165,22 @@ re-list the surface and re-run `compare_vocabulary` before continuing (three dri
      `benchmark` subject); `benchmarkTicker` + `marketScope` together (refused: one subject).
    - **H 1,000-bar history**: `aggregate` window 64 / 65 / 936 / 937; `zscore` / `pctl` / `efficiency` window maxima
      (lookback- or depth-bound per the served `bound`); `value` offset maximum; one header's served `conditionHold`
-     (`maxWindow` 985 on `RSI14 x value`).
+     (`maxWindow` 985 on `RSI14 x value`). The value offset maximum is per metric (63 / 62 / 53 / 44 / 43 / 0, see
+     "Resumed"), not a uniform 63.
    - **I combinations**: a knob plus `offset` and a pinned / lower timeframe on the same column (header order).
-5. **Coverage sweeps** (`scripts/sweep_render_coverage.py`, `SWEEP_DATE=2026-11-05`, one worker, 4 sections per
-   preview): (a) **coin**, `SWEEP_SCOPE=structural`, `SWEEP_METRICS` = the 206 added keys plus every existing metric
-   that gained `ema` (from `_moves_148.json`), default knobs; (b) `SWEEP_SCOPE=nonspread` over the same metrics;
-   (c) **reference**: a new `SWEEP_BENCHMARK` (e.g. `USDT_USD`) beside `SWEEP_MARKET_SCOPE`, PAR_DEV's 13 transforms.
-   Knob variants are not structural shapes: the space counts each metric x transform at its default parameters, and
-   groups A - E of step 4 are the knob coverage. `python -m scripts.render_coverage` reads the three new caches and
-   `_probe_148_*`; the operand-expanded spread pairs are left unrendered by decision as at 144 and 146.
+5. **Coverage sweeps** (`scripts/sweep_render_coverage.py`, one worker, 4 sections per preview, **one `SWEEP_DATE`
+   per pass** - the script names both outputs from `SWEEP_DATE` alone and refuses to overwrite an existing pair - and
+   `SWEEP_CONTRACT` = the served contract on every pass, so the version is re-read every 25 previews):
+   (a) **coin**, `SWEEP_DATE=2026-11-05-structural`, `SWEEP_SCOPE=structural`, `SWEEP_METRICS` = the 206 added keys
+   plus every existing metric that gained `ema` (from `_moves_148.json`), default knobs; (b)
+   `SWEEP_DATE=2026-11-05-nonspread`, `SWEEP_SCOPE=nonspread` over the same metrics; (c) **reference**,
+   `SWEEP_DATE=2026-11-05-reference`, a new `SWEEP_BENCHMARK` (e.g. `USDT_USD`) beside `SWEEP_MARKET_SCOPE`, PAR_DEV's
+   13 transforms (the date part is the run's own day if later). Knob variants are not structural shapes: the space
+   counts each metric x transform at its default parameters, and groups A - E of step 4 are the knob coverage. The
+   three `_coverage_sweep_2026-11-05-*.json` caches are added to `render_coverage.SEEN_FILES` (a fixed list, not a
+   glob), then `python -m scripts.render_coverage` reads them and `_probe_148_*`; the operand-expanded spread pairs are
+   left unrendered by decision as at 144 and 146. A sweep stops at the first OAuth prompt, platform 5xx or failed
+   version GET and writes a partial record (`complete` false) that judges header agreement on the shapes it sent.
 6. **OMEGA changes, tests, version.**
    - `omega.types.Column`: the six knobs at the schema's bounds (`leftBars`, `rightBars`, `swingLength`,
      `equalBars` int >= 1; `equalThreshold` float >= 0; `confluenceFilter` bool).
@@ -294,7 +301,7 @@ Clock: GET /mcp/version 148.1.0 / build d02121ec at 09:38:29Z, at every 40th hin
    (no platform template carries a pivot type, a structure metric or a 1,000-bar window; conditionGrammar carries no
    v146.11 level-reference wording). `categories.json`, `vocabulary/_shared.json`, `templates/platform/_all.json`
    refreshed with `_refreshed` blocks (the 146.0.1 ones under `previous`).
-3. **Step 3 - hints: STOPPED at 170 / 532.** `get_metric_construction_hints` read in roster order 09:40:01Z-10:17:58Z
+3. **Step 3 - hints: STOPPED at 170 / 532** (resumed 13:36Z to 383 / 532, see "Resumed 2026-11-05 13:36Z"). `get_metric_construction_hints` read in roster order 09:40:01Z-10:17:58Z
    for OPEN ... PRIOR_LONDON_LOW_SWEPT (indices 1-170), 0 failures, ~7-24 s per call. The next call (NEW_YORK_HIGH,
    started ~10:18Z) and the two after it each failed three times with mcporter's "If the browser did not open,
    visit https://mcp.battlegrid.trade/authorize?..." - `~/.mcporter/credentials.json` holds the client registration but
@@ -329,13 +336,22 @@ the scratch npx shim, one worker; no stage, commit, bind, deploy, fund, archive 
 
 - **Step 3 - hints: 383 / 532 on disk, then STOPPED.** The session's `fetch_hints.py` (now stopping at once on an OAuth
   prompt or a platform 5xx) read roster indices 171 - 383 (NEW_YORK_HIGH ... PIVOT_QUARTER_CAM_R1) at
-  13:39:17Z - 14:42:30Z, 213 hints, 0 failures, ~7 - 41 s per call. From 14:43:32Z every call answered "HTTP 502
+  13:39:17Z - 14:42:30Z, 213 hints, 0 failures, **7.0 - 144.5 s per call**: 7 - 41 s through index 360 (14:19:08Z),
+  then a slowdown from PIVOT_MONTH_DM_P (index 361, 14:20:20Z) to the outage - indices 361 - 383 took 14.5 - 144.5 s
+  (mean ~60 s), 19 calls over 41 s, PIVOT_QUARTER_S2 144.5 s, PIVOT_MONTH_DM_S1 83.5 s, PIVOT_QUARTER_R4 82.8 s,
+  PIVOT_QUARTER_R5 82.7 s (`fetch_hints_resume_stdout.txt`). A timeout or rate budget for the next read is sized from
+  the 145 s, not 41 s; the slowdown may have been the 149 deploy beginning. From 14:43:32Z every call answered "HTTP 502
   (Version negotiation failed: the server answered the probe with HTTP 502)" - PIVOT_QUARTER_CAM_R2 .. _S2 (indices
   384 - 389), three attempts each - and GET /mcp/version answered nginx 502 too; the fetch was stopped at 14:48Z. The
   version GET was then polled once a minute (no MCP call) until it answered at **16:31:50Z: contract 149.0.0, build
   5ec52a81589047437f7e7c59a613a1839499daee**. The run stopped there, as the route requires.
-- **Measured on the 383 (raw hints in the session scratchpad `v012/hints_20261105/`, not committed; all read at
-  148.1.0):** the authoring blocks stay invariant per transform with `maximum` / `bound` moved to the metric entry
+- **Measured on the 383 (raw hints in the session scratchpad `v012/hints_20261105/`, not committed).** Version: 370
+  of them (indices 1 - 370) were read between two GET /mcp/version reads of 148.1.0 / d02121ec. The last 13 (indices
+  371 - 383, PIVOT_QUARTER_S2 .. PIVOT_QUARTER_CAM_R1, read 14:32:15Z - 14:42:30Z) came after the last 148.1.0 read
+  (14:29:51Z) with none after them - the next read was 149.0.0 at 16:31:50Z, the 502 began a minute after the last
+  hint, and a raw hint carries no `contractVersion` or build field. **148.1.0 is inferred for those 13, not
+  measured** (a review compared four of them with siblings read before 14:29:51Z, name masked: top-level keys, metric
+  keys and transforms match, which fits 148.1.0 but does not settle it); see "To resume". The authoring blocks stay invariant per transform with `maximum` / `bound` moved to the metric entry
   (dry check over all 383: 1 variant per transform, `chainOuterParameters` 1 variant). The 14 new structure keys read:
   `SWING_FRACTAL_*` (7) serve `leftBars` / `rightBars` {default 2, 1 - 933, bound depth}; `metricParametersAccepted`
   true on value / trajectory / distance / spread / efficiency / the six statistics / levelInteraction and **false on
@@ -346,7 +362,12 @@ the scratch npx shim, one worker; no stage, commit, bind, deploy, fund, archive 
   operands. `EQH` / `EQL`: boolean, value only, `equalBars` {default 3, 1 - 935, depth}, `equalThreshold` {default 0.1,
   0 - 0.5, step 0.1, bound range}. Pivots (day and the four periods): timeless, value / distance / spread /
   levelInteraction, 368 spread operands, no `anchor`; day pivots keep study `floorPivots`, periods `weeklyPivots` etc.
-  `value.offset` maximum is now **63** (was 31; v146.1's 1,000-bar history). Every metric read serves `subjectKinds`;
+  `value.offset` maximum **did not move**: served 63 on 145 metrics, 0 on the 228 timeless ones, and lower on nine
+  candle / gap metrics - BAR_CONTAINMENT, CANDLE_ENGULFING, GAP, GAP_PCT, GAP_RANGE_CLEAR 62; CANDLE_DOJI, CANDLE_PIN
+  53; CANDLE_RUN 44; CLOSE_RUN 43 (STRUCT_ZONES serves no value offset maximum). The pinned 146.0.1 corpus stores the
+  same per-metric values (63 since the 135.2.0 re-extraction, 6dccb6b; 31 was the 108.4.0 corpus), so there is no
+  31 -> 63 move to record, and probe group H checks each metric's served maximum, not one uniform 63 (CANDLE_RUN
+  offset 50 is over its 44). Every metric read serves `subjectKinds`;
   `ema` window maximum 269 on every metric that serves it, `aggregate` 936.
 - **Nothing under data/ moved**: `refresh_metric_contracts.py` writes only once all 532 raw hints are on disk, and a
   149.0.0 surface must be compared before any 148.1.0 hint is mixed with 149.0.0 ones.
@@ -378,7 +399,10 @@ the scratch npx shim, one worker; no stage, commit, bind, deploy, fund, archive 
 ## Numbers
 
 Metrics in the corpus 326 (measured at 146.0.1), served 532, unmeasured 206 (34 v146.5 + 82 v146.8 + 82 v146.10 +
-8 v146.11). Hints read at 148.1.0: 170 / 532. Probes 0 / ~150. Sweeps 0. Tests: 1818 passed (1800 + 18: the 17 of tests/test_v148_surface.py and one 148-enum test in tests/test_condition_vocabulary_108.py), 0 failed; after the review fixes below **1841 passed** (+23), 0 failed.
+8 v146.11). Hints read: 383 / 532 (370 between two 148.1.0 version reads, 13
+after the last one - see "Resumed"; 144 of the 206 added keys among them); the served contract is 149.0.0 since
+16:31:50Z. Probes 0 / ~150. Sweeps 0. Tests: 1818 passed (1800 + 18: the 17 of tests/test_v148_surface.py and one 148-enum test in tests/test_condition_vocabulary_108.py), 0 failed; after the review fixes below **1841 passed** (+23), 0 failed; after the second review pass **1856 passed** (+15,
+tests/test_sweep_render_coverage.py), 0 failed.
 
 ## Review fixes 2026-11-05 (offline, after 8182fa1)
 
@@ -407,17 +431,45 @@ Seven confirmed review findings, each reproduced by a test that failed at 8182fa
    column for `ema` (served, never extracted). It reproduces every committed artefact unchanged.
 7. **A chained `ema` / `distance` was refused as "not a composable chain"**: covered by 1.
 
+## Review fixes 2026-11-05, second pass (offline, after 1743bcb; recorded 16:56Z)
+
+Ten confirmed findings (seven distinct defects; three were raised twice), no platform call. Code, each reproduced first by tests/test_sweep_render_coverage.py (14 of
+its 15 tests failed at 5c09f34, the refactor that made the script importable without running a sweep):
+
+1. **The sweep recorded a platform 5xx as per-column refusals and kept calling** (two findings): it stopped only on
+   an OAuth marker, so the 14:43Z 502 text was bisected to every leaf (~383 previews per 128-column batch) and stored
+   as each column's refusal, `complete` true. It now stops after the first 5xx (stderr or a gateway page on stdout).
+2. **A failing version GET crashed the sweep before any output was written** (two findings): an nginx 502, a timeout
+   or a non-JSON body is now a stop like the others, so the partial record is written.
+3. **An aborted sweep listed every never-sent shape as predicted-but-not-rendered** (two findings), and
+   `shapesRequested` was the target count: agreement is judged on the completed batches' shapes; the record carries
+   `shapesTargeted` and `shapesRequested` (= sent); headers minted inside an interrupted bisect are kept.
+4. **Step 5 ran three sweeps under one `SWEEP_DATE`**, each overwriting the last pair: one `SWEEP_DATE` per pass,
+   `SWEEP_CONTRACT` set, the three caches added to `SEEN_FILES`; the script refuses an existing output pair
+   (`SWEEP_OVERWRITE=1` to replace on purpose).
+
+Record only:
+
+5. **`value.offset` maximum "now 63 (was 31)"**: nothing moved; the per-metric maxima (63 / 62 / 53 / 44 / 43 / 0)
+   are the 146.0.1 corpus's, counted from the 383 raw hints.
+6. **"Hints read at 148.1.0: 170 / 532"** in Numbers, Not measured and To resume: 383, with the 144 of the 206 added
+   keys among them.
+7. **"~7 - 41 s per call"**: 7.0 - 144.5 s, with the slowdown from index 361 that ran into the outage.
+8. **"all read at 148.1.0"**: 370 measured between two 148.1.0 reads; 371 - 383 inferred, and the 149 re-read sample
+   must include them.
+
 ## Not measured, and why
 
-- **The 206 added keys** (every hint fact, transforms, headers, subjects, parameters): the hint step stopped at index
-  170, before the first of them (INTERNAL_STRUCTURE_EVENT is index 200), on the lost OAuth credential.
-- **The 362 roster metrics after index 170** at 148.1.0 (their `ema`, `parameters`, `subjectKinds`): same reason.
+- **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206
+  are among the 383 read (roster indices 200 - 383); the other 62 (indices 384 - 445) were not reached - the hint step
+  stopped at index 383 on the 502 outage and then the contract move to 149.0.0.
+- **The 149 roster metrics after index 383** at 148.1.0 (their `ema`, `parameters`, `subjectKinds`): same reason.
   The stored records are the 146.0.1 ones.
 - **`ema`, the `distance` chain outer and the six knobs** (headers `_ema{n}`, `_l<L>r<R>`, `_s<n>`, `_cf`, `_e<m>`,
   `_atr<t>`, `high_o1_max55`; refusals; depth maxima beyond the 269 above): the probe needs the hints and the
   platform.
 - **The four section subjects** as rendered (group G) and the corrected PAR_DEV subject: served `subjectKinds` read
-  for 170 metrics only; `_subjects_148.json` not written; `omega.contract` still reads `_subjects_146.json`.
+  for 383 metrics only; `_subjects_148.json` not written; `omega.contract` still reads `_subjects_146.json`.
 - **The structure category's vocabulary listing**: refused `RESULT_TOO_LARGE` by the platform (not a transport
   failure); the per-metric hints carry the same metric facts.
 
@@ -426,12 +478,13 @@ Seven confirmed review findings, each reproduced by a test that failed at 8182fa
 **Since 2026-11-05T16:31:50Z the served contract is 149.0.0 (build 5ec52a81), not 148.1.0.** Before anything below:
 read the battlegrid-mcp README "Contract history" for 149, re-list the surface, run `compare_vocabulary` against it and
 diff the six draft tools' schemas against the 148.1.0 capture (step 1 again). If 149 moved no authoring input, the 383
-raw hints can be kept only after re-reading a sample of them at 149 and finding them identical; otherwise re-read all
-532 at 149 (new stamp) and re-run steps 1 - 2. The 148.1.0 steps below are the earlier resume note.
+raw hints can be kept only after re-reading a sample of them at 149 and finding them identical - the sample includes
+all 13 of indices 371 - 383 (PIVOT_QUARTER_S2 .. PIVOT_QUARTER_CAM_R1, no 148.1.0 read after them); otherwise re-read
+all 532 at 149 (new stamp) and re-run steps 1 - 2. Size the per-call timeout from the 144.5 s measured, not 41 s. The 148.1.0 steps below are the earlier resume note.
 
 1. The user re-authorizes mcporter for `battlegrid-anbu` (interactive browser consent).
 2. `GET /mcp/version`; if still 148.1.0, re-run the session's `fetch_hints.py` (or `refresh_metric_contracts.py`
-   directly) with `EXTRACTION_SCRATCH` pointing at a dir holding `hints_20261105/` - the 170 raw hints are in this
+   directly) with `EXTRACTION_SCRATCH` pointing at a dir holding `hints_20261105/` - the 383 raw hints are in this
    session's scratchpad `v012/hints_20261105/` and are skipped on a resume; if the scratchpad is gone, re-read all 532.
    If the contract moved, redo step 1 first.
 3. Then steps 3 - 6 as planned: `_unmeasured_108.json` empties again (history148; its `chainOuters` and
