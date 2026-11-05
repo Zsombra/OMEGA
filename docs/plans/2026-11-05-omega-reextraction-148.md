@@ -1,6 +1,6 @@
 # OMEGA v0.12.0 at contract 148.1.0: the 146.1 - 146.14 authoring widening, re-extracted
 
-**Status: PARTIAL 2026-11-05 - BLOCKED at step 3 (hints 170 / 532) since ~10:18Z: the mcporter OAuth credential for battlegrid-anbu lost its tokens and every call asks for an interactive browser authorization (see "Executed" below). Steps 1 and 2 are done and committed; steps 3 (rest), 4, 5 and the v0.12.0 version bump are NOT done; the 206 added keys, `ema` and the six knobs are recorded UNMEASURED. Re-checked 2026-11-05T11:14Z: `~/.mcporter/credentials.json` still holds no `tokens` for battlegrid-anbu (no platform call made to find out), so the review-fix pass below ran offline only.** Plan as written below. Served contract
+**Status: STOPPED 2026-11-05T16:32Z - the served contract MOVED to 149.0.0 (build `5ec52a81`, GET /mcp/version 16:31:50Z) at the end of a 502 outage (~14:43Z - 16:31Z), with step 3 at 383 / 532 hints. Everything measured here is at 148.1.0 and the hint set is incomplete, so nothing from step 3 on was written under data/; steps 3 (rest), 4, 5, 6 and the v0.12.0 version bump are NOT done (see "Resumed 2026-11-05 13:36Z" below). The 149.0.0 drift is unreviewed. Earlier: BLOCKED ~10:18Z - 13:36Z on the lost mcporter OAuth credential (re-authorized by the user 13:36:07Z).** Plan as written below. Served contract
 **148.1.0** (build `d02121ec`, `GET /mcp/version` at 2026-11-05T09:18:34Z). Pinned corpus: OMEGA v0.11.0 (main
 `dc06373`) at 146.0.1, 326 metrics measured. Baseline of this branch (`feat/omega-v0.12`, cut from `dc06373`):
 `python -m pytest -q` **1800 passed** (re-run 2026-11-05, 132 s). Vendor changelog: battlegrid-mcp README "Contract
@@ -321,6 +321,46 @@ Clock: GET /mcp/version 148.1.0 / build d02121ec at 09:38:29Z, at every 40th hin
    model). `tests/test_v148_surface.py` (17) pins it; pins moved in nine existing test files. **`pyproject.toml` stays 0.11.0**:
    v0.12.0 is the full re-extraction, which this is not.
 
+## Resumed 2026-11-05 13:36Z (after the user re-authorized mcporter at 13:36:07Z)
+
+Clock: GET /mcp/version 148.1.0 / build d02121ec at 13:38:09Z, at the fetch start 13:38:40Z and every 40th hint
+(13:48:03Z, 13:56:10Z, 14:04:23Z, 14:12:44Z, 14:29:51Z). Every call read-only over mcporter (`battlegrid-anbu`) through
+the scratch npx shim, one worker; no stage, commit, bind, deploy, fund, archive or delete. No OAuth prompt this time.
+
+- **Step 3 - hints: 383 / 532 on disk, then STOPPED.** The session's `fetch_hints.py` (now stopping at once on an OAuth
+  prompt or a platform 5xx) read roster indices 171 - 383 (NEW_YORK_HIGH ... PIVOT_QUARTER_CAM_R1) at
+  13:39:17Z - 14:42:30Z, 213 hints, 0 failures, ~7 - 41 s per call. From 14:43:32Z every call answered "HTTP 502
+  (Version negotiation failed: the server answered the probe with HTTP 502)" - PIVOT_QUARTER_CAM_R2 .. _S2 (indices
+  384 - 389), three attempts each - and GET /mcp/version answered nginx 502 too; the fetch was stopped at 14:48Z. The
+  version GET was then polled once a minute (no MCP call) until it answered at **16:31:50Z: contract 149.0.0, build
+  5ec52a81589047437f7e7c59a613a1839499daee**. The run stopped there, as the route requires.
+- **Measured on the 383 (raw hints in the session scratchpad `v012/hints_20261105/`, not committed; all read at
+  148.1.0):** the authoring blocks stay invariant per transform with `maximum` / `bound` moved to the metric entry
+  (dry check over all 383: 1 variant per transform, `chainOuterParameters` 1 variant). The 14 new structure keys read:
+  `SWING_FRACTAL_*` (7) serve `leftBars` / `rightBars` {default 2, 1 - 933, bound depth}; `metricParametersAccepted`
+  true on value / trajectory / distance / spread / efficiency / the six statistics / levelInteraction and **false on
+  relativeTo, aggregate and ema**. `INTERNAL_STRUCTURE_EVENT` / `_TREND` / `_LEVEL` serve `swingLength` {default 50,
+  10 - 100, bound depth} AND `confluenceFilter` {default false, bound flag}; **`SWING_STRUCTURE_*` serve `swingLength`
+  only** (no `confluenceFilter`). EVENT: kind event, vocab `BOS↑ BOS↓ CHoCH↑ CHoCH↓`, value only; TREND: classification
+  `bullish` / `bearish`, value only; LEVEL: price, 12 transforms (no relativeTo / aggregate / ema / rank), 368 spread
+  operands. `EQH` / `EQL`: boolean, value only, `equalBars` {default 3, 1 - 935, depth}, `equalThreshold` {default 0.1,
+  0 - 0.5, step 0.1, bound range}. Pivots (day and the four periods): timeless, value / distance / spread /
+  levelInteraction, 368 spread operands, no `anchor`; day pivots keep study `floorPivots`, periods `weeklyPivots` etc.
+  `value.offset` maximum is now **63** (was 31; v146.1's 1,000-bar history). Every metric read serves `subjectKinds`;
+  `ema` window maximum 269 on every metric that serves it, `aggregate` 936.
+- **Nothing under data/ moved**: `refresh_metric_contracts.py` writes only once all 532 raw hints are on disk, and a
+  149.0.0 surface must be compared before any 148.1.0 hint is mixed with 149.0.0 ones.
+- **Offline, prepared and NOT applied** (session scratchpad `v012/edits/`, each an exact-substring edit script):
+  `e_types.py` (the six knobs on `omega.types.Column` at the schema bounds), `e_contract.py` (`Metric.subjects` /
+  `parameters` / `gloss`, `metric_subjects()` from `_subjects_148.json` over four subjects), `e_validate.py` (ema in the
+  series sets, offset declared per transform, DEPTH_EXCEEDED by the served `bound`, CHAIN_OFFSET_BELOW_MINIMUM,
+  PARAMETER_UNDECLARED / _OUT_OF_RANGE / _NOT_ACCEPTED, four-subject SECTION_SUBJECT_METRIC_UNSUPPORTED and
+  SECTION_SUBJECT_CONFLICT, METRIC_NO_SUBJECT retired - the `{Q:...}` markers wait for the probe's verbatim wording),
+  `e_fanout.py` (`_ema{n}`, the rolling `_o<N>`, the knob tokens - their position in the header is a guess until group
+  I renders), `e_space.py` (a shape carries `offsetMinimum` into the rolling -> distance chain). `build_moves.py` writes
+  `_moves_148.json` / `_subjects_148.json` after the refresh. Committed: `scripts/sweep_render_coverage.py`
+  SWEEP_BENCHMARK, an OAuth stop, a version gate and a partial record (3ac741a).
+
 ## What moved (measured)
 
 | axis | 146.0.1 (OMEGA v0.11.0) | 148.1.0 (measured 2026-11-05) |
@@ -382,6 +422,12 @@ Seven confirmed review findings, each reproduced by a test that failed at 8182fa
   failure); the per-metric hints carry the same metric facts.
 
 ## To resume
+
+**Since 2026-11-05T16:31:50Z the served contract is 149.0.0 (build 5ec52a81), not 148.1.0.** Before anything below:
+read the battlegrid-mcp README "Contract history" for 149, re-list the surface, run `compare_vocabulary` against it and
+diff the six draft tools' schemas against the 148.1.0 capture (step 1 again). If 149 moved no authoring input, the 383
+raw hints can be kept only after re-reading a sample of them at 149 and finding them identical; otherwise re-read all
+532 at 149 (new stamp) and re-run steps 1 - 2. The 148.1.0 steps below are the earlier resume note.
 
 1. The user re-authorizes mcporter for `battlegrid-anbu` (interactive browser consent).
 2. `GET /mcp/version`; if still 148.1.0, re-run the session's `fetch_hints.py` (or `refresh_metric_contracts.py`
