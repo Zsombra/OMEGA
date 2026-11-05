@@ -1,0 +1,113 @@
+"""scripts/probe_authoring_148.py stops on a transport failure instead of recording it as a platform refusal.
+
+2026-11-05 from ~10:18Z every mcporter call printed "If the browser did not open, visit .../authorize?...", took
+minutes and registered a new OAuth client. The probe as first written turned each such call into a probe with
+accepted=False and a null refusal, counted it under `refused`, re-probed every column of a "refused" batch alone and
+carried on: 247 calls, exit 0, a record that read as 247 platform refusals. Nothing here calls the platform:
+subprocess.Popen and the version GET are stubbed.
+"""
+from __future__ import annotations
+
+import importlib.util
+import json
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "probe_authoring_148.py"
+OAUTH = (b"If the browser did not open, visit https://mcp.battlegrid.trade/authorize?response_type=code&client_id=x "
+         b"to continue.\n")
+
+
+def _load(monkeypatch, tmp_path):
+    monkeypatch.setenv("PROBE_HINTS", str(tmp_path / "hints"))
+    monkeypatch.setenv("PROBE_DATE", "2099-01-01")
+    spec = importlib.util.spec_from_file_location("probe_authoring_148_under_test", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    monkeypatch.setattr(mod, "RECORD_OUT", str(tmp_path / "record.json"))
+    monkeypatch.setattr(mod, "HEADERS_OUT", str(tmp_path / "headers.json"))
+    monkeypatch.setattr(mod, "_MIN_INTERVAL", 0.0)
+    monkeypatch.setattr(mod, "version", lambda: {"contractVersion": "148.1.0", "buildSha": "d02121ec"})
+    monkeypatch.setattr(mod.time, "sleep", lambda s: None)
+    return mod
+
+
+class _Proc:
+    calls = 0
+
+    def __init__(self, stdout: bytes, stderr: bytes):
+        type(self).calls += 1
+        self._out, self._err = stdout, stderr
+        self.returncode = 1 if not stdout else 0
+
+    def communicate(self, data=None, timeout=None):
+        return self._out, self._err
+
+    def kill(self):
+        pass
+
+
+def _popen(stdout: bytes, stderr: bytes):
+    _Proc.calls = 0
+    return lambda *a, **k: _Proc(stdout, stderr)
+
+
+def test_an_oauth_prompt_aborts_the_run_after_one_call(monkeypatch, tmp_path):
+    mod = _load(monkeypatch, tmp_path)
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(b"", OAUTH))
+    assert mod.main() == 3
+    assert _Proc.calls == 1, "an OAuth prompt is never retried and nothing after it is sent"
+    record = json.loads((tmp_path / "record.json").read_text(encoding="utf-8"))
+    assert record["complete"] is False and record["aborted"]["reason"] == "TransportFailure"
+    assert record["aborted"]["afterProbes"] == 0 and "authorize" in record["aborted"]["message"]
+    assert record["counts"] == {"probes": 0, "accepted": 0, "refused": 0, "headersMinted": 0}
+
+
+def test_an_empty_or_non_json_answer_is_not_a_refusal(monkeypatch, tmp_path):
+    mod = _load(monkeypatch, tmp_path)
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(b"", b"connect ECONNRESET"))
+    with pytest.raises(mod.TransportFailure):
+        mod.call("preview_strategy_report", {})
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(b"<html>502 Bad Gateway</html>", b""))
+    with pytest.raises(mod.TransportFailure):
+        mod.call("preview_strategy_report", {})
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(json.dumps({"ok": True}).encode(), b""))
+    with pytest.raises(mod.TransportFailure):
+        mod.preview([])
+
+
+def test_a_rate_limit_is_retried_then_aborts(monkeypatch, tmp_path):
+    mod = _load(monkeypatch, tmp_path)
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(b"", b"Rate limited (429)"))
+    with pytest.raises(mod.TransportFailure):
+        mod.call("preview_strategy_report", {}, attempts=3)
+    assert _Proc.calls == 3
+
+
+def test_a_platform_refusal_is_still_recorded_verbatim(monkeypatch, tmp_path):
+    mod = _load(monkeypatch, tmp_path)
+    body = {"code": "VALIDATION_ERROR", "message": "transform 'ema' window 270 exceeds 269",
+            "details": {"authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED", "path": "columns[0].window"}}
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(json.dumps(body).encode(), b""))
+    req, d, e = mod.preview([])
+    assert d is None and mod.refusal(e)["authoringCode"] == "REPORT_COLUMN_DEPTH_EXCEEDED"
+    assert "transport" not in mod.refusal(e)
+
+
+def test_a_contract_move_mid_run_aborts(monkeypatch, tmp_path):
+    mod = _load(monkeypatch, tmp_path)
+    body = {"code": "VALIDATION_ERROR", "message": "refused", "details": {"authoringCode": "X"}}
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(json.dumps(body).encode(), b""))
+    versions = iter([{"contractVersion": "148.1.0"}] + [{"contractVersion": "149.0.0"}] * 10)
+    monkeypatch.setattr(mod, "version", lambda: next(versions))
+    hints = tmp_path / "hints"
+    hints.mkdir()
+    for name in ("SWING_FRACTAL_HIGH", "EQH"):
+        (hints / f"{name}.json").write_text(json.dumps({"metric": {"transforms": [{"id": "value"}], "parameters": {
+            "leftBars": {"maximum": 9}, "rightBars": {"maximum": 9}, "equalBars": {"maximum": 9}}}}), encoding="utf-8")
+    assert mod.main() == 3
+    record = json.loads((tmp_path / "record.json").read_text(encoding="utf-8"))
+    assert record["aborted"]["reason"] == "ContractMoved" and record["aborted"]["afterProbes"] == mod.VERSION_EVERY
+    assert record["counts"]["probes"] == mod.VERSION_EVERY
