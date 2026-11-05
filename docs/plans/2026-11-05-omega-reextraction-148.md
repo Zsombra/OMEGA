@@ -1,6 +1,6 @@
 # OMEGA v0.12.0 at contract 148.1.0: the 146.1 - 146.14 authoring widening, re-extracted
 
-**Status: PARTIAL 2026-11-05 - BLOCKED at step 3 (hints 170 / 532) since ~10:18Z: the mcporter OAuth credential for battlegrid-anbu lost its tokens and every call asks for an interactive browser authorization (see "Executed" below). Steps 1 and 2 are done and committed; steps 3 (rest), 4, 5 and the v0.12.0 version bump are NOT done; the 206 added keys, `ema` and the six knobs are recorded UNMEASURED.** Plan as written below. Served contract
+**Status: PARTIAL 2026-11-05 - BLOCKED at step 3 (hints 170 / 532) since ~10:18Z: the mcporter OAuth credential for battlegrid-anbu lost its tokens and every call asks for an interactive browser authorization (see "Executed" below). Steps 1 and 2 are done and committed; steps 3 (rest), 4, 5 and the v0.12.0 version bump are NOT done; the 206 added keys, `ema` and the six knobs are recorded UNMEASURED. Re-checked 2026-11-05T11:14Z: `~/.mcporter/credentials.json` still holds no `tokens` for battlegrid-anbu (no platform call made to find out), so the review-fix pass below ran offline only.** Plan as written below. Served contract
 **148.1.0** (build `d02121ec`, `GET /mcp/version` at 2026-11-05T09:18:34Z). Pinned corpus: OMEGA v0.11.0 (main
 `dc06373`) at 146.0.1, 326 metrics measured. Baseline of this branch (`feat/omega-v0.12`, cut from `dc06373`):
 `python -m pytest -q` **1800 passed** (re-run 2026-11-05, 132 s). Vendor changelog: battlegrid-mcp README "Contract
@@ -338,7 +338,34 @@ Clock: GET /mcp/version 148.1.0 / build d02121ec at 09:38:29Z, at every 40th hin
 ## Numbers
 
 Metrics in the corpus 326 (measured at 146.0.1), served 532, unmeasured 206 (34 v146.5 + 82 v146.8 + 82 v146.10 +
-8 v146.11). Hints read at 148.1.0: 170 / 532. Probes 0 / ~150. Sweeps 0. Tests: 1818 passed (1800 + 18: the 17 of tests/test_v148_surface.py and one 148-enum test in tests/test_condition_vocabulary_108.py), 0 failed.
+8 v146.11). Hints read at 148.1.0: 170 / 532. Probes 0 / ~150. Sweeps 0. Tests: 1818 passed (1800 + 18: the 17 of tests/test_v148_surface.py and one 148-enum test in tests/test_condition_vocabulary_108.py), 0 failed; after the review fixes below **1841 passed** (+23), 0 failed.
+
+## Review fixes 2026-11-05 (offline, after 8182fa1)
+
+Seven confirmed review findings, each reproduced by a test that failed at 8182fa1:
+
+1. **The unmeasured gate covered only a column's own metric and transformId.** An unmeasured key as a spread operand
+   (`CLOSE x spread [PIVOT_WEEK_P]`), as a chain outer (`HIGH x distance -> ema`, `RSI14 x spread -> ema`,
+   `HIGH x rollingMax -> distance`) or the rolling `offset` (v146.6) fell through to the 146.0.1 corpus and got
+   OPERAND_NOT_ALLOWED / REPORT_COLUMN_CHAIN_UNSUPPORTED / OFFSET_REFUSED stated as fact, while the 148.1.0 hints serve
+   all of them. `_unmeasured_108.json` now lists `chainOuters` (distance, ema) and `transformParameters`
+   (rollingMax / rollingMin `offset`); omega.validate refuses them METRIC_UNMEASURED / TRANSFORM_UNMEASURED /
+   PARAMETER_UNMEASURED before any corpus rule, and validate_section no longer raises KeyError predicting the header
+   of a column over an operand the corpus does not hold.
+2. **`probe_authoring_148.py` recorded transport / OAuth failures as refusals** and kept calling (247 calls, exit 0,
+   all "refused" with the credential lost). It now stops on the first non-platform answer (an OAuth prompt is never
+   retried), re-reads GET /mcp/version every 25 probes, and writes a PARTIAL record (`complete` false, `aborted`).
+3. **`_unmeasured_108.json` `_what` still said EMPTY**, and the manifest / a test comment named an uncut "OMEGA
+   v0.12.0": fixed, and a test refuses "v0.12.0" in those records until pyproject is cut.
+4. **The plan contradicted itself**: the manager row's two observations (now both stated: identical but for
+   `observedAt`) and ema's depth maximum in steps 4 / 6 (amended 936 -> 269).
+5. **`refresh_metric_contracts.py` wrote a short `_index.json` on a partial run** (170 / 532 would have left
+   omega.contract.load() raising "corpus incomplete"): it now reads every raw hint before writing anything under
+   data/, and stops the fetch on an OAuth prompt.
+6. **`build_corpus.py` exited "roster mismatch"** (532 served, 326 measured): it reconciles against the measured roster
+   (served minus the names-only list; family shortfall = the unmeasured count, structure 206), and the matrix gets no
+   column for `ema` (served, never extracted). It reproduces every committed artefact unchanged.
+7. **A chained `ema` / `distance` was refused as "not a composable chain"**: covered by 1.
 
 ## Not measured, and why
 
@@ -361,5 +388,7 @@ Metrics in the corpus 326 (measured at 146.0.1), served 532, unmeasured 206 (34 
    directly) with `EXTRACTION_SCRATCH` pointing at a dir holding `hints_20261105/` - the 170 raw hints are in this
    session's scratchpad `v012/hints_20261105/` and are skipped on a resume; if the scratchpad is gone, re-read all 532.
    If the contract moved, redo step 1 first.
-3. Then steps 3 - 6 as planned: `_unmeasured_108.json` empties again (history148), the knobs go on `Column`, the
-   version goes to 0.12.0.
+3. Then steps 3 - 6 as planned: `_unmeasured_108.json` empties again (history148; its `chainOuters` and
+   `transformParameters` too, once groups A and B render them), the knobs go on `Column`, the version goes to 0.12.0.
+   `refresh_metric_contracts.py` now writes nothing until all 532 raw hints are on disk, and both it and the probe
+   stop at the first OAuth prompt, so a lapsed credential costs one call, not hundreds.
