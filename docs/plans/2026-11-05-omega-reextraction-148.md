@@ -1,6 +1,6 @@
 # OMEGA v0.12.0 at contract 148.1.0: the 146.1 - 146.14 authoring widening, re-extracted
 
-**Status: PLAN 2026-11-05 (nothing executed beyond the read-only delta measurement below).** Served contract
+**Status: PARTIAL 2026-11-05 - BLOCKED at step 3 (hints 170 / 532) since ~10:18Z: the mcporter OAuth credential for battlegrid-anbu lost its tokens and every call asks for an interactive browser authorization (see "Executed" below). Steps 1 and 2 are done and committed; steps 3 (rest), 4, 5 and the v0.12.0 version bump are NOT done; the 206 added keys, `ema` and the six knobs are recorded UNMEASURED.** Plan as written below. Served contract
 **148.1.0** (build `d02121ec`, `GET /mcp/version` at 2026-11-05T09:18:34Z). Pinned corpus: OMEGA v0.11.0 (main
 `dc06373`) at 146.0.1, 326 metrics measured. Baseline of this branch (`feat/omega-v0.12`, cut from `dc06373`):
 `python -m pytest -q` **1800 passed** (re-run 2026-11-05, 132 s). Vendor changelog: battlegrid-mcp README "Contract
@@ -257,3 +257,103 @@ be split; the sweeps cache per shape. Run steps 3 - 5 when the manager is quiet 
 
 battlegrid-manager (read-only fixtures only); the 147 / 148 arena, Radar and budget tools; `docs/01` / `docs/02`
 regeneration; anything on the platform beyond the read-only calls above.
+
+## Executed 2026-11-05 (what was measured)
+
+Clock: GET /mcp/version 148.1.0 / build d02121ec at 09:38:29Z, at every 40th hint (09:49:48Z, 09:57:58Z, 10:07:10Z,
+10:15:44Z) and at 10:40:48Z - the contract did not move during the run. Every call read-only over mcporter
+(`battlegrid-anbu`) through the scratch npx shim; no stage, commit, bind, deploy, fund, archive or delete.
+
+1. **Step 1 - write surface: DONE.** `mcporter list --schema --all-parameters --json` at **2026-11-05T09:38:43Z**:
+   154 tools, every tool entry identical to the 09:18:42Z list. The six draft tools' description / inputSchema /
+   outputSchema are identical to battlegrid-manager's fixture `tests/fixtures/2026-11-04-contract-148.1.0/
+   manager_schemas_148.1.0.json`, and description / inputSchema to the manager's stored `surface_tools` row (148.1.0,
+   observed 2026-11-04T17:51:58Z). Written as `data/contract/stage_strategy_draft/schema_20261105T093843Z.json` (the
+   fixture's entries - the list serves no `annotations` - so `sourceSha256` is the fixture's); manifest `writeSurface`
+   names it, with `liveCheckedAt`, the 146.0.0 block under `supersedes`. `data/derived/condition_vocabulary_108.json`
+   re-derived: metric enum **532**, transformId **25** (+`ema`), chainedTransformId **13** (+`distance`, +`ema`),
+   column fields +6 knobs; `omega/condition_vocabulary.py` now derives `number` bounds too (`equalThreshold` minimum 0)
+   and each column field's served JSON type (`confluenceFilter` boolean). `compare_vocabulary` against the live list:
+   **exit 1 before** (532 live / 326 stored, 206 liveNotStored, 0 storedNotLive; sectionKeys 22 / 22), **exit 0 after**
+   the 206 were listed by name (206 storedUnmeasured) - `data/audit/contract_148_1_0_vocabulary_2026-11-05.json`.
+2. **Step 2 - vocabulary: DONE** (09:43:20-09:45:48Z, `data/contract/vocabulary/20261105T0943Z/`).
+   `list_strategy_categories`: eleven, ids and texts unchanged, **structure 156 -> 362** (sum 532); the 22 modules
+   byte-identical. `list_strategy_vocabulary`: ten categories read; **`structure` is REFUSED `RESULT_TOO_LARGE`**
+   ("The result is 224226 characters, over the 150000-character cap; ask for less."), and the tool takes only
+   `category`, so the structure category's metric / study listing (the five new studies, the `floorPivots` level-set
+   label `Pivots` -> `Traditional`) is not readable through it. Across the ten read, the category-invariant blocks are
+   identical; against the 146.0.1 read: transforms **+`ema`** after aggregate ("Exponential average (EMA)", 24 ids),
+   **`budgets.conditionFrameReads` 256 -> 2048**; conditionGrammar, timeframeRefs, previewExecutionLimits, timeframes,
+   rankedTimeframes, the 22 platform templates, the 3 custom template summaries and the scalar families: unchanged
+   (no platform template carries a pivot type, a structure metric or a 1,000-bar window; conditionGrammar carries no
+   v146.11 level-reference wording). `categories.json`, `vocabulary/_shared.json`, `templates/platform/_all.json`
+   refreshed with `_refreshed` blocks (the 146.0.1 ones under `previous`).
+3. **Step 3 - hints: STOPPED at 170 / 532.** `get_metric_construction_hints` read in roster order 09:40:01Z-10:17:58Z
+   for OPEN ... PRIOR_LONDON_LOW_SWEPT (indices 1-170), 0 failures, ~7-24 s per call. The next call (NEW_YORK_HIGH,
+   started ~10:18Z) and the two after it each failed three times with mcporter's "If the browser did not open,
+   visit https://mcp.battlegrid.trade/authorize?..." - `~/.mcporter/credentials.json` holds the client registration but
+   no `tokens` since 10:29:57Z, and `~/.mcporter/battlegrid-anbu/server_url.txt` was rewritten at 10:18Z by a process
+   other than this run. The fetcher was stopped at 10:30Z. Each failed call began an OAuth authorization (new dynamic
+   client ids d1196f2a, a6be72d3, 49c9f9b4 among them; up to nine attempts) and may have opened a browser tab on the
+   authorize page; nothing was approved. Re-authorizing is the user's step.
+   Measured on the 170 read (raw responses in the session scratchpad `v012/hints_20261105/`, not committed): every
+   metric serves `gloss`, `subjectKinds` and `parameters` (null on all 170 - the swing metrics, indices 193-199, were
+   not reached); every transform entry serves `metricParametersAccepted`; the authoring blocks stay invariant per
+   transform once `maximum` and `bound` are moved to the metric entry (`authoring_invariance` dry check: 1 variant per
+   transform, `chainOuterParameters` 1 variant); `ema` is served on 103 of the 170, window maximum **269** on every
+   one (`bound` depth, unit smoothingLength - NOT the 936 the plan expected; `aggregate`'s is 936); `subjectKinds`:
+   165 `evaluated-coin` + `benchmark`, 4 (OPEN, HIGH, LOW, CLOSE) + `reference`, PAR_DEV `reference` only.
+   `scripts/refresh_metric_contracts.py` is extended for the new served fields (gloss, subjectKinds, parameters,
+   metricParametersAccepted, a `bounds` sibling of `maximums`) and NOT run: it needs all 532.
+4. **Step 4 - probe: NOT RUN.** `scripts/probe_authoring_148.py` (groups A - I, ~150 previews) is written and
+   committed; it reads each new key's transforms from the same day's hints, so it waits on step 3.
+5. **Step 5 - sweeps / render_coverage: NOT RUN** (they need the corpus and the probe).
+6. **Step 6: partial.** Offline only what was measured: the write surface, the vocabulary, the 206 keys listed by name
+   in `data/contract/metrics/_unmeasured_108.json` (the v0.10.2 pattern: refused offline as `METRIC_UNMEASURED`;
+   `compare_vocabulary` reads them `storedUnmeasured`, so a consumer's pin-drift gate reads nothing moved), `ema`
+   derived `TRANSFORM_UNMEASURED`, the six knobs NOT on `omega.types.Column` (a column carrying one is refused by the
+   model). `tests/test_v148_surface.py` (17) pins it; pins moved in nine existing test files. **`pyproject.toml` stays 0.11.0**:
+   v0.12.0 is the full re-extraction, which this is not.
+
+## What moved (measured)
+
+| axis | 146.0.1 (OMEGA v0.11.0) | 148.1.0 (measured 2026-11-05) |
+|---|---|---|
+| tools listed | 151 | 154 |
+| `$defs/metricKey` | 326 | 532 (+206, none retired) |
+| transformId / chainedTransformId | 24 / 11 | 25 (+ema) / 13 (+distance, +ema) |
+| column fields | 13 | 19 (+leftBars, rightBars, swingLength, equalBars: integer >= 1; equalThreshold: number >= 0; confluenceFilter: boolean) |
+| sectionKeys | 22 | 22 |
+| categories | 11, structure 156 | 11, structure 362 |
+| served transform catalogue | 23 | 24 (+ema) |
+| `budgets.conditionFrameReads` | 256 | 2048 |
+| `list_strategy_vocabulary {structure}` | read | refused RESULT_TOO_LARGE (224,226 chars > 150,000) |
+
+## Numbers
+
+Metrics in the corpus 326 (measured at 146.0.1), served 532, unmeasured 206 (34 v146.5 + 82 v146.8 + 82 v146.10 +
+8 v146.11). Hints read at 148.1.0: 170 / 532. Probes 0 / ~150. Sweeps 0. Tests: 1818 passed (1800 + 18: the 17 of tests/test_v148_surface.py and one 148-enum test in tests/test_condition_vocabulary_108.py), 0 failed.
+
+## Not measured, and why
+
+- **The 206 added keys** (every hint fact, transforms, headers, subjects, parameters): the hint step stopped at index
+  170, before the first of them (INTERNAL_STRUCTURE_EVENT is index 200), on the lost OAuth credential.
+- **The 362 roster metrics after index 170** at 148.1.0 (their `ema`, `parameters`, `subjectKinds`): same reason.
+  The stored records are the 146.0.1 ones.
+- **`ema`, the `distance` chain outer and the six knobs** (headers `_ema{n}`, `_l<L>r<R>`, `_s<n>`, `_cf`, `_e<m>`,
+  `_atr<t>`, `high_o1_max55`; refusals; depth maxima beyond the 269 above): the probe needs the hints and the
+  platform.
+- **The four section subjects** as rendered (group G) and the corrected PAR_DEV subject: served `subjectKinds` read
+  for 170 metrics only; `_subjects_148.json` not written; `omega.contract` still reads `_subjects_146.json`.
+- **The structure category's vocabulary listing**: refused `RESULT_TOO_LARGE` by the platform (not a transport
+  failure); the per-metric hints carry the same metric facts.
+
+## To resume
+
+1. The user re-authorizes mcporter for `battlegrid-anbu` (interactive browser consent).
+2. `GET /mcp/version`; if still 148.1.0, re-run the session's `fetch_hints.py` (or `refresh_metric_contracts.py`
+   directly) with `EXTRACTION_SCRATCH` pointing at a dir holding `hints_20261105/` - the 170 raw hints are in this
+   session's scratchpad `v012/hints_20261105/` and are skipped on a resume; if the scratchpad is gone, re-read all 532.
+   If the contract moved, redo step 1 first.
+3. Then steps 3 - 6 as planned: `_unmeasured_108.json` empties again (history148), the knobs go on `Column`, the
+   version goes to 0.12.0.

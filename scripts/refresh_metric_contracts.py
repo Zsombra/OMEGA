@@ -123,11 +123,22 @@ for i, name in enumerate(names, 1):
     for served in ("provenance", "rankScope"):
         if served in m:
             rec[served] = m[served]
+    # 148.1.0 (2026-11-05, README v146 / v146.9 / v146.11): every metric serves `gloss`, `subjectKinds` (the section
+    # subjects that read it: evaluated-coin, benchmark, market, reference) and `parameters` (its author-set knobs, each
+    # with defaultValue / minimum / maximum / step / bound / required / description; null on a metric with none).
+    # Recorded as served.
+    for served in ("gloss", "subjectKinds", "parameters"):
+        if served in m:
+            rec[served] = m[served]
     for t in m.get("transforms", []):
         entry = {"id": t["id"]}
         for flag in TRANSFORM_FLAGS:
             if flag in t:
                 entry[flag] = t[flag]
+        # v146.9: whether this column accepts the metric's knobs off their defaults (false on a metric with none, and
+        # where an off-default knob is refused: rank / relativeTo / aggregate / ema). Per metric x transform.
+        if "metricParametersAccepted" in t:
+            entry["metricParametersAccepted"] = t["metricParametersAccepted"]
         rec["transforms"].append(entry)
         labels.setdefault(t["id"], t.get("label"))
         if "authoring" in t:
@@ -136,11 +147,18 @@ for i, name in enumerate(names, 1):
             # maxima go on this metric's transform entry; the catalogue keeps the invariant rest.
             auth = json.loads(json.dumps(t["authoring"]))
             maxima = {}
+            bounds = {}
             for pname, pspec in (auth.get("parameters") or {}).items():
                 if isinstance(pspec, dict) and "maximum" in pspec:
                     maxima[pname] = pspec.pop("maximum")
+                # v146.7: every served bounded window carries `bound` (lookback | depth) beside its `maximum` - per
+                # metric like the maximum it qualifies, so it goes on the metric's entry as `bounds`.
+                if isinstance(pspec, dict) and "bound" in pspec:
+                    bounds[pname] = pspec.pop("bound")
             if maxima:
                 entry["maximums"] = maxima
+            if bounds:
+                entry["bounds"] = bounds
             # 135.x: a series window's description ends, on a metric with its own indicator length, with a sentence
             # naming it ("Separate from ADX (14)'s own 14-bar length."). It is served per metric like the maxima, so
             # it goes on the metric's entry and the catalogue keeps the invariant rest.
