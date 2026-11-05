@@ -14,7 +14,14 @@ Also collects each transform's `authoring` block so the "byte-identical regardle
 which metric it is attached to" claim in transforms/_authoring.json can be re-checked
 rather than assumed.
 
-Resumable: a metric whose file already carries this run's stamp is skipped.
+Resumable: a metric whose raw hint is already in hints_<STAMP>/ is not re-read.
+
+Two phases (2026-11-05): every raw hint is read first, and nothing under data/ is written unless all of them are on
+disk. The first version rewrote each metric file as it read it and wrote _index.json with the count of THIS run's
+records before checking for failures, so a partial run (the 148.1.0 run stopped at 170 / 532 on a lost OAuth
+credential) left `metricCount` 170 beside 326 files and omega.contract.load() raised "corpus incomplete" for every
+consumer. An OAuth prompt from mcporter stops the fetch at once: each further call would start another interactive
+authorization.
 
 Re-run 2026-09-20 at contract 61.2.0. EXTRACTION_SCRATCH and EXTRACTION_STAMP replace the constants the
 first run pinned to one session's scratch directory, which no longer exists.
@@ -55,6 +62,8 @@ TRANSFORM_FLAGS = ("operandRequired", "chainSuccessors", "chainedRankOrderings",
 
 
 OWN_LENGTH = re.compile(r" (Separate from .+? own \d+-bar length\.)$")
+# mcporter's stderr when the stored OAuth credential has no usable token (seen 2026-11-05 from ~10:18Z).
+AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthorized", "401")
 
 
 def call(tool, args, timeout=120):
@@ -91,17 +100,36 @@ authoring_seen = {}   # transformId -> {json of authoring block: [metrics]}
 outer_params_seen = {}  # v135 chainOuterParameters (served once per response, beside `metric`): {json: [metrics]}
 written, failed = [], []
 
+# Phase 1: every raw hint on disk. Nothing under data/ is touched here.
 for i, name in enumerate(names, 1):
     rawp = os.path.join(RAW, f"{name}.json")
     if os.path.exists(rawp):
-        resp = json.load(open(rawp, encoding="utf-8"))
-    else:
-        resp, err = call("get_metric_construction_hints", {"metric": name})
-        if resp is None:
-            print(f"  [{i}/{len(names)}] {name}: FAILED {err}")
-            failed.append(name)
-            continue
-        json.dump(resp, open(rawp, "w", encoding="utf-8"), ensure_ascii=False)
+        continue
+    resp, err = call("get_metric_construction_hints", {"metric": name})
+    if resp is None:
+        print(f"  [{i}/{len(names)}] {name}: FAILED {err}")
+        failed.append(name)
+        if any(marker in (err or "") for marker in AUTH_MARKERS):
+            failed.extend(n for n in names[i:] if not os.path.exists(os.path.join(RAW, f"{n}.json")))
+            print("  mcporter has no usable credential for battlegrid-anbu: fetch stopped (re-authorizing is the "
+                  "user's step)")
+            break
+        continue
+    tmp = rawp + ".part"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(resp, f, ensure_ascii=False)
+    os.replace(tmp, rawp)
+    if i % 20 == 0:
+        print(f"  [{i}/{len(names)}] read ... {name}")
+if failed:
+    print(f"\nnot read: {len(failed)} of {len(names)} ({failed[:5]}{' ...' if len(failed) > 5 else ''}); "
+          f"{len(names) - len(failed)} raw hints are in {RAW} and a re-run skips them. Nothing under data/ was written.")
+    sys.exit(1)
+
+# Phase 2: every metric's raw hint is on disk; build the records and write them.
+for i, name in enumerate(names, 1):
+    rawp = os.path.join(RAW, f"{name}.json")
+    resp = json.load(open(rawp, encoding="utf-8"))
     m = resp["metric"] if isinstance(resp, dict) and "metric" in resp and isinstance(resp["metric"], dict) else resp
     if isinstance(resp, dict) and "chainOuterParameters" in resp:
         outer_params_seen.setdefault(json.dumps(resp["chainOuterParameters"], sort_keys=True), []).append(name)
