@@ -45,7 +45,9 @@ MKT_UP), 09:18:34 - 09:26:28Z. Raw files in the session scratchpad `v012/` (not 
 
 1. **Surface**: `mcporter list battlegrid-anbu --schema --all-parameters --json` at **2026-11-05T09:18:42Z**:
    **154 tools** (151 at 146.0.1). Every `inputSchema` identical to battlegrid-manager's stored
-   `system_state.surface_tools` (148.1.0, observed 2026-11-05T08:26:25Z), and the ten authoring tools' input schemas
+   `system_state.surface_tools` (148.1.0; read twice, observedAt 2026-11-04T17:51:58Z and 2026-11-05T08:26:25Z - the
+   two copies are 389,664 bytes each and identical but for `observedAt`; the capture's `readFrom` names the first,
+   see Executed step 1), and the ten authoring tools' input schemas
    identical to the manager fixture `tests/fixtures/2026-11-04-surface-146.14.0/surface_tools_146.14.0.json`:
    **147.0 - 148.1.0 moved no authoring input**. Tool moves since that fixture: `get_agent_radar_holdings`,
    `withdraw_agent_from_radar` (v147.1), `deploy_agent_to_radar`, `preview_agent_radar_deploy` (148, undocumented)
@@ -137,7 +139,8 @@ re-list the surface and re-run `compare_vocabulary` before continuing (three dri
    detailed; one column per preview where a refusal is expected, batched columns where acceptance is expected).
    Record `data/audit/authoring_probe_148_2026-11-05.json` (every refusal verbatim), headers
    `data/contract/columns/_probe_148_2026-11-05.json`. Groups, about 140 previews:
-   - **A `ema`**: on an oscillator, a price and a volume metric; window 1, 14, the depth maximum (936 at cap 64) and
+   - **A `ema`**: on an oscillator, a price and a volume metric; window 1, 14, the depth maximum (**269**: amended
+     2026-11-05, served on every ema-serving metric read; 936 is `aggregate`'s, first written here by mistake) and
      one over (`REPORT_COLUMN_DEPTH_EXCEEDED`); as a chain outer (`RSI14 x zscore -> ema`) and as an inner
      (`CLOSE x ema -> trajectory`); its `smoothingLength` unit; `bars` and `offset` accepted or refused.
    - **B `distance` as chain outer / rolling offset**: `HIGH x rollingMax(55, offset 1) -> distance`
@@ -179,8 +182,10 @@ re-list the surface and re-run `compare_vocabulary` before continuing (three dri
    - `omega.validate`: `PARAMETER_UNDECLARED` (a knob the metric's `parameters` does not serve),
      `PARAMETER_OUT_OF_RANGE` (served minimum / maximum / step, e.g. `swingLength` 10 - 100),
      `PARAMETER_NOT_ACCEPTED` (`metricParametersAccepted` false: an off-default pair or a structure metric under
-     rank / relativeTo / aggregate / ema), `DEPTH_EXCEEDED` (a window over the served depth maximum, `ema` and
-     `aggregate` at 936); the `ema` transform and the `distance` chain outer with `offsetMinimum`;
+     rank / relativeTo / aggregate / ema), `DEPTH_EXCEEDED` (a window over the served depth maximum, read per metric
+     from the hint's `maximum`, never a constant: `ema` **269**, `aggregate` 936 on every metric read 2026-11-05 -
+     amended, this line first said 936 for both); the `ema` transform and the `distance` chain outer with
+     `offsetMinimum`;
      `SECTION_SUBJECT_METRIC_UNSUPPORTED` over four subjects (`benchmarkTicker` a declared pair -> `reference`, another
      ticker -> `benchmark`, `marketScope` named -> `market`, else `evaluated-coin`); `METRIC_NO_SUBJECT` retired
      (PAR_DEV reads on a pair section) - each rule quoting the measured platform wording.
@@ -268,7 +273,8 @@ Clock: GET /mcp/version 148.1.0 / build d02121ec at 09:38:29Z, at every 40th hin
    154 tools, every tool entry identical to the 09:18:42Z list. The six draft tools' description / inputSchema /
    outputSchema are identical to battlegrid-manager's fixture `tests/fixtures/2026-11-04-contract-148.1.0/
    manager_schemas_148.1.0.json`, and description / inputSchema to the manager's stored `surface_tools` row (148.1.0,
-   observed 2026-11-04T17:51:58Z). Written as `data/contract/stage_strategy_draft/schema_20261105T093843Z.json` (the
+   observed 2026-11-04T17:51:58Z; the same row re-read at 2026-11-05T08:26:25Z for the Measured section is
+   byte-identical but for `observedAt`, so either observation is the same surface). Written as `data/contract/stage_strategy_draft/schema_20261105T093843Z.json` (the
    fixture's entries - the list serves no `annotations` - so `sourceSha256` is the fixture's); manifest `writeSurface`
    names it, with `liveCheckedAt`, the 146.0.0 block under `supersedes`. `data/derived/condition_vocabulary_108.json`
    re-derived: metric enum **532**, transformId **25** (+`ema`), chainedTransformId **13** (+`distance`, +`ema`),

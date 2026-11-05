@@ -109,7 +109,8 @@ def test_the_capture_names_its_contract_build_and_source():
     for tool in ("stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft", "list_strategy_drafts",
                  "preview_strategy_report", "get_strategy"):
         assert {"inputSchema", "outputSchema", "description"} <= set(DOC[tool]), tool
-    # superseded as the write surface by the 148.1.0 capture on 2026-11-05 (OMEGA v0.12.0); kept as history
+    # superseded as the write surface by the 148.1.0 capture on 2026-11-05 (the v0.12 branch, unreleased:
+    # pyproject.toml stays 0.11.0 until the full re-extraction lands); kept as history
     assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "148.1.0"
 
 

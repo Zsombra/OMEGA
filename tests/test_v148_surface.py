@@ -241,3 +241,14 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     assert sum(1 for m in load().metrics.values() if m.family == "structure") + 206 == 362
     templates = _j(CONTRACT_DIR / "templates" / "platform" / "_all.json")
     assert templates["_refreshed"]["contractVersion"] == "148.1.0" and len(templates["templates"]) == 22
+
+
+def test_no_stored_record_names_a_release_that_was_not_cut():
+    """The manifest said the schema moved "(OMEGA v0.12.0)" while pyproject.toml is 0.11.0: a reader would pin or
+    compare against a release that does not exist. Only a cut version (pyproject) may be named as the mover."""
+    import re
+    version = re.search(r'^version = "([^"]+)"', (ROOT / "pyproject.toml").read_text(encoding="utf-8"), re.M).group(1)
+    if tuple(int(x) for x in version.split(".")) >= (0, 12, 0):
+        pytest.skip(f"v0.12.0 is cut (pyproject {version})")
+    for rel in ("data/contract/_manifest.json", "data/contract/metrics/_unmeasured_108.json", "tests/test_v146.py"):
+        assert "v0.12.0" not in (ROOT / rel).read_text(encoding="utf-8"), rel
