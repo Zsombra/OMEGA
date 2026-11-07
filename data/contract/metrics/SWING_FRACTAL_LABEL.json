@@ -18,12 +18,39 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": true,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "swingFractal",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "the most recent decided swing pivot (2 bars each side) against the previous pivot on its own side: HH or LH for a swing high (an equal high is LH), HL or LL for a swing low (an equal low is HL), none when no comparable pair is in reach — a state held between pivots, not an event",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": {
+    "leftBars": {
+      "required": false,
+      "description": "Bars before a swing pivot it must be at least as extreme as.",
+      "defaultValue": 2,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 933
+    },
+    "rightBars": {
+      "required": false,
+      "description": "Closed bars after a swing pivot it must be strictly more extreme than; the pivot is decided on the last of them.",
+      "defaultValue": 2,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 933
+    }
+  }
 }

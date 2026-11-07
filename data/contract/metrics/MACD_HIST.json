@@ -13,14 +13,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": true,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
       "id": "trajectory",
+      "metricParametersAccepted": true,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
@@ -28,6 +36,11 @@
       "chainSuccessors": [
         "trajectory",
         "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
         "efficiency",
         "zscore",
         "stddev",
@@ -47,10 +60,12 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": true
         },
         "aggregate": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
@@ -59,7 +74,79 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 269,
+          "operands": [
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 118,
+          "operands": [
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 936,
+          "operands": [
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 118,
+          "operands": [
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 936,
+          "operands": [
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "efficiency": {
           "windowMaximum": 63,
@@ -71,10 +158,12 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": true
         },
         "zscore": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
@@ -83,10 +172,12 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "stddev": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
@@ -95,10 +186,12 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "linregSlope": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
@@ -107,10 +200,12 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "pctl": {
-          "windowMaximum": 63,
+          "windowMaximum": 935,
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
@@ -119,10 +214,12 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMin": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
@@ -131,10 +228,12 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMax": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "MACD_LINE",
             "MACD_SIGNAL",
@@ -143,65 +242,186 @@
             "CVD",
             "CUM_VOLUME_DELTA",
             "SPOT_CVD"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         }
-      }
+      },
+      "metricParametersAccepted": true
     },
     {
-      "id": "crossDetect"
+      "id": "crossDetect",
+      "metricParametersAccepted": true
     },
     {
       "id": "aggregate",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "ema",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 269
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "wma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rsi",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "cci",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "efficiency",
+      "metricParametersAccepted": true,
       "maximums": {
         "window": 63
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
       "id": "zscore",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "stddev",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "linregSlope",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "pctl",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 63
+        "window": 935
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "rollingMin",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
       "id": "rollingMax",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     }
   ],
   "study": "macd",
   "provenance": "tradingView",
   "rankScope": null,
+  "gloss": "MACD histogram — the 12/26 line minus its 9-period signal",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": {
+    "fast": {
+      "required": false,
+      "description": "The fast close EMA’s length.",
+      "defaultValue": 12,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 260
+    },
+    "slow": {
+      "required": false,
+      "description": "The slow close EMA’s length.",
+      "defaultValue": 26,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 260
+    },
+    "signal": {
+      "required": false,
+      "description": "The signal line’s length: the EMA of the MACD or PPO line.",
+      "defaultValue": 9,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 243
+    }
+  },
   "spreadOperands": [
     "MACD_LINE",
     "MACD_SIGNAL",

@@ -232,7 +232,9 @@ def test_the_added_metrics_are_served_and_now_in_the_corpus():
     # 24 unmeasured from 2026-11-01 to 2026-11-02; since 2026-11-05 the record holds the 206 keys the 148.1.0 capture
     # added (tests/test_condition_vocabulary_108.py), none of these
     assert set(contract.unmeasured_metrics).isdisjoint(ADDED_METRICS)
-    assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == served
+    # the corpus is the 146 enum plus the 206 the 148.1.0 capture added (in the corpus since 2026-11-07)
+    added_148 = set(json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"])
+    assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == served | added_148
     record = json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(encoding="utf-8"))
     assert set(record["metrics"]).isdisjoint(ADDED_METRICS)
     assert set(record["history146"]["formerlyUnmeasured"]) == ADDED_METRICS
@@ -240,9 +242,9 @@ def test_the_added_metrics_are_served_and_now_in_the_corpus():
     for key in sorted(ADDED_METRICS):
         column = Column.model_validate({"metric": key, "transformId": "value", "timeframe": {"rel": "anchor"}})
         codes = [f.code for f in validate_column(column, contract=contract) if f.severity == "error"]
-        # PAR_DEV is measured (hints, vocabulary, 12 transforms) but read by NO section subject - refused live on an
-        # evaluated-coin section and on a market section alike (_subjects_146.json), so omega refuses it the same way
-        assert codes == (["METRIC_NO_SUBJECT"] if key == "PAR_DEV" else []), key
+        # PAR_DEV was read by NO section subject at 146 (METRIC_NO_SUBJECT); since 148 its served subjectKinds say a pair
+        # section reads it, so the column is fine and the section decides (tests/test_v146_1.py)
+        assert codes == [], key
 
 
 def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
@@ -260,9 +262,10 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
     for kind in ("metrics", "sectionKeys"):
         assert results[kind]["liveNotStored"] == [], kind
     assert results["sectionKeys"]["storedNotLive"] == []
-    # since 2026-11-05 the store also names the 206 keys the 148.1.0 capture added (unmeasured), which this 146.0.0
-    # surface does not serve
-    assert results["metrics"]["storedNotLive"] == sorted(load().unmeasured_metrics) and len(load().unmeasured_metrics) == 206
+    # since 2026-11-07 the store holds the 206 keys the 148.1.0 capture added (unmeasured 11-05 .. 11-07), which this
+    # 146.0.0 surface does not serve
+    added_148 = json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"]
+    assert results["metrics"]["storedNotLive"] == sorted(added_148) and len(added_148) == 206
     assert (results["metrics"]["live"], results["sectionKeys"]["live"]) == (326, 22)
     assert results["metrics"]["storedUnmeasured"] == []
 

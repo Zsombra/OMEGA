@@ -33,7 +33,8 @@ def test_the_sweep_was_restricted_to_the_206_added_keys():
     r = _record()
     unmeasured = json.loads((ROOT / "data" / "contract" / "metrics" / "_unmeasured_108.json")
                             .read_text(encoding="utf-8"))
-    assert sorted(r["metricsRestrictedTo"]) == sorted(unmeasured["metrics"])
+    # listed under `metrics` when the sweep ran; folded into the corpus the same day (history148)
+    assert sorted(r["metricsRestrictedTo"]) == sorted(unmeasured["history148"]["formerlyUnmeasured"])
     assert len(r["metricsRestrictedTo"]) == 206
 
 

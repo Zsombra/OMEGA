@@ -313,8 +313,8 @@ def test_the_148_enum_is_the_146_enum_plus_the_206_pivot_and_structure_keys_know
     old, new = _enum_in(SCHEMA_146), V["reportColumn"]["metric"]["enum"]
     assert not set(old) - set(new) and len(new) == 532
     added = set(new) - set(old)
-    assert len(added) == 206 and added == set(load().unmeasured_metrics)
-    assert added.isdisjoint(load().metrics)
+    # unmeasured (known by name) 2026-11-05 .. 2026-11-07; in the corpus since the refresh at 149.1.0
+    assert len(added) == 206 and load().unmeasured_metrics == {} and added <= set(load().metrics)
     assert {m for m in added if not m.startswith("PIVOT_")} == {
         "INTERNAL_STRUCTURE_EVENT", "INTERNAL_STRUCTURE_TREND", "INTERNAL_STRUCTURE_LEVEL", "SWING_STRUCTURE_EVENT",
         "SWING_STRUCTURE_TREND", "SWING_STRUCTURE_LEVEL", "EQH", "EQL"}
@@ -360,8 +360,8 @@ def test_the_gaps_between_the_schema_and_omega():
     # measured 2026-11-02 at 146.0.1 (OMEGA v0.11.0, _moves_146.json): empty again
     # from 2026-11-05 the 206 keys v146.5 / .8 / .10 / .11 added, served and known by name only (the 148.1.0
     # re-extraction stopped at its hint step)
-    from omega.contract import load
-    assert gaps["metricsUnmeasured"] == sorted(load().unmeasured_metrics) and len(gaps["metricsUnmeasured"]) == 206
+    # ... and measured by the refresh at 149.1.0 on 2026-11-07 (_moves_149.json): empty again
+    assert gaps["metricsUnmeasured"] == []
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
     # the enum and was platform-privileged at the 61.2.0 extraction (data/derived/platform_privileged.json)
     # The extraction's catalogue still lists bandTouch; since 2026-10-12 omega.contract derives it as RETIRED from this
@@ -370,15 +370,13 @@ def test_the_gaps_between_the_schema_and_omega():
     # levelInteraction extracted 2026-10-13 (43 metrics); classifyState stays platform-privileged
     # ema (v146.7) served since the 148.1.0 capture and not yet extracted (2026-11-05: the hint step stopped first)
     # rma / wma / rsi / cci (149.0.0) served since the 149.1.0 capture (2026-11-07), not yet extracted either
-    assert gaps["transforms"] == {"schemaOnly": ["cci", "classifyState", "ema", "rma", "rsi", "wma"],
-                                  "omegaOnly": ["bandTouch"]}
+    # ... all five extracted by the refresh at 149.1.0 on 2026-11-07: classifyState alone again
+    assert gaps["transforms"] == {"schemaOnly": ["classifyState"], "omegaOnly": ["bandTouch"]}
     # closed 2026-10-12: Column.buffer with the schema's 0-500; before, schemaOnly was ["buffer"]. Since the 148.1.0
     # capture (2026-11-05) the six v146.9 / v146.11 knobs, served and not modelled (which metric takes which knob is
     # served per metric by the hints the stopped re-extraction did not reach)
     # and since the 149.1.0 capture (2026-11-07) the thirteen 149.x knobs
-    assert gaps["columnFields"] == {"schemaOnly": sorted([
-        "confluenceFilter", "equalBars", "equalThreshold", "leftBars", "rightBars", "swingLength",
-        "accelerationIncrement", "accelerationMaximum", "accelerationStart", "atrPeriod", "dSmoothing", "fast",
-        "kSmoothing", "multiplier", "period", "rsiPeriod", "signal", "slow", "stdDev"]), "omegaOnly": []}
+    # ... all nineteen on omega.types.Column since the model step of 2026-11-07 (omega.types.KNOBS): no gap
+    assert gaps["columnFields"] == {"schemaOnly": [], "omegaOnly": []}
     # the section anchor override left at 48.0.0; kept on the model for old records, refused by validate_section
     assert gaps["sectionFields"] == {"schemaOnly": [], "omegaOnly": ["timeframe"]}

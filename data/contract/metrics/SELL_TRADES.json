@@ -16,14 +16,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
       "id": "trajectory",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
@@ -31,6 +39,11 @@
       "chainSuccessors": [
         "trajectory",
         "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
         "efficiency",
         "zscore",
         "stddev",
@@ -49,10 +62,12 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "aggregate": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "UTC_HOUR",
             "DAY_OF_WEEK",
@@ -60,7 +75,74 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 269,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 118,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 936,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 118,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 936,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "TRADES",
+            "BUY_TRADES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "efficiency": {
           "windowMaximum": 63,
@@ -71,10 +153,12 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "zscore": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "UTC_HOUR",
             "DAY_OF_WEEK",
@@ -82,10 +166,12 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "stddev": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "UTC_HOUR",
             "DAY_OF_WEEK",
@@ -93,10 +179,12 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "linregSlope": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "UTC_HOUR",
             "DAY_OF_WEEK",
@@ -104,10 +192,12 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "pctl": {
-          "windowMaximum": 63,
+          "windowMaximum": 935,
           "operands": [
             "UTC_HOUR",
             "DAY_OF_WEEK",
@@ -115,10 +205,12 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMin": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "UTC_HOUR",
             "DAY_OF_WEEK",
@@ -126,10 +218,12 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMax": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "UTC_HOUR",
             "DAY_OF_WEEK",
@@ -137,15 +231,23 @@
             "SWING_FRACTAL_LOW_BARS_AGO",
             "TRADES",
             "BUY_TRADES"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         }
-      }
+      },
+      "metricParametersAccepted": false
     },
     {
       "id": "relativeTo",
       "chainSuccessors": [
         "trajectory",
         "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
         "efficiency",
         "zscore",
         "stddev",
@@ -157,97 +259,239 @@
       "chainedOuters": {
         "trajectory": {
           "windowMaximum": 64,
-          "operands": null
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "aggregate": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 269,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 118,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 118,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "efficiency": {
           "windowMaximum": 63,
-          "operands": null
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "zscore": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "stddev": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "linregSlope": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "pctl": {
-          "windowMaximum": 63,
-          "operands": null
+          "windowMaximum": 935,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMin": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMax": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 936,
+          "operands": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         }
-      }
+      },
+      "metricParametersAccepted": false
     },
     {
       "id": "aggregate",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "ema",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 269
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "wma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rsi",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "cci",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "maxShare",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
       "id": "zscore",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "stddev",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "linregSlope",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "pctl",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 63
+        "window": 935
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "rollingMin",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
       "id": "rollingMax",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
-      "id": "rank"
+      "id": "rank",
+      "metricParametersAccepted": false
     }
   ],
   "study": "barTrades",
   "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
+  "gloss": "the bar's sell trade count",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "UTC_HOUR",
     "DAY_OF_WEEK",

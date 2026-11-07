@@ -637,6 +637,62 @@ PAUSED (the user's word).
 - re-run `render_coverage` (the smoother shapes then read uncovered and are re-swept);
 - two review passes, then the 0.12.0 cut.
 
+## Stage 2, step 6 on 2026-11-07: the model step (recorded 17:58Z)
+
+Clock: `manager contract status` 149.1.0 / aa4ab640, writes open, at 17:25Z. Platform calls, all read-only over mcporter
+(`battlegrid-anbu`, the npx shim): `preview_strategy_report` for three sweeps (17:25 - 17:31Z) and one knob probe
+(17:31Z), `list_strategy_categories` + `list_strategy_vocabulary` x 11 (17:36Z). The manager was PAUSED (the user's
+word). No stage, commit, bind, deploy, fund, archive or delete.
+
+1. **The refresh landed** (item 1's command, then `build_corpus`): 532 records, stamp 20261106, the 146.0.1 batches
+   archived as `archive_20261102_extraction` (18 batches written). `_unmeasured_108.json` is empty again: the 206 under
+   `history148` with their per-key records, the chain outers (cci, distance, ema, rma, rsi, wma) and the rolling-extreme
+   `offset` under `history149`. `data/contract/metrics/_moves_149.json`: 206 added (v146.5 34, .8 82, .10 82, .11 8), none
+   retired, no header code moved, each smoother gained by 165 existing metrics, 36 metrics serve knobs, subjectKinds
+   489 coin + benchmark / 25 coin / 13 market / 4 OHLC with reference / PAR_DEV reference.
+2. **The model** (the probe's measurements, not inferred):
+   - `omega.types.Column` carries the nineteen knobs (`KNOBS`), typed as the schema serves them.
+   - `omega.contract`: `Metric.parameters` (the served knobs), `Metric.reads_on(subject)`, `REFERENCE_PAIRS` (USDT_USD,
+     USDC_USDT: README v146), `section_subject()`.
+   - `omega.fanout`: `knob_token` (a SET spelled whole once one knob is off, `rsiPeriod` its own token first; SINGLE knobs
+     spelled one by one; after the code, before the timeframe), `_o<N>` on every transform whose catalogue serves
+     `offset` (value, rollingMin, rollingMax: `high_o1_max55`), the five smoothers `_<id><window>` with the catalogue's
+     default, `distance` as a chain outer (`dist_high_o1_max55`).
+   - `omega.validate`: the smoothers are series transforms; `DEPTH_EXCEEDED` where the served bound is depth (window, chain
+     window maximum above columnLookback); `WINDOW_BELOW_MINIMUM` (the catalogue's minimum: cci 2); `OFFSET_REFUSED` off
+     value / rollingMin / rollingMax; `OFFSET_BELOW_MINIMUM` (chainedOuters.distance.offsetMinimum); the knobs
+     (`PARAMETER_UNDECLARED`, `PARAMETER_OUT_OF_RANGE` - range and step, depth maxima, the swing pair's L + R + 1 rule -
+     `PARAMETER_NOT_ACCEPTED` under a transform or chain outer whose served metricParametersAccepted is false, and a
+     `PARAMETER_DEPTH_UNVERIFIED` warning for two depth knobs off together); four section subjects
+     (`SECTION_SUBJECT_CONFLICT`, `SECTION_SUBJECT_METRIC_UNSUPPORTED` over the served subjectKinds,
+     `REFERENCE_INSTRUMENT_REQUIRED`). `METRIC_NO_SUBJECT` no longer fires: every record serves subjectKinds.
+   - `omega.space`: a shape carries the served `offsetMinimum` (rolling extreme -> distance at offset 1) and, for PAR_DEV
+     x relativeTo, the other reference pair.
+3. **Agreement with the platform.** All 104 rendered probe sections predicted header for header. All 223 non-transient
+   probe answers agree with omega.validate (the five accepted sections it refuses are the probe's deliberate duplicates,
+   which the platform flags in `duplicateHeaders`). Each refusal class maps to one omega code (pinned in
+   `tests/test_v149_model.py`).
+4. **The re-sweep.** With the smoothers spelled, `render_coverage` read 2,154 structural shapes uncovered. Three passes
+   (`SWEEP_SCOPE=structural`, `SWEEP_CONTRACT=149.1.0`, one subject each): `2026-11-07-smoothers` (coin, 151 metrics)
+   2,074 shapes / 2,074 headers; `-smoothers-market` (marketScope crypto, the 13 MKT_*) 65 / 65; `-reference`
+   (benchmarkTicker USDT_USD, PAR_DEV) 15 / 19, minting `parDev_USDC_USDT_rel`. **0 refusals, 0
+   predicted-but-not-rendered on all three.** Structural coverage **7,197 / 7,197**; operand-expanded 37,153 rendered,
+   233,740 never - every one a spread operand pair, unrendered by the standing decision (144 and 146 likewise).
+5. **Knob spellings never rendered by the probe** (`scripts/probe_knob_spelling_149.py`, one preview, 17:31Z): thirteen
+   columns - swingLength with confluenceFilter (`iStructLvl_s20_cf`, `iStructTrend_s20_cf_ltf`), STOCH_RSI with a knob other
+   than rsiPeriod off (`stochRsiK_rsi14_p21s3d3`), the D / signal / lower-band siblings, a knob with a Developing read
+   (`eql_e5_dev`) - **all as predicted**. 29 caches in `render_coverage.SEEN_FILES`.
+6. **The vocabulary re-read at 149.1.0** (`scripts/snapshot_vocabulary.py`, `data/contract/vocabulary/20261107T1736Z/`;
+   `structure` still RESULT_TOO_LARGE): the transforms gained rma / wma / rsi / cci (28 ids), and
+   **`budgets.conditionFrameReads` moved 2,048 -> 5,048**, undocumented and not read before. Categories unchanged. The
+   composability matrix is 532 x 28.
+7. **Tests: 1973 passed, 0 failed** (1916 + 42 in `tests/test_v149_model.py` + the moved pins). The 54 refresh pins
+   moved, each with its history kept in the comment; the "unmeasured" tests of v148 / v149 now pin the history blocks and
+   the measured behaviour. `pyproject.toml` stays 0.11.0.
+
+**Next:** two review passes over the v0.12 branch (the model step is the bulk of it), then the 0.12.0 cut (pyproject,
+this file rewritten as the DONE record) - no merge and no tag without the user's word.
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206

@@ -15,12 +15,40 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": true,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": null,
   "provenance": "tradingView",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "which side of the Supertrend stop price is on — a state that persists between flips, not a flip event",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": {
+    "atrPeriod": {
+      "required": false,
+      "description": "The length of the average true range the channel’s or the stop’s distance is a multiple of.",
+      "defaultValue": 10,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 118
+    },
+    "multiplier": {
+      "required": false,
+      "description": "How many average true ranges the channel or stop lines sit from their basis.",
+      "defaultValue": 3,
+      "minimum": 0.1,
+      "maximum": 10,
+      "step": 0.1,
+      "bound": "range"
+    }
+  }
 }

@@ -89,7 +89,9 @@ def test_every_timeless_metric_is_covered(contract):
     # 102 since the re-extraction at 144.0.0, 2026-10-30 (_moves_144.json): the v137.2 week / month profiles and PWH/PWL/PMH/PML.
     # 112 since the re-extraction at 146.0.1, 2026-11-02 (_moves_146.json): the eight CROWD_*_Z / _Z_LIVE and the two
     # REGIME_WARNING_* are timeless (the 13 MKT_* and PAR_DEV keep a candle grid).
-    assert len(timeless) == 112
+    # 310 since the refresh at 149.1.0, 2026-11-07 (_moves_149.json): the 198 pivots of 148.1.0 are timeless; the rule
+    # was probed live on PIVOT_WEEK_P that day ({abs: 4h} and {rel: lower} refused, data/audit/authoring_probe_149_2026-11-07.json)
+    assert len(timeless) == 310
     for name in timeless:
         codes = [f.code for f in _findings(name, {"rel": "regime"}, contract)]
         assert "REPORT_COLUMN_CONSTRUCTION_FAILED" in codes, name

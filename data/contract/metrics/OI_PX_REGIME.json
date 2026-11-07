@@ -17,12 +17,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "openInterest",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "open interest's direction over its newest samples read against the 1h change, ((frame price − 1h bar open) / 1h bar open) × 100 — read live, so it moves until that bar closes",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

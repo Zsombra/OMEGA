@@ -17,7 +17,6 @@ import json
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
 
 from omega import contract as C
 from omega.condition_vocabulary import derive, vocabulary
@@ -142,31 +141,38 @@ def test_all_twenty_one_numeric_fields_keep_their_bounds_through_the_ref():
 
 
 @pytest.mark.parametrize("knob,value", [(k, 14) for k in BAR_COUNT] + [(k, 2.0) for k in PLAIN_NUMBERS])
-def test_the_new_knobs_are_not_modelled_yet(knob, value):
-    """Served by the 149.1.0 schema and per metric by the 149.1.0 hints (data/audit/hints_149_1_0_2026-11-06.json
-    `parameters`), but no header token or refusal of theirs is rendered: omega.types.Column refuses them."""
-    with pytest.raises(ValidationError):
-        Column.model_validate({"metric": "MACD_HIST", "transformId": "value", "timeframe": {"rel": "anchor"},
-                               knob: value})
+def test_the_new_knobs_are_modelled_per_metric(knob, value):
+    """Refused by omega.types.Column until 2026-11-07 (no header token or refusal of theirs rendered). The probe at
+    149.1.0 rendered them (MACDhist_fast12slow26sig7, ...) and refused the undeclared ones ("metric 'MACD_LINE' does
+    not accept params.period"): MACD_HIST takes fast / slow / signal, as its hint serves."""
+    col = Column.model_validate({"metric": "MACD_HIST", "transformId": "value", "timeframe": {"rel": "anchor"},
+                                 knob: value})
+    expected = [] if knob in ("fast", "slow", "signal") else ["PARAMETER_UNDECLARED"]
+    assert _errors(validate_column(col)) == expected
 
 
-# --- the new transforms are served and unmeasured --------------------------------------------------------------------
-def test_the_five_smoothers_are_unmeasured_as_transform_and_as_chain_outer():
+# --- the new transforms: unmeasured until 2026-11-07, measured since -------------------------------------------------
+def test_the_five_smoothers_are_measured_as_transform_and_as_chain_outer():
+    """Unmeasured (served, never extracted) from 2026-11-07 03:22Z until the refresh folded the 2026-11-06 hints in and
+    the probe rendered them the same day (RSI14_rma14, dist_close_rma10, ...)."""
     contract = load()
-    assert set(contract.unmeasured_transforms) == {"ema"} | NEW_TRANSFORMS
-    assert set(contract.unmeasured_chain_outers) == {"distance", "ema"} | NEW_TRANSFORMS
-    served = set(V["reportColumn"]["chainedTransformId"]["enum"])
-    assert set(contract.unmeasured_chain_outers) <= served
+    assert contract.unmeasured_transforms == {} and contract.unmeasured_chain_outers == {}
+    assert {"ema"} | NEW_TRANSFORMS <= set(contract.transforms)
+    history = C._load(CONTRACT_DIR / "metrics" / "_unmeasured_108.json")["history149"]
+    assert set(history["chainOuters"]) == {"distance", "ema"} | NEW_TRANSFORMS
+    assert set(history["chainOuters"]) <= set(V["reportColumn"]["chainedTransformId"]["enum"])
 
 
 @pytest.mark.parametrize("transform", sorted(NEW_TRANSFORMS))
-def test_a_column_using_a_new_transform_is_refused_as_unmeasured(transform):
+def test_a_column_using_a_new_transform_validates(transform):
+    """Refused TRANSFORM_UNMEASURED until 2026-11-07; both shapes rendered at 149.1.0 (RSI14_<id>14,
+    dist_high_<id>10 / dist_close_<id>10)."""
     own = Column.model_validate({"metric": "RSI14", "transformId": transform, "window": 14,
                                  "timeframe": {"rel": "anchor"}})
-    assert _errors(validate_column(own)) == ["TRANSFORM_UNMEASURED"]
+    assert _errors(validate_column(own)) == []
     chained = Column.model_validate({"metric": "HIGH", "transformId": "distance", "chainedTransformId": transform,
                                      "window": 10, "timeframe": {"rel": "anchor"}})
-    assert _errors(validate_column(chained)) == ["TRANSFORM_UNMEASURED"]
+    assert _errors(validate_column(chained)) == []
 
 
 # --- the 532 hints at 149.1.0, recorded and not folded in -------------------------------------------------------------

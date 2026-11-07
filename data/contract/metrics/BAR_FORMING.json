@@ -15,12 +15,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether the bar is still forming (live, provisional) or already closed",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

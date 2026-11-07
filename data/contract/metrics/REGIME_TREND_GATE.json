@@ -16,12 +16,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "regimeTrendEvidence",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether this bar cleared the ADX trending gate (27), dropped below the exit gate (23), or landed in the buffer between them where the PREVIOUS bar’s trend is carried forward rather than re-confirmed",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

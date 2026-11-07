@@ -103,7 +103,8 @@ def test_mapped_plus_dead_covers_the_whole_corpus():
     never_probed = set(json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(
         encoding="utf-8"))["formerlyUnmeasured"])
     never_probed |= (set(MOVES_110["added"]) | set(MOVES_110_8["added"]) | set(MOVES_135["added"])
-                     | set(MOVES_144["added"]) | set(MOVES_146["added"]))
+                     | set(MOVES_144["added"]) | set(MOVES_146["added"])
+                     | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"]))
     measured_then = (mapped | dead) - set(CONTRACT.retired_metrics)
     assert measured_then == set(CONTRACT.metrics) - never_probed, (
         f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - never_probed - measured_then)}")

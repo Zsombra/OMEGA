@@ -1,0 +1,1317 @@
+[
+ {
+  "metric": "REGIME_CONVICTION",
+  "label": "Regime · conviction",
+  "code": "regConv",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "maximum",
+    "high",
+    "medium",
+    "low",
+    "uncertain"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   }
+  ],
+  "study": "regimeVerdict",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "how strongly the structure label holds: a trend’s tier moves with its volatility and its agreement with swing structure, a range’s with that agreement alone; never moved by a warning, and NOT how comfortably a gate cleared (the margins carry that)",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null
+ },
+ {
+  "metric": "REGIME_RUN_BARS",
+  "label": "Regime · run length",
+  "code": "regBars",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "count",
+   "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "spread",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "regimeVerdict",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "consecutive confirmed bars the structure label has held, unbounded — a warning or a volatility move inside it does not restart it",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null,
+  "spreadOperands": [
+   "UTC_HOUR",
+   "DAY_OF_WEEK",
+   "SWING_FRACTAL_HIGH_BARS_AGO",
+   "SWING_FRACTAL_LOW_BARS_AGO",
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_MOM_BULL_VOTES",
+   "REGIME_MOM_BEAR_VOTES"
+  ]
+ },
+ {
+  "metric": "REGIME_TREND_GATE",
+  "label": "Regime · trend gate",
+  "code": "regGate",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "cleared",
+    "held",
+    "dropped"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   }
+  ],
+  "study": "regimeTrendEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "whether this bar cleared the ADX trending gate (27), dropped below the exit gate (23), or landed in the buffer between them where the PREVIOUS bar’s trend is carried forward rather than re-confirmed",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null
+ },
+ {
+  "metric": "REGIME_TREND_MARGIN",
+  "label": "Regime · trend margin",
+  "code": "regMargin",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "spread",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "regimeTrendEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "ADX points by which the current trend label survives — distance above the exit gate (23) while trending, below the entry gate (27) while ranging; small inside the buffer zone",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null,
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "STOCH_RSI_K",
+   "STOCH_RSI_D",
+   "DI_PLUS",
+   "DI_MINUS",
+   "CMF20",
+   "REGIME_CRASH_MARGIN"
+  ]
+ },
+ {
+  "metric": "REGIME_TREND_SOURCE",
+  "label": "Regime · trend source",
+  "code": "regSrc",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "di spread",
+    "ema fallback"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   }
+  ],
+  "study": "regimeTrendEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "which evidence class voted the trend direction — a decisive DI spread, or the EMA-vs-SMA fallback that fires precisely when the DI spread is indecisive",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null
+ },
+ {
+  "metric": "REGIME_DI_SPREAD",
+  "label": "Regime · DI spread",
+  "code": "regDI",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "points",
+   "precision": 2,
+   "range": {
+    "min": -100,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   }
+  ],
+  "study": "regimeTrendEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "DI+ − DI− in points on the regime timeframe — the value of the DIplus14_DIminus14_spread column read at the regime rung, not at a lower anchor — gated against the directional threshold (5)",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null
+ },
+ {
+  "metric": "REGIME_VOL_ATR_RATIO",
+  "label": "Regime · ATR ratio",
+  "code": "regAtrR",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "ratio",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "spread",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "regimeVolatilityEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "the classifier’s ATR reading against its own trailing-window mean; expands above 1.05, contracts below 0.9",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null,
+  "spreadOperands": [
+   "RVOL",
+   "REGIME_VOL_BBW_RATIO"
+  ]
+ },
+ {
+  "metric": "REGIME_VOL_BBW_RATIO",
+  "label": "Regime · BB-width ratio",
+  "code": "regBbwR",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "ratio",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "spread",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "regimeVolatilityEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "the classifier’s Bollinger-width reading against its own trailing-window mean; the volatility label needs THIS and the ATR ratio to agree, so either alone can hold it back",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null,
+  "spreadOperands": [
+   "RVOL",
+   "REGIME_VOL_ATR_RATIO"
+  ]
+ },
+ {
+  "metric": "REGIME_MOM_BULL_VOTES",
+  "label": "Regime · bullish votes",
+  "code": "regBull",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "count",
+   "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "spread",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "regimeMomentumVotes",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "how many of the four momentum inputs voted bullish (0–4)",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null,
+  "spreadOperands": [
+   "UTC_HOUR",
+   "DAY_OF_WEEK",
+   "SWING_FRACTAL_HIGH_BARS_AGO",
+   "SWING_FRACTAL_LOW_BARS_AGO",
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_RUN_BARS",
+   "REGIME_MOM_BEAR_VOTES"
+  ]
+ },
+ {
+  "metric": "REGIME_MOM_BEAR_VOTES",
+  "label": "Regime · bearish votes",
+  "code": "regBear",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "count",
+   "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "spread",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "regimeMomentumVotes",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "how many of the four momentum inputs voted bearish (0–4) — read against the bullish tally, a 3–1 is not a 2–1",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null,
+  "spreadOperands": [
+   "UTC_HOUR",
+   "DAY_OF_WEEK",
+   "SWING_FRACTAL_HIGH_BARS_AGO",
+   "SWING_FRACTAL_LOW_BARS_AGO",
+   "TRADES",
+   "BUY_TRADES",
+   "SELL_TRADES",
+   "REGIME_RUN_BARS",
+   "REGIME_MOM_BULL_VOTES"
+  ]
+ },
+ {
+  "metric": "REGIME_CRASH_MARGIN",
+  "label": "Regime · crash margin",
+  "code": "regCrash",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "spread",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "regimeCrashEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "standard deviations by which the crash reading — the fifteen-bar rate of change counted in the coin's own one-bar volatility before it — sits above the crash gate (-3) — how far the crash warning was from being raised",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null,
+  "spreadOperands": [
+   "RSI14",
+   "RSI7",
+   "RSI2",
+   "STOCH_K",
+   "STOCH_D",
+   "MFI14",
+   "CCI20",
+   "ADX",
+   "WT1",
+   "WT2",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "WILLR14",
+   "STOCH_RSI_K",
+   "STOCH_RSI_D",
+   "DI_PLUS",
+   "DI_MINUS",
+   "CMF20",
+   "REGIME_TREND_MARGIN"
+  ]
+ },
+ {
+  "metric": "REGIME_CRASH_LATCH",
+  "label": "Regime · crash latch",
+  "code": "regLatch",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "armed",
+    "clear"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   }
+  ],
+  "study": "regimeCrashEvidence",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "the crash latch is armed: set by a crash reading below the gate, cleared when the reading recovers to the exit gate — while armed the reading carries the crash warning",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null
+ },
+ {
+  "metric": "REGIME_WARNING_CRASH",
+  "label": "Regime · crash warning",
+  "code": "regWCrash",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "raised",
+    "clear"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   }
+  ],
+  "study": "regimeVerdict",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "whether the reading carries the crash warning: raised by a crash reading below the gate (-3) and held by the crash latch until the reading recovers to the exit gate",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null
+ },
+ {
+  "metric": "REGIME_WARNING_DIVERGENCE",
+  "label": "Regime · divergence warning",
+  "code": "regWDiv",
+  "family": "regime",
+  "nativeOutput": {
+   "kind": "classification",
+   "vocab": [
+    "raised",
+    "clear"
+   ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   }
+  ],
+  "study": "regimeVerdict",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "whether the reading carries the momentum-divergence warning: momentum diverging from price while the structure is a trend",
+  "subjectKinds": [
+   "evaluated-coin",
+   "benchmark"
+  ],
+  "parameters": null
+ },
+ {
+  "metric": "CROWD_PICK",
+  "label": "Crowd pick rate",
+  "code": "pick",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "share of the field picking this coin (%), last 4 settled sessions",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_UPBIAS",
+  "label": "Crowd up-bias",
+  "code": "upBias",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "share of this coin’s picks that are directional up (%), last 4 settled sessions",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC",
+  "label": "Crowd accuracy",
+  "code": "crowdAcc",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "crowd accuracy on this coin (%), last 4 settled sessions",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT",
+  "label": "Crowd captain rate",
+  "code": "captRate",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "share of grids picking this coin that captain it (%), last 4 settled sessions",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_PICK_LIVE",
+  "label": "Crowd pick rate (live)",
+  "code": "pickLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "share of the field picking this coin (%), live concurrent sessions excluding the current one; null when none are running",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_UPBIAS_LIVE",
+  "label": "Crowd up-bias (live)",
+  "code": "upBiasLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "share of this coin’s picks that are directional up (%), live concurrent sessions excluding the current one; null when none are running",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC_LIVE",
+  "label": "Crowd accuracy (live)",
+  "code": "crowdAccLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "crowd accuracy on this coin (%), live concurrent sessions excluding the current one; null when none are running",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT_LIVE",
+  "label": "Crowd captain rate (live)",
+  "code": "captRateLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "percent",
+   "precision": 1,
+   "range": {
+    "min": 0,
+    "max": 100
+   }
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "share of grids picking this coin that captain it (%), live concurrent sessions excluding the current one; null when none are running",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo"
+  ]
+ },
+ {
+  "metric": "CROWD_UP_LEAN_Z",
+  "label": "Crowd lean (z)",
+  "code": "upLeanZ",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far this coin’s up share sits from 50%, in standard errors — a binomial z by normal approximation, each cell an independent trial; last 4 settled sessions; significant at ±1.96, compared unrounded; null with no cells",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "CROWD_UP_EXCESS_Z",
+  "label": "Crowd up-share excess (z)",
+  "code": "upExcessZ",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far this coin’s up share sits from the rest of the field’s over the same window, in standard errors — a binomial z by normal approximation, each cell an independent trial; last 4 settled sessions; significant at ±1.96, compared unrounded; null with no cells, or when the rest of the field is empty or unanimous",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT_EXCESS_Z",
+  "label": "Crowd captain excess (z)",
+  "code": "captExcessZ",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far the share of this coin’s cells that are captained sits from the rest of the field’s over the same window, in standard errors — a binomial z by normal approximation, each cell an independent trial; last 4 settled sessions; significant at ±1.96, compared unrounded; null with no cells, or when the rest of the field is empty or never or always captains",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC_EDGE_Z",
+  "label": "Crowd accuracy edge (z)",
+  "code": "accEdgeZ",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdSettled",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far the crowd’s accuracy on this coin sits from a coin flip (50%), in standard errors — a binomial z by normal approximation, each cell an independent trial; last 4 settled sessions; significant at ±1.96, compared unrounded; null with no cells",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "CROWD_UP_LEAN_Z_LIVE",
+  "label": "Crowd lean (z, live)",
+  "code": "upLeanZLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far this coin’s up share sits from 50%, in standard errors — a binomial z by normal approximation, each cell an independent trial; live concurrent sessions excluding the current one; null when none are running; significant at ±1.96, compared unrounded; null with no cells",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "CROWD_UP_EXCESS_Z_LIVE",
+  "label": "Crowd up-share excess (z, live)",
+  "code": "upExcessZLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far this coin’s up share sits from the rest of the field’s over the same window, in standard errors — a binomial z by normal approximation, each cell an independent trial; live concurrent sessions excluding the current one; null when none are running; significant at ±1.96, compared unrounded; null with no cells, or when the rest of the field is empty or unanimous",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+  "label": "Crowd captain excess (z, live)",
+  "code": "captExcessZLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far the share of this coin’s cells that are captained sits from the rest of the field’s over the same window, in standard errors — a binomial z by normal approximation, each cell an independent trial; live concurrent sessions excluding the current one; null when none are running; significant at ±1.96, compared unrounded; null with no cells, or when the rest of the field is empty or never or always captains",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ },
+ {
+  "metric": "CROWD_ACC_EDGE_Z_LIVE",
+  "label": "Crowd accuracy edge (z, live)",
+  "code": "accEdgeZLive",
+  "family": "crowd",
+  "nativeOutput": {
+   "kind": "numeric",
+   "unit": "oscillator",
+   "precision": 2
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "timeless",
+  "transforms": [
+   {
+    "id": "value",
+    "metricParametersAccepted": false,
+    "maximums": {
+     "offset": 0
+    },
+    "bounds": {
+     "offset": "lookback"
+    }
+   },
+   {
+    "id": "rank",
+    "metricParametersAccepted": false
+   }
+  ],
+  "study": "crowdLive",
+  "provenance": "battleGridDerived",
+  "rankScope": "report",
+  "gloss": "how far the crowd’s accuracy on this coin sits from a coin flip (50%), in standard errors — a binomial z by normal approximation, each cell an independent trial; live concurrent sessions excluding the current one; null when none are running; significant at ±1.96, compared unrounded; null with no cells; provisional while the sessions run, an unresolved cell counting as not correct",
+  "subjectKinds": [
+   "evaluated-coin"
+  ],
+  "parameters": null,
+  "rankOrderings": [
+   "hi",
+   "lo",
+   "far",
+   "near"
+  ]
+ }
+]

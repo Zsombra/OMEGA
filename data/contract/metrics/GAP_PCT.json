@@ -13,12 +13,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 62
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "gaps",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "the gap from the prior bar's close to this bar's open, ((open − prior close) / prior close) × 100",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

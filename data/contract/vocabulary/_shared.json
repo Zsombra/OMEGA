@@ -30,6 +30,22 @@
    "label": "Exponential average (EMA)"
   },
   {
+   "id": "rma",
+   "label": "Wilder average (RMA)"
+  },
+  {
+   "id": "wma",
+   "label": "Weighted average (WMA)"
+  },
+  {
+   "id": "rsi",
+   "label": "Relative strength index (RSI)"
+  },
+  {
+   "id": "cci",
+   "label": "Commodity channel index (CCI)"
+  },
+  {
    "id": "efficiency",
    "label": "Efficiency (ER)"
   },
@@ -134,7 +150,7 @@
   "distinctTimeframes": 8,
   "strategyConditions": 32,
   "conditionClauses": 32,
-  "conditionFrameReads": 2048,
+  "conditionFrameReads": 5048,
   "reportNoteChars": 3200,
   "marketReadChars": 4000
  },
@@ -173,52 +189,63 @@
  ],
  "nullSentinel": "—",
  "_refreshed": {
-  "at": "2026-11-05T09:43Z",
-  "contractVersion": "148.1.0",
-  "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261105T0943Z/. Ten of the eleven categories read; `structure` (362 metrics) is REFUSED as RESULT_TOO_LARGE ('The result is 224226 characters, over the 150000-character cap; ask for less.') and the tool takes no narrower argument - the category-invariant blocks below are identical across the ten that were read",
+  "at": "2026-11-07T17:36Z",
+  "contractVersion": "149.1.0",
+  "how": "scripts/snapshot_vocabulary.py: list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261107T1736Z/; refused: {'structure': 'RESULT_TOO_LARGE'}",
   "moved": [
-   "transforms: `ema` added after aggregate (label 'Exponential average (EMA)'), 24 ids (v146.7)",
-   "budgets.conditionFrameReads 256 -> 2048 (v146.4)",
-   "conditionGrammar, timeframeRefs, previewExecutionLimits, timeframes, rankedTimeframes: unchanged"
+   "transforms: rma, wma, rsi, cci added after ema (labels 'Wilder average (RMA)', 'Weighted average (WMA)', 'Relative strength index (RSI)', 'Commodity channel index (CCI)'), 28 ids (149.0.0)",
+   "budgets.conditionFrameReads 2048 -> 5048 (149.x; undocumented, first read here)",
+   "conditionGrammar, timeframeRefs, previewExecutionLimits, timeframes, rankedTimeframes: unchanged",
+   "categories: no count moved (structure still refused RESULT_TOO_LARGE)"
   ],
   "previous": {
-   "at": "2026-11-02T05:55Z",
-   "contractVersion": "146.0.1",
-   "how": "list_strategy_vocabulary per category (eleven since 146: `market` added) via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261102T0555Z/",
+   "at": "2026-11-05T09:43Z",
+   "contractVersion": "148.1.0",
+   "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261105T0943Z/. Ten of the eleven categories read; `structure` (362 metrics) is REFUSED as RESULT_TOO_LARGE ('The result is 224226 characters, over the 150000-character cap; ask for less.') and the tool takes no narrower argument - the category-invariant blocks below are identical across the ten that were read",
    "moved": [
-    "transforms",
-    "(transforms: the same 23 ids and labels; the served order moved - classifyZone now precedes maxShare and rank)"
+    "transforms: `ema` added after aggregate (label 'Exponential average (EMA)'), 24 ids (v146.7)",
+    "budgets.conditionFrameReads 256 -> 2048 (v146.4)",
+    "conditionGrammar, timeframeRefs, previewExecutionLimits, timeframes, rankedTimeframes: unchanged"
    ],
    "previous": {
-    "at": "2026-10-30T03:45Z",
-    "contractVersion": "144.0.0",
-    "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261030T0345Z/",
+    "at": "2026-11-02T05:55Z",
+    "contractVersion": "146.0.1",
+    "how": "list_strategy_vocabulary per category (eleven since 146: `market` added) via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261102T0555Z/",
     "moved": [
-     "transforms"
+     "transforms",
+     "(transforms: the same 23 ids and labels; the served order moved - classifyZone now precedes maxShare and rank)"
     ],
     "previous": {
-     "at": "2026-10-26T07:08Z",
-     "contractVersion": "135.2.0",
-     "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261026T0708Z/",
+     "at": "2026-10-30T03:45Z",
+     "contractVersion": "144.0.0",
+     "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261030T0345Z/",
      "moved": [
-      "transforms",
-      "budgets"
+      "transforms"
      ],
      "previous": {
-      "at": "2026-10-13T03:37Z",
-      "contractVersion": "108.4.0",
-      "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only; the in-app connector was disconnected); raw responses in data/contract/vocabulary/20261013T0337Z/",
+      "at": "2026-10-26T07:08Z",
+      "contractVersion": "135.2.0",
+      "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only); raw responses in data/contract/vocabulary/20261026T0708Z/",
       "moved": [
        "transforms",
-       "conditionGrammar (new)"
+       "budgets"
       ],
       "previous": {
-       "at": "2026-09-09T08:03:07Z",
-       "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
-       "fieldsUpdated": [
-        "budgets",
-        "transforms"
-       ]
+       "at": "2026-10-13T03:37Z",
+       "contractVersion": "108.4.0",
+       "how": "list_strategy_vocabulary per category via the mcporter CLI (read-only; the in-app connector was disconnected); raw responses in data/contract/vocabulary/20261013T0337Z/",
+       "moved": [
+        "transforms",
+        "conditionGrammar (new)"
+       ],
+       "previous": {
+        "at": "2026-09-09T08:03:07Z",
+        "how": "npx mcporter list battlegrid-anbu --schema --json (read-only tool catalogue) and npx mcporter call battlegrid-anbu.list_strategy_vocabulary per category; the CLI reaches the same server and account as the claude.ai connector, verified this session by fetching one series both ways. Deployed contract 54.1.0 per GET /mcp/version.",
+        "fieldsUpdated": [
+         "budgets",
+         "transforms"
+        ]
+       }
       }
      }
     }

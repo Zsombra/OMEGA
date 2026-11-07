@@ -15,12 +15,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "regimeCrashEvidence",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "the crash latch is armed: set by a crash reading below the gate, cleared when the reading recovers to the exit gate — while armed the reading carries the crash warning",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

@@ -13,20 +13,32 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     },
     {
-      "id": "rank"
+      "id": "rank",
+      "metricParametersAccepted": false
     }
   ],
   "study": "barDeviation",
   "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
+  "gloss": "how far the bar's high has run above its own open, ((high − open) / open) × 100 — never negative; read live, so it moves until the bar closes",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "PPO_HIST",
     "PPO_LINE",

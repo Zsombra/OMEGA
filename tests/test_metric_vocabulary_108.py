@@ -41,12 +41,15 @@ def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
     # 135.2 (_moves_135.json)
     # 532 since the 148.1.0 capture (2026-11-05): the 206 keys v146.5 / .8 / .10 / .11 added, listed by name - the
     # re-extraction at 148.1.0 stopped at its hint step before reaching any of them (RECORD["why"])
+    # 532 in the corpus since the refresh at 149.1.0, 2026-11-07 (_moves_149.json); the 206 under history148
     assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 532
-    assert len(c.metrics) == 326 and set(RECORD["metrics"]) == set(c.unmeasured_metrics)
-    assert len(c.unmeasured_metrics) == 206 and set(c.unmeasured_metrics).isdisjoint(c.metrics)
+    assert len(c.metrics) == 532 and RECORD["metrics"] == {} and c.unmeasured_metrics == {}
+    assert len(RECORD["history148"]["formerlyUnmeasured"]) == 206
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
     assert len(RECORD["history146"]["formerlyUnmeasured"]) == 24 and RECORD["history146"]["measuredOn"] == "2026-11-02"
-    assert RECORD["servedAt"] == "148.1.0" and RECORD["listedOn"] == "2026-11-05"
+    # listed 2026-11-05 at 148.1.0; the record's servedAt follows the served contract (149.1.0 when it was emptied)
+    assert RECORD["servedAt"] == "149.1.0" and RECORD["listedOn"] == "2026-11-05"
+    assert RECORD["history148"]["servedAt"] == "148.1.0"
 
 
 def test_the_v100_metrics_are_what_the_changelog_says():

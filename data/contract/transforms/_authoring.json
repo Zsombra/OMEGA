@@ -221,7 +221,7 @@
    "emits": 1
   },
   "aggregate": {
-   "label": "Windowed aggregate",
+   "label": "Moving average (SMA)",
    "parameters": {
     "bars": {
      "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
@@ -229,18 +229,18 @@
     },
     "window": {
      "defaultValue": 24,
-     "description": "How many of this column's newest bars are averaged into one value.",
+     "description": "How many of this column's newest bars are averaged into one value — the length of the simple moving average, as TradingView's ta.sma. Null when the series holds fewer bars than the length.",
      "minimum": 1,
      "required": false,
      "unit": "seriesElements"
     }
    },
-   "calculationSummary": "Compute the mean of non-null values in the selected window.",
+   "calculationSummary": "The simple moving average (TradingView's ta.sma) of the selected window: the mean of its non-null values.",
    "formula": "output = sum(nonNull({base}[-{window}:])) / count(nonNull({base}[-{window}:]))",
    "operandOrder": [
     "base"
    ],
-   "nullBehavior": "Returns null when the selected window has no non-null values.",
+   "nullBehavior": "Returns null when the series holds fewer bars than the window, or the window has no non-null values.",
    "emits": 1,
    "note": "Mean only — there is no sum/min/max variant.",
    "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here"
@@ -400,8 +400,8 @@
    "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   },
   "rollingMax": {
-   "calculationSummary": "Report the highest value of the window.",
-   "formula": "output = max(nonNull({base}[-{window}:]))",
+   "calculationSummary": "Report the highest value of the window, which ends offset bars before the newest.",
+   "formula": "output = max(nonNull({base}[t - {offset} - {window} + 1 .. t - {offset}]))",
    "nullBehavior": "Returns null when the series holds fewer bars than the window, or when the newest or the oldest of them has no value.",
    "operandOrder": [
     "base"
@@ -409,6 +409,12 @@
    "parameters": {
     "bars": {
      "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "offset": {
+     "defaultValue": 0,
+     "description": "How many bars before the newest the window ends; 0 ends it at the newest bar. At 1 the extreme is formed from the bars before the newest, a level a close can break, and the column can chain into distance (offset 1 or more).",
+     "minimum": 0,
      "required": false
     },
     "window": {
@@ -424,8 +430,8 @@
    "_addedAt": "extraction 20261026; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   },
   "rollingMin": {
-   "calculationSummary": "Report the lowest value of the window.",
-   "formula": "output = min(nonNull({base}[-{window}:]))",
+   "calculationSummary": "Report the lowest value of the window, which ends offset bars before the newest.",
+   "formula": "output = min(nonNull({base}[t - {offset} - {window} + 1 .. t - {offset}]))",
    "nullBehavior": "Returns null when the series holds fewer bars than the window, or when the newest or the oldest of them has no value.",
    "operandOrder": [
     "base"
@@ -433,6 +439,12 @@
    "parameters": {
     "bars": {
      "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "offset": {
+     "defaultValue": 0,
+     "description": "How many bars before the newest the window ends; 0 ends it at the newest bar. At 1 the extreme is formed from the bars before the newest, a level a close can break, and the column can chain into distance (offset 1 or more).",
+     "minimum": 0,
      "required": false
     },
     "window": {
@@ -516,6 +528,126 @@
    },
    "label": "Relative to coin",
    "_addedAt": "extraction 20261030; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "cci": {
+   "calculationSummary": "The commodity channel index (TradingView's ta.cci): the newest value's distance from its window's mean, in mean absolute deviations over 0.015.",
+   "formula": "output = ({base}[t] − mean) / (0.015 · mean |{base} − mean|) over the newest {window} bars",
+   "nullBehavior": "Returns null when the series holds fewer bars than the length, any of them has no value, or all of them are equal.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "The length of the commodity channel index, as TradingView's ta.cci(source, length). One value reads exactly the length in bars, and is null when the series holds fewer, any of them has no value, or all of them are equal. A stored CCI metric is the exact source at its own length.",
+     "minimum": 2,
+     "required": false,
+     "unit": "seriesElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Commodity channel index (CCI)",
+   "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "ema": {
+   "calculationSummary": "The exponential moving average (TradingView's ta.ema) over the bars its length's convergence needs, seeded by the oldest of them.",
+   "formula": "output = ema[t], ema[0] = {base}[-need({window})], ema[i] = α·{base}[i] + (1 − α)·ema[i − 1], α = 2 / ({window} + 1)",
+   "nullBehavior": "Returns null when the series holds fewer bars than the length needs, or any of them has no value.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "The length of the exponential moving average, as TradingView's ta.ema(source, length). One value reads the bars after which the average's seed weighs at most 0.1 % — 73 bars at length 20 — and is null when the series holds fewer or any of them has no value. A stored EMA metric is the exact source at its own length.",
+     "minimum": 1,
+     "required": false,
+     "unit": "smoothingLength"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Exponential average (EMA)",
+   "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "rma": {
+   "calculationSummary": "Wilder's moving average (TradingView's ta.rma) over the bars its length's convergence needs, seeded by the mean of the oldest length bars.",
+   "formula": "output = rma[t], rma[0] = mean({base}[-need({window})..][0..{window}]), rma[i] = α·{base}[i] + (1 − α)·rma[i − 1], α = 1 / {window}",
+   "nullBehavior": "Returns null when the series holds fewer bars than the length needs, or any of them has no value.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 14,
+     "description": "The length of Wilder's moving average, as TradingView's ta.rma(source, length). One value reads the length's seed bars plus the bars after which that seed weighs at most 0.1 % — 108 bars at length 14 — and is null when the series holds fewer or any of them has no value.",
+     "minimum": 1,
+     "required": false,
+     "unit": "wilderLength"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Wilder average (RMA)",
+   "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "rsi": {
+   "calculationSummary": "Wilder's relative strength index (TradingView's ta.rsi) of the series' changes over the bars its length's convergence needs, 0 to 100.",
+   "formula": "output = 100 − 100 / (1 + rma(gain, {window}) / rma(loss, {window})) over the newest need({window}) bars, 100 where nothing was lost, 0 where nothing was gained",
+   "nullBehavior": "Returns null when the series holds fewer bars than the length needs, any of them has no value, or all of them are equal.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 14,
+     "description": "The length of the relative strength index, as TradingView's ta.rsi(source, length). One value reads the changes its two Wilder averages need to converge, plus the bar the oldest change starts from — 109 bars at length 14 — and is null when the series holds fewer, any of them has no value, or all of them are equal. A stored RSI metric is the exact source at its own length.",
+     "minimum": 1,
+     "required": false,
+     "unit": "wilderChanges"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Relative strength index (RSI)",
+   "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "wma": {
+   "calculationSummary": "The linearly weighted moving average (TradingView's ta.wma) over the newest length bars, the newest weighing most.",
+   "formula": "output = Σ (i + 1)·{base}[i] / ({window}·({window} + 1)/2) over the newest {window} bars, oldest first",
+   "nullBehavior": "Returns null when the series holds fewer bars than the length, or any of them has no value.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 20,
+     "description": "The length of the linearly weighted moving average, as TradingView's ta.wma(source, length): the newest bar weighs the length, the oldest weighs 1. One value reads exactly the length in bars, and is null when the series holds fewer or any of them has no value.",
+     "minimum": 1,
+     "required": false,
+     "unit": "seriesElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Weighted average (WMA)",
+   "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   }
  },
  "privilegedTransforms": {

@@ -17,17 +17,28 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "regimeTrendEvidence",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "ADX points by which the current trend label survives — distance above the exit gate (23) while trending, below the entry gate (27) while ranging; small inside the buffer zone",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "RSI14",
     "RSI7",

@@ -52,7 +52,7 @@ def _refusal(col: dict) -> str:
 def test_the_roster_moved_as_recorded(contract):
     """302 metrics at 144.0.0: 226 - 2 retired + 78 added (_moves_144.json), every added key a record of its own; 326
     since the re-extraction at 146.0.1 (2026-11-02, _moves_146.json: 24 added, none retired)."""
-    assert len(contract.metrics) == 326
+    assert len(contract.metrics) == 532   # 326 at 146.0.1; 532 since the refresh at 149.1.0 (_moves_149.json)
     assert MOVES["contractVersion"] == "144.0.0" and len(MOVES["added"]) == 78
     assert set(MOVES["added"]) <= set(contract.metrics)
     assert set(MOVES["retired"]) == {"STOCH_RSI14", "BB_WIDTH"}

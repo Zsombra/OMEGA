@@ -13,17 +13,28 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "funding",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "the funding rate annualized (%), a point-in-time read at its own sample time",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "PPO_HIST",
     "PPO_LINE",

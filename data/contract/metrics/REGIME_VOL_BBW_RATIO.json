@@ -13,17 +13,28 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "regimeVolatilityEvidence",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "the classifier’s Bollinger-width reading against its own trailing-window mean; the volatility label needs THIS and the ATR ratio to agree, so either alone can hold it back",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "RVOL",
     "REGIME_VOL_ATR_RATIO"

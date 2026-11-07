@@ -16,12 +16,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 62
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "gaps",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether the bar opened outside the prior bar's range: up above its high, down below its low",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

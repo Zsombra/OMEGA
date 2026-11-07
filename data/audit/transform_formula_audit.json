@@ -149,6 +149,31 @@
    "transform": "relativeTo",
    "at": "2026-10-30",
    "why": "Served at 144.0.0 (README v142.3): `output = comparable(unit) ? {base} - {instrument}.{base} : {base} / {instrument}.{base}`, the other coin's series read bar by bar. Measured: its header ({code}_{INSTRUMENT}_rel, the timeframe infix inside the token, a chain outer after it), kind (numeric), units (`points` on an oscillator or percent base, `priceRatio` on a price - SOL/BTC 0.00124, SOL RSI14 - ETH RSI14 7.0 pts), the refusals (inputs, instrument off relativeTo, rank as its outer, an unknown symbol) - data/audit/relative_to_probe_144_2026-10-30.json. Not recomputed: the other coin's bars are not in the render, so the difference and the ratio were not re-derived from two tapes."
+  },
+  {
+   "transform": "ema",
+   "at": "2026-11-07",
+   "why": "Added at 148.1.0 (v146.7): the exponential moving average (TradingView's ta.ema). Served formula: `output = ema[t], ema[0] = {base}[-need({window})], ema[i] = α·{base}[i] + (1 − α)·ema[i − 1], α = 2 / ({window} + 1)`. Measured at 149.1.0: its header (base + _ema<window>, default 20), numeric kind, depth maximum (window one over is REPORT_COLUMN_DEPTH_EXCEEDED), offset refused, chain outer of distance / spread / relativeTo and never a chain inner (data/audit/authoring_probe_149_2026-11-07.json, the 2026-11-07 coverage sweeps). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "rma",
+   "at": "2026-11-07",
+   "why": "Added at 149.0.0: Wilder's moving average (ta.rma). Served formula: `output = rma[t], rma[0] = mean({base}[-need({window})..][0..{window}]), rma[i] = α·{base}[i] + (1 − α)·rma[i − 1], α = 1 / {window}`. Measured at 149.1.0: its header (base + _rma<window>, default 14), numeric kind, depth maximum (window one over is REPORT_COLUMN_DEPTH_EXCEEDED), offset refused, chain outer of distance / spread / relativeTo and never a chain inner (data/audit/authoring_probe_149_2026-11-07.json, the 2026-11-07 coverage sweeps). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "wma",
+   "at": "2026-11-07",
+   "why": "Added at 149.0.0: the weighted moving average (ta.wma). Served formula: `output = Σ (i + 1)·{base}[i] / ({window}·({window} + 1)/2) over the newest {window} bars, oldest first`. Measured at 149.1.0: its header (base + _wma<window>, default 20), numeric kind, depth maximum (window one over is REPORT_COLUMN_DEPTH_EXCEEDED), offset refused, chain outer of distance / spread / relativeTo and never a chain inner (data/audit/authoring_probe_149_2026-11-07.json, the 2026-11-07 coverage sweeps). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "rsi",
+   "at": "2026-11-07",
+   "why": "Added at 149.0.0: the RSI of the series (ta.rsi). Served formula: `output = 100 − 100 / (1 + rma(gain, {window}) / rma(loss, {window})) over the newest need({window}) bars, 100 where nothing was lost, 0 where nothing was gained`. Measured at 149.1.0: its header (base + _rsi<window>, default 14), numeric kind, depth maximum (window one over is REPORT_COLUMN_DEPTH_EXCEEDED), offset refused, chain outer of distance / spread / relativeTo and never a chain inner (data/audit/authoring_probe_149_2026-11-07.json, the 2026-11-07 coverage sweeps). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "cci",
+   "at": "2026-11-07",
+   "why": "Added at 149.0.0: the commodity channel index of the series (ta.cci). Served formula: `output = ({base}[t] − mean) / (0.015 · mean |{base} − mean|) over the newest {window} bars`. Measured at 149.1.0: its header (base + _cci<window>, default 20), numeric kind, depth maximum (window one over is REPORT_COLUMN_DEPTH_EXCEEDED), offset refused, chain outer of distance / spread / relativeTo and never a chain inner (data/audit/authoring_probe_149_2026-11-07.json, the 2026-11-07 coverage sweeps). Not yet recomputed from cached candles."
   }
  ],
  "operationalFindings": [

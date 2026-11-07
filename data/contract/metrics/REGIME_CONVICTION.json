@@ -18,12 +18,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "regimeVerdict",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "how strongly the structure label holds: a trend’s tier moves with its volatility and its agreement with swing structure, a range’s with that agreement alone; never moved by a warning, and NOT how comfortably a gate cleared (the margins carry that)",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

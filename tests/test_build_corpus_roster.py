@@ -23,8 +23,9 @@ CATEGORIES = json.loads((ROOT / "data" / "contract" / "categories.json").read_te
 def test_the_stored_batches_reconcile_with_the_served_roster(capsys):
     records = bc.merge_metrics()
     bc.verify(records, CATEGORIES)
-    assert (len(bc.METRIC_ENUM), len(bc.UNMEASURED), len(bc.MEASURED)) == (532, 206, 326)
-    assert "326/532 metrics measured (206 known by name only)" in capsys.readouterr().out
+    # (532, 206, 326) from 2026-11-05 until the refresh at 149.1.0 on 2026-11-07 folded the 206 in
+    assert (len(bc.METRIC_ENUM), len(bc.UNMEASURED), len(bc.MEASURED)) == (532, 0, 532)
+    assert "532/532 metrics measured;" in capsys.readouterr().out
 
 
 def test_a_missing_measured_metric_still_fails():
@@ -35,12 +36,13 @@ def test_a_missing_measured_metric_still_fails():
 
 
 def test_a_family_shortfall_the_unmeasured_do_not_explain_fails():
+    """Since 2026-11-07 no key is unmeasured, so any shortfall is unexplained; the check still fires."""
     records = bc.merge_metrics()
     categories = json.loads(json.dumps(CATEGORIES))
     for c in categories["categories"]:
         if c["category"] == "momentum":
             c["metricCount"] += 1                  # a shortfall no listed unmeasured key accounts for
-    with pytest.raises(SystemExit, match="families short"):
+    with pytest.raises(SystemExit, match="families short|roster mismatch|family"):
         bc.verify(records, categories)
 
 
@@ -51,9 +53,14 @@ def test_a_measured_metric_listed_unmeasured_fails():
 
 
 def test_the_matrix_has_no_column_for_a_served_but_unextracted_transform():
-    """`ema` is in the served catalogue (vocabulary/_shared.json) at 148.1.0 and in no metric record: a column for it
-    would read legal "no" on all 326 metrics, a false refusal. The matrix stays the extraction's 23 transforms."""
+    """A transform in the served catalogue (vocabulary/_shared.json) that no extracted record carries would read legal
+    "no" on every metric, a false refusal - so the matrix takes only the extraction's catalogue. `ema` was that case
+    from 2026-11-05 (148.1.0) until the 2026-11-07 refresh; a served id with no catalogue entry still gets no column."""
     shared = json.loads((ROOT / "data" / "contract" / "vocabulary" / "_shared.json").read_text(encoding="utf-8"))
-    assert "ema" in [t["id"] for t in shared["transforms"]]
+    ids = [t["id"] for t in shared["transforms"]]
+    assert {"ema", "rma", "wma", "rsi", "cci"} <= set(ids) and len(ids) == 28
     rows = bc.build_composability(bc.merge_metrics(), shared)
-    assert "ema" not in {r["transform"] for r in rows} and len(rows) == 326 * 23
+    assert {"ema", "rma", "wma", "rsi", "cci"} <= {r["transform"] for r in rows} and len(rows) == 532 * 28
+    fake = json.loads(json.dumps(shared))
+    fake["transforms"].append({"id": "notExtracted", "label": "x"})
+    assert "notExtracted" not in {r["transform"] for r in bc.build_composability(bc.merge_metrics(), fake)}

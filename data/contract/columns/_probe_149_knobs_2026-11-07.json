@@ -1,0 +1,18 @@
+{
+ "_what": "Headers minted live by data/audit/knob_spelling_probe_149_2026-11-07.json. HEADERS ONLY - render_coverage treats every string in this file as a seen header.",
+ "headers": [
+  "D_p21s1d3",
+  "PPOsig_fast8slow26sig9",
+  "PSAR_start0.01inc0.02max0.2",
+  "bbLower20_p20sd2.5",
+  "eql_e5_dev",
+  "fractalLoAgo_l2r4",
+  "iStructEvt_cf",
+  "iStructLvl_s20_cf",
+  "iStructTrend_s20_cf_ltf",
+  "kcLower_p30atr10mult2",
+  "stDir_atr10mult2",
+  "stochRsiD_rsi14_p14s5d3",
+  "stochRsiK_rsi14_p21s3d3"
+ ]
+}

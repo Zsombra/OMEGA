@@ -74,7 +74,9 @@ def test_chained_outers_replace_rankable_spread_operands(contract):
     assert set(spread["chainedOuters"]) == set(spread["chainSuccessors"])
     assert spread["chainedOuters"]["rank"]["operands"] == ["EMA13"]
     assert spread["chainedOuters"]["efficiency"]["windowMaximum"] == 63
-    assert spread["chainedOuters"]["zscore"]["windowMaximum"] == 64
+    # 64 at 135.2.0 (the columnLookback); 936 since the 1,000-bar history (v146.4, served by the 149.1.0 hints): the
+    # statistics' maxima are depth-bound now
+    assert spread["chainedOuters"]["zscore"]["windowMaximum"] == 936
 
 
 def test_a_chain_window_above_the_served_maximum_is_refused(contract):

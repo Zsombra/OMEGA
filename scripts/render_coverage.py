@@ -84,6 +84,16 @@ SEEN_FILES = [
     # swing, EQH / EQL) on evaluated-coin sections, structural scope: 557 shapes, 565 headers, zero refusals, zero
     # predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-07-structural.json).
     "_coverage_sweep_2026-11-07-structural.json",
+    # 2026-11-07, after the model step taught omega.fanout the smoother / knob / offset spellings: the shapes that then
+    # read uncovered - the five smoothers as transform and as chain outer, distance after an offset rolling extreme -
+    # on coin sections (2,074 shapes), on a market section (65, the MKT_* smoothers) and on a pair section bound to
+    # USDT_USD (15, PAR_DEV relativeTo USDC_USDT: parDev_USDC_USDT_rel); 0 refusals, 0 predicted-but-not-rendered.
+    "_coverage_sweep_2026-11-07-smoothers.json",
+    "_coverage_sweep_2026-11-07-smoothers-market.json",
+    "_coverage_sweep_2026-11-07-reference.json",
+    # 2026-11-07: thirteen knob spellings the probe had not rendered (iStructLvl_s20_cf, stochRsiK_rsi14_p21s3d3, ...;
+    # data/audit/knob_spelling_probe_149_2026-11-07.json), all as omega.fanout predicted.
+    "_probe_149_knobs_2026-11-07.json",
 ]
 
 

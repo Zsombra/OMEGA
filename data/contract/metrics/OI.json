@@ -13,74 +13,176 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
       "id": "trajectory",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     },
     {
       "id": "aggregate",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "ema",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 269
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "wma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rsi",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "cci",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "efficiency",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 63
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
       "id": "zscore",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "stddev",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "linregSlope",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "pctl",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 63
+        "window": 935
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "rollingMin",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 0
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
       "id": "rollingMax",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 0
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
-      "id": "rank"
+      "id": "rank",
+      "metricParametersAccepted": false
     }
   ],
   "study": "openInterest",
   "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
+  "gloss": "open interest, USD notional — a point-in-time read at its own sample time",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "QUOTE_VOL",
     "BUY_QUOTE_VOL",

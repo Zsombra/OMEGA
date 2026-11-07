@@ -16,12 +16,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 62
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "candlePatterns",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether the bar's body engulfs the prior bar's opposite-colour body, one equal edge allowed (TA-Lib CDLENGULFING): bullish for a white bar over a black one, bearish for the mirror, with no trend context",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

@@ -661,45 +661,53 @@
   }
  ],
  "_refreshed": {
-  "at": "2026-11-05T09:43Z",
-  "contractVersion": "148.1.0",
-  "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261105T0943Z/_categories.json",
+  "at": "2026-11-07T17:36Z",
+  "contractVersion": "149.1.0",
+  "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261107T1736Z/_categories.json",
   "moved": [
-   "structure 156 -> 362",
-   "the 206 metric keys v146.5 / .8 / .10 / .11 added are all `structure` (sum 532)",
-   "modules: the 22 of 146.0.0, byte-identical"
+   "nothing: the eleven categories, their counts (sum 532) and prose, and the 22 modules are as at 148.1.0"
   ],
   "previous": {
-   "at": "2026-11-02T05:55Z",
-   "contractVersion": "146.0.1",
-   "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261102T0555Z/_categories.json",
+   "at": "2026-11-05T09:43Z",
+   "contractVersion": "148.1.0",
+   "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261105T0943Z/_categories.json",
    "moved": [
-    "price 26 -> 27",
-    "regime 16 -> 18",
-    "crowd 9 -> 17",
-    "market NEW (13 metrics: the MKT_* family, study marketBreadth)",
-    "modules: the 22 of 146.0.0, unchanged"
+    "structure 156 -> 362",
+    "the 206 metric keys v146.5 / .8 / .10 / .11 added are all `structure` (sum 532)",
+    "modules: the 22 of 146.0.0, byte-identical"
    ],
    "previous": {
-    "at": "2026-11-01T06:17:33Z",
-    "contractVersion": "146.0.0",
-    "how": "modules: the sectionKey enum of the 146.0.0 stage schema (data/contract/stage_strategy_draft/schema_20261101T061733Z.json), copied from the battlegrid-manager fixture; list_strategy_categories was NOT re-read (no platform call), so the ten categories' metricCount and the 22 remaining module entries are the 2026-10-30 read at 144.0.0",
+    "at": "2026-11-02T05:55Z",
+    "contractVersion": "146.0.1",
+    "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261102T0555Z/_categories.json",
     "moved": [
-     "modules: includeMarketBreadth and includeReferencePairs retired (contract 146.0.0, undocumented in the README; absent from the served sectionKey enums and from agent contextSources), 24 -> 22",
-     "the 24 metric keys 146.0.0 added ($defs/metricKey 302 -> 326) belong to no category file here until list_strategy_categories is re-read"
+     "price 26 -> 27",
+     "regime 16 -> 18",
+     "crowd 9 -> 17",
+     "market NEW (13 metrics: the MKT_* family, study marketBreadth)",
+     "modules: the 22 of 146.0.0, unchanged"
     ],
     "previous": {
-     "at": "2026-10-30T03:45Z",
-     "contractVersion": "144.0.0",
-     "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261030T0345Z/_categories.json",
+     "at": "2026-11-01T06:17:33Z",
+     "contractVersion": "146.0.0",
+     "how": "modules: the sectionKey enum of the 146.0.0 stage schema (data/contract/stage_strategy_draft/schema_20261101T061733Z.json), copied from the battlegrid-manager fixture; list_strategy_categories was NOT re-read (no platform call), so the ten categories' metricCount and the 22 remaining module entries are the 2026-10-30 read at 144.0.0",
      "moved": [
-      "momentum 27 -> 30",
-      "volatility 7 -> 6",
-      "volumeFlow 14 -> 22",
-      "structure 90 -> 156",
-      "modules: includePerpSpotFlow description and one bullet re-worded ('crypto coins a spot venue lists' -> 'crypto coins the spot lane lists', README v139)"
+      "modules: includeMarketBreadth and includeReferencePairs retired (contract 146.0.0, undocumented in the README; absent from the served sectionKey enums and from agent contextSources), 24 -> 22",
+      "the 24 metric keys 146.0.0 added ($defs/metricKey 302 -> 326) belong to no category file here until list_strategy_categories is re-read"
      ],
-     "previous": "2026-10-26 from list_strategy_categories at contract 135.2.0 (mcporter, read-only); price 22 -> 26; trend 21 -> 22; volumeFlow 13 -> 14; structure 54 -> 90; derived 7 -> 8; modules: includeMtfConfluence retired (README v134). Previous: 2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+     "previous": {
+      "at": "2026-10-30T03:45Z",
+      "contractVersion": "144.0.0",
+      "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261030T0345Z/_categories.json",
+      "moved": [
+       "momentum 27 -> 30",
+       "volatility 7 -> 6",
+       "volumeFlow 14 -> 22",
+       "structure 90 -> 156",
+       "modules: includePerpSpotFlow description and one bullet re-worded ('crypto coins a spot venue lists' -> 'crypto coins the spot lane lists', README v139)"
+      ],
+      "previous": "2026-10-26 from list_strategy_categories at contract 135.2.0 (mcporter, read-only); price 22 -> 26; trend 21 -> 22; volumeFlow 13 -> 14; structure 54 -> 90; derived 7 -> 8; modules: includeMtfConfluence retired (README v134). Previous: 2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+     }
     }
    }
   }

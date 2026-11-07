@@ -1,0 +1,155 @@
+{
+ "_what": "Knob header spellings omega.fanout predicts but the 2026-11-07 authoring probe never rendered, rendered at 149.1.0.",
+ "contractVersion": "149.1.0",
+ "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
+ "startedAt": "2026-11-07T17:31:45Z",
+ "capturedAt": "2026-11-07T17:31:55Z",
+ "versionAtEnd": "149.1.0",
+ "entries": [
+  {
+   "columns": [
+    {
+     "metric": "INTERNAL_STRUCTURE_LEVEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 20,
+     "confluenceFilter": true
+    },
+    {
+     "metric": "INTERNAL_STRUCTURE_TREND",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "swingLength": 20,
+     "confluenceFilter": true
+    },
+    {
+     "metric": "INTERNAL_STRUCTURE_EVENT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "confluenceFilter": true
+    },
+    {
+     "metric": "STOCH_RSI_K",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 21
+    },
+    {
+     "metric": "STOCH_RSI_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "kSmoothing": 5
+    },
+    {
+     "metric": "STOCH_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 21
+    },
+    {
+     "metric": "BB_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "stdDev": 2.5
+    },
+    {
+     "metric": "PPO_SIGNAL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "fast": 8
+    },
+    {
+     "metric": "ST_DIR",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "multiplier": 2
+    },
+    {
+     "metric": "KC_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 30
+    },
+    {
+     "metric": "EQL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 5,
+     "bars": "all"
+    },
+    {
+     "metric": "SWING_FRACTAL_LOW_BARS_AGO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "rightBars": 4
+    },
+    {
+     "metric": "PSAR",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "accelerationStart": 0.01
+    }
+   ],
+   "predicted": [
+    "iStructLvl_s20_cf",
+    "iStructTrend_s20_cf_ltf",
+    "iStructEvt_cf",
+    "stochRsiK_rsi14_p21s3d3",
+    "stochRsiD_rsi14_p14s5d3",
+    "D_p21s1d3",
+    "bbLower20_p20sd2.5",
+    "PPOsig_fast8slow26sig9",
+    "stDir_atr10mult2",
+    "kcLower_p30atr10mult2",
+    "eql_e5_dev",
+    "fractalLoAgo_l2r4",
+    "PSAR_start0.01inc0.02max0.2"
+   ],
+   "rendered": [
+    "iStructLvl_s20_cf",
+    "iStructTrend_s20_cf_ltf",
+    "iStructEvt_cf",
+    "stochRsiK_rsi14_p21s3d3",
+    "stochRsiD_rsi14_p14s5d3",
+    "D_p21s1d3",
+    "bbLower20_p20sd2.5",
+    "PPOsig_fast8slow26sig9",
+    "stDir_atr10mult2",
+    "kcLower_p30atr10mult2",
+    "eql_e5_dev",
+    "fractalLoAgo_l2r4",
+    "PSAR_start0.01inc0.02max0.2"
+   ],
+   "refusal": null,
+   "agree": true
+  }
+ ],
+ "agree": true,
+ "refused": 0
+}

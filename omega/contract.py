@@ -71,6 +71,13 @@ class Metric:
     # reads only on a pair section), so the 146 two-subject consumers keep their meaning for every other metric.
     subject: str | None = None
     subject_kinds: tuple[str, ...] = ()
+    # Since 148.1.0 / 149.0.0 the hint serves the metric's own knobs (`parameters`): name -> {defaultValue, minimum,
+    # maximum, step, bound (depth | range | flag), required, description}. Empty on a metric that serves none (most).
+    parameters: dict[str, dict] = field(default_factory=dict)
+
+    def reads_on(self, subject: str) -> bool:
+        """True when a section of this subject reads the metric: the served `subjectKinds` (148+), else the 146 subject."""
+        return subject in self.subject_kinds if self.subject_kinds else subject == self.subject
 
     @property
     def is_timeless(self) -> bool:
@@ -193,6 +200,7 @@ def load() -> Contract:
             provenance=rec.get("provenance"),
             subject=_primary_subject(rec.get("subjectKinds")) or subjects.get(rec["metric"]),
             subject_kinds=tuple(rec.get("subjectKinds") or ()),
+            parameters=dict(rec.get("parameters") or {}),
         )
 
     # The roster size is the platform's to choose, not ours to pin: it went 86 (2026-08-24)
@@ -259,6 +267,22 @@ def _served_chain_outers() -> set[str] | None:
 
 
 _SUBJECT_ORDER = ("evaluated-coin", "market", "reference")
+
+# The declared reference pairs: README "Contract history - v146" names a section whose `benchmarkTicker` is `USDT_USD`
+# or `USDC_USDT` a pair section, reading OPEN / HIGH / LOW / CLOSE / PAR_DEV (subjectKinds `reference`); both rendered
+# as such on 2026-11-07 at 149.1.0 (data/audit/authoring_probe_149_2026-11-07.json, group G). Any other ticker is a
+# `benchmark` section. Neither the stage schema nor a hint lists them, so the changelog's two are the list.
+REFERENCE_PAIRS = ("USDT_USD", "USDC_USDT")
+
+
+def section_subject(benchmark_ticker: str | None, market_scope: str | None) -> str:
+    """The subject a custom section reads (measured 2026-11-07 at 149.1.0): a declared reference pair in
+    `benchmarkTicker` -> `reference`, any other ticker -> `benchmark`, a named `marketScope` -> `market`, neither ->
+    `evaluated-coin`. Both set is refused by the platform (omega.validate SECTION_SUBJECT_CONFLICT); here the ticker
+    wins, so the caller must check that first."""
+    if benchmark_ticker:
+        return "reference" if benchmark_ticker.upper() in REFERENCE_PAIRS else "benchmark"
+    return "market" if market_scope is not None else "evaluated-coin"
 
 
 def _primary_subject(kinds) -> str | None:

@@ -17,12 +17,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "regimeTrendEvidence",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "DI+ − DI− in points on the regime timeframe — the value of the DIplus14_DIminus14_spread column read at the regime rung, not at a lower anchor — gated against the directional threshold (5)",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

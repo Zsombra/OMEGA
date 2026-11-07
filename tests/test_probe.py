@@ -240,6 +240,16 @@ def test_all_sixteen_transforms_are_exercised_on_live_data():
         if case["outputs"]:
             covered.add(case["column"]["transformId"])
             covered.add(case["column"].get("chainedTransformId") or case["column"]["transformId"])
+    # ema (148.1.0) and rma / wma / rsi / cci (149.0.0): the authoring probe at 149.1.0, 2026-11-07, on atoms and as
+    # chain outers (data/audit/authoring_probe_149_2026-11-07.json)
+    probe = _json.loads((COLUMNS_DIR.parents[1] / "audit" / "authoring_probe_149_2026-11-07.json")
+                        .read_text(encoding="utf-8"))
+    for case in probe["probes"]:
+        if case["accepted"]:
+            for section in case["sections"]:
+                for col in section["columns"]:
+                    covered.add(col["transformId"])
+                    covered.add(col.get("chainedTransformId") or col["transformId"])
     missing = set(load().transform_ids()) - covered
     assert not missing, f"never exercised live: {sorted(missing)}"
 

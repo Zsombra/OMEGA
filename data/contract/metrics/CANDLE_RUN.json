@@ -17,12 +17,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 44
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "runs",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "consecutive candles of this bar's colour ending at this bar, signed: +n white (close at or above open), −n black; capped at ±20",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

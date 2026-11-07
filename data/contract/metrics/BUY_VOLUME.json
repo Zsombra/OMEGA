@@ -16,14 +16,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
       "id": "trajectory",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
@@ -31,6 +39,11 @@
       "chainSuccessors": [
         "trajectory",
         "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
         "efficiency",
         "zscore",
         "stddev",
@@ -47,16 +60,75 @@
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "aggregate": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 269,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "SELL_VOLUME",
+            "SPOT_AVG_TRADE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 118,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "SELL_VOLUME",
+            "SPOT_AVG_TRADE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 936,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "SELL_VOLUME",
+            "SPOT_AVG_TRADE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 118,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "SELL_VOLUME",
+            "SPOT_AVG_TRADE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 936,
+          "operands": [
+            "VOLUME",
+            "VOL_SMA20",
+            "SELL_VOLUME",
+            "SPOT_AVG_TRADE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "efficiency": {
           "windowMaximum": 63,
@@ -65,116 +137,223 @@
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "zscore": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "stddev": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "linregSlope": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "pctl": {
-          "windowMaximum": 63,
+          "windowMaximum": 935,
           "operands": [
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMin": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMax": {
-          "windowMaximum": 64,
+          "windowMaximum": 936,
           "operands": [
             "VOLUME",
             "VOL_SMA20",
             "SELL_VOLUME",
             "SPOT_AVG_TRADE"
-          ]
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         }
-      }
+      },
+      "metricParametersAccepted": false
     },
     {
       "id": "aggregate",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "ema",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 269
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "wma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rsi",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 118
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "cci",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "maxShare",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
       "id": "zscore",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "stddev",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "linregSlope",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "pctl",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 63
+        "window": 935
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "rollingMin",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
       "id": "rollingMax",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 936,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     }
   ],
   "study": "barVolume",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "the bar's buy-side traded volume, in base-asset units",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "VOLUME",
     "VOL_SMA20",

@@ -15,12 +15,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "Keltner squeeze (Bollinger inside Keltner): whether the Bollinger pair sits inside the squeeze's own Keltner channel, EMA20 ± 1.5 × ATR20 — the TTM/LazyBear squeeze, not the Bollinger bandwidth squeeze and not TradingView's Keltner Channels",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

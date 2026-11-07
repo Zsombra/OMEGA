@@ -88,7 +88,7 @@ def test_the_24_are_in_the_corpus_and_nothing_is_unmeasured(contract):
     assert MOVES["contractVersion"] == "146.0.1" and MOVES["buildSha"].startswith("a07740c0")
     assert set(MOVES["added"]) == ADDED and len(MOVES["added"]) == 24 and MOVES["retired"] == {}
     assert set(MOVES["added_detail"]) == ADDED
-    assert ADDED <= set(contract.metrics) and len(contract.metrics) == 326
+    assert ADDED <= set(contract.metrics) and len(contract.metrics) == 532   # 326 until the 149.1.0 refresh
     for key in sorted(ADDED):
         assert (CONTRACT_DIR / "metrics" / f"{key}.json").is_file(), key
     # since 2026-11-05 the record lists the 206 keys of the 148.1.0 capture by name (none of these 24)
@@ -103,8 +103,9 @@ def test_the_market_family_is_the_13_mkt_metrics(contract):
     categories = _j(CONTRACT_DIR / "categories.json")
     market = [c for c in categories["categories"] if c["category"] == "market"]
     assert len(categories["categories"]) == 11 and len(market) == 1 and market[0]["metricCount"] == 13
-    # re-read 2026-11-05 at 148.1.0 (structure 156 -> 362, market unchanged); the 146.0.1 read under `previous`
-    assert categories["_refreshed"]["previous"]["contractVersion"] == "146.0.1"
+    # re-read 2026-11-05 at 148.1.0 (structure 156 -> 362, market unchanged) and 2026-11-07 at 149.1.0 (nothing moved);
+    # the 146.0.1 read two `previous` down
+    assert categories["_refreshed"]["previous"]["previous"]["contractVersion"] == "146.0.1"
     # a market metric spreads over market metrics only (the served spreadOperands of each of the ten that offer spread)
     for key in sorted(MKT):
         m = contract.metric(key)
@@ -123,8 +124,9 @@ def test_the_served_facts_of_the_crowd_z_and_the_warnings(contract):
         m = contract.metric(key)
         assert m.is_timeless and set(m.transforms) == {"value"}, key
         assert m.native_output["kind"] == "classification" and set(m.native_output["vocab"]) == {"raised", "clear"}, key
-    # PAR_DEV: hint and vocabulary served, 12 transforms - and no subject reads it (test_par_dev_is_read_by_no_subject)
-    assert len(contract.metric("PAR_DEV").transforms) == 12 and not contract.metric("PAR_DEV").is_timeless
+    # PAR_DEV: hint and vocabulary served, 12 transforms at 146.0.1, 17 since 149.1.0 (+ ema, rma, wma, rsi, cci); read
+    # by no subject at 146 and on a pair section since 148 (test_par_dev_is_read_by_no_subject)
+    assert len(contract.metric("PAR_DEV").transforms) == 17 and not contract.metric("PAR_DEV").is_timeless
 
 
 # --- section subjects: the axis 146 introduced -------------------------------------------------------------------------
@@ -133,14 +135,18 @@ def test_the_subject_domains_partition_the_served_enum(contract):
     assert coin["marketScope"] is None and isinstance(market["marketScope"], str)
     assert (coin["metricCount"], market["metricCount"]) == (312, 13) and set(market["metrics"]) == MKT
     assert set(coin["metrics"]).isdisjoint(market["metrics"])
-    assert set(coin["metrics"]) | set(market["metrics"]) | set(SUBJECTS["noSubject"]) == set(contract.metrics)
+    # the 146 measurement covers the 326 it saw; the 206 the 148.1.0 capture added are subject-typed by their own
+    # served subjectKinds (_moves_149.json)
+    added_148 = set(_j(CONTRACT_DIR / "metrics" / "_moves_149.json")["added"])
+    assert set(coin["metrics"]) | set(market["metrics"]) | set(SUBJECTS["noSubject"]) == set(contract.metrics) - added_148
     assert SUBJECTS["servedEnumCount"] == 326 and list(SUBJECTS["noSubject"]) == ["PAR_DEV"]
     assert "is not read on a evaluated-coin section's bars" in coin["refusal"]
     assert "is not read on a market section's bars" in market["refusal"]
     subjects = metric_subjects()
     assert subjects["MKT_UP"] == "market" and subjects["CLOSE"] == "evaluated-coin" and "PAR_DEV" not in subjects
     assert contract.metric("MKT_UP").subject == "market" and contract.metric("RSI14").subject == "evaluated-coin"
-    assert contract.metric("PAR_DEV").subject is None
+    # None at 146.0.1 (no subject read it); since 148 the served subjectKinds say `reference` - a pair section reads it
+    assert contract.metric("PAR_DEV").subject == "reference" and contract.metric("PAR_DEV").subject_kinds == ("reference",)
 
 
 def test_the_domains_were_served_by_the_two_refusals():
@@ -172,10 +178,16 @@ def test_par_dev_is_read_by_no_subject(contract):
         p = _probe(f"B.PAR_DEV.{arm}")
         assert not p["accepted"] and p["refusal"]["authoringCode"] == SUBJECT_REFUSAL, arm
     assert set(SUBJECTS["noSubject"]["PAR_DEV"]) == {"evaluated-coin", "market"}
-    # offline: the same refusal on the column itself, whichever section it sits in
-    assert _errors(validate_column(_col("PAR_DEV"), contract=contract)) == ["METRIC_NO_SUBJECT"]
+    # offline since 148 / 149: the column is fine on its own (METRIC_NO_SUBJECT retired - it read on no section at 146),
+    # and refused on a coin and a market section by the subject rule, as the 149.1.0 probe measured (G.coin.PAR_DEV,
+    # G.market.PAR_DEV); it renders on a pair section (G.USDT_USD.pair)
+    assert _errors(validate_column(_col("PAR_DEV"), contract=contract)) == []
     for scope in (None, "crypto"):
-        assert _errors(validate_section(_section(scope, _col("PAR_DEV")), contract=contract)) == ["METRIC_NO_SUBJECT"]
+        assert _errors(validate_section(_section(scope, _col("PAR_DEV")), contract=contract)) == [
+            "SECTION_SUBJECT_METRIC_UNSUPPORTED"]
+    pair = CustomSection.model_validate({"kind": "custom", "title": "t", "benchmarkTicker": "USDT_USD",
+                                         "marketScope": None, "columns": [_col("PAR_DEV").model_dump()]})
+    assert _errors(validate_section(pair, contract=contract)) == []
 
 
 def test_the_probe_record_counts():
@@ -294,8 +306,8 @@ def test_the_manifest_chain_and_the_templates():
     assert {(k, "value") for k in WARNINGS} <= regime
     crowd = {(c["metric"], c["transformId"]) for c in by_key["includeCrowdIntelligence"]["columns"]}
     assert {(k, "value") for k in CROWD_Z} <= crowd
-    # re-read 2026-11-05 at 148.1.0 (ema, conditionFrameReads 2048); the 146.0.1 read under `previous`
-    assert _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]["previous"]["contractVersion"] == "146.0.1"
+    # re-read 2026-11-05 at 148.1.0 (ema, conditionFrameReads 2048) and 2026-11-07 at 149.1.0; 146.0.1 two `previous` down
+    assert _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]["previous"]["previous"]["contractVersion"] == "146.0.1"
 
 
 def test_the_version_is_0_11_0():

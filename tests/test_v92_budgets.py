@@ -17,11 +17,14 @@ SERVED_135 = SERVED_95 | {"columnLookback": 64, "strategyConditions": 32, "condi
                           "marketReadChars": 4000}
 # list_strategy_vocabulary at 148.1.0, 2026-11-05: conditionFrameReads 256 -> 2048 (README v146.4)
 SERVED_148 = SERVED_135 | {"conditionFrameReads": 2048}
+# list_strategy_vocabulary at 149.1.0, 2026-11-07 (scripts/snapshot_vocabulary.py): conditionFrameReads 2048 -> 5048,
+# undocumented in the README
+SERVED_149 = SERVED_148 | {"conditionFrameReads": 5048}
 
 
 def test_the_stored_budgets_are_the_served_ones():
     c = load()
-    assert c.budgets == SERVED_148
+    assert c.budgets == SERVED_149
     assert c.shared["previewExecutionLimits"] == {"maxResultChars": 150000, "deadlineMs": 15000}
 
 

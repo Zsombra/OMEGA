@@ -75,10 +75,8 @@ def test_the_gaps_name_only_the_retired_section_field():
     # since the 148.1.0 capture (2026-11-05): the six v146.9 / v146.11 knobs, served and not modelled (unmeasured: the
     # re-extraction stopped before the hints that serve them per metric)
     # since the 149.1.0 capture (2026-11-07): plus the thirteen 149.x knobs, served and not modelled either
-    assert gaps["columnFields"] == {"schemaOnly": sorted([
-        "confluenceFilter", "equalBars", "equalThreshold", "leftBars", "rightBars", "swingLength",
-        "accelerationIncrement", "accelerationMaximum", "accelerationStart", "atrPeriod", "dSmoothing", "fast",
-        "kSmoothing", "multiplier", "period", "rsiPeriod", "signal", "slow", "stdDev"]), "omegaOnly": []}
+    # since the model step of 2026-11-07 omega.types.Column carries all nineteen (omega.types.KNOBS): no gap
+    assert gaps["columnFields"] == {"schemaOnly": [], "omegaOnly": []}
     # kept on the model so a pre-48 record still loads; validate_section refuses it
     assert gaps["sectionFields"] == {"schemaOnly": [], "omegaOnly": ["timeframe"]}
 
@@ -102,9 +100,11 @@ def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
     the four single-print zone edges do not (value, distance, spread only)."""
     # since the 148.1.0 capture (2026-11-05): v146.7's `ema`, served and not extracted (the hint step stopped first)
     # and since the 149.1.0 capture (2026-11-07) the four 149.0 smoothers / oscillators rma, wma, rsi and cci
-    assert set(C.unmeasured_transforms) == {"ema", "rma", "wma", "rsi", "cci"}
-    assert all(t["servedAt"] == "149.1.0" for t in C.unmeasured_transforms.values())
-    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 118   # 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
+    # all five folded in by the refresh at 149.1.0 and rendered by the probe of 2026-11-07: none unmeasured since
+    assert C.unmeasured_transforms == {}
+    assert {"ema", "rma", "wma", "rsi", "cci"} <= set(C.transforms)
+    # 318 since the refresh at 149.1.0: the 198 pivots, the structure / swing levels and EQH / EQL of 148.1.0
+    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 318   # 118 at 144.0.0; 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
 
 
 def test_a_retired_transform_is_refused_naming_its_replacement():
@@ -138,7 +138,7 @@ def test_level_interaction_headers_are_the_measured_ones():
 def test_the_space_never_enumerates_a_retired_transform_and_does_enumerate_level_interaction():
     shapes = enumerate_shapes(expand_operands=True)
     assert not [s for s in shapes if "bandTouch" in (s.transform, s.chained)]
-    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 118      # 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
+    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 318      # 118 at 146.0.1; 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
 
 
 # --- buffer ----------------------------------------------------------------------------------------

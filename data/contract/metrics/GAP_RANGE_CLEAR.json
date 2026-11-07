@@ -16,12 +16,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 62
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "gaps",
   "provenance": "tradingView",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether the bar's whole range cleared the prior bar's, TradingView's Gap Detector rule: up when its low is above the prior high, down when its high is below the prior low",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

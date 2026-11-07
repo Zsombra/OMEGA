@@ -13,17 +13,28 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "regimeVerdict",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "consecutive confirmed bars the structure label has held, unbounded — a warning or a volatility move inside it does not restart it",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "UTC_HOUR",
     "DAY_OF_WEEK",

@@ -1,0 +1,24 @@
+{
+ "_what": "Headers minted live by preview_strategy_report during the 2026-11-07-reference coverage sweep. HEADERS ONLY - render_coverage treats every string in this file as a seen header, so nothing else may be added here.",
+ "headers": [
+  "parDev_USDC_USDT_rel",
+  "parDev_USDC_USDT_rel_cci20",
+  "parDev_USDC_USDT_rel_ema20",
+  "parDev_USDC_USDT_rel_er",
+  "parDev_USDC_USDT_rel_max20",
+  "parDev_USDC_USDT_rel_mean24",
+  "parDev_USDC_USDT_rel_min20",
+  "parDev_USDC_USDT_rel_now",
+  "parDev_USDC_USDT_rel_pctl20",
+  "parDev_USDC_USDT_rel_rma14",
+  "parDev_USDC_USDT_rel_rsi14",
+  "parDev_USDC_USDT_rel_sd20",
+  "parDev_USDC_USDT_rel_slope20",
+  "parDev_USDC_USDT_rel_t1",
+  "parDev_USDC_USDT_rel_t2",
+  "parDev_USDC_USDT_rel_t3",
+  "parDev_USDC_USDT_rel_trend",
+  "parDev_USDC_USDT_rel_wma20",
+  "parDev_USDC_USDT_rel_z20"
+ ]
+}

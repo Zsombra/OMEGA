@@ -72,14 +72,77 @@ def _infix(column: Column) -> str:
     return REL_INFIX.get(rel, "") if rel else ""
 
 
-def _token(column: Column, contract: Contract) -> str:
-    """The metric's header token: `<code>[_ltf|_htf|_<abs>][_dev][_o<N>]` (contract 109, measured 2026-10-13 -
-    data/contract/columns/header_tokens_2026-10-13.json; the vendor pack 31.2.98 states the same order).
+# The metric knobs' header spelling, measured 2026-11-07 at 149.1.0 (preview_strategy_report, BTC 1h;
+# data/audit/authoring_probe_149_2026-11-07.json groups C, D, E, I, J). The hint serves each knob's range but not its
+# spelling, so the spelling is this table. Two regimes:
+#  - a SET: once any of the metric's set knobs is off its default, every one of them is spelled, values concatenated in
+#    the served order behind one `_`: MACDline_fast8slow26sig9, K_p21s1d3, bbUpper20_p30sd2.5, kcUpper_p30atr14mult1.5,
+#    stLine_atr14mult2, PSAR_start0.01inc0.01max0.3, CMF20_p30, fractalHi_l3r5 / fractalLo_l4r2. `rsiPeriod` is spelled
+#    as its own token ahead of the rest: stochRsiK_rsi21_p14s3d3.
+#  - SINGLE knobs, each its own token and only when off its default, in the served order: eqh_e1, eqh_atr0,
+#    eql_e5_atr0.2; structLvl_s10, iStructLvl_cf (a flag spells no value).
+# Explicit defaults spell nothing (MACDline, bbUpper20, PSAR, stLine, fractalHi, eqh). The knob part sits right after
+# the code: fractalHi_l3r5_4h, bbUpper20_p30sd2.5_ltf_o2, MACDline_fast8slow26sig9_trend, fractalHi_l3r5_close_spread.
+KNOB_SPELLING = {"fast": "fast", "slow": "slow", "signal": "sig", "period": "p", "kSmoothing": "s", "dSmoothing": "d",
+                 "stdDev": "sd", "atrPeriod": "atr", "multiplier": "mult", "accelerationStart": "start",
+                 "accelerationIncrement": "inc", "accelerationMaximum": "max", "leftBars": "l", "rightBars": "r"}
+KNOB_OWN_TOKEN = {"rsiPeriod": "rsi"}
+KNOB_SINGLE = {"equalBars": "e", "equalThreshold": "atr", "swingLength": "s", "confluenceFilter": "cf"}
 
+
+def _knob_number(value) -> str:
+    """A knob value as the header prints it: 2.5, 0.01, 0.2; an integral number without its point (sd5, mult10, max1)."""
+    if isinstance(value, float):
+        return str(int(value)) if value.is_integer() else f"{value:g}"
+    return str(value)
+
+
+def knob_token(column: Column, contract: Contract) -> str:
+    """The knob part of a header (KNOB_SPELLING above), "" when every served knob is at its default. A knob the metric
+    does not serve is not spelled (omega.validate refuses it, PARAMETER_UNDECLARED)."""
+    served = contract.metric(column.metric).parameters
+    if not served:
+        return ""
+    values = {k: getattr(column, k, None) for k in served}
+
+    def is_off(k: str) -> bool:
+        return values[k] is not None and values[k] != served[k].get("defaultValue")
+
+    def value(k: str):
+        return values[k] if values[k] is not None else served[k].get("defaultValue")
+
+    unknown = [k for k in served if k not in KNOB_SPELLING and k not in KNOB_OWN_TOKEN and k not in KNOB_SINGLE]
+    if unknown and any(is_off(k) for k in unknown):
+        raise ValueError(f"{column.metric} serves knobs whose header spelling was never rendered: {unknown}")
+    set_knobs = [k for k in served if k not in KNOB_SINGLE]
+    out = ""
+    if any(is_off(k) for k in set_knobs):
+        out += "".join(f"_{KNOB_OWN_TOKEN[k]}{_knob_number(value(k))}" for k in set_knobs if k in KNOB_OWN_TOKEN)
+        rest = "".join(f"{KNOB_SPELLING[k]}{_knob_number(value(k))}" for k in set_knobs if k in KNOB_SPELLING)
+        out += f"_{rest}" if rest else ""
+    for k in served:
+        if k in KNOB_SINGLE and is_off(k):
+            out += f"_{KNOB_SINGLE[k]}" + ("" if served[k].get("bound") == "flag" else _knob_number(values[k]))
+    return out
+
+
+def takes_offset(transform_id: str, contract: Contract) -> bool:
+    """Whether the transform's served authoring parameters carry `offset`: `value` always, `rollingMin` / `rollingMax`
+    since 148.1.0 (v146.6)."""
+    return "offset" in ((contract.transforms.get(transform_id) or {}).get("parameters") or {})
+
+
+def _token(column: Column, contract: Contract) -> str:
+    """The metric's header token: `<code>[knobs][_ltf|_htf|_<abs>][_dev][_o<N>]` (contract 109, measured 2026-10-13 -
+    data/contract/columns/header_tokens_2026-10-13.json; the vendor pack 31.2.98 states the same order; the knob part
+    measured 2026-11-07 at 149.1.0).
+
+    - the knob part (knob_token): fractalHi_l3r5, MACDline_fast8slow26sig9, eqh_e5_atr0.2;
     - the timeframe part: `_ltf` / `_htf` for rel lower / regime (REL_INFIX), `_<tf>` for ANY pinned `abs` - even one
       equal to the anchor (`ADX14_1h` at a 1h anchor) - and nothing at rel anchor;
     - `_dev` when the column STORES `bars: "all"` (Developing), at any timeframe; `closed` or unset adds nothing;
-    - `_o<N>` for an `offset` N > 0, which only `value` reads.
+    - `_o<N>` for an `offset` N > 0, on a transform that takes one: `value`, and since 148.1.0 `rollingMin` /
+      `rollingMax` (high_o1_max55, high_ltf_o1_max55, high_4h_o1_max55; measured 2026-11-07).
     `<code>` is the metric file's `code`; since contract v123 the eighteen indicator codes carry their length (`ADX14`,
     `pctB20`, `RVOL20`, ... - data/contract/metrics/_moves_123.json), and omega.contract.load refuses a stale one.
     Until 2026-10-13 omega emitted only the rel part, so `RSI14_1d`, `RSI7_o1` and `ADX_dev_t2` were mispredicted -
@@ -88,8 +151,8 @@ def _token(column: Column, contract: Contract) -> str:
     rel = getattr(column.timeframe, "rel", None)
     tf = REL_INFIX.get(rel, "").rstrip("_") if rel else f"_{column.timeframe.abs}"
     dev = "_dev" if column.bars == "all" else ""
-    off = f"_o{column.offset}" if column.offset and column.transformId == "value" else ""
-    return f"{code}{tf}{dev}{off}"
+    off = f"_o{column.offset}" if column.offset and takes_offset(column.transformId, contract) else ""
+    return f"{code}{knob_token(column, contract)}{tf}{dev}{off}"
 
 
 # The six series statistics of contract v135, and the suffix each header carries with its window (default 20).
@@ -99,6 +162,17 @@ def _token(column: Column, contract: Contract) -> str:
 STATISTIC_SUFFIX = {"zscore": "z", "stddev": "sd", "linregSlope": "slope", "pctl": "pctl",
                     "rollingMin": "min", "rollingMax": "max"}
 STATISTIC_DEFAULT_WINDOW = 20
+# The five smoothers (ema since 148.1.0, v146.7; rma / wma / rsi / cci since 149.0.0), measured 2026-11-07 at 149.1.0
+# (data/audit/authoring_probe_149_2026-11-07.json groups A and J): the header is the base plus `_<id><window>`, the
+# window always spelled, its default the catalogue's (ema 20, rma 14, wma 20, rsi 14, cci 20): RSI14_ema20,
+# RSI14_rma14, quoteVol_wma14, parDev_cci20; as a chain outer over distance / spread / relativeTo: dist_close_rma10,
+# RSI14_RSI7_spread_ema10, close_BTC_rel_cci10; a pinned timeframe sits in the base (RSI14_4h_cci20).
+SMOOTHERS = ("ema", "rma", "wma", "rsi", "cci")
+
+
+def _smoothed(base: str, column: Column, transform_id: str, contract: Contract) -> str:
+    window = column.window or contract.transforms[transform_id]["parameters"]["window"]["defaultValue"]
+    return f"{base}_{transform_id}{window}"
 # v142.3 relativeTo (measured 2026-10-30 at 144.0.0, data/audit/relative_to_probe_144_2026-10-30.json): the token,
 # the instrument as the platform spells it, `_rel` - RSI14_ETH_rel, close_BTC_rel (BTC when omitted), RSI14_ltf_ETH_rel,
 # RSI14_4h_ETH_rel; a chain outer follows: close_BTC_rel_z20, close_ETH_rel_t3 .. close_ETH_rel_trend. An instrument
@@ -170,6 +244,8 @@ def _stage1_header(column: Column, contract: Contract) -> str:
         return f"{token}_er"
     if tid in STATISTIC_SUFFIX:
         return _statistic(token, column, tid)
+    if tid in SMOOTHERS:
+        return _smoothed(token, column, tid, contract)
     if tid == "maxShare":
         return f"{token}_maxShare"
     if tid == "aggregate":
@@ -224,6 +300,12 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
         outs.append(Output(f"{base}_trend", "direction", ("rising", "falling", "flat")))
         return outs
 
+    if column.chainedTransformId == "distance":
+        # 148.1.0 (v146.6): distance after an offset rolling extreme, a PREFIX as distance always is - dist_high_o1_max55,
+        # dist_close_o2_min20, dist_high_4h_o1_max55 (measured 2026-11-07 at 149.1.0, group B / I)
+        return [Output(f"dist_{base}", "numeric")]
+    if effective in SMOOTHERS:
+        return [Output(base if column.chainedTransformId is None else _smoothed(base, column, effective, c), "numeric")]
     if effective in ("efficiency", "maxShare"):
         return [Output(base if column.chainedTransformId is None else f"{base}_er", "numeric")]
     if effective in STATISTIC_SUFFIX:

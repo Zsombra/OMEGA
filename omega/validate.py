@@ -9,8 +9,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, get_args
 
-from .contract import Contract, load
-from .types import MARKET_SCOPE, Column, CustomSection, PlatformSection, Report, Section
+from .contract import REFERENCE_PAIRS, Contract, Metric, load, section_subject
+from .fanout import SMOOTHERS, takes_offset
+from .types import KNOBS, MARKET_SCOPE, Column, CustomSection, PlatformSection, Report, Section
 
 # The nine market scopes the 146.0.0 stage schema enumerates (omega.types.MARKET_SCOPE), for the subject message.
 MARKET_SCOPE_VALUES = get_args(MARKET_SCOPE)
@@ -19,13 +20,13 @@ MARKET_SCOPE_VALUES = get_args(MARKET_SCOPE)
 # series home and as a chain outer over every relation.
 SERIES_STATISTICS = {"zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"}
 
-# Transforms that walk a series and therefore honour `bars` / `window`.
-SERIES_TRANSFORMS = {"trajectory", "efficiency", "maxShare", "aggregate"} | SERIES_STATISTICS
+# Transforms that walk a series and therefore honour `bars` / `window`. The five smoothers (148.1.0 / 149.0.0) too.
+SERIES_TRANSFORMS = {"trajectory", "efficiency", "maxShare", "aggregate"} | SERIES_STATISTICS | set(SMOOTHERS)
 
 # The chain successors `spread` offers that BUILD A SERIES, as opposed to `rank`, which
 # reduces to an ordinal. Chaining into one of these needs a per-bar series on both sides of the spread. Since v135
 # the operands each outer accepts are served (chainedOuters.<outer>.operands; rankableSpreadOperands before).
-SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"} | SERIES_STATISTICS
+SERIES_CHAINS = {"aggregate", "trajectory", "efficiency"} | SERIES_STATISTICS | set(SMOOTHERS)
 
 
 def chained_operands(spec: dict, outer: str) -> list | None:
@@ -395,11 +396,26 @@ def validate_column(
         window_max = chained_window_maximum(spec, chained)
         if window_max is not None and column.window is not None and column.window > window_max:
             # v135: efficiency's largest window is one below columnLookback (it reads window + 1 bars), and pctl's
-            # likewise; each outer's maximum is served (chainedOuters.<outer>.windowMaximum).
+            # likewise; each outer's maximum is served (chainedOuters.<outer>.windowMaximum). A maximum above the
+            # columnLookback budget is the 1,000-bar depth's (v146.4): REPORT_COLUMN_DEPTH_EXCEEDED, measured 2026-11-07
+            # at 149.1.0 on HIGH x distance -> ema window 270 ("the largest window that fits is 269").
+            depth = window_max > c.budgets["columnLookback"]
             out.append(Finding(
-                "error", "LOOKBACK_EXCEEDED", f"{path}.window",
+                "error", "DEPTH_EXCEEDED" if depth else "LOOKBACK_EXCEEDED", f"{path}.window",
                 f"window={column.window} exceeds the maximum {window_max} the platform serves for the "
-                f"{chained} chain on {m.metric} x {tid} (chainedOuters.{chained}.windowMaximum)"))
+                f"{chained} chain on {m.metric} x {tid} (chainedOuters.{chained}.windowMaximum"
+                + ("; at most 936 of the 1000 readable bars, leaving the lookback budget)" if depth else ")")))
+        offset_min = ((spec.get("chainedOuters") or {}).get(chained) or {}).get("offsetMinimum")
+        if offset_min is not None and (column.offset or 0) < offset_min:
+            # 148.1.0 (v146.6): distance after a rolling extreme needs the extreme to exclude the bar it is measured on.
+            # Measured 2026-11-07 at 149.1.0: "[column-grammar] transform 'rollingMax' at offset 0 cannot be chained into
+            # 'distance': a rolling extreme at offset 0 includes the bar the distance is measured on, so a close can
+            # never pass it; author offset 1 or more" (REPORT_COLUMN_CONSTRUCTION_FAILED; offset omitted the same).
+            out.append(Finding(
+                "error", "OFFSET_BELOW_MINIMUM", f"{path}.offset",
+                f"transform {tid!r} at offset {column.offset or 0} cannot be chained into {chained!r}: a rolling extreme "
+                f"at offset 0 includes the bar the distance is measured on, so a close can never pass it; author offset "
+                f"{offset_min} or more (chainedOuters.{chained}.offsetMinimum)"))
 
     # --- offset that did nothing (BG-13), fixed at contract 94.0.0 --------------
     # Measured 2026-08-26 across 78 coins at a 4h anchor: MA_ALIGN, BB_TOUCH, EMA_CROSS
@@ -439,18 +455,39 @@ def validate_column(
                 f"transform {tid!r} does not accept params.window: {m.metric} x {tid} builds no series "
                 f"(REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 at 144.0.0)"))
         elif column.window > ((spec.get("maximums") or {}).get("window") or lookback):
+            # Since 146.x the served `bound` says which budget the maximum is (bounds.window): `depth` is the 1,000-bar
+            # history (REPORT_COLUMN_DEPTH_EXCEEDED, "at most 936 of the 1000 readable bars ... the largest window that
+            # fits is 269" on RSI14 x ema, measured 2026-11-07 at 149.1.0), `lookback` the 64-bar columnLookback.
+            served = (spec.get("maximums") or {}).get("window")
+            if (spec.get("bounds") or {}).get("window") == "depth":
+                out.append(Finding(
+                    "error", "DEPTH_EXCEEDED", f"{path}.window",
+                    f"window={column.window} exceeds the maximum {served} the platform serves for {m.metric} x {tid} "
+                    f"(bound depth: at most 936 of the 1000 readable bars, leaving the lookback budget)"))
+            else:
+                out.append(Finding(
+                    "error", "LOOKBACK_EXCEEDED", f"{path}.window",
+                    f"window={column.window} exceeds the columnLookback budget of {lookback}"))
+        owner = column.chainedTransformId if column.chainedTransformId in SERIES_TRANSFORMS else tid
+        minimum = (((c.transforms.get(owner) or {}).get("parameters") or {}).get("window") or {}).get("minimum")
+        if minimum is not None and column.window < minimum and "trajectory" not in (tid, column.chainedTransformId):
+            # The catalogue's served minimum (authoring.parameters.window.minimum). Measured 2026-11-07 at 149.1.0:
+            # "[column-grammar] transform 'cci' requires params.window >= 2 (got 1)". trajectory keeps its own v93 rule.
             out.append(Finding(
-                "error", "LOOKBACK_EXCEEDED", f"{path}.window",
-                f"window={column.window} exceeds the columnLookback budget of {lookback}"))
+                "error", "WINDOW_BELOW_MINIMUM", f"{path}.window",
+                f"transform {owner!r} requires params.window >= {minimum} (got {column.window})"))
     if column.offset is not None:
         served_max = (spec.get("maximums") or {}).get("offset")
-        if tid != "value":
+        if not takes_offset(tid, c):
             # Until 144 a warning (OFFSET_IGNORED). Measured 2026-10-30 at 144.0.0: "transform 'trajectory' does not
-            # accept params.offset", the same on relativeTo (REPORT_COLUMN_CONSTRUCTION_FAILED, [column-grammar]).
+            # accept params.offset", the same on relativeTo (REPORT_COLUMN_CONSTRUCTION_FAILED, [column-grammar]); on
+            # each smoother 2026-11-07 ("transform 'ema' does not accept params.offset"). `value` takes it, and since
+            # 148.1.0 (v146.6) rollingMin / rollingMax (the catalogue's authoring parameters say which).
             out.append(Finding(
                 "error", "OFFSET_REFUSED", f"{path}.offset",
-                f"transform {tid!r} does not accept params.offset: `offset` is the `value` transform's "
-                f"(REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 at 144.0.0)"))
+                f"transform {tid!r} does not accept params.offset: `offset` is taken by value, rollingMin and "
+                f"rollingMax only (REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 at 144.0.0 and 2026-11-07 at "
+                f"149.1.0)"))
         elif served_max is not None:
             # 108.4.0 serves the maximum per metric (get_metric_construction_hints, value.parameters.offset.maximum:
             # 31 on most candle metrics, 30/21/12/11 on the bar-geometry ones, 0 on a timeless one). It supersedes
@@ -493,6 +530,101 @@ def validate_column(
             f"{m.metric} is a raw per-bar quantity; the forming bar ramps from zero each "
             f"interval. Set bars='closed' for an honest read."))
 
+    out.extend(_knob_findings(column, m, spec, path))
+    return out
+
+
+# Why an off-default knob is refused under a transform (or chain outer) whose served `metricParametersAccepted` is
+# false - the platform's three reasons, measured 2026-11-07 at 149.1.0 (data/audit/authoring_probe_149_2026-11-07.json):
+# rank reads the materialized plane, relativeTo reads the other coin's stored value, every other one reaches history the
+# server never proved the settings over.
+def _not_accepted_reason(under: str, code: str) -> str:
+    if under == "rank":
+        return f"a ranked read reads the materialized plane, which holds {code!r} at its registered defaults only"
+    if under == "relativeTo":
+        return (f"its instrument side is read off the other coin's stored {code!r} at its defaults, so the ratio would "
+                f"mix two settings")
+    return ("its window reaches slots older than the history the server proves the settings over, so it would read "
+            "bars the settings were never proven on")
+
+
+def _step_ok(value: float, minimum: float, step: float) -> bool:
+    ratio = (value - minimum) / step
+    return abs(ratio - round(ratio)) < 1e-9
+
+
+def _knob_findings(column: Column, m: Metric, spec: dict, path: str) -> list[Finding]:
+    """The metric knobs (148.1.0 / 149.0.0), judged against what the metric serves (Metric.parameters) and what the
+    transform serves (`metricParametersAccepted`, on the entry and on each chain outer). Platform wording measured
+    2026-11-07 at 149.1.0 (data/audit/authoring_probe_149_2026-11-07.json, groups C, D, E, J)."""
+    out: list[Finding] = []
+    set_knobs = column.knobs()
+    off_default: list[str] = []
+    for knob, value in set_knobs.items():
+        served = m.parameters.get(knob)
+        if served is None:
+            out.append(Finding(
+                "error", "PARAMETER_UNDECLARED", f"{path}.{knob}",
+                f"[column-grammar] metric {m.metric!r} does not accept params.{knob} (it serves "
+                f"{sorted(m.parameters) or 'no knob'}; REPORT_COLUMN_CONSTRUCTION_FAILED)"))
+            continue
+        if value != served.get("defaultValue"):
+            off_default.append(knob)
+        bound, lo, hi, step = served.get("bound"), served.get("minimum"), served.get("maximum"), served.get("step")
+        if bound == "flag":
+            continue
+        if bound == "range":
+            if (lo is not None and value < lo) or (hi is not None and value > hi) \
+                    or (step and lo is not None and not _step_ok(value, lo, step)):
+                out.append(Finding(
+                    "error", "PARAMETER_OUT_OF_RANGE", f"{path}.{knob}",
+                    f"[column-grammar] metric {m.metric!r} requires params.{knob} from {lo:g} to {hi:g} in steps of "
+                    f"{step:g} (got {value:g}; REPORT_COLUMN_CONSTRUCTION_FAILED)"))
+            continue
+        if lo is not None and value < lo:
+            out.append(Finding(
+                "error", "PARAMETER_OUT_OF_RANGE", f"{path}.{knob}",
+                f"[column-grammar] metric {m.metric!r} requires params.{knob} >= {lo} (got {value})"))
+        elif hi is not None and value > hi:
+            # bound `depth`: the largest value whose read fits 936 of the 1000 readable bars with every other knob at
+            # its default ("the largest fast that fits is 260", REPORT_COLUMN_DEPTH_EXCEEDED), except swingLength,
+            # whose 10 - 100 is a grammar range ("requires params.swingLength from 10 to 100 (got 101)").
+            out.append(Finding(
+                "error", "PARAMETER_OUT_OF_RANGE", f"{path}.{knob}",
+                f"params.{knob} {value} on {m.metric} is over the served maximum {hi} (bound depth: the largest "
+                f"{knob} that fits, the metric's other knobs at their defaults)"))
+
+    # The swing pair reads left + right + 1 bars to decide one pivot (measured: 934/2 reads 937, 933/933 reads 1867),
+    # so the pair is bound jointly: each side's served maximum holds only with the other at its default.
+    if "leftBars" in m.parameters and "rightBars" in m.parameters and {"leftBars", "rightBars"} & set(off_default):
+        left_p, right_p = m.parameters["leftBars"], m.parameters["rightBars"]
+        left = column.leftBars if column.leftBars is not None else left_p["defaultValue"]
+        right = column.rightBars if column.rightBars is not None else right_p["defaultValue"]
+        limit = left_p["maximum"] + right_p["defaultValue"]
+        if left <= left_p["maximum"] and right <= right_p["maximum"] and left + right > limit:
+            out.append(Finding(
+                "error", "PARAMETER_OUT_OF_RANGE", f"{path}.leftBars",
+                f"swing pair {left}/{right} reads {left + right + 1} bars to decide one pivot - at most "
+                f"{limit + 1} fit (REPORT_COLUMN_DEPTH_EXCEEDED)"))
+    else:
+        depth_off = [k for k in off_default if (m.parameters[k].get("bound") == "depth")]
+        if len(depth_off) > 1:
+            out.append(Finding(
+                "warning", "PARAMETER_DEPTH_UNVERIFIED", f"{path}.{depth_off[0]}",
+                f"{depth_off} are each within their served maximum, but those maxima hold with the other knobs at "
+                f"their defaults; how many bars the combination reads is unmeasured offline - preview it"))
+
+    if off_default:
+        unders = [column.transformId] if spec.get("metricParametersAccepted") is False else []
+        chained = column.chainedTransformId
+        if chained and ((spec.get("chainedOuters") or {}).get(chained) or {}).get("metricParametersAccepted") is False:
+            unders.append(chained)
+        for under in unders:
+            out.append(Finding(
+                "error", "PARAMETER_NOT_ACCEPTED", f"{path}.{off_default[0]}",
+                f"[column-grammar] {m.metric} at {', '.join(f'{k} {set_knobs[k]}' for k in off_default)} cannot be "
+                f"read under {under!r}: {_not_accepted_reason(under, m.code)} (metricParametersAccepted false; "
+                f"REPORT_COLUMN_CONSTRUCTION_FAILED)"))
     return out
 
 
@@ -568,12 +700,25 @@ def validate_section(
     # (REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED, details.allowedDomain.candidates): the market section reads exactly
     # the thirteen MKT_* metrics (family `market`, study marketBreadth) and the coin section every other one
     # (data/audit/market_section_probe_146_2026-11-02.json). The split is the served family, not a typed list.
-    subject = "market" if section.marketScope is not None else "evaluated-coin"
+    # Since 148 / 149 (measured 2026-11-07 at 149.1.0, data/audit/authoring_probe_149_2026-11-07.json group G): four
+    # subjects, the metric's served `subjectKinds` saying which read it. `benchmarkTicker` binds an instrument: a declared
+    # reference pair (USDT_USD, USDC_USDT) is a `reference` section (OHLC and PAR_DEV), any other ticker a `benchmark`
+    # section (every evaluated-coin metric but the twenty-five coin-only ones). Both keys at once is refused.
+    if section.benchmarkTicker and section.marketScope is not None:
+        out.append(Finding(
+            "error", "SECTION_SUBJECT_CONFLICT", f"{path}",
+            "A section reads one subject: bind an instrument in `benchmarkTicker` or the market in `marketScope`, not "
+            "both (VALIDATION_ERROR, measured 2026-11-07 at 149.1.0)"))
+    subject = section_subject(section.benchmarkTicker, section.marketScope)
     for i, col in enumerate(section.columns):
         m = c.metrics.get(col.metric)
-        if m is None or m.subject == subject or m.subject is None:
+        if m is None or m.reads_on(subject) or m.subject is None:
             continue                          # validate_column reports an unknown metric and a metric with no subject
-        if subject == "market":
+        if subject in ("reference", "benchmark"):
+            msg = (f"a {subject} section cannot carry this column - metric {col.metric!r} is not read on a {subject} "
+                   f"section's bars (it reads on {list(m.subject_kinds)}; REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED, "
+                   f"measured 2026-11-07 at 149.1.0)")
+        elif subject == "market":
             msg = (f"a market section cannot carry this column - metric {col.metric!r} is not read on a market "
                    f"section's bars (marketScope {section.marketScope!r} reads the market subject's "
                    f"{sum(1 for mm in c.metrics.values() if mm.subject == 'market')} metrics only: "
@@ -585,6 +730,22 @@ def validate_section(
                    f"to one of {sorted(MARKET_SCOPE_VALUES)}; REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED, measured "
                    f"2026-11-02 at 146.0.1)")
         out.append(Finding("error", "SECTION_SUBJECT_METRIC_UNSUPPORTED", f"{path}.columns[{i}].metric", msg))
+
+    # relativeTo on a pair section reads against another declared pair, never the BTC default: "relativeTo on a section
+    # bound to 'USDT_USD' requires an instrument - another declared reference pair; a reference section has no default"
+    # (REPORT_COLUMN_INSTRUMENT_UNKNOWN, measured 2026-11-07 at 149.1.0).
+    if subject == "reference":
+        bound = section.benchmarkTicker.upper()
+        for i, col in enumerate(section.columns):
+            if "relativeTo" not in (col.transformId, col.chainedTransformId):
+                continue
+            other = (col.instrument or "").upper()
+            if other not in REFERENCE_PAIRS or other == bound:
+                out.append(Finding(
+                    "error", "REFERENCE_INSTRUMENT_REQUIRED", f"{path}.columns[{i}].instrument",
+                    f"relativeTo on a section bound to {section.benchmarkTicker!r} requires an instrument - another "
+                    f"declared reference pair ({[p for p in REFERENCE_PAIRS if p != bound]}); a reference section has "
+                    f"no default (got {col.instrument!r}; REPORT_COLUMN_INSTRUMENT_UNKNOWN)"))
 
     # THE SILENT ONE. Two columns compiling to the same header do not raise on the
     # platform - it renders both under the duplicate name and then omits the whole

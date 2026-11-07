@@ -15,7 +15,6 @@ import json
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
 
 from omega import contract as C
 from omega.condition_vocabulary import derive
@@ -116,9 +115,14 @@ def test_the_compare_before_and_after():
     assert COMPARE["before"]["liveToolCount"] == 154
 
 
-def test_the_206_are_listed_by_readme_entry_and_unmeasured():
-    metrics = UNMEASURED["metrics"]
-    assert set(metrics) == set(COMPARE["before"]["results"]["metrics"]["liveNotStored"]) == set(load().unmeasured_metrics)
+def test_the_206_were_listed_by_readme_entry_and_are_measured_since_2026_11_07():
+    """Listed by name 2026-11-05 at 148.1.0; their hints read at 149.1.0 on 2026-11-06 and folded into the corpus
+    2026-11-07 (history148). The per-key records are kept there as written."""
+    history = UNMEASURED["history148"]
+    metrics = history["formerlyUnmeasured"]
+    assert set(metrics) == set(COMPARE["before"]["results"]["metrics"]["liveNotStored"])
+    assert UNMEASURED["metrics"] == {} and load().unmeasured_metrics == {}
+    assert set(metrics) <= set(load().metrics)
     by_entry: dict[str, set[str]] = {}
     for key, rec in metrics.items():
         assert rec["servedAt"] == "148.1.0" and rec["transformAdmissibility"] == "UNMEASURED", key
@@ -127,20 +131,27 @@ def test_the_206_are_listed_by_readme_entry_and_unmeasured():
     assert by_entry["v146.11"] == STRUCTURE
     assert all(k.startswith(("PIVOT_WEEK_", "PIVOT_MONTH_")) for k in by_entry["v146.8"])
     assert all(k.startswith(("PIVOT_QUARTER_", "PIVOT_YEAR_")) for k in by_entry["v146.10"])
-    assert "10:18Z" in UNMEASURED["why"] and "170 of the 532" in UNMEASURED["why"]
+    assert "10:18Z" in history["why"] and "170 of the 532" in history["why"]
+    assert history["measuredBy"].startswith("get_metric_construction_hints x 532 at contract 149.1.0")
 
 
 @pytest.mark.parametrize("key", ["PIVOT_WEEK_P", "PIVOT_CAM_R1", "SWING_STRUCTURE_LEVEL", "EQH"])
-def test_a_column_over_an_added_key_is_refused_as_unmeasured(key):
+def test_a_column_over_an_added_key_validates_since_the_refresh(key):
+    """Refused METRIC_UNMEASURED until 2026-11-07; each rendered as `value` in the 149.1.0 probe (pivotWeekP,
+    pivotCamR1, structLvl, eqh)."""
     col = Column.model_validate({"metric": key, "transformId": "value", "timeframe": {"rel": "anchor"}})
-    assert _errors(validate_column(col)) == ["METRIC_UNMEASURED"]
+    assert _errors(validate_column(col)) == []
 
 
-def test_ema_is_served_and_refused_as_unmeasured():
+def test_ema_is_measured_and_judged_by_its_served_depth():
+    """Refused TRANSFORM_UNMEASURED until 2026-11-07; RSI14_ema14 rendered and window 270 was refused
+    REPORT_COLUMN_DEPTH_EXCEEDED ("the largest window that fits is 269") at 149.1.0."""
     contract = load()
-    assert "ema" in contract.unmeasured_transforms       # with rma / wma / rsi / cci since 149 (test_v149_surface.py)
-    col = Column.model_validate({"metric": "RSI14", "transformId": "ema", "timeframe": {"rel": "anchor"}, "window": 14})
-    assert _errors(validate_column(col, contract=contract)) == ["TRANSFORM_UNMEASURED"]
+    assert "ema" not in contract.unmeasured_transforms and "ema" in contract.transforms
+    col = {"metric": "RSI14", "transformId": "ema", "timeframe": {"rel": "anchor"}}
+    assert _errors(validate_column(Column.model_validate({**col, "window": 14}), contract=contract)) == []
+    assert _errors(validate_column(Column.model_validate({**col, "window": 270}), contract=contract)) == [
+        "DEPTH_EXCEEDED"]
 
 
 # An unmeasured key is unmeasured wherever the column uses it - not only as its own metric / transformId. Each shape
@@ -151,10 +162,13 @@ def test_ema_is_served_and_refused_as_unmeasured():
 def test_the_unmeasured_chain_outers_are_the_served_enums_delta():
     served = V148["reportColumn"]["chainedTransformId"]["enum"]
     old = _column_node(_j(CAPTURE_146))["properties"]["chainedTransformId"]["enum"]
-    assert set(served) - set(old) == {"distance", "ema"} <= set(load().unmeasured_chain_outers)
-    assert set(load().unmeasured_parameters) == {"rollingMax", "rollingMin"}
-    assert all(set(p) == {"offset"} for p in load().unmeasured_parameters.values())
-    assert "2026-11-05: 206" in UNMEASURED["_what"]
+    history = UNMEASURED["history149"]
+    assert set(served) - set(old) == {"distance", "ema"} <= set(history["chainOuters"])
+    assert set(history["transformParameters"]) == {"rollingMax", "rollingMin"}
+    assert all(set(p) == {"offset"} for p in history["transformParameters"].values())
+    # rendered by the 149.1.0 probe (groups A, B, J): nothing is left unmeasured
+    assert load().unmeasured_chain_outers == {} and load().unmeasured_parameters == {}
+    assert "2026-11-05: 206" in UNMEASURED["_what"] and "2026-11-07: EMPTY again" in UNMEASURED["_what"]
 
 
 @pytest.mark.parametrize("column,expected", [
@@ -173,17 +187,23 @@ def test_the_unmeasured_chain_outers_are_the_served_enums_delta():
     ({"metric": "LOW", "transformId": "rollingMin", "window": 20, "offset": 2},
      [("PARAMETER_UNMEASURED", "column.offset")]),
 ])
-def test_an_unmeasured_operand_chain_outer_or_knob_is_refused_as_unmeasured(column, expected):
+def test_what_was_refused_as_unmeasured_at_148_validates_since_the_refresh(column, expected):
+    """`expected` is what the 148.1.0 corpus answered (unmeasured); since 2026-11-07 every one of these is measured -
+    the operands from the served spreadOperands, the outers and the offset rendered in the 149.1.0 probe - and
+    validates with no error."""
     col = Column.model_validate({**column, "timeframe": {"rel": "anchor"}})
-    errors = [(f.code, f.path) for f in validate_column(col) if f.severity == "error"]
-    assert errors == expected
-    assert not any(code in ("OPERAND_NOT_ALLOWED", "REPORT_COLUMN_CHAIN_UNSUPPORTED", "OFFSET_REFUSED",
-                            "WINDOW_REFUSED") for code, _ in errors)
+    assert all(code.endswith("_UNMEASURED") for code, _ in expected)
+    now = []
+    if column.get("chainedTransformId") == "zscore":
+        # the one served refusal: SWING_STRUCTURE_LEVEL is a spread operand of CLOSE, but not one of the 91 operands
+        # CLOSE x spread serves under the zscore chain (chainedOuters.zscore.operands, hints at 149.1.0)
+        now = [("REPORT_COLUMN_CHAIN_UNSUPPORTED", "column.inputs[0]")]
+    assert [(f.code, f.path) for f in validate_column(col) if f.severity == "error"] == now
 
 
-def test_a_section_with_an_unmeasured_operand_is_refused_not_crashed():
-    """validate_section predicts every column's header for the duplicate check; over an operand the corpus does not
-    hold that raised KeyError ('unknown metric PIVOT_WEEK_P') instead of returning the finding."""
+def test_a_section_with_a_once_unmeasured_operand_validates():
+    """validate_section predicts every column's header for the duplicate check; over an operand the corpus did not
+    hold that raised KeyError ('unknown metric PIVOT_WEEK_P'). The operand is in the corpus since 2026-11-07."""
     from omega.types import CustomSection
     from omega.validate import validate_section
     section = CustomSection.model_validate({"kind": "custom", "title": "t", "marketScope": None, "columns": [
@@ -191,9 +211,7 @@ def test_a_section_with_an_unmeasured_operand_is_refused_not_crashed():
         {"metric": "HIGH", "transformId": "distance", "chainedTransformId": "ema", "window": 10,
          "timeframe": {"rel": "anchor"}},
         {"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "anchor"}}]})
-    assert [(f.code, f.path) for f in validate_section(section) if f.severity == "error"] == [
-        ("METRIC_UNMEASURED", "section.columns[0].inputs[0]"),
-        ("TRANSFORM_UNMEASURED", "section.columns[1].chainedTransformId")]
+    assert [(f.code, f.path) for f in validate_section(section) if f.severity == "error"] == []
 
 
 def test_measured_operands_and_chains_still_answer_from_the_corpus():
@@ -209,14 +227,16 @@ def test_measured_operands_and_chains_still_answer_from_the_corpus():
     assert "REPORT_COLUMN_CHAIN_UNSUPPORTED" in _errors(validate_column(chain))
 
 
-@pytest.mark.parametrize("knob,value", [("leftBars", 3), ("swingLength", 20), ("equalThreshold", 0.2),
-                                        ("confluenceFilter", True)])
-def test_the_knobs_are_not_modelled_yet(knob, value):
-    """Served by the 148.1.0 schema; which metric takes which knob, and its range, is served per metric by the hints
-    the stopped re-extraction did not reach - so omega.types.Column refuses them (extra='forbid')."""
-    with pytest.raises(ValidationError):
-        Column.model_validate({"metric": "SWING_FRACTAL_HIGH", "transformId": "value", "timeframe": {"rel": "anchor"},
-                               knob: value})
+@pytest.mark.parametrize("knob,value,expected", [
+    ("leftBars", 3, []), ("swingLength", 20, ["PARAMETER_UNDECLARED"]),
+    ("equalThreshold", 0.2, ["PARAMETER_UNDECLARED"]), ("confluenceFilter", True, ["PARAMETER_UNDECLARED"])])
+def test_the_knobs_are_modelled_per_metric(knob, value, expected):
+    """Refused by omega.types.Column (extra='forbid') until 2026-11-07. Now the Column carries every knob and the
+    metric's served `parameters` judge it: SWING_FRACTAL_HIGH takes leftBars / rightBars only ("metric
+    'SWING_FRACTAL_HIGH' does not accept params.swingLength", measured 2026-11-07 at 149.1.0)."""
+    col = Column.model_validate({"metric": "SWING_FRACTAL_HIGH", "transformId": "value", "timeframe": {"rel": "anchor"},
+                                 knob: value})
+    assert _errors(validate_column(col)) == expected
 
 
 # --- the vocabulary read at 148.1.0 ------------------------------------------------------------------------------------
@@ -233,15 +253,16 @@ def test_the_vocabulary_snapshot_and_the_refused_structure_category():
 
 def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")
-    assert shared["_refreshed"]["contractVersion"] == "148.1.0"
-    assert {"id": "ema", "label": "Exponential average (EMA)"} in shared["transforms"] and len(shared["transforms"]) == 24
-    assert load().budgets["conditionFrameReads"] == 2048
+    # re-read 2026-11-07 at 149.1.0 (rma / wma / rsi / cci, conditionFrameReads 5048); the 148.1.0 read under `previous`
+    assert shared["_refreshed"]["previous"]["contractVersion"] == "148.1.0"
+    assert "budgets.conditionFrameReads 256 -> 2048 (v146.4)" in shared["_refreshed"]["previous"]["moved"]
+    assert {"id": "ema", "label": "Exponential average (EMA)"} in shared["transforms"]
     categories = _j(CONTRACT_DIR / "categories.json")
     counts = {c["category"]: c["metricCount"] for c in categories["categories"]}
     assert counts["structure"] == 362 and sum(counts.values()) == 532 and len(counts) == 11
-    assert categories["_refreshed"]["moved"][0] == "structure 156 -> 362"
-    # the corpus holds the 156 measured structure metrics; the 206 added are all `structure` and unmeasured
-    assert sum(1 for m in load().metrics.values() if m.family == "structure") + 206 == 362
+    assert categories["_refreshed"]["previous"]["moved"][0] == "structure 156 -> 362"
+    # the 206 added are all `structure`; the corpus holds all 362 since 2026-11-07 (156 before)
+    assert sum(1 for m in load().metrics.values() if m.family == "structure") == 362
     templates = _j(CONTRACT_DIR / "templates" / "platform" / "_all.json")
     assert templates["_refreshed"]["contractVersion"] == "148.1.0" and len(templates["templates"]) == 22
 

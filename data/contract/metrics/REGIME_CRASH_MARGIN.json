@@ -13,17 +13,28 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "regimeCrashEvidence",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "standard deviations by which the crash reading — the fifteen-bar rate of change counted in the coin's own one-bar volatility before it — sits above the crash gate (-3) — how far the crash warning was from being raised",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
     "RSI14",
     "RSI7",

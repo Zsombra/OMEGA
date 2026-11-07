@@ -43,7 +43,10 @@ from scripts.render_coverage import (
 # and the nine new metrics offer their own spread atoms (data/contract/metrics/_moves_110.json).
 # 8302 at 110.2.0; 9432 at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json); 28958 at 135.2.0, 2026-10-26: each
 # spread chains into nine series outers over its served operands (data/contract/metrics/_moves_135.json)
-EXPANDED_SPREAD_SHAPES = 110392   # 109492 at 144.0.0; + 900 at 146.0.1, 2026-11-02: the ten MKT_* spread atoms x 10 (plain + nine chains) x 9 MKT_* operands
+# 110392 at 146.0.1 (109492 at 144.0.0; + 900 at 146.0.1, 2026-11-02: the ten MKT_* spread atoms x 10 (plain + nine
+# chains) x 9 MKT_* operands); 263502 at 149.1.0 (2026-11-07): the 206 added keys' spread atoms and operands, and every
+# spread's five smoother outers (ema / rma / wma / rsi / cci) over its served operands
+EXPANDED_SPREAD_SHAPES = 263502
 
 
 @pytest.fixture(scope="module")
@@ -75,7 +78,9 @@ def test_rendered_headers_spans_every_cache():
     # 11 until the 09-09 sweep, 13 since the 09-20 one, 14 since 10-13, 15 since 10-14, 16 since 10-15, 17 since 10-26
     # 23 since 2026-11-02: + the two 146.0.1 sweeps (one per section subject) and the 146 probe headers
     # 25 since 2026-11-07: + the 149.1.0 authoring probe headers and the 149.1.0 structural sweep over the 206 keys
-    assert len(SEEN_FILES) == 25   # 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
+    # 29 since the model step of 2026-11-07: + the three sweeps over the smoother / distance-chain / pair-relative shapes
+    # (coin, market, reference sections) and the knob-spelling probe headers
+    assert len(SEEN_FILES) == 29   # 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -172,7 +177,11 @@ def test_structural_coverage_is_complete(contract):
     # 4408 at 146.0.1 (2026-11-02: the 24 added metrics' mechanisms rendered by the two sweeps of that day, one per section
     # subject - 200 shapes on an evaluated-coin section, 1,015 on a market section - 0 refusals, 0 mispredicted; PAR_DEV's
     # 12 mechanisms are outside the space: no subject reads it, see coverage())
-    assert (cov, len(unc)) == (4408, 0), (
+    # 7197 at 149.1.0 (2026-11-07): the 206 added keys (557 shapes, the structural sweep), then - once omega.fanout spelled
+    # them - the five smoothers as transform and as chain outer and distance after an offset rolling extreme (2,074 on a
+    # coin section, 65 on a market section) and PAR_DEV's mechanisms on a pair section (15, relativeTo USDC_USDT): every
+    # sweep 0 refusals, 0 mispredicted. PAR_DEV is inside the space since 149 (subject `reference`).
+    assert (cov, len(unc)) == (7197, 0), (
         "every metric x transform mechanism has been rendered live at least once")
 
 
@@ -211,6 +220,9 @@ def test_live_coverage_is_complete(contract):
     # 146.0.1 (2026-11-02): 114,994 expanded shapes in the space (115,035 less PAR_DEV's 21 and 20 placeholders). The 900
     # MKT_* spread pairs rendered on a market section (the only subject that reads them) and the coin sweep also rendered
     # the CVD / CUM_VOLUME_DELTA / SPOT_CVD pairs (167 of the 80,806), so the deliberate stop is 80,639 spread pairs now.
-    assert (cov, len(unc)) == (34355, 80639), (
+    # 149.1.0 (2026-11-07): 270,893 expanded shapes. Every structural mechanism and every non-spread expansion is
+    # rendered (37,153); the spread operand pairs stay unrendered by the same deliberate stop, now 233,740 of them: the
+    # 206 added keys as spread atoms and operands, and each spread's five smoother outers over its served operands.
+    assert (cov, len(unc)) == (37153, 233740), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
-    assert dict(byt) == {"spread": 80639}
+    assert dict(byt) == {"spread": 233740}
