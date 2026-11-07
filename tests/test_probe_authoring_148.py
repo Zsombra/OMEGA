@@ -20,9 +20,13 @@ OAUTH = (b"If the browser did not open, visit https://mcp.battlegrid.trade/autho
          b"to continue.\n")
 
 
-def _load(monkeypatch, tmp_path):
+def _load(monkeypatch, tmp_path, contract="148.1.0"):
     monkeypatch.setenv("PROBE_HINTS", str(tmp_path / "hints"))
     monkeypatch.setenv("PROBE_DATE", "2099-01-01")
+    if contract is None:
+        monkeypatch.delenv("PROBE_CONTRACT", raising=False)
+    else:
+        monkeypatch.setenv("PROBE_CONTRACT", contract)
     spec = importlib.util.spec_from_file_location("probe_authoring_148_under_test", SCRIPT)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
@@ -111,3 +115,81 @@ def test_a_contract_move_mid_run_aborts(monkeypatch, tmp_path):
     record = json.loads((tmp_path / "record.json").read_text(encoding="utf-8"))
     assert record["aborted"]["reason"] == "ContractMoved" and record["aborted"]["afterProbes"] == mod.VERSION_EVERY
     assert record["counts"]["probes"] == mod.VERSION_EVERY
+
+
+# --- 2026-11-07: re-targeted to contract 149.1.0, group J (the four smoothers and the thirteen knobs) ---------------
+
+VOCAB = json.loads((ROOT / "data" / "derived" / "condition_vocabulary_108.json").read_text(encoding="utf-8"))
+COLUMN = VOCAB["reportColumn"]
+KNOBS = ("accelerationIncrement", "accelerationMaximum", "accelerationStart", "atrPeriod", "dSmoothing", "fast",
+         "kSmoothing", "multiplier", "period", "rsiPeriod", "signal", "slow", "stdDev")
+
+
+def _dry_run(monkeypatch, tmp_path, maximum=50, step=None):
+    """Every group sent against stubs: no platform call, every preview 'rendered' empty. Returns the columns sent."""
+    mod = _load(monkeypatch, tmp_path, contract=None)
+    monkeypatch.setattr(mod, "version", lambda: {"contractVersion": "149.1.0", "buildSha": "aa4ab640"})
+    sent = []
+
+    def preview(sections, tickers=("BTC",), timeframe="1h"):
+        for s in sections:
+            sent.extend(s["columns"])
+        return {}, {"budgetUsage": {}, "authoring": {"conditionColumns": []}, "renderedSections": []}, None
+
+    def hint(metric):
+        transforms = [{"id": t, "authoring": {"parameters": {"window": {"maximum": maximum}}}}
+                      for t in COLUMN["transformId"]["enum"]]
+        params = {k: {"defaultValue": 5, "minimum": 2, "maximum": maximum, "step": step}
+                  for k in KNOBS + ("leftBars", "rightBars", "equalBars")}
+        return {"transforms": transforms, "parameters": params, "spreadOperands": ["CLOSE"]}
+
+    monkeypatch.setattr(mod, "preview", preview)
+    monkeypatch.setattr(mod, "hint", hint)
+    assert mod.main() == 0
+    return mod, sent
+
+
+def test_the_probe_targets_149_1_0_by_default(monkeypatch, tmp_path):
+    monkeypatch.delenv("PROBE_CONTRACT", raising=False)
+    monkeypatch.setenv("PROBE_DATE", "2099-01-01")
+    spec = importlib.util.spec_from_file_location("probe_default_under_test", SCRIPT)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.CONTRACT == "149.1.0"
+    assert mod.RECORD_OUT == "data/audit/authoring_probe_149_2099-01-01.json"
+    assert mod.HEADERS_OUT == "data/contract/columns/_probe_149_2099-01-01.json"
+
+
+def test_every_column_the_probe_sends_is_a_149_column(monkeypatch, tmp_path):
+    """A field, metric or transform the 149.1.0 schema does not serve would be a schema refusal of the probe's own
+    making, read later as a platform fact."""
+    _, sent = _dry_run(monkeypatch, tmp_path)
+    assert len(sent) > 300
+    fields = set(COLUMN["fields"])
+    metrics = set(COLUMN["metric"]["enum"])
+    for col in sent:
+        assert set(col) <= fields, col
+        assert col["metric"] in metrics, col
+        assert col["transformId"] in COLUMN["transformId"]["enum"], col
+        if "chainedTransformId" in col:
+            assert col["chainedTransformId"] in COLUMN["chainedTransformId"]["enum"], col
+        for operand in col.get("inputs") or []:
+            assert operand["metric"] in metrics, col
+
+
+def test_group_j_sends_every_smoother_and_every_knob(monkeypatch, tmp_path):
+    _, sent = _dry_run(monkeypatch, tmp_path)
+    for tid in ("rma", "wma", "rsi", "cci"):
+        assert any(c["transformId"] == tid for c in sent), tid
+        assert any(c.get("chainedTransformId") == tid for c in sent), tid
+    for k in KNOBS:
+        assert any(k in c for c in sent), k
+
+
+def test_group_j_reads_every_bound_from_the_hints(monkeypatch, tmp_path):
+    """Maxima are the served ones (here a stub's 77), never constants: max accepted, one step past refused."""
+    _, sent = _dry_run(monkeypatch, tmp_path, maximum=77)
+    assert any(c["metric"] == "MACD_LINE" and c.get("fast") == 77 for c in sent)
+    assert any(c["metric"] == "MACD_LINE" and c.get("fast") == 78 for c in sent)
+    assert any(c["metric"] == "RSI14" and c["transformId"] == "rma" and c.get("window") == 78 for c in sent)
+    assert any(c["metric"] == "BB_UPPER" and c.get("period") == 1 for c in sent), "the minimum 2 minus one step"

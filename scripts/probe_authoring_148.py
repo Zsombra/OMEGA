@@ -11,18 +11,28 @@ Pivot Points Standard types on five periods, LuxAlgo market structure, EQH / EQL
 `REPORT_COLUMN_DEPTH_EXCEEDED`. Every served metric now carries `subjectKinds` - four subjects; group G renders the
 `reference` (a stablecoin-pair section) and `benchmark` subjects no earlier probe set.
 
+Contract 149.0.0 / 149.1.0 (undocumented in the README; read from the schemas and the 532 hints of 2026-11-06) added
+to the same column the smoothers `rma`, `wma`, `rsi` and `cci` (transformId and chainedTransformId) and thirteen
+optional knobs - atrPeriod, dSmoothing, fast, kSmoothing, period, rsiPeriod, signal, slow (bar counts), multiplier,
+stdDev and PSAR's accelerationStart / Increment / Maximum - each served per metric in the hint's `parameters`. Group J
+renders them. The run probes the served contract (PROBE_CONTRACT, default 149.1.0); the groups A - I written for
+148.1.0 hold unchanged there (149 moved no metric, section or tool).
+
 Groups (BTC, 1h anchor, detail "detailed"; one column per preview where a refusal is expected, batched columns where
 acceptance is expected - a refused batch is re-probed column by column):
   A `ema`; B the `distance` chain outer / rolling offset; C swing pairs; D market structure; E EQH / EQL;
-  F pivots (timeframe-inert bundles); G section subjects; H the 1,000-bar history; I knob + offset / timeframe combos.
+  F pivots (timeframe-inert bundles); G section subjects; H the 1,000-bar history; I knob + offset / timeframe combos;
+  J the 149 smoothers and knobs.
 
-The transforms each new key serves are read from the raw hints of the same day (PROBE_HINTS, the
-refresh_metric_contracts scratch dir hints_<STAMP>/), never assumed.
+The transforms each new key serves, and every knob's bounds, are read from the raw hints of the same contract
+(PROBE_HINTS, the refresh_metric_contracts scratch dir hints_<STAMP>/), never assumed.
 
-Headers minted go to data/contract/columns/_probe_148_<DATE>.json (HEADERS ONLY: render_coverage treats every string
-in that file as a seen header); the run record, every refusal verbatim, to data/audit/authoring_probe_148_<DATE>.json.
+Headers minted go to data/contract/columns/_probe_<MAJOR>_<DATE>.json (HEADERS ONLY: render_coverage treats every
+string in that file as a seen header); the run record, every refusal verbatim, to
+data/audit/authoring_probe_<MAJOR>_<DATE>.json (MAJOR = the probed contract's major, 149).
 
-Usage: PROBE_DATE=2026-11-05 PROBE_HINTS=<scratch>/hints_20261105 python scripts/probe_authoring_148.py
+Usage: PROBE_DATE=2026-11-07 PROBE_HINTS=C:/Users/rafae/omega-v012-hints/hints_20261106 \
+       python scripts/probe_authoring_148.py
 """
 from __future__ import annotations
 
@@ -35,11 +45,12 @@ import urllib.request
 
 sys.path.insert(0, ".")
 
-PROBE_DATE = os.environ.get("PROBE_DATE", "2026-11-05")
+PROBE_DATE = os.environ.get("PROBE_DATE", "2026-11-07")
 HINTS = os.environ.get("PROBE_HINTS")       # required by main(); read lazily so the module imports for tests
-CONTRACT = os.environ.get("PROBE_CONTRACT", "148.1.0")
-HEADERS_OUT = f"data/contract/columns/_probe_148_{PROBE_DATE}.json"
-RECORD_OUT = f"data/audit/authoring_probe_148_{PROBE_DATE}.json"
+CONTRACT = os.environ.get("PROBE_CONTRACT", "149.1.0")
+MAJOR = CONTRACT.split(".")[0]
+HEADERS_OUT = f"data/contract/columns/_probe_{MAJOR}_{PROBE_DATE}.json"
+RECORD_OUT = f"data/audit/authoring_probe_{MAJOR}_{PROBE_DATE}.json"
 NOTE = f"OMEGA read-only authoring probe {PROBE_DATE}"
 
 SWING = ["SWING_FRACTAL_HIGH", "SWING_FRACTAL_LOW", "PRIOR_SWING_FRACTAL_HIGH", "PRIOR_SWING_FRACTAL_LOW",
@@ -179,6 +190,96 @@ def refusal(e):
             "allowedDomain": {k: v for k, v in dom.items() if k != "candidates"} or None,
             "candidateCount": len(dom.get("candidates") or []) if isinstance(dom.get("candidates"), list) else None,
             "context": det.get("context")}
+
+
+SMOOTHERS = ("rma", "wma", "rsi", "cci")
+
+
+def window_max(metric, tid):
+    """The served window maximum of `tid` on `metric` (the hint's authoring block), None when not served."""
+    for t in hint(metric)["transforms"]:
+        if t["id"] == tid:
+            return ((t.get("authoring") or {}).get("parameters") or {}).get("window", {}).get("maximum")
+    return None
+
+
+def knob(metric, name):
+    """The served spec of one knob on one metric: defaultValue / minimum / maximum / step / bound."""
+    return hint(metric)["parameters"][name]
+
+
+def group_j(batch, one):
+    """J: what 149.0.0 / 149.1.0 added - the four smoothers and the thirteen knobs. Every maximum, minimum and step
+    is the hint's; a value one step past it is the expected refusal."""
+    print("J. the 149 smoothers")
+    for tid in SMOOTHERS:
+        wmax = window_max("RSI14", tid)
+        batch(f"J.{tid}.accept", [C("RSI14", tid, window=14), C("CLOSE", tid, window=14), C("QUOTE_VOL", tid, window=14),
+                                  C("RSI14", tid), C("RSI14", tid, window=1), C("RSI14", tid, window=wmax),
+                                  C("CLOSE", tid, window=14, bars="closed")])
+        one(f"J.RSI14.{tid}.w{wmax + 1}", C("RSI14", tid, window=wmax + 1))
+        batch(f"J.{tid}.chainOuter", [C("CLOSE", "distance", chainedTransformId=tid, window=10),
+                                      C("RSI14", "spread", inputs=[{"metric": "RSI7"}], chainedTransformId=tid, window=10),
+                                      C("CLOSE", "relativeTo", chainedTransformId=tid, window=10)])
+    one("J.CLOSE.distance.chain.rma.w119", C("CLOSE", "distance", chainedTransformId="rma", window=119))
+    one("J.CLOSE.distance.chain.wma.w937", C("CLOSE", "distance", chainedTransformId="wma", window=937))
+    one("J.RSI14.zscore.chain.rma", C("RSI14", "zscore", window=20, chainedTransformId="rma"))
+    one("J.CLOSE.rma.chain.trajectory", C("CLOSE", "rma", window=14, chainedTransformId="trajectory"))
+    one("J.RSI14.rma.offset1", C("RSI14", "rma", window=14, offset=1))
+    one("J.PIVOT_WEEK_P.rsi", C("PIVOT_WEEK_P", "rsi", window=14))
+    one("J.RSI14.cci.abs4h", C("RSI14", "cci", window=20, timeframe={"abs": "4h"}))
+
+    print("J. the 149 knobs")
+    batch("J.knobs.accept", [
+        C("MACD_LINE", fast=8, slow=21, signal=5), C("MACD_LINE", fast=8), C("PPO_LINE", slow=30),
+        C("MACD_HIST", signal=7), C("STOCH_K", period=21, kSmoothing=5, dSmoothing=5), C("STOCH_RSI_K", rsiPeriod=21),
+        C("BB_UPPER", period=30, stdDev=2.5), C("BB_PCT_B", stdDev=1.5),
+        C("KC_UPPER", period=30, atrPeriod=14, multiplier=1.5), C("ST_LINE", atrPeriod=14, multiplier=2),
+        C("PSAR", accelerationStart=0.01, accelerationIncrement=0.01, accelerationMaximum=0.3),
+        C("CMF20", period=30), C("MFI14", period=21), C("WILLR14", period=21)])
+    batch("J.knobs.defaults", [
+        C("MACD_LINE", fast=12, slow=26, signal=9), C("BB_UPPER", period=20, stdDev=2),
+        C("PSAR", accelerationStart=0.02, accelerationIncrement=0.02, accelerationMaximum=0.2),
+        C("ST_LINE", atrPeriod=knob("ST_LINE", "atrPeriod")["defaultValue"],
+          multiplier=knob("ST_LINE", "multiplier")["defaultValue"])])
+    # bounds: each knob kind at its served maximum (accepted) and one step past (refused), a minimum and an off-step
+    for metric, name in (("MACD_LINE", "fast"), ("MACD_LINE", "signal"), ("STOCH_RSI_K", "rsiPeriod"),
+                         ("ST_LINE", "atrPeriod"), ("BB_UPPER", "stdDev"), ("KC_UPPER", "multiplier"),
+                         ("PSAR", "accelerationMaximum")):
+        spec = knob(metric, name)
+        step = spec.get("step") or 1
+        one(f"J.{metric}.{name}.max", C(metric, **{name: spec["maximum"]}))
+        one(f"J.{metric}.{name}.over", C(metric, **{name: round(spec["maximum"] + step, 6)}))
+    for metric, name in (("BB_UPPER", "period"), ("BB_UPPER", "stdDev"), ("PSAR", "accelerationStart")):
+        spec = knob(metric, name)
+        step = spec.get("step") or 1
+        one(f"J.{metric}.{name}.under", C(metric, **{name: round(spec["minimum"] - step, 6)}))
+    one("J.BB_UPPER.stdDev.offstep", C("BB_UPPER", stdDev=2.25))
+    one("J.BB_UPPER.period.nonInteger", C("BB_UPPER", period=20.5))
+    one("J.MACD_LINE.fast.gt.slow", C("MACD_LINE", fast=30, slow=10))
+    one("J.MACD_LINE.fast.eq.slow", C("MACD_LINE", fast=26, slow=26))
+    one("J.EQH.equalThreshold.negative", C("EQH", equalThreshold=-0.1))
+    # a knob the metric does not serve
+    one("J.RSI14.period", C("RSI14", period=21))
+    one("J.CLOSE.stdDev", C("CLOSE", stdDev=2))
+    one("J.MACD_LINE.period", C("MACD_LINE", period=20))
+    # under transforms: metricParametersAccepted false (aggregate, ema, the smoothers, relativeTo, zscore) / true
+    one("J.MACD_LINE.aggregate.fast8", C("MACD_LINE", "aggregate", window=10, fast=8))
+    one("J.MACD_LINE.ema.fast8", C("MACD_LINE", "ema", window=10, fast=8))
+    one("J.MACD_LINE.rma.fast8", C("MACD_LINE", "rma", window=10, fast=8))
+    one("J.BB_UPPER.relativeTo.stdDev", C("BB_UPPER", "relativeTo", stdDev=2.5))
+    one("J.BB_UPPER.zscore.stdDev", C("BB_UPPER", "zscore", window=20, stdDev=2.5))
+    one("J.BB_UPPER.distance.chain.rma.stdDev", C("BB_UPPER", "distance", chainedTransformId="rma", window=10,
+                                                  stdDev=2.5))
+    batch("J.knobs.transforms.accept", [
+        C("MACD_LINE", "trajectory", window=4, fast=8), C("MACD_LINE", "crossDetect", fast=8),
+        C("MACD_LINE", "spread", inputs=[{"metric": "MACD_SIGNAL"}], fast=8), C("MACD_LINE", "efficiency", window=20, fast=8),
+        C("BB_UPPER", "distance", stdDev=2.5), C("BB_UPPER", "levelInteraction", stdDev=2.5),
+        C("STOCH_K", "classifyZone", period=21), C("PSAR", "distance", accelerationMaximum=0.3)])
+    # combinations: knobs + offset + a pinned / lower timeframe (header order)
+    batch("J.knobs.combos", [C("MACD_LINE", fast=8, slow=21, offset=1), C("MACD_LINE", fast=8, timeframe={"abs": "4h"}),
+                             C("BB_UPPER", period=30, stdDev=2.5, timeframe={"rel": "lower"}, offset=2),
+                             C("KC_UPPER", multiplier=1.5, atrPeriod=14, period=30, offset=1)])
 
 
 def main() -> int:
@@ -413,6 +514,8 @@ def main() -> int:
                            C("HIGH", "rollingMax", window=55, offset=1, timeframe={"rel": "lower"}),
                            C("HIGH", "rollingMax", window=55, offset=1, chainedTransformId="distance",
                              timeframe={"abs": "4h"})])
+
+        group_j(batch, one)
 
     aborted = None
     try:
