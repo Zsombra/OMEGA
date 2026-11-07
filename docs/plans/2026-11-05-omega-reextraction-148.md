@@ -458,6 +458,70 @@ Record only:
 8. **"all read at 148.1.0"**: 370 measured between two 148.1.0 reads; 371 - 383 inferred, and the 149 re-read sample
    must include them.
 
+## Resumed 2026-11-07 (offline, contract 149.1.0; recorded 03:22Z)
+
+No OMEGA platform call. The served contract has been **149.1.0 / build aa4ab640** since 2026-11-05 18:19Z (the user
+acknowledged it on the manager at 20:31:47Z). 149 is undocumented in the README; what moved was read from the schemas.
+On the custom column:
+- the transforms `rma`, `wma`, `rsi` and `cci` were added to transformId (29) and chainedTransformId (17);
+- thirteen optional knobs were added: atrPeriod, dSmoothing, fast, kSmoothing, period, rsiPeriod, signal and slow (each
+  a `$ref` to the new root `$defs/barCount`, integer 1 - 2^53-1), multiplier and stdDev, and PSAR's
+  accelerationStart / Increment / Maximum;
+- leftBars, rightBars, swingLength and equalBars became the same `$ref`;
+- equalThreshold lost its minimum 0.
+
+No metric key, section key or tool moved.
+
+1. **`condition_vocabulary._column_enums` follows `$ref`.**
+   - The defect: the derive read each column field's own keys. On 149 that dropped the type and bounds of the twelve
+     bar-count knobs, so 9 of the 21 numeric fields kept their bounds.
+   - The fix: each field is read through its `$ref`. The inventory also records `refs`, the field -> pointer map.
+   - `tests/test_condition_vocabulary_108.py::test_a_column_field_named_by_ref_keeps_its_type_and_bounds` failed
+     first (KeyError 'leftBars').
+2. **The write surface moved to `data/contract/stage_strategy_draft/schema_20261105T181932Z.json`.**
+   - It is battlegrid-manager's fixture `tests/fixtures/2026-11-05-contract-149.1.0/manager_schemas_149.1.0.json`:
+     the watch's stored row, hash 656c9bf6, `sourceSha256` the fixture's, `liveListSha256` null.
+   - Manifest `writeSurface` names it, with the 148.1.0 block under `supersedes`.
+   - Cross-checked against the manager's own live observation. Its watch re-listed the surface at
+     **2026-11-07T03:16:53Z**, when the stack came back from a host reboot: 154 tools, 149.1.0 / aa4ab640, and the six
+     draft tools' description and inputSchema identical to the capture. The stored manager_schemas row equals the
+     capture on all four keys.
+   - `compare_vocabulary` against that surface: **exit 0**. Metrics 532 / 532 (206 storedUnmeasured, as at 148.1.0),
+     sectionKeys 22 / 22. Recorded in `data/audit/contract_149_1_0_vocabulary_2026-11-07.json`.
+3. **Vocabulary re-derived** (`data/derived/condition_vocabulary_108.json`): 532 metrics, transformId 29,
+   chainedTransformId 17, 32 column fields, all 21 numeric fields bounded as served. The conditions grammar is
+   unchanged since 148.1.0.
+4. **The four new transforms are unmeasured.**
+   - `omega.contract` derives `rma`, `wma`, `rsi` and `cci` as unmeasured transforms (served, not extracted), beside
+     `ema`.
+   - `_unmeasured_108.json` lists them as chain outers too.
+   - A column using one, as its transform or as a chain outer, is refused TRANSFORM_UNMEASURED.
+   - The thirteen knobs are not on `omega.types.Column`, so the model refuses them.
+5. **The 532 hints read at 149.1.0 (C13, 2026-11-06 15:35 - 17:04Z, 0 failed, every one bracketed by two 149.1.0
+   version reads) are summarized, NOT folded into the corpus** (`data/audit/hints_149_1_0_2026-11-06.json`).
+   - A dry run of `refresh_metric_contracts.py` over them in a scratch copy wrote 532 with no failures.
+   - Every transform's authoring block is invariant, and `chainOuterParameters` is invariant.
+   - The catalogue would gain cci / ema / rma / rsi / wma and change aggregate / rollingMax / rollingMin.
+   - 165 metrics serve all five smoothers. Window maxima: ema 269, rma and rsi 118, wma and cci 936. The same maxima
+     apply as chain outers on 387 successor positions.
+   - The nineteen knobs are served per metric (e.g. leftBars / rightBars on the 7 swing metrics, `period` on 12).
+   - subjectKinds come in four subjects (489 coin + benchmark, 25 coin only, 13 market, 4 OHLC + reference,
+     PAR_DEV reference only).
+   - **Ruling (Claude's): the refresh lands with stage 2, not here.** A refreshed catalogue makes the five smoothers and
+     the 206 keys authorable, while their headers, knob tokens and refusals are unrendered (no probe has run). Landing
+     it alone would have OMEGA predict headers it never saw.
+   - **Cost if wrong:** one step of the re-extraction waits a session. The raw hints stay at
+     C:/Users/rafae/omega-v012-hints/hints_20261106/ (not committed, sha256 in the record).
+6. **Tests: 1887 passed, 0 failed.** That is 1856 + 1 `$ref` test + 30 in the new `tests/test_v149_surface.py`. Pins moved in test_condition_vocabulary_108, test_report_surface_108, test_compare_vocabulary, test_v146,
+   test_v146_1 and test_write_surface. test_v148_surface now reads the 148.1.0 capture's own derivation, so it holds
+   as history. `pyproject.toml` stays 0.11.0.
+
+**Next (stage 2, needs the platform):**
+- re-target `probe_authoring_148.py` to 149.1.0, adding a group for rma / wma / rsi / cci and the thirteen knobs;
+- the sweeps;
+- then the refresh above, `build_corpus`, `_moves_149` / `_subjects_149`, the model changes, two review passes, and
+  the 0.12.0 cut.
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206
@@ -475,7 +539,7 @@ Record only:
 
 ## To resume
 
-**Since 2026-11-05T16:31:50Z the served contract is 149.0.0 (build 5ec52a81), not 148.1.0.** Before anything below:
+**Superseded 2026-11-07: see "Resumed 2026-11-07" above - the 149.1.0 surface is captured, all 532 hints are re-read at 149.1.0, the probe is next.** (Earlier note:) **Since 2026-11-05T16:31:50Z the served contract is 149.0.0 (build 5ec52a81), not 148.1.0.** Before anything below:
 read the battlegrid-mcp README "Contract history" for 149, re-list the surface, run `compare_vocabulary` against it and
 diff the six draft tools' schemas against the 148.1.0 capture (step 1 again). If 149 moved no authoring input, the 383
 raw hints can be kept only after re-reading a sample of them at 149 and finding them identical - the sample includes
