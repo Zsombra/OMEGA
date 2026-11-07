@@ -522,6 +522,67 @@ No metric key, section key or tool moved.
 - then the refresh above, `build_corpus`, `_moves_149` / `_subjects_149`, the model changes, two review passes, and
   the 0.12.0 cut.
 
+## Stage 2 begun 2026-11-07: the authoring probe at 149.1.0 (recorded 11:40Z)
+
+Clock: `manager contract status` 149.1.0 / aa4ab640, writes open, at 10:53Z; GET /mcp/version 149.1.0 at the start
+(10:58:34Z), every 25 previews and at the end (11:32:02Z). Every call `preview_strategy_report` over mcporter
+(`battlegrid-anbu`, the npx shim at `C:/Users/rafae/omega-v012-hints/npxshim/`), one worker, read-only: no stage,
+commit, bind, deploy, fund, archive or delete. The manager was PAUSED (the user's word) with one position open.
+
+1. **The probe re-targeted** (`scripts/probe_authoring_148.py`, bc0a78a): `PROBE_CONTRACT` default 149.1.0, outputs
+   named by the major (`_probe_149_<DATE>`), and **group J**: rma / wma / rsi / cci (accepted windows, the served
+   maximum and one over, chain outers, offset, an inner chain, an unserved metric, a pinned timeframe) and the thirteen
+   knobs (accepted, explicit defaults, each kind at its served maximum and one step past, minima, off-step,
+   non-integer, fast > slow, undeclared knobs, knobs under history transforms, combinations). Every bound is read from
+   the 149.1.0 hints. Groups A - I unchanged.
+2. **Run: complete, 225 previews, 104 rendered, 121 refused, 254 headers minted** (10:58:34Z - 11:32:02Z, ~9 s per
+   preview). `data/audit/authoring_probe_149_2026-11-07.json` (every refusal verbatim),
+   `data/contract/columns/_probe_149_2026-11-07.json` (headers only). Two answers were the preview's 15 s deadline
+   (`SERVICE_UNAVAILABLE`, F.PIVOT_CAM_R1.served and J.rma.chainOuter): platform answers, not authoring refusals; every
+   column of both batches rendered when re-probed alone. The script now marks such an entry `transient` and counts it;
+   the record was annotated the same way offline (`transientNote`).
+3. **Measured** (pinned in `tests/test_probe_149_record.py`, 21 tests):
+   - **Smoothers.** Default windows ema 20, rma 14, wma 20, rsi 14, cci 20, spelled in the header (`RSI14_rma14`).
+     Maxima as served: ema 269, rma / rsi 118, wma / cci 936; one over is `REPORT_COLUMN_DEPTH_EXCEEDED` ("at most 936
+     of the 1000 readable bars"). cci needs window >= 2 (the hint's minimum). All five refuse `offset`; none is a chain
+     inner (`CLOSE x rma -> trajectory` CHAIN_UNSUPPORTED); as outers of distance / spread / relativeTo they render
+     `dist_close_rma10`, `RSI14_RSI7_spread_rma10`, `close_BTC_rel_rma10`; `zscore -> rma` is refused. A pinned
+     timeframe goes before the smoother (`RSI14_4h_cci20`).
+   - **Knobs.** Once any knob of a metric is off its default, the metric's whole set is spelled, in a fixed order:
+     `MACDline_fast8slow21sig5`, `PPOline_fast12slow30sig9`, `K_p21s5d5`, `stochRsiK_rsi21_p14s3d3`,
+     `bbUpper20_p30sd2.5`, `kcUpper_p30atr14mult1.5`, `stLine_atr14mult2`, `PSAR_start0.01inc0.01max0.3`, `CMF20_p30`,
+     `MFI14_p21`, `willR14_p21`. Explicit defaults mint no token. Order with the rest: knobs, then timeframe, then
+     offset (`bbUpper20_p30sd2.5_ltf_o2`), then the transform suffix (`MACDline_fast8slow26sig9_trend`).
+     Bar-count knobs are bound by depth (one past the served maximum is DEPTH_EXCEEDED, the message counting the
+     bars the whole indicator reads); range knobs by the served range and step ("requires params.stdDev from 0.1 to 5
+     in steps of 0.1 (got 5.1)"); a non-integer bar count is a schema VALIDATION_ERROR. No ordering rule between fast
+     and slow (fast 30 / slow 10 renders). An undeclared knob: "metric 'RSI14' does not accept params.period". Under
+     aggregate / ema / rma / zscore and as an inner of a smoother chain, an off-default knob is refused ("its window
+     reaches slots older than the history ..."); under relativeTo too (the other coin reads the default); under
+     trajectory / crossDetect / spread / efficiency / distance / levelInteraction / classifyZone it renders.
+   - **equalThreshold** lost its schema minimum at 149, but the column grammar still refuses -0.1 (from 0 to 0.5 in
+     steps of 0.1).
+   - **The 148.1.0 widening** renders as the hints serve it: `dist_high_o1_max55` (offset 0 into distance refused),
+     `fractalHi_l3r5` / `fractalLo_l4r2` (the pair is spelled once either bar is off 2/2), `structLvl_s10` /
+     `iStructTrend_cf`, `SWING_STRUCTURE_*` refuse `confluenceFilter`, `eqh_e5_atr0.2` / `eqh_atr0`, the 35 pivot
+     headers (`pivotWeekP`, `pivotQuarterCamR1` ...), timeless pivots refuse a timeframe or offset.
+   - **Four subjects** as rendered: a pair section (`USDT_USD`) carries PAR_DEV and OHLC; a benchmark section (ETH)
+     carries RSI14, pivots and structure; each mismatch is SUBJECT_METRIC_UNSUPPORTED ("a reference section cannot
+     carry this column - metric 'RSI14' is not read on a reference section's bars"); `benchmarkTicker` + `marketScope`
+     is a VALIDATION_ERROR; PAR_DEV x relativeTo on a pair section needs an `instrument`.
+   - Platform wording recorded as served, not corrected: the swing `rightBars` over-refusal says "the largest left that
+     fits is 1", and the MACD `signal` over-refusal names "slow 26".
+
+4. **Tests: 1912 passed, 0 failed** (1887 + 4 in `tests/test_probe_authoring_148.py`: the 149.1.0 target, every
+   column sent is a 149 column, every smoother and knob is sent, the bounds come from the hints + the 21 record pins).
+   `pyproject.toml` stays 0.11.0; `_unmeasured_108.json` unchanged (the smoothers and knobs stay refused offline until
+   the model changes land).
+
+**Next:** the sweeps (step 5, at 149.1.0, `SWEEP_CONTRACT=149.1.0`, the probe's caches added to
+`render_coverage.SEEN_FILES` then), the refresh over the 2026-11-06 hints, `build_corpus`, `_moves_149` /
+`_subjects_149`, the model changes (knobs on `Column`, the five smoothers, the codes above with this wording), two
+review passes, the 0.12.0 cut.
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206

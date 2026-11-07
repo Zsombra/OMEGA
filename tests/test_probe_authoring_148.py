@@ -66,7 +66,7 @@ def test_an_oauth_prompt_aborts_the_run_after_one_call(monkeypatch, tmp_path):
     record = json.loads((tmp_path / "record.json").read_text(encoding="utf-8"))
     assert record["complete"] is False and record["aborted"]["reason"] == "TransportFailure"
     assert record["aborted"]["afterProbes"] == 0 and "authorize" in record["aborted"]["message"]
-    assert record["counts"] == {"probes": 0, "accepted": 0, "refused": 0, "headersMinted": 0}
+    assert record["counts"] == {"probes": 0, "accepted": 0, "refused": 0, "transient": 0, "headersMinted": 0}
 
 
 def test_an_empty_or_non_json_answer_is_not_a_refusal(monkeypatch, tmp_path):

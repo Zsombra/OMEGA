@@ -304,6 +304,10 @@ def main() -> int:
                  "sections": [{k: s[k] for k in ("benchmarkTicker", "marketScope", "columns")} for s in sections],
                  "tickers": list(tickers), "timeframe": timeframe,
                  "accepted": d is not None, "render": digest(d) if d else None, "refusal": refusal(e)}
+        if e is not None and e.get("code") == "SERVICE_UNAVAILABLE":
+            # the preview's 15 s deadline (seen 2026-11-07 on two batches): a platform answer, NOT an authoring
+            # refusal - a batch so answered is re-probed column by column like any refused batch
+            entry["transient"] = True
         if keep_candidates and e is not None:
             entry["candidates"] = ((e.get("details") or {}).get("allowedDomain") or {}).get("candidates")
         if d:
@@ -540,7 +544,8 @@ def main() -> int:
                      "custom section per probe, its benchmarkTicker / marketScope as recorded; GET /mcp/version before "
                      "and after")
     record["counts"] = {"probes": len(record["probes"]), "accepted": sum(p["accepted"] for p in record["probes"]),
-                        "refused": sum(not p["accepted"] for p in record["probes"]), "headersMinted": len(headers)}
+                        "refused": sum(not p["accepted"] for p in record["probes"]),
+                        "transient": sum(bool(p.get("transient")) for p in record["probes"]), "headersMinted": len(headers)}
     os.makedirs(os.path.dirname(RECORD_OUT), exist_ok=True)
     with open(RECORD_OUT, "w", encoding="utf-8") as f:
         json.dump(record, f, ensure_ascii=False, indent=1)
