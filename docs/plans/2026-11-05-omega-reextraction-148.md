@@ -583,6 +583,60 @@ commit, bind, deploy, fund, archive or delete. The manager was PAUSED (the user'
 `_subjects_149`, the model changes (knobs on `Column`, the five smoothers, the codes above with this wording), two
 review passes, the 0.12.0 cut.
 
+## Stage 2, step 5 on 2026-11-07: the coverage sweep at 149.1.0 (recorded 15:24Z)
+
+Clock: `manager contract status` 149.1.0 / aa4ab640, writes open, at 15:10Z; the sweep read GET /mcp/version at its
+start (149.1.0); run 15:17:13Z - 15:18:25Z. One worker, `preview_strategy_report` only, read-only. The manager was
+PAUSED (the user's word).
+
+1. **The sweep needs the refreshed corpus; the ordering in "Next" above was wrong.** `collect_targets` enumerates the
+   stored corpus. At 146.0.1 that corpus has none of the 206 keys and none of the four new smoothers, so a sweep on it
+   sends nothing new. The 148 plan's own order (step 3 before step 5) holds.
+   - The 2026-11-06 hints were folded into a working tree: `refresh_metric_contracts.py` with `EXTRACTION_STAMP=20261106`,
+     `EXTRACTION_SCRATCH=C:/Users/rafae/omega-v012-hints`, `EXTRACTION_ARCHIVE=20261102`. No platform call was made: all
+     532 raw hints were on disk. It wrote 532 records, 0 failed, every authoring block invariant, and the catalogue
+     gained cci / ema / rma / rsi / wma.
+   - The 206 names were moved to a `history148` block of `_unmeasured_108.json`.
+   - `build_corpus`: 532 / 532, 11 families reconcile.
+2. **Subjects from the served record.** On the refreshed corpus the 206 keys loaded with `subject` None: the subject was
+   read from `_subjects_146.json` only. So `render_coverage.coverage` skipped all 645 of their shapes.
+   - `omega.contract` now reads each record's served `subjectKinds` into `Metric.subject_kinds`.
+   - `Metric.subject` is now the section kind the metric is sent on: evaluated-coin, else market, else reference.
+     PAR_DEV is now `reference`.
+   - A record without `subjectKinds` (the committed 146.0.1 corpus) falls back to `_subjects_146.json`, so nothing
+     changes until the refresh lands.
+3. **Targets after the fix: 572 structural** = 557 on the 206 keys (value 165, distance 198, levelInteraction 194) +
+   15 PAR_DEV x relativeTo. `nonspread` adds nothing (the same 572).
+   - Found in passing: the smoother shapes on existing metrics read as COVERED, because `outputs_for` does not spell
+     `_rma14` yet and predicts the bare value header, which was seen long ago. Coverage cannot select them until the
+     fanout change lands; the probe's group J is their measurement.
+4. **Pass (a), coin, `SWEEP_DATE=2026-11-07-structural`, `SWEEP_METRICS` = the 206: complete.**
+   - 557 shapes in 5 batches, **565 headers, 0 refusals, 0 predicted-but-not-rendered**.
+   - Batch 2's first answer was mcporter's "Version negotiation" transport error. It bisected, and every half rendered.
+   - Outputs: `data/contract/columns/_coverage_sweep_2026-11-07-structural.json` and
+     `data/audit/coverage_sweep_2026-11-07-structural.json`.
+5. **Pass (b) not run** (no target beyond (a)'s).
+6. **Pass (c), reference: not run, by decision.** The 15 remaining shapes are the space's PAR_DEV x relativeTo with no
+   `instrument`. The probe measured that column refused on the only section that reads PAR_DEV ("relativeTo on a
+   section bound to 'USDT_USD' requires an instrument - another declared reference pair; a reference section has no
+   default", G.USDT_USD.PAR_DEV.served). Sending them would repeat a known refusal 15 times. The space must enumerate
+   PAR_DEV x relativeTo with a reference-pair instrument (model step), and that header is measured then.
+7. **The refresh was NOT committed.** On the refreshed corpus the suite reads 54 failed / 1858 passed: the space
+   counts, the "unmeasured" refusals of the 206 and the smoothers, the 146 subject partition, PAR_DEV's subject. Those
+   are the pins the model step moves. The working tree was reverted, and the refresh is one offline command (item 1).
+   Committed: the two sweep files, `render_coverage.SEEN_FILES` + `_probe_149_2026-11-07.json` and
+   `_coverage_sweep_2026-11-07-structural.json` (25 caches), `Metric.subject_kinds`, and
+   `tests/test_sweep_149_record.py` (4).
+   **Tests: 1916 passed, 0 failed.**
+
+**Next:**
+- the refresh (item 1's command) plus `build_corpus`, together with `_moves_149`;
+- the model changes: knobs on `Column`; the five smoothers in `outputs_for`; the four subjects in validate (benchmark
+  and reference sections, PAR_DEV's relativeTo instrument); the codes with the probe's wording;
+- the 54 pins moved;
+- re-run `render_coverage` (the smoother shapes then read uncovered and are re-swept);
+- two review passes, then the 0.12.0 cut.
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206
