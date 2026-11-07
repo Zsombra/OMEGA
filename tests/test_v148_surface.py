@@ -18,7 +18,7 @@ import pytest
 from pydantic import ValidationError
 
 from omega import contract as C
-from omega.condition_vocabulary import vocabulary
+from omega.condition_vocabulary import derive
 from omega.contract import CONTRACT_DIR, load
 from omega.types import Column
 from omega.validate import validate_column
@@ -41,6 +41,9 @@ def _j(path: Path) -> dict:
 
 
 DOC = _j(CAPTURE)
+# the 148.1.0 capture's OWN inventory: since 2026-11-07 the manifest names the 149.1.0 capture
+# (tests/test_v149_surface.py), so what 148.1.0 served is read off this capture, never off vocabulary()
+V148 = derive(DOC, source=CAPTURE.name, source_sha256="")
 COMPARE = _j(ROOT / "data/audit/contract_148_1_0_vocabulary_2026-11-05.json")
 UNMEASURED = _j(CONTRACT_DIR / "metrics" / "_unmeasured_108.json")
 
@@ -63,8 +66,8 @@ def test_the_capture_names_its_contract_build_and_source():
     assert "manager_schemas_148.1.0.json" in DOC["readFrom"] and "09:38:43Z" in DOC["readFrom"]
     for tool in TOOLS:
         assert {"description", "inputSchema", "outputSchema", "annotations"} <= set(DOC[tool]), tool
-    assert C.stage_schema()["contractVersion"] == "148.1.0"
-    manifest = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
+    # the write surface until 2026-11-07, when the 149.1.0 capture superseded it (kept under `supersedes`)
+    manifest = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["supersedes"]
     assert manifest["schema"] == "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
     assert manifest["liveCheckedAt"]["observedAt"] == "2026-11-05T09:38:43Z"
     assert manifest["supersedes"]["servedContractVersion"] == "146.0.0"
@@ -93,7 +96,7 @@ def test_the_column_carries_the_six_knobs_at_the_schemas_bounds():
 
 
 def test_the_transform_enums_gained_ema_and_the_distance_chain_outer():
-    col = vocabulary()["reportColumn"]
+    col = V148["reportColumn"]
     old = _column_node(_j(CAPTURE_146))["properties"]
     assert set(col["transformId"]["enum"]) - set(old["transformId"]["enum"]) == {"ema"}
     assert set(col["chainedTransformId"]["enum"]) - set(old["chainedTransformId"]["enum"]) == {"distance", "ema"}
@@ -135,7 +138,7 @@ def test_a_column_over_an_added_key_is_refused_as_unmeasured(key):
 
 def test_ema_is_served_and_refused_as_unmeasured():
     contract = load()
-    assert set(contract.unmeasured_transforms) == {"ema"}
+    assert "ema" in contract.unmeasured_transforms       # with rma / wma / rsi / cci since 149 (test_v149_surface.py)
     col = Column.model_validate({"metric": "RSI14", "transformId": "ema", "timeframe": {"rel": "anchor"}, "window": 14})
     assert _errors(validate_column(col, contract=contract)) == ["TRANSFORM_UNMEASURED"]
 
@@ -146,9 +149,9 @@ def test_ema_is_served_and_refused_as_unmeasured():
 # `distance` with offsetMinimum 1), and the 146.0.1 corpus refused each one with a platform-style code
 # (OPERAND_NOT_ALLOWED, REPORT_COLUMN_CHAIN_UNSUPPORTED, OFFSET_REFUSED) stated as measured fact.
 def test_the_unmeasured_chain_outers_are_the_served_enums_delta():
-    served = vocabulary()["reportColumn"]["chainedTransformId"]["enum"]
+    served = V148["reportColumn"]["chainedTransformId"]["enum"]
     old = _column_node(_j(CAPTURE_146))["properties"]["chainedTransformId"]["enum"]
-    assert set(load().unmeasured_chain_outers) == set(served) - set(old) == {"distance", "ema"}
+    assert set(served) - set(old) == {"distance", "ema"} <= set(load().unmeasured_chain_outers)
     assert set(load().unmeasured_parameters) == {"rollingMax", "rollingMin"}
     assert all(set(p) == {"offset"} for p in load().unmeasured_parameters.values())
     assert "2026-11-05: 206" in UNMEASURED["_what"]

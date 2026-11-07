@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261105T093843Z.json",
-  "sha256": "0d3d3d90e147523c7c2fc48f8ad554398aa9debcecfca86c16b7489df6014222",
-  "contractVersion": "148.1.0",
-  "buildSha": "d02121ecdf909505410e079fbaeab2e0f9e290af",
-  "observedAt": "2026-11-05T09:38:43Z"
+  "schema": "data/contract/stage_strategy_draft/schema_20261105T181932Z.json",
+  "sha256": "e4a34d67ef1369ac890dae209362ebd5a0076c5651aeb7616f8f7067e91bdc21",
+  "contractVersion": "149.1.0",
+  "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
+  "observedAt": "2026-11-05T18:19:32Z"
  },
  "clauseOperators": [
   "lt",
@@ -551,21 +551,34 @@
  "reportColumn": {
   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items",
   "fields": [
+   "accelerationIncrement",
+   "accelerationMaximum",
+   "accelerationStart",
+   "atrPeriod",
    "bars",
    "buffer",
    "chainedTransformId",
    "confluenceFilter",
+   "dSmoothing",
    "equalBars",
    "equalThreshold",
+   "fast",
    "inputs",
    "instrument",
+   "kSmoothing",
    "leftBars",
    "metric",
+   "multiplier",
    "offset",
    "ordering",
+   "period",
    "rightBars",
+   "rsiPeriod",
    "scope",
    "side",
+   "signal",
+   "slow",
+   "stdDev",
    "swingLength",
    "timeframe",
    "transformId",
@@ -1111,7 +1124,7 @@
   },
   "transformId": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/transformId",
-   "count": 25,
+   "count": 29,
    "enum": [
     "value",
     "trajectory",
@@ -1123,6 +1136,10 @@
     "crossDetect",
     "aggregate",
     "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
     "efficiency",
     "maxShare",
     "zscore",
@@ -1142,12 +1159,16 @@
   },
   "chainedTransformId": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/chainedTransformId",
-   "count": 13,
+   "count": 17,
    "enum": [
     "trajectory",
     "distance",
     "aggregate",
     "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
     "efficiency",
     "maxShare",
     "zscore",
@@ -1160,29 +1181,64 @@
    ]
   },
   "bounds": {
+   "accelerationIncrement": {},
+   "accelerationMaximum": {},
+   "accelerationStart": {},
+   "atrPeriod": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
    "buffer": {
     "minimum": 0,
     "maximum": 500
+   },
+   "dSmoothing": {
+    "minimum": 1,
+    "maximum": 9007199254740991
    },
    "equalBars": {
     "minimum": 1,
     "maximum": 9007199254740991
    },
-   "equalThreshold": {
-    "minimum": 0
+   "equalThreshold": {},
+   "fast": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
+   "kSmoothing": {
+    "minimum": 1,
+    "maximum": 9007199254740991
    },
    "leftBars": {
     "minimum": 1,
     "maximum": 9007199254740991
    },
+   "multiplier": {},
    "offset": {
     "minimum": 0,
+    "maximum": 9007199254740991
+   },
+   "period": {
+    "minimum": 1,
     "maximum": 9007199254740991
    },
    "rightBars": {
     "minimum": 1,
     "maximum": 9007199254740991
    },
+   "rsiPeriod": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
+   "signal": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
+   "slow": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
+   "stdDev": {},
    "swingLength": {
     "minimum": 1,
     "maximum": 9007199254740991
@@ -1193,23 +1249,52 @@
    }
   },
   "types": {
+   "accelerationIncrement": "number",
+   "accelerationMaximum": "number",
+   "accelerationStart": "number",
+   "atrPeriod": "integer",
    "bars": "string",
    "buffer": "integer",
    "chainedTransformId": "string",
    "confluenceFilter": "boolean",
+   "dSmoothing": "integer",
    "equalBars": "integer",
    "equalThreshold": "number",
+   "fast": "integer",
    "inputs": "array",
    "instrument": "string",
+   "kSmoothing": "integer",
    "leftBars": "integer",
+   "metric": "string",
+   "multiplier": "number",
    "offset": "integer",
    "ordering": "string",
+   "period": "integer",
    "rightBars": "integer",
+   "rsiPeriod": "integer",
    "scope": "string",
    "side": "string",
+   "signal": "integer",
+   "slow": "integer",
+   "stdDev": "number",
    "swingLength": "integer",
    "transformId": "string",
    "window": "integer"
+  },
+  "refs": {
+   "atrPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "dSmoothing": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "equalBars": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "fast": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "kSmoothing": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "leftBars": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "metric": "/stage_strategy_draft/inputSchema/$defs/metricKey",
+   "period": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "rightBars": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "rsiPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "signal": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "slow": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "swingLength": "/stage_strategy_draft/inputSchema/$defs/barCount"
   }
  }
 }

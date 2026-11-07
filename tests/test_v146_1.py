@@ -283,8 +283,9 @@ def test_the_manifest_chain_and_the_templates():
     assert MANIFEST["servedContractVersion"] == "146.0.1" and MANIFEST["extractedOn"] == "2026-11-02"
     assert MANIFEST["supersedes"]["servedContractVersion"] == "144.0.0"
     assert MANIFEST["counts"]["metrics"] == 326 and MANIFEST["counts"]["families"] == 11
-    # the write surface moved to the 148.1.0 capture on 2026-11-05; the 146.0.1 live check is under `supersedes`
-    assert MANIFEST["writeSurface"]["supersedes"]["liveCheckedAt"]["contractVersion"] == "146.0.1"
+    # the write surface moved to the 148.1.0 capture on 2026-11-05 and to the 149.1.0 one on 2026-11-07; the 146.0.1
+    # live check is two levels under `supersedes`
+    assert MANIFEST["writeSurface"]["supersedes"]["supersedes"]["liveCheckedAt"]["contractVersion"] == "146.0.1"
     assert "derive_strategy_rule_view" not in MANIFEST["toolsUsed"]
     templates = _j(CONTRACT_DIR / "templates" / "platform" / "_all.json")
     by_key = {t["sectionKey"]: t for t in templates["templates"]}

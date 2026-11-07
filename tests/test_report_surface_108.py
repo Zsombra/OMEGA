@@ -59,15 +59,26 @@ def test_the_column_integer_bounds_are_derived():
                                           "rightBars": {"minimum": 1, "maximum": 9007199254740991},
                                           "swingLength": {"minimum": 1, "maximum": 9007199254740991},
                                           "equalBars": {"minimum": 1, "maximum": 9007199254740991},
-                                          "equalThreshold": {"minimum": 0}}
+                                          # the 149.1.0 capture (2026-11-07): equalThreshold loses its minimum 0; the
+                                          # eight new length knobs are `$ref`s to $defs/barCount (integer >= 1, read
+                                          # through the ref); multiplier, stdDev and PSAR's three are bare numbers
+                                          "equalThreshold": {},
+                                          **{k: {"minimum": 1, "maximum": 9007199254740991} for k in (
+                                              "atrPeriod", "dSmoothing", "fast", "kSmoothing", "period",
+                                              "rsiPeriod", "signal", "slow")},
+                                          **{k: {} for k in ("multiplier", "stdDev", "accelerationStart",
+                                                             "accelerationIncrement", "accelerationMaximum")}}
 
 
 def test_the_gaps_name_only_the_retired_section_field():
     gaps = CV.gaps()
     # since the 148.1.0 capture (2026-11-05): the six v146.9 / v146.11 knobs, served and not modelled (unmeasured: the
     # re-extraction stopped before the hints that serve them per metric)
-    assert gaps["columnFields"] == {"schemaOnly": ["confluenceFilter", "equalBars", "equalThreshold", "leftBars",
-                                                   "rightBars", "swingLength"], "omegaOnly": []}
+    # since the 149.1.0 capture (2026-11-07): plus the thirteen 149.x knobs, served and not modelled either
+    assert gaps["columnFields"] == {"schemaOnly": sorted([
+        "confluenceFilter", "equalBars", "equalThreshold", "leftBars", "rightBars", "swingLength",
+        "accelerationIncrement", "accelerationMaximum", "accelerationStart", "atrPeriod", "dSmoothing", "fast",
+        "kSmoothing", "multiplier", "period", "rsiPeriod", "signal", "slow", "stdDev"]), "omegaOnly": []}
     # kept on the model so a pre-48 record still loads; validate_section refuses it
     assert gaps["sectionFields"] == {"schemaOnly": [], "omegaOnly": ["timeframe"]}
 
@@ -77,8 +88,8 @@ def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert set(C.retired_transforms) == {"bandTouch"}
     # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.13.0 (v111) capture since 2026-10-16
     # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30, the 146.0.0 one since 2026-11-01, the
-    # 148.1.0 one since 2026-11-05)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "148.1.0"
+    # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07)
+    assert C.retired_transforms["bandTouch"]["servedAt"] == "149.1.0"
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -90,7 +101,9 @@ def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
     the two prior-bar Donchian edges (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6: "They take `levelInteraction`");
     the four single-print zone edges do not (value, distance, spread only)."""
     # since the 148.1.0 capture (2026-11-05): v146.7's `ema`, served and not extracted (the hint step stopped first)
-    assert set(C.unmeasured_transforms) == {"ema"} and C.unmeasured_transforms["ema"]["servedAt"] == "148.1.0"
+    # and since the 149.1.0 capture (2026-11-07) the four 149.0 smoothers / oscillators rma, wma, rsi and cci
+    assert set(C.unmeasured_transforms) == {"ema", "rma", "wma", "rsi", "cci"}
+    assert all(t["servedAt"] == "149.1.0" for t in C.unmeasured_transforms.values())
     assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 118   # 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
 
 
@@ -98,7 +111,7 @@ def test_a_retired_transform_is_refused_naming_its_replacement():
     f = validate_column(col("OPEN", "bandTouch"), contract=C)
     assert codes(f) == {"TRANSFORM_RETIRED"}
     msg = f[0].message
-    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "148.1.0" in msg
+    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "149.1.0" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():

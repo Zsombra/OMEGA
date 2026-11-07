@@ -1499,6 +1499,30 @@
    "describedIn": "v146.7",
    "source": "the 148.1.0 capture's reportColumn chainedTransformId enum; the 148.1.0 hints serve it among the chainSuccessors of distance / spread / relativeTo (chainedOuters.ema.windowMaximum 269 on every metric read)",
    "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group A"
+  },
+  "rma": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 118 (wilderLength), and as a chain outer on 387 successor positions, windowMaximum 118",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
+  },
+  "wma": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 936 (seriesElements), and as a chain outer on 387 successor positions, windowMaximum 936",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
+  },
+  "rsi": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 118 (wilderChanges), and as a chain outer on 387 successor positions, windowMaximum 118",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
+  },
+  "cci": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 936 (seriesElements), and as a chain outer on 387 successor positions, windowMaximum 936",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
   }
  },
  "transformParameters": {
