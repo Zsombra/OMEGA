@@ -256,4 +256,6 @@ def test_the_condition_vocabulary_carries_the_new_knobs():
     col = v["reportColumn"]
     assert "relativeTo" in col["transformId"]["enum"] and "relativeTo" not in col["chainedTransformId"]["enum"]
     assert "instrument" in col["fields"] and "scope" in col["fields"]
-    assert col["metric"]["count"] == 326       # 302 at 144.0.0; 326 since the 146.0.0 capture (2026-11-01, 24 unmeasured)
+    # 302 at 144.0.0; 326 since the 146.0.0 capture (2026-11-01, 24 unmeasured); 532 since the 148.1.0 one (2026-11-05,
+    # 206 unmeasured)
+    assert col["metric"]["count"] == 532

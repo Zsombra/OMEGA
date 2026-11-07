@@ -226,17 +226,25 @@ SCHEMA_110_13 = "data/contract/stage_strategy_draft/schema_20261016T031811Z.json
 SCHEMA_135 = "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
 SCHEMA_144 = "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
 SCHEMA_146 = "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
+SCHEMA_148 = "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
+SCHEMA_149 = "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
     manifest = json.loads((ROOT / "data/contract/_manifest.json").read_text(encoding="utf-8"))
     ws = manifest["writeSurface"]
-    # the 146.0.0 capture since 2026-11-01; 144.0.0 under `supersedes`, then 135.2.0, 110.13.0 (v111, flat arguments),
-    # 110.8.0, 110.2.0, 108.0.0 and 91.0.0
-    assert ws["servedContractVersion"] == "146.0.0"
-    assert ws["buildSha"].startswith("1cd4466a")
-    assert ws["schema"] == SCHEMA_146 and (ROOT / ws["schema"]).is_file()
-    v144 = ws["supersedes"]
+    # the 149.1.0 capture since 2026-11-07 (offline, from battlegrid-manager's fixture); 148.1.0 under `supersedes`,
+    # then 146.0.0, 144.0.0, 135.2.0, 110.13.0 (v111, flat arguments), 110.8.0, 110.2.0, 108.0.0 and 91.0.0
+    assert ws["servedContractVersion"] == "149.1.0"
+    assert ws["buildSha"].startswith("aa4ab640")
+    assert ws["schema"] == SCHEMA_149 and (ROOT / ws["schema"]).is_file()
+    v148 = ws["supersedes"]
+    assert v148["servedContractVersion"] == "148.1.0" and v148["buildSha"].startswith("d02121ec")
+    assert v148["schema"] == SCHEMA_148 and (ROOT / SCHEMA_148).is_file()
+    v146 = v148["supersedes"]
+    assert v146["servedContractVersion"] == "146.0.0" and v146["buildSha"].startswith("1cd4466a")
+    assert v146["schema"] == SCHEMA_146 and (ROOT / SCHEMA_146).is_file()
+    v144 = v146["supersedes"]
     assert v144["servedContractVersion"] == "144.0.0" and v144["buildSha"].startswith("beb6b930")
     assert v144["schema"] == SCHEMA_144 and (ROOT / SCHEMA_144).is_file()
     v135 = v144["supersedes"]
@@ -285,7 +293,7 @@ def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
 
 def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     doc = C.stage_schema()
-    assert doc["contractVersion"] == "146.0.0"          # the eight axes did not move at 110, 110.8, 110.13, 135, 144 or 146
+    assert doc["contractVersion"] == "149.1.0"          # the eight axes did not move at 110 - 146, 148.1 or 149.1
     assert V108_TOOLS <= set(doc)
     # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
     assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]

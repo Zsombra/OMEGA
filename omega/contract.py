@@ -65,7 +65,12 @@ class Metric:
     # a named scope a `market` section; each refuses a column whose metric it does not read and serves, in the refusal,
     # the whole domain it does read. `market` is exactly the thirteen MKT_*; `evaluated-coin` the other 312; None is a
     # served metric NO subject reads (PAR_DEV - refused on both), which no column can render.
+    # Since 148 / 149 each hint serves the metric's `subjectKinds` (data/contract/metrics/<METRIC>.json, read at
+    # 149.1.0 on 2026-11-06): evaluated-coin, benchmark, market, reference - a set, kept whole in `subject_kinds`.
+    # `subject` stays the one section kind the metric is sent on (evaluated-coin, else market, else reference: PAR_DEV
+    # reads only on a pair section), so the 146 two-subject consumers keep their meaning for every other metric.
     subject: str | None = None
+    subject_kinds: tuple[str, ...] = ()
 
     @property
     def is_timeless(self) -> bool:
@@ -117,6 +122,12 @@ class Contract:
     # `levelInteraction`) - which metrics it composes is unmeasured offline.
     retired_transforms: dict[str, dict] = field(default_factory=dict)
     unmeasured_transforms: dict[str, dict] = field(default_factory=dict)
+    # Served by the write schema and known by NAME only (data/contract/metrics/_unmeasured_108.json `chainOuters` and
+    # `transformParameters`, 2026-11-05 at 148.1.0): a chain outer (`distance` after an offset rolling extreme, `ema`)
+    # and a transform knob (`offset` on rollingMax / rollingMin) no extraction has rendered. validate_column refuses a
+    # column using one (TRANSFORM_UNMEASURED / PARAMETER_UNMEASURED) instead of answering from the older corpus.
+    unmeasured_chain_outers: dict[str, dict] = field(default_factory=dict)
+    unmeasured_parameters: dict[str, dict[str, dict]] = field(default_factory=dict)
 
     # -- lookups -------------------------------------------------------------
     def metric(self, name: str) -> Metric:
@@ -180,7 +191,8 @@ def load() -> Contract:
             anchor=rec.get("anchor"),
             rank_scope=rec.get("rankScope"),
             provenance=rec.get("provenance"),
-            subject=subjects.get(rec["metric"]),
+            subject=_primary_subject(rec.get("subjectKinds")) or subjects.get(rec["metric"]),
+            subject_kinds=tuple(rec.get("subjectKinds") or ()),
         )
 
     # The roster size is the platform's to choose, not ours to pin: it went 86 (2026-08-24)
@@ -193,7 +205,14 @@ def load() -> Contract:
             f"corpus incomplete: {len(metrics)} metric files, _index.json says {expected}")
 
     unmeasured_path = CONTRACT_DIR / "metrics" / "_unmeasured_108.json"
-    unmeasured = _load(unmeasured_path)["metrics"] if unmeasured_path.exists() else {}
+    unmeasured_doc = _load(unmeasured_path) if unmeasured_path.exists() else {}
+    unmeasured = unmeasured_doc.get("metrics") or {}
+    unmeasured_outers = unmeasured_doc.get("chainOuters") or {}
+    unmeasured_parameters = unmeasured_doc.get("transformParameters") or {}
+    served_outers = _served_chain_outers()
+    if served_outers is not None and set(unmeasured_outers) - served_outers:
+        raise RuntimeError(f"{unmeasured_path.name} lists chain outers the write schema does not serve: "
+                           f"{sorted(set(unmeasured_outers) - served_outers)}")
     overlap = set(unmeasured) & set(metrics)
     if overlap:
         raise RuntimeError(f"measured AND listed unmeasured: {sorted(overlap)} - drop them from {unmeasured_path.name}")
@@ -226,7 +245,30 @@ def load() -> Contract:
         retired_metrics=retired_metrics,
         retired_transforms=retired,
         unmeasured_transforms=unmeasured_transforms,
+        unmeasured_chain_outers=unmeasured_outers,
+        unmeasured_parameters=unmeasured_parameters,
     )
+
+
+def _served_chain_outers() -> set[str] | None:
+    """The write schema's column `chainedTransformId` enum (the derived inventory), or None with no inventory on disk."""
+    path = DERIVED_DIR / "condition_vocabulary_108.json"
+    if not path.exists():
+        return None
+    return set(_load(path)["reportColumn"]["chainedTransformId"]["enum"])
+
+
+_SUBJECT_ORDER = ("evaluated-coin", "market", "reference")
+
+
+def _primary_subject(kinds) -> str | None:
+    """The section kind a metric is sent on, from its served `subjectKinds` (148+); None when the record serves none
+    (a pre-148 record), and the 146 measurement in _subjects_146.json applies. `benchmark` alone is never primary: no
+    served metric reads only on a benchmark section (489 read on benchmark AND evaluated-coin at 149.1.0)."""
+    for kind in _SUBJECT_ORDER:
+        if kind in (kinds or ()):
+            return kind
+    return None
 
 
 @lru_cache(maxsize=1)

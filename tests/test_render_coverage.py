@@ -74,7 +74,8 @@ def test_rendered_headers_spans_every_cache():
     """Bug 2: a single cache is not the record of what was rendered."""
     # 11 until the 09-09 sweep, 13 since the 09-20 one, 14 since 10-13, 15 since 10-14, 16 since 10-15, 17 since 10-26
     # 23 since 2026-11-02: + the two 146.0.1 sweeps (one per section subject) and the 146 probe headers
-    assert len(SEEN_FILES) == 23   # 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
+    # 25 since 2026-11-07: + the 149.1.0 authoring probe headers and the 149.1.0 structural sweep over the 206 keys
+    assert len(SEEN_FILES) == 25   # 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that

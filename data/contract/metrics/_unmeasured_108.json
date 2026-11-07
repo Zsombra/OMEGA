@@ -1,10 +1,10 @@
 {
- "_what": "Metrics the write schema the manifest names serves (the stage schema's $defs/metricKey, data/derived/condition_vocabulary_108.json reportColumn.metric) that no metric extraction has measured. Known NAMES only: which transforms each composes, its native output kind, timeframe mode, header code and vocabulary are UNMEASURED offline (a re-extraction reads get_metric_construction_hints per metric, then renders: scripts/refresh_metric_contracts.py, scripts/build_corpus.py, the coverage sweep). omega.validate refuses a column over one (METRIC_UNMEASURED) and the generator never selects one, so no generated plan emits them until a re-extraction moves them into data/contract/metrics/<METRIC>.json. scripts/compare_vocabulary.py counts them as stored (so a served metric omega knows by name is not 'missing') and lists them under storedUnmeasured. 2026-11-02: EMPTY again - the 24 keys contract 146.0.0 added were measured by the re-extraction at 146.0.1 (history146; data/contract/metrics/_moves_146.json). 2026-11-01: the 24, read off the served enum (OMEGA v0.10.2, no platform call). 2026-10-13 .. 2026-10-31: EMPTY (the 15 served at 108 were measured on 2026-10-13; history108).",
- "servedAt": "146.0.1",
+ "_what": "Metrics the write schema the manifest names serves (the stage schema's $defs/metricKey, data/derived/condition_vocabulary_108.json reportColumn.metric) that no metric extraction has measured. Known NAMES only: which transforms each composes, its native output kind, timeframe mode, header code and vocabulary are UNMEASURED offline (a re-extraction reads get_metric_construction_hints per metric, then renders: scripts/refresh_metric_contracts.py, scripts/build_corpus.py, the coverage sweep). omega.validate refuses a column over one (METRIC_UNMEASURED) and the generator never selects one, so no generated plan emits them until a re-extraction moves them into data/contract/metrics/<METRIC>.json. scripts/compare_vocabulary.py counts them as stored (so a served metric omega knows by name is not 'missing') and lists them under storedUnmeasured. 2026-11-05: 206 (OMEGA v0.12 branch, unreleased - pyproject 0.11.0): the keys v146.5 / .8 / .10 / .11 added, served at 148.1.0 and read off the 148.1.0 capture's $defs/metricKey; the re-extraction stopped at its hint step (170 / 532, none of the 206), see `why`. Beside them, `chainOuters` (distance, ema) and `transformParameters` (rollingMax / rollingMin offset): served at 148.1.0, never rendered by OMEGA, refused offline wherever a column uses one (as an operand, a chain outer or a knob as well as the column's own metric / transformId). 2026-11-02: EMPTY again - the 24 keys contract 146.0.0 added were measured by the re-extraction at 146.0.1 (history146; data/contract/metrics/_moves_146.json). 2026-11-01: the 24, read off the served enum (OMEGA v0.10.2, no platform call). 2026-10-13 .. 2026-10-31: EMPTY (the 15 served at 108 were measured on 2026-10-13; history108).",
+ "servedAt": "148.1.0",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
+  "schema": "data/contract/stage_strategy_draft/schema_20261105T093843Z.json",
   "pointer": "/stage_strategy_draft/inputSchema/$defs/metricKey/enum",
-  "sameAs": "get_metric_construction_hints input metric ($ref #/$defs/metricKey) on the live 146.0.1 surface (build a07740c0, mcporter list --schema 2026-11-02T05:54:05Z): identical 326 values, same order"
+  "sameAs": "get_metric_construction_hints input metric ($ref #/$defs/metricKey) on the live 148.1.0 surface (build d02121ec, mcporter list --schema 2026-11-05T09:38:43Z): identical 532 values, same order"
  },
  "readmeDescriptions": {
   "patterns": {
@@ -43,7 +43,1506 @@
    "status": "DESCRIPTION, not measured - recorded, not modelled"
   }
  },
- "metrics": {},
+ "metrics": {
+  "EQH": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"EQH\"}"
+  },
+  "EQL": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"EQL\"}"
+  },
+  "INTERNAL_STRUCTURE_EVENT": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"INTERNAL_STRUCTURE_EVENT\"}"
+  },
+  "INTERNAL_STRUCTURE_LEVEL": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"INTERNAL_STRUCTURE_LEVEL\"}"
+  },
+  "INTERNAL_STRUCTURE_TREND": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"INTERNAL_STRUCTURE_TREND\"}"
+  },
+  "PIVOT_CAM_R1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_R1\"}"
+  },
+  "PIVOT_CAM_R2": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_R2\"}"
+  },
+  "PIVOT_CAM_R3": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_R3\"}"
+  },
+  "PIVOT_CAM_R4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_R4\"}"
+  },
+  "PIVOT_CAM_R5": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_R5\"}"
+  },
+  "PIVOT_CAM_S1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_S1\"}"
+  },
+  "PIVOT_CAM_S2": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_S2\"}"
+  },
+  "PIVOT_CAM_S3": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_S3\"}"
+  },
+  "PIVOT_CAM_S4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_S4\"}"
+  },
+  "PIVOT_CAM_S5": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CAM_S5\"}"
+  },
+  "PIVOT_CLASSIC_R3": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CLASSIC_R3\"}"
+  },
+  "PIVOT_CLASSIC_R4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CLASSIC_R4\"}"
+  },
+  "PIVOT_CLASSIC_S3": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CLASSIC_S3\"}"
+  },
+  "PIVOT_CLASSIC_S4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_CLASSIC_S4\"}"
+  },
+  "PIVOT_DM_P": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_DM_P\"}"
+  },
+  "PIVOT_DM_R1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_DM_R1\"}"
+  },
+  "PIVOT_DM_S1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_DM_S1\"}"
+  },
+  "PIVOT_FIB_R1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_FIB_R1\"}"
+  },
+  "PIVOT_FIB_R2": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_FIB_R2\"}"
+  },
+  "PIVOT_FIB_S1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_FIB_S1\"}"
+  },
+  "PIVOT_FIB_S2": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_FIB_S2\"}"
+  },
+  "PIVOT_MONTH_CAM_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_R1\"}"
+  },
+  "PIVOT_MONTH_CAM_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_R2\"}"
+  },
+  "PIVOT_MONTH_CAM_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_R3\"}"
+  },
+  "PIVOT_MONTH_CAM_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_R4\"}"
+  },
+  "PIVOT_MONTH_CAM_R5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_R5\"}"
+  },
+  "PIVOT_MONTH_CAM_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_S1\"}"
+  },
+  "PIVOT_MONTH_CAM_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_S2\"}"
+  },
+  "PIVOT_MONTH_CAM_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_S3\"}"
+  },
+  "PIVOT_MONTH_CAM_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_S4\"}"
+  },
+  "PIVOT_MONTH_CAM_S5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CAM_S5\"}"
+  },
+  "PIVOT_MONTH_CLASSIC_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CLASSIC_R3\"}"
+  },
+  "PIVOT_MONTH_CLASSIC_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CLASSIC_R4\"}"
+  },
+  "PIVOT_MONTH_CLASSIC_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CLASSIC_S3\"}"
+  },
+  "PIVOT_MONTH_CLASSIC_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_CLASSIC_S4\"}"
+  },
+  "PIVOT_MONTH_DM_P": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_DM_P\"}"
+  },
+  "PIVOT_MONTH_DM_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_DM_R1\"}"
+  },
+  "PIVOT_MONTH_DM_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_DM_S1\"}"
+  },
+  "PIVOT_MONTH_FIB_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_FIB_R1\"}"
+  },
+  "PIVOT_MONTH_FIB_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_FIB_R2\"}"
+  },
+  "PIVOT_MONTH_FIB_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_FIB_S1\"}"
+  },
+  "PIVOT_MONTH_FIB_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_FIB_S2\"}"
+  },
+  "PIVOT_MONTH_P": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_P\"}"
+  },
+  "PIVOT_MONTH_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_R1\"}"
+  },
+  "PIVOT_MONTH_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_R2\"}"
+  },
+  "PIVOT_MONTH_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_R3\"}"
+  },
+  "PIVOT_MONTH_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_R4\"}"
+  },
+  "PIVOT_MONTH_R5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_R5\"}"
+  },
+  "PIVOT_MONTH_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_S1\"}"
+  },
+  "PIVOT_MONTH_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_S2\"}"
+  },
+  "PIVOT_MONTH_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_S3\"}"
+  },
+  "PIVOT_MONTH_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_S4\"}"
+  },
+  "PIVOT_MONTH_S5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_S5\"}"
+  },
+  "PIVOT_MONTH_WOODIE_P": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_P\"}"
+  },
+  "PIVOT_MONTH_WOODIE_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_R1\"}"
+  },
+  "PIVOT_MONTH_WOODIE_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_R2\"}"
+  },
+  "PIVOT_MONTH_WOODIE_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_R3\"}"
+  },
+  "PIVOT_MONTH_WOODIE_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_R4\"}"
+  },
+  "PIVOT_MONTH_WOODIE_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_S1\"}"
+  },
+  "PIVOT_MONTH_WOODIE_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_S2\"}"
+  },
+  "PIVOT_MONTH_WOODIE_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_S3\"}"
+  },
+  "PIVOT_MONTH_WOODIE_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_MONTH_WOODIE_S4\"}"
+  },
+  "PIVOT_QUARTER_CAM_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_R1\"}"
+  },
+  "PIVOT_QUARTER_CAM_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_R2\"}"
+  },
+  "PIVOT_QUARTER_CAM_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_R3\"}"
+  },
+  "PIVOT_QUARTER_CAM_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_R4\"}"
+  },
+  "PIVOT_QUARTER_CAM_R5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_R5\"}"
+  },
+  "PIVOT_QUARTER_CAM_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_S1\"}"
+  },
+  "PIVOT_QUARTER_CAM_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_S2\"}"
+  },
+  "PIVOT_QUARTER_CAM_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_S3\"}"
+  },
+  "PIVOT_QUARTER_CAM_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_S4\"}"
+  },
+  "PIVOT_QUARTER_CAM_S5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CAM_S5\"}"
+  },
+  "PIVOT_QUARTER_CLASSIC_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CLASSIC_R3\"}"
+  },
+  "PIVOT_QUARTER_CLASSIC_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CLASSIC_R4\"}"
+  },
+  "PIVOT_QUARTER_CLASSIC_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CLASSIC_S3\"}"
+  },
+  "PIVOT_QUARTER_CLASSIC_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_CLASSIC_S4\"}"
+  },
+  "PIVOT_QUARTER_DM_P": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_DM_P\"}"
+  },
+  "PIVOT_QUARTER_DM_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_DM_R1\"}"
+  },
+  "PIVOT_QUARTER_DM_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_DM_S1\"}"
+  },
+  "PIVOT_QUARTER_FIB_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_FIB_R1\"}"
+  },
+  "PIVOT_QUARTER_FIB_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_FIB_R2\"}"
+  },
+  "PIVOT_QUARTER_FIB_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_FIB_S1\"}"
+  },
+  "PIVOT_QUARTER_FIB_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_FIB_S2\"}"
+  },
+  "PIVOT_QUARTER_P": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_P\"}"
+  },
+  "PIVOT_QUARTER_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_R1\"}"
+  },
+  "PIVOT_QUARTER_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_R2\"}"
+  },
+  "PIVOT_QUARTER_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_R3\"}"
+  },
+  "PIVOT_QUARTER_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_R4\"}"
+  },
+  "PIVOT_QUARTER_R5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_R5\"}"
+  },
+  "PIVOT_QUARTER_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_S1\"}"
+  },
+  "PIVOT_QUARTER_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_S2\"}"
+  },
+  "PIVOT_QUARTER_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_S3\"}"
+  },
+  "PIVOT_QUARTER_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_S4\"}"
+  },
+  "PIVOT_QUARTER_S5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_S5\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_P": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_P\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_R1\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_R2\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_R3\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_R4\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_S1\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_S2\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_S3\"}"
+  },
+  "PIVOT_QUARTER_WOODIE_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_QUARTER_WOODIE_S4\"}"
+  },
+  "PIVOT_R4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_R4\"}"
+  },
+  "PIVOT_R5": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_R5\"}"
+  },
+  "PIVOT_S4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_S4\"}"
+  },
+  "PIVOT_S5": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_S5\"}"
+  },
+  "PIVOT_WEEK_CAM_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_R1\"}"
+  },
+  "PIVOT_WEEK_CAM_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_R2\"}"
+  },
+  "PIVOT_WEEK_CAM_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_R3\"}"
+  },
+  "PIVOT_WEEK_CAM_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_R4\"}"
+  },
+  "PIVOT_WEEK_CAM_R5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_R5\"}"
+  },
+  "PIVOT_WEEK_CAM_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_S1\"}"
+  },
+  "PIVOT_WEEK_CAM_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_S2\"}"
+  },
+  "PIVOT_WEEK_CAM_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_S3\"}"
+  },
+  "PIVOT_WEEK_CAM_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_S4\"}"
+  },
+  "PIVOT_WEEK_CAM_S5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CAM_S5\"}"
+  },
+  "PIVOT_WEEK_CLASSIC_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CLASSIC_R3\"}"
+  },
+  "PIVOT_WEEK_CLASSIC_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CLASSIC_R4\"}"
+  },
+  "PIVOT_WEEK_CLASSIC_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CLASSIC_S3\"}"
+  },
+  "PIVOT_WEEK_CLASSIC_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_CLASSIC_S4\"}"
+  },
+  "PIVOT_WEEK_DM_P": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_DM_P\"}"
+  },
+  "PIVOT_WEEK_DM_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_DM_R1\"}"
+  },
+  "PIVOT_WEEK_DM_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_DM_S1\"}"
+  },
+  "PIVOT_WEEK_FIB_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_FIB_R1\"}"
+  },
+  "PIVOT_WEEK_FIB_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_FIB_R2\"}"
+  },
+  "PIVOT_WEEK_FIB_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_FIB_S1\"}"
+  },
+  "PIVOT_WEEK_FIB_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_FIB_S2\"}"
+  },
+  "PIVOT_WEEK_P": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_P\"}"
+  },
+  "PIVOT_WEEK_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_R1\"}"
+  },
+  "PIVOT_WEEK_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_R2\"}"
+  },
+  "PIVOT_WEEK_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_R3\"}"
+  },
+  "PIVOT_WEEK_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_R4\"}"
+  },
+  "PIVOT_WEEK_R5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_R5\"}"
+  },
+  "PIVOT_WEEK_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_S1\"}"
+  },
+  "PIVOT_WEEK_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_S2\"}"
+  },
+  "PIVOT_WEEK_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_S3\"}"
+  },
+  "PIVOT_WEEK_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_S4\"}"
+  },
+  "PIVOT_WEEK_S5": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_S5\"}"
+  },
+  "PIVOT_WEEK_WOODIE_P": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_P\"}"
+  },
+  "PIVOT_WEEK_WOODIE_R1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_R1\"}"
+  },
+  "PIVOT_WEEK_WOODIE_R2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_R2\"}"
+  },
+  "PIVOT_WEEK_WOODIE_R3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_R3\"}"
+  },
+  "PIVOT_WEEK_WOODIE_R4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_R4\"}"
+  },
+  "PIVOT_WEEK_WOODIE_S1": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_S1\"}"
+  },
+  "PIVOT_WEEK_WOODIE_S2": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_S2\"}"
+  },
+  "PIVOT_WEEK_WOODIE_S3": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_S3\"}"
+  },
+  "PIVOT_WEEK_WOODIE_S4": {
+   "addedAt": "146.8",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.8",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WEEK_WOODIE_S4\"}"
+  },
+  "PIVOT_WOODIE_P": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_P\"}"
+  },
+  "PIVOT_WOODIE_R1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_R1\"}"
+  },
+  "PIVOT_WOODIE_R2": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_R2\"}"
+  },
+  "PIVOT_WOODIE_R3": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_R3\"}"
+  },
+  "PIVOT_WOODIE_R4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_R4\"}"
+  },
+  "PIVOT_WOODIE_S1": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_S1\"}"
+  },
+  "PIVOT_WOODIE_S2": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_S2\"}"
+  },
+  "PIVOT_WOODIE_S3": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_S3\"}"
+  },
+  "PIVOT_WOODIE_S4": {
+   "addedAt": "146.5",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.5",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_WOODIE_S4\"}"
+  },
+  "PIVOT_YEAR_CAM_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_R1\"}"
+  },
+  "PIVOT_YEAR_CAM_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_R2\"}"
+  },
+  "PIVOT_YEAR_CAM_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_R3\"}"
+  },
+  "PIVOT_YEAR_CAM_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_R4\"}"
+  },
+  "PIVOT_YEAR_CAM_R5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_R5\"}"
+  },
+  "PIVOT_YEAR_CAM_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_S1\"}"
+  },
+  "PIVOT_YEAR_CAM_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_S2\"}"
+  },
+  "PIVOT_YEAR_CAM_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_S3\"}"
+  },
+  "PIVOT_YEAR_CAM_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_S4\"}"
+  },
+  "PIVOT_YEAR_CAM_S5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CAM_S5\"}"
+  },
+  "PIVOT_YEAR_CLASSIC_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CLASSIC_R3\"}"
+  },
+  "PIVOT_YEAR_CLASSIC_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CLASSIC_R4\"}"
+  },
+  "PIVOT_YEAR_CLASSIC_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CLASSIC_S3\"}"
+  },
+  "PIVOT_YEAR_CLASSIC_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_CLASSIC_S4\"}"
+  },
+  "PIVOT_YEAR_DM_P": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_DM_P\"}"
+  },
+  "PIVOT_YEAR_DM_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_DM_R1\"}"
+  },
+  "PIVOT_YEAR_DM_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_DM_S1\"}"
+  },
+  "PIVOT_YEAR_FIB_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_FIB_R1\"}"
+  },
+  "PIVOT_YEAR_FIB_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_FIB_R2\"}"
+  },
+  "PIVOT_YEAR_FIB_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_FIB_S1\"}"
+  },
+  "PIVOT_YEAR_FIB_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_FIB_S2\"}"
+  },
+  "PIVOT_YEAR_P": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_P\"}"
+  },
+  "PIVOT_YEAR_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_R1\"}"
+  },
+  "PIVOT_YEAR_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_R2\"}"
+  },
+  "PIVOT_YEAR_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_R3\"}"
+  },
+  "PIVOT_YEAR_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_R4\"}"
+  },
+  "PIVOT_YEAR_R5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_R5\"}"
+  },
+  "PIVOT_YEAR_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_S1\"}"
+  },
+  "PIVOT_YEAR_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_S2\"}"
+  },
+  "PIVOT_YEAR_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_S3\"}"
+  },
+  "PIVOT_YEAR_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_S4\"}"
+  },
+  "PIVOT_YEAR_S5": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_S5\"}"
+  },
+  "PIVOT_YEAR_WOODIE_P": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_P\"}"
+  },
+  "PIVOT_YEAR_WOODIE_R1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_R1\"}"
+  },
+  "PIVOT_YEAR_WOODIE_R2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_R2\"}"
+  },
+  "PIVOT_YEAR_WOODIE_R3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_R3\"}"
+  },
+  "PIVOT_YEAR_WOODIE_R4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_R4\"}"
+  },
+  "PIVOT_YEAR_WOODIE_S1": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_S1\"}"
+  },
+  "PIVOT_YEAR_WOODIE_S2": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_S2\"}"
+  },
+  "PIVOT_YEAR_WOODIE_S3": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_S3\"}"
+  },
+  "PIVOT_YEAR_WOODIE_S4": {
+   "addedAt": "146.10",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.10",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"PIVOT_YEAR_WOODIE_S4\"}"
+  },
+  "SWING_STRUCTURE_EVENT": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"SWING_STRUCTURE_EVENT\"}"
+  },
+  "SWING_STRUCTURE_LEVEL": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"SWING_STRUCTURE_LEVEL\"}"
+  },
+  "SWING_STRUCTURE_TREND": {
+   "addedAt": "146.11",
+   "servedAt": "148.1.0",
+   "describedIn": "v146.11",
+   "transformAdmissibility": "UNMEASURED",
+   "measuredBy": "get_metric_construction_hints {metric: \"SWING_STRUCTURE_TREND\"}"
+  }
+ },
+ "chainOuters": {
+  "distance": {
+   "servedAt": "148.1.0",
+   "describedIn": "v146.6",
+   "source": "the 148.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 146.0.0 capture's); get_metric_construction_hints HIGH / LOW at 148.1.0 (read 2026-11-05 09:40-10:18Z, raw in the session scratchpad, not committed) serve it after rollingMax / rollingMin with chainedOuters.distance.offsetMinimum 1",
+   "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group B"
+  },
+  "ema": {
+   "servedAt": "148.1.0",
+   "describedIn": "v146.7",
+   "source": "the 148.1.0 capture's reportColumn chainedTransformId enum; the 148.1.0 hints serve it among the chainSuccessors of distance / spread / relativeTo (chainedOuters.ema.windowMaximum 269 on every metric read)",
+   "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group A"
+  },
+  "rma": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 118 (wilderLength), and as a chain outer on 387 successor positions, windowMaximum 118",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
+  },
+  "wma": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 936 (seriesElements), and as a chain outer on 387 successor positions, windowMaximum 936",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
+  },
+  "rsi": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 118 (wilderChanges), and as a chain outer on 387 successor positions, windowMaximum 118",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
+  },
+  "cci": {
+   "servedAt": "149.1.0",
+   "describedIn": "149.0.0 (undocumented in the README)",
+   "source": "the 149.1.0 capture's reportColumn chainedTransformId enum (data/derived/condition_vocabulary_108.json; not in the 148.1.0 capture's); get_metric_construction_hints at 149.1.0 (all 532 read 2026-11-06, data/audit/hints_149_1_0_2026-11-06.json) serve it on 165 metrics, window maximum 936 (seriesElements), and as a chain outer on 387 successor positions, windowMaximum 936",
+   "measuredBy": "preview_strategy_report (the v0.12 probe; a group for rma / wma / rsi / cci is still to be written)"
+  }
+ },
+ "transformParameters": {
+  "rollingMax": {
+   "offset": {
+    "servedAt": "148.1.0",
+    "describedIn": "v146.6",
+    "source": "get_metric_construction_hints HIGH at 148.1.0 (2026-11-05): rollingMax.authoring.parameters.offset {defaultValue 0, minimum 0, maximum 44, bound lookback}; the stored 146.0.1 catalogue (transforms/_authoring.json) has no offset on it",
+    "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group B"
+   }
+  },
+  "rollingMin": {
+   "offset": {
+    "servedAt": "148.1.0",
+    "describedIn": "v146.6",
+    "source": "get_metric_construction_hints HIGH at 148.1.0 (2026-11-05): rollingMin.authoring.parameters.offset {defaultValue 0, minimum 0, maximum 44, bound lookback}; the stored 146.0.1 catalogue (transforms/_authoring.json) has no offset on it",
+    "measuredBy": "preview_strategy_report, scripts/probe_authoring_148.py group B"
+   }
+  }
+ },
  "measuredOn": "2026-10-13",
  "measuredBy": "get_metric_construction_hints x 171 at contract 108.4.0 (docs/plans/2026-10-13-omega-reextraction-108-4.md)",
  "formerlyUnmeasured": [
@@ -104,5 +1603,7 @@
    "REGIME_WARNING_CRASH",
    "REGIME_WARNING_DIVERGENCE"
   ]
- }
+ },
+ "listedOn": "2026-11-05",
+ "why": "2026-11-05 (OMEGA v0.12 re-extraction, docs/plans/2026-11-05-omega-reextraction-148.md): the write surface moved to the 148.1.0 capture and the 206 keys v146.5 / .8 / .10 / .11 added are served there, but the re-extraction stopped at step 3: get_metric_construction_hints was read for 170 of the 532 roster metrics (09:40:01Z-10:17:58Z, every one before the first added key) when the mcporter OAuth credential for battlegrid-anbu lost its tokens (~10:18Z; every later call asked for an interactive browser authorization, which this run may not give). None of the 206 was read. They are listed here by name, as OMEGA v0.10.2 listed the 24 of 146.0.0, so omega refuses a column over one (METRIC_UNMEASURED) and compare_vocabulary reads them storedUnmeasured."
 }

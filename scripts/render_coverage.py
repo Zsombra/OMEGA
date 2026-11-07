@@ -77,6 +77,13 @@ SEEN_FILES = [
     "_coverage_sweep_2026-11-02.json",
     "_coverage_sweep_2026-11-02-market.json",
     "_probe_146_2026-11-02.json",
+    # 2026-11-07: the authoring probe at contract 149.1.0 (data/audit/authoring_probe_149_2026-11-07.json): the four
+    # smoothers, the thirteen knobs, the 148.1.0 widening (swing pairs, structure, EQH / EQL, pivots, four subjects).
+    "_probe_149_2026-11-07.json",
+    # 2026-11-07: the coverage sweep at 149.1.0 over the 206 keys v146.5 / .8 / .10 / .11 added (pivots, structure,
+    # swing, EQH / EQL) on evaluated-coin sections, structural scope: 557 shapes, 565 headers, zero refusals, zero
+    # predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-07-structural.json).
+    "_coverage_sweep_2026-11-07-structural.json",
 ]
 
 
