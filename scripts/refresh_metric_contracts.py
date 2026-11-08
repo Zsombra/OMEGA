@@ -29,6 +29,15 @@ hint first and stops, naming it, on a bad one. Phase 2 builds every record, the 
 and runs every check (authoring invariance, chainOuterParameters invariance, the archive path) before the first write
 under data/: a failing check exits non-zero with data/ untouched.
 
+2026-11-08 (review pass 2, finding 9): the contract the hints were read at is read, never assumed. Phase 1 reads GET
+/mcp/version (VERSION_URL, the probes' endpoint; EXTRACTION_VERSION_URL overrides it for an offline test) before its
+first fetch, every VERSION_EVERY fetches and after its last one, and stores {contractVersion, buildSha, readAt} in
+hints_<STAMP>/_version.json at the first read. A resume whose served contract (version or build) differs from it, a
+contract that moves mid-fetch, or a failed read stops the fetch. A partial raw dir with no _version.json (cached by an
+earlier version of this script) is not resumed: its hints' contract is unknown. Phase 2 refuses to build without
+_version.json unless EXTRACTION_CONTRACT asserts the contract (recorded as asserted, not read), and refuses when
+EXTRACTION_CONTRACT differs from it. _index.json records contractVersion / buildSha and how they were known.
+
 Re-run 2026-09-20 at contract 61.2.0. EXTRACTION_SCRATCH and EXTRACTION_STAMP replace the constants the
 first run pinned to one session's scratch directory, which no longer exists.
 """
@@ -39,6 +48,7 @@ import re
 import subprocess
 import sys
 import time
+import urllib.request
 
 # Re-run 2026-10-13 at contract 108.4.0: the root is this checkout (the first two runs hard-coded a worktree that no
 # longer exists), and the stamp, the scratch dir and the archive stamp are required - a default pointed at another
@@ -70,6 +80,64 @@ TRANSFORM_FLAGS = ("operandRequired", "chainSuccessors", "chainedRankOrderings",
 OWN_LENGTH = re.compile(r" (Separate from .+? own \d+-bar length\.)$")
 # mcporter's stderr when the stored OAuth credential has no usable token (seen 2026-11-05 from ~10:18Z).
 AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthorized", "401")
+# The endpoint probe_authoring_148 / probe_knob_spelling_149 / sweep_render_coverage read (VERSION_URL there). This
+# script runs standalone (a copy in a throwaway tree in the tests), so it does not import it.
+VERSION_URL = os.environ.get("EXTRACTION_VERSION_URL") or "https://mcp.battlegrid.trade/mcp/version"
+VERSION_EVERY = 40                    # fetches between two version reads (the 11-06 fetch_hints.py gate)
+VERSION_FILE = os.path.join(RAW, "_version.json")
+ASSERTED = os.environ.get("EXTRACTION_CONTRACT") or None
+
+
+def version():
+    """-> ({contractVersion, buildSha, readAt}, None) or (None, why). Never raises."""
+    try:
+        with urllib.request.urlopen(VERSION_URL, timeout=30) as r:
+            v = json.loads(r.read().decode())
+    except (OSError, ValueError) as exc:      # HTTPError / URLError / timeout; a body that is not JSON
+        return None, f"GET /mcp/version failed ({type(exc).__name__}: {str(exc)[:200]})"
+    if not isinstance(v, dict) or not v.get("contractVersion"):
+        return None, f"GET /mcp/version answered no contract: {str(v)[:200]}"
+    return {"contractVersion": v["contractVersion"], "buildSha": v.get("buildSha"),
+            "readAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, None
+
+
+def stored_version():
+    """hints_<STAMP>/_version.json, None when absent. A file that is not a version record stops the run."""
+    if not os.path.exists(VERSION_FILE):
+        return None
+    try:
+        with open(VERSION_FILE, encoding="utf-8") as f:
+            v = json.load(f)
+    except (OSError, ValueError) as exc:
+        sys.exit(f"{VERSION_FILE} is unreadable ({type(exc).__name__}: {str(exc)[:120]}). Nothing under data/ was "
+                 "written.")
+    if not isinstance(v, dict) or not v.get("contractVersion"):
+        sys.exit(f"{VERSION_FILE} names no contractVersion: {str(v)[:200]}. Nothing under data/ was written.")
+    return v
+
+
+def taint(reason):
+    """Mark hints_<STAMP>/_version.json so no later run builds from or adds to this raw dir: its hints are no longer
+    known to be of one contract (review pass 2 re-review, 2026-11-08: the stop alone left the old _version.json, and a
+    re-run with nothing left to fetch built a mixed corpus labelled as read at the old contract)."""
+    v = stored_version()
+    if v is None:
+        return
+    v["tainted"] = {"reason": reason, "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    tmp = VERSION_FILE + ".part"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(v, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, VERSION_FILE)
+
+
+def refuse_if_tainted(v):
+    if v is not None and v.get("tainted"):
+        sys.exit(f"{VERSION_FILE} is marked tainted ({v['tainted']['reason'][:200]}, {v['tainted']['at']}): the hints "
+                 f"in {RAW} may span two contracts. Start a new EXTRACTION_STAMP. Nothing under data/ was written.")
+
+
+def same_contract(a, b):
+    return (a.get("contractVersion"), a.get("buildSha")) == (b.get("contractVersion"), b.get("buildSha"))
 
 
 def call(tool, args, timeout=120):
@@ -158,10 +226,49 @@ if bad_cached:
              "Nothing under data/ was written.")
 
 # Phase 1: every raw hint on disk. Nothing under data/ is touched here.
+# 2026-11-08 (review pass 2, finding 9): the served contract is read before the first fetch and every VERSION_EVERY
+# fetches; the hints of one raw dir are all of one contract and build, or the fetch stops.
+contract_read = stored_version()
+refuse_if_tainted(contract_read)
+cached_before = sum(os.path.exists(os.path.join(RAW, f"{n}.json")) for n in names)
+fetched = 0
+
+
+def gate(when):
+    """Read the served contract; stop the fetch (nothing under data/ written) on a failed read or a move."""
+    global contract_read
+    now, why = version()
+    if now is None:
+        if fetched:                    # the hints since the last read are of an unverified contract
+            taint(f"version read failed {when}: {why}")
+        sys.exit(f"{why} ({when}): fetch stopped after {fetched} fetches. Nothing under data/ was written.")
+    if contract_read is None:
+        if cached_before:
+            sys.exit(f"{cached_before} raw hint(s) are already in {RAW} with no _version.json: the contract they were "
+                     "read at is unknown, so this fetch cannot add to them. Start a new EXTRACTION_STAMP (or, when "
+                     "every hint is cached, run phase 2 with EXTRACTION_CONTRACT). Nothing under data/ was written.")
+        contract_read = now
+        tmp = VERSION_FILE + ".part"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(now, f, ensure_ascii=False, indent=1)
+        os.replace(tmp, VERSION_FILE)
+        print(f"  served contract {now['contractVersion']} ({now['buildSha']}) at {now['readAt']}: {VERSION_FILE}")
+    elif not same_contract(now, contract_read):
+        taint(f"served {now['contractVersion']} ({now['buildSha']}) {when}, read at {contract_read['contractVersion']} "
+              f"({contract_read.get('buildSha')})")
+        sys.exit(f"the served contract is {now['contractVersion']} ({now['buildSha']}) {when}, but the hints in {RAW} "
+                 f"were read at {contract_read['contractVersion']} ({contract_read.get('buildSha')}): fetch stopped "
+                 f"after {fetched} fetches (the hints fetched since the last matching read may be of either). Start a "
+                 "new EXTRACTION_STAMP. Nothing under data/ was written.")
+
+
 for i, name in enumerate(names, 1):
     rawp = os.path.join(RAW, f"{name}.json")
     if os.path.exists(rawp):
         continue
+    if fetched % VERSION_EVERY == 0:
+        gate("before the first fetch" if fetched == 0 else f"after {fetched} fetches")
+    fetched += 1
     resp, err = call("get_metric_construction_hints", {"metric": name})
     if resp is None:
         print(f"  [{i}/{len(names)}] {name}: FAILED {err}")
@@ -187,6 +294,28 @@ if failed:
     print(f"\nnot read: {len(failed)} of {len(names)} ({failed[:5]}{' ...' if len(failed) > 5 else ''}); "
           f"{len(names) - len(failed)} raw hints are in {RAW} and a re-run skips them. Nothing under data/ was written.")
     sys.exit(1)
+if fetched:
+    gate("after the last fetch")          # the hints since the last read were read at the same contract too
+
+# Phase 2's contract: read (hints_<STAMP>/_version.json), or asserted (EXTRACTION_CONTRACT) - never neither, never two.
+contract_read = stored_version()
+refuse_if_tainted(contract_read)
+if contract_read is None and ASSERTED is None:
+    sys.exit(f"{VERSION_FILE} is missing: the contract these hints were read at is unknown. Set EXTRACTION_CONTRACT "
+             "to assert it (recorded as asserted, not read), or re-fetch under a new EXTRACTION_STAMP. Nothing under "
+             "data/ was written.")
+if contract_read is not None and ASSERTED is not None and ASSERTED != contract_read["contractVersion"]:
+    sys.exit(f"EXTRACTION_CONTRACT {ASSERTED} differs from the contract the hints were read at "
+             f"({contract_read['contractVersion']}, {VERSION_FILE}). Nothing under data/ was written.")
+if contract_read is not None:
+    CONTRACT_FIELDS = {"contractVersion": contract_read["contractVersion"], "buildSha": contract_read.get("buildSha"),
+                       "contractKnownBy": f"read: GET /mcp/version at {contract_read.get('readAt')} before the first "
+                                          f"fetch of extraction {STAMP} (hints_{STAMP}/_version.json)"}
+else:
+    CONTRACT_FIELDS = {"contractVersion": ASSERTED, "buildSha": None,
+                       "contractKnownBy": f"asserted: EXTRACTION_CONTRACT, not read (hints_{STAMP} has no "
+                                          "_version.json)"}
+print(f"contract: {CONTRACT_FIELDS['contractVersion']} ({CONTRACT_FIELDS['contractKnownBy']})")
 
 
 def build_record(name, resp):
@@ -290,7 +419,8 @@ retired = sorted(os.path.basename(path)[:-5] for path in glob.glob(os.path.join(
 by_family = {}
 for name in sorted(records):
     by_family.setdefault(records[name]["family"], []).append(name)
-idx = {"metricCount": len(records), "byFamily": {k: sorted(v) for k, v in sorted(by_family.items())}}
+idx = {"metricCount": len(records), "byFamily": {k: sorted(v) for k, v in sorted(by_family.items())},
+       **CONTRACT_FIELDS}
 
 # authoring-invariance re-check (the evidence goes to the scratch dir, never under data/)
 variants = {tid: len(blobs) for tid, blobs in authoring_seen.items()}

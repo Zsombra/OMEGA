@@ -54,6 +54,11 @@ class Operand(BaseModel):
     metric: str
 
 
+# A number knob is a finite float: NaN passed every bound comparison and crashed the step check, and `wire()` would send
+# `nan`, which is not JSON; inf predicted the header `sdinf` (review 2026-11-08).
+Finite = Annotated[float, Field(allow_inf_nan=False)]
+
+
 class Column(BaseModel):
     """One custom report column: (metric, transform, timeframe) plus parameters."""
     model_config = ConfigDict(extra="forbid")
@@ -93,7 +98,7 @@ class Column(BaseModel):
     swingLength: Annotated[int, Field(ge=1)] | None = None
     confluenceFilter: bool | None = None
     equalBars: Annotated[int, Field(ge=1)] | None = None
-    equalThreshold: float | None = None
+    equalThreshold: Finite | None = None
     period: Annotated[int, Field(ge=1)] | None = None
     fast: Annotated[int, Field(ge=1)] | None = None
     slow: Annotated[int, Field(ge=1)] | None = None
@@ -102,11 +107,11 @@ class Column(BaseModel):
     dSmoothing: Annotated[int, Field(ge=1)] | None = None
     rsiPeriod: Annotated[int, Field(ge=1)] | None = None
     atrPeriod: Annotated[int, Field(ge=1)] | None = None
-    stdDev: float | None = None
-    multiplier: float | None = None
-    accelerationStart: float | None = None
-    accelerationIncrement: float | None = None
-    accelerationMaximum: float | None = None
+    stdDev: Finite | None = None
+    multiplier: Finite | None = None
+    accelerationStart: Finite | None = None
+    accelerationIncrement: Finite | None = None
+    accelerationMaximum: Finite | None = None
 
     def knobs(self) -> dict:
         """The metric knobs this column sets (explicit defaults included), in field order."""

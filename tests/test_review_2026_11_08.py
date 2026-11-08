@@ -167,3 +167,75 @@ def test_a_known_knob_name_on_a_metric_never_rendered_with_it_raises(contract):
     with pytest.raises(ValueError, match="never rendered"):
         knob_token(Column(metric="RSI14", transformId="value", timeframe={"rel": "anchor"}, period=21), c2)
     assert knob_token(Column(metric="RSI14", transformId="value", timeframe={"rel": "anchor"}), c2) == ""
+
+
+# --- pass 2, finding 1: the spelling guard is a refusal in the validator, not an exception --------------------------
+from pydantic import ValidationError
+
+from omega import fanout
+from omega.types import CustomSection
+from omega.validate import validate_section
+
+
+def test_a_never_rendered_knob_cell_is_refused_by_the_validator_not_raised(contract, monkeypatch):
+    """MACD_SIGNAL as it stood before the 2026-11-08 render: validate_column said nothing and validate_section raised
+    ValueError while predicting headers. Now both refuse it KNOB_SPELLING_UNMEASURED and nothing raises."""
+    monkeypatch.delitem(fanout.KNOB_SPELLING_RENDERED, "MACD_SIGNAL")
+    column = Column(metric="MACD_SIGNAL", transformId="value", timeframe={"rel": "anchor"}, fast=8)
+    assert _errors(column, contract) == ["KNOB_SPELLING_UNMEASURED"]
+    section = CustomSection(title="t", columns=[column, Column(metric="RSI14", transformId="value",
+                                                               timeframe={"rel": "anchor"})])
+    assert [f.code for f in validate_section(section, contract=contract) if f.severity == "error"] == \
+        ["KNOB_SPELLING_UNMEASURED"]
+    # at its defaults it spells nothing, so nothing is unmeasured
+    assert _errors(Column(metric="MACD_SIGNAL", transformId="value", timeframe={"rel": "anchor"}, fast=12),
+                   contract) == []
+
+
+def test_an_unspelled_served_knob_is_refused_by_the_validator_not_raised(contract):
+    c2 = _with_unspelled_knob(contract)
+    column = Column(metric="BB_UPPER", transformId="value", timeframe={"rel": "anchor"}, stdDev=2.5)
+    assert _errors(column, c2) == ["KNOB_SPELLING_UNMEASURED"]
+    section = CustomSection(title="t", columns=[column])
+    assert [f.code for f in validate_section(section, contract=c2) if f.severity == "error"] == \
+        ["KNOB_SPELLING_UNMEASURED"]
+
+
+def test_every_rendered_cell_validates_without_the_spelling_finding(contract):
+    for metric, knobs in fanout.KNOB_SPELLING_RENDERED.items():
+        params = contract.metric(metric).parameters
+        for k in knobs:
+            p = params[k]
+            if p.get("bound") == "flag":
+                value = not p.get("defaultValue")
+            elif p.get("bound") == "range":
+                value = round(p["defaultValue"] + p["step"], 6) if p["defaultValue"] + p["step"] <= p["maximum"] \
+                    else round(p["defaultValue"] - p["step"], 6)
+            else:
+                value = p["defaultValue"] + 1
+            column = Column(metric=metric, transformId="value", timeframe={"rel": "anchor"}, **{k: value})
+            assert "KNOB_SPELLING_UNMEASURED" not in _errors(column, contract), (metric, k)
+
+
+# --- pass 2, finding 10: NaN / inf ----------------------------------------------------------------------------------
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_a_non_finite_knob_is_refused_by_the_model(value):
+    with pytest.raises(ValidationError):
+        Column(metric="BB_UPPER", transformId="value", timeframe={"rel": "anchor"}, stdDev=value)
+
+
+# --- pass-2 re-review: every header-predicting caller skips an unmeasured knob header instead of raising -----------
+def test_cost_report_headers_and_emit_skip_an_unmeasured_knob_column(contract, monkeypatch, tmp_path):
+    from omega.conditions import report_headers
+    from omega.emit import RefusedToEmit, emit
+    from omega.fanout import cost_report
+    from omega.types import Report
+
+    monkeypatch.delitem(fanout.KNOB_SPELLING_RENDERED, "MACD_SIGNAL")
+    report = Report(sections=[CustomSection(title="t", columns=[
+        Column(metric="MACD_SIGNAL", transformId="value", timeframe={"rel": "anchor"}, fast=8),
+        Column(metric="RSI14", transformId="value", timeframe={"rel": "anchor"})])])
+    assert cost_report(report, contract).headers == 1
+    assert "RSI14" in report_headers(report) and not any(h.startswith("MACDsig") for h in report_headers(report))
+    with pytest.raises(RefusedToEmit, match="never rendered"):
+        emit(report, "t", out_dir=tmp_path)

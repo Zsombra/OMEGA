@@ -86,12 +86,23 @@ def test_a_gateway_page_on_stdout_stops_the_call(monkeypatch, body):
 
 
 def test_a_platform_refusal_is_still_bisected_not_stopped(monkeypatch):
-    """The stop is for an outage only: a refusal the platform words is what the bisect exists to attribute."""
+    """The stop is for an outage only: a refusal the platform words is what the bisect exists to attribute.
+
+    2026-11-08 (review pass 2, finding 4): a refusal is the platform's VALIDATION_ERROR body on stdout. The same words
+    on stderr with an empty stdout were returned as a refusal until then; empty stdout is never a platform answer, so
+    that is now a transient (re-sent once, then a stop)."""
     mod = _load(monkeypatch)
+    body = {"code": "VALIDATION_ERROR", "message": "metric 'MKT_UP' is not read on a evaluated-coin section's bars",
+            "details": {"authoringCode": "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED"}}
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(json.dumps(body).encode(), b""))
+    d, err = mod.call("preview_strategy_report", {})
+    assert err is None and d["details"]["authoringCode"] == "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED"
+    hdrs, err = mod.render([{"metric": "MKT_UP"}])
+    assert hdrs is None and "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED" in err
     monkeypatch.setattr(mod.subprocess, "Popen", _popen(b"", b"REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED: metric 'MKT_UP'"
                                                             b" is not read on a evaluated-coin section's bars"))
-    d, err = mod.call("preview_strategy_report", {})
-    assert d is None and "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED" in err
+    with pytest.raises(mod.Transient):
+        mod.call("preview_strategy_report", {})
 
 
 def test_an_outage_aborts_the_sweep_after_one_preview_and_records_no_refusal(monkeypatch):

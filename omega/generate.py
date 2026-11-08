@@ -35,7 +35,7 @@ from .conditions import (
     entry_gates, validate_conditions, validate_entry_gate, validate_market_read,
 )
 from .contract import DERIVED_DIR, load
-from .fanout import cost_report, outputs_for
+from .fanout import cost_report, outputs_for, predictable
 # Signal membership and scoring: RETIRED at contract 108, imported only by the history helpers
 # (membership, allocation_findings, signal_rules, _scoring_data_columns, plan_pre_108, _rules).
 from .membership import (RUNG_REL, _map, _signal_data, analyse, check_allocations,
@@ -699,7 +699,7 @@ class StrategyPlan:
         for section in self.report.sections:
             if isinstance(section, CustomSection):
                 for column in section.columns:
-                    if column.metric not in c.metrics:
+                    if column.metric not in c.metrics or not predictable(column, c):
                         continue
                     for o in outputs_for(column, c):
                         out.setdefault(o.header, []).append((section.sectionKey, column.wire()))

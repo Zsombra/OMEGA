@@ -30,7 +30,7 @@ from functools import lru_cache
 from typing import Any, Literal
 
 from .contract import DERIVED_DIR, header_since_123, load
-from .fanout import outputs_for
+from .fanout import outputs_for, predictable
 from .types import CustomSection, PlatformSection, Report
 
 CONDITION_KEY = re.compile(r"^[A-Z][A-Z0-9_]{1,39}$")
@@ -632,8 +632,8 @@ def report_headers(report: Report) -> dict[str, dict]:
                     continue
         elif isinstance(section, CustomSection):
             for column in section.columns:
-                if column.metric not in c.metrics:
-                    continue
+                if column.metric not in c.metrics or not predictable(column, c):
+                    continue                 # an unmeasured knob header (KNOB_SPELLING_UNMEASURED) is no header here
                 moved = not c.metric(column.metric).is_timeless
                 candle = moved and (column.offset or 0) == 0
                 above, below = _anchor_side(column, report.anchor, order)

@@ -133,6 +133,20 @@ KNOB_SPELLING_RENDERED = {
 }
 
 
+class KnobSpellingUnmeasured(ValueError):
+    """A header whose knob part was never rendered (KNOB_SPELLING_RENDERED). omega.validate refuses such a column
+    (KNOB_SPELLING_UNMEASURED); a header-predicting caller skips it as it skips an unmeasured metric."""
+
+
+def predictable(column: Column, contract: Contract) -> bool:
+    """False for a column whose header omega cannot predict (KnobSpellingUnmeasured) - it adds no predicted header."""
+    try:
+        knob_token(column, contract)
+        return True
+    except KnobSpellingUnmeasured:
+        return False
+
+
 def _knob_number(value) -> str:
     """A knob value as the header prints it: 2.5, 0.01, 0.2; an integral number without its point (sd5, mult10, max1)."""
     if isinstance(value, float):
@@ -158,10 +172,11 @@ def knob_token(column: Column, contract: Contract) -> str:
     if unknown and any(is_off(k) for k in served):
         # Any knob off, not only an unknown one: in the SET regime an unspelled knob at its default still belongs in the
         # header, and which regime an unknown knob is in was never rendered either (review 2026-11-08).
-        raise ValueError(f"{column.metric} serves knobs whose header spelling was never rendered: {unknown}")
+        raise KnobSpellingUnmeasured(f"{column.metric} serves knobs whose header spelling was never rendered: {unknown}")
     unrendered = [k for k in served if is_off(k) and k not in KNOB_SPELLING_RENDERED.get(column.metric, ())]
     if unrendered:
-        raise ValueError(f"{column.metric} at {unrendered} off its default was never rendered (KNOB_SPELLING_RENDERED)")
+        raise KnobSpellingUnmeasured(
+            f"{column.metric} at {unrendered} off its default was never rendered (KNOB_SPELLING_RENDERED)")
     set_knobs = [k for k in served if k not in KNOB_SINGLE]
     out = ""
     if any(is_off(k) for k in set_knobs):
@@ -437,7 +452,8 @@ def cost_report(report: Report, contract: Contract | None = None) -> BudgetRepor
             if col.metric not in c.metrics:
                 continue
             columns += 1
-            headers += len(outputs_for(col, c))
+            # an unpredictable knob header (refused KNOB_SPELLING_UNMEASURED by omega.validate) charges no header
+            headers += len(outputs_for(col, c)) if predictable(col, c) else 0
             tf = column_timeframe(col, section, report.anchor, c)
             if tf:
                 timeframes.add(tf)

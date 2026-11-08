@@ -248,9 +248,15 @@ def main() -> None:
         (CONTRACT / "metrics" / f"{name}.json").write_text(
             json.dumps(rec, indent=2, ensure_ascii=False), encoding="utf-8"
         )
+    # The contract the hints were read at, as refresh_metric_contracts recorded it (2026-11-08, review pass 2): carried
+    # through, since this rewrite would otherwise drop it. An index from before then has none, and none is invented.
+    index_path = CONTRACT / "metrics" / "_index.json"
+    previous = load_json(index_path) if index_path.exists() else {}
+    carried = {k: previous[k] for k in ("contractVersion", "buildSha", "contractKnownBy") if k in previous}
     (CONTRACT / "metrics" / "_index.json").write_text(
         json.dumps(
             {
+                **carried,
                 "metricCount": len(records),
                 "byFamily": {
                     fam: sorted(m for m, r in records.items() if r["family"] == fam)

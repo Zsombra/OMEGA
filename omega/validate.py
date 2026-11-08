@@ -11,7 +11,7 @@ from decimal import Decimal
 from typing import Iterable, get_args
 
 from .contract import REFERENCE_PAIRS, Contract, Metric, load, section_subject
-from .fanout import SMOOTHERS, takes_offset
+from .fanout import KNOB_OWN_TOKEN, KNOB_SINGLE, KNOB_SPELLING, KNOB_SPELLING_RENDERED, SMOOTHERS, takes_offset
 from .types import KNOBS, MARKET_SCOPE, Column, CustomSection, PlatformSection, Report, Section
 
 # The nine market scopes the 146.0.0 stage schema enumerates (omega.types.MARKET_SCOPE), for the subject message.
@@ -79,7 +79,10 @@ SECTION_TIMEFRAME_RETIRED_AT = "48.0.0"
 
 # The codes for a served key OMEGA knows by name only (data/contract/metrics/_unmeasured_108.json, or a transform the
 # served enum has and the extraction never read): the column is refused before any corpus rule is applied to it.
-UNMEASURED_CODES = {"METRIC_UNMEASURED", "TRANSFORM_UNMEASURED", "PARAMETER_UNMEASURED"}
+UNMEASURED_CODES = {"METRIC_UNMEASURED", "TRANSFORM_UNMEASURED", "PARAMETER_UNMEASURED",
+                    # a knob setting whose header was never rendered (omega.fanout.KNOB_SPELLING_RENDERED): the column
+                    # is refused, and no header is predicted for it (knob_token raises) - review 2026-11-08
+                    "KNOB_SPELLING_UNMEASURED"}
 
 
 @dataclass(frozen=True)
@@ -633,6 +636,18 @@ def _knob_findings(column: Column, m: Metric, spec: dict, path: str) -> list[Fin
                 f"their defaults; how many bars the combination reads is unmeasured offline - preview it"))
 
     if off_default:
+        # The header of an off-default knob is a measured spelling (omega.fanout): a served knob none of the tables
+        # spells, or a (metric, knob) never rendered off its default, is refused here as unmeasured rather than raised
+        # out of the header prediction (review 2026-11-08, pass 2).
+        unspelled = [k for k in m.parameters if k not in KNOB_SPELLING and k not in KNOB_OWN_TOKEN and k not in KNOB_SINGLE]
+        unrendered = [k for k in off_default if k not in KNOB_SPELLING_RENDERED.get(m.metric, ())]
+        if unspelled or unrendered:
+            out.append(Finding(
+                "error", "KNOB_SPELLING_UNMEASURED", f"{path}.{off_default[0]}",
+                f"{m.metric} at {', '.join(f'{k} {set_knobs[k]}' for k in off_default)}: the header of "
+                + (f"knobs {unspelled} has no measured spelling" if unspelled else
+                   f"{unrendered} off its default was never rendered (omega.fanout.KNOB_SPELLING_RENDERED)")
+                + " - render it once (scripts/probe_knob_spelling_149.py, KNOB_COLUMNS) before authoring it"))
         unders = [column.transformId] if spec.get("metricParametersAccepted") is False else []
         chained = column.chainedTransformId
         if chained and ((spec.get("chainedOuters") or {}).get(chained) or {}).get("metricParametersAccepted") is False:

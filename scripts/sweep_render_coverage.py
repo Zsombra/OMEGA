@@ -29,6 +29,15 @@ timeout, "Version negotiation failed" and stdout that is not JSON are re-sent on
 bisected, never a column's refusal. The record carries `contractVersion` / `buildSha` from a version read before the
 first preview and `versionAtEnd` / `buildShaAtEnd` from one after the last; a difference sets `contractMoved` and the
 run exits 2 (3 on a stop, 0 on a clean run).
+
+2026-11-08 (review pass 2, findings 3, 4, 5), the rules shared with probe_authoring_148 / probe_knob_spelling_149:
+- A refusal is a JSON body whose `code` is VALIDATION_ERROR - the only answer the bisect attributes to a column. A rate
+  limit (RATE_LIMITED, "Rate limited" / 429 on stderr) backs off and is re-sent; a SERVICE_UNAVAILABLE body, another
+  code, an mcporter `isError` body, empty stdout with any stderr that is not an auth prompt (ECONNRESET, ...) are
+  re-sent once and then stop the run. A gateway 5xx stops it at once.
+- The end version read is retried once after a pause. The exit code of a stopped run is 3 whatever the end read said;
+  2 is a completed run whose contract moved or could not be read. When the seen-header cache is held back
+  (contractMoved not False) the headers are kept in the record under `headersWithheld`, so nothing rendered is lost.
 """
 import json
 import os
@@ -41,6 +50,9 @@ import urllib.request
 sys.path.insert(0, ".")
 from omega.contract import load                      # noqa: E402
 from omega.fanout import outputs_for                 # noqa: E402
+from scripts.probe_authoring_148 import (            # noqa: E402  the answer and end-of-run rules the probes share
+    VERSION_URL, classify, contract_fields, is_rate_limit, read_version_safely, withheld_because,
+)
 from scripts.render_coverage import (                # noqa: E402
     QUARANTINED, coverage, is_placeholder, rendered_headers,
 )
@@ -99,7 +111,7 @@ def version():
     """GET /mcp/version. Any failure (HTTPError on the nginx 502, URLError / a timeout, a body that is not a JSON
     object) is a stop, never an uncaught exception that loses the partial record."""
     try:
-        with urllib.request.urlopen("https://mcp.battlegrid.trade/mcp/version", timeout=30) as r:
+        with urllib.request.urlopen(VERSION_URL, timeout=30) as r:
             v = json.loads(r.read().decode())
     except (OSError, ValueError) as exc:      # HTTPError / URLError / TimeoutError; JSONDecodeError / UnicodeDecodeError
         raise SweepStopped(f"GET /mcp/version failed ({type(exc).__name__}: {str(exc)[:200]})") from None
@@ -121,49 +133,56 @@ def is_outage(err):
     return bool(err) and (err == "TIMEOUT" or bool(PLATFORM_DOWN.search(err)))
 
 
-def _outage_body(d):
-    """The text of a JSON answer that is an outage, not a render or a refusal: None otherwise."""
-    if not isinstance(d, dict) or "budgetUsage" in d:
-        return None
-    txt = json.dumps(d)
-    if d.get("code") == "SERVICE_UNAVAILABLE" or PLATFORM_DOWN.search(txt):
-        return txt[:400]
-    return None
-
-
-def call(tool, args, timeout=240):
+def call(tool, args, timeout=240, attempts=4):
+    """-> (d, None): `d` a render or a VALIDATION_ERROR refusal body, nothing else. A rate limit is backed off and
+    re-sent (`attempts` sends, then a stop); an OAuth prompt or a gateway 5xx stops the sweep (SweepStopped); every
+    other non-answer - a timeout, a deadline / other-code / isError body, empty stdout with a transport error on stderr,
+    stdout that is not JSON - raises Transient, which _call_once_more re-sends once. Never a refusal."""
     if SWEEP_CONTRACT and _calls[0] % VERSION_EVERY == 0:
         served = version().get("contractVersion")
         if served != SWEEP_CONTRACT:
             raise SweepStopped(f"served contract {served} after {_calls[0]} previews, not {SWEEP_CONTRACT}")
-    _calls[0] += 1
-    time.sleep(0.45)                      # one worker, well under the account's 3 req/s
-    p = subprocess.Popen(
-        ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
-         "--output", "json", "--args", "-"],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    try:
-        out, err = p.communicate(json.dumps(args).encode(), timeout=timeout)
-    except subprocess.TimeoutExpired:
-        p.kill()
-        raise Transient("TIMEOUT") from None
-    txt = out.decode(errors="replace")
-    if not txt.strip():
-        msg = (err.decode(errors="replace") or "empty stdout")[:400]
-        if any(marker in msg for marker in AUTH_MARKERS):
-            raise SweepStopped(f"mcporter has no usable credential for battlegrid-anbu: {msg}")
+    msg = None
+    for attempt in range(1, attempts + 1):
+        _calls[0] += 1
+        time.sleep(0.45)                      # one worker, well under the account's 3 req/s
+        p = subprocess.Popen(
+            ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
+             "--output", "json", "--args", "-"],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            out, err = p.communicate(json.dumps(args).encode(), timeout=timeout)
+        except subprocess.TimeoutExpired:
+            p.kill()
+            raise Transient("TIMEOUT") from None
+        txt = out.decode(errors="replace")
+        if not txt.strip():
+            msg = (err.decode(errors="replace") or "empty stdout")[:400]
+            if any(marker in msg for marker in AUTH_MARKERS):
+                raise SweepStopped(f"mcporter has no usable credential for battlegrid-anbu: {msg}")
+            _stop_on_outage(msg)
+            if is_rate_limit(msg):
+                time.sleep(2.0 * attempt)
+                continue
+            # review pass 2, finding 4: empty stdout is never a platform answer (ECONNRESET, "Error POSTing to
+            # endpoint" ...) - it was returned as the batch's error and bisected into one "refusal" per column
+            raise Transient(msg)
+        try:
+            d = json.loads(txt)
+        except json.JSONDecodeError:
+            _stop_on_outage(txt[:400])
+            raise Transient(f"stdout is not JSON: {txt[:400]}") from None
+        kind = classify(d)
+        if kind in ("render", "refusal"):
+            return d, None
+        msg = json.dumps(d)[:400]
+        if kind == "rate_limited":
+            time.sleep(2.0 * attempt)
+            continue
+        # review pass 2, finding 5: a deadline, any other platform code, an mcporter isError body - not a refusal
         _stop_on_outage(msg)
-        return None, msg
-    try:
-        d = json.loads(txt)
-    except json.JSONDecodeError:
-        _stop_on_outage(txt[:400])
-        raise Transient(f"stdout is not JSON: {txt[:400]}") from None
-    body = _outage_body(d)
-    if body is not None:
-        _stop_on_outage(body)
-        raise Transient(body)
-    return d, None
+        raise Transient(msg)
+    raise SweepStopped(f"rate limited after {attempts} sends ({_calls[0]} previews; not a refusal): {msg}")
 
 
 def _call_once_more(req):
@@ -175,13 +194,11 @@ def _call_once_more(req):
         except Transient as exc:
             reason = str(exc)
         else:
-            body = _outage_body(d) if d is not None else None
-            if d is None and is_outage(err):
-                reason = err
-            elif body is not None:
-                reason = body
-            else:
+            if classify(d) in ("render", "refusal"):
                 return d, err
+            reason = json.dumps(d)[:400] if d is not None else str(err)   # whatever else: transient, never a refusal
+            if GATEWAY_DOWN.search(reason):
+                raise SweepStopped(f"platform outage after {_calls[0]} previews (not a refusal): {reason}")
         if attempt == 1:
             print(f"  transient ({reason[:90]}): re-sending once after {RETRY_PAUSE:.0f}s", flush=True)
             time.sleep(RETRY_PAUSE)
@@ -189,8 +206,8 @@ def _call_once_more(req):
 
 
 def render(columns):
-    """-> (headers, error). One preview carrying `columns` split across sections. `error` is a platform refusal only:
-    a transient answer is re-sent once and then stops the sweep (SweepStopped)."""
+    """-> (headers, error). One preview carrying `columns` split across sections. `error` is a platform refusal only
+    (a VALIDATION_ERROR body): a transient answer is re-sent once and then stops the sweep (SweepStopped)."""
     secs = []
     for i in range(0, len(columns), COLS_PER_SECTION):
         secs.append({"kind": "custom", "title": f"sweep {len(secs) + 1}",
@@ -200,11 +217,11 @@ def render(columns):
     # `authoring`, served only at detail "detailed"); the 09-09 / 09-20 runs used the flat compile-era shape.
     req = {"coinSelection": {"mode": "explicit", "tickers": ["BTC"]}, "detail": "detailed",
            "source": {"kind": "FIELDS", "timeframe": "1h", "sections": secs}}
-    d, err = _call_once_more(req)
-    if d is None:
-        return None, err
-    if "budgetUsage" not in d or not isinstance(d.get("authoring"), dict):
+    d, _ = _call_once_more(req)
+    if classify(d) == "refusal":
         return None, json.dumps(d)[:400]
+    if classify(d) != "render":            # call() returns nothing else; never let anything else become a refusal
+        raise SweepStopped(f"neither a render nor a refusal after {_calls[0]} previews: {json.dumps(d)[:400]}")
     hdrs = []
     for cc in d["authoring"].get("conditionColumns", []):
         if str(cc.get("title", "")).startswith("sweep "):
@@ -313,28 +330,16 @@ def agreement(shapes, headers, seen_before, predict):
     return mismatches
 
 
-def _read_version():
-    """version() for the record: a failed read is recorded as {"error": ...}, never raised."""
-    try:
-        return version()
-    except SweepStopped as exc:
-        return {"error": str(exc)[:300]}
+def _read_version(retry_pause=None):
+    """version() for the record: a failed read is recorded as {"error": ...}, never raised. With `retry_pause` (the end
+    read), a failed read is retried once after that pause."""
+    return read_version_safely(lambda: version(), retry_pause)
 
 
-def contract_check(v0, v1):
-    """The record's contract fields (2026-11-08, review pass 1 finding 7): `contractVersion` / `buildSha` from the read
-    before the first preview, `versionAtEnd` / `buildShaAtEnd` from a read after the last one. `contractMoved` is True
-    when they differ, None when either read failed (the run cannot say which contract it measured)."""
-    v0, v1 = v0 or {}, v1 or {}
-    fields = {"contractVersion": v0.get("contractVersion"), "buildSha": v0.get("buildSha"),
-              "versionAtEnd": v1.get("contractVersion"), "buildShaAtEnd": v1.get("buildSha")}
-    if "error" in v0 or "error" in v1 or not v0 or not v1:
-        fields["contractMoved"] = None
-        fields["versionReadErrors"] = {k: v["error"] for k, v in (("start", v0), ("end", v1)) if "error" in v}
-    else:
-        fields["contractMoved"] = ((v0.get("contractVersion"), v0.get("buildSha"))
-                                   != (v1.get("contractVersion"), v1.get("buildSha")))
-    return fields
+# The record's contract fields (2026-11-08, review pass 1 finding 7), shared with the two probes since review pass 2:
+# `contractVersion` / `buildSha` from the read before the first preview, `versionAtEnd` / `buildShaAtEnd` from a read
+# after the last one; `contractMoved` True when they differ, None when either read failed.
+contract_check = contract_fields
 
 
 def run_record(scope, targets, out, mismatches, versions=None):
@@ -388,35 +393,44 @@ def main():
         print(f"STOPPED: {out['aborted']['message']}")
     else:
         out = run_sweep(targets)
-    versions = contract_check(v0, _read_version())   # the read after the last batch
+    # the read after the last batch, retried once after a pause: an outage that stopped the run often fails it too
+    versions = contract_check(v0, _read_version(RETRY_PAUSE))
 
     headers = out["headers"]
-    if versions["contractMoved"] is False:
+    write_headers = versions["contractMoved"] is False
+    if write_headers:
         os.makedirs(os.path.dirname(HEADERS_OUT), exist_ok=True)
-        json.dump({"_what": ("Headers minted live by preview_strategy_report during the " + SWEEP_DATE + " "
-                             "coverage sweep. HEADERS ONLY - render_coverage treats every string in "
-                             "this file as a seen header, so nothing else may be added here."),
-                   "headers": headers},
-                  open(HEADERS_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        with open(HEADERS_OUT, "w", encoding="utf-8") as f:
+            json.dump({"_what": ("Headers minted live by preview_strategy_report during the " + SWEEP_DATE + " "
+                                 "coverage sweep. HEADERS ONLY - render_coverage treats every string in "
+                                 "this file as a seen header, so nothing else may be added here."),
+                       "headers": headers}, f, ensure_ascii=False, indent=1)
     # else: the seen-header cache is held back - a header minted under a contract that moved mid-run, or under one
-    # the end read could not name, is not a render of any one contract (as probe_knob_spelling_149 holds its own back)
+    # the end read could not name, is not a render of any one contract. The headers go into the record instead
+    # (review pass 2, finding 3), so a re-read can promote them.
+    held = {"headersWritten": write_headers}
+    if not write_headers:
+        held.update(headersWithheld=headers, headersWithheldBecause=withheld_because(versions))
 
     mismatches = agreement(out["sent"], headers, seen_before,
                            lambda s: [o.header for o in outputs_for(s.to_column(), c)])
     os.makedirs(os.path.dirname(RECORD_OUT), exist_ok=True)
     with open(RECORD_OUT, "w", encoding="utf-8") as f:
-        json.dump(run_record(scope, targets, out, mismatches, versions), f, ensure_ascii=False, indent=1)
+        json.dump({**run_record(scope, targets, out, mismatches, versions), **held}, f, ensure_ascii=False, indent=1)
 
     print(f"\nrendered {len(headers)} distinct headers; refusals {len(out['refusals'])}; "
           f"predicted-but-not-rendered {len(mismatches)} of {len(out['sent'])} sent"
           + ("" if out["aborted"] is None else f" (STOPPED after {out['aborted']['afterBatches']} batches)"))
-    print(f"wrote {RECORD_OUT}" + (f" and {HEADERS_OUT}" if versions["contractMoved"] is False else " (headers held back)") + f"; contract {versions['contractVersion']} ({versions['buildSha']}) -> "
+    print(f"wrote {RECORD_OUT}" + (f" and {HEADERS_OUT}" if write_headers else " (headers held back, kept in the record)")
+          + f"; contract {versions['contractVersion']} ({versions['buildSha']}) -> "
           f"{versions['versionAtEnd']} ({versions['buildShaAtEnd']})")
-    if versions["contractMoved"] is not False:
-        print("CONTRACT MOVED during the sweep, or a version read failed: the record says which; not a clean run")
-        return 2
-    if out["aborted"] is not None:
+    if out["aborted"] is not None:          # a stop is a stop, whatever the end read said
+        if not write_headers:
+            print(f"also: {held['headersWithheldBecause']}")
         return 3
+    if not write_headers:
+        print(f"not a clean run: {held['headersWithheldBecause']}")
+        return 2
     return 0
 
 

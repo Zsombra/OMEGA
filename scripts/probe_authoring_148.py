@@ -32,6 +32,18 @@ string in that file as a seen header); the run record, every refusal verbatim, t
 data/audit/authoring_probe_<MAJOR>_<DATE>.json (MAJOR = the probed contract's major, 149). The run refuses either
 output that already exists (PROBE_OVERWRITE=1 replaces them on purpose).
 
+2026-11-08 (review pass 2, findings 4-7), the rules shared with probe_knob_spelling_149 and sweep_render_coverage:
+- A refusal is a JSON body whose `code` is VALIDATION_ERROR. SERVICE_UNAVAILABLE (the preview's deadline) is recorded as
+  a transient probe and the run goes on. A rate limit (RATE_LIMITED, "Rate limited" / 429 on stderr) backs off and is
+  re-sent. Anything else - another platform code, an mcporter `isError` body, empty stdout, a timeout - is re-sent once
+  after RETRY_PAUSE and then stops the run (TransportFailure), the partial record written. Never a refusal.
+- Every GET /mcp/version is wrapped: a failed gate read stops the run (VersionReadFailed) with the partial record
+  written; the gate compares contractVersion AND buildSha. The end read is retried once after a pause.
+- The record carries contractVersion / buildSha (start) and versionAtEnd / buildShaAtEnd (end); `contractMoved` is True
+  (they differ), False, or None (a read failed). The header cache is written only when contractMoved is False; else the
+  headers stay in the record under `headersWithheld`. Exit 0 clean, 3 stopped early, 2 a completed run whose contract
+  moved or could not be read.
+
 Usage: PROBE_DATE=2026-11-07 PROBE_HINTS=C:/Users/rafae/omega-v012-hints/hints_20261106 \
        python scripts/probe_authoring_148.py
 """
@@ -73,29 +85,107 @@ VERSION_EVERY = 25
 # mcporter's stderr when the stored OAuth credential has no usable token: every call then starts an interactive
 # authorization (a new dynamic client, possibly a browser tab) and takes minutes. Seen 2026-11-05 from ~10:18Z.
 AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthorized", "401")
+# The pause before the one re-send of an answer that is neither a render nor a refusal, and before the end version
+# read's one retry.
+RETRY_PAUSE = 20.0
+VERSION_URL = "https://mcp.battlegrid.trade/mcp/version"
+# The platform's code for an authoring refusal: every one of the 196 preview refusals recorded in data/audit carries it.
+# Every other code of the served error enum (RATE_LIMITED, INTERNAL_ERROR, UNAUTHORIZED, ...) is about the call.
+REFUSAL_CODE = "VALIDATION_ERROR"
+DEADLINE_CODE = "SERVICE_UNAVAILABLE"
+RATE_LIMIT_CODE = "RATE_LIMITED"
 
 
 class TransportFailure(RuntimeError):
     """Nothing the platform rendered or refused: the call never produced a platform answer (OAuth / credential lost,
-    timeout, empty or non-JSON stdout, an unrecognised body). The run stops - such a probe is never recorded, least of
-    all as a refusal."""
+    timeout, empty or non-JSON stdout, a body with a code other than VALIDATION_ERROR / SERVICE_UNAVAILABLE). The run
+    stops - such a probe is never recorded, least of all as a refusal."""
 
 
 class ContractMoved(RuntimeError):
-    """The served contract left the one this run probes."""
+    """The served contract (version or build) left the one this run probes."""
+
+
+class VersionReadFailed(RuntimeError):
+    """A mid-run GET /mcp/version failed: the run cannot say which contract it is probing, so it stops."""
 
 
 def version():
-    with urllib.request.urlopen("https://mcp.battlegrid.trade/mcp/version", timeout=30) as r:
+    with urllib.request.urlopen(VERSION_URL, timeout=30) as r:
         return json.loads(r.read().decode())
 
 
+def is_rate_limit(text):
+    return "Rate limited" in text or "429" in text
+
+
+def classify(d):
+    """The shared answer rule of the three probing scripts (review pass 2, finding 5): 'render' | 'refusal' (a
+    VALIDATION_ERROR body) | 'deadline' (SERVICE_UNAVAILABLE) | 'rate_limited' | 'other' (another code, an mcporter
+    `isError` body, anything else - never a refusal)."""
+    if not isinstance(d, dict):
+        return "other"
+    if "budgetUsage" in d and isinstance(d.get("authoring"), dict):
+        return "render"
+    code = d.get("code")
+    if code == REFUSAL_CODE and "authoring" not in d:
+        return "refusal"
+    if code == DEADLINE_CODE:
+        return "deadline"
+    if code == RATE_LIMIT_CODE:
+        return "rate_limited"
+    return "other"
+
+
+def read_version_safely(read, retry_pause=None):
+    """`read()` (a GET /mcp/version) that never raises: a failure -> {"error": ...}. With `retry_pause`, a failed read
+    is retried once after that pause (the end-of-run read)."""
+    err = None
+    for attempt in (1, 2):
+        try:
+            v = read()
+            if not isinstance(v, dict) or "error" in v:
+                raise ValueError(f"no version object: {str(v)[:200]}")
+            return v
+        except Exception as exc:                  # HTTPError / URLError / timeout / a body that is not JSON
+            err = f"{type(exc).__name__}: {str(exc)[:200]}"
+        if retry_pause is None or attempt == 2:
+            break
+        time.sleep(retry_pause)
+    return {"error": f"GET /mcp/version failed ({err})"}
+
+
+def contract_fields(v0, v1):
+    """The record's contract fields, shared by the three probing scripts: `contractVersion` / `buildSha` from the read
+    before the first call, `versionAtEnd` / `buildShaAtEnd` from the read after the last one. `contractMoved` is True
+    when they differ, None when either read failed (the run cannot say which contract it measured)."""
+    v0, v1 = v0 or {}, v1 or {}
+    fields = {"contractVersion": v0.get("contractVersion"), "buildSha": v0.get("buildSha"),
+              "versionAtEnd": v1.get("contractVersion"), "buildShaAtEnd": v1.get("buildSha")}
+    if "error" in v0 or "error" in v1 or not v0 or not v1:
+        fields["contractMoved"] = None
+        fields["versionReadErrors"] = {k: v["error"] for k, v in (("start", v0), ("end", v1)) if "error" in v}
+    else:
+        fields["contractMoved"] = ((v0.get("contractVersion"), v0.get("buildSha"))
+                                   != (v1.get("contractVersion"), v1.get("buildSha")))
+    return fields
+
+
+def withheld_because(fields):
+    """Why the header cache is held back (contractMoved not False), in words: moved, or unreadable."""
+    if fields["contractMoved"] is None:
+        return f"a version read failed, so the contract measured is unknown: {fields.get('versionReadErrors')}"
+    return (f"the served contract moved during the run ({fields['contractVersion']} / {fields['buildSha']} -> "
+            f"{fields['versionAtEnd']} / {fields['buildShaAtEnd']})")
+
+
 def call(tool, args, timeout=240, attempts=4):
-    """The platform's JSON answer (a render or a refusal). Raises TransportFailure on anything else: an OAuth prompt
-    at once (never retried - each retry would start another authorization), a timeout or a rate limit after
-    `attempts`, empty or non-JSON stdout."""
+    """The platform's JSON answer (any JSON: preview() classifies it). Raises TransportFailure on anything else: an
+    OAuth prompt at once (never retried - each retry would start another authorization), a rate limit after
+    `attempts` backed-off sends; a timeout, empty stdout or non-JSON stdout after one re-send."""
     assert tool == "preview_strategy_report", tool
     err = None
+    other = 0
     for attempt in range(1, attempts + 1):
         wait = _last[0] + _MIN_INTERVAL - time.monotonic()
         if wait > 0:
@@ -110,22 +200,26 @@ def call(tool, args, timeout=240, attempts=4):
         except subprocess.TimeoutExpired:
             p.kill()
             err = "TIMEOUT"
-            continue
-        txt = out.decode("utf-8", errors="replace")
-        if not txt.strip():
-            err = (serr.decode(errors="replace") or "empty stdout")[:400]
-            if any(marker in err for marker in AUTH_MARKERS):
-                raise TransportFailure(f"mcporter has no usable credential for battlegrid-anbu (re-authorizing is the "
-                                       f"user's step): {err}")
-            if "Rate limited" in err or "429" in err:
-                time.sleep(2.0 * attempt)
-                continue
-            raise TransportFailure(err)
-        try:
-            return json.loads(txt)
-        except json.JSONDecodeError:
-            raise TransportFailure(f"stdout is not JSON: {txt[:400]}") from None
-    raise TransportFailure(f"no answer after {attempts} attempts: {err}")
+        else:
+            txt = out.decode("utf-8", errors="replace")
+            if txt.strip():
+                try:
+                    return json.loads(txt)
+                except json.JSONDecodeError:
+                    err = f"stdout is not JSON: {txt[:400]}"
+            else:
+                err = (serr.decode(errors="replace") or "empty stdout")[:400]
+                if any(marker in err for marker in AUTH_MARKERS):
+                    raise TransportFailure(f"mcporter has no usable credential for battlegrid-anbu (re-authorizing is "
+                                           f"the user's step): {err}")
+                if is_rate_limit(err):
+                    time.sleep(2.0 * attempt)
+                    continue
+        other += 1                                 # no platform answer: re-sent once, then the run stops
+        if other >= 2:
+            break
+        time.sleep(RETRY_PAUSE)
+    raise TransportFailure(f"no platform answer after {attempt} attempt(s): {err}")
 
 
 def hint(metric):
@@ -151,12 +245,23 @@ def section(columns, title, benchmark=None, scope=None):
 def preview(sections, tickers=("BTC",), timeframe="1h"):
     req = {"coinSelection": {"mode": "explicit", "tickers": list(tickers)}, "detail": "detailed",
            "source": {"kind": "FIELDS", "timeframe": timeframe, "sections": sections}}
-    d = call("preview_strategy_report", req)
-    if "code" in d and "message" in d and "authoring" not in d:
-        return req, None, d
-    if "budgetUsage" not in d or not isinstance(d.get("authoring"), dict):
-        raise TransportFailure(f"neither a render nor a refusal: {json.dumps(d)[:600]}")
-    return req, d, None
+    other = 0
+    for attempt in range(1, 5):
+        d = call("preview_strategy_report", req)
+        kind = classify(d)
+        if kind == "render":
+            return req, d, None
+        if kind in ("refusal", "deadline"):        # a deadline is the caller's to mark transient, never a refusal
+            return req, None, d
+        if kind == "rate_limited":
+            time.sleep(2.0 * attempt)
+            continue
+        other += 1                                 # another code, an isError body: re-sent once, then the run stops
+        if other >= 2:
+            break
+        time.sleep(RETRY_PAUSE)
+    raise TransportFailure(f"neither a render nor a refusal (code {d.get('code') if isinstance(d, dict) else None!r}, "
+                           f"after {attempt} send(s)): {json.dumps(d)[:600]}")
 
 
 def digest(d):
@@ -294,7 +399,9 @@ def main() -> int:
                  "them")
     if not HINTS:
         sys.exit("set PROBE_HINTS (the dir holding <METRIC>.json raw hints)")
-    v0 = version()
+    v0 = read_version_safely(version)
+    if "error" in v0:                     # nothing sent yet, nothing to record
+        sys.exit(f"{v0['error']}: stop before the first probe")
     if v0.get("contractVersion") != CONTRACT:
         sys.exit(f"served contract {v0.get('contractVersion')} is not {CONTRACT}: stop")
     record = {"_what": __doc__.strip().splitlines()[0], "contractVersion": CONTRACT, "buildSha": v0.get("buildSha"),
@@ -304,10 +411,12 @@ def main() -> int:
 
     def probe(name, sections, tickers=("BTC",), timeframe="1h", keep_candidates=False):
         if record["probes"] and len(record["probes"]) % VERSION_EVERY == 0:
-            now = version()
-            if now.get("contractVersion") != CONTRACT:
-                raise ContractMoved(f"served contract {now.get('contractVersion')} after {len(record['probes'])} "
-                                    f"probes, not {CONTRACT}: {now}")
+            now = read_version_safely(version)
+            if "error" in now:
+                raise VersionReadFailed(f"the gate read after {len(record['probes'])} probes: {now['error']}")
+            if (now.get("contractVersion"), now.get("buildSha")) != (CONTRACT, v0.get("buildSha")):
+                raise ContractMoved(f"served contract {now.get('contractVersion')} / {now.get('buildSha')} after "
+                                    f"{len(record['probes'])} probes, not {CONTRACT} / {v0.get('buildSha')}: {now}")
         req, d, e = preview(sections, tickers, timeframe)
         entry = {"probe": name,
                  "sections": [{k: s[k] for k in ("benchmarkTicker", "marketScope", "columns")} for s in sections],
@@ -533,18 +642,16 @@ def main() -> int:
     aborted = None
     try:
         groups()
-    except (TransportFailure, ContractMoved) as exc:
+    except (TransportFailure, ContractMoved, VersionReadFailed) as exc:
         aborted = {"reason": type(exc).__name__, "message": str(exc)[:600],
                    "afterProbes": len(record["probes"]),
                    "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
         print(f"\nABORTED after {len(record['probes'])} probes: {aborted['message']}", flush=True)
 
-    try:
-        v1 = version()
-    except Exception as exc:              # the record of what WAS rendered is still written
-        v1 = {"error": str(exc)[:300]}
+    v1 = read_version_safely(version, RETRY_PAUSE)   # never raises: the record of what WAS rendered is still written
+    fields = contract_fields(v0, v1)
     record["capturedAt"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    record["versionAtEnd"] = v1
+    record.update({k: v for k, v in fields.items() if k not in ("contractVersion",)})
     # A run that stopped on a transport failure or a contract move is PARTIAL: every probe in it is a platform answer
     # (a render or a verbatim refusal), and the groups after `aborted.afterProbes` were never sent.
     record["complete"] = aborted is None
@@ -555,22 +662,36 @@ def main() -> int:
     record["counts"] = {"probes": len(record["probes"]), "accepted": sum(p["accepted"] for p in record["probes"]),
                         "refused": sum(not p["accepted"] for p in record["probes"]),
                         "transient": sum(bool(p.get("transient")) for p in record["probes"]), "headersMinted": len(headers)}
-    os.makedirs(os.path.dirname(RECORD_OUT), exist_ok=True)
+    # The seen-header cache only for a run whose contract is known and did not move; otherwise the headers stay in the
+    # record (nothing rendered is lost) and no SEEN_FILE names them.
+    write_headers = fields["contractMoved"] is False
+    record["headersWritten"] = write_headers
+    if not write_headers:
+        record["headersWithheld"] = sorted(headers)
+        record["headersWithheldBecause"] = withheld_because(fields)
+    os.makedirs(os.path.dirname(RECORD_OUT) or ".", exist_ok=True)
     with open(RECORD_OUT, "w", encoding="utf-8") as f:
         json.dump(record, f, ensure_ascii=False, indent=1)
         f.write("\n")
-    with open(HEADERS_OUT, "w", encoding="utf-8") as f:
-        json.dump({"_what": (f"Headers minted live by preview_strategy_report in the {PROBE_DATE} authoring probe at "
-                             f"contract {CONTRACT} ({RECORD_OUT}). HEADERS ONLY - render_coverage treats every string in "
-                             "this file as a seen header, so nothing else may be added here."),
-                   "headers": sorted(headers)}, f, ensure_ascii=False, indent=1)
-        f.write("\n")
-    print(f"\n{record['counts']}\nwrote {RECORD_OUT} and {HEADERS_OUT}")
+    if write_headers:
+        os.makedirs(os.path.dirname(HEADERS_OUT) or ".", exist_ok=True)
+        with open(HEADERS_OUT, "w", encoding="utf-8") as f:
+            json.dump({"_what": (f"Headers minted live by preview_strategy_report in the {PROBE_DATE} authoring probe "
+                                 f"at contract {CONTRACT} ({RECORD_OUT}). HEADERS ONLY - render_coverage treats every "
+                                 "string in this file as a seen header, so nothing else may be added here."),
+                       "headers": sorted(headers)}, f, ensure_ascii=False, indent=1)
+            f.write("\n")
+        print(f"\n{record['counts']}\nwrote {RECORD_OUT} and {HEADERS_OUT}")
+    else:
+        print(f"\n{record['counts']}\nwrote {RECORD_OUT} only; header cache withheld: {record['headersWithheldBecause']}")
     if aborted is not None:
         print(f"PARTIAL: aborted ({aborted['reason']}) after {aborted['afterProbes']} probes")
         return 3
-    if v1.get("contractVersion") != CONTRACT:
-        print(f"WARNING: the served contract moved during the run: {v1}")
+    if fields["contractMoved"] is None:
+        print(f"WARNING: the served contract could not be read at the end of the run: {fields['versionReadErrors']}")
+        return 2
+    if fields["contractMoved"]:
+        print(f"WARNING: {withheld_because(fields)}")
         return 2
     return 0
 

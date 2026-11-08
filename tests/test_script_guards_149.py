@@ -57,8 +57,15 @@ def _hint(name: str, desc: str = "w", outer: dict | None = None) -> dict:
     return body
 
 
+SERVED = {"contractVersion": "149.1.0", "buildSha": "aa4ab640"}
+
+
 def _refresh(tmp_path: Path, roster, raw: dict, stub_stdout: str | None = None, old_batches=False,
-             pre_archive=False) -> dict:
+             pre_archive=False, served: dict | None = SERVED, stored: dict | None = SERVED,
+             asserted: str | None = None, served_after_call: dict | None = None) -> dict:
+    """served: what the stubbed GET /mcp/version answers (a file:// URL; None = the read fails). stored: the raw dir's
+    _version.json (None = absent). asserted: EXTRACTION_CONTRACT. served_after_call: the stub npx rewrites the served
+    version on every call (a contract that moves mid-fetch)."""
     tree = tmp_path / "repo"
     (tree / "scripts").mkdir(parents=True)
     shutil.copy(ROOT / "scripts" / "refresh_metric_contracts.py", tree / "scripts")
@@ -79,17 +86,28 @@ def _refresh(tmp_path: Path, roster, raw: dict, stub_stdout: str | None = None, 
     (scratch / "vocab_live_flat.json").write_text(json.dumps(roster), encoding="utf-8")
     for name, body in raw.items():
         (hints / f"{name}.json").write_text(body if isinstance(body, str) else json.dumps(body), encoding="utf-8")
+    if stored is not None:
+        (hints / "_version.json").write_text(json.dumps({**stored, "readAt": "2999-01-01T00:00:00Z"}),
+                                             encoding="utf-8")
+    served_file = tmp_path / "served_version.json"            # never the network: GET /mcp/version is this file
+    if served is not None:
+        served_file.write_text(json.dumps(served), encoding="utf-8")
     shim = tmp_path / "shim"
     shim.mkdir()
     (shim / "npx.cmd").write_text(
         "@echo off\r\n" f'echo call>>"{shim / "calls.log"}"\r\n'
+        + (f'echo {json.dumps(served_after_call)}>"{served_file}"\r\n' if served_after_call else "")
         + (f"echo {stub_stdout}\r\nexit /b 0\r\n" if stub_stdout else "echo TIMEOUT 1>&2\r\nexit /b 1\r\n"),
         encoding="utf-8")
     before = _files(tree / "data")
     env = {**os.environ, "PATH": f"{shim}{os.pathsep}{os.environ['PATH']}", "EXTRACTION_STAMP": "29990101",
-           "EXTRACTION_SCRATCH": str(scratch), "EXTRACTION_ARCHIVE": "29990100"}
+           "EXTRACTION_SCRATCH": str(scratch), "EXTRACTION_ARCHIVE": "29990100",
+           "EXTRACTION_VERSION_URL": served_file.as_uri()}
+    env.pop("EXTRACTION_CONTRACT", None)
+    if asserted is not None:
+        env["EXTRACTION_CONTRACT"] = asserted
     proc = subprocess.run([sys.executable, str(tree / "scripts" / "refresh_metric_contracts.py")], cwd=tree, env=env,
-                          capture_output=True, text=True, timeout=120)
+                          capture_output=True, text=True, timeout=300)
     calls = (shim / "calls.log").read_text().count("call") if (shim / "calls.log").exists() else 0
     return {"proc": proc, "before": before, "after": _files(tree / "data"), "hints": hints, "calls": calls,
             "metrics": metrics}
@@ -198,7 +216,13 @@ def _knob(monkeypatch, tmp_path, answers, versions=(("149.1.0", "x"), ("149.1.0"
     monkeypatch.setattr(pk, "RECORD_OUT", str(tmp_path / "audit" / "knob.json"))
     monkeypatch.setattr(pk, "HEADERS_OUT", str(tmp_path / "columns" / "knob_headers.json"))
     vs = iter(versions)
-    monkeypatch.setattr(pk, "version", lambda: dict(zip(("contractVersion", "buildSha"), next(vs))))
+
+    def version():
+        v = next(vs)
+        if v == "FAIL":
+            raise OSError("URLError: <urlopen error [Errno 11001] getaddrinfo failed>")
+        return dict(zip(("contractVersion", "buildSha"), v))
+    monkeypatch.setattr(pk, "version", version)
     monkeypatch.setattr(pk, "OC", SimpleNamespace(load=lambda: None))
     monkeypatch.setattr(pk, "Column", lambda **kw: SimpleNamespace(**kw))
     monkeypatch.setattr(pk, "outputs_for", lambda col, c: [SimpleNamespace(header=col.metric + "_k")])
@@ -213,6 +237,8 @@ def _knob(monkeypatch, tmp_path, answers, versions=(("149.1.0", "x"), ("149.1.0"
             return {}, None, DEADLINE
         if kind == "refuse":
             return {}, None, {"code": "VALIDATION_ERROR", "message": "refused", "details": {"authoringCode": "X"}}
+        if kind in ("RATE_LIMITED", "INTERNAL_ERROR", "UNAUTHORIZED"):
+            return {}, None, {"code": kind, "message": "x", "details": {}}
         return {}, {"renderedSections": [{"section": {"columns": [{"key": col["metric"] + "_k"} for col in cols]}}],
                     "authoring": {}}, None
     monkeypatch.setattr(pk, "preview", preview)
@@ -444,18 +470,28 @@ def test_sweep_a_timeout_from_any_render_fn_is_never_a_refusal(monkeypatch):
     assert out["refusals"] == [] and out["aborted"] is not None
 
 
-def _sweep_main(monkeypatch, tmp_path, versions):
+def _sweep_main(monkeypatch, tmp_path, versions, plan=None, targets=("X",)):
+    """versions: (contractVersion, buildSha) tuples or "FAIL" (the GET raises, as on the 11-05 nginx 502), one per
+    read. plan: the Popen answers (default: one render). With more than one target, one column per batch."""
     mod = _sweep(monkeypatch)
     monkeypatch.setattr(mod, "HEADERS_OUT", str(tmp_path / "columns" / "h.json"))
     monkeypatch.setattr(mod, "RECORD_OUT", str(tmp_path / "audit" / "r.json"))
     monkeypatch.delenv("SWEEP_OVERWRITE", raising=False)
     monkeypatch.setattr(mod, "load", lambda: None)
     monkeypatch.setattr(mod, "rendered_headers", lambda: set())
-    monkeypatch.setattr(mod, "collect_targets", lambda c: ("structural", _targets("X")))
+    monkeypatch.setattr(mod, "collect_targets", lambda c: ("structural", _targets(*targets)))
     monkeypatch.setattr(mod, "outputs_for", lambda col, c: [SimpleNamespace(header=col.metric + "_value")])
-    monkeypatch.setattr(mod.subprocess, "Popen", _popen((json.dumps(RENDER).encode(), b"")))
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen(*(plan or [(json.dumps(RENDER).encode(), b"")])))
+    if len(targets) > 1:
+        monkeypatch.setattr(mod, "run_sweep", lambda t, orig=mod.run_sweep: orig(t, per_call=1))
     vs = iter(versions)
-    monkeypatch.setattr(mod, "version", lambda: dict(zip(("contractVersion", "buildSha"), next(vs))))
+
+    def version():
+        v = next(vs)
+        if v == "FAIL":
+            raise mod.SweepStopped("GET /mcp/version failed (HTTPError: HTTP Error 502: Bad Gateway)")
+        return dict(zip(("contractVersion", "buildSha"), v))
+    monkeypatch.setattr(mod, "version", version)
     return mod
 
 
@@ -476,3 +512,500 @@ def test_sweep_a_contract_move_marks_the_record_and_exits_non_zero(monkeypatch, 
     rec = _read(tmp_path / "audit" / "r.json")
     assert rec["contractMoved"] is True and (rec["versionAtEnd"], rec["buildShaAtEnd"]) == end
     assert not (tmp_path / "columns" / "h.json").exists()     # the seen-header cache is held back
+    assert rec["headersWritten"] is False and rec["headersWithheld"] == ["X_value"], "kept in the record instead"
+
+
+# ======================================================================================================================
+# Review pass 2 (2026-11-08), findings 2-9. Each test below fails on the 94027ea scripts.
+# ======================================================================================================================
+
+OK = ("149.1.0", "aa4ab640")
+STDERR_502 = b"[mcporter] battlegrid-anbu.preview_strategy_report responded with HTTP 502"
+RATE_LIMIT = (b"[mcporter] Error POSTing to endpoint: Rate limited: 3 requests/second sustained, up to 120 banked. "
+              b"Retry after 1s, or wait 40s for full capacity.")
+
+
+# --- finding 2: the knob probe predicts before the first call; an unpredictable cell is sent and recorded -----------
+
+def test_knob_an_unpredictable_cell_is_still_sent_and_its_render_recorded(monkeypatch, tmp_path):
+    """r_knob.py K2, on the real omega: MACD_SIGNAL out of KNOB_SPELLING_RENDERED (the table before the 11-08 render),
+    so fanout raises ValueError for `fast 8` - the cell the probe exists to render."""
+    import omega.fanout as F
+    from omega import contract as OC
+    import scripts.probe_knob_spelling_149 as pk
+    monkeypatch.delitem(F.KNOB_SPELLING_RENDERED, "MACD_SIGNAL")
+    cols = [{"metric": "MACD_SIGNAL", "transformId": "value", "timeframe": {"rel": "anchor"}, "fast": 8},
+            {"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "anchor"}}]
+    rsi = [o.header for o in F.outputs_for(pk.Column(**cols[1]), OC.load())]
+    (tmp_path / "cols.json").write_text(json.dumps(cols), encoding="utf-8")
+    monkeypatch.setenv("KNOB_COLUMNS", str(tmp_path / "cols.json"))
+    monkeypatch.setattr(pk, "RECORD_OUT", str(tmp_path / "audit" / "knob.json"))
+    monkeypatch.setattr(pk, "HEADERS_OUT", str(tmp_path / "columns" / "knob_headers.json"))
+    monkeypatch.setattr(pk, "version", lambda: {"contractVersion": "149.1.0", "buildSha": "x"})
+    order = []
+    real = pk.outputs_for
+
+    def outputs_for(col, c):
+        order.append("predict")
+        return real(col, c)
+    monkeypatch.setattr(pk, "outputs_for", outputs_for)
+
+    def preview(sections):
+        order.append("preview")
+        return {}, {"renderedSections": [{"section": {"columns": [{"key": k} for k in
+                                                                  ["MACDsig_fast8slow26sig9"] + rsi]}}],
+                    "authoring": {}}, None
+    monkeypatch.setattr(pk, "preview", preview)
+    assert pk.main() == 0
+    assert order.index("preview") > max(i for i, x in enumerate(order) if x == "predict"), "predicted before any call"
+    rec = _read(pk.RECORD_OUT)
+    (entry,) = rec["entries"]
+    assert entry["predicted"] is None and "MACD_SIGNAL" in entry["unpredicted"] and entry["agree"] is None
+    assert entry["rendered"] == ["MACDsig_fast8slow26sig9"] + rsi, "the live answer is recorded"
+    assert rec["unpredicted"] == 1 and rec["agree"] is None
+    assert "MACDsig_fast8slow26sig9" in _read(pk.HEADERS_OUT)["headers"]
+
+
+def test_knob_per_column_entries_mark_only_the_unpredictable_column(monkeypatch, tmp_path):
+    pk, _ = _knob(monkeypatch, tmp_path, ["refuse", "render"])
+
+    def outputs_for(col, c):
+        if col.metric == "PPO_SIGNAL":
+            raise ValueError("PPO_SIGNAL at ['fast'] off its default was never rendered (KNOB_SPELLING_RENDERED)")
+        return [SimpleNamespace(header=col.metric + "_k")]
+    monkeypatch.setattr(pk, "outputs_for", outputs_for)
+    assert pk.main() == 0
+    rec = _read(pk.RECORD_OUT)
+    assert len(rec["entries"]) == len(pk.COLUMNS) and rec["unpredicted"] == 1
+    ppo = [e for e in rec["entries"] if e["columns"][0]["metric"] == "PPO_SIGNAL"][0]
+    assert ppo["predicted"] is None and ppo["agree"] is None and ppo["rendered"] == ["PPO_SIGNAL_k"]
+    assert all(e["agree"] is True for e in rec["entries"] if e is not ppo) and rec["agree"] is True
+
+
+# --- finding 3: a sweep stopped by an outage keeps its headers and exits 3 ------------------------------------------
+
+def test_sweep_an_outage_stop_with_an_unreadable_end_keeps_the_headers_and_exits_3(monkeypatch, tmp_path):
+    """r_sweep.py S1: batch 1 renders, batch 2 meets a gateway 502, the end read fails the same way (twice)."""
+    mod = _sweep_main(monkeypatch, tmp_path, [OK, "FAIL", "FAIL"], targets=("M0", "M1"),
+                      plan=[(json.dumps(RENDER).encode(), b""), (b"", STDERR_502)])
+    assert mod.main() == 3, "a stop is a stop, whatever the end read said"
+    rec = _read(tmp_path / "audit" / "r.json")
+    assert rec["complete"] is False and rec["contractMoved"] is None and "end" in rec["versionReadErrors"]
+    assert rec["headersWritten"] is False and rec["headersWithheld"] == ["X_value"], "the rendered header is kept"
+    assert "version read failed" in rec["headersWithheldBecause"]
+    assert not (tmp_path / "columns" / "h.json").exists()
+
+
+def test_sweep_the_end_read_is_retried_once(monkeypatch, tmp_path):
+    mod = _sweep_main(monkeypatch, tmp_path, [OK, "FAIL", OK], targets=("M0", "M1"),
+                      plan=[(json.dumps(RENDER).encode(), b""), (b"", STDERR_502)])
+    assert mod.main() == 3
+    rec = _read(tmp_path / "audit" / "r.json")
+    assert rec["contractMoved"] is False and rec["headersWritten"] is True
+    assert _read(tmp_path / "columns" / "h.json")["headers"] == ["X_value"]
+
+
+def test_sweep_a_completed_run_with_an_unreadable_end_exits_2_and_keeps_the_headers(monkeypatch, tmp_path):
+    mod = _sweep_main(monkeypatch, tmp_path, [OK, "FAIL", "FAIL"])
+    assert mod.main() == 2
+    rec = _read(tmp_path / "audit" / "r.json")
+    assert rec["complete"] is True and rec["contractMoved"] is None and rec["headersWithheld"] == ["X_value"]
+
+
+# --- finding 4: empty stdout with a transport error is never bisected into refusals ----------------------------------
+
+def test_sweep_a_rate_limit_backs_off_and_is_never_a_refusal(monkeypatch):
+    mod = _sweep(monkeypatch)
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen((b"", RATE_LIMIT)))
+    out = mod.run_sweep(_targets("A", "B"), per_call=2)
+    assert out["refusals"] == [] and out["aborted"] is not None and "ate limited" in out["aborted"]["message"]
+    assert _Proc.calls == 4, "backed off and re-sent, then the stop - no bisect"
+
+
+def test_sweep_a_rate_limit_then_a_render_completes(monkeypatch):
+    mod = _sweep(monkeypatch)
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen((b"", RATE_LIMIT), (json.dumps(RENDER).encode(), b"")))
+    out = mod.run_sweep(_targets("A", "B"), per_call=2)
+    assert out["aborted"] is None and out["refusals"] == [] and out["headers"] == ["X_value"] and _Proc.calls == 2
+
+
+@pytest.mark.parametrize("stderr", [b"[mcporter] fetch failed: read ECONNRESET", b"",
+                                    b"[mcporter] Error POSTing to endpoint: socket hang up"])
+def test_sweep_a_transport_error_on_stderr_is_resent_once_then_stops(monkeypatch, stderr):
+    mod = _sweep(monkeypatch)
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen((b"", stderr)))
+    out = mod.run_sweep(_targets("A", "B"), per_call=2)
+    assert out["refusals"] == [] and out["aborted"] is not None and _Proc.calls == 2
+
+
+# --- finding 5: a code other than VALIDATION_ERROR is never a refusal, in any of the three scripts -------------------
+
+@pytest.mark.parametrize("body", [{"code": "RATE_LIMITED", "message": "x"}, {"code": "INTERNAL_ERROR", "message": "x"},
+                                  {"code": "UNAUTHORIZED", "message": "x"},
+                                  {"isError": True, "content": [{"type": "text", "text": "upstream"}]}])
+def test_sweep_a_non_validation_body_is_never_bisected(monkeypatch, body):
+    mod = _sweep(monkeypatch)
+    monkeypatch.setattr(mod.subprocess, "Popen", _popen((json.dumps(body).encode(), b"")))
+    out = mod.run_sweep(_targets("A", "B"), per_call=2)
+    assert out["refusals"] == [] and out["aborted"] is not None
+    assert _Proc.calls == (4 if body.get("code") == "RATE_LIMITED" else 2)
+
+
+def test_sweep_a_validation_error_body_is_still_bisected_to_its_column(monkeypatch):
+    mod = _sweep(monkeypatch)
+    refused = {"code": "VALIDATION_ERROR", "message": "no", "details": {"authoringCode": "X"}}
+    seen = []
+
+    class Proc:
+        def __init__(self, *a, **k):
+            pass
+
+        def communicate(self, data=None, timeout=None):
+            cols = [c["metric"] for s in json.loads(data)["source"]["sections"] for c in s["columns"]]
+            seen.append(cols)
+            if "B" in cols:
+                return json.dumps(refused).encode(), b""
+            return json.dumps(RENDER).encode(), b""
+
+        def kill(self):
+            pass
+    monkeypatch.setattr(mod.subprocess, "Popen", Proc)
+    out = mod.run_sweep(_targets("A", "B"), per_call=2)
+    assert out["aborted"] is None and [r["column"]["metric"] for r in out["refusals"]] == ["B"]
+
+
+@pytest.mark.parametrize("code", ["RATE_LIMITED", "INTERNAL_ERROR", "UNAUTHORIZED"])
+def test_knob_a_non_validation_code_stops_the_run_and_is_no_refusal(monkeypatch, tmp_path, code):
+    """r_knob.py K4: until pass 2 this was `refused: 13`, a written header cache and exit 0."""
+    pk, sent = _knob(monkeypatch, tmp_path, [code])
+    assert pk.main() == 3
+    assert len(sent) == 2, "re-sent once, then the stop"
+    rec = _read(pk.RECORD_OUT)
+    assert rec["refused"] == 0 and rec["complete"] is False and rec["aborted"]["reason"] == "TransportFailure"
+    assert not Path(pk.HEADERS_OUT).exists()
+
+
+def _probe_mod(monkeypatch, tmp_path):
+    """probe_authoring_148 with its own call() / preview(); only subprocess.Popen is stubbed (by _probe_popen)."""
+    monkeypatch.setenv("PROBE_HINTS", str(tmp_path / "hints"))
+    monkeypatch.setenv("PROBE_DATE", "2099-01-01")
+    monkeypatch.delenv("PROBE_CONTRACT", raising=False)
+    return _module("probe_authoring_148_codes", "probe_authoring_148.py")
+
+
+def _probe_popen(monkeypatch, mod, *answers):
+    """Popen for probe_authoring_148.call: each answer is (stdout bytes, stderr bytes), the last one repeats."""
+    _Proc.calls, _Proc.plan = 0, list(answers)
+    monkeypatch.setattr(mod.subprocess, "Popen", _Proc)
+    monkeypatch.setattr(mod, "_MIN_INTERVAL", 0.0)
+    monkeypatch.setattr(mod.time, "sleep", lambda s: None)
+
+
+@pytest.mark.parametrize("body", [{"code": "INTERNAL_ERROR", "message": "boom"},
+                                  {"code": "UNAUTHORIZED", "message": "no"},
+                                  {"code": "NOT_FOUND", "message": "x", "details": {}}])
+def test_probe_a_non_validation_code_is_resent_once_then_a_transport_failure(monkeypatch, tmp_path, body):
+    mod = _probe_mod(monkeypatch, tmp_path)
+    _probe_popen(monkeypatch, mod, (json.dumps(body).encode(), b""))
+    with pytest.raises(mod.TransportFailure, match=body["code"]):
+        mod.preview([])
+    assert _Proc.calls == 2
+
+
+def test_probe_a_rate_limited_body_backs_off_then_a_render_is_kept(monkeypatch, tmp_path):
+    mod = _probe_mod(monkeypatch, tmp_path)
+    _probe_popen(monkeypatch, mod, (json.dumps({"code": "RATE_LIMITED", "message": "slow"}).encode(), b""),
+                 (json.dumps(RENDER).encode(), b""))
+    _, d, e = mod.preview([])
+    assert d is not None and e is None and _Proc.calls == 2
+
+
+def test_probe_validation_and_deadline_bodies_are_still_answers(monkeypatch, tmp_path):
+    mod = _probe_mod(monkeypatch, tmp_path)
+    _probe_popen(monkeypatch, mod, (json.dumps(DEADLINE).encode(), b""))
+    assert mod.preview([])[2]["code"] == "SERVICE_UNAVAILABLE" and _Proc.calls == 1
+    _probe_popen(monkeypatch, mod, (json.dumps({"code": "VALIDATION_ERROR", "message": "no"}).encode(), b""))
+    assert mod.preview([])[2]["code"] == "VALIDATION_ERROR" and _Proc.calls == 1
+
+
+def test_probe_an_empty_stdout_transport_error_is_resent_once(monkeypatch, tmp_path):
+    mod = _probe_mod(monkeypatch, tmp_path)
+    _probe_popen(monkeypatch, mod, (b"", b"[mcporter] fetch failed: read ECONNRESET"), (json.dumps(RENDER).encode(), b""))
+    assert mod.call("preview_strategy_report", {}) == RENDER and _Proc.calls == 2
+
+
+# --- findings 6 + 7: probe_authoring_148's end of run, and every version read wrapped --------------------------------
+
+KNOB_NAMES = ("accelerationIncrement", "accelerationMaximum", "accelerationStart", "atrPeriod", "dSmoothing", "fast",
+              "kSmoothing", "multiplier", "period", "rsiPeriod", "signal", "slow", "stdDev", "leftBars", "rightBars",
+              "equalBars")
+
+
+def _probe_run(monkeypatch, tmp_path, version_at):
+    """probe_authoring_148.main() with every group sent against stubs (each preview renders one header).
+    version_at(previews_sent, total_or_None) -> a version dict, or raises. Returns (exit, record, cache, total)."""
+    def setup():
+        mod = _module("probe_authoring_148_end", "probe_authoring_148.py")
+        monkeypatch.setattr(mod, "RECORD_OUT", str(tmp_path / "audit" / "record.json"))
+        monkeypatch.setattr(mod, "HEADERS_OUT", str(tmp_path / "columns" / "headers.json"))
+        monkeypatch.setattr(mod.time, "sleep", lambda s: None)
+        monkeypatch.setattr(mod, "hint", lambda metric: {
+            "transforms": [{"id": t, "authoring": {"parameters": {"window": {"maximum": 50}}}}
+                           for t in ("value", "rma", "wma", "rsi", "cci")],
+            "parameters": {k: {"defaultValue": 5, "minimum": 2, "maximum": 50} for k in KNOB_NAMES},
+            "spreadOperands": ["CLOSE"]})
+        n = [0]
+
+        def preview(sections, tickers=("BTC",), timeframe="1h"):
+            n[0] += 1
+            return {}, {"budgetUsage": {}, "authoring": {"conditionColumns": [
+                {"title": "t", "outputs": [{"header": f"h{n[0]}"}]}]}, "renderedSections": []}, None
+        monkeypatch.setattr(mod, "preview", preview)
+        return mod, n
+
+    monkeypatch.setenv("PROBE_HINTS", str(tmp_path / "hints"))
+    monkeypatch.setenv("PROBE_DATE", "2099-01-01")
+    monkeypatch.delenv("PROBE_CONTRACT", raising=False)
+    monkeypatch.delenv("PROBE_OVERWRITE", raising=False)
+    mod, n = setup()                                       # a clean run first: how many previews the groups send
+    monkeypatch.setattr(mod, "version", lambda: {"contractVersion": "149.1.0", "buildSha": "aa"})
+    assert mod.main() == 0
+    total = n[0]
+    for p in (mod.RECORD_OUT, mod.HEADERS_OUT):
+        os.remove(p)
+    mod, n = setup()
+    reads = [0]
+
+    def version():
+        reads[0] += 1
+        return {"contractVersion": "149.1.0", "buildSha": "aa"} if reads[0] == 1 else version_at(n[0], total)
+    monkeypatch.setattr(mod, "version", version)
+    code = mod.main()
+    cache = Path(mod.HEADERS_OUT)
+    return code, _read(mod.RECORD_OUT), (_read(cache) if cache.exists() else None), total
+
+
+def _at_end(end):
+    """A version reader answering 149.1.0 / aa mid-run and `end` (a dict, or an exception) after the last preview."""
+    def read(sent, total):
+        if sent < total:
+            return {"contractVersion": "149.1.0", "buildSha": "aa"}
+        if isinstance(end, Exception):
+            raise end
+        return end
+    return read
+
+
+@pytest.mark.parametrize("end", [{"contractVersion": "150.0.0", "buildSha": "aa"},
+                                 {"contractVersion": "149.1.0", "buildSha": "bb"}])
+def test_probe_a_moved_contract_or_build_withholds_the_cache_and_exits_2(monkeypatch, tmp_path, end):
+    """r_probe.py P1: the cache was written on a move, and a moved build exited 0."""
+    code, rec, cache, total = _probe_run(monkeypatch, tmp_path, _at_end(end))
+    assert code == 2 and cache is None
+    assert rec["contractMoved"] is True and (rec["versionAtEnd"], rec["buildShaAtEnd"]) == (end["contractVersion"],
+                                                                                            end["buildSha"])
+    assert rec["headersWritten"] is False and len(rec["headersWithheld"]) == total == rec["counts"]["probes"]
+    assert "moved" in rec["headersWithheldBecause"]
+
+
+def test_probe_an_unreadable_end_is_worded_unreadable_and_withholds_the_cache(monkeypatch, tmp_path, capsys):
+    code, rec, cache, total = _probe_run(monkeypatch, tmp_path, _at_end(OSError("HTTP Error 502: Bad Gateway")))
+    assert code == 2 and cache is None and rec["complete"] is True
+    assert rec["contractMoved"] is None and "502" in rec["versionReadErrors"]["end"]
+    assert len(rec["headersWithheld"]) == total
+    out = capsys.readouterr().out
+    assert "could not be read" in out and "contract moved during the run" not in out
+
+
+def test_probe_the_end_read_is_retried_once(monkeypatch, tmp_path):
+    fails = [0]
+
+    def read(sent, total):
+        if sent >= total and fails[0] == 0:
+            fails[0] += 1
+            raise OSError("HTTP Error 502: Bad Gateway")
+        return {"contractVersion": "149.1.0", "buildSha": "aa"}
+    code, rec, cache, total = _probe_run(monkeypatch, tmp_path, read)
+    assert code == 0 and rec["contractMoved"] is False and len(cache["headers"]) == total
+
+
+def test_probe_the_gate_compares_the_build_too(monkeypatch, tmp_path):
+    code, rec, cache, _ = _probe_run(monkeypatch, tmp_path, lambda sent, total: {"contractVersion": "149.1.0",
+                                                                                 "buildSha": "bb"})
+    assert code == 3 and rec["aborted"]["reason"] == "ContractMoved"
+    assert rec["counts"]["probes"] == 25 and cache is None
+
+
+def test_probe_a_failed_gate_read_stops_with_the_partial_record(monkeypatch, tmp_path):
+    """r_probe.py P2: the read at probe 25 raised past main() and nothing was written."""
+    reads = [0]
+
+    def read(sent, total):
+        reads[0] += 1
+        if reads[0] == 1:                                  # the first gate read (after 25 probes) fails
+            raise OSError("HTTP Error 502: Bad Gateway")
+        return {"contractVersion": "149.1.0", "buildSha": "aa"}
+    code, rec, cache, _ = _probe_run(monkeypatch, tmp_path, read)
+    assert code == 3 and rec["aborted"]["reason"] == "VersionReadFailed" and "502" in rec["aborted"]["message"]
+    assert rec["counts"]["probes"] == 25 and rec["complete"] is False
+    assert rec["contractMoved"] is False and len(cache["headers"]) == 25, "rendered under a known, unmoved contract"
+
+
+def test_probe_a_failed_start_read_stops_before_any_call(monkeypatch, tmp_path):
+    mod = _probe(monkeypatch, tmp_path)
+
+    def version():
+        raise OSError("HTTP Error 502: Bad Gateway")
+    monkeypatch.setattr(mod, "version", version)
+    with pytest.raises(SystemExit, match="502"):
+        mod.main()
+    assert not (tmp_path / "record.json").exists()
+
+
+@pytest.mark.parametrize("end, code, cached", [(["FAIL", "FAIL"], 2, False), (["FAIL", OK], 0, True)])
+def test_knob_the_end_read_is_wrapped_and_retried_once(monkeypatch, tmp_path, end, code, cached):
+    """r_knob.py K3: an unguarded end read raised after the previews and nothing was written."""
+    pk, _ = _knob(monkeypatch, tmp_path, ["render"], versions=[OK] + end)
+    assert pk.main() == code
+    rec = _read(pk.RECORD_OUT)
+    assert Path(pk.HEADERS_OUT).exists() is cached
+    if not cached:
+        assert rec["contractMoved"] is None and rec["headersWritten"] is False
+        assert rec["headersWithheld"] == sorted(c["metric"] + "_k" for c in pk.COLUMNS)
+
+
+def test_knob_a_failed_start_read_stops_before_any_call(monkeypatch, tmp_path):
+    pk, sent = _knob(monkeypatch, tmp_path, ["render"], versions=["FAIL"])
+    with pytest.raises(SystemExit, match="getaddrinfo"):
+        pk.main()
+    assert sent == [] and not Path(pk.RECORD_OUT).exists()
+
+
+# --- finding 8: a deadline stop during the per-column re-sends keeps the answered entries -----------------------------
+
+def test_knob_a_stop_during_the_resends_keeps_every_answered_entry(monkeypatch, tmp_path):
+    """r_knob.py K1: the batch is refused, columns 0-2 render, column 3 meets the deadline twice."""
+    pk, sent = _knob(monkeypatch, tmp_path, ["refuse", "render", "render", "render", "deadline"])
+    assert pk.main() == 3
+    assert len(sent) == 1 + 3 + 2
+    rec = _read(pk.RECORD_OUT)
+    assert rec["complete"] is False and rec["aborted"]["reason"] == "SERVICE_UNAVAILABLE"
+    assert [e["columns"][0]["metric"] for e in rec["entries"]] == [c["metric"] for c in pk.COLUMNS[:3]]
+    assert all(e["agree"] is True for e in rec["entries"]) and rec["agree"] is True
+    assert not Path(pk.HEADERS_OUT).exists() and rec["headersWritten"] is False
+    assert rec["headersWithheld"] == sorted(c["metric"] + "_k" for c in pk.COLUMNS[:3])
+
+
+# --- finding 9: refresh_metric_contracts reads the contract and refuses a mixed or unknown one ----------------------
+
+ABC = {n: _hint(n) for n in "ABC"}
+
+
+def _index(run) -> dict:
+    return json.loads((run["metrics"] / "_index.json").read_text(encoding="utf-8"))
+
+
+@win_only
+def test_refresh_phase_2_refuses_hints_of_an_unknown_contract(tmp_path):
+    run = _refresh(tmp_path, ["A", "B", "C"], ABC, stored=None)
+    out = run["proc"].stdout + run["proc"].stderr
+    assert run["proc"].returncode != 0 and "_version.json" in out and "EXTRACTION_CONTRACT" in out, out
+    assert run["after"] == run["before"] and run["calls"] == 0
+
+
+@win_only
+def test_refresh_an_asserted_contract_is_recorded_as_asserted(tmp_path):
+    run = _refresh(tmp_path, ["A", "B", "C"], ABC, stored=None, asserted="149.1.0")
+    assert run["proc"].returncode == 0, run["proc"].stdout + run["proc"].stderr
+    idx = _index(run)
+    assert idx["metricCount"] == 3 and idx["contractVersion"] == "149.1.0" and idx["buildSha"] is None
+    assert idx["contractKnownBy"].startswith("asserted")
+
+
+@win_only
+def test_refresh_an_assertion_that_differs_from_the_read_contract_is_refused(tmp_path):
+    run = _refresh(tmp_path, ["A", "B", "C"], ABC, asserted="150.0.0")
+    out = run["proc"].stdout + run["proc"].stderr
+    assert run["proc"].returncode != 0 and "150.0.0" in out and "149.1.0" in out, out
+    assert run["after"] == run["before"]
+
+
+@win_only
+def test_refresh_the_index_records_the_contract_read(tmp_path):
+    run = _refresh(tmp_path, ["A", "B", "C"], ABC, asserted="149.1.0")
+    assert run["proc"].returncode == 0, run["proc"].stdout + run["proc"].stderr
+    idx = _index(run)
+    assert (idx["contractVersion"], idx["buildSha"]) == ("149.1.0", "aa4ab640")
+    assert idx["contractKnownBy"].startswith("read") and "2999-01-01T00:00:00Z" in idx["contractKnownBy"]
+
+
+@win_only
+@pytest.mark.parametrize("served", [{"contractVersion": "150.0.0", "buildSha": "aa4ab640"},
+                                    {"contractVersion": "149.1.0", "buildSha": "beefcafe"}])
+def test_refresh_a_resume_at_another_contract_stops_before_fetching(tmp_path, served):
+    run = _refresh(tmp_path, ["A", "B", "C"], {"A": _hint("A"), "B": _hint("B")}, served=served,
+                   stub_stdout=json.dumps(_hint("C")))
+    out = run["proc"].stdout + run["proc"].stderr
+    assert run["proc"].returncode != 0 and run["calls"] == 0, out
+    assert not (run["hints"] / "C.json").exists() and run["after"] == run["before"]
+
+
+@win_only
+def test_refresh_a_partial_raw_dir_without_a_version_is_not_resumed(tmp_path):
+    run = _refresh(tmp_path, ["A", "B", "C"], {"A": _hint("A"), "B": _hint("B")}, stored=None,
+                   stub_stdout=json.dumps(_hint("C")))
+    out = run["proc"].stdout + run["proc"].stderr
+    assert run["proc"].returncode != 0 and run["calls"] == 0 and "unknown" in out, out
+    assert not (run["hints"] / "_version.json").exists() and run["after"] == run["before"]
+
+
+@win_only
+def test_refresh_a_failed_version_read_stops_before_fetching(tmp_path):
+    run = _refresh(tmp_path, ["A", "B", "C"], {"A": _hint("A"), "B": _hint("B")}, served=None,
+                   stub_stdout=json.dumps(_hint("C")))
+    assert run["proc"].returncode != 0 and run["calls"] == 0, run["proc"].stdout + run["proc"].stderr
+    assert run["after"] == run["before"]
+
+
+@win_only
+def test_refresh_a_fresh_fetch_stores_the_contract_it_read(tmp_path):
+    run = _refresh(tmp_path, ["A"], {}, stored=None, stub_stdout=json.dumps(_hint("A")))
+    assert run["proc"].returncode == 0 and run["calls"] == 1, run["proc"].stdout + run["proc"].stderr
+    stored = json.loads((run["hints"] / "_version.json").read_text(encoding="utf-8"))
+    assert (stored["contractVersion"], stored["buildSha"]) == ("149.1.0", "aa4ab640") and stored["readAt"]
+    assert (_index(run)["contractVersion"], _index(run)["buildSha"]) == ("149.1.0", "aa4ab640")
+
+
+@win_only
+def test_refresh_a_contract_that_moves_mid_fetch_stops_the_fetch(tmp_path):
+    """The stub npx serves 150.0.0 from its first call on: the read every 40 fetches sees the move."""
+    roster = [f"M{i:02d}" for i in range(45)]
+    run = _refresh(tmp_path, roster, {}, stored=None, stub_stdout=json.dumps(_hint("M00")),
+                   served_after_call={"contractVersion": "150.0.0", "buildSha": "aa4ab640"})
+    out = run["proc"].stdout + run["proc"].stderr
+    assert run["proc"].returncode != 0 and run["calls"] == 40 and "150.0.0" in out, out
+    assert run["after"] == run["before"]
+
+
+# --- pass-2 re-review (2026-11-08): a stopped fetch taints its raw dir, so a re-run cannot build a mixed corpus ------
+
+@win_only
+def test_refresh_a_mid_fetch_move_taints_the_raw_dir(tmp_path):
+    roster = [f"M{i:02d}" for i in range(45)]
+    run = _refresh(tmp_path, roster, {}, stored=None, stub_stdout=json.dumps(_hint("M00")),
+                   served_after_call={"contractVersion": "150.0.0", "buildSha": "aa4ab640"})
+    assert run["proc"].returncode != 0
+    stored = json.loads((run["hints"] / "_version.json").read_text(encoding="utf-8"))
+    assert stored["contractVersion"] == "149.1.0" and "150.0.0" in stored["tainted"]["reason"]
+
+
+@win_only
+def test_refresh_a_rerun_over_a_tainted_raw_dir_builds_nothing(tmp_path):
+    """Every hint cached, nothing left to fetch, so no gate runs: before the taint, phase 2 built the corpus and
+    labelled it as read at the old contract."""
+    tainted = {**SERVED, "tainted": {"reason": "served 150.0.0 (aa4ab640) after the last fetch", "at": "2999"}}
+    run = _refresh(tmp_path, ["A", "B", "C"], ABC, stored=tainted,
+                   served={"contractVersion": "150.0.0", "buildSha": "aa4ab640"})
+    out = run["proc"].stdout + run["proc"].stderr
+    assert run["proc"].returncode != 0 and "tainted" in out and run["calls"] == 0, out
+    assert run["after"] == run["before"]

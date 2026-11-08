@@ -49,6 +49,11 @@ def _tree(tmp_path: Path, roster: list[str], raw: list[str], stub_stderr: str) -
     (scratch / "vocab_live_flat.json").write_text(json.dumps(roster), encoding="utf-8")
     for name in raw:
         (hints / f"{name}.json").write_text(json.dumps(_hint(name)), encoding="utf-8")
+    # 2026-11-08 (review pass 2, finding 9): the raw dir names the contract its hints were read at, and GET
+    # /mcp/version is a local file - never the network
+    served = {"contractVersion": "149.1.0", "buildSha": "aa4ab640"}
+    (hints / "_version.json").write_text(json.dumps({**served, "readAt": "2999-01-01T00:00:00Z"}), encoding="utf-8")
+    (tmp_path / "served_version.json").write_text(json.dumps(served), encoding="utf-8")
     shim = tmp_path / "shim"
     shim.mkdir()
     (shim / "npx.cmd").write_text(
@@ -57,7 +62,9 @@ def _tree(tmp_path: Path, roster: list[str], raw: list[str], stub_stderr: str) -
         f"echo {stub_stderr.replace('&', '^&')} 1>&2\r\n"
         "exit /b 1\r\n", encoding="utf-8")
     env = {**os.environ, "PATH": f"{shim}{os.pathsep}{os.environ['PATH']}", "EXTRACTION_STAMP": "29990101",
-           "EXTRACTION_SCRATCH": str(scratch), "EXTRACTION_ARCHIVE": "29990100"}
+           "EXTRACTION_SCRATCH": str(scratch), "EXTRACTION_ARCHIVE": "29990100",
+           "EXTRACTION_VERSION_URL": (tmp_path / "served_version.json").as_uri()}
+    env.pop("EXTRACTION_CONTRACT", None)
     proc = subprocess.run([sys.executable, str(tree / "scripts" / SCRIPT.name)], cwd=tree, env=env,
                           capture_output=True, text=True, timeout=120)
     calls = (shim / "calls.log").read_text().count("call") if (shim / "calls.log").exists() else 0

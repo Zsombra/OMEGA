@@ -693,6 +693,59 @@ word). No stage, commit, bind, deploy, fund, archive or delete.
 **Next:** two review passes over the v0.12 branch (the model step is the bulk of it), then the 0.12.0 cut (pyproject,
 this file rewritten as the DONE record) - no merge and no tag without the user's word.
 
+## The two review passes, 2026-11-08 (recorded 05:43Z)
+
+Clock: `manager contract status` 149.1.0 / aa4ab640, writes open, at 04:17Z and 04:46Z. One platform call, read-only:
+`preview_strategy_report` for the second knob-spelling probe (04:46:30 - 04:46:59Z). The manager stayed PAUSED. Every
+finding below was reproduced first and has a test that failed before its fix.
+
+**Pass 1** (two reviewers: the omega model against the measured evidence; the scripts, records and tests). Every number
+in step 6 was recomputed from the committed data and agrees. Fixed in 94027ea:
+
+1. **A chained window above 64 was refused** (the one confirmed model defect). The window check read the INNER
+   transform's maximum (distance / spread / relativeTo serve none, so 64) while the window is the outer's, served as
+   chainedOuters.<outer>.windowMaximum (269 / 118 / 936, the platform's own "the largest window that fits"). HIGH x
+   distance -> ema at 100 now validates; at 270 it reads DEPTH_EXCEEDED alone.
+2. **Knob floats with representation noise** (0.1 * 3) were accepted, sent raw and predicted rounded (`sd0.3`); a value
+   must now be exactly a grid point at the step's decimals. A range knob served without a step or bound no longer
+   crashes the message.
+3. **Knob spelling was inferred for 27 of the 81 served (metric, knob) cells** - MACD_SIGNAL and PPO_HIST had no render
+   at all. The 27 were rendered (`data/audit/knob_spelling_probe_149_2026-11-08.json`, one preview, 27 / 27 as
+   predicted); `omega.fanout.KNOB_SPELLING_RENDERED` holds the 81 cells, recomputed by a test from the three records,
+   and a cell outside it (or a served knob no table spells) is never spelled by analogy. 30 caches in SEEN_FILES.
+4. **Scripts**: refresh_metric_contracts cached error bodies as hints and wrote under data/ before its checks;
+   probe_authoring_148 overwrote its committed outputs on a re-run; the knob probe and the sweep recorded the preview
+   deadline as a refusal; snapshot_vocabulary could blank `_shared.json`; the sweep records named no contract.
+5. **Tests**: the probe agreement accepted any omega error for a refusal - now each refusal is pinned to its platform
+   class (`REFUSAL_CLASSES`); the build_corpus "families short" branch is reached again.
+
+**Pass 2** (one reviewer over the whole branch, the fixes included) confirmed the pass-1 fixes and found ten more, plus a
+scoped re-review of those fixes found two:
+
+6. **The spelling guard raised instead of refusing**: a never-rendered cell is now `KNOB_SPELLING_UNMEASURED` (an
+   unmeasured code: validate_section predicts no header for it) and every header-predicting caller (cost_report,
+   report_headers, emit, generate) skips it - emit refuses, it does not crash. NaN / inf knobs are refused by the model.
+7. **One rule across the three probing scripts**: a refusal is a `VALIDATION_ERROR` body only - any other code, an
+   mcporter error body, or empty stdout is never recorded as a refusal (rate limit backs off; anything else retries once,
+   then stops with the partial record). Each records the contract and build at start and end; the seen-header cache is
+   written only when the contract provably did not move, else the headers are kept in the record (`headersWithheld`).
+   Exit 0 clean, 3 stopped, 2 contract moved or unreadable. Every version read is wrapped.
+8. **The knob probe** predicts before it calls (an unpredictable column is still sent and recorded, `predicted` null)
+   and keeps the answered entries on a stop.
+9. **refresh_metric_contracts gates on the served contract** (before, every 40 fetches, after), stores it in
+   `hints_<STAMP>/_version.json`, records it in `_index.json` (build_corpus carries it through), refuses a raw dir of
+   unknown or asserted-but-different contract, and taints the raw dir when the contract moves or a read fails so a
+   re-run cannot build a mixed corpus. Rebuilding from the 11-06 hints now needs `EXTRACTION_CONTRACT=149.1.0` (that
+   dir predates the gate) and the index then says asserted, not read.
+
+**Tests: 2085 passed, 0 failed** (1973 before; 2031 after pass 1 - tests/test_review_2026_11_08.py and
+tests/test_script_guards_149.py new; 2085 after pass 2).
+Coverage unchanged: structural 7,197 / 7,197; operand-expanded 37,153 rendered, 233,740 never (spread pairs, by the
+standing decision). `pyproject.toml` stays 0.11.0.
+
+**Next:** the 0.12.0 cut (pyproject, this file rewritten as the DONE record) - no merge and no tag without the user's
+word.
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206
