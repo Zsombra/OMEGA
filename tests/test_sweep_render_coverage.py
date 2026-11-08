@@ -156,7 +156,9 @@ def test_main_writes_the_partial_record_when_the_gate_fails(monkeypatch, tmp_pat
     mod.main()
     record = json.loads((tmp_path / "audit" / "r.json").read_text(encoding="utf-8"))
     assert record["complete"] is False and "502" in record["aborted"]["message"]
-    assert json.loads((tmp_path / "columns" / "h.json").read_text(encoding="utf-8"))["headers"] == []
+    # Until 2026-11-08 an empty header cache was written here. Since review pass 1 the seen-header cache is held back
+    # whenever no version read names the contract the run measured (contractMoved not False) - nothing rendered anyway.
+    assert record["contractMoved"] is None and not (tmp_path / "columns" / "h.json").exists()
 
 
 # --- finding 3: an aborted record measures only what was sent -------------------------------------------------------

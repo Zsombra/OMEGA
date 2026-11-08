@@ -1,0 +1,298 @@
+{
+ "_what": "Knob header spellings omega.fanout predicts but the 2026-11-07 authoring probe never rendered, rendered at 149.1.0.",
+ "contractVersion": "149.1.0",
+ "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
+ "startedAt": "2026-11-08T04:46:44Z",
+ "capturedAt": "2026-11-08T04:46:59Z",
+ "versionAtEnd": "149.1.0",
+ "buildShaAtEnd": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
+ "contractMoved": false,
+ "columnsFrom": "data/audit/knob_spelling_probe_149_2026-11-08_columns.json",
+ "complete": true,
+ "aborted": null,
+ "transient": [],
+ "entries": [
+  {
+   "columns": [
+    {
+     "metric": "BB_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 30
+    },
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 30
+    },
+    {
+     "metric": "INTERNAL_STRUCTURE_EVENT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 30
+    },
+    {
+     "metric": "KC_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "atrPeriod": 14
+    },
+    {
+     "metric": "KC_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "multiplier": 2.5
+    },
+    {
+     "metric": "MACD_HIST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "fast": 8
+    },
+    {
+     "metric": "MACD_HIST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "slow": 21
+    },
+    {
+     "metric": "MACD_SIGNAL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "fast": 8
+    },
+    {
+     "metric": "MACD_SIGNAL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "signal": 5
+    },
+    {
+     "metric": "MACD_SIGNAL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "slow": 21
+    },
+    {
+     "metric": "PPO_HIST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "fast": 8
+    },
+    {
+     "metric": "PPO_HIST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "signal": 5
+    },
+    {
+     "metric": "PPO_HIST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "slow": 21
+    },
+    {
+     "metric": "PPO_LINE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "fast": 8
+    },
+    {
+     "metric": "PPO_LINE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "signal": 5
+    },
+    {
+     "metric": "PPO_SIGNAL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "signal": 5
+    },
+    {
+     "metric": "PPO_SIGNAL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "slow": 21
+    },
+    {
+     "metric": "STOCH_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "dSmoothing": 5
+    },
+    {
+     "metric": "STOCH_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "kSmoothing": 3
+    },
+    {
+     "metric": "STOCH_RSI_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "dSmoothing": 5
+    },
+    {
+     "metric": "STOCH_RSI_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 21
+    },
+    {
+     "metric": "STOCH_RSI_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "rsiPeriod": 21
+    },
+    {
+     "metric": "STOCH_RSI_K",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "dSmoothing": 5
+    },
+    {
+     "metric": "STOCH_RSI_K",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "kSmoothing": 5
+    },
+    {
+     "metric": "ST_DIR",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "atrPeriod": 14
+    },
+    {
+     "metric": "SWING_STRUCTURE_EVENT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 30
+    },
+    {
+     "metric": "SWING_STRUCTURE_TREND",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 30
+    }
+   ],
+   "predicted": [
+    "bbLower20_p30sd2",
+    "pctB20_p30sd2",
+    "iStructEvt_s30",
+    "kcLower_p20atr14mult2",
+    "kcLower_p20atr10mult2.5",
+    "MACDhist_fast8slow26sig9",
+    "MACDhist_fast12slow21sig9",
+    "MACDsig_fast8slow26sig9",
+    "MACDsig_fast12slow26sig5",
+    "MACDsig_fast12slow21sig9",
+    "PPOhist_fast8slow26sig9",
+    "PPOhist_fast12slow26sig5",
+    "PPOhist_fast12slow21sig9",
+    "PPOline_fast8slow26sig9",
+    "PPOline_fast12slow26sig5",
+    "PPOsig_fast12slow26sig5",
+    "PPOsig_fast12slow21sig9",
+    "D_p14s1d5",
+    "D_p14s3d3",
+    "stochRsiD_rsi14_p14s3d5",
+    "stochRsiD_rsi14_p21s3d3",
+    "stochRsiD_rsi21_p14s3d3",
+    "stochRsiK_rsi14_p14s3d5",
+    "stochRsiK_rsi14_p14s5d3",
+    "stDir_atr14mult3",
+    "structEvt_s30",
+    "structTrend_s30"
+   ],
+   "rendered": [
+    "bbLower20_p30sd2",
+    "pctB20_p30sd2",
+    "iStructEvt_s30",
+    "kcLower_p20atr14mult2",
+    "kcLower_p20atr10mult2.5",
+    "MACDhist_fast8slow26sig9",
+    "MACDhist_fast12slow21sig9",
+    "MACDsig_fast8slow26sig9",
+    "MACDsig_fast12slow26sig5",
+    "MACDsig_fast12slow21sig9",
+    "PPOhist_fast8slow26sig9",
+    "PPOhist_fast12slow26sig5",
+    "PPOhist_fast12slow21sig9",
+    "PPOline_fast8slow26sig9",
+    "PPOline_fast12slow26sig5",
+    "PPOsig_fast12slow26sig5",
+    "PPOsig_fast12slow21sig9",
+    "D_p14s1d5",
+    "D_p14s3d3",
+    "stochRsiD_rsi14_p14s3d5",
+    "stochRsiD_rsi14_p21s3d3",
+    "stochRsiD_rsi21_p14s3d3",
+    "stochRsiK_rsi14_p14s3d5",
+    "stochRsiK_rsi14_p14s5d3",
+    "stDir_atr14mult3",
+    "structEvt_s30",
+    "structTrend_s30"
+   ],
+   "refusal": null,
+   "agree": true
+  }
+ ],
+ "agree": true,
+ "refused": 0
+}

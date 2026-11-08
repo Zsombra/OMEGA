@@ -80,7 +80,7 @@ def test_rendered_headers_spans_every_cache():
     # 25 since 2026-11-07: + the 149.1.0 authoring probe headers and the 149.1.0 structural sweep over the 206 keys
     # 29 since the model step of 2026-11-07: + the three sweeps over the smoother / distance-chain / pair-relative shapes
     # (coin, market, reference sections) and the knob-spelling probe headers
-    assert len(SEEN_FILES) == 29   # 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
+    assert len(SEEN_FILES) == 30   # 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that

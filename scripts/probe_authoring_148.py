@@ -29,7 +29,8 @@ The transforms each new key serves, and every knob's bounds, are read from the r
 
 Headers minted go to data/contract/columns/_probe_<MAJOR>_<DATE>.json (HEADERS ONLY: render_coverage treats every
 string in that file as a seen header); the run record, every refusal verbatim, to
-data/audit/authoring_probe_<MAJOR>_<DATE>.json (MAJOR = the probed contract's major, 149).
+data/audit/authoring_probe_<MAJOR>_<DATE>.json (MAJOR = the probed contract's major, 149). The run refuses either
+output that already exists (PROBE_OVERWRITE=1 replaces them on purpose).
 
 Usage: PROBE_DATE=2026-11-07 PROBE_HINTS=C:/Users/rafae/omega-v012-hints/hints_20261106 \
        python scripts/probe_authoring_148.py
@@ -283,6 +284,14 @@ def group_j(batch, one):
 
 
 def main() -> int:
+    # 2026-11-08 (review pass 1, finding 3): one run per PROBE_DATE. The default PROBE_DATE names the committed 11-07
+    # record and seen-header cache, and an aborted run still writes both files: a re-run would replace the 225-probe
+    # record and the 254-header cache (a render_coverage SEEN_FILES entry) with whatever it reached. As in
+    # sweep_render_coverage (SWEEP_OVERWRITE), PROBE_OVERWRITE=1 replaces them on purpose.
+    taken = [p for p in (RECORD_OUT, HEADERS_OUT) if os.path.exists(p)]
+    if taken and os.environ.get("PROBE_OVERWRITE") != "1":
+        sys.exit(f"{', '.join(taken)} already exist: give this run its own PROBE_DATE, or PROBE_OVERWRITE=1 to replace "
+                 "them")
     if not HINTS:
         sys.exit("set PROBE_HINTS (the dir holding <METRIC>.json raw hints)")
     v0 = version()

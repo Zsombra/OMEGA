@@ -42,8 +42,21 @@ def test_a_family_shortfall_the_unmeasured_do_not_explain_fails():
     for c in categories["categories"]:
         if c["category"] == "momentum":
             c["metricCount"] += 1                  # a shortfall no listed unmeasured key accounts for
-    with pytest.raises(SystemExit, match="families short|roster mismatch|family"):
+    with pytest.raises(SystemExit, match="family 'momentum'"):
         bc.verify(records, categories)
+
+
+def test_a_family_shortfall_the_listed_unmeasured_do_not_explain_fails():
+    """The branch the test above was written for (until 2026-11-07, when UNMEASURED emptied): with a key listed
+    unmeasured, a shortfall larger than the unmeasured count is still refused (review 2026-11-08: no test reached it)."""
+    records = bc.merge_metrics()
+    records.pop("RSI14")
+    categories = json.loads(json.dumps(CATEGORIES))
+    for c in categories["categories"]:
+        if c["category"] == "momentum":
+            c["metricCount"] += 1
+    with pytest.raises(SystemExit, match="families short"):
+        bc.verify(records, categories, {"RSI14"})
 
 
 def test_a_measured_metric_listed_unmeasured_fails():

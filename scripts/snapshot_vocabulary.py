@@ -5,7 +5,9 @@ kept; this is the same read as a script. Read-only: the two list tools over mcpo
 Writes the raw answers to data/contract/vocabulary/<UTC stamp>/ (one file per category, `_categories.json`), then
 compares the category-invariant blocks across every category read and, only when they agree, writes them into
 vocabulary/_shared.json (the old `_refreshed` kept under `previous`) and the category counts into categories.json.
-A category the platform refuses (`structure` is RESULT_TOO_LARGE since 148.1.0) is stored as its refusal.
+A category the platform refuses (`structure` is RESULT_TOO_LARGE since 148.1.0) is stored as its refusal; only the
+codes in KNOWN_REFUSALS are. Any other answer that is not a vocabulary stops the run (the raw dir is kept), and the
+shared blocks are rewritten only when every category answered or was refused with a known code.
 
     PATH=<npx shim>:$PATH python -m scripts.snapshot_vocabulary
 """
@@ -25,6 +27,11 @@ READ_TOOLS = ("list_strategy_categories", "list_strategy_vocabulary")
 INVARIANT = ("transforms", "timeframeRefs", "budgets", "previewExecutionLimits", "timeframes", "rankedTimeframes",
              "conditionGrammar")
 AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthorized", "401")
+# The platform refusals stored as a category's answer (a fact about that category at this contract). Any other `code`
+# (SERVICE_UNAVAILABLE - the 15 s deadline, RATE_LIMITED, INTERNAL_ERROR ...) or a body with no `transforms` stops the
+# run with nothing rewritten (2026-11-08, review pass 1 finding 5): read as "refused", a deadline became a platform
+# fact in `_refreshed.how`, and an unrecognised body on every category overwrote the invariant blocks with null.
+KNOWN_REFUSALS = frozenset({"RESULT_TOO_LARGE"})
 
 
 def version() -> dict:
@@ -55,16 +62,28 @@ def main() -> int:
     out_dir.mkdir()
     cats = call("list_strategy_categories", {})
     (out_dir / "_categories.json").write_text(json.dumps(cats, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    if not isinstance(cats, dict) or not isinstance(cats.get("categories"), list) or not cats["categories"]:
+        sys.exit(f"list_strategy_categories answered no category list: {json.dumps(cats)[:300]}; raw kept in {out_dir}, "
+                 "nothing else written")
     names = [c["category"] for c in cats["categories"]]
     answers, refused = {}, {}
     for name in names:
         d = call("list_strategy_vocabulary", {"category": name})
         (out_dir / f"{name}.json").write_text(json.dumps(d, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-        if "code" in d and "transforms" not in d:
+        if isinstance(d, dict) and "transforms" in d:
+            answers[name] = d
+        elif isinstance(d, dict) and d.get("code") in KNOWN_REFUSALS:
             refused[name] = d.get("code")
         else:
-            answers[name] = d
+            # a deadline / rate limit / outage, or a body that is neither a vocabulary nor a known refusal: not a fact
+            # about the category, so nothing is rewritten from a partial read
+            sys.exit(f"{name}: not a vocabulary and not a known refusal ({sorted(KNOWN_REFUSALS)}): "
+                     f"{json.dumps(d)[:300]}; raw kept in {out_dir}, nothing else written")
         print(f"  {name}: {'REFUSED ' + str(d.get('code')) if name in refused else 'ok'}", flush=True)
+    unanswered = [n for n in names if n not in answers and n not in refused]
+    if unanswered or not answers:
+        sys.exit(f"categories without an answer {unanswered} (answered {len(answers)}, refused {refused}): raw kept in "
+                 f"{out_dir}, nothing else written")
     v1 = version()
     if (v0.get("contractVersion"), v0.get("buildSha")) != (v1.get("contractVersion"), v1.get("buildSha")):
         sys.exit(f"the contract moved during the read ({v0} -> {v1}): raw kept in {out_dir}, nothing else written")

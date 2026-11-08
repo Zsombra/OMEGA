@@ -94,6 +94,9 @@ SEEN_FILES = [
     # 2026-11-07: thirteen knob spellings the probe had not rendered (iStructLvl_s20_cf, stochRsiK_rsi14_p21s3d3, ...;
     # data/audit/knob_spelling_probe_149_2026-11-07.json), all as omega.fanout predicted.
     "_probe_149_knobs_2026-11-07.json",
+    # 2026-11-08: the 27 (metric, knob) cells no render had shown off default (MACDsig_fast12slow26sig5, PPOhist_...;
+    # data/audit/knob_spelling_probe_149_2026-11-08.json), all as predicted - 81 / 81 served cells now rendered.
+    "_probe_149_knobs_2026-11-08.json",
 ]
 
 

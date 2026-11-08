@@ -1,0 +1,218 @@
+[
+ {
+  "metric": "BB_LOWER",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "period": 30
+ },
+ {
+  "metric": "BB_PCT_B",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "period": 30
+ },
+ {
+  "metric": "INTERNAL_STRUCTURE_EVENT",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "swingLength": 30
+ },
+ {
+  "metric": "KC_LOWER",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "atrPeriod": 14
+ },
+ {
+  "metric": "KC_LOWER",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "multiplier": 2.5
+ },
+ {
+  "metric": "MACD_HIST",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "fast": 8
+ },
+ {
+  "metric": "MACD_HIST",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "slow": 21
+ },
+ {
+  "metric": "MACD_SIGNAL",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "fast": 8
+ },
+ {
+  "metric": "MACD_SIGNAL",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "signal": 5
+ },
+ {
+  "metric": "MACD_SIGNAL",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "slow": 21
+ },
+ {
+  "metric": "PPO_HIST",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "fast": 8
+ },
+ {
+  "metric": "PPO_HIST",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "signal": 5
+ },
+ {
+  "metric": "PPO_HIST",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "slow": 21
+ },
+ {
+  "metric": "PPO_LINE",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "fast": 8
+ },
+ {
+  "metric": "PPO_LINE",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "signal": 5
+ },
+ {
+  "metric": "PPO_SIGNAL",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "signal": 5
+ },
+ {
+  "metric": "PPO_SIGNAL",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "slow": 21
+ },
+ {
+  "metric": "STOCH_D",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "dSmoothing": 5
+ },
+ {
+  "metric": "STOCH_D",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "kSmoothing": 3
+ },
+ {
+  "metric": "STOCH_RSI_D",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "dSmoothing": 5
+ },
+ {
+  "metric": "STOCH_RSI_D",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "period": 21
+ },
+ {
+  "metric": "STOCH_RSI_D",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "rsiPeriod": 21
+ },
+ {
+  "metric": "STOCH_RSI_K",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "dSmoothing": 5
+ },
+ {
+  "metric": "STOCH_RSI_K",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "kSmoothing": 5
+ },
+ {
+  "metric": "ST_DIR",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "atrPeriod": 14
+ },
+ {
+  "metric": "SWING_STRUCTURE_EVENT",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "swingLength": 30
+ },
+ {
+  "metric": "SWING_STRUCTURE_TREND",
+  "transformId": "value",
+  "timeframe": {
+   "rel": "anchor"
+  },
+  "swingLength": 30
+ }
+]

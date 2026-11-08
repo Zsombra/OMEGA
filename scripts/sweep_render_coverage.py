@@ -23,6 +23,12 @@ so the run refuses an existing output (SWEEP_OVERWRITE=1 replaces it on purpose)
 The run stops - it never bisects - on anything that is not a platform answer: an OAuth prompt, a platform 5xx (the
 11-05 14:43Z-16:31Z outage answered "HTTP 502" to every call), a version GET that fails or a served contract that
 moved. What rendered before the stop is kept, and the record measures header agreement on the shapes it sent only.
+
+2026-11-08 (review pass 1, findings 6 and 7): the preview's deadline answer (a `SERVICE_UNAVAILABLE` JSON body), a
+timeout, "Version negotiation failed" and stdout that is not JSON are re-sent once and then stop the run - never
+bisected, never a column's refusal. The record carries `contractVersion` / `buildSha` from a version read before the
+first preview and `versionAtEnd` / `buildShaAtEnd` from one after the last; a difference sets `contractMoved` and the
+run exits 2 (3 on a stop, 0 on a clean run).
 """
 import json
 import os
@@ -67,7 +73,14 @@ AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthori
 # A gateway / platform outage, on stderr ("[mcporter] battlegrid-anbu.<tool> responded with HTTP 502 (Version
 # negotiation failed ...)", 2026-11-05 14:43Z) or as an nginx page on stdout. Never a column's refusal: bisecting it
 # costs ~383 previews per 128-column batch against a dead platform and records the gateway text as each column's error.
-PLATFORM_DOWN = re.compile(r"HTTP 5\d\d|Bad Gateway|Service (Temporarily )?Unavailable|Gateway Time-?out", re.I)
+GATEWAY_DOWN = re.compile(r"HTTP 5\d\d|Bad Gateway|Service (Temporarily )?Unavailable|Gateway Time-?out", re.I)
+# 2026-11-08 (review pass 1, finding 6): the outage pattern also covers the preview's 15 s deadline answer
+# (`{"code": "SERVICE_UNAVAILABLE", ...}`, a JSON body on stdout, seen 11-07) and mcporter's "Version negotiation
+# failed" without an HTTP code (11-07 step 5: such a batch was bisected). It is applied to JSON bodies too. A gateway
+# 5xx stops the run at once; the rest are re-sent once (RETRY_PAUSE) and a second one stops the run. Neither is ever
+# bisected, nor recorded as a column's refusal.
+PLATFORM_DOWN = re.compile(GATEWAY_DOWN.pattern + r"|SERVICE_UNAVAILABLE|Version negotiation", re.I)
+RETRY_PAUSE = 20.0
 SWEEP_CONTRACT = os.environ.get("SWEEP_CONTRACT")      # when set, GET /mcp/version every VERSION_EVERY previews
 VERSION_EVERY = 25
 _calls = [0]
@@ -75,6 +88,11 @@ _calls = [0]
 
 class SweepStopped(RuntimeError):
     """The run cannot go on: no usable credential, a platform outage, an unreadable version, or a moved contract."""
+
+
+class Transient(RuntimeError):
+    """No platform answer about these columns (a timeout, a deadline, a negotiation failure, stdout that is not JSON):
+    re-sent once by render(), then a stop. Never a refusal."""
 
 
 def version():
@@ -91,8 +109,26 @@ def version():
 
 
 def _stop_on_outage(msg):
-    if PLATFORM_DOWN.search(msg):
+    """A gateway 5xx stops at once; the rest of the outage pattern (a deadline, a negotiation failure) is transient."""
+    if GATEWAY_DOWN.search(msg):
         raise SweepStopped(f"platform outage after {_calls[0]} previews (not a refusal): {msg}")
+    if PLATFORM_DOWN.search(msg):
+        raise Transient(msg)
+
+
+def is_outage(err):
+    """An error string that is no platform refusal: a timeout or anything the outage pattern matches."""
+    return bool(err) and (err == "TIMEOUT" or bool(PLATFORM_DOWN.search(err)))
+
+
+def _outage_body(d):
+    """The text of a JSON answer that is an outage, not a render or a refusal: None otherwise."""
+    if not isinstance(d, dict) or "budgetUsage" in d:
+        return None
+    txt = json.dumps(d)
+    if d.get("code") == "SERVICE_UNAVAILABLE" or PLATFORM_DOWN.search(txt):
+        return txt[:400]
+    return None
 
 
 def call(tool, args, timeout=240):
@@ -110,7 +146,7 @@ def call(tool, args, timeout=240):
         out, err = p.communicate(json.dumps(args).encode(), timeout=timeout)
     except subprocess.TimeoutExpired:
         p.kill()
-        return None, "TIMEOUT"
+        raise Transient("TIMEOUT") from None
     txt = out.decode(errors="replace")
     if not txt.strip():
         msg = (err.decode(errors="replace") or "empty stdout")[:400]
@@ -119,14 +155,42 @@ def call(tool, args, timeout=240):
         _stop_on_outage(msg)
         return None, msg
     try:
-        return json.loads(txt), None
+        d = json.loads(txt)
     except json.JSONDecodeError:
         _stop_on_outage(txt[:400])
-        return None, txt[:400]
+        raise Transient(f"stdout is not JSON: {txt[:400]}") from None
+    body = _outage_body(d)
+    if body is not None:
+        _stop_on_outage(body)
+        raise Transient(body)
+    return d, None
+
+
+def _call_once_more(req):
+    """call() with one re-send of a transient answer; a second one stops the sweep."""
+    reason = None
+    for attempt in (1, 2):
+        try:
+            d, err = call("preview_strategy_report", req)
+        except Transient as exc:
+            reason = str(exc)
+        else:
+            body = _outage_body(d) if d is not None else None
+            if d is None and is_outage(err):
+                reason = err
+            elif body is not None:
+                reason = body
+            else:
+                return d, err
+        if attempt == 1:
+            print(f"  transient ({reason[:90]}): re-sending once after {RETRY_PAUSE:.0f}s", flush=True)
+            time.sleep(RETRY_PAUSE)
+    raise SweepStopped(f"platform outage after {_calls[0]} previews (not a refusal; re-sent once): {reason}")
 
 
 def render(columns):
-    """-> (headers, error). One preview carrying `columns` split across sections."""
+    """-> (headers, error). One preview carrying `columns` split across sections. `error` is a platform refusal only:
+    a transient answer is re-sent once and then stops the sweep (SweepStopped)."""
     secs = []
     for i in range(0, len(columns), COLS_PER_SECTION):
         secs.append({"kind": "custom", "title": f"sweep {len(secs) + 1}",
@@ -136,7 +200,7 @@ def render(columns):
     # `authoring`, served only at detail "detailed"); the 09-09 / 09-20 runs used the flat compile-era shape.
     req = {"coinSelection": {"mode": "explicit", "tickers": ["BTC"]}, "detail": "detailed",
            "source": {"kind": "FIELDS", "timeframe": "1h", "sections": secs}}
-    d, err = call("preview_strategy_report", req)
+    d, err = _call_once_more(req)
     if d is None:
         return None, err
     if "budgetUsage" not in d or not isinstance(d.get("authoring"), dict):
@@ -148,11 +212,19 @@ def render(columns):
     return hdrs, None
 
 
+def _never_a_refusal(err):
+    """A timeout or an outage answer that reached the bisect (any render_fn) stops the sweep: it is never bisected,
+    least of all recorded as a column's refusal."""
+    if is_outage(err):
+        raise SweepStopped(f"platform outage after {_calls[0]} previews (not a refusal): {err[:400]}")
+
+
 def bisect(columns, refusals, render_fn, acc, depth=0):
     """Attribute a refusal to the exact column(s). Headers go into `acc` as they render, so a stop inside the bisect
     keeps what the platform already minted."""
     if len(columns) == 1:
         hdrs, err = render_fn(columns)
+        _never_a_refusal(err)
         if err:
             refusals.append({"column": columns[0], "error": err[:300]})
         else:
@@ -161,6 +233,7 @@ def bisect(columns, refusals, render_fn, acc, depth=0):
     mid = len(columns) // 2
     for half in (columns[:mid], columns[mid:]):
         hdrs, err = render_fn(half)
+        _never_a_refusal(err)
         if err:
             bisect(half, refusals, render_fn, acc, depth + 1)
         else:
@@ -204,6 +277,7 @@ def run_sweep(targets, render_fn=render, per_call=COLS_PER_SECTION * SECTIONS_PE
         batch_hdrs = []
         try:
             hdrs, err = render_fn(cols)
+            _never_a_refusal(err)
             if err:
                 print(f"  batch {i // per_call + 1}: REFUSED, bisecting ({err[:90]})")
                 bisect(cols, refusals, render_fn, batch_hdrs)
@@ -239,11 +313,36 @@ def agreement(shapes, headers, seen_before, predict):
     return mismatches
 
 
-def run_record(scope, targets, out, mismatches):
+def _read_version():
+    """version() for the record: a failed read is recorded as {"error": ...}, never raised."""
+    try:
+        return version()
+    except SweepStopped as exc:
+        return {"error": str(exc)[:300]}
+
+
+def contract_check(v0, v1):
+    """The record's contract fields (2026-11-08, review pass 1 finding 7): `contractVersion` / `buildSha` from the read
+    before the first preview, `versionAtEnd` / `buildShaAtEnd` from a read after the last one. `contractMoved` is True
+    when they differ, None when either read failed (the run cannot say which contract it measured)."""
+    v0, v1 = v0 or {}, v1 or {}
+    fields = {"contractVersion": v0.get("contractVersion"), "buildSha": v0.get("buildSha"),
+              "versionAtEnd": v1.get("contractVersion"), "buildShaAtEnd": v1.get("buildSha")}
+    if "error" in v0 or "error" in v1 or not v0 or not v1:
+        fields["contractMoved"] = None
+        fields["versionReadErrors"] = {k: v["error"] for k, v in (("start", v0), ("end", v1)) if "error" in v}
+    else:
+        fields["contractMoved"] = ((v0.get("contractVersion"), v0.get("buildSha"))
+                                   != (v1.get("contractVersion"), v1.get("buildSha")))
+    return fields
+
+
+def run_record(scope, targets, out, mismatches, versions=None):
     """`shapesTargeted` = every uncovered shape; `shapesRequested` = the shapes of the completed batches (equal on a
-    complete run); `predictedButNotRendered` is judged on the requested shapes only."""
+    complete run); `predictedButNotRendered` is judged on the requested shapes only. `versions` = the
+    contract_check() fields, recorded beside the run."""
     aborted = out["aborted"]
-    return {"_what": (f"Run record for the {SWEEP_DATE} live coverage sweep: what was asked for, what "
+    return {**(versions or {}), "_what":(f"Run record for the {SWEEP_DATE} live coverage sweep: what was asked for, what "
                       "the platform refused, and every shape whose omega-predicted header did not "
                       "turn up in the render. Kept OUT of data/contract/columns/ so none of these "
                       "strings can be mistaken for a rendered header. A stopped run (complete false) "
@@ -274,27 +373,52 @@ def main():
     scope, targets = collect_targets(c)
     print(f"uncovered shapes to render: {len(targets)}")
 
-    out = run_sweep(targets)
+    # the gate's first read: the contract the record names (a failed read is a stop before any preview)
+    v0 = _read_version()
+    if "error" in v0:
+        out = {"headers": [], "refusals": [], "batches": [], "sent": [],
+               "aborted": {"message": v0["error"][:600], "afterBatches": 0,
+                           "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}}
+        print(f"STOPPED: {v0['error']}")
+    elif SWEEP_CONTRACT and v0.get("contractVersion") != SWEEP_CONTRACT:
+        out = {"headers": [], "refusals": [], "batches": [], "sent": [],
+               "aborted": {"message": f"served contract {v0.get('contractVersion')} before the first preview, not "
+                                      f"{SWEEP_CONTRACT}", "afterBatches": 0,
+                           "at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}}
+        print(f"STOPPED: {out['aborted']['message']}")
+    else:
+        out = run_sweep(targets)
+    versions = contract_check(v0, _read_version())   # the read after the last batch
 
     headers = out["headers"]
-    os.makedirs(os.path.dirname(HEADERS_OUT), exist_ok=True)
-    json.dump({"_what": ("Headers minted live by preview_strategy_report during the " + SWEEP_DATE + " "
-                         "coverage sweep. HEADERS ONLY - render_coverage treats every string in "
-                         "this file as a seen header, so nothing else may be added here."),
-               "headers": headers},
-              open(HEADERS_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    if versions["contractMoved"] is False:
+        os.makedirs(os.path.dirname(HEADERS_OUT), exist_ok=True)
+        json.dump({"_what": ("Headers minted live by preview_strategy_report during the " + SWEEP_DATE + " "
+                             "coverage sweep. HEADERS ONLY - render_coverage treats every string in "
+                             "this file as a seen header, so nothing else may be added here."),
+                   "headers": headers},
+                  open(HEADERS_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    # else: the seen-header cache is held back - a header minted under a contract that moved mid-run, or under one
+    # the end read could not name, is not a render of any one contract (as probe_knob_spelling_149 holds its own back)
 
     mismatches = agreement(out["sent"], headers, seen_before,
                            lambda s: [o.header for o in outputs_for(s.to_column(), c)])
     os.makedirs(os.path.dirname(RECORD_OUT), exist_ok=True)
-    json.dump(run_record(scope, targets, out, mismatches),
-              open(RECORD_OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    with open(RECORD_OUT, "w", encoding="utf-8") as f:
+        json.dump(run_record(scope, targets, out, mismatches, versions), f, ensure_ascii=False, indent=1)
 
     print(f"\nrendered {len(headers)} distinct headers; refusals {len(out['refusals'])}; "
           f"predicted-but-not-rendered {len(mismatches)} of {len(out['sent'])} sent"
           + ("" if out["aborted"] is None else f" (STOPPED after {out['aborted']['afterBatches']} batches)"))
-    print(f"wrote {HEADERS_OUT} and {RECORD_OUT}")
+    print(f"wrote {RECORD_OUT}" + (f" and {HEADERS_OUT}" if versions["contractMoved"] is False else " (headers held back)") + f"; contract {versions['contractVersion']} ({versions['buildSha']}) -> "
+          f"{versions['versionAtEnd']} ({versions['buildShaAtEnd']})")
+    if versions["contractMoved"] is not False:
+        print("CONTRACT MOVED during the sweep, or a version read failed: the record says which; not a clean run")
+        return 2
+    if out["aborted"] is not None:
+        return 3
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

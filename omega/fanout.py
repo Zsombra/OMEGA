@@ -88,6 +88,49 @@ KNOB_SPELLING = {"fast": "fast", "slow": "slow", "signal": "sig", "period": "p",
                  "accelerationIncrement": "inc", "accelerationMaximum": "max", "leftBars": "l", "rightBars": "r"}
 KNOB_OWN_TOKEN = {"rsiPeriod": "rsi"}
 KNOB_SINGLE = {"equalBars": "e", "equalThreshold": "atr", "swingLength": "s", "confluenceFilter": "cf"}
+# Each (metric, knob) whose header has been RENDERED with that knob off its default, at 149.1.0: the authoring probe
+# (2026-11-07), the knob-spelling probe (11-07, thirteen columns) and its second run (2026-11-08, the 27 cells neither had
+# rendered: MACD_SIGNAL and PPO_HIST had no render at all). The spelling tables above are keyed by knob name, so a metric
+# serving a known name would otherwise be spelled by analogy; knob_token raises on a cell outside this table instead
+# (review 2026-11-08, "extract, never infer"). tests/test_review_2026_11_08.py recomputes it from the three records.
+KNOB_SPELLING_RENDERED = {
+    "BB_LOWER": frozenset({'period', 'stdDev'}),
+    "BB_PCT_B": frozenset({'period', 'stdDev'}),
+    "BB_UPPER": frozenset({'period', 'stdDev'}),
+    "CMF20": frozenset({'period'}),
+    "EQH": frozenset({'equalBars', 'equalThreshold'}),
+    "EQL": frozenset({'equalBars', 'equalThreshold'}),
+    "INTERNAL_STRUCTURE_EVENT": frozenset({'swingLength', 'confluenceFilter'}),
+    "INTERNAL_STRUCTURE_LEVEL": frozenset({'swingLength', 'confluenceFilter'}),
+    "INTERNAL_STRUCTURE_TREND": frozenset({'swingLength', 'confluenceFilter'}),
+    "KC_LOWER": frozenset({'period', 'atrPeriod', 'multiplier'}),
+    "KC_UPPER": frozenset({'period', 'atrPeriod', 'multiplier'}),
+    "MACD_HIST": frozenset({'fast', 'slow', 'signal'}),
+    "MACD_LINE": frozenset({'fast', 'slow', 'signal'}),
+    "MACD_SIGNAL": frozenset({'fast', 'slow', 'signal'}),
+    "MFI14": frozenset({'period'}),
+    "PPO_HIST": frozenset({'fast', 'slow', 'signal'}),
+    "PPO_LINE": frozenset({'fast', 'slow', 'signal'}),
+    "PPO_SIGNAL": frozenset({'fast', 'slow', 'signal'}),
+    "PRIOR_SWING_FRACTAL_HIGH": frozenset({'leftBars', 'rightBars'}),
+    "PRIOR_SWING_FRACTAL_LOW": frozenset({'leftBars', 'rightBars'}),
+    "PSAR": frozenset({'accelerationStart', 'accelerationIncrement', 'accelerationMaximum'}),
+    "STOCH_D": frozenset({'period', 'kSmoothing', 'dSmoothing'}),
+    "STOCH_K": frozenset({'period', 'kSmoothing', 'dSmoothing'}),
+    "STOCH_RSI_D": frozenset({'period', 'kSmoothing', 'dSmoothing', 'rsiPeriod'}),
+    "STOCH_RSI_K": frozenset({'period', 'kSmoothing', 'dSmoothing', 'rsiPeriod'}),
+    "ST_DIR": frozenset({'atrPeriod', 'multiplier'}),
+    "ST_LINE": frozenset({'atrPeriod', 'multiplier'}),
+    "SWING_FRACTAL_HIGH": frozenset({'leftBars', 'rightBars'}),
+    "SWING_FRACTAL_HIGH_BARS_AGO": frozenset({'leftBars', 'rightBars'}),
+    "SWING_FRACTAL_LABEL": frozenset({'leftBars', 'rightBars'}),
+    "SWING_FRACTAL_LOW": frozenset({'leftBars', 'rightBars'}),
+    "SWING_FRACTAL_LOW_BARS_AGO": frozenset({'leftBars', 'rightBars'}),
+    "SWING_STRUCTURE_EVENT": frozenset({'swingLength'}),
+    "SWING_STRUCTURE_LEVEL": frozenset({'swingLength'}),
+    "SWING_STRUCTURE_TREND": frozenset({'swingLength'}),
+    "WILLR14": frozenset({'period'}),
+}
 
 
 def _knob_number(value) -> str:
@@ -112,8 +155,13 @@ def knob_token(column: Column, contract: Contract) -> str:
         return values[k] if values[k] is not None else served[k].get("defaultValue")
 
     unknown = [k for k in served if k not in KNOB_SPELLING and k not in KNOB_OWN_TOKEN and k not in KNOB_SINGLE]
-    if unknown and any(is_off(k) for k in unknown):
+    if unknown and any(is_off(k) for k in served):
+        # Any knob off, not only an unknown one: in the SET regime an unspelled knob at its default still belongs in the
+        # header, and which regime an unknown knob is in was never rendered either (review 2026-11-08).
         raise ValueError(f"{column.metric} serves knobs whose header spelling was never rendered: {unknown}")
+    unrendered = [k for k in served if is_off(k) and k not in KNOB_SPELLING_RENDERED.get(column.metric, ())]
+    if unrendered:
+        raise ValueError(f"{column.metric} at {unrendered} off its default was never rendered (KNOB_SPELLING_RENDERED)")
     set_knobs = [k for k in served if k not in KNOB_SINGLE]
     out = ""
     if any(is_off(k) for k in set_knobs):

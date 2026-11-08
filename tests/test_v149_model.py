@@ -109,7 +109,7 @@ def test_omega_agrees_with_every_probe_answer(contract):
     """Every non-transient probe: refused by the platform <=> refused by omega. The five accepted sections omega
     refuses are the ones the probe built with a duplicate header on purpose: the platform renders them and flags
     `duplicateHeaders` (the section then leaves conditionColumns), which is exactly omega's DUPLICATE_HEADER."""
-    agree = 0
+    agree = duplicates = 0
     for p in PROBE["probes"]:
         if (p.get("refusal") or {}).get("code") == "SERVICE_UNAVAILABLE":
             continue
@@ -117,10 +117,31 @@ def test_omega_agrees_with_every_probe_answer(contract):
         if p["accepted"]:
             if errors:
                 assert set(errors) == {"DUPLICATE_HEADER"} and p["render"]["duplicateHeaders"], p["probe"]
+                duplicates += 1
         else:
-            assert errors, p["probe"]
+            # Refused for the platform's reason, not just refused (review 2026-11-08: `assert errors` passed on any code)
+            refusal = p["refusal"]
+            allowed = REFUSAL_CLASSES[refusal.get("authoringCode")]
+            assert set(errors) & allowed, (p["probe"], refusal.get("authoringCode"), errors)
         agree += 1
-    assert agree == 223
+    assert (agree, duplicates) == (223, 5)
+
+
+# The platform's refusal class (authoringCode; None = a schema-level VALIDATION_ERROR) -> the omega codes that state it.
+# Not one to one: depth is the transform window's (DEPTH_EXCEEDED) or a knob's (PARAMETER_OUT_OF_RANGE), and
+# construction covers every grammar refusal. Cross-tabbed over the 121 refusals at 149.1.0 on 2026-11-08.
+REFUSAL_CLASSES = {
+    "REPORT_COLUMN_DEPTH_EXCEEDED": {"DEPTH_EXCEEDED", "PARAMETER_OUT_OF_RANGE"},
+    "REPORT_COLUMN_CONSTRUCTION_FAILED": {"OFFSET_REFUSED", "OFFSET_BELOW_MINIMUM", "PARAMETER_UNDECLARED",
+                                          "PARAMETER_NOT_ACCEPTED", "PARAMETER_OUT_OF_RANGE", "WINDOW_BELOW_MINIMUM",
+                                          "TIMELESS_OFFSET_REFUSED", "REPORT_COLUMN_CONSTRUCTION_FAILED"},
+    "REPORT_COLUMN_CHAIN_UNSUPPORTED": {"REPORT_COLUMN_CHAIN_UNSUPPORTED"},
+    "REPORT_COLUMN_PAIR_UNSUPPORTED": {"REPORT_COLUMN_PAIR_UNSUPPORTED"},
+    "REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED": {"SECTION_SUBJECT_METRIC_UNSUPPORTED"},
+    "REPORT_COLUMN_INSTRUMENT_UNKNOWN": {"REFERENCE_INSTRUMENT_REQUIRED"},
+    "REPORT_COLUMN_LOOKBACK_EXCEEDED": {"LOOKBACK_EXCEEDED"},
+    None: {"SCHEMA", "SECTION_SUBJECT_CONFLICT"},
+}
 
 
 @pytest.mark.parametrize("probe,code", [

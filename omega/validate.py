@@ -7,6 +7,7 @@ column is caught here instead of at submit time. Each Finding carries the
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Iterable, get_args
 
 from .contract import REFERENCE_PAIRS, Contract, Metric, load, section_subject
@@ -454,6 +455,16 @@ def validate_column(
                 "error", "WINDOW_REFUSED", f"{path}.window",
                 f"transform {tid!r} does not accept params.window: {m.metric} x {tid} builds no series "
                 f"(REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 at 144.0.0)"))
+        elif column.chainedTransformId in SERIES_TRANSFORMS:
+            # A chained window belongs to the OUTER: the chain block above judges it against the served
+            # chainedOuters.<outer>.windowMaximum (269 / 118 / 936 at 149.1.0, the platform's own "the largest window
+            # that fits"). The inner (distance, spread, relativeTo) serves no window maximum of its own, so reading it
+            # here refused every chained window from 65 up (review 2026-11-08). The 64-bar budget stays the bound only
+            # where the outer serves no maximum (a corpus older than v135).
+            if chained_window_maximum(spec, column.chainedTransformId) is None and column.window > lookback:
+                out.append(Finding(
+                    "error", "LOOKBACK_EXCEEDED", f"{path}.window",
+                    f"window={column.window} exceeds the columnLookback budget of {lookback}"))
         elif column.window > ((spec.get("maximums") or {}).get("window") or lookback):
             # Since 146.x the served `bound` says which budget the maximum is (bounds.window): `depth` is the 1,000-bar
             # history (REPORT_COLUMN_DEPTH_EXCEEDED, "at most 936 of the 1000 readable bars ... the largest window that
@@ -549,8 +560,12 @@ def _not_accepted_reason(under: str, code: str) -> str:
 
 
 def _step_ok(value: float, minimum: float, step: float) -> bool:
+    """On the served step grid AND exactly the number a header can print. A float carrying representation noise
+    (0.1 * 3 = 0.30000000000000004) is sent to the platform as is, its tolerance for that is unmeasured, and the header
+    would print the rounded 0.3 - so it is refused here rather than predicted (review 2026-11-08)."""
     ratio = (value - minimum) / step
-    return abs(ratio - round(ratio)) < 1e-9
+    places = max(0, -Decimal(str(step)).as_tuple().exponent)
+    return abs(ratio - round(ratio)) < 1e-9 and round(value, places) == value
 
 
 def _knob_findings(column: Column, m: Metric, spec: dict, path: str) -> list[Finding]:
@@ -576,10 +591,13 @@ def _knob_findings(column: Column, m: Metric, spec: dict, path: str) -> list[Fin
         if bound == "range":
             if (lo is not None and value < lo) or (hi is not None and value > hi) \
                     or (step and lo is not None and not _step_ok(value, lo, step)):
+                span = f"from {lo:g} to {hi:g}" if lo is not None and hi is not None else \
+                    (f">= {lo:g}" if lo is not None else f"<= {hi:g}" if hi is not None else "on its grid")
+                steps = f" in steps of {step:g}" if step else ""
                 out.append(Finding(
                     "error", "PARAMETER_OUT_OF_RANGE", f"{path}.{knob}",
-                    f"[column-grammar] metric {m.metric!r} requires params.{knob} from {lo:g} to {hi:g} in steps of "
-                    f"{step:g} (got {value:g}; REPORT_COLUMN_CONSTRUCTION_FAILED)"))
+                    f"[column-grammar] metric {m.metric!r} requires params.{knob} {span}{steps} "
+                    f"(got {value!r}; REPORT_COLUMN_CONSTRUCTION_FAILED)"))
             continue
         if lo is not None and value < lo:
             out.append(Finding(

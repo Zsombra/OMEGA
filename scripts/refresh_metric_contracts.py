@@ -23,6 +23,12 @@ credential) left `metricCount` 170 beside 326 files and omega.contract.load() ra
 consumer. An OAuth prompt from mcporter stops the fetch at once: each further call would start another interactive
 authorization.
 
+2026-11-08 (review pass 1, findings 1 and 2): phase 1 caches an answer only when it is a hint (a `metric` object with
+metric / code / family / transforms); a `{code, message}` body is a failed read. A re-run re-validates every cached raw
+hint first and stops, naming it, on a bad one. Phase 2 builds every record, the index, the batches and the catalogue
+and runs every check (authoring invariance, chainOuterParameters invariance, the archive path) before the first write
+under data/: a failing check exits non-zero with data/ untouched.
+
 Re-run 2026-09-20 at contract 61.2.0. EXTRACTION_SCRATCH and EXTRACTION_STAMP replace the constants the
 first run pinned to one session's scratch directory, which no longer exists.
 """
@@ -93,12 +99,63 @@ else:
     names = json.load(open(os.path.join(ROOT, "data", "derived", "condition_vocabulary_108.json"),
                            encoding="utf-8"))["reportColumn"]["metric"]["enum"]
 print(f"live metrics: {len(names)}")
+
+
+# 2026-11-08 (review pass 1, findings 1 and 2): a raw hint is cached only when it IS a hint. mcporter prints a platform
+# error ({code, message}: INTERNAL_ERROR, SERVICE_UNAVAILABLE, an unknown-metric refusal) as JSON on stdout, and the
+# first two-phase version cached any JSON it got: phase 2 then died on `KeyError: 'metric'` after rewriting some metric
+# files, and "resumable" skipped the poisoned file on every re-run.
+HINT_KEYS = ("metric", "code", "family", "transforms")
+
+
+def hint_problem(resp, cached=False):
+    """None when `resp` is a construction hint ({metric: {metric, code, family, transforms, ...}, ...}); else why not.
+
+    `cached`: a raw hint already on disk from an earlier run may also be the flat shape (the metric object itself at the
+    top level), which phase 2 has always read; a fresh answer must be the served wrapped shape."""
+    if not isinstance(resp, dict):
+        return f"not a JSON object ({type(resp).__name__})"
+    m = resp.get("metric")
+    if not isinstance(m, dict):
+        if "code" in resp and ("message" in resp or "metric" not in resp):
+            return f"a platform error body: {resp.get('code')}: {str(resp.get('message'))[:160]}"
+        if not cached:
+            return "no `metric` object"
+        m = resp                                   # the flat shape of an earlier raw dir
+    missing = [k for k in HINT_KEYS if k not in m]
+    if missing:
+        return f"the hint's metric lacks {missing}"
+    if not isinstance(m["transforms"], list):
+        return "`transforms` is not a list"
+    return None
+
+
 records = {}
 labels = {}           # transformId -> label (served on the transform entry, beside its authoring block)
 
 authoring_seen = {}   # transformId -> {json of authoring block: [metrics]}
 outer_params_seen = {}  # v135 chainOuterParameters (served once per response, beside `metric`): {json: [metrics]}
-written, failed = [], []
+failed = []
+
+# Resume: every raw hint already on disk is re-validated before anything is fetched. A bad one (an error body cached by
+# an earlier run, a truncated file) stops the run with nothing written: delete it and re-run, which re-reads it.
+bad_cached = {}
+for name in names:
+    rawp = os.path.join(RAW, f"{name}.json")
+    if not os.path.exists(rawp):
+        continue
+    try:
+        with open(rawp, encoding="utf-8") as f:
+            problem = hint_problem(json.load(f), cached=True)
+    except (OSError, ValueError) as exc:
+        problem = f"unreadable ({type(exc).__name__}: {str(exc)[:120]})"
+    if problem:
+        bad_cached[name] = problem
+if bad_cached:
+    for name, problem in bad_cached.items():
+        print(f"  cached raw hint {os.path.join(RAW, name + '.json')}: {problem}")
+    sys.exit(f"{len(bad_cached)} cached raw hint(s) are not hints ({sorted(bad_cached)[:10]}): delete them and re-run. "
+             "Nothing under data/ was written.")
 
 # Phase 1: every raw hint on disk. Nothing under data/ is touched here.
 for i, name in enumerate(names, 1):
@@ -115,6 +172,11 @@ for i, name in enumerate(names, 1):
                   "user's step)")
             break
         continue
+    problem = hint_problem(resp)
+    if problem:                    # an answer, but not a hint: a fetch failure, never cached
+        print(f"  [{i}/{len(names)}] {name}: FAILED (not cached) {problem}")
+        failed.append(name)
+        continue
     tmp = rawp + ".part"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(resp, f, ensure_ascii=False)
@@ -126,10 +188,9 @@ if failed:
           f"{len(names) - len(failed)} raw hints are in {RAW} and a re-run skips them. Nothing under data/ was written.")
     sys.exit(1)
 
-# Phase 2: every metric's raw hint is on disk; build the records and write them.
-for i, name in enumerate(names, 1):
-    rawp = os.path.join(RAW, f"{name}.json")
-    resp = json.load(open(rawp, encoding="utf-8"))
+
+def build_record(name, resp):
+    """One metric file's content (and the transform side-tables) from its raw hint. Nothing is written here."""
     m = resp["metric"] if isinstance(resp, dict) and "metric" in resp and isinstance(resp["metric"], dict) else resp
     if isinstance(resp, dict) and "chainOuterParameters" in resp:
         outer_params_seen.setdefault(json.dumps(resp["chainOuterParameters"], sort_keys=True), []).append(name)
@@ -202,84 +263,76 @@ for i, name in enumerate(names, 1):
         rec["spreadOperands"] = m["spreadOperands"]
     if m.get("rankOrderings"):
         rec["rankOrderings"] = m["rankOrderings"]
-    with open(os.path.join(OUT, f"{name}.json"), "w", encoding="utf-8") as f:
-        json.dump(rec, f, indent=2, ensure_ascii=False)
-        f.write("\n")
-    records[name] = rec
-    written.append(name)
-    if i % 20 == 0 or i == len(names):
-        print(f"  [{i}/{len(names)}] ... {name}")
+    return rec
 
-# retire metrics the platform no longer serves
-retired = []
-for path in glob.glob(os.path.join(OUT, "*.json")):
-    base = os.path.basename(path)
-    if base.startswith("_"):
-        continue
-    if base[:-5] not in names:
-        os.remove(path)
-        retired.append(base[:-5])
+
+# Phase 2 (2026-11-08, review pass 1 finding 2): every record, the index, the batches and the catalogue are built and
+# every check is run IN MEMORY first - the authoring invariance, the chainOuterParameters invariance and the archive
+# path. The first two-phase version wrote the metric files and _index.json (and moved the batches) before those checks,
+# so a failing check left the records at the new stamp and the catalogue at the old one. Nothing under data/ is written
+# unless every check passes.
+for i, name in enumerate(names, 1):
+    rawp = os.path.join(RAW, f"{name}.json")
+    try:
+        with open(rawp, encoding="utf-8") as f:
+            records[name] = build_record(name, json.load(f))
+    except (OSError, ValueError, KeyError, TypeError, AttributeError) as exc:
+        sys.exit(f"raw hint {rawp} cannot be built into a record ({type(exc).__name__}: {str(exc)[:160]}); "
+                 "nothing under data/ was written")
+    if i % 20 == 0 or i == len(names):
+        print(f"  [{i}/{len(names)}] built ... {name}")
+
+# metrics the platform no longer serves (removed in the write step)
+retired = sorted(os.path.basename(path)[:-5] for path in glob.glob(os.path.join(OUT, "*.json"))
+                 if not os.path.basename(path).startswith("_") and os.path.basename(path)[:-5] not in names)
 
 # index
 by_family = {}
 for name in sorted(records):
     by_family.setdefault(records[name]["family"], []).append(name)
 idx = {"metricCount": len(records), "byFamily": {k: sorted(v) for k, v in sorted(by_family.items())}}
-with open(os.path.join(OUT, "_index.json"), "w", encoding="utf-8") as f:
-    json.dump(idx, f, indent=2, ensure_ascii=False)
-    f.write("\n")
 
-# authoring-invariance re-check
+# authoring-invariance re-check (the evidence goes to the scratch dir, never under data/)
 variants = {tid: len(blobs) for tid, blobs in authoring_seen.items()}
-json.dump({"_what": "get_metric_construction_hints authoring blocks grouped by transform, "
-                    "2026-09-09 sweep. variants>1 would falsify the invariance claim in "
-                    "transforms/_authoring.json.",
-           "variantsPerTransform": variants,
-           "metricsPerTransform": {t: sum(len(v) for v in b.values()) for t, b in authoring_seen.items()}},
-          open(os.path.join(SP, "authoring_invariance_" + STAMP + ".json"), "w", encoding="utf-8"),
-          ensure_ascii=False, indent=1)
-
-print(f"\nwritten {len(written)}; retired {retired}; failed {failed or 'none'}")
+with open(os.path.join(SP, "authoring_invariance_" + STAMP + ".json"), "w", encoding="utf-8") as f:
+    json.dump({"_what": "get_metric_construction_hints authoring blocks grouped by transform, "
+                        "2026-09-09 sweep. variants>1 would falsify the invariance claim in "
+                        "transforms/_authoring.json.",
+               "variantsPerTransform": variants,
+               "metricsPerTransform": {t: sum(len(v) for v in b.values()) for t, b in authoring_seen.items()}},
+              f, ensure_ascii=False, indent=1)
+print(f"\nbuilt {len(records)}; retiring {retired}")
 print("authoring variants per transform (1 == invariant):", variants)
-if failed:
-    sys.exit(1)
 
-# The batches build_corpus merges: archive the ones this run replaces, then write the new set in platform order, 30
-# per batch (the shape of every earlier extraction's batches).
+# The batches build_corpus merges: the ones this run replaces are archived, then the new set is written in platform
+# order, 30 per batch (the shape of every earlier extraction's batches).
 arch = os.path.join(OUT, f"archive_{ARCHIVE}_extraction")
 old = sorted(glob.glob(os.path.join(OUT, "_batch*.json")))
-if old:
-    os.makedirs(arch, exist_ok=False)
-    for path in old:
-        os.replace(path, os.path.join(arch, os.path.basename(path)))
 ordered = [records[n] for n in names if n in records]
-for b in range(0, len(ordered), 30):
-    with open(os.path.join(OUT, f"_batch{b // 30 + 1:02d}.json"), "w", encoding="utf-8") as f:
-        json.dump(ordered[b:b + 30], f, indent=1, ensure_ascii=False)
-        f.write("\n")
-print(f"batches: {len(old)} archived to {os.path.basename(arch)}; {-(-len(ordered) // 30)} written")
+batches = [ordered[b:b + 30] for b in range(0, len(ordered), 30)]
 
-# v135's chainOuterParameters, the parameters each chain outer takes (window with its `unit`, bars): recorded only
-# when every response serves the same block, like the authoring catalogue below.
-if outer_params_seen:
-    if len(outer_params_seen) != 1:
-        sys.exit(f"chainOuterParameters VARY across metrics ({len(outer_params_seen)} variants) - not recorded")
-    with open(os.path.join(ROOT, "data", "contract", "transforms", "_chain_outer_parameters.json"), "w",
-              encoding="utf-8") as f:
-        json.dump({"_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's "
-                            "parameters, served identically on every metric of extraction " + STAMP,
-                   "chainOuterParameters": json.loads(next(iter(outer_params_seen)))},
-                  f, indent=1, ensure_ascii=False)
-        f.write("\n")
-    print(f"chainOuterParameters: invariant across {len(next(iter(outer_params_seen.values())))} metrics")
-
-# The transform catalogue (data/contract/transforms/_authoring.json): only when every transform's authoring block is
-# invariant across the metrics that serve it - otherwise the catalogue's own claim is false and nothing is written.
-if any(v != 1 for v in variants.values()):
-    sys.exit("authoring blocks VARY across metrics - the catalogue is not refreshed; inspect authoring_invariance_*")
+# The transform catalogue (data/contract/transforms/_authoring.json), built in memory.
 cat_path = os.path.join(ROOT, "data", "contract", "transforms", "_authoring.json")
 cat = json.load(open(cat_path, encoding="utf-8"))
 added, changed = [], []
+problems = []
+# v135's chainOuterParameters, the parameters each chain outer takes (window with its `unit`, bars): recorded only
+# when every response serves the same block, like the authoring catalogue.
+if len(outer_params_seen) > 1:
+    problems.append(f"chainOuterParameters VARY across metrics ({len(outer_params_seen)} variants) - not recorded")
+# The catalogue only when every transform's authoring block is invariant across the metrics that serve it - otherwise
+# the catalogue's own claim is false.
+if any(v != 1 for v in variants.values()):
+    problems.append("authoring blocks VARY across metrics - the catalogue is not refreshed; inspect "
+                    f"{os.path.join(SP, 'authoring_invariance_' + STAMP + '.json')}")
+if old and os.path.exists(arch):
+    problems.append(f"{arch} already exists: the batches this run replaces cannot be archived there (give "
+                    "EXTRACTION_ARCHIVE the stamp of the batches being replaced)")
+if problems:
+    for p in problems:
+        print(f"  CHECK FAILED: {p}")
+    sys.exit(f"{len(problems)} check(s) failed: {'; '.join(problems)}. Nothing under data/ was written.")
+
 for tid, blobs in sorted(authoring_seen.items()):
     block = json.loads(next(iter(blobs)))
     entry = dict(cat["transforms"].get(tid, {}))
@@ -297,6 +350,39 @@ for tid, blobs in sorted(authoring_seen.items()):
     elif entry != before:
         changed.append(tid)
     cat["transforms"][tid] = entry
+
+# Every check passed: write.
+for name in names:
+    with open(os.path.join(OUT, f"{name}.json"), "w", encoding="utf-8") as f:
+        json.dump(records[name], f, indent=2, ensure_ascii=False)
+        f.write("\n")
+for name in retired:
+    os.remove(os.path.join(OUT, f"{name}.json"))
+with open(os.path.join(OUT, "_index.json"), "w", encoding="utf-8") as f:
+    json.dump(idx, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+print(f"written {len(records)}; retired {retired}")
+
+if old:
+    os.makedirs(arch, exist_ok=False)
+    for path in old:
+        os.replace(path, os.path.join(arch, os.path.basename(path)))
+for n, chunk in enumerate(batches, 1):
+    with open(os.path.join(OUT, f"_batch{n:02d}.json"), "w", encoding="utf-8") as f:
+        json.dump(chunk, f, indent=1, ensure_ascii=False)
+        f.write("\n")
+print(f"batches: {len(old)} archived to {os.path.basename(arch)}; {len(batches)} written")
+
+if outer_params_seen:
+    with open(os.path.join(ROOT, "data", "contract", "transforms", "_chain_outer_parameters.json"), "w",
+              encoding="utf-8") as f:
+        json.dump({"_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's "
+                            "parameters, served identically on every metric of extraction " + STAMP,
+                   "chainOuterParameters": json.loads(next(iter(outer_params_seen)))},
+                  f, indent=1, ensure_ascii=False)
+        f.write("\n")
+    print(f"chainOuterParameters: invariant across {len(next(iter(outer_params_seen.values())))} metrics")
+
 with open(cat_path, "w", encoding="utf-8") as f:
     json.dump(cat, f, indent=1, ensure_ascii=False)
     f.write("\n")
