@@ -29,6 +29,15 @@ SCOPE = Literal["all", "crypto", "l1", "memes", "defi", "tradfi", "stocks", "ind
 MARKET_SCOPE = Literal["all", "crypto", "l1", "memes", "defi", "tradfi", "stocks", "indices", "commodities"]
 
 
+# The column fields that are a METRIC's knobs (served per metric in the hint's `parameters`), as opposed to the
+# transform's own (`window`, `offset`, `bars`, ...). The 148.1.0 six and the 149.0.0 thirteen.
+KNOBS = ("leftBars", "rightBars", "swingLength", "confluenceFilter", "equalBars", "equalThreshold", "period", "fast",
+         "slow", "signal", "kSmoothing", "dSmoothing", "rsiPeriod", "atrPeriod", "stdDev", "multiplier",
+         "accelerationStart", "accelerationIncrement", "accelerationMaximum",
+         # 161.0.0 (2026-11-09, undocumented): Ichimoku's four lengths, served on the five ICHI_* metrics
+         "conversionPeriod", "basePeriod", "spanBPeriod", "displacement")
+
+
 class RelTimeframe(BaseModel):
     model_config = ConfigDict(extra="forbid")
     rel: REL
@@ -45,6 +54,11 @@ Timeframe = RelTimeframe | AbsTimeframe
 class Operand(BaseModel):
     model_config = ConfigDict(extra="forbid")
     metric: str
+
+
+# A number knob is a finite float: NaN passed every bound comparison and crashed the step check, and `wire()` would send
+# `nan`, which is not JSON; inf predicted the header `sdinf` (review 2026-11-08).
+Finite = Annotated[float, Field(allow_inf_nan=False)]
 
 
 class Column(BaseModel):
@@ -66,6 +80,17 @@ class Column(BaseModel):
     # v100: "whole basis points of the level, 0-500, default 0 ... declared by levelInteraction only"; the bounds are
     # the 108 schema's (data/derived/condition_vocabulary_108.json reportColumn.bounds.buffer).
     buffer: Annotated[int, Field(ge=0, le=500)] | None = None
+    # 161.0.0 (2026-11-09, undocumented; measured data/audit/authoring_probe_161_2026-11-09.json): the touch distance
+    # as a multiple of ATR, levelInteraction's alternative to `buffer` - "accepts params.buffer or params.touchAtr,
+    # never both"; served minimum 0.1 and step 0.1, the maximum per metric. Header token `_a<value>` (bbUpper20_lvl_a0.5).
+    # The schema's own column `buffer` maximum rose to 2^53-1 at 161, but levelInteraction still serves 0 - 500 and
+    # refuses 501 (measured), so the bound above stays.
+    touchAtr: Finite | None = None
+    # 161.0.0: the OUTER window of a chain whose inner is a rolling transform (aggregate / ema / rma / wma / rsi / cci /
+    # roc), which keeps `window` for itself - the served chainedOuters.<outer>.windowParameter names which field the
+    # outer reads ("window" after spread / distance / relativeTo, "chainedWindow" after a rolling inner); refused on any
+    # other chain ("transform 'spread' -> 'ema' does not accept params.chainedWindow", measured).
+    chainedWindow: Annotated[int, Field(ge=1)] | None = None
     # v142.3: the roster instrument a `relativeTo` column reads its metric against, `BTC` when omitted; the shape is
     # the 144.0.0 stage schema's (minLength 1, maxLength 20, pattern ^[A-Za-z0-9][A-Za-z0-9._:-]*$, "case-insensitive").
     # Refused on every other transform (measured 2026-10-30: "transform 'value' does not accept params.instrument",
@@ -74,6 +99,40 @@ class Column(BaseModel):
     # v136: a `rank` column's category scope, `all` when omitted. Refused off rank ("transform 'value' does not accept
     # params.scope") and on a rank of the report's own coins (measured 2026-10-30 on CROWD_UPBIAS).
     scope: SCOPE | None = None
+    # The nineteen per-metric knobs of contract 148.1.0 (v146.5 / .8: the swing, structure and equal-pivot six) and
+    # 149.0.0 (the thirteen indicator settings). The stage schema bounds the integer ones at >= 1 (`$defs/barCount`)
+    # and the number ones not at all; each metric serves its own knobs with their default, minimum, maximum, step and
+    # bound (get_metric_construction_hints `parameters`, data/contract/metrics/<METRIC>.json), and omega.validate
+    # judges a column against that. Types are the schema's (data/derived/condition_vocabulary_108.json reportColumn.types);
+    # a non-integer bar count is a schema VALIDATION_ERROR on the platform ("expected int, received number", measured
+    # 2026-11-07 at 149.1.0) and a pydantic error here.
+    leftBars: Annotated[int, Field(ge=1)] | None = None
+    rightBars: Annotated[int, Field(ge=1)] | None = None
+    swingLength: Annotated[int, Field(ge=1)] | None = None
+    confluenceFilter: bool | None = None
+    equalBars: Annotated[int, Field(ge=1)] | None = None
+    equalThreshold: Finite | None = None
+    period: Annotated[int, Field(ge=1)] | None = None
+    fast: Annotated[int, Field(ge=1)] | None = None
+    slow: Annotated[int, Field(ge=1)] | None = None
+    signal: Annotated[int, Field(ge=1)] | None = None
+    kSmoothing: Annotated[int, Field(ge=1)] | None = None
+    dSmoothing: Annotated[int, Field(ge=1)] | None = None
+    rsiPeriod: Annotated[int, Field(ge=1)] | None = None
+    atrPeriod: Annotated[int, Field(ge=1)] | None = None
+    stdDev: Finite | None = None
+    multiplier: Finite | None = None
+    accelerationStart: Finite | None = None
+    accelerationIncrement: Finite | None = None
+    accelerationMaximum: Finite | None = None
+    conversionPeriod: Annotated[int, Field(ge=1)] | None = None
+    basePeriod: Annotated[int, Field(ge=1)] | None = None
+    spanBPeriod: Annotated[int, Field(ge=1)] | None = None
+    displacement: Annotated[int, Field(ge=1)] | None = None
+
+    def knobs(self) -> dict:
+        """The metric knobs this column sets (explicit defaults included), in field order."""
+        return {k: getattr(self, k) for k in KNOBS if getattr(self, k) is not None}
 
     def wire(self) -> dict:
         """The exact JSON the connector expects."""

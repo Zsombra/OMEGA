@@ -109,7 +109,10 @@ def test_the_capture_names_its_contract_build_and_source():
     for tool in ("stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft", "list_strategy_drafts",
                  "preview_strategy_report", "get_strategy"):
         assert {"inputSchema", "outputSchema", "description"} <= set(DOC[tool]), tool
-    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "146.0.0"
+    # superseded as the write surface by the 148.1.0 capture on 2026-11-05 and the 149.1.0 one on 2026-11-07 (the
+    # v0.12 branch, unreleased: pyproject.toml stays 0.11.0 until the full re-extraction lands); kept as history
+    # and by the 161.0.0 one on 2026-11-09 (the 149.1.0 capture is the manifest's `supersedes`)
+    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "161.0.0"   # 149.1.0 until 2026-11-09
 
 
 @pytest.mark.skipif(not FIXTURE.exists(), reason="the battlegrid-manager checkout is not beside this repo")
@@ -227,17 +230,25 @@ def test_the_added_metrics_are_served_and_now_in_the_corpus():
     served = set(DOC["stage_strategy_draft"]["inputSchema"]["$defs"]["metricKey"]["enum"])
     before = set(DOC_144["stage_strategy_draft"]["inputSchema"]["$defs"]["metricKey"]["enum"])
     assert served - before == ADDED_METRICS and not before - served and (len(before), len(served)) == (302, 326)
-    assert not contract.unmeasured_metrics                           # 24 from 2026-11-01 to 2026-11-02
-    assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == served
+    # 24 unmeasured from 2026-11-01 to 2026-11-02; since 2026-11-05 the record holds the 206 keys the 148.1.0 capture
+    # added (tests/test_condition_vocabulary_108.py), none of these
+    assert set(contract.unmeasured_metrics).isdisjoint(ADDED_METRICS)
+    # the corpus is the 146 enum plus the 206 the 148.1.0 capture added (in the corpus since 2026-11-07)
+    added_148 = set(json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"])
+    # 161.0.0 (2026-11-09): BB_TOUCH, served at 146, is retired (_moves_161.json) and its three additions are in the corpus
+    moves_161 = json.loads((CONTRACT_DIR / "metrics" / "_moves_161.json").read_text(encoding="utf-8"))
+    assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == (
+        (served - set(moves_161["retired"])) | added_148 | set(moves_161["added"]))
     record = json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(encoding="utf-8"))
-    assert record["metrics"] == {} and set(record["history146"]["formerlyUnmeasured"]) == ADDED_METRICS
+    assert set(record["metrics"]).isdisjoint(ADDED_METRICS)
+    assert set(record["history146"]["formerlyUnmeasured"]) == ADDED_METRICS
     assert record["history146"]["listedOn"] == "2026-11-01" and record["history146"]["measuredOn"] == "2026-11-02"
     for key in sorted(ADDED_METRICS):
         column = Column.model_validate({"metric": key, "transformId": "value", "timeframe": {"rel": "anchor"}})
         codes = [f.code for f in validate_column(column, contract=contract) if f.severity == "error"]
-        # PAR_DEV is measured (hints, vocabulary, 12 transforms) but read by NO section subject - refused live on an
-        # evaluated-coin section and on a market section alike (_subjects_146.json), so omega refuses it the same way
-        assert codes == (["METRIC_NO_SUBJECT"] if key == "PAR_DEV" else []), key
+        # PAR_DEV was read by NO section subject at 146 (METRIC_NO_SUBJECT); since 148 its served subjectKinds say a pair
+        # section reads it, so the column is fine and the section decides (tests/test_v146_1.py)
+        assert codes == [], key
 
 
 def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
@@ -252,12 +263,20 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
                                           "properties": {"metric": {"$ref": "#/$defs/metricKey"}},
                                           "$defs": {"metricKey": stage["inputSchema"]["$defs"]["metricKey"]}}}]}
     results = compare(live_enums(surface), stored_enums(), stored_unmeasured())
-    for kind in ("metrics", "sectionKeys"):
-        assert results[kind]["liveNotStored"] == [] and results[kind]["storedNotLive"] == [], kind
+    # 161.0.0 (2026-11-09): this 146.0.0 surface still serves BB_TOUCH, which the corpus no longer stores (retired)
+    assert results["metrics"]["liveNotStored"] == ["BB_TOUCH"] and results["sectionKeys"]["liveNotStored"] == []
+    assert results["sectionKeys"]["storedNotLive"] == []
+    # since 2026-11-07 the store holds the 206 keys the 148.1.0 capture added (unmeasured 11-05 .. 11-07), which this
+    # 146.0.0 surface does not serve
+    added_148 = json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"]
+    # and, since 161.0.0 (2026-11-09), VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR (_moves_161.json)
+    added_161 = json.loads((CONTRACT_DIR / "metrics" / "_moves_161.json").read_text(encoding="utf-8"))["added"]
+    assert results["metrics"]["storedNotLive"] == sorted(added_148 + added_161) and len(added_148) == 206
     assert (results["metrics"]["live"], results["sectionKeys"]["live"]) == (326, 22)
     assert results["metrics"]["storedUnmeasured"] == []
 
 
 def test_the_version_moved_past_v0_10_2():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.10.2"' not in text and 'version = "0.11.0"' in text
+    # 0.11.0 at 146.0.1 (2026-11-02); 0.12.0 since the cut at 161.0.0 (2026-11-10)
+    assert 'version = "0.10.2"' not in text and 'version = "0.12.0"' in text

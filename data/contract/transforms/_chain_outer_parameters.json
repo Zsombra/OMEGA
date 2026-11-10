@@ -1,5 +1,5 @@
 {
- "_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's parameters, served identically on every metric of extraction 20261102",
+ "_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's parameters, served identically on every metric of extraction 20261109",
  "chainOuterParameters": {
   "aggregate": {
    "bars": {
@@ -7,11 +7,32 @@
     "required": false
    },
    "window": {
+    "bound": "depth",
     "defaultValue": 24,
-    "description": "How many of this column's newest bars are averaged into one value.",
+    "description": "How many of this column's newest bars are averaged into one value — the length of the simple moving average, as TradingView's ta.sma. Null when the series holds fewer bars than the length.",
     "minimum": 1,
     "required": false,
     "unit": "seriesElements"
+   }
+  },
+  "cci": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "bound": "depth",
+    "defaultValue": 20,
+    "description": "The length of the commodity channel index, as TradingView's ta.cci(source, length). One value reads exactly the length in bars, and is null when the series holds fewer, any of them has no value, or all of them are equal. A stored CCI metric is the exact source at its own length.",
+    "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "distance": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
    }
   },
   "efficiency": {
@@ -20,11 +41,49 @@
     "required": false
    },
    "window": {
+    "bound": "lookback",
     "defaultValue": 20,
     "description": "How many bar-to-bar changes of this column the ratio measures; it reads one more bar than that. Null when the newest or oldest bar it reads has no value.",
     "minimum": 1,
     "required": false,
     "unit": "seriesChanges"
+   }
+  },
+  "ema": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "bound": "depth",
+    "defaultValue": 20,
+    "description": "The length of the exponential moving average, as TradingView's ta.ema(source, length). One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the bars after which the average's seed weighs at most 0.1 % — 73 bars at length 20 — so it is null when the newest bars hold fewer present values in a row. A stored EMA metric is the exact source at its own length.",
+    "minimum": 1,
+    "required": false,
+    "unit": "smoothingLength"
+   }
+  },
+  "levelInteraction": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "buffer": {
+    "bound": "range",
+    "defaultValue": 0,
+    "description": "How near a TOUCH must come to the level, in whole basis points of the level; a column carries this or touchAtr, never both. At 0, the default, a TOUCH is exact contact: the bar reaches the level and closes exactly on it. \"Reached and did not close through\" is an in clause over the TOUCH and REJECT labels of a side, and a close through the level is the distance crossing (BREAK), which reads none here. Only TOUCH reads the buffer; a REJECT pierces the level itself. A distance of X% is a buffer of X × 100 bps.",
+    "maximum": 500,
+    "minimum": 0,
+    "required": false,
+    "step": 1
+   },
+   "touchAtr": {
+    "bound": "range",
+    "description": "How near a TOUCH must come to the level, as a multiple of the ATR14 of the column's own timeframe at the prior bar; a column carries this or buffer, never both. Only TOUCH reads it: a close through the level still reads none and a REJECT still reads where the prior bar has no ATR, and a TOUCH reads no value there.",
+    "maximum": 2,
+    "minimum": 0.1,
+    "required": false,
+    "step": 0.1
    }
   },
   "linregSlope": {
@@ -33,6 +92,7 @@
     "required": false
    },
    "window": {
+    "bound": "depth",
     "defaultValue": 20,
     "description": "How many of this column's newest bars the regression is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
     "minimum": 2,
@@ -46,6 +106,7 @@
     "required": false
    },
    "window": {
+    "bound": "lookback",
     "defaultValue": 24,
     "description": "How many of this column's newest bars the share is taken over. Bars with no value are left out.",
     "minimum": 1,
@@ -59,6 +120,7 @@
     "required": false
    },
    "window": {
+    "bound": "depth",
     "defaultValue": 20,
     "description": "How many of this column's bars before the newest the newest is ranked against; it reads the newest bar too. Null when the newest or oldest bar it reads has no value.",
     "minimum": 1,
@@ -78,12 +140,41 @@
     "required": false
    }
   },
+  "rma": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "bound": "depth",
+    "defaultValue": 14,
+    "description": "The length of Wilder's moving average, as TradingView's ta.rma(source, length). One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the length's seed bars plus the bars after which that seed weighs at most 0.1 % — 108 bars at length 14 — so it is null when the newest bars hold fewer present values in a row.",
+    "minimum": 1,
+    "required": false,
+    "unit": "wilderLength"
+   }
+  },
+  "roc": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "bound": "depth",
+    "defaultValue": 9,
+    "description": "The length of the rate of change, as TradingView's ta.roc(source, length): the percent change from the value length bars back. It reads the newest bar and the one length bars before it, and is null when either has no value or the older one is 0. A stored ROC metric is the exact close at its own length.",
+    "minimum": 1,
+    "required": false,
+    "unit": "priorElements"
+   }
+  },
   "rollingMax": {
    "bars": {
     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
     "required": false
    },
    "window": {
+    "bound": "depth",
     "defaultValue": 20,
     "description": "How many of this column's newest bars the maximum is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
     "minimum": 2,
@@ -97,11 +188,26 @@
     "required": false
    },
    "window": {
+    "bound": "depth",
     "defaultValue": 20,
     "description": "How many of this column's newest bars the minimum is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
     "minimum": 2,
     "required": false,
     "unit": "seriesElements"
+   }
+  },
+  "rsi": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "bound": "depth",
+    "defaultValue": 14,
+    "description": "The length of the relative strength index, as TradingView's ta.rsi(source, length). One value folds the newest unbroken run of bars, up to the readable depth plus one, and needs at least the changes its two Wilder averages need to converge plus the bar the oldest change starts from — 109 bars at length 14 — so it is null when the newest bars hold fewer present values in a row, or all of them are equal. A stored RSI metric is the exact source at its own length.",
+    "minimum": 1,
+    "required": false,
+    "unit": "wilderChanges"
    }
   },
   "stddev": {
@@ -110,6 +216,7 @@
     "required": false
    },
    "window": {
+    "bound": "depth",
     "defaultValue": 20,
     "description": "How many of this column's newest bars the standard deviation is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
     "minimum": 2,
@@ -123,9 +230,24 @@
     "required": false
    },
    "window": {
+    "bound": "lookback",
     "defaultValue": 4,
     "description": "How many of this column's newest bars the trajectory shows, including bars with no value — at least 2, because the trend compares the oldest present reading with the newest.",
     "minimum": 2,
+    "required": false,
+    "unit": "seriesElements"
+   }
+  },
+  "wma": {
+   "bars": {
+    "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+    "required": false
+   },
+   "window": {
+    "bound": "depth",
+    "defaultValue": 20,
+    "description": "The length of the linearly weighted moving average, as TradingView's ta.wma(source, length): the newest bar weighs the length, the oldest weighs 1. One value reads exactly the length in bars, and is null when the series holds fewer or any of them has no value.",
+    "minimum": 1,
     "required": false,
     "unit": "seriesElements"
    }
@@ -136,6 +258,7 @@
     "required": false
    },
    "window": {
+    "bound": "depth",
     "defaultValue": 20,
     "description": "How many of this column's newest bars the z-score is taken over, including bars with no value — at least 2. Null when the newest or oldest bar it reads has no value.",
     "minimum": 2,

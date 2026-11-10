@@ -1,0 +1,191 @@
+"""OMEGA v0.12 at contract 161.0.0 (2026-11-09): what 150 - 161 moved for the authoring surface.
+
+The README's "Contract history" documents v150 - v156; 157 - 161 are undocumented, so the served write schema
+(data/contract/stage_strategy_draft/schema_20261109T162100Z.json), the 534 raw hints read at 161.0.0 and the probe
+(data/audit/authoring_probe_161_2026-11-09.json) are the sources.
+"""
+from __future__ import annotations
+
+import json
+
+import pytest
+
+from omega.conditions import LIVE_CROWD_METRICS, condition, num, validate_conditions
+from omega.contract import CONTRACT_DIR
+from omega.fanout import outputs_for
+from omega.types import Column, CustomSection, Report
+
+SECTION_KEY = "custom:18c11ae8-bb26-5025-a01c-957043d42445"
+
+
+def _report(*specs, anchor="1h") -> Report:
+    return Report(anchor=anchor, sections=[CustomSection(
+        title="T", sectionKey=SECTION_KEY, benchmarkTicker=None,
+        columns=[Column.model_validate(s) for s in specs])])
+
+
+def _col(metric, **kw):
+    return {"metric": metric, "transformId": "value", "timeframe": {"rel": "anchor"}, **kw}
+
+
+# --- v156: a condition on a live crowd reading is refused -----------------------------------------------------------
+
+def test_the_eight_live_crowd_metrics_are_the_readmes_eight_codes():
+    codes = {json.loads((CONTRACT_DIR / "metrics" / f"{m}.json").read_text(encoding="utf-8"))["code"]
+             for m in LIVE_CROWD_METRICS}
+    assert codes == {"pickLive", "upBiasLive", "crowdAccLive", "captRateLive", "upLeanZLive", "upExcessZLive",
+                     "captExcessZLive", "accEdgeZLive"}
+
+
+@pytest.mark.parametrize("metric", sorted(LIVE_CROWD_METRICS))
+def test_a_condition_on_a_live_crowd_header_is_refused(metric):
+    report = _report(_col(metric))
+    header = outputs_for(Column.model_validate(_col(metric)))[0].header
+    found = validate_conditions(report, [condition("LIVE_ONE", "on the live crowd", num(header, "gt", 0.5),
+                                                   verdict="LONG")])
+    errors = [f for f in found if f.severity == "error"]
+    assert any("CONDITION_OPERAND_UNSERVABLE" in f.message for f in errors), found
+
+
+def test_the_settled_twin_and_the_live_column_itself_are_not_refused():
+    report = _report(_col("CROWD_PICK"), _col("CROWD_PICK_LIVE"))
+    header = outputs_for(Column.model_validate(_col("CROWD_PICK")))[0].header
+    found = validate_conditions(report, [condition("SETTLED", "on the settled crowd", num(header, "gt", 0.5),
+                                                   verdict="LONG")])
+    assert not any("CONDITION_OPERAND_UNSERVABLE" in f.message for f in found)
+
+
+# --- the depth probes at 161.0.0 (2026-11-09): omega agrees with the platform's own maxima ---------------------------
+
+def test_omega_agrees_with_the_161_depth_probes():
+    """The readable depth is 2500 bars (2436 less the 64-bar lookback budget): the K.RSI14.roc.* and O.* probes sit on
+    each served maximum (accepted) and one past it (refused REPORT_COLUMN_DEPTH_EXCEEDED). omega judges both sides the same
+    way, from the corpus's served maxima. (The N.* chained-window probes rendered one past the served maximum: see
+    test_omega_agrees_with_every_answer_of_the_161_probe.)"""
+    from pathlib import Path
+
+    from omega.contract import load
+    from omega.validate import validate_section
+    ROOT = Path(__file__).resolve().parents[1]
+    contract = load()
+    probes = [p for p in json.loads((ROOT / "data/audit/authoring_probe_161_2026-11-09.json").read_text(encoding="utf-8"))["probes"]
+              if p["probe"].startswith("O.") or p["probe"] in ("K.RSI14.roc.max", "K.RSI14.roc.over")]
+    assert len(probes) == 16
+    for p in probes:
+        errors = []
+        for sent in p["sections"]:
+            section = CustomSection(title="t", benchmarkTicker=sent.get("benchmarkTicker"),
+                                    marketScope=sent.get("marketScope"), columns=sent["columns"])
+            errors += [f.code for f in validate_section(section, contract=contract) if f.severity == "error"]
+        if p["accepted"]:
+            assert errors == [], p["probe"]
+        else:
+            assert p["refusal"]["authoringCode"] == "REPORT_COLUMN_DEPTH_EXCEEDED"
+            assert errors == ["DEPTH_EXCEEDED"], (p["probe"], errors)
+
+
+# --- every answer of the 161.0.0 probe, replayed through omega (2026-11-10, review of the 161 step) ------------------
+
+# Each refused probe -> the omega finding that refuses it. "TYPE" = the column / report type refuses it at construction
+# (pydantic: `buffer` <= 500, the four authorable anchors).
+REFUSED_161 = {
+    "K.RSI14.roc.over": ["DEPTH_EXCEEDED"], "K.RSI14.roc.offset1": ["OFFSET_REFUSED"],
+    "K.PIVOT_WEEK_P.roc": ["REPORT_COLUMN_PAIR_UNSUPPORTED"], "L.accept": ["REPORT_COLUMN_PAIR_UNSUPPORTED"],
+    "L.accept#0": ["REPORT_COLUMN_PAIR_UNSUPPORTED"],
+    "M.both.buffer.touchAtr": ["TOUCH_ATR_AND_BUFFER"], "M.offset0": ["OFFSET_BELOW_MINIMUM"], "M.buffer501": "TYPE",
+    "N.spread.chainedWindow": ["CHAINED_WINDOW_REFUSED"],
+    **{f"O.{k}.over": ["DEPTH_EXCEEDED"] for k in ("RSI14.aggregate", "CLOSE.ema", "RSI14.rma", "RSI14.zscore",
+                                                   "RSI14.pctl", "CLOSE.rollingMax", "HIGH.distance.ema")},
+    "P.ASIA_HIGH.abs4h": ["REPORT_COLUMN_OPERAND_UNSUPPORTED"], "P.ASIA_HIGH.lower": ["REPORT_COLUMN_OPERAND_UNSUPPORTED"],
+    "P.ASIA_HIGH.offset1": ["OFFSET_REFUSED"], "P.EMA20.offset1": ["OFFSET_REFUSED"],
+    "P.ASIA_HIGH.chain.aggregate": ["REPORT_COLUMN_CHAIN_UNSUPPORTED"],
+    "S.BB_TOUCH": ["METRIC_RETIRED"],
+    "T.BB_UPPER.buffer501": "TYPE", "T.BB_UPPER.both": ["TOUCH_ATR_AND_BUFFER"],
+    "T.BB_UPPER.touchAtr.on.value": ["TOUCH_ATR_UNDECLARED"],
+    "U.crowd.1d": "TYPE",
+}
+
+
+def _rendered_names(render) -> set:
+    out = set()
+
+    def walk(o):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                if k in ("header", "key") and isinstance(v, str):
+                    out.add(v)
+                else:
+                    walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+    walk(render)
+    return out
+
+
+def test_omega_agrees_with_every_answer_of_the_161_probe():
+    """63 previews at 161.0.0: every accepted one validates with no error (bar the duplicate header the platform itself
+    flags in `duplicateHeaders`) and renders every header omega.fanout predicts; every refused one is refused by omega
+    with the finding above. N.chainedWindow.over / N.innerWindow.over rendered one past the served maximum, so omega
+    warns there (BEYOND_SERVED_MAXIMUM) and does not refuse."""
+    from pathlib import Path
+
+    from pydantic import ValidationError
+
+    from omega.contract import load
+    from omega.validate import validate_section
+    contract = load()
+    root = Path(__file__).resolve().parents[1]
+    probes = json.loads((root / "data/audit/authoring_probe_161_2026-11-09.json").read_text(encoding="utf-8"))["probes"]
+    assert len(probes) == 63
+    refused_seen, warned = set(), {}
+    for p in probes:
+        expect = REFUSED_161.get(p["probe"])
+        if expect == "TYPE":
+            assert not p["accepted"]
+            with pytest.raises(ValidationError):
+                Report(anchor=p["timeframe"], sections=[CustomSection(
+                    title="t", benchmarkTicker=s.get("benchmarkTicker"), marketScope=s.get("marketScope"),
+                    columns=s["columns"]) for s in p["sections"]])
+            refused_seen.add(p["probe"])
+            continue
+        errors, predicted = [], set()
+        for s in p["sections"]:
+            section = CustomSection(title="t", benchmarkTicker=s.get("benchmarkTicker"),
+                                    marketScope=s.get("marketScope"), columns=s["columns"])
+            for f in validate_section(section, contract=contract):
+                if f.severity == "error":
+                    errors.append(f.code)
+                else:
+                    warned.setdefault(p["probe"], []).append(f.code)
+            if p["accepted"]:      # a refused column has no header to predict (BB_TOUCH is not in the corpus)
+                for col in section.columns:
+                    predicted |= {o.header for o in outputs_for(col, contract)}
+        if p["accepted"]:
+            flagged = bool((p["render"] or {}).get("duplicateHeaders"))
+            assert errors == (["DUPLICATE_HEADER"] if flagged else []), p["probe"]
+            assert predicted <= _rendered_names(p["render"]), (p["probe"], sorted(predicted - _rendered_names(p["render"])))
+        else:
+            assert errors == expect, (p["probe"], errors)
+            refused_seen.add(p["probe"])
+    assert refused_seen == set(REFUSED_161), "every refused probe is listed, and every listed one was refused"
+    assert warned["N.chainedWindow.over"] == ["BEYOND_SERVED_MAXIMUM"]
+    assert warned["N.innerWindow.over"] == ["BEYOND_SERVED_MAXIMUM"]
+    assert "N.chainedWindow.max" not in warned and "N.innerWindow.max" not in warned
+
+
+def test_the_manifest_records_the_161_extraction():
+    """The top-level extraction block moved to 161.0.0 on 2026-11-10 (it had stayed at 146.0.1 through the 149.1.0 model
+    step); its counts are measured on the corpus, the 146.0.1 block sits under `supersedes`."""
+    from omega import space
+    from omega.contract import load
+    m = json.loads((CONTRACT_DIR / "_manifest.json").read_text(encoding="utf-8"))
+    assert (m["servedContractVersion"], m["extractedOn"]) == ("161.0.0", "2026-11-09")
+    assert "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7" in m["contractVersionSource"]
+    assert m["supersedes"]["servedContractVersion"] == "146.0.1"
+    c = load()
+    legal = sum(len(x.transforms) for x in c.metrics.values())
+    n = m["counts"]
+    assert (n["metrics"], n["families"], n["authorableTransforms"]) == (len(c.metrics), 11, len(c.transforms)) == (534, 11, 30)
+    assert (n["composabilityCells"], n["composabilityLegal"]) == (len(c.metrics) * len(c.transforms), legal)
+    assert n["structuralShapes"] == sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 25915

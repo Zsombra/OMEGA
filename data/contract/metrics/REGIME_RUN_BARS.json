@@ -13,18 +13,40 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "regimeVerdict",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "consecutive confirmed bars the structure label has held, unbounded — a warning or a volatility move inside it does not restart it; unresolved while the run’s start is unknown, across a bar the platform never classified or before the label next changes after a cold start",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "TRADES",
+    "BUY_TRADES",
+    "SELL_TRADES",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_MOM_BEAR_VOTES"
+  ],
+  "spreadOperandsOffAnchor": [
     "UTC_HOUR",
     "DAY_OF_WEEK",
     "SWING_FRACTAL_HIGH_BARS_AGO",

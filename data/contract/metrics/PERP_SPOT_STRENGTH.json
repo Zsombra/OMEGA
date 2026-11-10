@@ -16,12 +16,21 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "perpSpotFlow",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "divergence strength bucket over the bounded perp-vs-spot rate gap (CONFIDENCE idiom) — high at perpSpotGap ≥ 0.5, moderate at ≥ 0.25, low below and on the bar after the UTC-day reset; compared on the unrounded gap, so a gap that prints 0.250 can read low",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null
 }

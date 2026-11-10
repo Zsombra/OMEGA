@@ -18,12 +18,21 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "perpSpotFlow",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "perp-vs-spot order-flow divergence state from bounded self-normalized CVD rates (shared calculator; crypto coins the spot lane lists) — confirmed_bull when perpSpotGap < 0.1 and both rates are positive; confirmed_bear when perpSpotGap < 0.1 and both rates are negative; spot_led_accumulation when perpSpotGap is at least 0.1 and the spot rate is positive and above the perp rate; perp_led_fragile when perpSpotGap is at least 0.1 and the perp rate is positive and above the spot rate; neutral otherwise and on the bar after the UTC-day reset; compared on the unrounded gap",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null
 }

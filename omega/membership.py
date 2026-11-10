@@ -73,12 +73,17 @@ def _signal_data() -> dict[str, list[dict]]:
     histograms", data/contract/metrics/_moves_110.json) reads as its replacement: the column that shows that data
     today is the replacement's. So does BB_WIDTH -> BB_WIDTH_PCT (v138, _moves_144.json): not the same series (price
     units against a percent), but the platform moved "every saved column, Market Read marker and doctrine mention" to
-    it before deploy, so the column that shows bollinger_squeeze's data today is BB_WIDTH_PCT's. The 2026-10-06 rung
+    it before deploy, so the column that shows bollinger_squeeze's data today is BB_WIDTH_PCT's; BB_TOUCH -> BB_PCT_B
+    likewise at 161.0.0 (the platform's own template made that move). The 2026-10-06 rung
     record itself is left as measured."""
     signals = json.loads(
         (DERIVED_DIR / "signal_data_rungs_91.json").read_text(encoding="utf-8"))["signals"]
     same = {old: rec["author"] for old, rec in _moves_110().get("retired", {}).items() if rec.get("sameSeries")}
     same["BB_WIDTH"] = "BB_WIDTH_PCT"
+    # 161.0.0 (2026-11-09, undocumented) removed BB_TOUCH; the platform's own includeBollingerBands template replaced
+    # its BB_TOUCH x value with BB_PCT_B x value (data/contract/templates/platform/_all.json, `_refreshed.moved`), so
+    # the column that shows the band-touch signals' data today is BB_PCT_B's.
+    same["BB_TOUCH"] = "BB_PCT_B"
     return {sid: [d | {"metric": same.get(d["metric"], d["metric"])} for d in data] for sid, data in signals.items()}
 
 

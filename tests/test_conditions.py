@@ -38,7 +38,8 @@ RSI_REPORT = _report(
     ({"metric": "MFI14", "transformId": "classifyZone", "timeframe": {"rel": "anchor"}}, "MFI14_zone"),
     # MACD_HIST since contract 110 (MACD retired); rendered live 2026-10-14 (_coverage_sweep_2026-10-14.json)
     ({"metric": "MACD_HIST", "transformId": "crossDetect", "timeframe": {"rel": "anchor"}}, "MACDhist_cross"),
-    ({"metric": "BB_TOUCH", "transformId": "value", "timeframe": {"rel": "anchor"}}, "BBtouch"),
+    # 161.0.0 (2026-11-09): BB_TOUCH retired by the platform; BB_PCT_B (its replacement) x value, rendered live as pctB20 (_coverage_sweep_2026-10-26.json)
+    ({"metric": "BB_PCT_B", "transformId": "value", "timeframe": {"rel": "anchor"}}, "pctB20"),
     ({"metric": "MA_ALIGN", "transformId": "value", "timeframe": {"rel": "anchor"}}, "MAalign"),
     ({"metric": "SMA200", "transformId": "distance", "timeframe": {"rel": "anchor"}}, "dist_SMA200"),
     ({"metric": "REGIME_VOL", "transformId": "value", "timeframe": {"rel": "anchor"}}, "regVol"),

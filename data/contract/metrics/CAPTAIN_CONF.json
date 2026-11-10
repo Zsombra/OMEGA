@@ -11,12 +11,21 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether captain concentration is confirmed by flow — false when captExcessZ is below 1.96; true when upLeanZ is at least 1.96 with buyPres_trend rising, or upLeanZ is at most −1.96 with buyPres_trend falling; false otherwise; compared on the unrounded scores; no value without captExcessZ or buyPres_trend",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null
 }

@@ -11,22 +11,33 @@
   "timeframeMode": "candle",
   "transforms": [
     {
-      "id": "count"
+      "id": "count",
+      "metricParametersAccepted": false
     },
     {
-      "id": "nearestZoneType"
+      "id": "nearestZoneType",
+      "metricParametersAccepted": false
     },
     {
-      "id": "nearestZoneRange"
+      "id": "nearestZoneRange",
+      "metricParametersAccepted": false
     },
     {
-      "id": "nearestZoneDist"
+      "id": "nearestZoneDist",
+      "metricParametersAccepted": false
     },
     {
-      "id": "nearestZoneAge"
+      "id": "nearestZoneAge",
+      "metricParametersAccepted": false
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "the ACTIVE structure-zone set (fair-value gaps and order blocks)",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

@@ -13,18 +13,35 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "24-hour traded notional volume, USD, a point-in-time read at its own sample time",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
+    "QUOTE_VOL",
+    "BUY_QUOTE_VOL",
+    "SELL_QUOTE_VOL",
+    "OI"
+  ],
+  "spreadOperandsOffAnchor": [
     "QUOTE_VOL",
     "BUY_QUOTE_VOL",
     "SELL_QUOTE_VOL",

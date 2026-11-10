@@ -13,17 +13,27 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "rank"
+      "id": "rank",
+      "metricParametersAccepted": false
     }
   ],
   "study": "crowdLive",
   "provenance": "battleGridDerived",
   "rankScope": "report",
+  "gloss": "how far this coin’s up share sits from 50%, in standard errors — a binomial z by normal approximation, each cell an independent trial; live concurrent sessions excluding the current one; null when none are running; significant at ±1.96, compared unrounded; null with no cells",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null,
   "rankOrderings": [
     "hi",
     "lo",

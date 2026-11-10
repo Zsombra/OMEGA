@@ -286,6 +286,10 @@ ADDED = {
         ("Structure Reversal Signals", "STRUCT_ZONES", "count", "regime"),   # structure_* (no `value` on an entitySet)
         ("Structure Reversal Signals", "RSI14", "value", "regime"),
         ("Structure Reversal Signals", "RSI14", "value", "lower"),
+        # since 161.0.0 (2026-11-09) the recipe shows the PRIOR Donchian channel (DONCHIAN_UPPER / DONCHIAN_LOWER no longer
+        # serve `distance`), so the history path adds the channel the sr_* signals scored on as a column of its own
+        ("Structure Reversal Signals", "DONCHIAN_UPPER", "value", "anchor"),
+        ("Structure Reversal Signals", "DONCHIAN_LOWER", "value", "anchor"),
     },
 }
 # the REGIME context columns every preset dropped (REPORT_DATA_SIGNAL_OFF x4, the module warning)
@@ -411,7 +415,9 @@ def test_the_regime_rung_counts_as_a_distinct_timeframe():
     report = Report(anchor=variants["request"]["timeframe"], sections=[
         CustomSection(title="omega tf variants", benchmarkTicker=None, columns=cols)])
     assert cost_report(report).distinct_timeframes == ["15m", "1h", "regime"]
-    assert validate_report(report).ok
+    # the 2026-08-24 render held BB_TOUCH x value, which contract 161.0.0 removed: the one finding, by design
+    found = validate_report(report)
+    assert [(f.code, f.path) for f in found.errors] == [("METRIC_RETIRED", "report.sections[0].columns[8].metric")]
     # the three rung-widened presets spent three of the eight (v0.3.2); the other two spent one
     spent = {name: _1010(name).cost().distinct_timeframes for name in PRESETS}
     assert spent == {"mean-reversion": ["15m", "1h", "regime"], "trend-continuation": ["15m", "1h", "regime"],

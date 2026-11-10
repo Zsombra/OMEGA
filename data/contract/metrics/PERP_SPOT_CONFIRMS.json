@@ -11,12 +11,21 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "perpSpotFlow",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether the perp and spot flow rates agree in sign (mutual confirmation)",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null
 }

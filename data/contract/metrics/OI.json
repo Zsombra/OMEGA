@@ -13,75 +13,193 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
       "id": "trajectory",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     },
     {
       "id": "aggregate",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "ema",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 704
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 308
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "wma",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "rsi",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 308
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "cci",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "roc",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 2435
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "efficiency",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 63
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
       "id": "zscore",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "stddev",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "linregSlope",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "pctl",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 63
+        "window": 2435
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "rollingMin",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436,
+        "offset": 0
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
       "id": "rollingMax",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436,
+        "offset": 0
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       }
     },
     {
-      "id": "rank"
+      "id": "rank",
+      "metricParametersAccepted": false
     }
   ],
   "study": "openInterest",
   "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
+  "gloss": "open interest, USD notional — a point-in-time read at its own sample time",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
+    "QUOTE_VOL",
+    "BUY_QUOTE_VOL",
+    "SELL_QUOTE_VOL",
+    "NOTIONAL_VOLUME_1D"
+  ],
+  "spreadOperandsOffAnchor": [
     "QUOTE_VOL",
     "BUY_QUOTE_VOL",
     "SELL_QUOTE_VOL",

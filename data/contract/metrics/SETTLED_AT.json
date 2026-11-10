@@ -11,12 +11,21 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "crowdSettled",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "the settlement timestamp of the reference game",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null
 }

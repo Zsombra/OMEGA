@@ -1,0 +1,105 @@
+{
+ "_what": "Which crowd headers preview_strategy_report's authoring.conditionColumns offers at each authorable main candle, contract 161.0.0 (build ab5b6252), 2026-11-09, BTC: the v156 rule refuses a condition on a live crowd header and on any crowd header on a main candle no Market Grid time range settles on. Read-only; 15m / 1h / 4h / 1d from data/audit/authoring_probe_161_2026-11-09.json group U, 5m one preview the same day (GET /mcp/version 161.0.0 / ab5b6252 after it).",
+ "contractVersion": "161.0.0",
+ "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+ "authorableMainCandles": [
+  "5m",
+  "15m",
+  "1h",
+  "4h"
+ ],
+ "byTimeframe": {
+  "15m": {
+   "sent": [
+    "CROWD_PICK",
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS",
+    "CROWD_UPBIAS_LIVE",
+    "CROWD_ACC",
+    "CROWD_ACC_LIVE",
+    "CROWD_UP_LEAN_Z",
+    "CROWD_UP_LEAN_Z_LIVE"
+   ],
+   "conditionHeaders": [
+    "pick",
+    "upBias",
+    "crowdAcc",
+    "upLeanZ"
+   ],
+   "refusal": null
+  },
+  "1h": {
+   "sent": [
+    "CROWD_PICK",
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS",
+    "CROWD_UPBIAS_LIVE",
+    "CROWD_ACC",
+    "CROWD_ACC_LIVE",
+    "CROWD_UP_LEAN_Z",
+    "CROWD_UP_LEAN_Z_LIVE"
+   ],
+   "conditionHeaders": [
+    "pick",
+    "upBias",
+    "crowdAcc",
+    "upLeanZ"
+   ],
+   "refusal": null
+  },
+  "4h": {
+   "sent": [
+    "CROWD_PICK",
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS",
+    "CROWD_UPBIAS_LIVE",
+    "CROWD_ACC",
+    "CROWD_ACC_LIVE",
+    "CROWD_UP_LEAN_Z",
+    "CROWD_UP_LEAN_Z_LIVE"
+   ],
+   "conditionHeaders": [
+    "pick",
+    "upBias",
+    "crowdAcc",
+    "upLeanZ"
+   ],
+   "refusal": null
+  },
+  "1d": {
+   "sent": [
+    "CROWD_PICK",
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS",
+    "CROWD_UPBIAS_LIVE",
+    "CROWD_ACC",
+    "CROWD_ACC_LIVE",
+    "CROWD_UP_LEAN_Z",
+    "CROWD_UP_LEAN_Z_LIVE"
+   ],
+   "conditionHeaders": null,
+   "refusal": "Timeframe '1d' is not authorable as a main candle."
+  },
+  "5m": {
+   "sent": [
+    "CROWD_PICK",
+    "CROWD_PICK_LIVE",
+    "CROWD_UPBIAS",
+    "CROWD_UP_LEAN_Z"
+   ],
+   "renderedHeaders": [
+    "coin",
+    "pick",
+    "pickLive",
+    "upBias",
+    "upLeanZ"
+   ],
+   "conditionHeaders": [
+    "pick",
+    "upBias",
+    "upLeanZ"
+   ]
+  }
+ },
+ "finding": "At every authorable main candle (5m, 15m, 1h, 4h) the settled crowd headers are condition columns and the live ones are not; 1d is not authorable as a main candle. So the second v156 clause bites no authorable candle at 161.0.0, and the refusal omega needs is the live one (omega.conditions.LIVE_CROWD_METRICS)."
+}

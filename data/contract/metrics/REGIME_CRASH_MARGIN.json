@@ -13,18 +13,50 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "regimeCrashEvidence",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "standard deviations by which the crash reading — the fifteen-bar rate of change counted in the coin's own one-bar volatility before it — sits above the crash gate (-3) — how far the crash warning was from being raised",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "RSI2",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "CCI20",
+    "ADX",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "WILLR14",
+    "STOCH_RSI_K",
+    "STOCH_RSI_D",
+    "DI_PLUS",
+    "DI_MINUS",
+    "CMF20",
+    "REGIME_TREND_MARGIN"
+  ],
+  "spreadOperandsOffAnchor": [
     "RSI14",
     "RSI7",
     "RSI2",

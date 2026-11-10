@@ -1,0 +1,50 @@
+{
+  "metric": "EQL",
+  "label": "Equal low (3, 0.1 ATR)",
+  "code": "eql",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "boolean"
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "metricParametersAccepted": true,
+      "maximums": {
+        "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
+      }
+    }
+  ],
+  "study": "marketStructure",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "whether this bar recorded a pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; false on a bar that records no such pivot, absent until the bars read hold the ATR’s 800-bar window and a proven previous pivot",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": {
+    "equalBars": {
+      "required": false,
+      "description": "The equal highs and lows’ pivot length, each side (LuxAlgo’s Bars Confirmation).",
+      "defaultValue": 3,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 2435
+    },
+    "equalThreshold": {
+      "required": false,
+      "description": "How close two pivots must be to be equal, as a fraction of ATR(200) at the deciding bar.",
+      "defaultValue": 0.1,
+      "minimum": 0,
+      "maximum": 0.5,
+      "step": 0.1,
+      "bound": "range"
+    }
+  }
+}

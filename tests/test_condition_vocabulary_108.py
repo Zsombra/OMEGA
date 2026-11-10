@@ -19,7 +19,11 @@ ROOT = Path(__file__).resolve().parents[1]
 # The schema the manifest names: the 146.0.0 capture since 2026-11-01 (the 144.0.0 one of 2026-10-30, the 135.2.0 one
 # of 2026-10-26, the 110.13.0 one of 2026-10-16, the 110.8.0 one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the
 # 108.0.0 one are kept below as history).
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
+# 161.0.0 (2026-11-09): the manifest names the 161.0.0 capture (build ab5b6252); the 149.1.0 one it supersedes stays below.
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"
+SCHEMA_149 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
+SCHEMA_148 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
+SCHEMA_146 = ROOT / "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
 SCHEMA_144 = ROOT / "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
 SCHEMA_135 = ROOT / "data/contract/stage_strategy_draft/schema_20261026T062718Z.json"
 SCHEMA_110_13 = ROOT / "data/contract/stage_strategy_draft/schema_20261016T031811Z.json"
@@ -73,9 +77,10 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "146.0.0",
-                           "buildSha": "1cd4466aace4e047a44672b6d531e4deabc8fe12",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261109T162100Z.json",
+                           # 161.0.0 (2026-11-09): was 149.1.0 / build aa4ab640 (schema_20261105T181932Z.json)
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "161.0.0",
+                           "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -200,17 +205,42 @@ def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
     since 110.8 (six added, none retired - _moves_110_8.json); 226 since 135 (43 added, none retired - _moves_135.json:
     seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1) and the six v135 statistics in both transform enums; 302 since
     144 (78 added, STOCH_RSI14 and BB_WIDTH retired - _moves_144.json) and v142.3's relativeTo in the transform enum;
-    326 since 146 (24 added, none retired; served, known by name only - data/contract/metrics/_unmeasured_108.json)."""
+    326 since 146 (24 added, none retired); 532 since the 148.1.0 capture (206 added by v146.5 / .8 / .10 / .11, none
+    retired; served, known by name only since 2026-11-05 - data/contract/metrics/_unmeasured_108.json), with v146.7's
+    `ema` in both transform enums and v146.6's `distance` among the chain outers; 149.0.0 added `rma`, `wma`, `rsi` and
+    `cci` to both (the 149.1.0 capture, 2026-11-07), and no metric."""
     col = V["reportColumn"]
-    assert col["metric"]["count"] == 326 == len(set(col["metric"]["enum"]))
+    # 161.0.0 (2026-11-09): 534 (BB_TOUCH retired; VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR added)
+    assert col["metric"]["count"] == 534 == len(set(col["metric"]["enum"]))
     assert col["metric"]["pointer"] == "/stage_strategy_draft/inputSchema/$defs/metricKey"   # v137.2: named once
     assert set(MOVES_144["retired"]).isdisjoint(col["metric"]["enum"]) and set(MOVES_144["added"]) <= set(col["metric"]["enum"])
     stats = ["zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"]
     assert col["transformId"]["enum"] == [
         "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "relativeTo", "crossDetect", "aggregate",
-        "efficiency", "maxShare", *stats, "rank", "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist",
-        "nearestZoneAge", "levelInteraction"]
-    assert col["chainedTransformId"]["enum"] == ["trajectory", "aggregate", "efficiency", "maxShare", *stats, "rank"]
+        "ema", "rma", "wma", "rsi", "cci", "roc", "efficiency", "maxShare", *stats, "rank", "count", "nearestZoneType",
+        "nearestZoneRange", "nearestZoneDist", "nearestZoneAge", "levelInteraction"]
+    assert col["chainedTransformId"]["enum"] == ["trajectory", "distance", "aggregate", "ema", "rma", "wma", "rsi",
+                                                 "cci", "roc", "efficiency", "maxShare", *stats, "rank", "levelInteraction"]
+    # 161.0.0 (2026-11-09): `roc` joined both transform enums (after `cci`), and levelInteraction became a chain outer.
+    # v146.9 / v146.11: the six author-set knobs, at the schema's bounds (not modelled by omega.types.Column: unmeasured)
+    assert {k: col["types"][k] for k in ("leftBars", "rightBars", "swingLength", "equalBars", "equalThreshold",
+                                         "confluenceFilter")} == {
+        "leftBars": "integer", "rightBars": "integer", "swingLength": "integer", "equalBars": "integer",
+        "equalThreshold": "number", "confluenceFilter": "boolean"}
+    # since 149: the four length knobs are `$ref`s to $defs/barCount (read through the ref) and equalThreshold has
+    # no minimum (it was >= 0 at 148.1.0)
+    assert {k: col["bounds"][k].get("minimum") for k in ("leftBars", "rightBars", "swingLength", "equalBars",
+                                                         "equalThreshold")} == {
+        "leftBars": 1, "rightBars": 1, "swingLength": 1, "equalBars": 1, "equalThreshold": None}
+    # 161.0.0 (2026-11-09): five more `$ref`s to barCount (basePeriod, conversionPeriod, displacement, spanBPeriod,
+    # chainedWindow - the Ichimoku knobs and the chained window); the 149.1.0 twelve are a subset
+    assert {k for k, ref in col["refs"].items() if ref.endswith("/$defs/barCount")} == {
+        "leftBars", "rightBars", "swingLength", "equalBars", "atrPeriod", "dSmoothing", "fast", "kSmoothing",
+        "period", "rsiPeriod", "signal", "slow", "basePeriod", "conversionPeriod", "displacement", "spanBPeriod",
+        "chainedWindow"}
+    old = CV.derive(json.loads(SCHEMA_148.read_text(encoding="utf-8")), source="x", source_sha256="")["reportColumn"]
+    assert old["bounds"]["equalThreshold"] == {"minimum": 0} and old["refs"] == {
+        "metric": "/stage_strategy_draft/inputSchema/$defs/metricKey"}
     assert "buffer" in col["fields"]       # v100: "buffer, a column knob declared by levelInteraction only"
     assert "instrument" in col["fields"] and "scope" in col["fields"]      # v142.3 relativeTo's coin; v136 rank's scope
 
@@ -277,11 +307,42 @@ def test_the_146_enum_is_the_144_enum_plus_the_24_market_crowd_and_warning_keys(
     platform order. The 24 were served and UNMEASURED from 2026-11-01 (data/contract/metrics/_unmeasured_108.json) to
     2026-11-02, when the re-extraction at 146.0.1 measured them (_moves_146.json)."""
     from omega.contract import load
-    old, new = _enum_in(SCHEMA_144), V["reportColumn"]["metric"]["enum"]
+    old, new = _enum_in(SCHEMA_144), _enum_in(SCHEMA_146)
     assert not set(old) - set(new) and len(new) == 326
     assert set(new) - set(old) == set(MOVES_146["added"]) <= set(load().metrics) and len(set(new) - set(old)) == 24
-    assert not load().unmeasured_metrics
     assert [m for m in new if m in old] == old
+
+
+def test_the_148_enum_is_the_146_enum_plus_the_206_pivot_and_structure_keys_known_by_name():
+    """Contracts 146.5 / .8 / .10 / .11 (README "Contract history - v146.1 to v146.12"): 206 keys added, none retired; the
+    326 keep their platform order. Served and UNMEASURED since 2026-11-05: the re-extraction at 148.1.0 stopped at its
+    hint step before reaching any of them (data/contract/metrics/_unmeasured_108.json, `why`)."""
+    from omega.contract import load
+    # 161.0.0 (2026-11-09): the 148 enum is read from the 149.1.0 capture (history; the current enum retired BB_TOUCH)
+    old, new = _enum_in(SCHEMA_146), _enum_in(SCHEMA_149)
+    assert not set(old) - set(new) and len(new) == 532
+    added = set(new) - set(old)
+    # unmeasured (known by name) 2026-11-05 .. 2026-11-07; in the corpus since the refresh at 149.1.0
+    assert len(added) == 206 and load().unmeasured_metrics == {} and added <= set(load().metrics)
+    assert {m for m in added if not m.startswith("PIVOT_")} == {
+        "INTERNAL_STRUCTURE_EVENT", "INTERNAL_STRUCTURE_TREND", "INTERNAL_STRUCTURE_LEVEL", "SWING_STRUCTURE_EVENT",
+        "SWING_STRUCTURE_TREND", "SWING_STRUCTURE_LEVEL", "EQH", "EQL"}
+    assert [m for m in new if m in old] == old
+
+
+def test_a_column_field_named_by_ref_keeps_its_type_and_bounds():
+    """Contract 149 serves twelve column knobs (atrPeriod, fast, slow, signal, leftBars, swingLength, ...) as
+    `{"$ref": "#/$defs/barCount"}` (integer, 1 - 2^53-1): the field's type and bounds live behind the `$ref`, and a
+    derive that read only the field's own keys dropped both (9 of 21 numeric fields kept their bounds)."""
+    moved = copy.deepcopy(DOC)
+    stage = moved["stage_strategy_draft"]["inputSchema"]
+    stage["$defs"]["barCount"] = {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+    column = CV.resolve(moved, V["reportColumn"]["pointer"])
+    column = column if "properties" in column else CV.resolve(moved, "/stage_strategy_draft/inputSchema" + column["$ref"][1:])
+    column["properties"]["leftBars"] = {"$ref": "#/$defs/barCount"}
+    col = CV.derive(moved, source="x", source_sha256="y")["reportColumn"]
+    assert col["types"]["leftBars"] == "integer"
+    assert col["bounds"]["leftBars"] == {"minimum": 1, "maximum": 9007199254740991}
 
 
 # --- a schema swap shows up as a diff -------------------------------------------------------------
@@ -306,16 +367,25 @@ def test_the_gaps_between_the_schema_and_omega():
     # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2);
     # from 2026-11-01 to 2026-11-02 the 24 keys contract 146.0.0 added, served and known by name only (OMEGA v0.10.2);
     # measured 2026-11-02 at 146.0.1 (OMEGA v0.11.0, _moves_146.json): empty again
-    from omega.contract import load
-    assert gaps["metricsUnmeasured"] == sorted(load().unmeasured_metrics) == []
+    # from 2026-11-05 the 206 keys v146.5 / .8 / .10 / .11 added, served and known by name only (the 148.1.0
+    # re-extraction stopped at its hint step)
+    # ... and measured by the refresh at 149.1.0 on 2026-11-07 (_moves_149.json): empty again
+    assert gaps["metricsUnmeasured"] == []
     # v100: "the bandTouch transform is retired and levelInteraction takes its place"; classifyState is served in
     # the enum and was platform-privileged at the 61.2.0 extraction (data/derived/platform_privileged.json)
     # The extraction's catalogue still lists bandTouch; since 2026-10-12 omega.contract derives it as RETIRED from this
     # very gap (and levelInteraction as UNMEASURED) and neither is enumerated or validated as legal
     # (tests/test_report_surface_108.py).
     # levelInteraction extracted 2026-10-13 (43 metrics); classifyState stays platform-privileged
+    # ema (v146.7) served since the 148.1.0 capture and not yet extracted (2026-11-05: the hint step stopped first)
+    # rma / wma / rsi / cci (149.0.0) served since the 149.1.0 capture (2026-11-07), not yet extracted either
+    # ... all five extracted by the refresh at 149.1.0 on 2026-11-07: classifyState alone again
     assert gaps["transforms"] == {"schemaOnly": ["classifyState"], "omegaOnly": ["bandTouch"]}
-    # closed 2026-10-12: Column.buffer with the schema's 0-500; before, schemaOnly was ["buffer"]
+    # closed 2026-10-12: Column.buffer with the schema's 0-500; before, schemaOnly was ["buffer"]. Since the 148.1.0
+    # capture (2026-11-05) the six v146.9 / v146.11 knobs, served and not modelled (which metric takes which knob is
+    # served per metric by the hints the stopped re-extraction did not reach)
+    # and since the 149.1.0 capture (2026-11-07) the thirteen 149.x knobs
+    # ... all nineteen on omega.types.Column since the model step of 2026-11-07 (omega.types.KNOBS): no gap
     assert gaps["columnFields"] == {"schemaOnly": [], "omegaOnly": []}
     # the section anchor override left at 48.0.0; kept on the model for old records, refused by validate_section
     assert gaps["sectionFields"] == {"schemaOnly": [], "omegaOnly": ["timeframe"]}

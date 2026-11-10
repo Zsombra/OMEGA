@@ -17,12 +17,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 43
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "runs",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "consecutive closes in one direction ending at this bar, signed: +n when the last n closes each closed above their prior close, −n below, 0 when the close equals the prior close; capped at ±20",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

@@ -11,12 +11,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 53
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "candlePatterns",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether the bar is a doji: its body is at most 0.1× the mean range of the 10 bars before it (TA-Lib CDLDOJI)",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

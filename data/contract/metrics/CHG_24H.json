@@ -13,18 +13,49 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "multiTimeframeChange",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "the frame price against the open of the 1d bar in force at the frame's instant, ((frame price − 1d bar open) / 1d bar open) × 100 — read live, so it moves until that bar closes; the 1d bar opens at the UTC day's 00:00, so this is the change since that open — not a rolling 24h change",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC9",
+    "ROC12",
+    "ROC15",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "spreadOperandsOffAnchor": [
     "PPO_HIST",
     "PPO_LINE",
     "PPO_SIGNAL",

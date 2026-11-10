@@ -17,18 +17,50 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
-      "id": "spread"
+      "id": "spread",
+      "metricParametersAccepted": false
     }
   ],
   "study": "regimeTrendEvidence",
   "provenance": "battleGridDerived",
   "rankScope": null,
+  "gloss": "ADX points by which the current trend label survives — distance above the exit gate (23) while trending, below the entry gate (27) while ranging; small inside the buffer zone",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
+    "RSI14",
+    "RSI7",
+    "RSI2",
+    "STOCH_K",
+    "STOCH_D",
+    "MFI14",
+    "CCI20",
+    "ADX",
+    "WT1",
+    "WT2",
+    "QQE_RSI_MA",
+    "QQE_STOP",
+    "WILLR14",
+    "STOCH_RSI_K",
+    "STOCH_RSI_D",
+    "DI_PLUS",
+    "DI_MINUS",
+    "CMF20",
+    "REGIME_CRASH_MARGIN"
+  ],
+  "spreadOperandsOffAnchor": [
     "RSI14",
     "RSI7",
     "RSI2",

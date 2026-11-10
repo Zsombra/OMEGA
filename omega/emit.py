@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 from .contract import ROOT, load
-from .fanout import cost_report, outputs_for
+from .fanout import cost_report, outputs_for, predictable
 from .types import CustomSection, Report
 from .validate import validate_report
 
@@ -39,7 +39,7 @@ def emit(report: Report, name: str, *, out_dir: Path | None = None, force: bool 
     for i, section in enumerate(report.sections):
         if isinstance(section, CustomSection):
             for j, col in enumerate(section.columns):
-                if col.metric in c.metrics:
+                if col.metric in c.metrics and predictable(col, c):
                     header_map[f"sections[{i}].columns[{j}]"] = [
                         {"header": o.header, "kind": o.kind,
                          "conditionOperators": o.condition_operators,

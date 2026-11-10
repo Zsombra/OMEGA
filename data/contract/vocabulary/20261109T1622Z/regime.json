@@ -1,0 +1,2289 @@
+{
+ "category": "regime",
+ "metrics": [
+  {
+   "metric": "REGIME_TREND",
+   "label": "Regime · trend",
+   "code": "regTrend",
+   "gloss": "the platform-classified trend regime",
+   "family": "regime",
+   "study": "regimeContext",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "trending up",
+     "trending down",
+     "ranging"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "trajectory"
+   ]
+  },
+  {
+   "metric": "REGIME_VOL",
+   "label": "Regime · volatility",
+   "code": "regVol",
+   "gloss": "the platform-classified volatility regime",
+   "family": "regime",
+   "study": "regimeContext",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "expanding",
+     "contracting",
+     "normal"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "trajectory"
+   ]
+  },
+  {
+   "metric": "REGIME_MOM",
+   "label": "Regime · momentum",
+   "code": "regMom",
+   "gloss": "the platform-classified momentum regime",
+   "family": "regime",
+   "study": "regimeContext",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish",
+     "neutral",
+     "diverging"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "trajectory"
+   ]
+  },
+  {
+   "metric": "REGIME_STATE",
+   "label": "Regime · state",
+   "code": "regState",
+   "gloss": "the market structure the platform classified — trend or range, up or down — at the confirmed close; its volatility and warnings are read beside it",
+   "family": "regime",
+   "study": "regimeVerdict",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bull trend",
+     "bear trend",
+     "bull range",
+     "bear range",
+     "fallback"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_CONVICTION",
+   "label": "Regime · conviction",
+   "code": "regConv",
+   "gloss": "how strongly the structure label holds: a trend’s tier moves with its volatility and its agreement with swing structure, a range’s with that agreement alone; never moved by a warning, and NOT how comfortably a gate cleared (the margins carry that)",
+   "family": "regime",
+   "study": "regimeVerdict",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "maximum",
+     "high",
+     "medium",
+     "low",
+     "uncertain"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_RUN_BARS",
+   "label": "Regime · run length",
+   "code": "regBars",
+   "gloss": "consecutive confirmed bars the structure label has held, unbounded — a warning or a volatility move inside it does not restart it; unresolved while the run’s start is unknown, across a bar the platform never classified or before the label next changes after a cold start",
+   "family": "regime",
+   "study": "regimeVerdict",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_TREND_GATE",
+   "label": "Regime · trend gate",
+   "code": "regGate",
+   "gloss": "whether this bar cleared the ADX trending gate (27), dropped below the exit gate (23), or landed in the buffer between them where the PREVIOUS bar’s trend is carried forward rather than re-confirmed",
+   "family": "regime",
+   "study": "regimeTrendEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "cleared",
+     "held",
+     "dropped"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_TREND_MARGIN",
+   "label": "Regime · trend margin",
+   "code": "regMargin",
+   "gloss": "ADX points by which the current trend label survives — distance above the exit gate (23) while trending, below the entry gate (27) while ranging; small inside the buffer zone",
+   "family": "regime",
+   "study": "regimeTrendEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_TREND_SOURCE",
+   "label": "Regime · trend source",
+   "code": "regSrc",
+   "gloss": "which evidence class voted the trend direction — a decisive DI spread, or the EMA-vs-SMA fallback that fires precisely when the DI spread is indecisive",
+   "family": "regime",
+   "study": "regimeTrendEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "di spread",
+     "ema fallback"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_DI_SPREAD",
+   "label": "Regime · DI spread",
+   "code": "regDI",
+   "gloss": "DI+ − DI− in points on the regime timeframe — the value of the DIplus14_DIminus14_spread column read at the regime rung, not at a lower anchor — gated against the directional threshold (5)",
+   "family": "regime",
+   "study": "regimeTrendEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "points",
+    "precision": 2,
+    "range": {
+     "min": -100,
+     "max": 100
+    }
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_VOL_ATR_RATIO",
+   "label": "Regime · ATR ratio",
+   "code": "regAtrR",
+   "gloss": "the classifier’s ATR reading against its own trailing-window mean; expands above 1.05, contracts below 0.9",
+   "family": "regime",
+   "study": "regimeVolatilityEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "ratio",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_VOL_BBW_RATIO",
+   "label": "Regime · BB-width ratio",
+   "code": "regBbwR",
+   "gloss": "the classifier’s Bollinger-width reading against its own trailing-window mean; the volatility label needs THIS and the ATR ratio to agree, so either alone can hold it back",
+   "family": "regime",
+   "study": "regimeVolatilityEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "ratio",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_MOM_BULL_VOTES",
+   "label": "Regime · bullish votes",
+   "code": "regBull",
+   "gloss": "how many of the four momentum inputs voted bullish (0–4)",
+   "family": "regime",
+   "study": "regimeMomentumVotes",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_MOM_BEAR_VOTES",
+   "label": "Regime · bearish votes",
+   "code": "regBear",
+   "gloss": "how many of the four momentum inputs voted bearish (0–4) — read against the bullish tally, a 3–1 is not a 2–1",
+   "family": "regime",
+   "study": "regimeMomentumVotes",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_CRASH_MARGIN",
+   "label": "Regime · crash margin",
+   "code": "regCrash",
+   "gloss": "standard deviations by which the crash reading — the fifteen-bar rate of change counted in the coin's own one-bar volatility before it — sits above the crash gate (-3) — how far the crash warning was from being raised",
+   "family": "regime",
+   "study": "regimeCrashEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "REGIME_CRASH_LATCH",
+   "label": "Regime · crash latch",
+   "code": "regLatch",
+   "gloss": "the crash latch is armed: set by a crash reading below the gate, cleared when the reading recovers to the exit gate — while armed the reading carries the crash warning",
+   "family": "regime",
+   "study": "regimeCrashEvidence",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "armed",
+     "clear"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_WARNING_CRASH",
+   "label": "Regime · crash warning",
+   "code": "regWCrash",
+   "gloss": "whether the reading carries the crash warning: raised by a crash reading below the gate (-3) and held by the crash latch until the reading recovers to the exit gate",
+   "family": "regime",
+   "study": "regimeVerdict",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "raised",
+     "clear"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "REGIME_WARNING_DIVERGENCE",
+   "label": "Regime · divergence warning",
+   "code": "regWDiv",
+   "gloss": "whether the reading carries the momentum-divergence warning: momentum diverging from price while the structure is a trend",
+   "family": "regime",
+   "study": "regimeVerdict",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "raised",
+     "clear"
+    ]
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value"
+   ]
+  }
+ ],
+ "studies": [
+  {
+   "study": "regimeContext",
+   "label": "Regime context",
+   "gloss": "the platform-classified trend, volatility and momentum regimes",
+   "family": "regime",
+   "members": [
+    "REGIME_TREND",
+    "REGIME_VOL",
+    "REGIME_MOM"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "regimeVerdict",
+   "label": "Regime verdict",
+   "gloss": "the composite regime, the branch that selected it, and how long it has held",
+   "family": "regime",
+   "members": [
+    "REGIME_STATE",
+    "REGIME_CONVICTION",
+    "REGIME_RUN_BARS",
+    "REGIME_WARNING_CRASH",
+    "REGIME_WARNING_DIVERGENCE"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "regimeTrendEvidence",
+   "label": "Regime trend evidence",
+   "gloss": "the evidence the trend classifier gated — the ADX gate, its margin, the voting source and the DI spread",
+   "family": "regime",
+   "members": [
+    "REGIME_TREND_GATE",
+    "REGIME_TREND_MARGIN",
+    "REGIME_TREND_SOURCE",
+    "REGIME_DI_SPREAD"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "regimeVolatilityEvidence",
+   "label": "Regime volatility evidence",
+   "gloss": "the ATR and Bollinger-width readings against their own trailing means, which the volatility classifier compares",
+   "family": "regime",
+   "members": [
+    "REGIME_VOL_ATR_RATIO",
+    "REGIME_VOL_BBW_RATIO"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "regimeMomentumVotes",
+   "label": "Regime momentum votes",
+   "gloss": "how many of the momentum classifier's four inputs — RSI, MACD histogram, MFI and OBV slope — voted bullish or bearish",
+   "family": "regime",
+   "members": [
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_MOM_BEAR_VOTES"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "regimeCrashEvidence",
+   "label": "Regime crash evidence",
+   "gloss": "the crash reading's margin and whether the crash latch is holding the regime",
+   "family": "regime",
+   "members": [
+    "REGIME_CRASH_MARGIN",
+    "REGIME_CRASH_LATCH"
+   ],
+   "levelSets": []
+  }
+ ],
+ "indicators": [
+  {
+   "key": "regimeContext",
+   "label": "Regime context",
+   "family": "regime",
+   "gloss": "the platform-classified trend, volatility and momentum regimes",
+   "aliases": [],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "REGIME_TREND",
+       "label": "Regime · trend"
+      },
+      {
+       "value": "REGIME_VOL",
+       "label": "Regime · volatility"
+      },
+      {
+       "value": "REGIME_MOM",
+       "label": "Regime · momentum"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "REGIME_TREND",
+     "at": {
+      "output": "REGIME_TREND"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_VOL",
+     "at": {
+      "output": "REGIME_VOL"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_MOM",
+     "at": {
+      "output": "REGIME_MOM"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "regimeVerdict",
+   "label": "Regime verdict",
+   "family": "regime",
+   "gloss": "the composite regime, the branch that selected it, and how long it has held",
+   "aliases": [],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "REGIME_STATE",
+       "label": "Regime · state"
+      },
+      {
+       "value": "REGIME_CONVICTION",
+       "label": "Regime · conviction"
+      },
+      {
+       "value": "REGIME_RUN_BARS",
+       "label": "Regime · run length"
+      },
+      {
+       "value": "REGIME_WARNING_CRASH",
+       "label": "Regime · crash warning"
+      },
+      {
+       "value": "REGIME_WARNING_DIVERGENCE",
+       "label": "Regime · divergence warning"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "REGIME_STATE",
+     "at": {
+      "output": "REGIME_STATE"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_CONVICTION",
+     "at": {
+      "output": "REGIME_CONVICTION"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_RUN_BARS",
+     "at": {
+      "output": "REGIME_RUN_BARS"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_WARNING_CRASH",
+     "at": {
+      "output": "REGIME_WARNING_CRASH"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "at": {
+      "output": "REGIME_WARNING_DIVERGENCE"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "regimeTrendEvidence",
+   "label": "Regime trend evidence",
+   "family": "regime",
+   "gloss": "the evidence the trend classifier gated — the ADX gate, its margin, the voting source and the DI spread",
+   "aliases": [],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "REGIME_TREND_GATE",
+       "label": "Regime · trend gate"
+      },
+      {
+       "value": "REGIME_TREND_MARGIN",
+       "label": "Regime · trend margin"
+      },
+      {
+       "value": "REGIME_TREND_SOURCE",
+       "label": "Regime · trend source"
+      },
+      {
+       "value": "REGIME_DI_SPREAD",
+       "label": "Regime · DI spread"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "REGIME_TREND_GATE",
+     "at": {
+      "output": "REGIME_TREND_GATE"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_TREND_MARGIN",
+     "at": {
+      "output": "REGIME_TREND_MARGIN"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_TREND_SOURCE",
+     "at": {
+      "output": "REGIME_TREND_SOURCE"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_DI_SPREAD",
+     "at": {
+      "output": "REGIME_DI_SPREAD"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "regimeVolatilityEvidence",
+   "label": "Regime volatility evidence",
+   "family": "regime",
+   "gloss": "the ATR and Bollinger-width readings against their own trailing means, which the volatility classifier compares",
+   "aliases": [],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "REGIME_VOL_ATR_RATIO",
+       "label": "Regime · ATR ratio"
+      },
+      {
+       "value": "REGIME_VOL_BBW_RATIO",
+       "label": "Regime · BB-width ratio"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "REGIME_VOL_ATR_RATIO",
+     "at": {
+      "output": "REGIME_VOL_ATR_RATIO"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_VOL_BBW_RATIO",
+     "at": {
+      "output": "REGIME_VOL_BBW_RATIO"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "regimeMomentumVotes",
+   "label": "Regime momentum votes",
+   "family": "regime",
+   "gloss": "how many of the momentum classifier's four inputs — RSI, MACD histogram, MFI and OBV slope — voted bullish or bearish",
+   "aliases": [],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "REGIME_MOM_BULL_VOTES",
+       "label": "Regime · bullish votes"
+      },
+      {
+       "value": "REGIME_MOM_BEAR_VOTES",
+       "label": "Regime · bearish votes"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "REGIME_MOM_BULL_VOTES",
+     "at": {
+      "output": "REGIME_MOM_BULL_VOTES"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_MOM_BEAR_VOTES",
+     "at": {
+      "output": "REGIME_MOM_BEAR_VOTES"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "regimeCrashEvidence",
+   "label": "Regime crash evidence",
+   "family": "regime",
+   "gloss": "the crash reading's margin and whether the crash latch is holding the regime",
+   "aliases": [],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "REGIME_CRASH_MARGIN",
+       "label": "Regime · crash margin"
+      },
+      {
+       "value": "REGIME_CRASH_LATCH",
+       "label": "Regime · crash latch"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "REGIME_CRASH_MARGIN",
+     "at": {
+      "output": "REGIME_CRASH_MARGIN"
+     },
+     "length": null
+    },
+    {
+     "metric": "REGIME_CRASH_LATCH",
+     "at": {
+      "output": "REGIME_CRASH_LATCH"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  }
+ ],
+ "transforms": [
+  {
+   "id": "value",
+   "label": "Value"
+  },
+  {
+   "id": "trajectory",
+   "label": "Trajectory"
+  },
+  {
+   "id": "distance",
+   "label": "Distance from price"
+  },
+  {
+   "id": "spread",
+   "label": "Spread vs metric"
+  },
+  {
+   "id": "relativeTo",
+   "label": "Relative to coin"
+  },
+  {
+   "id": "aggregate",
+   "label": "Moving average (SMA)"
+  },
+  {
+   "id": "ema",
+   "label": "Exponential average (EMA)"
+  },
+  {
+   "id": "rma",
+   "label": "Wilder average (RMA)"
+  },
+  {
+   "id": "wma",
+   "label": "Weighted average (WMA)"
+  },
+  {
+   "id": "rsi",
+   "label": "Relative strength index (RSI)"
+  },
+  {
+   "id": "cci",
+   "label": "Commodity channel index (CCI)"
+  },
+  {
+   "id": "roc",
+   "label": "Rate of change (ROC)"
+  },
+  {
+   "id": "efficiency",
+   "label": "Efficiency (ER)"
+  },
+  {
+   "id": "zscore",
+   "label": "Z-score"
+  },
+  {
+   "id": "stddev",
+   "label": "Std deviation"
+  },
+  {
+   "id": "linregSlope",
+   "label": "Regression slope"
+  },
+  {
+   "id": "pctl",
+   "label": "Percentile"
+  },
+  {
+   "id": "rollingMin",
+   "label": "Rolling min"
+  },
+  {
+   "id": "rollingMax",
+   "label": "Rolling max"
+  },
+  {
+   "id": "classifyZone",
+   "label": "Zone label"
+  },
+  {
+   "id": "maxShare",
+   "label": "Largest share"
+  },
+  {
+   "id": "rank",
+   "label": "Peer rank"
+  },
+  {
+   "id": "crossDetect",
+   "label": "Cross detect"
+  },
+  {
+   "id": "levelInteraction",
+   "label": "Level interaction"
+  },
+  {
+   "id": "count",
+   "label": "Zone count"
+  },
+  {
+   "id": "nearestZoneType",
+   "label": "Nearest zone type"
+  },
+  {
+   "id": "nearestZoneRange",
+   "label": "Nearest zone range"
+  },
+  {
+   "id": "nearestZoneDist",
+   "label": "Nearest zone distance"
+  },
+  {
+   "id": "nearestZoneAge",
+   "label": "Nearest zone age"
+  }
+ ],
+ "timeframeRefs": [
+  {
+   "rel": "anchor",
+   "resolvedByAnchor": {
+    "5m": "5m",
+    "15m": "15m",
+    "1h": "1h",
+    "4h": "4h"
+   }
+  },
+  {
+   "rel": "lower",
+   "resolvedByAnchor": {
+    "5m": "1m",
+    "15m": "5m",
+    "1h": "15m",
+    "4h": "1h"
+   }
+  },
+  {
+   "rel": "regime",
+   "resolvedByAnchor": {
+    "5m": null,
+    "15m": null,
+    "1h": null,
+    "4h": null
+   }
+  }
+ ],
+ "budgets": {
+  "sections": 32,
+  "sectionColumns": 32,
+  "columnLookback": 64,
+  "distinctTimeframes": 8,
+  "strategyConditions": 32,
+  "conditionClauses": 32,
+  "conditionFrameReads": 5048,
+  "reportNoteChars": 3200,
+  "marketReadChars": 4000
+ },
+ "previewExecutionLimits": {
+  "maxResultChars": 150000,
+  "deadlineMs": 15000
+ },
+ "timeframes": [
+  "5m",
+  "15m",
+  "1h",
+  "4h"
+ ],
+ "rankedTimeframes": [
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+  "1d"
+ ],
+ "conditionGrammar": {
+  "maxGroupDepth": 2,
+  "operators": [
+   "lt",
+   "lte",
+   "gte",
+   "gt",
+   "between",
+   "is",
+   "in",
+   "crossesAbove",
+   "crossesBelow",
+   "increased",
+   "decreased",
+   "enters",
+   "exits"
+  ],
+  "groupOperators": [
+   "ALL",
+   "ANY",
+   "NOT",
+   "N_OF"
+  ],
+  "verdicts": [
+   "UP",
+   "DOWN",
+   "NEITHER"
+  ]
+ },
+ "templates": [
+  {
+   "kind": "platform",
+   "sectionKey": "includePriceAction",
+   "title": "Price Action",
+   "columns": [
+    {
+     "metric": "LAST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 5,
+     "bars": "closed"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CHG_5M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_15M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_1H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_4H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_24H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSubTimeframe",
+   "title": "Candle Breakdown",
+   "columns": [
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "efficiency",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "maxShare",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRsi",
+   "title": "RSI",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMacd",
+   "title": "MACD",
+   "columns": [
+    {
+     "metric": "MACD_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MACD_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolume",
+   "title": "Volume",
+   "columns": [
+    {
+     "metric": "RVOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OBV",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolatility",
+   "title": "Volatility",
+   "columns": [
+    {
+     "metric": "ATR",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "HIGH_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "LOW_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeBollingerBands",
+   "title": "Bollinger Bands",
+   "columns": [
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMovingAverages",
+   "title": "Moving Averages",
+   "columns": [
+    {
+     "metric": "SMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA50",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA13",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA200",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "spread",
+     "chainedTransformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "EMA13"
+      }
+     ]
+    },
+    {
+     "metric": "EMA_CROSS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStochastic",
+   "title": "Stochastic",
+   "columns": [
+    {
+     "metric": "STOCH_K",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_K",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeFundingRates",
+   "title": "Funding Rates",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "FUNDING_ANN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_LABEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MARK",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "ORACLE"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeOpenInterest",
+   "title": "Open Interest",
+   "columns": [
+    {
+     "metric": "OI",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_CHG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "OI_VELOCITY",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_PX_REGIME",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRelativeStrength",
+   "title": "Relative Strength",
+   "columns": [
+    {
+     "metric": "PPO_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PPO_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "RVOL",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSupportResistance",
+   "title": "Support & Resistance",
+   "columns": [
+    {
+     "metric": "DONCHIAN_UPPER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_UPPER"
+      }
+     ]
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_LOWER"
+      }
+     ]
+    },
+    {
+     "metric": "PRICE_ZONE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeTrendStrength",
+   "title": "Trend Strength",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMfi",
+   "title": "Money Flow Index",
+   "columns": [
+    {
+     "metric": "MFI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MFI14",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvd",
+   "title": "Volume Delta (CVD)",
+   "columns": [
+    {
+     "metric": "CVD",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CVD",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_PRESSURE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SELL_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeHigherTimeframe",
+   "title": "Higher Timeframe Context",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRegimeContext",
+   "title": "Regime Context",
+   "columns": [
+    {
+     "metric": "REGIME_TREND",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_MOM",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_STATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_CONVICTION",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_RUN_BARS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_CRASH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_GATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_MARGIN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_SOURCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_ATR_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_BBW_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCrowdIntelligence",
+   "title": "Crowd Intelligence",
+   "columns": [
+    {
+     "metric": "CROWD_PICK",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_PICK_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvdCrowdConvergence",
+   "title": "CVD-Crowd Convergence",
+   "columns": [
+    {
+     "metric": "FLOW_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMART_RETAIL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CAPTAIN_CONF",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CONFIDENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStructureZones",
+   "title": "Price Structure Zones",
+   "columns": [
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "count",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includePerpSpotFlow",
+   "title": "Perp/Spot Flow",
+   "columns": [
+    {
+     "metric": "SPOT_CVD",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_FLOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_GAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_STRENGTH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_CONFIRMS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "custom",
+   "templateKey": "momentum-composite",
+   "title": "Momentum Composite",
+   "description": "RSI, MACD, and Stochastic %K read at the section anchor — a one-glance momentum panel.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "volatility-trend",
+   "title": "Volatility & Trend",
+   "description": "ATR, ADX, and Bollinger width % at the section anchor — regime and expansion at a glance.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "venue-dislocation",
+   "title": "Venue Dislocation",
+   "description": "Where the spot venues and the perp disagree at the section anchor — the Coinbase premium over Binance, the perp basis over each venue, the cross-venue buy-share gap, and the composite spot tape.",
+   "columnCount": 6
+  }
+ ],
+ "scalarFamilies": [
+  {
+   "moduleKey": null,
+   "sectionKey": "session-field",
+   "title": "Session Field",
+   "metrics": [
+    {
+     "metric": "fieldPlayers",
+     "gloss": "players in this session",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldPlayers_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldUpBias",
+     "gloss": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldUpBias_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldBiasDir",
+     "gloss": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+     "conditionOperators": [
+      "is",
+      "in"
+     ],
+     "conditionVocabulary": [
+      "UP",
+      "DOWN"
+     ],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldBiasDir_session"
+      }
+     ]
+    },
+    {
+     "metric": "captConc",
+     "gloss": "share of captain picks landing on the single most-captained coin (%)",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "captConc_session"
+      }
+     ]
+    },
+    {
+     "metric": "picksSpread",
+     "gloss": "distinct coins picked, over distinct coins available",
+     "conditionOperators": [],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "picksSpread_session"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

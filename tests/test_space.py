@@ -32,9 +32,12 @@ def test_matrix_is_the_full_metric_by_transform_grid():
     # 177 x 16 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): MACD, PPO, KC_MID out, nine in.
     # 183 x 16 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): six in, none out.
     # 6946 = 302 x 23 since the re-extraction at 144.0.0, 2026-10-30 (4972 = 226 x 22 at 135.2.0; 2928 = 183 x 16 before)
-    assert len(rows) == 7498   # 326 x 23 since the re-extraction at 146.0.1, 2026-11-02 (_moves_146.json: 24 added)
-    assert len({r["metric"] for r in rows}) == 326
-    assert len({r["transform"] for r in rows}) == 23      # + the six v135 statistics; + relativeTo (v142.3)
+    # 7498 = 326 x 23 since the re-extraction at 146.0.1, 2026-11-02 (_moves_146.json: 24 added)
+    # 14896 = 532 x 28 since the refresh at 149.1.0, 2026-11-07 (_moves_149.json: 206 added, 5 smoothers)
+    # 161.0.0 (2026-11-09): 15486 = 534 x 29 (_moves_161.json: BB_TOUCH retired, three added, `roc` joins the transforms)
+    assert len(rows) == 15486
+    assert len({r["metric"] for r in rows}) == 534
+    assert len({r["transform"] for r in rows}) == 29      # + the six v135 statistics; + relativeTo (v142.3); + the 5 smoothers; + roc (161.0.0)
     assert "levelInteraction" in {r["transform"] for r in rows} and "bandTouch" not in {r["transform"] for r in rows}
 
 
@@ -77,9 +80,16 @@ def test_structural_shape_count_is_1018():
     # series statistics, spread into its nine outers over market operands only, maxShare on the shares, classifyZone on
     # MKT_ABOVE_EMA), the eight CROWD_*_Z (value, rank), the two REGIME_WARNING_* (value), PAR_DEV (twelve cells the
     # hint serves, read by no section subject), and classifyZone on CVD, CUM_VOLUME_DELTA and SPOT_CVD
-    assert len(atoms) == 2607
-    assert len(chained) == 3515
-    assert len(shapes) == 6122
+    # 4242 + 5642 = 9884 since the refresh at 149.1.0, 2026-11-07 (_moves_149.json): the 206 keys of 148.1.0 (pivots,
+    # structure, swings, EQH / EQL) and the five smoothers on the 165 metrics that serve them; chained: each series inner
+    # chains into the smoothers too, and rollingMin / rollingMax chain into distance (184, at offset 1)
+    # 161.0.0 (2026-11-09): 4493 + 21422 = 25915 (4242 + 5642 = 9884 at 149.1.0). Atoms: `roc` on every metric that serves
+    # it, VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR in, BB_TOUCH out, levelInteraction on 33 more levels (_moves_161.json).
+    # Chained: each rolling transform (aggregate, ema, rma, wma, rsi, cci, roc) gained 13 chain outers with chainedWindow,
+    # and `roc` is a new outer on every series inner.
+    assert len(atoms) == 4493
+    assert len(chained) == 21422
+    assert len(shapes) == 25915
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -121,8 +131,23 @@ def test_chain_successors_split_93_and_19():
     # 355 since the re-extraction at 146.0.1, 2026-11-02 (_moves_146.json): + the ten MKT_* that offer spread (MKT_BREADTH,
     # MKT_REGIME and MKT_STRENGTH do not) and PAR_DEV's relativeTo; 344 at 144.0.0, 105 at 135.2.0; relativeTo chains the
     # nine, never rank
-    assert len([k for k, v in by_atom.items() if v == nine]) == 355
-    assert len([k for k, v in by_atom.items() if v == nine | {"rank"}]) == 32   # 21 at 135.2.0
+    # since the refresh at 149.1.0, 2026-11-07 each of those atoms also chains into the five smoothers: fourteen outers
+    smoothers = {"ema", "rma", "wma", "rsi", "cci"}
+    assert len([k for k, v in by_atom.items() if v == nine]) == 0
+    # 161.0.0 (2026-11-09): `roc` is a sixth smoother-class outer (fifteen outers in all); 360 atoms take the fifteen (355
+    # at 149.1.0 with fourteen) and 33 also take rank (32 at 149.1.0)
+    smoothers6 = smoothers | {"roc"}
+    assert len([k for k, v in by_atom.items() if v == nine | smoothers]) == 0
+    assert len([k for k, v in by_atom.items() if v == nine | smoothers6]) == 360
+    assert len([k for k, v in by_atom.items() if v == nine | smoothers6 | {"rank"}]) == 33   # 21 at 135.2.0
+    # 161.0.0: the rolling transforms (aggregate, ema, rma, wma, rsi, cci, roc) chain into thirteen outers (the fifteen
+    # less trajectory and efficiency), 1162 atoms - each outer carries `chainedWindow`
+    assert len([k for k, v in by_atom.items() if v == (nine | smoothers6) - {"trajectory", "efficiency"}]) == 1162
+    # 148.1.0: rollingMin / rollingMax -> distance (offsetMinimum 1), and the two structure levels' distance / spread
+    # chain into trajectory and efficiency only; 161.0.0: levelInteraction became a chain outer on those 190 atoms (184 at 149.1.0)
+    assert len([k for k, v in by_atom.items() if v == {"distance", "levelInteraction"}]) == 190
+    assert len([k for k, v in by_atom.items() if v == {"distance"}]) == 0
+    assert len([k for k, v in by_atom.items() if v == {"trajectory", "efficiency"}]) == 4
     # 91 and 20 since the re-extraction at 110.2.0, 2026-10-14 (data/contract/metrics/_moves_110.json): KC_MID's distance -> rank left with it.
     # 95 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json): the Donchian prior edges' distance and spread.
     assert (len(two), len(two_rank)) == (0, 0)     # 95 and 20 at 110.8.0
@@ -152,7 +177,8 @@ def test_expanding_operands_and_orderings_gives_8999():
     # 10,257 since the re-extraction at 110.8.0, 2026-10-15 (data/contract/metrics/_moves_110_8.json).
     # 30,761 since the re-extraction at 135.2.0, 2026-10-26: each spread chain into the nine outers over its served operands.
     # 113934 at 144.0.0 (30761 at 135.2.0: the 78 added metrics as spread operands)
-    assert len(enumerate_shapes(expand_operands=True)) == 115035   # 146.0.1: the MKT_* spread pairs and the CROWD_*_Z rank orderings
+    # 115035 at 146.0.1: the MKT_* spread pairs and the CROWD_*_Z rank orderings
+    assert len(enumerate_shapes(expand_operands=True)) == 306357   # 161.0.0 (2026-11-09); 270913 at 149.1.0: the 206 keys, the smoothers over each spread (then the 13 chained-window outers, roc, VWMA20)
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -165,7 +191,7 @@ def test_chained_rank_expands_over_its_own_ordering_axis():
     expanded = enumerate_shapes(expand_operands=True)
     rank_chains = [s for s in expanded if s.chained == "rank"]
     # 76 at 61.2.0; the swing fractals +8 (108.4); KC_MID's -4 at 110.2.0 (2026-10-14); the prior swing fractals +4 (135.2.0)
-    assert len(rank_chains) == 132   # 84 at 135.2.0
+    assert len(rank_chains) == 144   # 161.0.0 (2026-11-09): 144; 132 at 149.1.0; 84 at 135.2.0
     assert {s.ordering for s in rank_chains} == {"hi", "lo", "far", "near"}
 
 
@@ -249,9 +275,9 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert unused and used
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
-    assert len(unused) + len(used) == 6122   # 5845 at 144.0.0; 2604 at 135.2.0
+    assert len(unused) + len(used) == 25915   # 161.0.0 (2026-11-09); 9884 at 149.1.0; 6122 at 146.0.1; 5845 at 144.0.0; 2604 at 135.2.0
 
 
 def test_query_with_no_filters_is_the_whole_space():
-    assert len(query()) == 6122                      # 5845 at 144.0.0; 2604 at 135.2.0, 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
-    assert len(query(expand_operands=True)) == 115035  # 113934 at 144.0.0; 30761 at 135.2.0; 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0
+    assert len(query()) == 25915                      # 161.0.0 (2026-11-09); 9884 at 149.1.0; 6122 at 146.0.1; 5845 at 144.0.0; 2604 at 135.2.0, 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
+    assert len(query(expand_operands=True)) == 306357  # 161.0.0 (2026-11-09); 270913 at 149.1.0; 115035 at 146.0.1; 113934 at 144.0.0; 30761 at 135.2.0; 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0

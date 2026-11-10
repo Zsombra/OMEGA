@@ -1,0 +1,53 @@
+{
+  "metric": "INTERNAL_STRUCTURE_EVENT",
+  "label": "Internal structure break (internal 5, swing 50)",
+  "code": "iStructEvt",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "event",
+    "vocab": [
+      "BOS↑",
+      "BOS↓",
+      "CHoCH↑",
+      "CHoCH↓"
+    ]
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "metricParametersAccepted": true,
+      "maximums": {
+        "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
+      }
+    }
+  ],
+  "study": "marketStructure",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "the internal structure's break on this bar — BOS when the close crosses its latest uncrossed level with the bias, CHoCH against it — over pivots of length 5, unless the level is also the swing level of length 50; absent on a bar with no break — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": {
+    "swingLength": {
+      "required": false,
+      "description": "The swing structure’s pivot length, each side: a swing pivot is decided this many closed bars after it.",
+      "defaultValue": 50,
+      "minimum": 10,
+      "bound": "depth",
+      "maximum": 100
+    },
+    "confluenceFilter": {
+      "required": false,
+      "description": "Whether an internal structure break also needs LuxAlgo’s confluence bar test.",
+      "defaultValue": false,
+      "bound": "flag"
+    }
+  }
+}

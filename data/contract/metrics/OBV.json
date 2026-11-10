@@ -13,42 +13,72 @@
   "transforms": [
     {
       "id": "trajectory",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
       "id": "efficiency",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 63
+      },
+      "bounds": {
+        "window": "lookback"
       }
     },
     {
       "id": "zscore",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "stddev",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "linregSlope",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       }
     },
     {
       "id": "pctl",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 63
+        "window": 2435
+      },
+      "bounds": {
+        "window": "depth"
       }
     }
   ],
   "study": null,
   "provenance": "tradingView",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "on-balance volume — the running sum of sign(Δclose) × volume from the first bar this column reads, in base-asset units; its level is arbitrary, so read its change, slope or trend, which agree with TradingView’s OBV",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

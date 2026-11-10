@@ -16,12 +16,21 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "divergence between flow pressure and crowd bias — hidden accumulation when buyPres_now > 0.6 and upLeanZ is at most −1.96; hidden distribution when buyPres_now < 0.4 and upLeanZ is at least 1.96; confirmed when buyPres_now > 0.6 and upLeanZ is at least 1.96, or buyPres_now < 0.4 and upLeanZ is at most −1.96; compared on the unrounded score; no value otherwise",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null
 }

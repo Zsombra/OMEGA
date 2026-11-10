@@ -1,0 +1,3186 @@
+{
+ "category": "trend",
+ "metrics": [
+  {
+   "metric": "ADX",
+   "label": "ADX (14)",
+   "code": "ADX14",
+   "gloss": "14-period average directional index (trend strength, 0–100)",
+   "family": "trend",
+   "study": "directionalMovement",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "SMA20",
+   "label": "SMA (20)",
+   "code": "SMA20",
+   "gloss": "20-period simple moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SMA50",
+   "label": "SMA (50)",
+   "code": "SMA50",
+   "gloss": "50-period simple moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SMA200",
+   "label": "SMA (200)",
+   "code": "SMA200",
+   "gloss": "200-period simple moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "VWMA20",
+   "label": "VWMA (20)",
+   "code": "VWMA20",
+   "gloss": "20-period volume-weighted moving average of the close — each close weighted by its bar's volume over the 20 bars ending at this bar; no value when that volume is zero",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA5",
+   "label": "EMA (5)",
+   "code": "EMA5",
+   "gloss": "5-period exponential moving average",
+   "family": "trend",
+   "study": "emaCross",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA13",
+   "label": "EMA (13)",
+   "code": "EMA13",
+   "gloss": "13-period exponential moving average",
+   "family": "trend",
+   "study": "emaCross",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA8",
+   "label": "EMA (8)",
+   "code": "EMA8",
+   "gloss": "8-period exponential moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA20",
+   "label": "EMA (20)",
+   "code": "EMA20",
+   "gloss": "20-period exponential moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA9",
+   "label": "EMA (9)",
+   "code": "EMA9",
+   "gloss": "9-period exponential moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA21",
+   "label": "EMA (21)",
+   "code": "EMA21",
+   "gloss": "21-period exponential moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA50",
+   "label": "EMA (50)",
+   "code": "EMA50",
+   "gloss": "50-period exponential moving average",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EMA_CROSS",
+   "label": "EMA 5/13 cross",
+   "code": "EMA5_13",
+   "gloss": "the 5/13 EMA crossover event",
+   "family": "trend",
+   "study": "emaCross",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "event",
+    "vocab": [
+     "Bullish",
+     "Bearish"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "MA_ALIGN",
+   "label": "MA alignment",
+   "code": "MAalign",
+   "gloss": "price stacked against EMA20 / SMA20 / SMA50",
+   "family": "trend",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish",
+     "mixed"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "ST_DIR",
+   "label": "Supertrend direction",
+   "code": "stDir",
+   "gloss": "which side of the Supertrend stop price is on — a state that persists between flips, not a flip event",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "HMA20",
+   "label": "Hull MA (20)",
+   "code": "HMA20",
+   "gloss": "20-period Hull moving average — a lag-reduced weighted mean of close",
+   "family": "trend",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ICHI_CONV",
+   "label": "Ichimoku conversion",
+   "code": "tenkan",
+   "gloss": "the Ichimoku conversion line (tenkan, 9) — the midpoint of the 9-bar window ending at this bar",
+   "family": "trend",
+   "study": "ichimoku",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ICHI_BASE",
+   "label": "Ichimoku base",
+   "code": "kijun",
+   "gloss": "the Ichimoku base line (kijun, 26) — the midpoint of the 26-bar window ending at this bar",
+   "family": "trend",
+   "study": "ichimoku",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ICHI_SPAN_A",
+   "label": "Ichimoku span A",
+   "code": "senkouA",
+   "gloss": "the Ichimoku leading span A APPLYING at this bar — (conversion + base) / 2 as computed 25 bars ago",
+   "family": "trend",
+   "study": "ichimoku",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ICHI_SPAN_B",
+   "label": "Ichimoku span B",
+   "code": "senkouB",
+   "gloss": "the Ichimoku leading span B APPLYING at this bar — the 52-bar midpoint as computed 25 bars ago",
+   "family": "trend",
+   "study": "ichimoku",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ICHI_LAG",
+   "label": "Ichimoku lagging close",
+   "code": "chikou",
+   "gloss": "the close from 25 bars ago — the level the lagging span compares the current price against",
+   "family": "trend",
+   "study": "ichimoku",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "DI_PLUS",
+   "label": "DI+ (14)",
+   "code": "DIplus14",
+   "gloss": "the positive directional indicator (14) — the up-move share of directional movement",
+   "family": "trend",
+   "study": "directionalMovement",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "DI_MINUS",
+   "label": "DI− (14)",
+   "code": "DIminus14",
+   "gloss": "the negative directional indicator (14) — the down-move share of directional movement",
+   "family": "trend",
+   "study": "directionalMovement",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  }
+ ],
+ "studies": [
+  {
+   "study": "ichimoku",
+   "label": "Ichimoku Cloud (9, 26, 52)",
+   "gloss": "the conversion line is the midpoint of the last 9 bars and the base line of the last 26; span A averages the two and span B is the 52-bar midpoint, both carried forward 25 bars (TradingView's displacement 26, plotted one bar short of it); the lagging close is the close 25 bars back",
+   "family": "trend",
+   "members": [
+    "ICHI_SPAN_A",
+    "ICHI_SPAN_B",
+    "ICHI_CONV",
+    "ICHI_BASE",
+    "ICHI_LAG"
+   ],
+   "levelSets": [
+    {
+     "label": "Cloud",
+     "levels": [
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B"
+     ]
+    },
+    {
+     "label": "Conversion and base",
+     "levels": [
+      "ICHI_CONV",
+      "ICHI_BASE"
+     ]
+    }
+   ]
+  },
+  {
+   "study": "directionalMovement",
+   "label": "Directional Movement (14)",
+   "gloss": "ADX is the 14-period average directional index (trend strength, 0–100); DI+ and DI− are the 14-period up- and down-move shares it is built from",
+   "family": "trend",
+   "members": [
+    "ADX",
+    "DI_PLUS",
+    "DI_MINUS"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "emaCross",
+   "label": "EMA cross (5, 13)",
+   "gloss": "the 5- and 13-period EMAs of close, and the event of the 5-period crossing the 13-period",
+   "family": "trend",
+   "members": [
+    "EMA5",
+    "EMA13",
+    "EMA_CROSS"
+   ],
+   "levelSets": [
+    {
+     "label": "Lines",
+     "levels": [
+      "EMA5",
+      "EMA13"
+     ]
+    }
+   ]
+  }
+ ],
+ "indicators": [
+  {
+   "key": "directionalMovement",
+   "label": "Directional Movement (14)",
+   "family": "trend",
+   "gloss": "ADX is the 14-period average directional index (trend strength, 0–100); DI+ and DI− are the 14-period up- and down-move shares it is built from",
+   "aliases": [
+    "adx",
+    "dmi",
+    "ta.dmi",
+    "directional movement",
+    "di+",
+    "di-"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "ADX",
+       "label": "ADX (14)"
+      },
+      {
+       "value": "DI_PLUS",
+       "label": "DI+ (14)"
+      },
+      {
+       "value": "DI_MINUS",
+       "label": "DI− (14)"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "ADX",
+     "at": {
+      "output": "ADX"
+     },
+     "length": null
+    },
+    {
+     "metric": "DI_PLUS",
+     "at": {
+      "output": "DI_PLUS"
+     },
+     "length": null
+    },
+    {
+     "metric": "DI_MINUS",
+     "at": {
+      "output": "DI_MINUS"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "sma",
+   "label": "SMA",
+   "family": "trend",
+   "gloss": "the simple moving average of the chosen price over the chosen number of bars (TradingView ta.sma)",
+   "aliases": [
+    "sma",
+    "ta.sma",
+    "simple moving average",
+    "moving average",
+    "ma"
+   ],
+   "inputs": [
+    {
+     "key": "source",
+     "label": "Source",
+     "options": [
+      {
+       "value": "CLOSE",
+       "label": "Close price"
+      },
+      {
+       "value": "OPEN",
+       "label": "Open price"
+      },
+      {
+       "value": "HIGH",
+       "label": "High price"
+      },
+      {
+       "value": "LOW",
+       "label": "Low price"
+      },
+      {
+       "value": "HL2",
+       "label": "Median price (HL2)"
+      },
+      {
+       "value": "HLC3",
+       "label": "Typical price (HLC3)"
+      },
+      {
+       "value": "OHLC4",
+       "label": "Average price (OHLC4)"
+      }
+     ]
+    }
+   ],
+   "length": {
+    "label": "Length"
+   },
+   "points": [
+    {
+     "metric": "SMA20",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 20
+    },
+    {
+     "metric": "SMA50",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 50
+    },
+    {
+     "metric": "SMA200",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 200
+    }
+   ],
+   "routes": [
+    {
+     "at": {
+      "source": "CLOSE"
+     },
+     "base": "CLOSE",
+     "transformId": "aggregate",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "OPEN"
+     },
+     "base": "OPEN",
+     "transformId": "aggregate",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HIGH"
+     },
+     "base": "HIGH",
+     "transformId": "aggregate",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "LOW"
+     },
+     "base": "LOW",
+     "transformId": "aggregate",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HL2"
+     },
+     "base": "HL2",
+     "transformId": "aggregate",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HLC3"
+     },
+     "base": "HLC3",
+     "transformId": "aggregate",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "OHLC4"
+     },
+     "base": "OHLC4",
+     "transformId": "aggregate",
+     "offset": null,
+     "windowMaximum": 2436
+    }
+   ]
+  },
+  {
+   "key": "VWMA20",
+   "label": "VWMA (20)",
+   "family": "trend",
+   "gloss": "20-period volume-weighted moving average of the close — each close weighted by its bar's volume over the 20 bars ending at this bar; no value when that volume is zero",
+   "aliases": [
+    "vwma",
+    "ta.vwma",
+    "volume weighted moving average",
+    "volume-weighted moving average"
+   ],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "VWMA20",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ema",
+   "label": "EMA",
+   "family": "trend",
+   "gloss": "the exponential moving average of the chosen price over the chosen number of bars (TradingView ta.ema)",
+   "aliases": [
+    "ema",
+    "ta.ema",
+    "exponential moving average",
+    "moving average",
+    "ma"
+   ],
+   "inputs": [
+    {
+     "key": "source",
+     "label": "Source",
+     "options": [
+      {
+       "value": "CLOSE",
+       "label": "Close price"
+      },
+      {
+       "value": "OPEN",
+       "label": "Open price"
+      },
+      {
+       "value": "HIGH",
+       "label": "High price"
+      },
+      {
+       "value": "LOW",
+       "label": "Low price"
+      },
+      {
+       "value": "HL2",
+       "label": "Median price (HL2)"
+      },
+      {
+       "value": "HLC3",
+       "label": "Typical price (HLC3)"
+      },
+      {
+       "value": "OHLC4",
+       "label": "Average price (OHLC4)"
+      }
+     ]
+    }
+   ],
+   "length": {
+    "label": "Length"
+   },
+   "points": [
+    {
+     "metric": "EMA20",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 20
+    },
+    {
+     "metric": "EMA5",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 5
+    },
+    {
+     "metric": "EMA8",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 8
+    },
+    {
+     "metric": "EMA9",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 9
+    },
+    {
+     "metric": "EMA13",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 13
+    },
+    {
+     "metric": "EMA21",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 21
+    },
+    {
+     "metric": "EMA50",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 50
+    }
+   ],
+   "routes": [
+    {
+     "at": {
+      "source": "CLOSE"
+     },
+     "base": "CLOSE",
+     "transformId": "ema",
+     "offset": null,
+     "windowMaximum": 704
+    },
+    {
+     "at": {
+      "source": "OPEN"
+     },
+     "base": "OPEN",
+     "transformId": "ema",
+     "offset": null,
+     "windowMaximum": 704
+    },
+    {
+     "at": {
+      "source": "HIGH"
+     },
+     "base": "HIGH",
+     "transformId": "ema",
+     "offset": null,
+     "windowMaximum": 704
+    },
+    {
+     "at": {
+      "source": "LOW"
+     },
+     "base": "LOW",
+     "transformId": "ema",
+     "offset": null,
+     "windowMaximum": 704
+    },
+    {
+     "at": {
+      "source": "HL2"
+     },
+     "base": "HL2",
+     "transformId": "ema",
+     "offset": null,
+     "windowMaximum": 704
+    },
+    {
+     "at": {
+      "source": "HLC3"
+     },
+     "base": "HLC3",
+     "transformId": "ema",
+     "offset": null,
+     "windowMaximum": 704
+    },
+    {
+     "at": {
+      "source": "OHLC4"
+     },
+     "base": "OHLC4",
+     "transformId": "ema",
+     "offset": null,
+     "windowMaximum": 704
+    }
+   ]
+  },
+  {
+   "key": "rma",
+   "label": "RMA",
+   "family": "trend",
+   "gloss": "Wilder's moving average (smoothed MA) of the chosen price over the chosen number of bars (TradingView ta.rma)",
+   "aliases": [
+    "rma",
+    "ta.rma",
+    "wilder",
+    "smma",
+    "smoothed moving average",
+    "running moving average"
+   ],
+   "inputs": [
+    {
+     "key": "source",
+     "label": "Source",
+     "options": [
+      {
+       "value": "CLOSE",
+       "label": "Close price"
+      },
+      {
+       "value": "OPEN",
+       "label": "Open price"
+      },
+      {
+       "value": "HIGH",
+       "label": "High price"
+      },
+      {
+       "value": "LOW",
+       "label": "Low price"
+      },
+      {
+       "value": "HL2",
+       "label": "Median price (HL2)"
+      },
+      {
+       "value": "HLC3",
+       "label": "Typical price (HLC3)"
+      },
+      {
+       "value": "OHLC4",
+       "label": "Average price (OHLC4)"
+      }
+     ]
+    }
+   ],
+   "length": {
+    "label": "Length"
+   },
+   "points": [],
+   "routes": [
+    {
+     "at": {
+      "source": "CLOSE"
+     },
+     "base": "CLOSE",
+     "transformId": "rma",
+     "offset": null,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "OPEN"
+     },
+     "base": "OPEN",
+     "transformId": "rma",
+     "offset": null,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "HIGH"
+     },
+     "base": "HIGH",
+     "transformId": "rma",
+     "offset": null,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "LOW"
+     },
+     "base": "LOW",
+     "transformId": "rma",
+     "offset": null,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "HL2"
+     },
+     "base": "HL2",
+     "transformId": "rma",
+     "offset": null,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "HLC3"
+     },
+     "base": "HLC3",
+     "transformId": "rma",
+     "offset": null,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "OHLC4"
+     },
+     "base": "OHLC4",
+     "transformId": "rma",
+     "offset": null,
+     "windowMaximum": 308
+    }
+   ]
+  },
+  {
+   "key": "wma",
+   "label": "WMA",
+   "family": "trend",
+   "gloss": "the linearly weighted moving average of the chosen price over the chosen number of bars, newest bar weighted most (TradingView ta.wma)",
+   "aliases": [
+    "wma",
+    "ta.wma",
+    "weighted moving average",
+    "linear weighted moving average"
+   ],
+   "inputs": [
+    {
+     "key": "source",
+     "label": "Source",
+     "options": [
+      {
+       "value": "CLOSE",
+       "label": "Close price"
+      },
+      {
+       "value": "OPEN",
+       "label": "Open price"
+      },
+      {
+       "value": "HIGH",
+       "label": "High price"
+      },
+      {
+       "value": "LOW",
+       "label": "Low price"
+      },
+      {
+       "value": "HL2",
+       "label": "Median price (HL2)"
+      },
+      {
+       "value": "HLC3",
+       "label": "Typical price (HLC3)"
+      },
+      {
+       "value": "OHLC4",
+       "label": "Average price (OHLC4)"
+      }
+     ]
+    }
+   ],
+   "length": {
+    "label": "Length"
+   },
+   "points": [],
+   "routes": [
+    {
+     "at": {
+      "source": "CLOSE"
+     },
+     "base": "CLOSE",
+     "transformId": "wma",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "OPEN"
+     },
+     "base": "OPEN",
+     "transformId": "wma",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HIGH"
+     },
+     "base": "HIGH",
+     "transformId": "wma",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "LOW"
+     },
+     "base": "LOW",
+     "transformId": "wma",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HL2"
+     },
+     "base": "HL2",
+     "transformId": "wma",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HLC3"
+     },
+     "base": "HLC3",
+     "transformId": "wma",
+     "offset": null,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "OHLC4"
+     },
+     "base": "OHLC4",
+     "transformId": "wma",
+     "offset": null,
+     "windowMaximum": 2436
+    }
+   ]
+  },
+  {
+   "key": "emaCross",
+   "label": "EMA cross (5, 13)",
+   "family": "trend",
+   "gloss": "the 5- and 13-period EMAs of close, and the event of the 5-period crossing the 13-period",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "EMA_CROSS",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "MA_ALIGN",
+   "label": "MA alignment",
+   "family": "trend",
+   "gloss": "price stacked against EMA20 / SMA20 / SMA50",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "MA_ALIGN",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ST_DIR",
+   "label": "Supertrend direction",
+   "family": "trend",
+   "gloss": "which side of the Supertrend stop price is on — a state that persists between flips, not a flip event",
+   "aliases": [
+    "supertrend",
+    "ta.supertrend"
+   ],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "ST_DIR",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "HMA20",
+   "label": "Hull MA (20)",
+   "family": "trend",
+   "gloss": "20-period Hull moving average — a lag-reduced weighted mean of close",
+   "aliases": [
+    "hma",
+    "hull",
+    "hull moving average",
+    "ta.hma"
+   ],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "HMA20",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ichimoku",
+   "label": "Ichimoku Cloud (9, 26, 52)",
+   "family": "trend",
+   "gloss": "the conversion line is the midpoint of the last 9 bars and the base line of the last 26; span A averages the two and span B is the 52-bar midpoint, both carried forward 25 bars (TradingView's displacement 26, plotted one bar short of it); the lagging close is the close 25 bars back",
+   "aliases": [
+    "ichimoku",
+    "ichimoku cloud",
+    "kumo"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "ICHI_SPAN_A",
+       "label": "Ichimoku span A"
+      },
+      {
+       "value": "ICHI_SPAN_B",
+       "label": "Ichimoku span B"
+      },
+      {
+       "value": "ICHI_CONV",
+       "label": "Ichimoku conversion"
+      },
+      {
+       "value": "ICHI_BASE",
+       "label": "Ichimoku base"
+      },
+      {
+       "value": "ICHI_LAG",
+       "label": "Ichimoku lagging close"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "ICHI_SPAN_A",
+     "at": {
+      "output": "ICHI_SPAN_A"
+     },
+     "length": null
+    },
+    {
+     "metric": "ICHI_SPAN_B",
+     "at": {
+      "output": "ICHI_SPAN_B"
+     },
+     "length": null
+    },
+    {
+     "metric": "ICHI_CONV",
+     "at": {
+      "output": "ICHI_CONV"
+     },
+     "length": null
+    },
+    {
+     "metric": "ICHI_BASE",
+     "at": {
+      "output": "ICHI_BASE"
+     },
+     "length": null
+    },
+    {
+     "metric": "ICHI_LAG",
+     "at": {
+      "output": "ICHI_LAG"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  }
+ ],
+ "transforms": [
+  {
+   "id": "value",
+   "label": "Value"
+  },
+  {
+   "id": "trajectory",
+   "label": "Trajectory"
+  },
+  {
+   "id": "distance",
+   "label": "Distance from price"
+  },
+  {
+   "id": "spread",
+   "label": "Spread vs metric"
+  },
+  {
+   "id": "relativeTo",
+   "label": "Relative to coin"
+  },
+  {
+   "id": "aggregate",
+   "label": "Moving average (SMA)"
+  },
+  {
+   "id": "ema",
+   "label": "Exponential average (EMA)"
+  },
+  {
+   "id": "rma",
+   "label": "Wilder average (RMA)"
+  },
+  {
+   "id": "wma",
+   "label": "Weighted average (WMA)"
+  },
+  {
+   "id": "rsi",
+   "label": "Relative strength index (RSI)"
+  },
+  {
+   "id": "cci",
+   "label": "Commodity channel index (CCI)"
+  },
+  {
+   "id": "roc",
+   "label": "Rate of change (ROC)"
+  },
+  {
+   "id": "efficiency",
+   "label": "Efficiency (ER)"
+  },
+  {
+   "id": "zscore",
+   "label": "Z-score"
+  },
+  {
+   "id": "stddev",
+   "label": "Std deviation"
+  },
+  {
+   "id": "linregSlope",
+   "label": "Regression slope"
+  },
+  {
+   "id": "pctl",
+   "label": "Percentile"
+  },
+  {
+   "id": "rollingMin",
+   "label": "Rolling min"
+  },
+  {
+   "id": "rollingMax",
+   "label": "Rolling max"
+  },
+  {
+   "id": "classifyZone",
+   "label": "Zone label"
+  },
+  {
+   "id": "maxShare",
+   "label": "Largest share"
+  },
+  {
+   "id": "rank",
+   "label": "Peer rank"
+  },
+  {
+   "id": "crossDetect",
+   "label": "Cross detect"
+  },
+  {
+   "id": "levelInteraction",
+   "label": "Level interaction"
+  },
+  {
+   "id": "count",
+   "label": "Zone count"
+  },
+  {
+   "id": "nearestZoneType",
+   "label": "Nearest zone type"
+  },
+  {
+   "id": "nearestZoneRange",
+   "label": "Nearest zone range"
+  },
+  {
+   "id": "nearestZoneDist",
+   "label": "Nearest zone distance"
+  },
+  {
+   "id": "nearestZoneAge",
+   "label": "Nearest zone age"
+  }
+ ],
+ "timeframeRefs": [
+  {
+   "rel": "anchor",
+   "resolvedByAnchor": {
+    "5m": "5m",
+    "15m": "15m",
+    "1h": "1h",
+    "4h": "4h"
+   }
+  },
+  {
+   "rel": "lower",
+   "resolvedByAnchor": {
+    "5m": "1m",
+    "15m": "5m",
+    "1h": "15m",
+    "4h": "1h"
+   }
+  },
+  {
+   "rel": "regime",
+   "resolvedByAnchor": {
+    "5m": null,
+    "15m": null,
+    "1h": null,
+    "4h": null
+   }
+  }
+ ],
+ "budgets": {
+  "sections": 32,
+  "sectionColumns": 32,
+  "columnLookback": 64,
+  "distinctTimeframes": 8,
+  "strategyConditions": 32,
+  "conditionClauses": 32,
+  "conditionFrameReads": 5048,
+  "reportNoteChars": 3200,
+  "marketReadChars": 4000
+ },
+ "previewExecutionLimits": {
+  "maxResultChars": 150000,
+  "deadlineMs": 15000
+ },
+ "timeframes": [
+  "5m",
+  "15m",
+  "1h",
+  "4h"
+ ],
+ "rankedTimeframes": [
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+  "1d"
+ ],
+ "conditionGrammar": {
+  "maxGroupDepth": 2,
+  "operators": [
+   "lt",
+   "lte",
+   "gte",
+   "gt",
+   "between",
+   "is",
+   "in",
+   "crossesAbove",
+   "crossesBelow",
+   "increased",
+   "decreased",
+   "enters",
+   "exits"
+  ],
+  "groupOperators": [
+   "ALL",
+   "ANY",
+   "NOT",
+   "N_OF"
+  ],
+  "verdicts": [
+   "UP",
+   "DOWN",
+   "NEITHER"
+  ]
+ },
+ "templates": [
+  {
+   "kind": "platform",
+   "sectionKey": "includePriceAction",
+   "title": "Price Action",
+   "columns": [
+    {
+     "metric": "LAST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 5,
+     "bars": "closed"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CHG_5M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_15M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_1H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_4H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_24H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSubTimeframe",
+   "title": "Candle Breakdown",
+   "columns": [
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "efficiency",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "maxShare",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRsi",
+   "title": "RSI",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMacd",
+   "title": "MACD",
+   "columns": [
+    {
+     "metric": "MACD_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MACD_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolume",
+   "title": "Volume",
+   "columns": [
+    {
+     "metric": "RVOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OBV",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolatility",
+   "title": "Volatility",
+   "columns": [
+    {
+     "metric": "ATR",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "HIGH_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "LOW_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeBollingerBands",
+   "title": "Bollinger Bands",
+   "columns": [
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMovingAverages",
+   "title": "Moving Averages",
+   "columns": [
+    {
+     "metric": "SMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA50",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA13",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA200",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "spread",
+     "chainedTransformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "EMA13"
+      }
+     ]
+    },
+    {
+     "metric": "EMA_CROSS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStochastic",
+   "title": "Stochastic",
+   "columns": [
+    {
+     "metric": "STOCH_K",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_K",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeFundingRates",
+   "title": "Funding Rates",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "FUNDING_ANN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_LABEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MARK",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "ORACLE"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeOpenInterest",
+   "title": "Open Interest",
+   "columns": [
+    {
+     "metric": "OI",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_CHG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "OI_VELOCITY",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_PX_REGIME",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRelativeStrength",
+   "title": "Relative Strength",
+   "columns": [
+    {
+     "metric": "PPO_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PPO_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "RVOL",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSupportResistance",
+   "title": "Support & Resistance",
+   "columns": [
+    {
+     "metric": "DONCHIAN_UPPER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_UPPER"
+      }
+     ]
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_LOWER"
+      }
+     ]
+    },
+    {
+     "metric": "PRICE_ZONE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeTrendStrength",
+   "title": "Trend Strength",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMfi",
+   "title": "Money Flow Index",
+   "columns": [
+    {
+     "metric": "MFI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MFI14",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvd",
+   "title": "Volume Delta (CVD)",
+   "columns": [
+    {
+     "metric": "CVD",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CVD",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_PRESSURE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SELL_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeHigherTimeframe",
+   "title": "Higher Timeframe Context",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRegimeContext",
+   "title": "Regime Context",
+   "columns": [
+    {
+     "metric": "REGIME_TREND",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_MOM",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_STATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_CONVICTION",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_RUN_BARS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_CRASH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_GATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_MARGIN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_SOURCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_ATR_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_BBW_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCrowdIntelligence",
+   "title": "Crowd Intelligence",
+   "columns": [
+    {
+     "metric": "CROWD_PICK",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_PICK_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvdCrowdConvergence",
+   "title": "CVD-Crowd Convergence",
+   "columns": [
+    {
+     "metric": "FLOW_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMART_RETAIL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CAPTAIN_CONF",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CONFIDENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStructureZones",
+   "title": "Price Structure Zones",
+   "columns": [
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "count",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includePerpSpotFlow",
+   "title": "Perp/Spot Flow",
+   "columns": [
+    {
+     "metric": "SPOT_CVD",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_FLOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_GAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_STRENGTH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_CONFIRMS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "custom",
+   "templateKey": "momentum-composite",
+   "title": "Momentum Composite",
+   "description": "RSI, MACD, and Stochastic %K read at the section anchor — a one-glance momentum panel.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "volatility-trend",
+   "title": "Volatility & Trend",
+   "description": "ATR, ADX, and Bollinger width % at the section anchor — regime and expansion at a glance.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "venue-dislocation",
+   "title": "Venue Dislocation",
+   "description": "Where the spot venues and the perp disagree at the section anchor — the Coinbase premium over Binance, the perp basis over each venue, the cross-venue buy-share gap, and the composite spot tape.",
+   "columnCount": 6
+  }
+ ],
+ "scalarFamilies": [
+  {
+   "moduleKey": null,
+   "sectionKey": "session-field",
+   "title": "Session Field",
+   "metrics": [
+    {
+     "metric": "fieldPlayers",
+     "gloss": "players in this session",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldPlayers_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldUpBias",
+     "gloss": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldUpBias_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldBiasDir",
+     "gloss": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+     "conditionOperators": [
+      "is",
+      "in"
+     ],
+     "conditionVocabulary": [
+      "UP",
+      "DOWN"
+     ],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldBiasDir_session"
+      }
+     ]
+    },
+    {
+     "metric": "captConc",
+     "gloss": "share of captain picks landing on the single most-captained coin (%)",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "captConc_session"
+      }
+     ]
+    },
+    {
+     "metric": "picksSpread",
+     "gloss": "distinct coins picked, over distinct coins available",
+     "conditionOperators": [],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "picksSpread_session"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

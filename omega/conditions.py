@@ -30,7 +30,7 @@ from functools import lru_cache
 from typing import Any, Literal
 
 from .contract import DERIVED_DIR, header_since_123, load
-from .fanout import outputs_for
+from .fanout import outputs_for, predictable
 from .types import CustomSection, PlatformSection, Report
 
 CONDITION_KEY = re.compile(r"^[A-Z][A-Z0-9_]{1,39}$")
@@ -481,6 +481,17 @@ def stables_at_par(tolerance: float = 0.5) -> dict:
                   between("usdcUsdtDev_market", -tolerance, tolerance))
 
 
+# v156 (README "Contract history - v156", Refused input): "A condition on a crowd reading no decided bar can serve is
+# refused, entry or exit, with VALIDATION_ERROR and authoring code CONDITION_OPERAND_UNSERVABLE", first "a live crowd
+# header: the eight ...Live crowd codes (pickLive, upBiasLive, crowdAccLive, captRateLive, upLeanZLive, upExcessZLive,
+# captExcessZLive, accEdgeZLive), written before the game's candle closes". Refused on every strategy write and the
+# radar checks; "Reports and prompts still read those columns", so the column itself stays authorable.
+LIVE_CROWD_METRICS = frozenset({"CROWD_PICK_LIVE", "CROWD_UPBIAS_LIVE", "CROWD_ACC_LIVE", "CROWD_CAPT_LIVE",
+                                "CROWD_UP_LEAN_Z_LIVE", "CROWD_UP_EXCESS_Z_LIVE", "CROWD_CAPT_EXCESS_Z_LIVE",
+                                "CROWD_ACC_EDGE_Z_LIVE"})
+LIVE_CROWD_SOURCE = "README v156"
+
+
 AMBIENT_CLAUSES = {
     "tape_bullish": tape_bullish,
     "tape_bearish": tape_bearish,
@@ -621,7 +632,7 @@ def report_headers(report: Report) -> dict[str, dict]:
                         # custom-candle-section headers are treated as eligible
                         # offline, platform-section headers are not, and their
                         # timeframe placement is not omega's to assert either
-                        out[o.header] = {"sectionKey": section.sectionKey,
+                        out[o.header] = {"sectionKey": section.sectionKey, "metric": column.metric,
                                          "ops": o.condition_operators,
                                          "vocab": list(o.vocabulary), "meaning": "",
                                          "kind": o.kind, "moved": False, "candle": False,
@@ -632,8 +643,8 @@ def report_headers(report: Report) -> dict[str, dict]:
                     continue
         elif isinstance(section, CustomSection):
             for column in section.columns:
-                if column.metric not in c.metrics:
-                    continue
+                if column.metric not in c.metrics or not predictable(column, c):
+                    continue                 # an unmeasured knob header (KNOB_SPELLING_UNMEASURED) is no header here
                 moved = not c.metric(column.metric).is_timeless
                 candle = moved and (column.offset or 0) == 0
                 above, below = _anchor_side(column, report.anchor, order)
@@ -641,7 +652,7 @@ def report_headers(report: Report) -> dict[str, dict]:
                 horizon = _horizon_above(column.metric, report.anchor, order)
                 developing = (above and column.bars == "all") or horizon is not None
                 for o in outputs_for(column, c):
-                    out[o.header] = {"sectionKey": section.sectionKey,
+                    out[o.header] = {"sectionKey": section.sectionKey, "metric": column.metric,
                                      "ops": o.condition_operators,
                                      "vocab": list(o.vocabulary), "meaning": "",
                                      "kind": o.kind, "moved": moved, "candle": candle,
@@ -833,6 +844,14 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"header {header!r} is not produced by any column in this report "
             f"(nor ambient). Add a column that emits it, or fix the name."))
         return 1
+
+    if spec.get("metric") in LIVE_CROWD_METRICS:
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"{header!r} is a live crowd reading ({spec['metric']}), written before the game's candle closes: no "
+            f"decided bar can serve it, so a condition on it is refused, entry or exit "
+            f"(CONDITION_OPERAND_UNSERVABLE, {LIVE_CROWD_SOURCE}). Read its settled twin "
+            f"({spec['metric'][:-len('_LIVE')]}) instead; reports may still show the live column."))
 
     if window > 1 and spec.get("horizon_above"):
         # v117 makes this one an error, not the warning below: the README names the refusal outright.

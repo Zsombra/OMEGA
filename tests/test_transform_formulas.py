@@ -98,6 +98,7 @@ def test_the_audit_covers_every_transform_the_contract_declares():
     seen = {v["transform"] for v in AUDIT["verified"]}
     seen |= {v["transform"] for v in AUDIT["notVerified"]}
     missing = declared - seen
+    # 161.0.0 (2026-11-09): `roc` has a notVerified entry (the served formula, not recomputed)
     assert not missing, f"transforms with no audit verdict either way: {sorted(missing)}"
 
 

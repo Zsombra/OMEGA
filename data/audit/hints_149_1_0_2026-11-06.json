@@ -1,0 +1,315 @@
+{
+ "_what": "The 532 get_metric_construction_hints responses read at contract 149.1.0 / build aa4ab640 on 2026-11-06 (C13), summarized offline on 2026-11-07. NOT folded into the corpus: data/contract/metrics/ stays the 146.0.1 extraction plus the 206 keys known by name (_unmeasured_108.json). A dry run of scripts/refresh_metric_contracts.py over these hints in a scratch copy wrote all 532 and found every transform's authoring block invariant, so the refresh step of the re-extraction is ready; it lands together with the probe-measured model (stage 2), because a refreshed catalogue makes ema / rma / wma / rsi / cci and the 206 keys authorable while their headers and knob tokens are unrendered.",
+ "contractVersion": "149.1.0",
+ "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
+ "readOn": "2026-11-06T15:35:14Z - 2026-11-06T17:04:36Z",
+ "readBy": "get_metric_construction_hints x 532, one worker, mcporter battlegrid-anbu; GET /mcp/version read at the start, about every 5 minutes and at the end, 149.1.0 / aa4ab640 every time (every hint is bracketed by two 149.1.0 reads); 0 failed. Raw responses at C:/Users/rafae/omega-v012-hints/hints_20261106/ (not committed).",
+ "versionReads": [
+  "2026-11-06T15:35:14Z start {'name': 'battlegrid', 'contractVersion': '149.1.0', 'buildSha': 'aa4ab6407e62bd0c2465ca7790b276b39bbf76d4'}",
+  "2026-11-06T15:48:57Z version 149.1.0 aa4ab640",
+  "2026-11-06T15:59:36Z start {'name': 'battlegrid', 'contractVersion': '149.1.0', 'buildSha': 'aa4ab6407e62bd0c2465ca7790b276b39bbf76d4'}",
+  "2026-11-06T16:06:16Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:11:19Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:16:12Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:21:14Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:26:45Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:31:49Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:36:59Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:42:05Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:46:58Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:52:50Z version 149.1.0 aa4ab640",
+  "2026-11-06T16:58:21Z version 149.1.0 aa4ab640",
+  "2026-11-06T17:03:17Z version 149.1.0 aa4ab640",
+  "2026-11-06T17:04:36Z end {'name': 'battlegrid', 'contractVersion': '149.1.0', 'buildSha': 'aa4ab6407e62bd0c2465ca7790b276b39bbf76d4'} failed []"
+ ],
+ "rawSha256": "68464ad782cccb92e0927940c1272defed6bbd1deb7de1b9a4fed5f8fefbe1e1",
+ "rawSha256Of": "sha256 over, in roster order, each metric name + NUL + its raw file with CRLF normalised to LF",
+ "roster": {
+  "count": 532,
+  "equalsWriteSchemaEnum": true,
+  "measuredInCorpus": 326,
+  "knownByNameOnly": 206
+ },
+ "refreshDryRun": {
+  "written": 532,
+  "retired": [],
+  "failed": [],
+  "authoringVariantsPerTransform": {
+   "value": 1,
+   "trajectory": 1,
+   "distance": 1,
+   "spread": 1,
+   "relativeTo": 1,
+   "aggregate": 1,
+   "ema": 1,
+   "rma": 1,
+   "wma": 1,
+   "rsi": 1,
+   "cci": 1,
+   "efficiency": 1,
+   "zscore": 1,
+   "stddev": 1,
+   "linregSlope": 1,
+   "pctl": 1,
+   "rollingMin": 1,
+   "rollingMax": 1,
+   "classifyZone": 1,
+   "maxShare": 1,
+   "rank": 1,
+   "crossDetect": 1,
+   "levelInteraction": 1,
+   "count": 1,
+   "nearestZoneType": 1,
+   "nearestZoneRange": 1,
+   "nearestZoneDist": 1,
+   "nearestZoneAge": 1
+  },
+  "metricsPerTransform": {
+   "value": 530,
+   "trajectory": 171,
+   "distance": 369,
+   "spread": 455,
+   "relativeTo": 137,
+   "aggregate": 165,
+   "ema": 165,
+   "rma": 165,
+   "wma": 165,
+   "rsi": 165,
+   "cci": 165,
+   "efficiency": 149,
+   "zscore": 166,
+   "stddev": 166,
+   "linregSlope": 166,
+   "pctl": 166,
+   "rollingMin": 165,
+   "rollingMax": 165,
+   "classifyZone": 15,
+   "maxShare": 36,
+   "rank": 62,
+   "crossDetect": 11,
+   "levelInteraction": 318,
+   "count": 1,
+   "nearestZoneType": 1,
+   "nearestZoneRange": 1,
+   "nearestZoneDist": 1,
+   "nearestZoneAge": 1
+  },
+  "chainOuterParameters": "invariant across 532 metrics",
+  "catalogueAdded": [
+   "cci",
+   "ema",
+   "rma",
+   "rsi",
+   "wma"
+  ],
+  "catalogueChanged": [
+   "aggregate",
+   "rollingMax",
+   "rollingMin"
+  ],
+  "catalogueUntouched": [
+   "bandTouch"
+  ]
+ },
+ "newTransforms": {
+  "ema": {
+   "metricsServing": 165,
+   "windowMaximum": {
+    "269": 165
+   },
+   "windowUnit": {
+    "smoothingLength": 165
+   },
+   "asChainOuterWindowMaximum": {
+    "269": 387
+   }
+  },
+  "rma": {
+   "metricsServing": 165,
+   "windowMaximum": {
+    "118": 165
+   },
+   "windowUnit": {
+    "wilderLength": 165
+   },
+   "asChainOuterWindowMaximum": {
+    "118": 387
+   }
+  },
+  "wma": {
+   "metricsServing": 165,
+   "windowMaximum": {
+    "936": 165
+   },
+   "windowUnit": {
+    "seriesElements": 165
+   },
+   "asChainOuterWindowMaximum": {
+    "936": 387
+   }
+  },
+  "rsi": {
+   "metricsServing": 165,
+   "windowMaximum": {
+    "118": 165
+   },
+   "windowUnit": {
+    "wilderChanges": 165
+   },
+   "asChainOuterWindowMaximum": {
+    "118": 387
+   }
+  },
+  "cci": {
+   "metricsServing": 165,
+   "windowMaximum": {
+    "936": 165
+   },
+   "windowUnit": {
+    "seriesElements": 165
+   },
+   "asChainOuterWindowMaximum": {
+    "936": 387
+   }
+  }
+ },
+ "transformsGainedByMeasuredMetrics": {
+  "cci": 165,
+  "ema": 165,
+  "rma": 165,
+  "rsi": 165,
+  "wma": 165
+ },
+ "parameters": {
+  "accelerationIncrement": {
+   "metrics": 1,
+   "specs": {
+    "{\"bound\": \"range\", \"defaultValue\": 0.02, \"maximum\": 0.1, \"minimum\": 0.001, \"step\": 0.001}": 1
+   }
+  },
+  "accelerationMaximum": {
+   "metrics": 1,
+   "specs": {
+    "{\"bound\": \"range\", \"defaultValue\": 0.2, \"maximum\": 1, \"minimum\": 0.01, \"step\": 0.01}": 1
+   }
+  },
+  "accelerationStart": {
+   "metrics": 1,
+   "specs": {
+    "{\"bound\": \"range\", \"defaultValue\": 0.02, \"maximum\": 0.1, \"minimum\": 0.001, \"step\": 0.001}": 1
+   }
+  },
+  "atrPeriod": {
+   "metrics": 4,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 10, \"maximum\": 118, \"minimum\": 1, \"step\": null}": 4
+   }
+  },
+  "confluenceFilter": {
+   "metrics": 3,
+   "specs": {
+    "{\"bound\": \"flag\", \"defaultValue\": false, \"maximum\": null, \"minimum\": null, \"step\": null}": 3
+   }
+  },
+  "dSmoothing": {
+   "metrics": 4,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 3, \"maximum\": 923, \"minimum\": 1, \"step\": null}": 2,
+    "{\"bound\": \"depth\", \"defaultValue\": 3, \"maximum\": 813, \"minimum\": 1, \"step\": null}": 2
+   }
+  },
+  "equalBars": {
+   "metrics": 2,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 3, \"maximum\": 935, \"minimum\": 1, \"step\": null}": 2
+   }
+  },
+  "equalThreshold": {
+   "metrics": 2,
+   "specs": {
+    "{\"bound\": \"range\", \"defaultValue\": 0.1, \"maximum\": 0.5, \"minimum\": 0, \"step\": 0.1}": 2
+   }
+  },
+  "fast": {
+   "metrics": 6,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 12, \"maximum\": 260, \"minimum\": 1, \"step\": null}": 6
+   }
+  },
+  "kSmoothing": {
+   "metrics": 4,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 1, \"maximum\": 921, \"minimum\": 1, \"step\": null}": 2,
+    "{\"bound\": \"depth\", \"defaultValue\": 3, \"maximum\": 813, \"minimum\": 1, \"step\": null}": 2
+   }
+  },
+  "leftBars": {
+   "metrics": 7,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 2, \"maximum\": 933, \"minimum\": 1, \"step\": null}": 7
+   }
+  },
+  "multiplier": {
+   "metrics": 4,
+   "specs": {
+    "{\"bound\": \"range\", \"defaultValue\": 2, \"maximum\": 10, \"minimum\": 0.1, \"step\": 0.1}": 2,
+    "{\"bound\": \"range\", \"defaultValue\": 3, \"maximum\": 10, \"minimum\": 0.1, \"step\": 0.1}": 2
+   }
+  },
+  "period": {
+   "metrics": 12,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 14, \"maximum\": 934, \"minimum\": 2, \"step\": null}": 2,
+    "{\"bound\": \"depth\", \"defaultValue\": 14, \"maximum\": 935, \"minimum\": 2, \"step\": null}": 1,
+    "{\"bound\": \"depth\", \"defaultValue\": 20, \"maximum\": 935, \"minimum\": 2, \"step\": null}": 3,
+    "{\"bound\": \"depth\", \"defaultValue\": 20, \"maximum\": 269, \"minimum\": 2, \"step\": null}": 2,
+    "{\"bound\": \"depth\", \"defaultValue\": 14, \"maximum\": 936, \"minimum\": 2, \"step\": null}": 1,
+    "{\"bound\": \"depth\", \"defaultValue\": 14, \"maximum\": 824, \"minimum\": 2, \"step\": null}": 2,
+    "{\"bound\": \"depth\", \"defaultValue\": 20, \"maximum\": 936, \"minimum\": 2, \"step\": null}": 1
+   }
+  },
+  "rightBars": {
+   "metrics": 7,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 2, \"maximum\": 933, \"minimum\": 1, \"step\": null}": 7
+   }
+  },
+  "rsiPeriod": {
+   "metrics": 2,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 14, \"maximum\": 116, \"minimum\": 2, \"step\": null}": 2
+   }
+  },
+  "signal": {
+   "metrics": 6,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 9, \"maximum\": 243, \"minimum\": 1, \"step\": null}": 6
+   }
+  },
+  "slow": {
+   "metrics": 6,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 26, \"maximum\": 260, \"minimum\": 1, \"step\": null}": 6
+   }
+  },
+  "stdDev": {
+   "metrics": 3,
+   "specs": {
+    "{\"bound\": \"range\", \"defaultValue\": 2, \"maximum\": 5, \"minimum\": 0.1, \"step\": 0.1}": 3
+   }
+  },
+  "swingLength": {
+   "metrics": 6,
+   "specs": {
+    "{\"bound\": \"depth\", \"defaultValue\": 50, \"maximum\": 100, \"minimum\": 10, \"step\": null}": 6
+   }
+  }
+ },
+ "subjectKinds": {
+  "benchmark,evaluated-coin": 489,
+  "evaluated-coin": 25,
+  "market": 13,
+  "benchmark,evaluated-coin,reference": 4,
+  "reference": 1
+ }
+}

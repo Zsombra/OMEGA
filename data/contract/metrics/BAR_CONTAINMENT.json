@@ -16,12 +16,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 62
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "candlePatterns",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "the bar's range against the prior bar's: inside when its high is lower and its low higher, outside when its high is higher and its low lower",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

@@ -1,0 +1,501 @@
+{
+ "_what": "What the re-extraction at contract 161.0.0 moved in the metric corpus: the hints of all 534 served metrics read 2026-11-09 16:22 - 17:26Z (scripts/refresh_metric_contracts.py, EXTRACTION_STAMP=20261109; the 149.1.0 batches archived as archive_20261106_extraction), against the committed 149.1.0 records. Header spellings and refusals are the probe's (data/audit/authoring_probe_161_2026-11-09.json), not this file's.",
+ "contractVersion": "161.0.0",
+ "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+ "hintsReadOn": "2026-11-09",
+ "foldedOn": "2026-11-09",
+ "added": [
+  "DONCHIAN_BROKEN_HI_PRIOR",
+  "DONCHIAN_BROKEN_LO_PRIOR",
+  "VWMA20"
+ ],
+ "retired": {
+  "BB_TOUCH": {
+   "author": "BB_PCT_B",
+   "alsoAuthor": "BB_UPPER / BB_LOWER x levelInteraction",
+   "sameSeries": false,
+   "readme": "undocumented (README newest entry v156)",
+   "code": "BBtouch",
+   "quote": "undocumented: BB_TOUCH left $defs/metricKey at 161.0.0 (the README's newest entry was v156 at 2026-11-09T16:10Z); the platform's own includeBollingerBands template replaced its BB_TOUCH x value with BB_PCT_B x value in the same release",
+   "measured": "BB_TOUCH x value probed 2026-11-09 at 161.0.0 (data/audit/authoring_probe_161_2026-11-09.json, group S)"
+  }
+ },
+ "transformsGainedByExistingMetrics": {
+  "levelInteraction": [
+   "ASIA_HIGH",
+   "ASIA_LOW",
+   "ASIA_OPEN",
+   "IB_EXT_DOWN_150",
+   "IB_EXT_DOWN_200",
+   "IB_EXT_UP_150",
+   "IB_EXT_UP_200",
+   "LONDON_HIGH",
+   "LONDON_LOW",
+   "LONDON_OPEN",
+   "MONTH_TPO_POC",
+   "MONTH_TPO_VAH",
+   "MONTH_TPO_VAL",
+   "NEW_YORK_HIGH",
+   "NEW_YORK_LOW",
+   "NEW_YORK_OPEN",
+   "OR15_HIGH",
+   "OR15_LOW",
+   "OR30_HIGH",
+   "OR30_LOW",
+   "TPO_IB_HIGH",
+   "TPO_IB_LOW",
+   "TPO_POC",
+   "TPO_SINGLE_PRINT_ABOVE",
+   "TPO_SINGLE_PRINT_BELOW",
+   "TPO_VAH",
+   "TPO_VAL",
+   "TPO_VPOC",
+   "TPO_VVAH",
+   "TPO_VVAL",
+   "WEEK_TPO_POC",
+   "WEEK_TPO_VAH",
+   "WEEK_TPO_VAL"
+  ],
+  "roc": [
+   "ADX",
+   "ATR",
+   "ATR_PCT",
+   "BB_LOWER",
+   "BB_PCT_B",
+   "BB_UPPER",
+   "BB_WIDTH_PCT",
+   "BUY_PRESSURE",
+   "BUY_PRES_BN",
+   "BUY_PRES_CB",
+   "BUY_QUOTE_VOL",
+   "BUY_TRADES",
+   "BUY_VOLUME",
+   "CCI20",
+   "CLOSE",
+   "CLOSE_CHANGE",
+   "CLOSE_LOCATION",
+   "CMF20",
+   "CUM_VOLUME_DELTA",
+   "CVD",
+   "DAY_OF_WEEK",
+   "DI_MINUS",
+   "DI_PLUS",
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_LOWER_PRIOR",
+   "DONCHIAN_UPPER",
+   "DONCHIAN_UPPER_PRIOR",
+   "EMA13",
+   "EMA20",
+   "EMA21",
+   "EMA5",
+   "EMA50",
+   "EMA8",
+   "EMA9",
+   "FUNDING_RATE",
+   "HIGH",
+   "HL2",
+   "HLC3",
+   "HMA20",
+   "ICHI_BASE",
+   "ICHI_CONV",
+   "ICHI_LAG",
+   "ICHI_SPAN_A",
+   "ICHI_SPAN_B",
+   "KC_LOWER",
+   "KC_UPPER",
+   "LOW",
+   "MACD_HIST",
+   "MACD_LINE",
+   "MACD_SIGNAL",
+   "MFI14",
+   "MKT_ABOVE_EMA",
+   "MKT_AVG_CHG",
+   "MKT_AVG_PPO",
+   "MKT_DISPERSION",
+   "MKT_DOWN",
+   "MKT_NET",
+   "MKT_PPO_DOWN",
+   "MKT_PPO_NET",
+   "MKT_PPO_UP",
+   "MKT_STRETCH",
+   "MKT_UNIVERSE",
+   "MKT_UP",
+   "MKT_VOL_NET",
+   "OHLC4",
+   "OI",
+   "OPEN",
+   "PAR_DEV",
+   "PPO_HIST",
+   "PPO_LINE",
+   "PPO_SIGNAL",
+   "PRIOR_SWING_FRACTAL_HIGH",
+   "PRIOR_SWING_FRACTAL_LOW",
+   "PSAR",
+   "QQE_RSI_MA",
+   "QQE_STOP",
+   "QUOTE_VOL",
+   "ROC12",
+   "ROC15",
+   "ROC9",
+   "RSI14",
+   "RSI2",
+   "RSI7",
+   "RVOL",
+   "SELL_QUOTE_VOL",
+   "SELL_TRADES",
+   "SELL_VOLUME",
+   "SMA20",
+   "SMA200",
+   "SMA50",
+   "SPOT_AVG_TRADE",
+   "SPOT_CLOSE_BN",
+   "SPOT_CLOSE_CB",
+   "SPOT_CVD",
+   "SPOT_DOMINANCE",
+   "SQZ_MOM",
+   "STOCH_D",
+   "STOCH_K",
+   "STOCH_RSI_D",
+   "STOCH_RSI_K",
+   "ST_LINE",
+   "SWING_FRACTAL_HIGH",
+   "SWING_FRACTAL_HIGH_BARS_AGO",
+   "SWING_FRACTAL_LOW",
+   "SWING_FRACTAL_LOW_BARS_AGO",
+   "TRADES",
+   "UTC_HOUR",
+   "VOLUME",
+   "VOL_SMA20",
+   "VWAP",
+   "VWAP_LB1",
+   "VWAP_LB2",
+   "VWAP_LB3",
+   "VWAP_MONTH",
+   "VWAP_MONTH_LB1",
+   "VWAP_MONTH_LB2",
+   "VWAP_MONTH_LB3",
+   "VWAP_MONTH_UB1",
+   "VWAP_MONTH_UB2",
+   "VWAP_MONTH_UB3",
+   "VWAP_ROLLING_1H",
+   "VWAP_ROLLING_1H_LB1",
+   "VWAP_ROLLING_1H_LB2",
+   "VWAP_ROLLING_1H_LB3",
+   "VWAP_ROLLING_1H_UB1",
+   "VWAP_ROLLING_1H_UB2",
+   "VWAP_ROLLING_1H_UB3",
+   "VWAP_ROLLING_24H",
+   "VWAP_ROLLING_24H_LB1",
+   "VWAP_ROLLING_24H_LB2",
+   "VWAP_ROLLING_24H_LB3",
+   "VWAP_ROLLING_24H_UB1",
+   "VWAP_ROLLING_24H_UB2",
+   "VWAP_ROLLING_24H_UB3",
+   "VWAP_ROLLING_4H",
+   "VWAP_ROLLING_4H_LB1",
+   "VWAP_ROLLING_4H_LB2",
+   "VWAP_ROLLING_4H_LB3",
+   "VWAP_ROLLING_4H_UB1",
+   "VWAP_ROLLING_4H_UB2",
+   "VWAP_ROLLING_4H_UB3",
+   "VWAP_SWING_HIGH",
+   "VWAP_SWING_LOW",
+   "VWAP_TRADING_SESSION",
+   "VWAP_TRADING_SESSION_LB1",
+   "VWAP_TRADING_SESSION_LB2",
+   "VWAP_TRADING_SESSION_LB3",
+   "VWAP_TRADING_SESSION_UB1",
+   "VWAP_TRADING_SESSION_UB2",
+   "VWAP_TRADING_SESSION_UB3",
+   "VWAP_UB1",
+   "VWAP_UB2",
+   "VWAP_UB3",
+   "VWAP_WEEK",
+   "VWAP_WEEK_LB1",
+   "VWAP_WEEK_LB2",
+   "VWAP_WEEK_LB3",
+   "VWAP_WEEK_UB1",
+   "VWAP_WEEK_UB2",
+   "VWAP_WEEK_UB3",
+   "WILLR14",
+   "WT1",
+   "WT2"
+  ]
+ },
+ "transformsLostByExistingMetrics": {
+  "distance": [
+   "CLOSE",
+   "DONCHIAN_LOWER",
+   "DONCHIAN_UPPER",
+   "LAST"
+  ],
+  "levelInteraction": [
+   "DONCHIAN_BROKEN_HI",
+   "DONCHIAN_BROKEN_LO"
+  ]
+ },
+ "chainOutersGained": {
+  "aggregate->aggregate": 163,
+  "aggregate->cci": 163,
+  "aggregate->ema": 163,
+  "aggregate->linregSlope": 163,
+  "aggregate->pctl": 163,
+  "aggregate->rma": 163,
+  "aggregate->roc": 163,
+  "aggregate->rollingMax": 163,
+  "aggregate->rollingMin": 163,
+  "aggregate->rsi": 163,
+  "aggregate->stddev": 163,
+  "aggregate->wma": 163,
+  "aggregate->zscore": 163,
+  "cci->aggregate": 163,
+  "cci->cci": 163,
+  "cci->ema": 163,
+  "cci->linregSlope": 163,
+  "cci->pctl": 163,
+  "cci->rma": 163,
+  "cci->roc": 163,
+  "cci->rollingMax": 163,
+  "cci->rollingMin": 163,
+  "cci->rsi": 163,
+  "cci->stddev": 163,
+  "cci->wma": 163,
+  "cci->zscore": 163,
+  "distance->rank": 2,
+  "distance->roc": 89,
+  "ema->aggregate": 163,
+  "ema->cci": 163,
+  "ema->ema": 163,
+  "ema->linregSlope": 163,
+  "ema->pctl": 163,
+  "ema->rma": 163,
+  "ema->roc": 163,
+  "ema->rollingMax": 163,
+  "ema->rollingMin": 163,
+  "ema->rsi": 163,
+  "ema->stddev": 163,
+  "ema->wma": 163,
+  "ema->zscore": 163,
+  "relativeTo->roc": 137,
+  "rma->aggregate": 163,
+  "rma->cci": 163,
+  "rma->ema": 163,
+  "rma->linregSlope": 163,
+  "rma->pctl": 163,
+  "rma->rma": 163,
+  "rma->roc": 163,
+  "rma->rollingMax": 163,
+  "rma->rollingMin": 163,
+  "rma->rsi": 163,
+  "rma->stddev": 163,
+  "rma->wma": 163,
+  "rma->zscore": 163,
+  "rollingMax->levelInteraction": 92,
+  "rollingMin->levelInteraction": 92,
+  "rsi->aggregate": 163,
+  "rsi->cci": 163,
+  "rsi->ema": 163,
+  "rsi->linregSlope": 163,
+  "rsi->pctl": 163,
+  "rsi->rma": 163,
+  "rsi->roc": 163,
+  "rsi->rollingMax": 163,
+  "rsi->rollingMin": 163,
+  "rsi->rsi": 163,
+  "rsi->stddev": 163,
+  "rsi->wma": 163,
+  "rsi->zscore": 163,
+  "spread->roc": 158,
+  "wma->aggregate": 163,
+  "wma->cci": 163,
+  "wma->ema": 163,
+  "wma->linregSlope": 163,
+  "wma->pctl": 163,
+  "wma->rma": 163,
+  "wma->roc": 163,
+  "wma->rollingMax": 163,
+  "wma->rollingMin": 163,
+  "wma->rsi": 163,
+  "wma->stddev": 163,
+  "wma->wma": 163,
+  "wma->zscore": 163
+ },
+ "parametersAdded": {
+  "ADX": [
+   "period"
+  ],
+  "ATR": [
+   "period"
+  ],
+  "DI_MINUS": [
+   "period"
+  ],
+  "DI_PLUS": [
+   "period"
+  ],
+  "ICHI_BASE": [
+   "basePeriod",
+   "conversionPeriod",
+   "displacement",
+   "spanBPeriod"
+  ],
+  "ICHI_CONV": [
+   "basePeriod",
+   "conversionPeriod",
+   "displacement",
+   "spanBPeriod"
+  ],
+  "ICHI_LAG": [
+   "basePeriod",
+   "conversionPeriod",
+   "displacement",
+   "spanBPeriod"
+  ],
+  "ICHI_SPAN_A": [
+   "basePeriod",
+   "conversionPeriod",
+   "displacement",
+   "spanBPeriod"
+  ],
+  "ICHI_SPAN_B": [
+   "basePeriod",
+   "conversionPeriod",
+   "displacement",
+   "spanBPeriod"
+  ]
+ },
+ "parametersMoved": {
+  "BB_LOWER": [
+   "period"
+  ],
+  "BB_PCT_B": [
+   "period"
+  ],
+  "BB_UPPER": [
+   "period"
+  ],
+  "CMF20": [
+   "period"
+  ],
+  "EQH": [
+   "equalBars"
+  ],
+  "EQL": [
+   "equalBars"
+  ],
+  "KC_LOWER": [
+   "atrPeriod",
+   "period"
+  ],
+  "KC_UPPER": [
+   "atrPeriod",
+   "period"
+  ],
+  "MACD_HIST": [
+   "fast",
+   "signal",
+   "slow"
+  ],
+  "MACD_LINE": [
+   "fast",
+   "signal",
+   "slow"
+  ],
+  "MACD_SIGNAL": [
+   "fast",
+   "signal",
+   "slow"
+  ],
+  "MFI14": [
+   "period"
+  ],
+  "PPO_HIST": [
+   "fast",
+   "signal",
+   "slow"
+  ],
+  "PPO_LINE": [
+   "fast",
+   "signal",
+   "slow"
+  ],
+  "PPO_SIGNAL": [
+   "fast",
+   "signal",
+   "slow"
+  ],
+  "PRIOR_SWING_FRACTAL_HIGH": [
+   "leftBars",
+   "rightBars"
+  ],
+  "PRIOR_SWING_FRACTAL_LOW": [
+   "leftBars",
+   "rightBars"
+  ],
+  "STOCH_D": [
+   "dSmoothing",
+   "kSmoothing",
+   "period"
+  ],
+  "STOCH_K": [
+   "dSmoothing",
+   "kSmoothing",
+   "period"
+  ],
+  "STOCH_RSI_D": [
+   "dSmoothing",
+   "kSmoothing",
+   "period",
+   "rsiPeriod"
+  ],
+  "STOCH_RSI_K": [
+   "dSmoothing",
+   "kSmoothing",
+   "period",
+   "rsiPeriod"
+  ],
+  "ST_DIR": [
+   "atrPeriod"
+  ],
+  "ST_LINE": [
+   "atrPeriod"
+  ],
+  "SWING_FRACTAL_HIGH": [
+   "leftBars",
+   "rightBars"
+  ],
+  "SWING_FRACTAL_HIGH_BARS_AGO": [
+   "leftBars",
+   "rightBars"
+  ],
+  "SWING_FRACTAL_LABEL": [
+   "leftBars",
+   "rightBars"
+  ],
+  "SWING_FRACTAL_LOW": [
+   "leftBars",
+   "rightBars"
+  ],
+  "SWING_FRACTAL_LOW_BARS_AGO": [
+   "leftBars",
+   "rightBars"
+  ],
+  "WILLR14": [
+   "period"
+  ]
+ },
+ "headerCodesMoved": [],
+ "addedByContract": {
+  "161.0.0 (undocumented)": [
+   "DONCHIAN_BROKEN_HI_PRIOR",
+   "DONCHIAN_BROKEN_LO_PRIOR",
+   "VWMA20"
+  ]
+ },
+ "platformTemplatesChanged": [
+  "includeBollingerBands: lost ['{\"metric\": \"BB_TOUCH\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"value\"}'] gained ['{\"metric\": \"BB_PCT_B\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"value\"}']",
+  "includeSupportResistance: lost ['{\"chainedTransformId\": \"rank\", \"metric\": \"DONCHIAN_LOWER\", \"ordering\": \"near\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}', '{\"chainedTransformId\": \"rank\", \"metric\": \"DONCHIAN_UPPER\", \"ordering\": \"near\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}', '{\"metric\": \"DONCHIAN_LOWER\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}', '{\"metric\": \"DONCHIAN_UPPER\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}'] gained ['{\"chainedTransformId\": \"rank\", \"metric\": \"DONCHIAN_LOWER_PRIOR\", \"ordering\": \"near\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}', '{\"chainedTransformId\": \"rank\", \"metric\": \"DONCHIAN_UPPER_PRIOR\", \"ordering\": \"near\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}', '{\"inputs\": [{\"metric\": \"DONCHIAN_LOWER\"}], \"metric\": \"CLOSE\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"spread\"}', '{\"inputs\": [{\"metric\": \"DONCHIAN_UPPER\"}], \"metric\": \"CLOSE\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"spread\"}', '{\"metric\": \"DONCHIAN_LOWER_PRIOR\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}', '{\"metric\": \"DONCHIAN_UPPER_PRIOR\", \"timeframe\": {\"rel\": \"anchor\"}, \"transformId\": \"distance\"}']"
+ ]
+}

@@ -29,7 +29,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .contract import Contract, Metric, load
+from .contract import REFERENCE_PAIRS, Contract, Metric, load
 from .fanout import outputs_for
 from .types import Column, Operand, RelTimeframe
 from .validate import SERIES_CHAINS as _SERIES_CHAINS, chained_operands
@@ -48,6 +48,13 @@ class ColumnShape:
     chained: str | None = None
     operand: str | None = None
     ordering: str | None = None
+    # A relativeTo stage on a metric only a reference (pair) section reads - PAR_DEV - names another declared pair: "a
+    # reference section has no default" instrument (measured 2026-11-07 at 149.1.0). Such a shape is sent on a section
+    # bound to REFERENCE_PAIRS[0] and reads against REFERENCE_PAIRS[1]. None everywhere else.
+    instrument: str | None = None
+    # A chain whose outer serves an `offsetMinimum` (148.1.0: distance after rollingMin / rollingMax, minimum 1) is
+    # only legal at that offset or more; the shape carries the served minimum so its column is authorable as written.
+    offset: int | None = None
 
     def to_column(self, timeframe_rel: str = "anchor") -> Column:
         """The authorable Column this shape denotes, with no parameters set."""
@@ -58,6 +65,8 @@ class ColumnShape:
             chainedTransformId=self.chained,
             ordering=self.ordering,
             inputs=[Operand(metric=self.operand)] if self.operand else None,
+            instrument=self.instrument,
+            offset=self.offset,
         )
 
 
@@ -99,9 +108,11 @@ def enumerate_shapes(expand_operands: bool = False,
     c = contract or load()
     out: list[ColumnShape] = []
     for name, m in c.metrics.items():
+        pair = REFERENCE_PAIRS[1] if m.subject == "reference" else None
         for transform, flags in m.transforms.items():
+            instrument = pair if transform == "relativeTo" else None
             for operand, ordering in _variants(m, transform, expand_operands):
-                out.append(ColumnShape(name, transform, None, operand, ordering))
+                out.append(ColumnShape(name, transform, None, operand, ordering, instrument))
                 for succ in (flags.get("chainSuccessors") or ()):
                     if succ == "rank" and expand_operands:
                         # Chaining to rank NARROWS the legal operand set. The contract
@@ -115,7 +126,7 @@ def enumerate_shapes(expand_operands: bool = False,
                         if rankable is not None and operand not in rankable:
                             continue
                         for o in (flags.get("chainedRankOrderings") or (None,)):
-                            out.append(ColumnShape(name, transform, succ, operand, o))
+                            out.append(ColumnShape(name, transform, succ, operand, o, instrument))
                     elif (transform == "spread" and succ in _SERIES_CHAINS
                           and operand is not None and c.metric(operand).is_timeless):
                         # A series-building chain needs a per-bar series on BOTH sides.
@@ -130,7 +141,8 @@ def enumerate_shapes(expand_operands: bool = False,
                           and operand not in chained_operands(flags, succ)):
                         continue        # v135: the outer is not offered over this operand
                     else:
-                        out.append(ColumnShape(name, transform, succ, operand, ordering))
+                        offset_min = ((flags.get("chainedOuters") or {}).get(succ) or {}).get("offsetMinimum")
+                        out.append(ColumnShape(name, transform, succ, operand, ordering, instrument, offset_min))
     return out
 
 

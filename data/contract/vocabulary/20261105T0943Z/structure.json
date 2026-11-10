@@ -1,0 +1,10 @@
+{
+  "code": "RESULT_TOO_LARGE",
+  "message": "The result is 224226 characters, over the 150000-character cap; ask for less.",
+  "details": {
+    "limit": "result_chars",
+    "actual": 224226,
+    "maximum": 150000,
+    "correlationId": "3cd9c96b-eab2-4fe1-959b-8d88f3eed995"
+  }
+}

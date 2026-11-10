@@ -41,7 +41,7 @@ def _findings(metric, offset, contract):
     return validate_column(col, path="s", contract=contract)
 
 
-@pytest.mark.parametrize("metric", ["MA_ALIGN", "BB_TOUCH", "EMA_CROSS", "PRICE_ZONE"])
+@pytest.mark.parametrize("metric", ["MA_ALIGN", "KC_SQUEEZE", "EMA_CROSS", "PRICE_ZONE"])   # 161.0.0 (2026-11-09): KC_SQUEEZE for BB_TOUCH (retired; a live candle categorical)
 def test_offset_on_a_candle_categorical_metric_no_longer_warns_at_v94(metric, contract):
     """Contract 94.0.0 fixed BG-13: "A candle label column at offset N reads bar t-N's label;
     it used to read the latest" (vendor README, Contract history - v94). The 2026-08 proofs
@@ -80,9 +80,15 @@ def test_the_affected_set_is_exactly_the_candle_categoricals(contract):
     # v94 fixed the behaviour ("A candle label column at offset N reads bar t-N's label"), so they were never affected.
     MEASURED = ["BAR_FORMING", "BB_TOUCH", "EMA_CROSS", "KC_SQUEEZE", "MA_ALIGN", "PRICE_ZONE", "ST_DIR"]
     # and v135.1's TRADING_SESSION (asia / london / newYork / late, a fact of the read bar's open time)
+    # and the six structure categoricals contract 148.1.0 added (v146.11: EQH / EQL and the four TREND / EVENT keys),
+    # in the corpus since 2026-11-07
     JOINED_AFTER_V94 = ["BAR_CONTAINMENT", "CANDLE_DOJI", "CANDLE_ENGULFING", "CANDLE_PIN", "GAP", "GAP_RANGE_CLEAR",
-                        "SWING_FRACTAL_LABEL", "TRADING_SESSION"]
-    assert affected == sorted(MEASURED + JOINED_AFTER_V94)
+                        "SWING_FRACTAL_LABEL", "TRADING_SESSION", "EQH", "EQL", "INTERNAL_STRUCTURE_EVENT",
+                        "INTERNAL_STRUCTURE_TREND", "SWING_STRUCTURE_EVENT", "SWING_STRUCTURE_TREND"]
+    # 161.0.0 (2026-11-09): BB_TOUCH was retired by the platform (_moves_161.json, author BB_PCT_B): it is no longer in
+    # the corpus, so the live affected set loses it; the stored 2026-08-28 audit keeps its measured history.
+    assert "BB_TOUCH" in contract.retired_metrics and "BB_TOUCH" not in contract.metrics
+    assert affected == sorted([m for m in MEASURED if m != "BB_TOUCH"] + JOINED_AFTER_V94)
     affected = MEASURED
     rec = json.loads(AUDIT.read_text(encoding="utf-8"))
     assert rec["scope"]["candleCategoricalMetrics"] == affected

@@ -77,6 +77,42 @@ SEEN_FILES = [
     "_coverage_sweep_2026-11-02.json",
     "_coverage_sweep_2026-11-02-market.json",
     "_probe_146_2026-11-02.json",
+    # 2026-11-07: the authoring probe at contract 149.1.0 (data/audit/authoring_probe_149_2026-11-07.json): the four
+    # smoothers, the thirteen knobs, the 148.1.0 widening (swing pairs, structure, EQH / EQL, pivots, four subjects).
+    "_probe_149_2026-11-07.json",
+    # 2026-11-07: the coverage sweep at 149.1.0 over the 206 keys v146.5 / .8 / .10 / .11 added (pivots, structure,
+    # swing, EQH / EQL) on evaluated-coin sections, structural scope: 557 shapes, 565 headers, zero refusals, zero
+    # predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-07-structural.json).
+    "_coverage_sweep_2026-11-07-structural.json",
+    # 2026-11-07, after the model step taught omega.fanout the smoother / knob / offset spellings: the shapes that then
+    # read uncovered - the five smoothers as transform and as chain outer, distance after an offset rolling extreme -
+    # on coin sections (2,074 shapes), on a market section (65, the MKT_* smoothers) and on a pair section bound to
+    # USDT_USD (15, PAR_DEV relativeTo USDC_USDT: parDev_USDC_USDT_rel); 0 refusals, 0 predicted-but-not-rendered.
+    "_coverage_sweep_2026-11-07-smoothers.json",
+    "_coverage_sweep_2026-11-07-smoothers-market.json",
+    "_coverage_sweep_2026-11-07-reference.json",
+    # 2026-11-07: thirteen knob spellings the probe had not rendered (iStructLvl_s20_cf, stochRsiK_rsi14_p21s3d3, ...;
+    # data/audit/knob_spelling_probe_149_2026-11-07.json), all as omega.fanout predicted.
+    "_probe_149_knobs_2026-11-07.json",
+    # 2026-11-08: the 27 (metric, knob) cells no render had shown off default (MACDsig_fast12slow26sig5, PPOhist_...;
+    # data/audit/knob_spelling_probe_149_2026-11-08.json), all as predicted - 81 / 81 served cells now rendered.
+    "_probe_149_knobs_2026-11-08.json",
+    # 2026-11-09: the authoring probe at contract 161.0.0 (data/audit/authoring_probe_161_2026-11-09.json): 63 previews,
+    # 37 rendered, 166 headers - the roc / chained-window / touchAtr / Ichimoku and period knob spellings.
+    "_probe_161_2026-11-09.json",
+    # 2026-11-09/10: the structural sweep at contract 161.0.0 (build ab5b6252) over the 15,876 shapes the 161 refresh
+    # opened (roc, the chained-window outers, VWMA20, DONCHIAN_BROKEN_*_PRIOR, the new knob cells), coin sections:
+    # 14,623 headers; every shape on a metric a coin section reads rendered as omega.fanout predicted. Its 1,289
+    # refusals are the thirteen MKT_* and PAR_DEV sent on a coin section, which no coin section reads (the sweep had no
+    # subject filter until that day; data/audit/coverage_sweep_2026-11-09.json). Those shapes are the market and
+    # reference passes below.
+    "_coverage_sweep_2026-11-09.json",
+    # 2026-11-10, the subject filter in place: the 1,196 MKT_* shapes on a market section (marketScope crypto), the 93
+    # PAR_DEV shapes on a pair section (benchmarkTicker USDT_USD), and the 9 non-spread coin expansions - every pass
+    # 0 refusals, 0 predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-10-{market,reference,nonspread}.json).
+    "_coverage_sweep_2026-11-10-market.json",
+    "_coverage_sweep_2026-11-10-reference.json",
+    "_coverage_sweep_2026-11-10-nonspread.json",
 ]
 
 

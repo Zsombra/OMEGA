@@ -240,6 +240,26 @@ def test_all_sixteen_transforms_are_exercised_on_live_data():
         if case["outputs"]:
             covered.add(case["column"]["transformId"])
             covered.add(case["column"].get("chainedTransformId") or case["column"]["transformId"])
+    # ema (148.1.0) and rma / wma / rsi / cci (149.0.0): the authoring probe at 149.1.0, 2026-11-07, on atoms and as
+    # chain outers (data/audit/authoring_probe_149_2026-11-07.json)
+    probe = _json.loads((COLUMNS_DIR.parents[1] / "audit" / "authoring_probe_149_2026-11-07.json")
+                        .read_text(encoding="utf-8"))
+    for case in probe["probes"]:
+        if case["accepted"]:
+            for section in case["sections"]:
+                for col in section["columns"]:
+                    covered.add(col["transformId"])
+                    covered.add(col.get("chainedTransformId") or col["transformId"])
+    # roc (161.0.0): the authoring probe at 161.0.0, 2026-11-09, on atoms and as chain outers
+    # (data/audit/authoring_probe_161_2026-11-09.json)
+    probe = _json.loads((COLUMNS_DIR.parents[1] / "audit" / "authoring_probe_161_2026-11-09.json")
+                        .read_text(encoding="utf-8"))
+    for case in probe["probes"]:
+        if case["accepted"]:
+            for section in case["sections"]:
+                for col in section["columns"]:
+                    covered.add(col["transformId"])
+                    covered.add(col.get("chainedTransformId") or col["transformId"])
     missing = set(load().transform_ids()) - covered
     assert not missing, f"never exercised live: {sorted(missing)}"
 
@@ -250,14 +270,22 @@ def test_fanout_predicts_every_rendered_header_exactly():
     This is what caught the two nearestZone* bugs: the header carries an `_h`
     unit suffix for age, and side='resistance' is abbreviated to `resist`.
     """
+    from omega.contract import load
     from omega.fanout import outputs_for
     from omega.types import Column
 
+    # 161.0.0 (2026-11-09): BB_TOUCH left the contract (retired_metrics). The stored render that carries a BB_TOUCH
+    # column keeps its live header on disk, but omega can no longer predict a metric it does not model: that column is
+    # skipped on both sides (its header code is the retired record's `code`), every other column is still compared.
+    retired = {m: r for m, r in load().retired_metrics.items() if r.get("retiredAt") == "161.0.0"}   # the older retirements are replayed by _pre_110
+    retired_codes = {r["code"] for r in retired.values() if "code" in r}
     for payload in load_all_renders():
         section = payload["request"]["sections"][0]
         predicted = []
         back: dict[str, str] = {}
         for spec in section["columns"]:
+            if spec["metric"] in retired:
+                continue
             if payload["capturedAt"] < "2026-10-14":
                 spec, codes = _pre_110(spec)
                 back |= codes
@@ -283,6 +311,7 @@ def test_fanout_predicts_every_rendered_header_exactly():
 
         # every capture predates v123: the same column renders under today's codes (tests/moves_123.py)
         live = [header_at_123(o["header"]) for o in custom[0]["outputs"]]
+        live = [h for h in live if h not in retired_codes]      # 161.0.0: the retired metric's own header
         assert predicted == live, f"predicted {predicted}\nlive      {live}"
 
 

@@ -17,12 +17,21 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "agreement between order flow and crowd positioning — aligned bullish when CVD_state is bullish and upLeanZ is at least 1.96; aligned bearish when CVD_state is bearish and upLeanZ is at most −1.96; divergent when CVD_state is bullish and upLeanZ is at most −1.96, or bearish and upLeanZ is at least 1.96; neutral otherwise; compared on the unrounded score; no value when either is absent",
+  "subjectKinds": [
+    "evaluated-coin"
+  ],
+  "parameters": null
 }

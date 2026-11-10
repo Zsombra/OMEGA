@@ -45,6 +45,12 @@ class Metric:
     timeframe_mode: str
     transforms: dict[str, dict]          # transformId -> flags (operandRequired, chainSuccessors, ...)
     spread_operands: tuple[str, ...] = ()
+    # 161.0.0 (served beside spreadOperands, undocumented): the operands a spread meets OFF the anchor rung - a column
+    # at {rel: lower | regime} or any {abs}. A per-bar session-profile level (ASIA_HIGH, the IB extensions, pivots...)
+    # is in spreadOperands only: "a relation meets it only at the strategy's anchor rung ({ rel: 'anchor' })"
+    # (REPORT_COLUMN_OPERAND_UNSUPPORTED, measured 2026-11-09, authoring_probe_161 group P). Empty = no restriction
+    # recorded (a corpus older than 161).
+    spread_operands_off_anchor: tuple[str, ...] = ()
     rank_orderings: tuple[str, ...] = ()
     anchor: str | None = None
     """The one ABSOLUTE timeframe this metric accepts, when the platform declares one.
@@ -65,7 +71,19 @@ class Metric:
     # a named scope a `market` section; each refuses a column whose metric it does not read and serves, in the refusal,
     # the whole domain it does read. `market` is exactly the thirteen MKT_*; `evaluated-coin` the other 312; None is a
     # served metric NO subject reads (PAR_DEV - refused on both), which no column can render.
+    # Since 148 / 149 each hint serves the metric's `subjectKinds` (data/contract/metrics/<METRIC>.json, read at
+    # 149.1.0 on 2026-11-06): evaluated-coin, benchmark, market, reference - a set, kept whole in `subject_kinds`.
+    # `subject` stays the one section kind the metric is sent on (evaluated-coin, else market, else reference: PAR_DEV
+    # reads only on a pair section), so the 146 two-subject consumers keep their meaning for every other metric.
     subject: str | None = None
+    subject_kinds: tuple[str, ...] = ()
+    # Since 148.1.0 / 149.0.0 the hint serves the metric's own knobs (`parameters`): name -> {defaultValue, minimum,
+    # maximum, step, bound (depth | range | flag), required, description}. Empty on a metric that serves none (most).
+    parameters: dict[str, dict] = field(default_factory=dict)
+
+    def reads_on(self, subject: str) -> bool:
+        """True when a section of this subject reads the metric: the served `subjectKinds` (148+), else the 146 subject."""
+        return subject in self.subject_kinds if self.subject_kinds else subject == self.subject
 
     @property
     def is_timeless(self) -> bool:
@@ -117,6 +135,12 @@ class Contract:
     # `levelInteraction`) - which metrics it composes is unmeasured offline.
     retired_transforms: dict[str, dict] = field(default_factory=dict)
     unmeasured_transforms: dict[str, dict] = field(default_factory=dict)
+    # Served by the write schema and known by NAME only (data/contract/metrics/_unmeasured_108.json `chainOuters` and
+    # `transformParameters`, 2026-11-05 at 148.1.0): a chain outer (`distance` after an offset rolling extreme, `ema`)
+    # and a transform knob (`offset` on rollingMax / rollingMin) no extraction has rendered. validate_column refuses a
+    # column using one (TRANSFORM_UNMEASURED / PARAMETER_UNMEASURED) instead of answering from the older corpus.
+    unmeasured_chain_outers: dict[str, dict] = field(default_factory=dict)
+    unmeasured_parameters: dict[str, dict[str, dict]] = field(default_factory=dict)
 
     # -- lookups -------------------------------------------------------------
     def metric(self, name: str) -> Metric:
@@ -176,11 +200,14 @@ def load() -> Contract:
             timeframe_mode=rec["timeframeMode"],
             transforms={t["id"]: t for t in rec["transforms"] if t["id"] not in retired},
             spread_operands=tuple(rec.get("spreadOperands", ())),
+            spread_operands_off_anchor=tuple(rec.get("spreadOperandsOffAnchor", ())),
             rank_orderings=tuple(rec.get("rankOrderings", ())),
             anchor=rec.get("anchor"),
             rank_scope=rec.get("rankScope"),
             provenance=rec.get("provenance"),
-            subject=subjects.get(rec["metric"]),
+            subject=_primary_subject(rec.get("subjectKinds")) or subjects.get(rec["metric"]),
+            subject_kinds=tuple(rec.get("subjectKinds") or ()),
+            parameters=dict(rec.get("parameters") or {}),
         )
 
     # The roster size is the platform's to choose, not ours to pin: it went 86 (2026-08-24)
@@ -193,7 +220,14 @@ def load() -> Contract:
             f"corpus incomplete: {len(metrics)} metric files, _index.json says {expected}")
 
     unmeasured_path = CONTRACT_DIR / "metrics" / "_unmeasured_108.json"
-    unmeasured = _load(unmeasured_path)["metrics"] if unmeasured_path.exists() else {}
+    unmeasured_doc = _load(unmeasured_path) if unmeasured_path.exists() else {}
+    unmeasured = unmeasured_doc.get("metrics") or {}
+    unmeasured_outers = unmeasured_doc.get("chainOuters") or {}
+    unmeasured_parameters = unmeasured_doc.get("transformParameters") or {}
+    served_outers = _served_chain_outers()
+    if served_outers is not None and set(unmeasured_outers) - served_outers:
+        raise RuntimeError(f"{unmeasured_path.name} lists chain outers the write schema does not serve: "
+                           f"{sorted(set(unmeasured_outers) - served_outers)}")
     overlap = set(unmeasured) & set(metrics)
     if overlap:
         raise RuntimeError(f"measured AND listed unmeasured: {sorted(overlap)} - drop them from {unmeasured_path.name}")
@@ -226,7 +260,46 @@ def load() -> Contract:
         retired_metrics=retired_metrics,
         retired_transforms=retired,
         unmeasured_transforms=unmeasured_transforms,
+        unmeasured_chain_outers=unmeasured_outers,
+        unmeasured_parameters=unmeasured_parameters,
     )
+
+
+def _served_chain_outers() -> set[str] | None:
+    """The write schema's column `chainedTransformId` enum (the derived inventory), or None with no inventory on disk."""
+    path = DERIVED_DIR / "condition_vocabulary_108.json"
+    if not path.exists():
+        return None
+    return set(_load(path)["reportColumn"]["chainedTransformId"]["enum"])
+
+
+_SUBJECT_ORDER = ("evaluated-coin", "market", "reference")
+
+# The declared reference pairs: README "Contract history - v146" names a section whose `benchmarkTicker` is `USDT_USD`
+# or `USDC_USDT` a pair section, reading OPEN / HIGH / LOW / CLOSE / PAR_DEV (subjectKinds `reference`); both rendered
+# as such on 2026-11-07 at 149.1.0 (data/audit/authoring_probe_149_2026-11-07.json, group G). Any other ticker is a
+# `benchmark` section. Neither the stage schema nor a hint lists them, so the changelog's two are the list.
+REFERENCE_PAIRS = ("USDT_USD", "USDC_USDT")
+
+
+def section_subject(benchmark_ticker: str | None, market_scope: str | None) -> str:
+    """The subject a custom section reads (measured 2026-11-07 at 149.1.0): a declared reference pair in
+    `benchmarkTicker` -> `reference`, any other ticker -> `benchmark`, a named `marketScope` -> `market`, neither ->
+    `evaluated-coin`. Both set is refused by the platform (omega.validate SECTION_SUBJECT_CONFLICT); here the ticker
+    wins, so the caller must check that first."""
+    if benchmark_ticker:
+        return "reference" if benchmark_ticker.upper() in REFERENCE_PAIRS else "benchmark"
+    return "market" if market_scope is not None else "evaluated-coin"
+
+
+def _primary_subject(kinds) -> str | None:
+    """The section kind a metric is sent on, from its served `subjectKinds` (148+); None when the record serves none
+    (a pre-148 record), and the 146 measurement in _subjects_146.json applies. `benchmark` alone is never primary: no
+    served metric reads only on a benchmark section (489 read on benchmark AND evaluated-coin at 149.1.0)."""
+    for kind in _SUBJECT_ORDER:
+        if kind in (kinds or ()):
+            return kind
+    return None
 
 
 @lru_cache(maxsize=1)

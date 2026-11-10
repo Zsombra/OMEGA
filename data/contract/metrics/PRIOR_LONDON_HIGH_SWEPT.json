@@ -15,12 +15,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 0
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     }
   ],
   "study": "priorTradingSessions",
   "provenance": "battleGridDerived",
-  "rankScope": null
+  "rankScope": null,
+  "gloss": "whether any price since the previous London 08–13 UTC trading session closed has traded strictly above its high: swept, else intact — a touch is not a sweep; read live, because the last price decides; absent while that instance, any trading session since it, or the current one has no fold, or the last price is unknown",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null
 }

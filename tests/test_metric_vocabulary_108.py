@@ -39,11 +39,18 @@ def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
     # 326 at 146.0.0 (24 unmeasured 2026-11-01 .. 11-02, measured at 146.0.1 on 2026-11-02: _moves_146.json); 302 at
     # 144.0.0 (_moves_144.json); 171 at 108; 177 at 110 (_moves_110.json); 183 at 110.8 (_moves_110_8.json); 226 at
     # 135.2 (_moves_135.json)
-    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 326
-    assert len(c.metrics) == 326 and set(RECORD["metrics"]) == set(c.unmeasured_metrics) == set()
+    # 532 since the 148.1.0 capture (2026-11-05): the 206 keys v146.5 / .8 / .10 / .11 added, listed by name - the
+    # re-extraction at 148.1.0 stopped at its hint step before reaching any of them (RECORD["why"])
+    # 532 in the corpus since the refresh at 149.1.0, 2026-11-07 (_moves_149.json); the 206 under history148
+    # 534 since 161.0.0 (2026-11-09, _moves_161.json): BB_TOUCH retired, VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR added
+    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 534
+    assert len(c.metrics) == 534 and RECORD["metrics"] == {} and c.unmeasured_metrics == {}
+    assert len(RECORD["history148"]["formerlyUnmeasured"]) == 206
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
     assert len(RECORD["history146"]["formerlyUnmeasured"]) == 24 and RECORD["history146"]["measuredOn"] == "2026-11-02"
-    assert RECORD["servedAt"] == "146.0.1"
+    # listed 2026-11-05 at 148.1.0; the record's servedAt follows the served contract (149.1.0 when it was emptied)
+    assert RECORD["servedAt"] == "149.1.0" and RECORD["listedOn"] == "2026-11-05"
+    assert RECORD["history148"]["servedAt"] == "148.1.0"
 
 
 def test_the_v100_metrics_are_what_the_changelog_says():
@@ -55,7 +62,9 @@ def test_the_v100_metrics_are_what_the_changelog_says():
     for m in V100:
         assert "rank" not in c.metrics[m].transforms, m
     for m in PRICE_SOURCES:
-        assert set(c.metrics[m].transforms) == set(c.metrics["CLOSE"].transforms), m
+        # 161.0.0 (2026-11-09): the platform removed `distance` from CLOSE (and LAST, DONCHIAN_UPPER/LOWER) but not from
+        # the three derived price sources, so they take every transform a close takes, plus distance
+        assert set(c.metrics[m].transforms) == set(c.metrics["CLOSE"].transforms) | {"distance"}, m
 
 
 @pytest.mark.parametrize("metric", sorted(V100 | V101_1))
@@ -109,4 +118,6 @@ def test_the_stored_104_1_surface_reports_nothing_missing_and_nothing_unmeasured
     root = Path(__file__).resolve().parents[1]
     retired = {**json.loads((root / "data/contract/metrics/_moves_110.json").read_text(encoding="utf-8"))["retired"],
                **json.loads((root / "data/contract/metrics/_moves_144.json").read_text(encoding="utf-8"))["retired"]}
+    # ... plus BB_TOUCH (retired at 161.0.0, 2026-11-09 - _moves_161.json), which the 104.1.0 surface also still lists
+    retired = {**retired, **json.loads((root / "data/contract/metrics/_moves_161.json").read_text(encoding="utf-8"))["retired"]}
     assert result["metrics"]["liveNotStored"] == sorted(retired) and result["metrics"]["storedUnmeasured"] == []

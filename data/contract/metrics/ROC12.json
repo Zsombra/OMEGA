@@ -13,14 +13,22 @@
   "transforms": [
     {
       "id": "value",
+      "metricParametersAccepted": false,
       "maximums": {
         "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
       }
     },
     {
       "id": "trajectory",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
@@ -29,6 +37,12 @@
       "chainSuccessors": [
         "trajectory",
         "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
         "efficiency",
         "zscore",
         "stddev",
@@ -40,6 +54,8 @@
       "chainedOuters": {
         "trajectory": {
           "windowMaximum": 64,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -49,10 +65,24 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "aggregate": {
-          "windowMaximum": 64,
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -62,10 +92,186 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 704,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 308,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 308,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2435,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "efficiency": {
           "windowMaximum": 63,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -75,10 +281,24 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "zscore": {
-          "windowMaximum": 64,
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -88,10 +308,24 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "stddev": {
-          "windowMaximum": 64,
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -101,10 +335,24 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "linregSlope": {
-          "windowMaximum": 64,
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -114,10 +362,24 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "pctl": {
-          "windowMaximum": 63,
+          "windowMaximum": 2435,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -127,10 +389,24 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMin": {
-          "windowMaximum": 64,
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -140,10 +416,24 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMax": {
-          "windowMaximum": 64,
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
           "operands": [
             "PPO_HIST",
             "PPO_LINE",
@@ -153,15 +443,34 @@
             "CLOSE_CHANGE",
             "ATR_PCT",
             "BB_WIDTH_PCT"
-          ]
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC9",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "ATR_PCT",
+            "BB_WIDTH_PCT"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         }
-      }
+      },
+      "metricParametersAccepted": false
     },
     {
       "id": "relativeTo",
       "chainSuccessors": [
         "trajectory",
         "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
         "efficiency",
         "zscore",
         "stddev",
@@ -173,109 +482,1277 @@
       "chainedOuters": {
         "trajectory": {
           "windowMaximum": 64,
-          "operands": null
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "aggregate": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 704,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 308,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 308,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2435,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "efficiency": {
           "windowMaximum": 63,
-          "operands": null
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "zscore": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "stddev": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "linregSlope": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "pctl": {
-          "windowMaximum": 63,
-          "operands": null
+          "windowMaximum": 2435,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMin": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         },
         "rollingMax": {
-          "windowMaximum": 64,
-          "operands": null
+          "windowMaximum": 2436,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
         }
-      }
+      },
+      "metricParametersAccepted": false
     },
     {
-      "id": "crossDetect"
+      "id": "crossDetect",
+      "metricParametersAccepted": false
     },
     {
       "id": "aggregate",
+      "chainSuccessors": [
+        "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "aggregate": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2413,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 697,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2364,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 305,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2329,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 305,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2328,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2412,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2427,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "zscore": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "stddev": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "linregSlope": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "pctl": {
+          "windowMaximum": 2412,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMin": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMax": {
+          "windowMaximum": 2413,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        }
+      },
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
+      },
+      "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
+    },
+    {
+      "id": "ema",
+      "chainSuccessors": [
+        "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "aggregate": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 697,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 683,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 683,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 299,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 673,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 299,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 673,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2363,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 701,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "zscore": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "stddev": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "linregSlope": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "pctl": {
+          "windowMaximum": 2363,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMin": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMax": {
+          "windowMaximum": 2364,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 698,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        }
+      },
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 704
+      },
+      "bounds": {
+        "window": "depth"
+      },
+      "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
+    },
+    {
+      "id": "rma",
+      "chainSuccessors": [
+        "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "aggregate": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 673,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 299,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 294,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 294,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 306,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 294,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 294,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 306,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 307,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "zscore": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 306,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "stddev": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 306,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "linregSlope": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 306,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "pctl": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMin": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 306,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMax": {
+          "windowMaximum": 2329,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 306,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        }
+      },
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 308
+      },
+      "bounds": {
+        "window": "depth"
+      },
+      "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
+    },
+    {
+      "id": "wma",
+      "chainSuccessors": [
+        "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "aggregate": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2413,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 698,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2364,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 306,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2329,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 305,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2328,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2416,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2427,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "zscore": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "stddev": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "linregSlope": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "pctl": {
+          "windowMaximum": 2416,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMin": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMax": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        }
+      },
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
+      },
+      "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
+    },
+    {
+      "id": "rsi",
+      "chainSuccessors": [
+        "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "aggregate": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 673,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 299,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 294,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 294,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 294,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 294,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2327,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 307,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "zscore": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "stddev": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "linregSlope": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "pctl": {
+          "windowMaximum": 2327,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMin": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMax": {
+          "windowMaximum": 2328,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 305,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        }
+      },
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 308
+      },
+      "bounds": {
+        "window": "depth"
+      },
+      "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
+    },
+    {
+      "id": "cci",
+      "chainSuccessors": [
+        "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "aggregate": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2413,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 698,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2364,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 306,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2329,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 305,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2328,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2416,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2427,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "zscore": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "stddev": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "linregSlope": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "pctl": {
+          "windowMaximum": 2416,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMin": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMax": {
+          "windowMaximum": 2417,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2417,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        }
+      },
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
+      },
+      "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
+    },
+    {
+      "id": "roc",
+      "chainSuccessors": [
+        "aggregate",
+        "ema",
+        "rma",
+        "wma",
+        "rsi",
+        "cci",
+        "roc",
+        "zscore",
+        "stddev",
+        "linregSlope",
+        "pctl",
+        "rollingMin",
+        "rollingMax"
+      ],
+      "chainedOuters": {
+        "aggregate": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2412,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "ema": {
+          "windowMaximum": 701,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2363,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rma": {
+          "windowMaximum": 307,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2328,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "wma": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rsi": {
+          "windowMaximum": 307,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2327,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "cci": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "roc": {
+          "windowMaximum": 2426,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2426,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "zscore": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "stddev": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "linregSlope": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "pctl": {
+          "windowMaximum": 2426,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2415,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMin": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
+        "rollingMax": {
+          "windowMaximum": 2427,
+          "windowParameter": "chainedWindow",
+          "innerWindowMaximum": 2416,
+          "operands": null,
+          "operandsOffAnchor": null,
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        }
+      },
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 2435
+      },
+      "bounds": {
+        "window": "depth"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
       "id": "efficiency",
+      "metricParametersAccepted": false,
       "maximums": {
         "window": 63
+      },
+      "bounds": {
+        "window": "lookback"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
       "id": "zscore",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
       "id": "stddev",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
       "id": "linregSlope",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
       "id": "pctl",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 63
+        "window": 2435
+      },
+      "bounds": {
+        "window": "depth"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
       "id": "rollingMin",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
       "id": "rollingMax",
+      "metricParametersAccepted": false,
       "maximums": {
-        "window": 64
+        "window": 2436,
+        "offset": 63
+      },
+      "bounds": {
+        "window": "depth",
+        "offset": "lookback"
       },
       "windowOwnLength": "Separate from ROC (12)’s own 12-bar length."
     },
     {
-      "id": "rank"
+      "id": "rank",
+      "metricParametersAccepted": false
     }
   ],
   "study": null,
   "provenance": "tradingView",
   "rankScope": "exchangeWide",
+  "gloss": "rate of change vs 12 bars ago (%)",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": null,
   "spreadOperands": [
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC9",
+    "ROC15",
+    "CLOSE_CHANGE",
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV",
+    "FUNDING_RATE",
+    "FUNDING_ANN",
+    "OI_CHG"
+  ],
+  "spreadOperandsOffAnchor": [
     "PPO_HIST",
     "PPO_LINE",
     "PPO_SIGNAL",
