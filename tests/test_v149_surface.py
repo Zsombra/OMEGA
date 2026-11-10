@@ -43,7 +43,10 @@ def _j(path: Path) -> dict:
 
 
 DOC = _j(CAPTURE)
-V = vocabulary()
+# 161.0.0 (2026-11-09): the stored inventory (omega.condition_vocabulary.vocabulary()) now derives from the 161.0.0
+# capture; this file pins the 149.1.0 surface as history, so it derives its own vocabulary from the 149.1.0 capture
+# (what the inventory held from 2026-11-07 to 2026-11-09) instead of reading today's.
+V = derive(DOC, source=CAPTURE.name, source_sha256="")
 V148 = derive(_j(CAPTURE_148), source=CAPTURE_148.name, source_sha256="")
 HINTS = _j(ROOT / "data/audit/hints_149_1_0_2026-11-06.json")
 
@@ -61,12 +64,16 @@ def test_the_capture_names_its_contract_build_and_source():
     assert DOC["liveListSha256"] is None                 # no live list: OMEGA made no platform call
     for tool in TOOLS:
         assert {"description", "inputSchema", "outputSchema", "annotations"} <= set(DOC[tool]), tool
-    assert C.stage_schema()["contractVersion"] == "149.1.0"
-    ws = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
+    # 161.0.0 (2026-11-09): the manifest's writeSurface names the 161.0.0 capture; the 149.1.0 block is its `supersedes`
+    assert C.stage_schema()["contractVersion"] == "161.0.0"
+    current = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
+    assert current["servedContractVersion"] == "161.0.0"
+    ws = current["supersedes"]
+    assert ws["servedContractVersion"] == "149.1.0"
     assert ws["schema"] == "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
     # cross-checked against the manager's own live observation when its stack came back (2026-11-07T03:16:53Z)
     assert ws["liveCheckedAt"]["observedAt"] == "2026-11-07T03:16:53Z"
-    assert ws["liveCheckedAt"]["buildSha"] == DOC["buildSha"] and "no platform call" in ws["offline"]
+    assert ws["liveCheckedAt"]["buildSha"] == DOC["buildSha"] and "no platform call" in ws["liveCheckedAt"]["how"]   # 161.0.0: the `offline` key left the block; its `how` says it
     assert ws["supersedes"]["servedContractVersion"] == "148.1.0"
 
 

@@ -228,6 +228,7 @@ SCHEMA_144 = "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
 SCHEMA_146 = "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
 SCHEMA_148 = "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
 SCHEMA_149 = "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
+SCHEMA_161 = "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"   # 161.0.0 (2026-11-09)
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
@@ -235,10 +236,14 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     ws = manifest["writeSurface"]
     # the 149.1.0 capture since 2026-11-07 (offline, from battlegrid-manager's fixture); 148.1.0 under `supersedes`,
     # then 146.0.0, 144.0.0, 135.2.0, 110.13.0 (v111, flat arguments), 110.8.0, 110.2.0, 108.0.0 and 91.0.0
-    assert ws["servedContractVersion"] == "149.1.0"
-    assert ws["buildSha"].startswith("aa4ab640")
-    assert ws["schema"] == SCHEMA_149 and (ROOT / ws["schema"]).is_file()
-    v148 = ws["supersedes"]
+    # 161.0.0 (2026-11-09): the 161.0.0 capture (live listing, build ab5b6252); the 149.1.0 block is one level down
+    assert ws["servedContractVersion"] == "161.0.0"
+    assert ws["buildSha"].startswith("ab5b6252")
+    assert ws["schema"] == SCHEMA_161 and (ROOT / ws["schema"]).is_file()
+    v149 = ws["supersedes"]
+    assert v149["servedContractVersion"] == "149.1.0" and v149["buildSha"].startswith("aa4ab640")
+    assert v149["schema"] == SCHEMA_149 and (ROOT / SCHEMA_149).is_file()
+    v148 = v149["supersedes"]
     assert v148["servedContractVersion"] == "148.1.0" and v148["buildSha"].startswith("d02121ec")
     assert v148["schema"] == SCHEMA_148 and (ROOT / SCHEMA_148).is_file()
     v146 = v148["supersedes"]
@@ -271,9 +276,10 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     # the metric/transform extraction is a separate snapshot and keeps its own version: 108.4.0 since the 2026-10-13
     # re-extraction (61.2.0 before, kept under `supersedes`), while the write surface above is still the 108.0.0 capture
     # 146.0.1 since the 2026-11-02 re-extraction; 144.0.0 under `supersedes`, then 135.2.0, 110.8.0, 110.2.0, 108.4.0
-    # and 61.2.0
-    assert manifest["servedContractVersion"] == "146.0.1"
-    chain = manifest["supersedes"]
+    # and 61.2.0; 161.0.0 since the 2026-11-09 re-extraction, 146.0.1 under `supersedes` and the rest below it
+    assert manifest["servedContractVersion"] == "161.0.0"
+    assert manifest["supersedes"]["servedContractVersion"] == "146.0.1"
+    chain = manifest["supersedes"]["supersedes"]
     assert chain["servedContractVersion"] == "144.0.0"
     assert chain["supersedes"]["servedContractVersion"] == "135.2.0"
     assert chain["supersedes"]["supersedes"]["servedContractVersion"] == "110.8.0"
@@ -293,7 +299,7 @@ def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
 
 def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     doc = C.stage_schema()
-    assert doc["contractVersion"] == "149.1.0"          # the eight axes did not move at 110 - 146, 148.1 or 149.1
+    assert doc["contractVersion"] == "161.0.0"          # the eight axes did not move at 110 - 146, 148.1, 149.1 or 161
     assert V108_TOOLS <= set(doc)
     # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
     assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]

@@ -85,7 +85,9 @@ def _infix(column: Column) -> str:
 # the code: fractalHi_l3r5_4h, bbUpper20_p30sd2.5_ltf_o2, MACDline_fast8slow26sig9_trend, fractalHi_l3r5_close_spread.
 KNOB_SPELLING = {"fast": "fast", "slow": "slow", "signal": "sig", "period": "p", "kSmoothing": "s", "dSmoothing": "d",
                  "stdDev": "sd", "atrPeriod": "atr", "multiplier": "mult", "accelerationStart": "start",
-                 "accelerationIncrement": "inc", "accelerationMaximum": "max", "leftBars": "l", "rightBars": "r"}
+                 "accelerationIncrement": "inc", "accelerationMaximum": "max", "leftBars": "l", "rightBars": "r",
+                 # 161.0.0, measured 2026-11-09 (authoring_probe_161 group Q): Ichimoku's set, kijun_conv9base27spanB52disp26
+                 "conversionPeriod": "conv", "basePeriod": "base", "spanBPeriod": "spanB", "displacement": "disp"}
 KNOB_OWN_TOKEN = {"rsiPeriod": "rsi"}
 KNOB_SINGLE = {"equalBars": "e", "equalThreshold": "atr", "swingLength": "s", "confluenceFilter": "cf"}
 # Each (metric, knob) whose header has been RENDERED with that knob off its default, at 149.1.0: the authoring probe
@@ -130,6 +132,17 @@ KNOB_SPELLING_RENDERED = {
     "SWING_STRUCTURE_LEVEL": frozenset({'swingLength'}),
     "SWING_STRUCTURE_TREND": frozenset({'swingLength'}),
     "WILLR14": frozenset({'period'}),
+    # 161.0.0, rendered 2026-11-09 (data/audit/authoring_probe_161_2026-11-09.json group Q): the `period` 161 gave ADX,
+    # ATR and the two DIs (ADX14_p15, ATR14_p15, DIplus14_p15, DIminus14_p15), VWMA20's (VWMA20_p21), and Ichimoku's
+    # four-knob set on its five lines, each knob off alone and two, four and none together (kijun_conv10base27spanB52disp26,
+    # tenkan at every default)
+    "ADX": frozenset({'period'}),
+    "ATR": frozenset({'period'}),
+    "DI_MINUS": frozenset({'period'}),
+    "DI_PLUS": frozenset({'period'}),
+    "VWMA20": frozenset({'period'}),
+    **{m: frozenset({'conversionPeriod', 'basePeriod', 'spanBPeriod', 'displacement'})
+       for m in ("ICHI_BASE", "ICHI_CONV", "ICHI_LAG", "ICHI_SPAN_A", "ICHI_SPAN_B")},
 }
 
 
@@ -230,11 +243,24 @@ STATISTIC_DEFAULT_WINDOW = 20
 # window always spelled, its default the catalogue's (ema 20, rma 14, wma 20, rsi 14, cci 20): RSI14_ema20,
 # RSI14_rma14, quoteVol_wma14, parDev_cci20; as a chain outer over distance / spread / relativeTo: dist_close_rma10,
 # RSI14_RSI7_spread_ema10, close_BTC_rel_cci10; a pinned timeframe sits in the base (RSI14_4h_cci20).
-SMOOTHERS = ("ema", "rma", "wma", "rsi", "cci")
+# 161.0.0 adds `roc` (TradingView's ta.roc, default length 9; measured 2026-11-09, authoring_probe_161 groups K and L):
+# close_roc9, RSI14_roc3, close_4h_roc5; as a chain outer dist_EMA20_roc9, RSI14_RSI7_spread_roc5, close_BTC_rel_roc5.
+# It spells exactly as a smoother does, and takes no offset ("transform 'roc' does not accept params.offset").
+SMOOTHERS = ("ema", "rma", "wma", "rsi", "cci", "roc")
+# 161.0.0: a chain whose INNER is one of these keeps `window` for the inner and reads the outer's from `chainedWindow`
+# (served chainedOuters.<outer>.windowParameter); headers measured 2026-11-09 (authoring_probe_161 group N):
+# close_ema20_mean5, RSI14_rma14_roc3, close_mean10_z20, RSI14_roc5_ema10, close_wma10_max20; no chainedWindow ->
+# the outer's default (close_ema20_mean24), no window -> the inner's (close_ema20_mean5).
+ROLLING_INNERS = ("aggregate", "ema", "rma", "wma", "rsi", "cci", "roc")
 
 
-def _smoothed(base: str, column: Column, transform_id: str, contract: Contract) -> str:
-    window = column.window or contract.transforms[transform_id]["parameters"]["window"]["defaultValue"]
+def outer_window(column: Column) -> int | None:
+    """The window the chain OUTER reads: `chainedWindow` after a rolling inner (161.0.0), `window` otherwise."""
+    return column.chainedWindow if column.transformId in ROLLING_INNERS else column.window
+
+
+def _smoothed(base: str, column: Column, transform_id: str, contract: Contract, window: int | None = None) -> str:
+    window = window or contract.transforms[transform_id]["parameters"]["window"]["defaultValue"]
     return f"{base}_{transform_id}{window}"
 # v142.3 relativeTo (measured 2026-10-30 at 144.0.0, data/audit/relative_to_probe_144_2026-10-30.json): the token,
 # the instrument as the platform spells it, `_rel` - RSI14_ETH_rel, close_BTC_rel (BTC when omitted), RSI14_ltf_ETH_rel,
@@ -283,8 +309,19 @@ def scope_token(column: Column) -> str:
     return f"_{column.scope}" if column.scope and column.scope != "all" else ""
 
 
-def _statistic(base: str, column: Column, transform_id: str) -> str:
-    return f"{base}_{STATISTIC_SUFFIX[transform_id]}{column.window or STATISTIC_DEFAULT_WINDOW}"
+def _statistic(base: str, column: Column, transform_id: str, window: int | None = None) -> str:
+    return f"{base}_{STATISTIC_SUFFIX[transform_id]}{window or STATISTIC_DEFAULT_WINDOW}"
+
+
+LEVEL_VOCABULARY = ("touch_from_below", "touch_from_above", "reject_from_below", "reject_from_above", "none")
+
+
+def _level(base: str, column: Column) -> str:
+    """levelInteraction's header: `_lvl`, then `_b<bps>` for a non-zero buffer or `_a<atr>` for touchAtr (never both:
+    the platform refuses the pair). bbUpper20_lvl_b500, bbUpper20_lvl_a0.5, high_o1_max20_lvl_b10 (161.0.0)."""
+    if column.touchAtr is not None:
+        return f"{base}_lvl_a{_knob_number(float(column.touchAtr))}"
+    return f"{base}_lvl" + (f"_b{column.buffer}" if column.buffer else "")
 
 
 def _stage1_header(column: Column, contract: Contract) -> str:
@@ -306,9 +343,9 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     if tid == "efficiency":
         return f"{token}_er"
     if tid in STATISTIC_SUFFIX:
-        return _statistic(token, column, tid)
+        return _statistic(token, column, tid, column.window)
     if tid in SMOOTHERS:
-        return _smoothed(token, column, tid, contract)
+        return _smoothed(token, column, tid, contract, column.window)
     if tid == "maxShare":
         return f"{token}_maxShare"
     if tid == "aggregate":
@@ -320,7 +357,7 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     if tid == "levelInteraction":
         # Measured 2026-10-13 (get_strategy_column_contract, levelInteraction_108_4_2026-10-13.json): bbUpper_lvl,
         # VWAP_ltf_lvl, and a non-zero buffer names the header - bbUpper_lvl_b25 (bbUpper_4h_lvl_b25 pinned).
-        return f"{token}_lvl" + (f"_b{column.buffer}" if column.buffer else "")
+        return _level(token, column)
     if tid == "crossDetect":
         return f"{token}_cross"
     if tid == "classifyState":          # platform-only, listed for completeness
@@ -363,18 +400,23 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
         outs.append(Output(f"{base}_trend", "direction", ("rising", "falling", "flat")))
         return outs
 
+    if column.chainedTransformId == "levelInteraction":
+        # 161.0.0: a rolling extreme read as a level (high_o1_max20_lvl, low_o1_min20_lvl; measured group M)
+        return [Output(_level(base, column), "classification", LEVEL_VOCABULARY)]
     if column.chainedTransformId == "distance":
         # 148.1.0 (v146.6): distance after an offset rolling extreme, a PREFIX as distance always is - dist_high_o1_max55,
         # dist_close_o2_min20, dist_high_4h_o1_max55 (measured 2026-11-07 at 149.1.0, group B / I)
         return [Output(f"dist_{base}", "numeric")]
     if effective in SMOOTHERS:
-        return [Output(base if column.chainedTransformId is None else _smoothed(base, column, effective, c), "numeric")]
+        return [Output(base if column.chainedTransformId is None
+                       else _smoothed(base, column, effective, c, outer_window(column)), "numeric")]
     if effective in ("efficiency", "maxShare"):
         return [Output(base if column.chainedTransformId is None else f"{base}_er", "numeric")]
     if effective in STATISTIC_SUFFIX:
-        return [Output(base if column.chainedTransformId is None else _statistic(base, column, effective), "numeric")]
+        return [Output(base if column.chainedTransformId is None
+                       else _statistic(base, column, effective, outer_window(column)), "numeric")]
     if effective == "aggregate" and column.chainedTransformId:
-        return [Output(f"{base}_mean{column.window or 24}", "numeric")]
+        return [Output(f"{base}_mean{outer_window(column) or 24}", "numeric")]
 
     # single-output transforms
     tid = column.transformId

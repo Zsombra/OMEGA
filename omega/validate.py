@@ -11,7 +11,8 @@ from decimal import Decimal
 from typing import Iterable, get_args
 
 from .contract import REFERENCE_PAIRS, Contract, Metric, load, section_subject
-from .fanout import KNOB_OWN_TOKEN, KNOB_SINGLE, KNOB_SPELLING, KNOB_SPELLING_RENDERED, SMOOTHERS, takes_offset
+from .fanout import (KNOB_OWN_TOKEN, KNOB_SINGLE, KNOB_SPELLING, KNOB_SPELLING_RENDERED, ROLLING_INNERS, SMOOTHERS,
+                     takes_offset)
 from .types import KNOBS, MARKET_SCOPE, Column, CustomSection, PlatformSection, Report, Section
 
 # The nine market scopes the 146.0.0 stage schema enumerates (omega.types.MARKET_SCOPE), for the subject message.
@@ -55,7 +56,9 @@ NULLARY_TRANSFORMS = {"distance", "bandTouch", "classifyZone", "crossDetect", "c
 # What the changelog says replaces a retired transform (which transforms are retired is derived, contract.py).
 RETIRED_TRANSFORM_REPLACEMENT = {
     "bandTouch": ('README "Contract history - v100": "Where you want \'where the close sits in the bands\', read '
-                  'BB_TOUCH x value; where you want \'what the bar\'s range did at a band\', use levelInteraction"'),
+                  'BB_TOUCH x value; where you want \'what the bar\'s range did at a band\', use levelInteraction" - '
+                  'and BB_TOUCH itself was removed at contract 161.0.0: read BB_PCT_B for where the close sits, '
+                  'BB_UPPER / BB_LOWER x levelInteraction for a touch'),
 }
 # v100: "`buffer`, a column knob declared by `levelInteraction` only ... `buffer` on any other transform is refused
 # as an undeclared parameter."
@@ -212,7 +215,46 @@ def validate_column(
             f"{tid!r} is served at contract {rec['servedAt']} but was never extracted: which metrics it composes, "
             f"its header and its vocabulary are UNMEASURED offline; omega does not emit it until "
             f"`get_strategy_column_contract` is read over it and the corpus re-extracted")]
-    if column.buffer is not None and tid not in BUFFER_TRANSFORMS:
+    level = tid in BUFFER_TRANSFORMS or column.chainedTransformId in BUFFER_TRANSFORMS
+    if column.touchAtr is not None:
+        # 161.0.0 (measured 2026-11-09, authoring_probe_161 groups M / T): levelInteraction's touch distance in ATR,
+        # on the transform or a chained levelInteraction outer; "accepts params.buffer or params.touchAtr, never both";
+        # "transform 'value' does not accept params.touchAtr"
+        spec_atr = (((c.transforms.get("levelInteraction") or {}).get("parameters") or {}).get("touchAtr") or {})
+        lo, step = spec_atr.get("minimum"), spec_atr.get("step")
+        if not level:
+            out.append(Finding(
+                "error", "TOUCH_ATR_UNDECLARED", f"{path}.touchAtr",
+                f"transform {tid!r} does not accept params.touchAtr: it is levelInteraction's (the transform or a "
+                f"chained outer) - REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-11-09 at 161.0.0"))
+        elif column.buffer is not None:
+            out.append(Finding(
+                "error", "TOUCH_ATR_AND_BUFFER", f"{path}.touchAtr",
+                "levelInteraction accepts params.buffer or params.touchAtr, never both (REPORT_COLUMN_CONSTRUCTION_FAILED,"
+                " measured 2026-11-09 at 161.0.0)"))
+        elif (lo is not None and column.touchAtr < lo) or (step and lo is not None
+                                                             and not _step_ok(column.touchAtr, lo, step)):
+            out.append(Finding(
+                "error", "PARAMETER_OUT_OF_RANGE", f"{path}.touchAtr",
+                f"levelInteraction requires params.touchAtr >= {lo:g} in steps of {step:g} (got {column.touchAtr!r})"))
+        else:
+            hi = (((m.transforms.get("levelInteraction") or {}).get("maximums") or {}).get("touchAtr")
+                  if tid == "levelInteraction" else None)
+            if hi is not None and column.touchAtr > hi:
+                out.append(Finding(
+                    "error", "PARAMETER_OUT_OF_RANGE", f"{path}.touchAtr",
+                    f"params.touchAtr {column.touchAtr} on {m.metric} is over the served maximum {hi}"))
+    if column.chainedWindow is not None:
+        outer_spec = (((m.transforms.get(tid) or {}).get("chainedOuters") or {}).get(column.chainedTransformId or "")
+                      or {})
+        if outer_spec.get("windowParameter") != "chainedWindow":
+            # measured 2026-11-09: "transform 'spread' -> 'ema' does not accept params.chainedWindow"
+            out.append(Finding(
+                "error", "CHAINED_WINDOW_REFUSED", f"{path}.chainedWindow",
+                f"transform {tid!r} -> {column.chainedTransformId!r} does not accept params.chainedWindow: only a chain "
+                f"whose inner is a rolling transform ({', '.join(ROLLING_INNERS)}) reads its outer window from it "
+                f"(served chainedOuters.<outer>.windowParameter; REPORT_COLUMN_CONSTRUCTION_FAILED, 161.0.0)"))
+    if column.buffer is not None and not level:
         out.append(Finding(
             "error", "BUFFER_UNDECLARED", f"{path}.buffer",
             f"`buffer` is declared by {sorted(BUFFER_TRANSFORMS)} only; on {tid!r} it is refused as an undeclared "
@@ -298,6 +340,14 @@ def validate_column(
                     "error", "OPERAND_NOT_ALLOWED", f"{path}.inputs[0]",
                     f"{operand} is not a valid spread operand for {m.metric} "
                     f"(unit '{m.unit}'). Allowed: {list(m.spread_operands)}"))
+            elif (m.spread_operands_off_anchor and getattr(column.timeframe, "rel", None) != "anchor"
+                  and operand not in m.spread_operands_off_anchor):
+                # 161.0.0 (measured 2026-11-09 at {abs: 4h} and {rel: lower}, authoring_probe_161 group P)
+                out.append(Finding(
+                    "error", "REPORT_COLUMN_OPERAND_UNSUPPORTED", f"{path}.inputs[0]",
+                    f"spread operand {operand!r} is a per-bar session-profile level: a relation meets it only at the "
+                    f"strategy's anchor rung ({{rel: 'anchor'}}), and this column reads off it (served "
+                    f"spreadOperandsOffAnchor)"))
     elif column.inputs and tid in INSTRUMENT_TRANSFORMS:
         # v142.3: the other coin is named by `instrument`, never by an operand metric - measured 2026-10-30:
         # "[column-grammar] transform 'relativeTo' does not accept params.inputs" (REPORT_COLUMN_CONSTRUCTION_FAILED)
@@ -397,18 +447,42 @@ def validate_column(
                         "error", "REPORT_COLUMN_CHAIN_UNSUPPORTED", f"{path}.inputs[0]",
                         f"({m.metric} x spread x {chained}) is only offered over the operands "
                         f"{served}, not {operand!r} (chainedOuters.{chained}.operands)."))
+        outer_spec = (spec.get("chainedOuters") or {}).get(chained) or {}
+        rolling_inner = outer_spec.get("windowParameter") == "chainedWindow"
+        outer_win = column.chainedWindow if rolling_inner else column.window
+        inner_max = outer_spec.get("innerWindowMaximum")
+        if rolling_inner and inner_max is not None and column.window is not None and column.window > inner_max:
+            # 161.0.0: the inner keeps `window`, bounded by the chain's served innerWindowMaximum (ema 697 under an
+            # aggregate outer on RSI14 against 704 alone). Measured 2026-11-09: 698 was still rendered
+            # (RSI14_ema698_mean5, probe N.innerWindow.over), so the platform does not refuse at this bound: a WARNING,
+            # not an error (2026-11-10, review of the 161 step). The platform's own last accepted value is unmeasured.
+            out.append(Finding(
+                "warning", "BEYOND_SERVED_MAXIMUM", f"{path}.window",
+                f"window={column.window} is past the inner maximum {inner_max} the platform serves for the {chained} "
+                f"chain on {m.metric} x {tid} (chainedOuters.{chained}.innerWindowMaximum); one past it rendered on "
+                f"2026-11-09, the real limit is unmeasured"))
         window_max = chained_window_maximum(spec, chained)
-        if window_max is not None and column.window is not None and column.window > window_max:
+        if rolling_inner and window_max is not None and outer_win is not None and outer_win > window_max:
+            # 161.0.0: a rolling inner's chainedWindow past the served windowMaximum still renders - measured 2026-11-09,
+            # RSI14 x ema14 -> aggregate chainedWindow 2365 against 2364 served (RSI14_ema14_mean2365, probe
+            # N.chainedWindow.over). A WARNING, as the inner bound above; the platform's own limit is unmeasured.
+            out.append(Finding(
+                "warning", "BEYOND_SERVED_MAXIMUM", f"{path}.chainedWindow",
+                f"chainedWindow={outer_win} is past the maximum {window_max} the platform serves for the {chained} "
+                f"chain on {m.metric} x {tid} (chainedOuters.{chained}.windowMaximum); one past it rendered on "
+                f"2026-11-09, the real limit is unmeasured"))
+        elif window_max is not None and outer_win is not None and outer_win > window_max:
             # v135: efficiency's largest window is one below columnLookback (it reads window + 1 bars), and pctl's
             # likewise; each outer's maximum is served (chainedOuters.<outer>.windowMaximum). A maximum above the
             # columnLookback budget is the 1,000-bar depth's (v146.4): REPORT_COLUMN_DEPTH_EXCEEDED, measured 2026-11-07
             # at 149.1.0 on HIGH x distance -> ema window 270 ("the largest window that fits is 269").
             depth = window_max > c.budgets["columnLookback"]
+            field = "chainedWindow" if rolling_inner else "window"
             out.append(Finding(
-                "error", "DEPTH_EXCEEDED" if depth else "LOOKBACK_EXCEEDED", f"{path}.window",
-                f"window={column.window} exceeds the maximum {window_max} the platform serves for the "
+                "error", "DEPTH_EXCEEDED" if depth else "LOOKBACK_EXCEEDED", f"{path}.{field}",
+                f"{field}={outer_win} exceeds the maximum {window_max} the platform serves for the "
                 f"{chained} chain on {m.metric} x {tid} (chainedOuters.{chained}.windowMaximum"
-                + ("; at most 936 of the 1000 readable bars, leaving the lookback budget)" if depth else ")")))
+                + ("; the readable depth less the lookback budget: 2436 of 2500 bars since 161.0.0)" if depth else ")")))
         offset_min = ((spec.get("chainedOuters") or {}).get(chained) or {}).get("offsetMinimum")
         if offset_min is not None and (column.offset or 0) < offset_min:
             # 148.1.0 (v146.6): distance after a rolling extreme needs the extreme to exclude the bar it is measured on.
@@ -418,8 +492,9 @@ def validate_column(
             out.append(Finding(
                 "error", "OFFSET_BELOW_MINIMUM", f"{path}.offset",
                 f"transform {tid!r} at offset {column.offset or 0} cannot be chained into {chained!r}: a rolling extreme "
-                f"at offset 0 includes the bar the distance is measured on, so a close can never pass it; author offset "
-                f"{offset_min} or more (chainedOuters.{chained}.offsetMinimum)"))
+                f"at offset 0 includes the bar the {'interaction is classified' if chained == 'levelInteraction' else 'distance is measured'} "
+                f"on, so a close can never pass it; author offset {offset_min} or more "
+                f"(chainedOuters.{chained}.offsetMinimum)"))
 
     # --- offset that did nothing (BG-13), fixed at contract 94.0.0 --------------
     # Measured 2026-08-26 across 78 coins at a 4h anchor: MA_ALIGN, BB_TOUCH, EMA_CROSS
@@ -458,6 +533,10 @@ def validate_column(
                 "error", "WINDOW_REFUSED", f"{path}.window",
                 f"transform {tid!r} does not accept params.window: {m.metric} x {tid} builds no series "
                 f"(REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-10-30 at 144.0.0)"))
+        elif (column.chainedTransformId and tid in ROLLING_INNERS
+              and ((spec.get("chainedOuters") or {}).get(column.chainedTransformId) or {}).get("windowParameter")
+              == "chainedWindow"):
+            pass   # 161.0.0: the inner's window under a rolling-inner chain, judged by the chain block above
         elif column.chainedTransformId in SERIES_TRANSFORMS:
             # A chained window belongs to the OUTER: the chain block above judges it against the served
             # chainedOuters.<outer>.windowMaximum (269 / 118 / 936 at 149.1.0, the platform's own "the largest window
@@ -477,12 +556,15 @@ def validate_column(
                 out.append(Finding(
                     "error", "DEPTH_EXCEEDED", f"{path}.window",
                     f"window={column.window} exceeds the maximum {served} the platform serves for {m.metric} x {tid} "
-                    f"(bound depth: at most 936 of the 1000 readable bars, leaving the lookback budget)"))
+                    f"(bound depth: the readable depth less the lookback budget, 2436 of 2500 bars since 161.0.0)"))
             else:
                 out.append(Finding(
                     "error", "LOOKBACK_EXCEEDED", f"{path}.window",
                     f"window={column.window} exceeds the columnLookback budget of {lookback}"))
-        owner = column.chainedTransformId if column.chainedTransformId in SERIES_TRANSFORMS else tid
+        rolling_chain = (((spec.get("chainedOuters") or {}).get(column.chainedTransformId or "") or {})
+                         .get("windowParameter") == "chainedWindow")
+        owner = column.chainedTransformId if column.chainedTransformId in SERIES_TRANSFORMS and not rolling_chain \
+            else tid
         minimum = (((c.transforms.get(owner) or {}).get("parameters") or {}).get("window") or {}).get("minimum")
         if minimum is not None and column.window < minimum and "trajectory" not in (tid, column.chainedTransformId):
             # The catalogue's served minimum (authoring.parameters.window.minimum). Measured 2026-11-07 at 149.1.0:

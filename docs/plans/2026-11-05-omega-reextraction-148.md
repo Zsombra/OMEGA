@@ -746,6 +746,45 @@ standing decision). `pyproject.toml` stays 0.11.0.
 **Next:** the 0.12.0 cut (pyproject, this file rewritten as the DONE record) - no merge and no tag without the user's
 word.
 
+## Contract 161.0.0, 2026-11-09 / 10: brought to 161 and cut as 0.12.0 (recorded 2026-11-10 03:09Z)
+
+The served contract moved 149.1.0 -> 161.0.0 (build ab5b6252) before the cut; the user's word was "Bring it to 161",
+then the 11-09 full-autonomy grant covered the merge and the tag. The README "Contract history" stops at v156; 157 -
+161 are undocumented, so the served write schema, the 534 hints and the probe are the sources.
+
+1. **Surface and hints.** The live surface listed 2026-11-09T16:21Z (166 tools; the six draft tools identical to the
+   manager watch's stored 161.0.0 row); the write schema captured as `schema_20261109T162100Z.json`. All 534 hints read
+   16:22 - 17:26Z (the 149.1.0 batch archived as `archive_20261106_extraction`). Moves (`_moves_161.json`): BB_TOUCH
+   retired (BB_PCT_B / BB_UPPER-LOWER x levelInteraction replace it, as the platform's own includeBollingerBands
+   template now does); VWMA20 and DONCHIAN_BROKEN_HI/LO_PRIOR added; `roc` a transform and a chain outer; the
+   chained-window outers (`chainedWindow`) on every rolling transform; `touchAtr` on levelInteraction; `distance` lost on
+   CLOSE / DONCHIAN_LOWER / DONCHIAN_UPPER / LAST and levelInteraction on DONCHIAN_BROKEN_HI/LO; 25 knob cells added
+   (ADX / ATR / DI / VWMA20 `period`, the four Ichimoku knobs on each ICHI_*); no header code moved.
+2. **The authoring probe** (`scripts/probe_authoring_161.py`, 17:28 - 17:36Z): 63 previews, 37 rendered, 26 refused,
+   166 headers. Replayed whole through omega in `tests/test_v161.py::test_omega_agrees_with_every_answer_of_the_161_probe`:
+   every accepted section validates and renders every predicted header, every refused one is refused with the finding
+   that maps to the platform's code.
+3. **The sweeps.** Structural, coin sections, unrestricted (2026-11-09 18:00Z - 11-10 02:47Z, 125 batches): 15,876
+   shapes, 14,623 headers; every shape on a metric a coin section reads rendered as predicted. Its 1,289 refusals were
+   the thirteen MKT_* (92 each) and PAR_DEV (93) sent on a coin section, which reads none of them: the sweep had no
+   subject filter (every earlier pass had been restricted by SWEEP_METRICS). Fixed in `collect_targets` (a shape is
+   sent only on the subject its metric reads; test in `tests/test_sweep_render_coverage.py`), then three passes:
+   market (1,196), reference USDT_USD (93), coin non-spread (9) - **0 refusals, 0 mispredicted**. With the 161 probe
+   headers, 35 caches: **structural 23,022 / 23,022**; operand-expanded 52,985 rendered, 253,352 never - every one a
+   spread operand pair (the standing decision).
+4. **Review of the 161 step** (an independent reviewer over the uncommitted diff, 2026-11-10): (a) omega refused a
+   rolling-inner chain one past the served `windowMaximum` / `innerWindowMaximum` (DEPTH_EXCEEDED) where the platform
+   rendered it (N.chainedWindow.over 2365, N.innerWindow.over 698): now a warning, BEYOND_SERVED_MAXIMUM; every other
+   past-maximum stays an error, each one measured refused; (b) the new branches (touchAtr, chainedWindow refusal,
+   off-anchor operand, levelInteraction offset 0, roc offset) had no test: the probe replay above pins them all;
+   (c) a touchAtr maximum on a *chained* levelInteraction is not checked - unmeasured either way, left as it is.
+5. **The manifest's extraction block** had stayed at 146.0.1 (326 metrics) through the 149.1.0 model step, while the
+   manager reads it (`manager.authoring.pin.extraction_manifest`). Moved to 161.0.0 / 2026-11-09 with counts measured on
+   the corpus (534 metrics, 30 transforms, 4,493 legal cells, 25,915 structural shapes); 146.0.1 under `supersedes`.
+
+**Version 0.12.0** (pyproject). Not measured: the platform's own last accepted chained / inner window (one past the
+served maximum rendered; further is unprobed); `customSectionTemplates` (carried from 146.0.1).
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206

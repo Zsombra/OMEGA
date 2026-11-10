@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261105T181932Z.json",
-  "sha256": "e4a34d67ef1369ac890dae209362ebd5a0076c5651aeb7616f8f7067e91bdc21",
-  "contractVersion": "149.1.0",
-  "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
-  "observedAt": "2026-11-05T18:19:32Z"
+  "schema": "data/contract/stage_strategy_draft/schema_20261109T162100Z.json",
+  "sha256": "779d03ac28f173b36d5974b6b55b3026f692a0e1b552deffb8d1b45403c38bf1",
+  "contractVersion": "161.0.0",
+  "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+  "observedAt": "2026-11-09T06:56:56Z"
  },
  "clauseOperators": [
   "lt",
@@ -556,10 +556,14 @@
    "accelerationStart",
    "atrPeriod",
    "bars",
+   "basePeriod",
    "buffer",
    "chainedTransformId",
+   "chainedWindow",
    "confluenceFilter",
+   "conversionPeriod",
    "dSmoothing",
+   "displacement",
    "equalBars",
    "equalThreshold",
    "fast",
@@ -578,15 +582,17 @@
    "side",
    "signal",
    "slow",
+   "spanBPeriod",
    "stdDev",
    "swingLength",
    "timeframe",
+   "touchAtr",
    "transformId",
    "window"
   ],
   "metric": {
    "pointer": "/stage_strategy_draft/inputSchema/$defs/metricKey",
-   "count": 532,
+   "count": 534,
    "enum": [
     "OPEN",
     "HIGH",
@@ -642,6 +648,7 @@
     "SMA20",
     "SMA50",
     "SMA200",
+    "VWMA20",
     "EMA5",
     "EMA13",
     "EMA8",
@@ -664,6 +671,8 @@
     "DONCHIAN_LOWER_PRIOR",
     "DONCHIAN_BROKEN_HI",
     "DONCHIAN_BROKEN_LO",
+    "DONCHIAN_BROKEN_HI_PRIOR",
+    "DONCHIAN_BROKEN_LO_PRIOR",
     "VWAP",
     "VWAP_UB1",
     "VWAP_UB2",
@@ -716,7 +725,6 @@
     "VWAP_SWING_HIGH",
     "VWAP_SWING_LOW",
     "PRICE_ZONE",
-    "BB_TOUCH",
     "STRUCT_ZONES",
     "TPO_POC",
     "TPO_VAH",
@@ -1124,7 +1132,7 @@
   },
   "transformId": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/transformId",
-   "count": 29,
+   "count": 30,
    "enum": [
     "value",
     "trajectory",
@@ -1140,6 +1148,7 @@
     "wma",
     "rsi",
     "cci",
+    "roc",
     "efficiency",
     "maxShare",
     "zscore",
@@ -1159,7 +1168,7 @@
   },
   "chainedTransformId": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/chainedTransformId",
-   "count": 17,
+   "count": 19,
    "enum": [
     "trajectory",
     "distance",
@@ -1169,6 +1178,7 @@
     "wma",
     "rsi",
     "cci",
+    "roc",
     "efficiency",
     "maxShare",
     "zscore",
@@ -1177,7 +1187,8 @@
     "pctl",
     "rollingMin",
     "rollingMax",
-    "rank"
+    "rank",
+    "levelInteraction"
    ]
   },
   "bounds": {
@@ -1188,11 +1199,27 @@
     "minimum": 1,
     "maximum": 9007199254740991
    },
+   "basePeriod": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
    "buffer": {
     "minimum": 0,
-    "maximum": 500
+    "maximum": 9007199254740991
+   },
+   "chainedWindow": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
+   "conversionPeriod": {
+    "minimum": 1,
+    "maximum": 9007199254740991
    },
    "dSmoothing": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
+   "displacement": {
     "minimum": 1,
     "maximum": 9007199254740991
    },
@@ -1238,11 +1265,16 @@
     "minimum": 1,
     "maximum": 9007199254740991
    },
+   "spanBPeriod": {
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
    "stdDev": {},
    "swingLength": {
     "minimum": 1,
     "maximum": 9007199254740991
    },
+   "touchAtr": {},
    "window": {
     "minimum": 1,
     "maximum": 9007199254740991
@@ -1254,10 +1286,14 @@
    "accelerationStart": "number",
    "atrPeriod": "integer",
    "bars": "string",
+   "basePeriod": "integer",
    "buffer": "integer",
    "chainedTransformId": "string",
+   "chainedWindow": "integer",
    "confluenceFilter": "boolean",
+   "conversionPeriod": "integer",
    "dSmoothing": "integer",
+   "displacement": "integer",
    "equalBars": "integer",
    "equalThreshold": "number",
    "fast": "integer",
@@ -1276,14 +1312,20 @@
    "side": "string",
    "signal": "integer",
    "slow": "integer",
+   "spanBPeriod": "integer",
    "stdDev": "number",
    "swingLength": "integer",
+   "touchAtr": "number",
    "transformId": "string",
    "window": "integer"
   },
   "refs": {
    "atrPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "basePeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "chainedWindow": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "conversionPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "dSmoothing": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "displacement": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "equalBars": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "fast": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "kSmoothing": "/stage_strategy_draft/inputSchema/$defs/barCount",
@@ -1294,6 +1336,7 @@
    "rsiPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "signal": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "slow": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "spanBPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "swingLength": "/stage_strategy_draft/inputSchema/$defs/barCount"
   }
  }

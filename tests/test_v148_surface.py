@@ -65,8 +65,9 @@ def test_the_capture_names_its_contract_build_and_source():
     assert "manager_schemas_148.1.0.json" in DOC["readFrom"] and "09:38:43Z" in DOC["readFrom"]
     for tool in TOOLS:
         assert {"description", "inputSchema", "outputSchema", "annotations"} <= set(DOC[tool]), tool
-    # the write surface until 2026-11-07, when the 149.1.0 capture superseded it (kept under `supersedes`)
-    manifest = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["supersedes"]
+    # the write surface until 2026-11-07, when the 149.1.0 capture superseded it (kept under `supersedes`); two levels
+    # down since the 161.0.0 capture of 2026-11-09 (the 149.1.0 one is the first `supersedes`)
+    manifest = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["supersedes"]["supersedes"]
     assert manifest["schema"] == "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
     assert manifest["liveCheckedAt"]["observedAt"] == "2026-11-05T09:38:43Z"
     assert manifest["supersedes"]["servedContractVersion"] == "146.0.0"
@@ -145,12 +146,17 @@ def test_a_column_over_an_added_key_validates_since_the_refresh(key):
 
 def test_ema_is_measured_and_judged_by_its_served_depth():
     """Refused TRANSFORM_UNMEASURED until 2026-11-07; RSI14_ema14 rendered and window 270 was refused
-    REPORT_COLUMN_DEPTH_EXCEEDED ("the largest window that fits is 269") at 149.1.0."""
+    REPORT_COLUMN_DEPTH_EXCEEDED ("the largest window that fits is 269") at 149.1.0. At 161.0.0 (2026-11-09) the
+    readable depth is 2500 bars and ema's served maximum is 704 (2436 of 2500 less the lookback budget): 270 fits."""
     contract = load()
     assert "ema" not in contract.unmeasured_transforms and "ema" in contract.transforms
     col = {"metric": "RSI14", "transformId": "ema", "timeframe": {"rel": "anchor"}}
     assert _errors(validate_column(Column.model_validate({**col, "window": 14}), contract=contract)) == []
-    assert _errors(validate_column(Column.model_validate({**col, "window": 270}), contract=contract)) == [
+    # 161.0.0 (2026-11-09): the served maximum moved 269 -> 704; the judge follows it
+    maximum = contract.metric("RSI14").transforms["ema"]["maximums"]["window"]
+    assert maximum == 704
+    assert _errors(validate_column(Column.model_validate({**col, "window": maximum}), contract=contract)) == []
+    assert _errors(validate_column(Column.model_validate({**col, "window": maximum + 1}), contract=contract)) == [
         "DEPTH_EXCEEDED"]
 
 
@@ -253,18 +259,26 @@ def test_the_vocabulary_snapshot_and_the_refused_structure_category():
 
 def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")
-    # re-read 2026-11-07 at 149.1.0 (rma / wma / rsi / cci, conditionFrameReads 5048); the 148.1.0 read under `previous`
-    assert shared["_refreshed"]["previous"]["contractVersion"] == "148.1.0"
-    assert "budgets.conditionFrameReads 256 -> 2048 (v146.4)" in shared["_refreshed"]["previous"]["moved"]
+    # re-read 2026-11-07 at 149.1.0 (rma / wma / rsi / cci, conditionFrameReads 5048) and 2026-11-09 at 161.0.0 (roc); the
+    # 148.1.0 read is two `previous` down since 161.0.0 (it was one)
+    assert shared["_refreshed"]["previous"]["contractVersion"] == "149.1.0"
+    assert shared["_refreshed"]["previous"]["previous"]["contractVersion"] == "148.1.0"
+    assert "budgets.conditionFrameReads 256 -> 2048 (v146.4)" in shared["_refreshed"]["previous"]["previous"]["moved"]
     assert {"id": "ema", "label": "Exponential average (EMA)"} in shared["transforms"]
     categories = _j(CONTRACT_DIR / "categories.json")
     counts = {c["category"]: c["metricCount"] for c in categories["categories"]}
-    assert counts["structure"] == 362 and sum(counts.values()) == 532 and len(counts) == 11
-    assert categories["_refreshed"]["previous"]["moved"][0] == "structure 156 -> 362"
+    # 161.0.0 (2026-11-09): structure 363 and trend 23, sum 534 (the re-read moved `structure 362 -> 363`, `trend 22 -> 23`);
+    # the 148.1.0 move (`structure 156 -> 362`) is two `previous` down
+    assert counts["structure"] == 363 and counts["trend"] == 23 and sum(counts.values()) == 534 and len(counts) == 11
+    assert categories["_refreshed"]["moved"][:2] == ["structure 362 -> 363", "trend 22 -> 23"]
+    assert categories["_refreshed"]["previous"]["previous"]["moved"][0] == "structure 156 -> 362"
     # the 206 added are all `structure`; the corpus holds all 362 since 2026-11-07 (156 before)
-    assert sum(1 for m in load().metrics.values() if m.family == "structure") == 362
+    # 363 since 161.0.0 (2026-11-09)
+    assert sum(1 for m in load().metrics.values() if m.family == "structure") == 363
     templates = _j(CONTRACT_DIR / "templates" / "platform" / "_all.json")
-    assert templates["_refreshed"]["contractVersion"] == "148.1.0" and len(templates["templates"]) == 22
+    # re-read at 161.0.0 (2026-11-09: includeBollingerBands and includeSupportResistance moved); the 148.1.0 read is `previous`
+    assert templates["_refreshed"]["contractVersion"] == "161.0.0" and templates["_refreshed"]["previous"]["contractVersion"] == "148.1.0"
+    assert len(templates["templates"]) == 22
 
 
 def test_no_stored_record_names_a_release_that_was_not_cut():

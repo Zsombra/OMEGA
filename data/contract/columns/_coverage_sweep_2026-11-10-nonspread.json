@@ -1,0 +1,14 @@
+{
+ "_what": "Headers minted live by preview_strategy_report during the 2026-11-10-nonspread coverage sweep. HEADERS ONLY - render_coverage treats every string in this file as a seen header, so nothing else may be added here.",
+ "headers": [
+  "dist_VWMA20_rank_far",
+  "dist_VWMA20_rank_lo",
+  "dist_VWMA20_rank_near",
+  "dist_donchianHiPrior20_rank_far",
+  "dist_donchianHiPrior20_rank_lo",
+  "dist_donchianHiPrior20_rank_near",
+  "dist_donchianLoPrior20_rank_far",
+  "dist_donchianLoPrior20_rank_lo",
+  "dist_donchianLoPrior20_rank_near"
+ ]
+}

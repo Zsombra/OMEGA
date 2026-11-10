@@ -35,7 +35,7 @@
       "defaultValue": 3,
       "minimum": 1,
       "bound": "depth",
-      "maximum": 935
+      "maximum": 2435
     },
     "equalThreshold": {
       "required": false,

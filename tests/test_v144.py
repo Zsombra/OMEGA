@@ -52,7 +52,7 @@ def _refusal(col: dict) -> str:
 def test_the_roster_moved_as_recorded(contract):
     """302 metrics at 144.0.0: 226 - 2 retired + 78 added (_moves_144.json), every added key a record of its own; 326
     since the re-extraction at 146.0.1 (2026-11-02, _moves_146.json: 24 added, none retired)."""
-    assert len(contract.metrics) == 532   # 326 at 146.0.1; 532 since the refresh at 149.1.0 (_moves_149.json)
+    assert len(contract.metrics) == 534   # 326 at 146.0.1; 532 at 149.1.0 (_moves_149.json); 534 since 161.0.0 (2026-11-09, _moves_161.json: BB_TOUCH out, three in)
     assert MOVES["contractVersion"] == "144.0.0" and len(MOVES["added"]) == 78
     assert set(MOVES["added"]) <= set(contract.metrics)
     assert set(MOVES["retired"]) == {"STOCH_RSI14", "BB_WIDTH"}
@@ -64,7 +64,8 @@ def test_the_roster_moved_as_recorded(contract):
 
 def test_every_retirement_record_is_read(contract):
     """omega.contract reads every _moves_*.json: the three of 110 and the two of 144, each naming its record."""
-    assert set(contract.retired_metrics) == {"MACD", "PPO", "KC_MID", "STOCH_RSI14", "BB_WIDTH"}
+    # + BB_TOUCH since 161.0.0 (2026-11-09, _moves_161.json)
+    assert set(contract.retired_metrics) == {"MACD", "PPO", "KC_MID", "STOCH_RSI14", "BB_WIDTH", "BB_TOUCH"}
     assert contract.retired_metrics["STOCH_RSI14"]["record"] == "_moves_144.json"
     assert contract.retired_metrics["STOCH_RSI14"]["retiredAt"] == "144.0.0"
     assert contract.retired_metrics["MACD"]["record"] == "_moves_110.json"
@@ -257,5 +258,5 @@ def test_the_condition_vocabulary_carries_the_new_knobs():
     assert "relativeTo" in col["transformId"]["enum"] and "relativeTo" not in col["chainedTransformId"]["enum"]
     assert "instrument" in col["fields"] and "scope" in col["fields"]
     # 302 at 144.0.0; 326 since the 146.0.0 capture (2026-11-01, 24 unmeasured); 532 since the 148.1.0 one (2026-11-05,
-    # 206 unmeasured)
-    assert col["metric"]["count"] == 532
+    # 206 unmeasured); 534 since the 161.0.0 one (2026-11-09: BB_TOUCH out, three in)
+    assert col["metric"]["count"] == 534

@@ -388,7 +388,9 @@ def group_j(batch, one):
                              C("KC_UPPER", multiplier=1.5, atrPeriod=14, period=30, offset=1)])
 
 
-def main() -> int:
+def main(extra_groups=None, what=None) -> int:
+    """`extra_groups(batch, one, probe)`, when given, is sent INSTEAD of this probe's groups A - J, under the same rules
+    (version gate, refusal rule, record and header cache): scripts/probe_authoring_161.py (2026-11-09) uses it."""
     # 2026-11-08 (review pass 1, finding 3): one run per PROBE_DATE. The default PROBE_DATE names the committed 11-07
     # record and seen-header cache, and an aborted run still writes both files: a re-run would replace the 225-probe
     # record and the 254-header cache (a render_coverage SEEN_FILES entry) with whatever it reached. As in
@@ -404,7 +406,7 @@ def main() -> int:
         sys.exit(f"{v0['error']}: stop before the first probe")
     if v0.get("contractVersion") != CONTRACT:
         sys.exit(f"served contract {v0.get('contractVersion')} is not {CONTRACT}: stop")
-    record = {"_what": __doc__.strip().splitlines()[0], "contractVersion": CONTRACT, "buildSha": v0.get("buildSha"),
+    record = {"_what": what or __doc__.strip().splitlines()[0], "contractVersion": CONTRACT, "buildSha": v0.get("buildSha"),
               "startedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "capturedAt": None, "probes": []}
     headers = set()
     t0 = time.time()
@@ -641,7 +643,10 @@ def main() -> int:
 
     aborted = None
     try:
-        groups()
+        if extra_groups is not None:
+            extra_groups(batch, one, probe)
+        else:
+            groups()
     except (TransportFailure, ContractMoved, VersionReadFailed) as exc:
         aborted = {"reason": type(exc).__name__, "message": str(exc)[:600],
                    "afterProbes": len(record["probes"]),

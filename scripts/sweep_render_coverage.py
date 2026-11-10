@@ -48,7 +48,7 @@ import time
 import urllib.request
 
 sys.path.insert(0, ".")
-from omega.contract import load                      # noqa: E402
+from omega.contract import load, section_subject     # noqa: E402
 from omega.fanout import outputs_for                 # noqa: E402
 from scripts.probe_authoring_148 import (            # noqa: E402  the answer and end-of-run rules the probes share
     VERSION_URL, classify, contract_fields, is_rate_limit, read_version_safely, withheld_because,
@@ -264,6 +264,11 @@ def collect_targets(c):
     against 3,3xx structural ones; every new header pattern is structural, the expansions re-mint it with another
     operand code)."""
     scope = os.environ.get("SWEEP_SCOPE", "all")
+    # 2026-11-10 (contract 161.0.0): the run's own subject filters the targets. The first unrestricted sweep (11-09,
+    # coin sections, no SWEEP_METRICS) sent the thirteen MKT_* and PAR_DEV shapes too: 1,289 subject refusals that
+    # omega.validate predicts (SECTION_SUBJECT_METRIC_UNSUPPORTED), measuring nothing. A shape whose metric this
+    # subject does not read is now left for the pass that builds its subject (SWEEP_MARKET_SCOPE / SWEEP_BENCHMARK).
+    subject = section_subject(SWEEP_BENCHMARK, SWEEP_MARKET_SCOPE)
     targets, keys = [], set()
     for expand in ((False,) if scope == "structural" else (False, True)):
         _, unc, _ = coverage(expand, c)
@@ -272,6 +277,8 @@ def collect_targets(c):
                 continue        # the 2026-10-30 second pass: every uncovered expansion that is not a spread operand pair
             if SWEEP_METRICS is not None and s.metric not in SWEEP_METRICS:
                 continue        # 2026-11-02: one subject per run (see SWEEP_METRICS above)
+            if not c.metric(s.metric).reads_on(subject):
+                continue        # 2026-11-10: another subject's metric (see above)
             col = s.to_column().model_dump(exclude_none=True)
             k = json.dumps(col, sort_keys=True)
             if k in keys:

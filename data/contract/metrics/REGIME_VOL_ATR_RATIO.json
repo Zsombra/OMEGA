@@ -38,5 +38,9 @@
   "spreadOperands": [
     "RVOL",
     "REGIME_VOL_BBW_RATIO"
+  ],
+  "spreadOperandsOffAnchor": [
+    "RVOL",
+    "REGIME_VOL_BBW_RATIO"
   ]
 }

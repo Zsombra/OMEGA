@@ -42,7 +42,7 @@
       "defaultValue": 2,
       "minimum": 1,
       "bound": "depth",
-      "maximum": 933
+      "maximum": 2433
     },
     "rightBars": {
       "required": false,
@@ -50,7 +50,7 @@
       "defaultValue": 2,
       "minimum": 1,
       "bound": "depth",
-      "maximum": 933
+      "maximum": 2433
     }
   }
 }

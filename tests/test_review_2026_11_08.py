@@ -33,33 +33,49 @@ def _errors(column, contract) -> list[str]:
 
 
 # --- F1 ---------------------------------------------------------------------------------------------------------------
+# 161.0.0 (2026-11-09): the served maxima moved with the readable depth (1000 -> 2500 bars): the chained ema / rma / wma
+# maxima were 269 / 118 / 936 at 149.1.0 and are 704 / 308 / 2436 now, and CLOSE no longer serves `distance` (so HIGH, which
+# does, stands in for it). The intent of F1 is that omega follows the OUTER's SERVED maximum, so each case reads that
+# maximum from the corpus (chainedOuters.<outer>.windowMaximum) rather than hard-coding a number that moves with the depth.
+def _outer_max(contract, metric, inner, outer) -> int:
+    return contract.metric(metric).transforms[inner]["chainedOuters"][outer]["windowMaximum"]
+
+
 @pytest.mark.parametrize("metric,inner,outer,window,extra", [
-    ("HIGH", "distance", "ema", 65, {}),
-    ("HIGH", "distance", "ema", 269, {}),                    # the platform's own largest that fits
-    ("CLOSE", "distance", "rma", 118, {}),
-    ("CLOSE", "distance", "wma", 936, {}),
-    ("CLOSE", "distance", "zscore", 100, {}),
+    ("HIGH", "distance", "ema", 65, {}),                     # above the 64-bar budget the inner's fallback used to apply
+    ("HIGH", "distance", "ema", "max", {}),                  # the served largest that fits (269 at 149.1.0, 704 at 161)
+    ("HIGH", "distance", "rma", "max", {}),                  # 118 at 149.1.0, 308 at 161
+    ("HIGH", "distance", "wma", "max", {}),                  # 936 at 149.1.0, 2436 at 161
+    ("HIGH", "distance", "zscore", 100, {}),
     ("RSI14", "relativeTo", "ema", 100, {}),
     ("RSI14", "spread", "ema", 100, {"inputs": [{"metric": "RSI7"}]}),
 ])
 def test_a_chained_window_within_the_outers_served_maximum_is_accepted(metric, inner, outer, window, extra, contract):
+    if window == "max":
+        window = _outer_max(contract, metric, inner, outer)
+        assert window > 64            # the point of F1: a served maximum above the 64-bar fallback is accepted
     column = Column(metric=metric, transformId=inner, chainedTransformId=outer, window=window,
                     timeframe={"rel": "anchor"}, **extra)
     assert _errors(column, contract) == []
 
 
-@pytest.mark.parametrize("outer,window", [("ema", 270), ("rma", 119), ("wma", 937)])
-def test_a_chained_window_over_the_outers_served_maximum_is_depth_only(outer, window, contract):
-    """A.HIGH.distance.chain.ema.w270, J.CLOSE.distance.chain.rma.w119 / .wma.w937: REPORT_COLUMN_DEPTH_EXCEEDED alone
-    (omega also said LOOKBACK_EXCEEDED, from the inner's fallback)."""
-    column = Column(metric="CLOSE", transformId="distance", chainedTransformId=outer, window=window,
+@pytest.mark.parametrize("outer", ["ema", "rma", "wma"])
+def test_a_chained_window_over_the_outers_served_maximum_is_depth_only(outer, contract):
+    """A.HIGH.distance.chain.ema.w270, J.CLOSE.distance.chain.rma.w119 / .wma.w937 at 149.1.0 (and, at 161.0.0,
+    O.HIGH.distance.ema.over at 705): REPORT_COLUMN_DEPTH_EXCEEDED alone (omega also said LOOKBACK_EXCEEDED, from the
+    inner's fallback). The window is the served maximum + 1 of the corpus (270 / 119 / 937 at 149.1.0)."""
+    window = _outer_max(contract, "HIGH", "distance", outer) + 1
+    column = Column(metric="HIGH", transformId="distance", chainedTransformId=outer, window=window,
                     timeframe={"rel": "anchor"})
     assert _errors(column, contract) == ["DEPTH_EXCEEDED"]
 
 
 def test_a_plain_series_window_still_reads_its_own_maximum(contract):
-    assert _errors(Column(metric="RSI14", transformId="ema", window=270, timeframe={"rel": "anchor"}),
+    # 270 at 149.1.0 was one past ema's served maximum; the maximum is 704 at 161.0.0 and is read, not hard-coded
+    maximum = contract.metric("RSI14").transforms["ema"]["maximums"]["window"]
+    assert _errors(Column(metric="RSI14", transformId="ema", window=maximum + 1, timeframe={"rel": "anchor"}),
                    contract) == ["DEPTH_EXCEEDED"]
+    assert _errors(Column(metric="RSI14", transformId="ema", window=maximum, timeframe={"rel": "anchor"}), contract) == []
     assert _errors(Column(metric="RSI14", transformId="zscore", window=100, timeframe={"rel": "anchor"}), contract) == []
 
 
@@ -153,10 +169,18 @@ def test_knob_spelling_rendered_is_what_the_three_records_rendered(contract):
         for e in _j(f"knob_spelling_probe_149_{date}.json")["entries"]:
             for col in e["columns"]:
                 take(col)
+    # 161.0.0 (2026-11-09): a fourth record - the authoring probe at 161.0.0 rendered the 25 cells 161 added on ten metrics
+    # (ADX / ATR / DI_PLUS / DI_MINUS / VWMA20 `period`, the four knobs on each of the five ICHI_*; _moves_161.json
+    # parametersAdded): 106 served cells on 46 metrics, all rendered
+    for p in _j("authoring_probe_161_2026-11-09.json")["probes"]:
+        if p["accepted"]:
+            for s in p["sections"]:
+                for col in s["columns"]:
+                    take(col)
     assert {m: frozenset(v) for m, v in rendered.items()} == KNOB_SPELLING_RENDERED
-    # and that is every served cell: 81 of 81 on 36 metrics
+    # and that is every served cell: 81 of 81 on 36 metrics at 149.1.0
     served = {n: frozenset(m.parameters) for n, m in contract.metrics.items() if m.parameters}
-    assert served == KNOB_SPELLING_RENDERED and sum(map(len, served.values())) == 81
+    assert served == KNOB_SPELLING_RENDERED and sum(map(len, served.values())) == 106
 
 
 def test_a_known_knob_name_on_a_metric_never_rendered_with_it_raises(contract):

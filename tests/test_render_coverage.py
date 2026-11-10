@@ -46,7 +46,10 @@ from scripts.render_coverage import (
 # 110392 at 146.0.1 (109492 at 144.0.0; + 900 at 146.0.1, 2026-11-02: the ten MKT_* spread atoms x 10 (plain + nine
 # chains) x 9 MKT_* operands); 263502 at 149.1.0 (2026-11-07): the 206 added keys' spread atoms and operands, and every
 # spread's five smoother outers (ema / rma / wma / rsi / cci) over its served operands
-EXPANDED_SPREAD_SHAPES = 263502
+# 283118 at 161.0.0 (2026-11-09): the thirteen chain outers each rolling transform gained (with chainedWindow) widen every
+# spread's chains over its served operands, `roc` joins the smoothers' outer set, and VWMA20 / the two
+# DONCHIAN_BROKEN_*_PRIOR add spread atoms and operands (BB_TOUCH's left).
+EXPANDED_SPREAD_SHAPES = 283118
 
 
 @pytest.fixture(scope="module")
@@ -80,7 +83,9 @@ def test_rendered_headers_spans_every_cache():
     # 25 since 2026-11-07: + the 149.1.0 authoring probe headers and the 149.1.0 structural sweep over the 206 keys
     # 29 since the model step of 2026-11-07: + the three sweeps over the smoother / distance-chain / pair-relative shapes
     # (coin, market, reference sections) and the knob-spelling probe headers
-    assert len(SEEN_FILES) == 30   # 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
+    # 35 since 2026-11-10: + the 161.0.0 probe headers, the 161.0.0 structural sweep and its market / reference /
+    # non-spread passes
+    assert len(SEEN_FILES) == 35   # 30 from the second knob probe of 2026-11-08; 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -181,8 +186,17 @@ def test_structural_coverage_is_complete(contract):
     # them - the five smoothers as transform and as chain outer and distance after an offset rolling extreme (2,074 on a
     # coin section, 65 on a market section) and PAR_DEV's mechanisms on a pair section (15, relativeTo USDC_USDT): every
     # sweep 0 refusals, 0 mispredicted. PAR_DEV is inside the space since 149 (subject `reference`).
-    assert (cov, len(unc)) == (7197, 0), (
-        "every metric x transform mechanism has been rendered live at least once")
+    # 161.0.0 (2026-11-09): the contract refresh at 161.0.0 enlarged the structural space to 23,022 shapes (roc as a
+    # transform and chain outer, the 13 chained-window outers per rolling transform, VWMA20, the two DONCHIAN_BROKEN_*_PRIOR,
+    # the Ichimoku/ADX/ATR/DI/VWMA20 knob cells; BB_TOUCH's 51 left the space). 7,146 are rendered by the stored sweeps;
+    # the 15,876 uncovered are the shapes the 161.0.0 coverage sweep has still to render - pinned as MEASURED, as the
+    # 144.0.0 live pin below was, so the number moves only when a sweep file is added to scripts.render_coverage.SEEN_FILES
+    # (then this becomes (23022, 0) again).
+    # 23022 at 161.0.0 (2026-11-10): the 161.0.0 structural sweep (14,623 headers on coin sections; its 1,289 refusals
+    # are the MKT_* and PAR_DEV it sent on a coin section before the sweep filtered by subject) and the market (1,196),
+    # reference (93) and coin non-spread (9) passes after it - 0 refusals, 0 mispredicted on every shape a section reads.
+    assert (cov, len(unc)) == (23022, 0), (
+        "a structural shape is enumerated that has never been rendered")
 
 
 def test_live_coverage_is_complete(contract):
@@ -223,6 +237,11 @@ def test_live_coverage_is_complete(contract):
     # 149.1.0 (2026-11-07): 270,893 expanded shapes. Every structural mechanism and every non-spread expansion is
     # rendered (37,153); the spread operand pairs stay unrendered by the same deliberate stop, now 233,740 of them: the
     # 206 added keys as spread atoms and operands, and each spread's five smoother outers over its served operands.
-    assert (cov, len(unc)) == (37153, 233740), (
+    # 161.0.0 (2026-11-09): 306,337 expanded shapes; 37,096 rendered by the stored sweeps (BB_TOUCH's 57 left the rendered
+    # side with the metric) and 269,241 unrendered: 253,356 spread operand pairs (the deliberate stop) and 15,885 shapes of
+    # other transforms (the structural ones above, not yet swept at 161.0.0, plus the non-spread expansions of them).
+    # 161.0.0 swept (2026-11-10): 52,985 rendered (4 spread pairs by the 161 probe); the 253,352 unrendered are the
+    # spread operand pairs only (the deliberate stop) - every structural mechanism and every non-spread expansion is rendered.
+    assert (cov, len(unc)) == (52985, 253352), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
-    assert dict(byt) == {"spread": 233740}
+    assert byt["spread"] == 253352 and sum(byt.values()) == 253352

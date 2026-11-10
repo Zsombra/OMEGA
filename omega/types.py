@@ -33,7 +33,9 @@ MARKET_SCOPE = Literal["all", "crypto", "l1", "memes", "defi", "tradfi", "stocks
 # transform's own (`window`, `offset`, `bars`, ...). The 148.1.0 six and the 149.0.0 thirteen.
 KNOBS = ("leftBars", "rightBars", "swingLength", "confluenceFilter", "equalBars", "equalThreshold", "period", "fast",
          "slow", "signal", "kSmoothing", "dSmoothing", "rsiPeriod", "atrPeriod", "stdDev", "multiplier",
-         "accelerationStart", "accelerationIncrement", "accelerationMaximum")
+         "accelerationStart", "accelerationIncrement", "accelerationMaximum",
+         # 161.0.0 (2026-11-09, undocumented): Ichimoku's four lengths, served on the five ICHI_* metrics
+         "conversionPeriod", "basePeriod", "spanBPeriod", "displacement")
 
 
 class RelTimeframe(BaseModel):
@@ -78,6 +80,17 @@ class Column(BaseModel):
     # v100: "whole basis points of the level, 0-500, default 0 ... declared by levelInteraction only"; the bounds are
     # the 108 schema's (data/derived/condition_vocabulary_108.json reportColumn.bounds.buffer).
     buffer: Annotated[int, Field(ge=0, le=500)] | None = None
+    # 161.0.0 (2026-11-09, undocumented; measured data/audit/authoring_probe_161_2026-11-09.json): the touch distance
+    # as a multiple of ATR, levelInteraction's alternative to `buffer` - "accepts params.buffer or params.touchAtr,
+    # never both"; served minimum 0.1 and step 0.1, the maximum per metric. Header token `_a<value>` (bbUpper20_lvl_a0.5).
+    # The schema's own column `buffer` maximum rose to 2^53-1 at 161, but levelInteraction still serves 0 - 500 and
+    # refuses 501 (measured), so the bound above stays.
+    touchAtr: Finite | None = None
+    # 161.0.0: the OUTER window of a chain whose inner is a rolling transform (aggregate / ema / rma / wma / rsi / cci /
+    # roc), which keeps `window` for itself - the served chainedOuters.<outer>.windowParameter names which field the
+    # outer reads ("window" after spread / distance / relativeTo, "chainedWindow" after a rolling inner); refused on any
+    # other chain ("transform 'spread' -> 'ema' does not accept params.chainedWindow", measured).
+    chainedWindow: Annotated[int, Field(ge=1)] | None = None
     # v142.3: the roster instrument a `relativeTo` column reads its metric against, `BTC` when omitted; the shape is
     # the 144.0.0 stage schema's (minLength 1, maxLength 20, pattern ^[A-Za-z0-9][A-Za-z0-9._:-]*$, "case-insensitive").
     # Refused on every other transform (measured 2026-10-30: "transform 'value' does not accept params.instrument",
@@ -112,6 +125,10 @@ class Column(BaseModel):
     accelerationStart: Finite | None = None
     accelerationIncrement: Finite | None = None
     accelerationMaximum: Finite | None = None
+    conversionPeriod: Annotated[int, Field(ge=1)] | None = None
+    basePeriod: Annotated[int, Field(ge=1)] | None = None
+    spanBPeriod: Annotated[int, Field(ge=1)] | None = None
+    displacement: Annotated[int, Field(ge=1)] | None = None
 
     def knobs(self) -> dict:
         """The metric knobs this column sets (explicit defaults included), in field order."""

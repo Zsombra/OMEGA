@@ -1,0 +1,90 @@
+{
+ "contractVersion": "161.0.0",
+ "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+ "versionAtEnd": "161.0.0",
+ "buildShaAtEnd": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+ "contractMoved": false,
+ "_what": "Run record for the 2026-11-10-market live coverage sweep: what was asked for, what the platform refused, and every shape whose omega-predicted header did not turn up in the render. Kept OUT of data/contract/columns/ so none of these strings can be mistaken for a rendered header. A stopped run (complete false) judges header agreement on the shapes it sent, never on the ones it did not.",
+ "capturedAt": "2026-11-10T02:54:10Z",
+ "how": "preview_strategy_report via the mcporter CLI, read-only, BTC only, 32 columns per custom section, up to 4 sections per call; refused batches bisected to the offending column.",
+ "scope": "structural",
+ "marketScope": "crypto",
+ "benchmarkTicker": null,
+ "metricsRestrictedTo": [
+  "MKT_ABOVE_EMA",
+  "MKT_AVG_CHG",
+  "MKT_AVG_PPO",
+  "MKT_DISPERSION",
+  "MKT_DOWN",
+  "MKT_NET",
+  "MKT_PPO_DOWN",
+  "MKT_PPO_NET",
+  "MKT_PPO_UP",
+  "MKT_STRETCH",
+  "MKT_UNIVERSE",
+  "MKT_UP",
+  "MKT_VOL_NET"
+ ],
+ "shapesTargeted": 1196,
+ "shapesRequested": 1196,
+ "batches": [
+  {
+   "batch": 1,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 2,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 3,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 4,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 5,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 6,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 7,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 8,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 9,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 10,
+   "columns": 44,
+   "headers": 44
+  }
+ ],
+ "complete": true,
+ "aborted": null,
+ "headersMinted": 1196,
+ "refusalCount": 0,
+ "refusals": [],
+ "predictedButNotRenderedCount": 0,
+ "predictedButNotRendered": [],
+ "headersWritten": true
+}

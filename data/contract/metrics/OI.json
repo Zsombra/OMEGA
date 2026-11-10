@@ -39,7 +39,7 @@
       "id": "aggregate",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -49,7 +49,7 @@
       "id": "ema",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 269
+        "window": 704
       },
       "bounds": {
         "window": "depth"
@@ -59,7 +59,7 @@
       "id": "rma",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 118
+        "window": 308
       },
       "bounds": {
         "window": "depth"
@@ -69,7 +69,7 @@
       "id": "wma",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -79,7 +79,7 @@
       "id": "rsi",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 118
+        "window": 308
       },
       "bounds": {
         "window": "depth"
@@ -89,7 +89,17 @@
       "id": "cci",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
+      },
+      "bounds": {
+        "window": "depth"
+      }
+    },
+    {
+      "id": "roc",
+      "metricParametersAccepted": false,
+      "maximums": {
+        "window": 2435
       },
       "bounds": {
         "window": "depth"
@@ -109,7 +119,7 @@
       "id": "zscore",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -119,7 +129,7 @@
       "id": "stddev",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -129,7 +139,7 @@
       "id": "linregSlope",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -139,7 +149,7 @@
       "id": "pctl",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 935
+        "window": 2435
       },
       "bounds": {
         "window": "depth"
@@ -149,7 +159,7 @@
       "id": "rollingMin",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936,
+        "window": 2436,
         "offset": 0
       },
       "bounds": {
@@ -161,7 +171,7 @@
       "id": "rollingMax",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936,
+        "window": 2436,
         "offset": 0
       },
       "bounds": {
@@ -184,6 +194,12 @@
   ],
   "parameters": null,
   "spreadOperands": [
+    "QUOTE_VOL",
+    "BUY_QUOTE_VOL",
+    "SELL_QUOTE_VOL",
+    "NOTIONAL_VOLUME_1D"
+  ],
+  "spreadOperandsOffAnchor": [
     "QUOTE_VOL",
     "BUY_QUOTE_VOL",
     "SELL_QUOTE_VOL",

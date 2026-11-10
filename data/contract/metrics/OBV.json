@@ -35,7 +35,7 @@
       "id": "zscore",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -45,7 +45,7 @@
       "id": "stddev",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -55,7 +55,7 @@
       "id": "linregSlope",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 936
+        "window": 2436
       },
       "bounds": {
         "window": "depth"
@@ -65,7 +65,7 @@
       "id": "pctl",
       "metricParametersAccepted": false,
       "maximums": {
-        "window": 935
+        "window": 2435
       },
       "bounds": {
         "window": "depth"

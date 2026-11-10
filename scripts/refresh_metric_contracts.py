@@ -390,6 +390,10 @@ def build_record(name, resp):
             authoring_seen.setdefault(t["id"], {}).setdefault(blob, []).append(m["metric"])
     if m.get("spreadOperands"):
         rec["spreadOperands"] = m["spreadOperands"]
+    # 161.0.0 (2026-11-09, undocumented): the operands a spread takes when it reads off the anchor bar, served per
+    # metric beside spreadOperands (null on a metric with none). Recorded as served.
+    if m.get("spreadOperandsOffAnchor"):
+        rec["spreadOperandsOffAnchor"] = m["spreadOperandsOffAnchor"]
     if m.get("rankOrderings"):
         rec["rankOrderings"] = m["rankOrderings"]
     return rec

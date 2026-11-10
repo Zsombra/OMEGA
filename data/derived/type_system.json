@@ -68,6 +68,7 @@
         "SMA20",
         "SMA50",
         "SMA200",
+        "VWMA20",
         "EMA5",
         "EMA13",
         "EMA8",
@@ -87,6 +88,8 @@
         "DONCHIAN_LOWER_PRIOR",
         "DONCHIAN_BROKEN_HI",
         "DONCHIAN_BROKEN_LO",
+        "DONCHIAN_BROKEN_HI_PRIOR",
+        "DONCHIAN_BROKEN_LO_PRIOR",
         "VWAP",
         "VWAP_UB1",
         "VWAP_UB2",
@@ -505,7 +508,7 @@
         "MKT_UNIVERSE"
       ],
       "vocabularies": {},
-      "metricCount": 481
+      "metricCount": 484
     },
     "classification": {
       "conditionOperators": [
@@ -524,7 +527,6 @@
         "MA_ALIGN",
         "KC_SQUEEZE",
         "PRICE_ZONE",
-        "BB_TOUCH",
         "TPO_SHAPE",
         "PRIOR_TPO_SHAPE",
         "PRIOR_ASIA_HIGH_SWEPT",
@@ -607,11 +609,6 @@
           "near high",
           "near low",
           "mid-range"
-        ],
-        "BB_TOUCH": [
-          "upper",
-          "lower",
-          "none"
         ],
         "TPO_SHAPE": [
           "p-shape",
@@ -763,7 +760,7 @@
           "low"
         ]
       },
-      "metricCount": 41
+      "metricCount": 40
     },
     "boolean": {
       "conditionOperators": [

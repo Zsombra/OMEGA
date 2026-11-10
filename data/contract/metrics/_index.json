@@ -1,5 +1,8 @@
 {
-  "metricCount": 532,
+  "contractVersion": "161.0.0",
+  "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+  "contractKnownBy": "read: GET /mcp/version at 2026-11-09T16:22:49Z before the first fetch of extraction 20261109 (hints_20261109/_version.json)",
+  "metricCount": 534,
   "byFamily": {
     "crowd": [
       "CROWD_ACC",
@@ -141,10 +144,11 @@
       "ASIA_OPEN",
       "BB_LOWER",
       "BB_PCT_B",
-      "BB_TOUCH",
       "BB_UPPER",
       "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
       "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
       "DONCHIAN_LOWER",
       "DONCHIAN_LOWER_PRIOR",
       "DONCHIAN_UPPER",
@@ -521,7 +525,8 @@
       "SMA20",
       "SMA200",
       "SMA50",
-      "ST_DIR"
+      "ST_DIR",
+      "VWMA20"
     ],
     "volatility": [
       "ATR",

@@ -174,6 +174,11 @@
    "transform": "cci",
    "at": "2026-11-07",
    "why": "Added at 149.0.0: the commodity channel index of the series (ta.cci). Served formula: `output = ({base}[t] − mean) / (0.015 · mean |{base} − mean|) over the newest {window} bars`. Measured at 149.1.0: its header (base + _cci<window>, default 20), numeric kind, depth maximum (window one over is REPORT_COLUMN_DEPTH_EXCEEDED), offset refused, chain outer of distance / spread / relativeTo and never a chain inner (data/audit/authoring_probe_149_2026-11-07.json, the 2026-11-07 coverage sweeps). Not yet recomputed from cached candles."
+  },
+  {
+   "transform": "roc",
+   "at": "2026-11-09 (contract 161.0.0)",
+   "why": "Served formula only, not recomputed: get_metric_construction_hints states \"the percent change from the value length bars back\", TradingView's ta.roc(source, length), default length 9, null when either value is missing or the older one is 0. The 161 probe (data/audit/authoring_probe_161_2026-11-09.json, groups K and L) rendered its headers and depth bounds, not a value check against the trajectory slots this audit's method uses."
   }
  ],
  "operationalFindings": [

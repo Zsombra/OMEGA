@@ -57,12 +57,12 @@
      "required": false
     }
    },
-   "calculationSummary": "Measure signed percentage distance from current price to a price-level metric.",
+   "calculationSummary": "Measure signed percentage distance from price to a price-level metric: a candle-homed level from its own bar’s close at every slot, a period level or a mark from the current price.",
    "formula": "output = (({price} − {base}) / {base}) × 100",
    "operandOrder": [
     "base"
    ],
-   "nullBehavior": "Returns null when price or the base level is null, or when the base level is zero.",
+   "nullBehavior": "Returns null when price or the base level is null, or when the base level is zero. A session-profile level is read at each completed bar as it stood when the bar opened: a level formed before the bar from that bar's own snapshot, a level formed from its own bar (a developing value area, a session's running high) from the prior bar's snapshot in the same period instance, so a value stamped inside a completed bar is never part of that bar's read; null on the instance's first bar and where the snapshot is not held. A live read's forming bar reads the level bound at the read instant, the value a display shows.",
    "emits": 1,
    "chainSuccessorsWhenCandle": [
     "trajectory",
@@ -88,7 +88,7 @@
     "base",
     "inputs[0]"
    ],
-   "nullBehavior": "Returns null when either operand is null, or, for an asset-relative unit, when the operand is zero. A day or trading-session level met with a bar's own value reads null on a bar outside the UTC day or trading session the level was bound to, so a spread against a bar is null across the roll.",
+   "nullBehavior": "Returns null when either operand is null, or, for an asset-relative unit, when the operand is zero. A session-profile level is read at each completed bar as it stood when the bar opened: a level formed before the bar from that bar's own snapshot, a level formed from its own bar (a developing value area, a session's running high) from the prior bar's snapshot in the same period instance, so a value stamped inside a completed bar is never part of that bar's read; null on the instance's first bar and where the snapshot is not held. A live read's forming bar reads the level bound at the read instant, the value a display shows.",
    "operandRequired": true,
    "emits": 1,
    "chainSuccessorsWhenCandle": [
@@ -319,8 +319,8 @@
      "required": true
     }
    },
-   "calculationSummary": "Return whole hours since the nearest zone was detected.",
-   "formula": "output = floor((now - detectedAt(nearest zone)) / 1 hour)",
+   "calculationSummary": "Count the whole bars of the column's timeframe since the bar that completed the nearest zone.",
+   "formula": "output = (lastClosedBar - completingBar(nearest zone)) / barDuration",
    "operandOrder": [
     "base"
    ],
@@ -330,9 +330,9 @@
    "appliesTo": "entitySet metrics only"
   },
   "levelInteraction": {
-   "calculationSummary": "Classify what the newest bar did against a price level: a touch within the buffer, or a rejection that pierced the level and closed back, on the side the prior close stood.",
-   "formula": "output = levelInteraction(bar t, close t−1, {base}[t], {base} in force when bar t opened, buffer {buffer} bps)",
-   "nullBehavior": "Returns null when the series holds no prior bar, a price or the level at the newest bar is absent, the level in force when the bar opened is absent (the prior bar's level, for a level computed from its own bar), or either level is not positive. A day or trading-session level reads null on a bar outside the UTC day or trading session it was bound to, so the last bar before the roll is not classified against the next period's level.",
+   "calculationSummary": "Classify what the newest bar did against a price level: none when it closed through the level, a rejection that pierced the level and closed back, or a touch within the TOUCH tolerance, on the side the prior close stood.",
+   "formula": "output = levelInteraction(bar t, close t−1, {base}[t], {base} in force when bar t opened, touch tolerance {tolerance})",
+   "nullBehavior": "Returns null when the series holds no prior bar, a price or the level at the newest bar is absent, the level in force when the bar opened is absent (the prior bar's level, for a level computed from its own bar), or either level is not positive; with touchAtr, a bar that neither closed through the level nor rejected it reads null when the prior bar has no ATR. A session-profile level is read at each completed bar as it stood when the bar opened: a level formed before the bar from that bar's own snapshot, a level formed from its own bar (a developing value area, a session's running high) from the prior bar's snapshot in the same period instance, so a value stamped inside a completed bar is never part of that bar's read; null on the instance's first bar and where the snapshot is not held. A live read's forming bar is judged against the level bound at the read instant, from the side in force when it opened.",
    "operandOrder": [
     "base"
    ],
@@ -343,13 +343,22 @@
     },
     "buffer": {
      "defaultValue": 0,
-     "description": "How near a TOUCH must come to the level, in whole basis points of the level (0–500). At 0 the bar must reach the level and close on it to read TOUCH. A REJECT pierces the level itself and ignores the buffer.",
-     "required": false
+     "description": "How near a TOUCH must come to the level, in whole basis points of the level; a column carries this or touchAtr, never both. At 0, the default, a TOUCH is exact contact: the bar reaches the level and closes exactly on it. \"Reached and did not close through\" is an in clause over the TOUCH and REJECT labels of a side, and a close through the level is the distance crossing (BREAK), which reads none here. Only TOUCH reads the buffer; a REJECT pierces the level itself. A distance of X% is a buffer of X × 100 bps.",
+     "minimum": 0,
+     "required": false,
+     "step": 1
+    },
+    "touchAtr": {
+     "description": "How near a TOUCH must come to the level, as a multiple of the ATR14 of the column's own timeframe at the prior bar; a column carries this or buffer, never both. Only TOUCH reads it: a close through the level still reads none and a REJECT still reads where the prior bar has no ATR, and a TOUCH reads no value there.",
+     "minimum": 0.1,
+     "required": false,
+     "step": 0.1
     }
    },
    "label": "Level interaction",
    "emits": 1,
-   "_emitsMeasured": "2026-10-13, get_strategy_column_contract at 108.4.0: one output on every case (plain, buffer 25, rel lower) - data/contract/columns/levelInteraction_108_4_2026-10-13.json"
+   "_emitsMeasured": "2026-10-13, get_strategy_column_contract at 108.4.0: one output on every case (plain, buffer 25, rel lower) - data/contract/columns/levelInteraction_108_4_2026-10-13.json",
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here"
   },
   "linregSlope": {
    "calculationSummary": "Fit a straight line through the window and report its slope per bar, in the column’s own units.",
@@ -554,9 +563,9 @@
    "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   },
   "ema": {
-   "calculationSummary": "The exponential moving average (TradingView's ta.ema) over the bars its length's convergence needs, seeded by the oldest of them.",
-   "formula": "output = ema[t], ema[0] = {base}[-need({window})], ema[i] = α·{base}[i] + (1 − α)·ema[i − 1], α = 2 / ({window} + 1)",
-   "nullBehavior": "Returns null when the series holds fewer bars than the length needs, or any of them has no value.",
+   "calculationSummary": "The exponential moving average (TradingView's ta.ema) folded over the newest unbroken run of bars up to the readable depth, seeded by the oldest of them.",
+   "formula": "output = ema[t], ema[0] = {base}[-run], ema[i] = α·{base}[i] + (1 − α)·ema[i − 1], α = 2 / ({window} + 1), run = min(present bars in a row, depth)",
+   "nullBehavior": "Returns null when the newest bars hold fewer present values in a row than the length needs.",
    "operandOrder": [
     "base"
    ],
@@ -567,7 +576,7 @@
     },
     "window": {
      "defaultValue": 20,
-     "description": "The length of the exponential moving average, as TradingView's ta.ema(source, length). One value reads the bars after which the average's seed weighs at most 0.1 % — 73 bars at length 20 — and is null when the series holds fewer or any of them has no value. A stored EMA metric is the exact source at its own length.",
+     "description": "The length of the exponential moving average, as TradingView's ta.ema(source, length). One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the bars after which the average's seed weighs at most 0.1 % — 73 bars at length 20 — so it is null when the newest bars hold fewer present values in a row. A stored EMA metric is the exact source at its own length.",
      "minimum": 1,
      "required": false,
      "unit": "smoothingLength"
@@ -578,9 +587,9 @@
    "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   },
   "rma": {
-   "calculationSummary": "Wilder's moving average (TradingView's ta.rma) over the bars its length's convergence needs, seeded by the mean of the oldest length bars.",
-   "formula": "output = rma[t], rma[0] = mean({base}[-need({window})..][0..{window}]), rma[i] = α·{base}[i] + (1 − α)·rma[i − 1], α = 1 / {window}",
-   "nullBehavior": "Returns null when the series holds fewer bars than the length needs, or any of them has no value.",
+   "calculationSummary": "Wilder's moving average (TradingView's ta.rma) folded over the newest unbroken run of bars up to the readable depth, seeded by the mean of its oldest length bars.",
+   "formula": "output = rma[t], rma[0] = mean({base}[-run..][0..{window}]), rma[i] = α·{base}[i] + (1 − α)·rma[i − 1], α = 1 / {window}, run = min(present bars in a row, depth)",
+   "nullBehavior": "Returns null when the newest bars hold fewer present values in a row than the length needs.",
    "operandOrder": [
     "base"
    ],
@@ -591,7 +600,7 @@
     },
     "window": {
      "defaultValue": 14,
-     "description": "The length of Wilder's moving average, as TradingView's ta.rma(source, length). One value reads the length's seed bars plus the bars after which that seed weighs at most 0.1 % — 108 bars at length 14 — and is null when the series holds fewer or any of them has no value.",
+     "description": "The length of Wilder's moving average, as TradingView's ta.rma(source, length). One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the length's seed bars plus the bars after which that seed weighs at most 0.1 % — 108 bars at length 14 — so it is null when the newest bars hold fewer present values in a row.",
      "minimum": 1,
      "required": false,
      "unit": "wilderLength"
@@ -602,9 +611,9 @@
    "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   },
   "rsi": {
-   "calculationSummary": "Wilder's relative strength index (TradingView's ta.rsi) of the series' changes over the bars its length's convergence needs, 0 to 100.",
-   "formula": "output = 100 − 100 / (1 + rma(gain, {window}) / rma(loss, {window})) over the newest need({window}) bars, 100 where nothing was lost, 0 where nothing was gained",
-   "nullBehavior": "Returns null when the series holds fewer bars than the length needs, any of them has no value, or all of them are equal.",
+   "calculationSummary": "Wilder's relative strength index (TradingView's ta.rsi) of the series' changes folded over the newest unbroken run of bars up to the readable depth, 0 to 100.",
+   "formula": "output = 100 − 100 / (1 + rma(gain, {window}) / rma(loss, {window})) over the newest run of present bars up to the depth, 100 where nothing was lost, 0 where nothing was gained",
+   "nullBehavior": "Returns null when the newest bars hold fewer present values in a row than the length needs, or all of them are equal.",
    "operandOrder": [
     "base"
    ],
@@ -615,7 +624,7 @@
     },
     "window": {
      "defaultValue": 14,
-     "description": "The length of the relative strength index, as TradingView's ta.rsi(source, length). One value reads the changes its two Wilder averages need to converge, plus the bar the oldest change starts from — 109 bars at length 14 — and is null when the series holds fewer, any of them has no value, or all of them are equal. A stored RSI metric is the exact source at its own length.",
+     "description": "The length of the relative strength index, as TradingView's ta.rsi(source, length). One value folds the newest unbroken run of bars, up to the readable depth plus one, and needs at least the changes its two Wilder averages need to converge plus the bar the oldest change starts from — 109 bars at length 14 — so it is null when the newest bars hold fewer present values in a row, or all of them are equal. A stored RSI metric is the exact source at its own length.",
      "minimum": 1,
      "required": false,
      "unit": "wilderChanges"
@@ -648,6 +657,30 @@
    "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
    "label": "Weighted average (WMA)",
    "_addedAt": "extraction 20261106; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
+  },
+  "roc": {
+   "calculationSummary": "The rate of change (TradingView's ta.roc): the newest value's percent change from the value length bars before it.",
+   "formula": "output = 100 · ({base}[t] − {base}[t − {window}]) / {base}[t − {window}]",
+   "nullBehavior": "Returns null when the series holds fewer bars than the length plus the newest, when the newest or the older value has no value, or when the older value is 0.",
+   "operandOrder": [
+    "base"
+   ],
+   "parameters": {
+    "bars": {
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "required": false
+    },
+    "window": {
+     "defaultValue": 9,
+     "description": "The length of the rate of change, as TradingView's ta.roc(source, length): the percent change from the value length bars back. It reads the newest bar and the one length bars before it, and is null when either has no value or the older one is 0. A stored ROC metric is the exact close at its own length.",
+     "minimum": 1,
+     "required": false,
+     "unit": "priorElements"
+    }
+   },
+   "_maximumServedPerMetric": "a parameter's `maximum` is served per metric since 108.4.0 - read it from the metric record's transform entry (`maximums`), never from here",
+   "label": "Rate of change (ROC)",
+   "_addedAt": "extraction 20261109; `emits` and any `range` are not served by this tool - set them from a measured render, never assumed"
   }
  },
  "privilegedTransforms": {

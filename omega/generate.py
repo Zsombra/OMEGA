@@ -86,7 +86,11 @@ MODULE_RECIPES: dict[str, list[dict]] = {
     "BOLLINGER": [
         {"metric": "BB_PCT_B", "transformId": "trajectory", "timeframe": {"rel": "anchor"}, "window": 4, "bars": "closed"},
         {"metric": "BB_WIDTH_PCT", "transformId": "value", "timeframe": {"rel": "anchor"}},
-        {"metric": "BB_TOUCH", "transformId": "value", "timeframe": {"rel": "anchor"}},
+        # BB_TOUCH (the close's touch by %B) was removed at contract 161.0.0 (undocumented; the key left
+        # $defs/metricKey). The bar's range at each band is levelInteraction's read (README v100), rendered at 161.0.0
+        # on 2026-11-09 (data/audit/authoring_probe_161_2026-11-09.json, group T).
+        {"metric": "BB_UPPER", "transformId": "levelInteraction", "timeframe": {"rel": "anchor"}},
+        {"metric": "BB_LOWER", "transformId": "levelInteraction", "timeframe": {"rel": "anchor"}},
     ],
     "MOVING_AVERAGES": [
         {"metric": "MA_ALIGN", "transformId": "value", "timeframe": {"rel": "anchor"}},
@@ -112,8 +116,12 @@ MODULE_RECIPES: dict[str, list[dict]] = {
         # nativeOutput, timeframeMode and transform set, header stems swingHi->donchianHi
         # and swingLo->donchianLo. It always was a 20-bar Donchian channel; the old names
         # answer to nothing now.
-        {"metric": "DONCHIAN_UPPER", "transformId": "distance", "timeframe": {"rel": "anchor"}},
-        {"metric": "DONCHIAN_LOWER", "transformId": "distance", "timeframe": {"rel": "anchor"}},
+        # 2026-11-09 (contract 161.0.0, undocumented): DONCHIAN_UPPER / DONCHIAN_LOWER no longer serve `distance` (a
+        # channel that includes the bar it is measured on); the platform's own includeSupportResistance moved to the
+        # PRIOR channel, which excludes it, and so does this recipe (dist_donchianHiPrior20 / ...LoPrior20, rendered
+        # in the 10-15, 10-26 and 10-30 sweeps).
+        {"metric": "DONCHIAN_UPPER_PRIOR", "transformId": "distance", "timeframe": {"rel": "anchor"}},
+        {"metric": "DONCHIAN_LOWER_PRIOR", "transformId": "distance", "timeframe": {"rel": "anchor"}},
         {"metric": "PRICE_ZONE", "transformId": "value", "timeframe": {"rel": "anchor"}},
     ],
     "PRICE_STRUCTURE": [

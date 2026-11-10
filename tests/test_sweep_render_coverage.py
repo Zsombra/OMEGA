@@ -235,3 +235,27 @@ def test_main_refuses_to_overwrite_an_existing_output(monkeypatch, tmp_path):
     with pytest.raises(SystemExit, match="SWEEP_DATE"):
         mod.main()
     assert json.loads((tmp_path / "h.json").read_text(encoding="utf-8"))["headers"] == ["KEEP_ME"]
+
+
+# --- 2026-11-10: the run's subject filters its targets ---------------------------------------------------------------
+
+@pytest.mark.parametrize("benchmark, scope, kept", [
+    (None, None, {"ADX"}),                 # a coin section: the 11-09 sweep sent MKT_* and PAR_DEV here, 1,289 refusals
+    (None, "crypto", {"MKT_UP"}),          # a market section reads the MKT_* family only
+    ("USDT_USD", None, {"PAR_DEV"}),       # a declared pair: a reference section, OPEN/HIGH/LOW/CLOSE/PAR_DEV
+])
+def test_collect_targets_keeps_only_the_metrics_its_subject_reads(monkeypatch, benchmark, scope, kept):
+    from omega import space
+    from omega.contract import load
+    mod = _load(monkeypatch)
+    c = load()
+    shapes = [s for s in space.enumerate_shapes(expand_operands=False, contract=c)
+              if s.metric in ("ADX", "MKT_UP", "PAR_DEV") and s.transform == "rollingMax"]
+    assert {s.metric for s in shapes} == {"ADX", "MKT_UP", "PAR_DEV"}
+    monkeypatch.setattr(mod, "coverage", lambda expand, c: (0, shapes, None))
+    monkeypatch.setattr(mod, "SWEEP_BENCHMARK", benchmark)
+    monkeypatch.setattr(mod, "SWEEP_MARKET_SCOPE", scope)
+    monkeypatch.setattr(mod, "SWEEP_METRICS", None)
+    monkeypatch.setenv("SWEEP_SCOPE", "structural")
+    _, targets = mod.collect_targets(c)
+    assert targets and {s.metric for s, _ in targets} == kept

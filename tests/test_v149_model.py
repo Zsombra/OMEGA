@@ -105,15 +105,36 @@ def _verdict(p: dict, contract) -> list[str]:
     return errors
 
 
+def _moved_at_161(p: dict) -> str | None:
+    """161.0.0 (2026-11-09): the two platform moves that changed an answer the 149.1.0 probe recorded. `pair`: CLOSE no
+    longer serves `distance` (README undocumented, _moves_161.json transformsLostByExistingMetrics), so a CLOSE x distance
+    column is refused PAIR_UNSUPPORTED now. `depth`: the readable depth went 1000 -> 2500 bars, so a window refused at 149.1.0
+    "of the 1000 readable bars" fits now (the served maxima: ema 269 -> 704, aggregate 936 -> 2436 ...)."""
+    if any(c.get("metric") == "CLOSE" and c.get("transformId") == "distance" for s in p["sections"] for c in s["columns"]):
+        return "pair"
+    if "of the 1000 readable bars" in ((p.get("refusal") or {}).get("message") or ""):
+        return "depth"
+    return None
+
+
 def test_omega_agrees_with_every_probe_answer(contract):
     """Every non-transient probe: refused by the platform <=> refused by omega. The five accepted sections omega
     refuses are the ones the probe built with a duplicate header on purpose: the platform renders them and flags
     `duplicateHeaders` (the section then leaves conditionColumns), which is exactly omega's DUPLICATE_HEADER."""
     agree = duplicates = 0
+    moved = {"pair": [], "depth": []}
     for p in PROBE["probes"]:
         if (p.get("refusal") or {}).get("code") == "SERVICE_UNAVAILABLE":
             continue
         errors = _verdict(p, contract)
+        if _moved_at_161(p):
+            # the 149.1.0 answer is history: omega at 161.0.0 follows the platform's later move instead
+            moved[_moved_at_161(p)].append(p["probe"])
+            if _moved_at_161(p) == "pair":
+                assert "REPORT_COLUMN_PAIR_UNSUPPORTED" in errors, p["probe"]
+            else:
+                assert not {"DEPTH_EXCEEDED", "PARAMETER_OUT_OF_RANGE"} & set(errors), (p["probe"], errors)
+            continue
         if p["accepted"]:
             if errors:
                 assert set(errors) == {"DUPLICATE_HEADER"} and p["render"]["duplicateHeaders"], p["probe"]
@@ -124,7 +145,11 @@ def test_omega_agrees_with_every_probe_answer(contract):
             allowed = REFUSAL_CLASSES[refusal.get("authoringCode")]
             assert set(errors) & allowed, (p["probe"], refusal.get("authoringCode"), errors)
         agree += 1
-    assert (agree, duplicates) == (223, 5)
+    # 161.0.0 (2026-11-09): (201, 5) agree on the 149.1.0 answers that still hold; 22 moved (223 - 22): six touch
+    # CLOSE x distance (the four J.<smoother>.chainOuter sections accepted at 149 and the two J.CLOSE.distance.chain
+    # depth refusals) and sixteen were depth refusals at the 1000-bar depth (the served maxima moved with the 2500-bar depth)
+    assert (len(moved["pair"]), len(moved["depth"])) == (6, 16)
+    assert (agree, duplicates) == (201, 5)
 
 
 # The platform's refusal class (authoringCode; None = a schema-level VALIDATION_ERROR) -> the omega codes that state it.
@@ -145,18 +170,15 @@ REFUSAL_CLASSES = {
 
 
 @pytest.mark.parametrize("probe,code", [
-    ("A.RSI14.ema.w270", "DEPTH_EXCEEDED"),
     ("A.RSI14.ema.offset1", "OFFSET_REFUSED"),
     ("B.HIGH.rollingMax.w55.o0.chain.distance", "OFFSET_BELOW_MINIMUM"),
     ("C.RSI14.leftBars", "PARAMETER_UNDECLARED"),
-    ("C.SWING_FRACTAL_HIGH.both.max", "PARAMETER_OUT_OF_RANGE"),
     ("C.SWING_FRACTAL_HIGH.aggregate.l3r5", "PARAMETER_NOT_ACCEPTED"),
     ("C.SWING_FRACTAL_HIGH.relativeTo.l3r5", "PARAMETER_NOT_ACCEPTED"),
     ("C.SWING_FRACTAL_HIGH.distance.chain.rank.l3r5", "PARAMETER_NOT_ACCEPTED"),
     ("D.SWING_STRUCTURE_LEVEL.s101", "PARAMETER_OUT_OF_RANGE"),
     ("E.EQH.equalThreshold.offstep", "PARAMETER_OUT_OF_RANGE"),
     ("J.cci.accept", "WINDOW_BELOW_MINIMUM"),
-    ("J.MACD_LINE.fast.over", "PARAMETER_OUT_OF_RANGE"),
     ("J.BB_UPPER.zscore.stdDev", "PARAMETER_NOT_ACCEPTED"),
     ("G.USDT_USD.RSI14", "SECTION_SUBJECT_METRIC_UNSUPPORTED"),
     ("G.ETH.PAR_DEV", "SECTION_SUBJECT_METRIC_UNSUPPORTED"),
@@ -168,6 +190,25 @@ def test_each_refusal_class_maps_to_its_omega_code(probe, code, contract):
     [p] = [x for x in PROBE["probes"] if x["probe"] == probe]
     assert not p["accepted"]
     assert code in _verdict(p, contract)
+
+
+# 161.0.0 (2026-11-09): the three depth refusals of this table at 149.1.0 (A.RSI14.ema.w270, C.SWING_FRACTAL_HIGH.both.max,
+# J.MACD_LINE.fast.over) were judged at the 1000-bar depth. The platform's depth is 2500 now, so the same three classes
+# are pinned at the SERVED maximum read from the corpus (maximum + 1 refused, the maximum accepted); the 161.0.0 probe's
+# own depth refusals (O.* / K.RSI14.roc.over) are in tests/test_v161.py.
+def test_the_depth_refusals_follow_the_served_maxima(contract):
+    def errors(**kw):
+        col = Column(timeframe={"rel": "anchor"}, **kw)
+        return [f.code for f in validate_column(col, contract=contract) if f.severity == "error"]
+    window = contract.metric("RSI14").transforms["ema"]["maximums"]["window"]
+    assert errors(metric="RSI14", transformId="ema", window=window) == []
+    assert errors(metric="RSI14", transformId="ema", window=window + 1) == ["DEPTH_EXCEEDED"]
+    fast = contract.metric("MACD_LINE").parameters["fast"]["maximum"]
+    assert errors(metric="MACD_LINE", transformId="value", fast=fast) == []
+    assert errors(metric="MACD_LINE", transformId="value", fast=fast + 1) == ["PARAMETER_OUT_OF_RANGE"]
+    # the swing pair's L + R + 1 <= readable depth less the lookback budget rule (2436): 1217 / 1217 fits, 1218 / 1218 reads 2437
+    assert errors(metric="SWING_FRACTAL_HIGH", transformId="value", leftBars=1217, rightBars=1217) == []
+    assert errors(metric="SWING_FRACTAL_HIGH", transformId="value", leftBars=1218, rightBars=1218) == ["PARAMETER_OUT_OF_RANGE"]
 
 
 def test_two_depth_bound_knobs_off_together_are_warned_not_judged(contract):
@@ -219,6 +260,7 @@ def test_the_model_step_sweeps(date, shapes, headers, scope, ticker):
 
 def test_the_moves_record(contract):
     assert MOVES["contractVersion"] == "149.1.0" and MOVES["retired"] == {} and len(MOVES["added"]) == 206
+    # 161.0.0 (2026-11-09): the corpus holds the 149.1.0 additions plus _moves_161.json's three, less BB_TOUCH
     assert {k: len(v) for k, v in MOVES["addedByReadmeEntry"].items()} == {
         "v146.10": 82, "v146.11": 8, "v146.5": 34, "v146.8": 82}
     assert {k: len(v) for k, v in MOVES["transformsGainedByExistingMetrics"].items()} == {
@@ -227,15 +269,20 @@ def test_the_moves_record(contract):
     assert len(MOVES["parametersServed"]) == 36
     assert MOVES["subjectKindsCounts"] == {"evaluated-coin + benchmark": 489, "evaluated-coin": 25, "market": 13,
                                            "evaluated-coin + benchmark + reference": 4, "reference": 1}
-    assert set(MOVES["added"]) <= set(contract.metrics) and len(contract.metrics) == 532
+    assert set(MOVES["added"]) <= set(contract.metrics) and len(contract.metrics) == 534   # 532 at 149.1.0
     for key, knobs in MOVES["parametersServed"].items():
         assert list(contract.metric(key).parameters) == knobs, key
 
 
 def test_the_vocabulary_read_at_149_1_0(contract):
     shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")
-    assert shared["_refreshed"]["contractVersion"] == "149.1.0" and shared["_refreshed"]["at"] == "2026-11-07T17:36Z"
-    assert len(shared["transforms"]) == 28 and contract.budgets["conditionFrameReads"] == 5048
+    # 161.0.0 (2026-11-09): _shared.json was re-read at 161.0.0 (2026-11-09T16:22Z, `roc` added: 29 transforms); the 149.1.0
+    # read is its `previous` and its own snapshot (20261107T1736Z) keeps the 28 as read
+    assert shared["_refreshed"]["contractVersion"] == "161.0.0" and shared["_refreshed"]["at"] == "2026-11-09T16:22Z"
+    prev = shared["_refreshed"]["previous"]
+    assert prev["contractVersion"] == "149.1.0" and prev["at"] == "2026-11-07T17:36Z"
+    assert len(shared["transforms"]) == 29 and contract.budgets["conditionFrameReads"] == 5048
     snap = CONTRACT_DIR / "vocabulary" / "20261107T1736Z"
     assert len(list(snap.glob("*.json"))) == 12
+    assert len(_j(snap / "derived.json")["transforms"]) == 28
     assert _j(snap / "structure.json")["code"] == "RESULT_TOO_LARGE"

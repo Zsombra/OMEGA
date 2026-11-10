@@ -39,7 +39,7 @@
       "defaultValue": 10,
       "minimum": 1,
       "bound": "depth",
-      "maximum": 118
+      "maximum": 308
     },
     "multiplier": {
       "required": false,

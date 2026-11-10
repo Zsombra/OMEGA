@@ -45,6 +45,12 @@ class Metric:
     timeframe_mode: str
     transforms: dict[str, dict]          # transformId -> flags (operandRequired, chainSuccessors, ...)
     spread_operands: tuple[str, ...] = ()
+    # 161.0.0 (served beside spreadOperands, undocumented): the operands a spread meets OFF the anchor rung - a column
+    # at {rel: lower | regime} or any {abs}. A per-bar session-profile level (ASIA_HIGH, the IB extensions, pivots...)
+    # is in spreadOperands only: "a relation meets it only at the strategy's anchor rung ({ rel: 'anchor' })"
+    # (REPORT_COLUMN_OPERAND_UNSUPPORTED, measured 2026-11-09, authoring_probe_161 group P). Empty = no restriction
+    # recorded (a corpus older than 161).
+    spread_operands_off_anchor: tuple[str, ...] = ()
     rank_orderings: tuple[str, ...] = ()
     anchor: str | None = None
     """The one ABSOLUTE timeframe this metric accepts, when the platform declares one.
@@ -194,6 +200,7 @@ def load() -> Contract:
             timeframe_mode=rec["timeframeMode"],
             transforms={t["id"]: t for t in rec["transforms"] if t["id"] not in retired},
             spread_operands=tuple(rec.get("spreadOperands", ())),
+            spread_operands_off_anchor=tuple(rec.get("spreadOperandsOffAnchor", ())),
             rank_orderings=tuple(rec.get("rankOrderings", ())),
             anchor=rec.get("anchor"),
             rank_scope=rec.get("rankScope"),

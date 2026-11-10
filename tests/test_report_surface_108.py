@@ -51,7 +51,10 @@ def test_the_inventory_carries_the_custom_section_arm():
 
 def test_the_column_integer_bounds_are_derived():
     # v103: "`window` and `offset` keep their integer floors"; v100: buffer "whole basis points ... 0-500"
-    assert V["reportColumn"]["bounds"] == {"buffer": {"minimum": 0, "maximum": 500},
+    # 161.0.0 (2026-11-09): buffer's maximum is now the safe-integer cap like the other knobs (it was 500 until the
+    # 149.1.0 capture), and six more `$ref`s to barCount join the bounds: the four Ichimoku knobs (basePeriod,
+    # conversionPeriod, displacement, spanBPeriod), chainedWindow and ADX/ATR/DI/VWMA20's period (already below)
+    assert V["reportColumn"]["bounds"] == {"buffer": {"minimum": 0, "maximum": 9007199254740991},
                                           "offset": {"minimum": 0, "maximum": 9007199254740991},
                                           "window": {"minimum": 1, "maximum": 9007199254740991},   # v115.1
                                           # v146.9 / v146.11, the 148.1.0 capture (2026-11-05)
@@ -65,8 +68,9 @@ def test_the_column_integer_bounds_are_derived():
                                           "equalThreshold": {},
                                           **{k: {"minimum": 1, "maximum": 9007199254740991} for k in (
                                               "atrPeriod", "dSmoothing", "fast", "kSmoothing", "period",
-                                              "rsiPeriod", "signal", "slow")},
-                                          **{k: {} for k in ("multiplier", "stdDev", "accelerationStart",
+                                              "rsiPeriod", "signal", "slow", "basePeriod", "chainedWindow",
+                                              "conversionPeriod", "displacement", "spanBPeriod")},
+                                          **{k: {} for k in ("multiplier", "stdDev", "touchAtr", "accelerationStart",   # touchAtr: 161.0.0 (2026-11-09), a bare number
                                                              "accelerationIncrement", "accelerationMaximum")}}
 
 
@@ -86,8 +90,8 @@ def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert set(C.retired_transforms) == {"bandTouch"}
     # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.13.0 (v111) capture since 2026-10-16
     # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30, the 146.0.0 one since 2026-11-01, the
-    # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "149.1.0"
+    # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07, the 161.0.0 one since 2026-11-09)
+    assert C.retired_transforms["bandTouch"]["servedAt"] == "161.0.0"   # 161.0.0 (2026-11-09): was 149.1.0
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -104,14 +108,19 @@ def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
     assert C.unmeasured_transforms == {}
     assert {"ema", "rma", "wma", "rsi", "cci"} <= set(C.transforms)
     # 318 since the refresh at 149.1.0: the 198 pivots, the structure / swing levels and EQH / EQL of 148.1.0
-    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 318   # 118 at 144.0.0; 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
+    # 352 since 161.0.0 (2026-11-09, _moves_161.json): +33 existing levels (the session highs / lows / opens, IB extensions,
+    # opening ranges and the TPO / week / month profile levels), -2 (DONCHIAN_BROKEN_HI / LO) and +3 added (VWMA20 and the
+    # two DONCHIAN_BROKEN_*_PRIOR)
+    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 352   # 118 at 144.0.0; 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
 
 
 def test_a_retired_transform_is_refused_naming_its_replacement():
     f = validate_column(col("OPEN", "bandTouch"), contract=C)
     assert codes(f) == {"TRANSFORM_RETIRED"}
     msg = f[0].message
-    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "149.1.0" in msg
+    # 161.0.0 (2026-11-09): the retired transform is judged against the 161.0.0 schema, and BB_TOUCH itself is gone
+    # from the enum (the message names its replacement BB_PCT_B / BB_UPPER x levelInteraction)
+    assert "BB_TOUCH" in msg and "levelInteraction" in msg and "161.0.0" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():
@@ -119,7 +128,10 @@ def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact()
     lines) or a prior-session level or pivot"; "not offered on a price fact (CLOSE, MARK, HLC3), a developing-session
     level (TPO_*), the naked points of control, or the Donchian rails". The extraction agrees on every one named."""
     assert codes(validate_column(col("BB_UPPER", "levelInteraction"), contract=C)) == set()
-    for fact in ("CLOSE", "MARK", "HLC3", "TPO_POC", "NAKED_POC_ABOVE", "DONCHIAN_UPPER"):
+    # 161.0.0 (2026-11-09): the developing-session TPO levels now OFFER it (_moves_161.json, measured at 161.0.0 - the
+    # README's "not offered on TPO_*" no longer holds): TPO_POC moves from the refused list to the accepted line above
+    assert codes(validate_column(col("TPO_POC", "levelInteraction"), contract=C)) == set()
+    for fact in ("CLOSE", "MARK", "HLC3", "NAKED_POC_ABOVE", "DONCHIAN_UPPER"):
         assert codes(validate_column(col(fact, "levelInteraction"), contract=C)) == {"REPORT_COLUMN_PAIR_UNSUPPORTED"}
 
 
@@ -138,7 +150,7 @@ def test_level_interaction_headers_are_the_measured_ones():
 def test_the_space_never_enumerates_a_retired_transform_and_does_enumerate_level_interaction():
     shapes = enumerate_shapes(expand_operands=True)
     assert not [s for s in shapes if "bandTouch" in (s.transform, s.chained)]
-    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 318      # 118 at 146.0.1; 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
+    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 352      # 352 at 161.0.0 (2026-11-09: 318 at 149.1.0); 118 at 146.0.1; 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
 
 
 # --- buffer ----------------------------------------------------------------------------------------

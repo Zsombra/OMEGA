@@ -109,5 +109,5 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     # 5845 / 113934 since the re-extraction at 144.0.0, 2026-10-30 (data/contract/metrics/_moves_144.json).
     # 6122 / 115035 since the re-extraction at 146.0.1, 2026-11-02 (data/contract/metrics/_moves_146.json).
     # 9884 / 270913 since the refresh at 149.1.0, 2026-11-07 (data/contract/metrics/_moves_149.json).
-    assert len(enumerate_shapes(contract=contract)) == 9884
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 270913
+    assert len(enumerate_shapes(contract=contract)) == 25915   # 161.0.0 (2026-11-09); 9884 at 149.1.0
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 306357   # 161.0.0 (2026-11-09); 270913 at 149.1.0
