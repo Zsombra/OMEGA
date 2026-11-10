@@ -85,7 +85,7 @@
     "unreferenceable": "markerConditions[].unreferenceableReason names any condition that cannot be referenced."
   },
   "ambientSections": {
-    "_note": "Sections that exist for CONDITION REFERENCE without you adding any column. They cost no columns and no tokens against your report budget. This is why the platform templates includeMarketBreadth and includeReferencePairs ship with ZERO columns - the data is ambient, the template is a no-op.",
+    "_note": "Headers a condition may read without a report column. Measured 2026-11-10 at contract 161.0.0 (preview_strategy_report, read-only): the CONDITION_COLUMN_UNKNOWN refusal's allowed domain is the report's own headers plus exactly captConc_session, fieldBiasDir_session, fieldPlayers_session and fieldUpBias_session. Before that, this file also listed the market-breadth and reference-pairs sections and picksSpread_session: retired at contract 146 (README v146: 'refused as an unknown column'), now under _retired146. Market tape and stablecoin par are report columns since 146: MKT_NET on a market section, PAR_DEV on a reference section (omega.conditions.CONTEXT_SECTIONS).",
     "session-field": {
       "title": "Session Field",
       "outputs": [
@@ -133,87 +133,91 @@
             "between"
           ],
           "meaning": "share of captain picks landing on the single most-captained coin (%)"
-        },
+        }
+      ]
+    },
+    "_retired146": {
+      "market-breadth": {
+        "title": "Market Breadth",
+        "outputs": [
+          {
+            "header": "mktUp_all",
+            "ops": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "meaning": "share of the scope's coins that closed up (%)"
+          },
+          {
+            "header": "mktDown_all",
+            "ops": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "meaning": "share of the scope's coins that closed down (%)"
+          },
+          {
+            "header": "mktBreadth_all",
+            "ops": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "meaning": "net breadth - up share minus down share (%), signed; negative is a broadly red field"
+          },
+          {
+            "header": "mktAvgChg_all",
+            "ops": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "meaning": "mean close-change across the scope (%), signed"
+          }
+        ]
+      },
+      "reference-pairs": {
+        "title": "Reference Pairs",
+        "outputs": [
+          {
+            "header": "usdtUsdDev_market",
+            "ops": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "meaning": "USDT/USD deviation from par (%), signed; absent when the close is older than 15 minutes"
+          },
+          {
+            "header": "usdcUsdtDev_market",
+            "ops": [
+              "lt",
+              "lte",
+              "gte",
+              "gt",
+              "between"
+            ],
+            "meaning": "USDC/USDT deviation from par (%), signed; absent when the close is older than 15 minutes"
+          }
+        ]
+      },
+      "session-field.picksSpread_session": [
         {
           "header": "picksSpread_session",
           "ops": [],
           "meaning": "distinct coins picked, over distinct coins available - NOT conditionable (empty operator set)"
-        }
-      ]
-    },
-    "market-breadth": {
-      "title": "Market Breadth",
-      "outputs": [
-        {
-          "header": "mktUp_all",
-          "ops": [
-            "lt",
-            "lte",
-            "gte",
-            "gt",
-            "between"
-          ],
-          "meaning": "share of the scope's coins that closed up (%)"
-        },
-        {
-          "header": "mktDown_all",
-          "ops": [
-            "lt",
-            "lte",
-            "gte",
-            "gt",
-            "between"
-          ],
-          "meaning": "share of the scope's coins that closed down (%)"
-        },
-        {
-          "header": "mktBreadth_all",
-          "ops": [
-            "lt",
-            "lte",
-            "gte",
-            "gt",
-            "between"
-          ],
-          "meaning": "net breadth - up share minus down share (%), signed; negative is a broadly red field"
-        },
-        {
-          "header": "mktAvgChg_all",
-          "ops": [
-            "lt",
-            "lte",
-            "gte",
-            "gt",
-            "between"
-          ],
-          "meaning": "mean close-change across the scope (%), signed"
-        }
-      ]
-    },
-    "reference-pairs": {
-      "title": "Reference Pairs",
-      "outputs": [
-        {
-          "header": "usdtUsdDev_market",
-          "ops": [
-            "lt",
-            "lte",
-            "gte",
-            "gt",
-            "between"
-          ],
-          "meaning": "USDT/USD deviation from par (%), signed; absent when the close is older than 15 minutes"
-        },
-        {
-          "header": "usdcUsdtDev_market",
-          "ops": [
-            "lt",
-            "lte",
-            "gte",
-            "gt",
-            "between"
-          ],
-          "meaning": "USDC/USDT deviation from par (%), signed; absent when the close is older than 15 minutes"
         }
       ]
     }

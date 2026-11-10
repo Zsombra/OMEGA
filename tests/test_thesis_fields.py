@@ -34,8 +34,12 @@ def test_show_scoring_data_is_retired_with_the_scoring_data_columns():
     assert "show_scoring_data" not in _names()
     with pytest.raises(TypeError):
         Thesis(name="x", show_scoring_data=False)
+    # since v0.12.1 plan() also appends the context sections its conditions read; the pre-108 path keeps its history
+    from omega.conditions import CONTEXT_SECTIONS
+    titles = {spec["title"] for spec in CONTEXT_SECTIONS.values()}
     for name, t in PRESETS.items():
-        assert plan(t).report == plan_pre_108(t, show_scoring_data=False).report, name
+        own = [s for s in plan(t).report.sections if s.title not in titles]
+        assert own == plan_pre_108(t, show_scoring_data=False).report.sections, name
 
 
 @pytest.mark.parametrize("retired", ["gate", "required"])

@@ -207,11 +207,12 @@ def test_a_header_kind_that_does_not_take_the_operator_is_refused():
 def test_a_timeless_custom_header_is_refused_and_an_ambient_one_stays_a_warning():
     """vendor strategy-examples: "a header whose conditionHold.maxWindow is 1 is served none of the six". (measured 2026-10-13 at 108.4.0, data/contract/columns/operators_108_4_2026-10-13/):
     chg24h (a timeless custom column) is served maxWindow 1 / NOT_REWINDABLE and `increased` on it was refused. An
-    ambient header's kind and history omega cannot see, so mktBreadth_all stays a warning (unmeasured)."""
+    ambient header's kind and history omega cannot see, so fieldUpBias_session stays a warning (unmeasured; it was
+    mktBreadth_all until v0.12.1, retired at 146)."""
     assert _walk(increased("chg24h")) == []
     errors, _ = _findings(increased("chg24h"))
     assert any("NOT_REWINDABLE" in e.message and "CONDITION_OPERATOR_UNSUPPORTED" in e.message for e in errors)
-    errors, warnings = _findings(crosses_above("mktBreadth_all", 0))
+    errors, warnings = _findings(crosses_above("fieldUpBias_session", 0))
     assert errors == [] and any("maxWindow" in w.message for w in warnings), [str(w) for w in warnings]
 
 

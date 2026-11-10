@@ -318,4 +318,4 @@ def test_the_manifest_chain_and_the_templates():
 
 def test_the_version_moved_past_0_11_0():
     # 0.11.0 was this re-extraction's release; 0.12.0 since the cut at contract 161.0.0 (2026-11-10)
-    assert 'version = "0.12.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert 'version = "0.12.1"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
