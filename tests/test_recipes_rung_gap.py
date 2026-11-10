@@ -33,7 +33,10 @@ import pytest
 
 from tests.moves_110 import rewritten_at_110   # the body as the server holds it since 110
 from omega.contract import load, stage_schema
+from omega.conditions import CONTEXT_SECTIONS
 from omega.generate import PRESETS, plan, plan_pre_108
+
+CONTEXT_TITLES = {spec["title"] for spec in CONTEXT_SECTIONS.values()}
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "data/contract/stage_strategy_draft"
@@ -197,9 +200,10 @@ def _1010(name: str):
 
 
 def _cols(p) -> list[tuple[str, str, str, str]]:
-    """(section title, metric, transformId, rel) of every custom column, in report order."""
+    """(section title, metric, transformId, rel) of every custom column, in report order - the thesis's own sections,
+    without the v0.12.1 context sections (Market Tape, Stablecoin Par) the history paths predate."""
     return [(s.title, c.metric, c.transformId, c.timeframe.rel)
-            for s in p.report.sections for c in s.columns]
+            for s in p.report.sections if s.title not in CONTEXT_TITLES for c in s.columns]
 
 
 # The residue closing the ACTIVE gaps leaves on trend-continuation: four unreachable signals
@@ -253,7 +257,10 @@ def test_the_committed_report_is_reproducible_by_plan_with_regime_as_context():
     # omega wires it null (a per-coin section), the one key the committed body lacks
     committed = [{k: v for k, v in s.items() if k != "sectionKey"} | {"marketScope": None}
                  for s in COMMITTED["REPORT"]["sections"]]
-    assert plan(replace(PRESETS["trend-continuation"], context=["REGIME"])).axes()["REPORT"]["sections"] == committed
+    # v0.12.1 (2026-11-10): plan() also adds the context sections its conditions read (Market Tape, Stablecoin Par),
+    # which the committed body predates; the thesis's own sections are unchanged
+    now = plan(replace(PRESETS["trend-continuation"], context=["REGIME"])).axes()["REPORT"]["sections"]
+    assert [s for s in now if s["title"] not in CONTEXT_TITLES] == committed
     assert _pre_1010("trend-continuation").axes()["REPORT"]["sections"] == committed
 
 
@@ -359,7 +366,8 @@ def test_the_token_estimate_after_the_change():
     one-header `value` columns in, six REGIME headers out); at 108 the six columns go and it reads ~756."""
     assert _1010("trend-continuation").cost().estimated_tokens == 918
     assert _pre_1010("trend-continuation").cost().estimated_tokens == 918
-    assert plan(PRESETS["trend-continuation"]).cost().estimated_tokens == 756
+    # 810 since v0.12.1 (2026-11-10): + the Market Tape and Stablecoin Par sections, one column each
+    assert plan(PRESETS["trend-continuation"]).cost().estimated_tokens == 810
 
 
 def test_a_context_module_is_still_honoured_and_no_longer_warns():

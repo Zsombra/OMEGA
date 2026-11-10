@@ -785,6 +785,41 @@ then the 11-09 full-autonomy grant covered the merge and the tag. The README "Co
 **Version 0.12.0** (pyproject). Not measured: the platform's own last accepted chained / inner window (one past the
 served maximum rendered; further is unprobed); `customSectionTemplates` (carried from 146.0.1).
 
+## v0.12.1, 2026-11-10: no condition reads a retired ambient header (recorded 15:06Z)
+
+**The defect.** The 149 re-review found it (battlegrid-manager `docs/status/2026-11-10-contract-149-rereview.md`).
+Since contract 146, every preset named retired ambient headers:
+- `usdtUsdDev_market` and `usdcUsdtDev_market` in `{P}_RISK_ON`;
+- `mktBreadth_all` in the non-FADE `{P}_CTX_*`.
+
+v0.12.0 still did. At 161.0.0, preview_strategy_report refused all five presets with CONDITION_COLUMN_UNKNOWN: "a
+condition may only read the strategy's own report columns". The refusal's allowed domain was the report's own headers
+plus four session headers (`captConc`, `fieldBiasDir`, `fieldPlayers`, `fieldUpBias` `_session`).
+
+**Measured the same day (read-only previews):**
+- A market section (`marketScope` "all", MKT_NET, header `mktBreadth`) and a USDT_USD reference section (PAR_DEV, header
+  `parDev`) render.
+- A condition on each was accepted, and each resolved to its section.
+- `mktBreadth` is net breadth in %, signed (-79.4 then). `parDev` is the deviation from par in % (-0.13).
+- The old thresholds (±10, ±0.5) keep their meaning.
+- A second reference section (USDC_USDT) makes `parDev` ambiguous (CONDITION_COLUMN_AMBIGUOUS). Qualifying it needs the
+  key the platform mints at CREATE.
+
+**Changed:**
+- `omega.conditions`: `tape_bullish` / `tape_bearish` read `mktBreadth`; `stables_at_par` reads `parDev` (USDT/USD only).
+  `CONTEXT_SECTIONS` names each one's section.
+- `omega.generate._plan` appends the section a plan's conditions read: Market Tape and/or Stablecoin Par. The
+  `plan_pre_108` history path does not.
+- `report_headers`: a market or reference section's header neither holds nor exits.
+- The ambient table (`data/derived/condition_surface.json`) holds the four measured session headers. Market-breadth,
+  reference-pairs and `picksSpread_session` move to `_retired146`.
+- `tests/test_v0_12_1.py` is new. The history tests that pinned the old ambient set or the old report shape are
+  re-scoped, each with its reason.
+
+**Not measured:** whether a strategy STAGE (not a preview) accepts the market and reference sections. A stage is a
+write and needs the user's word. The manager's preflight check and the live re-preview of all five presets go with the
+manager's re-pin.
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206

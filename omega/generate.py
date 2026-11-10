@@ -30,7 +30,7 @@ import uuid
 
 from .aggregate import Signal, aggregate
 from .conditions import (
-    all_of, ambient_headers, close_on, condition, crowd_leaning_down, crowd_leaning_up, is_,
+    CONTEXT_SECTIONS, all_of, ambient_headers, close_on, condition, crowd_leaning_down, crowd_leaning_up, is_,
     market_read_text, n_of, num, ref, stables_at_par, tape_bearish, tape_bullish,
     entry_gates, validate_conditions, validate_entry_gate, validate_market_read,
 )
@@ -883,10 +883,11 @@ def plan_pre_108(thesis: Thesis, *, show_scoring_data: bool = True) -> StrategyP
     measured pre-108 diagnostics (tests/test_recipes_rung_gap.py) stay reproducible. Its axes()
     are the 108 axes all the same: the scorecard is in `.rules` and `._rules()`, never staged."""
     rules = signal_rules(thesis)
-    return _plan(thesis, rules=rules, scoring_data=show_scoring_data)
+    # history: the pre-108 report as it was staged, without the v0.12.1 context sections
+    return _plan(thesis, rules=rules, scoring_data=show_scoring_data, context_sections=False)
 
 
-def _plan(thesis: Thesis, *, rules: list[Rule], scoring_data: bool) -> StrategyPlan:
+def _plan(thesis: Thesis, *, rules: list[Rule], scoring_data: bool, context_sections: bool = True) -> StrategyPlan:
     c = load()
     candle, inert = _split_by_timeframe_mode(thesis.modules)
     if scoring_data:
@@ -910,13 +911,38 @@ def _plan(thesis: Thesis, *, rules: list[Rule], scoring_data: bool) -> StrategyP
             title=title, sectionKey=_section_key(title), benchmarkTicker=None,
             notes=notes, columns=[Column.model_validate(s) for s in inert]))
 
-    report = Report(anchor=thesis.anchor, sections=sections)
     conditions = _build_conditions(thesis)
+    # v0.12.1 (2026-11-10): the market tape and stablecoin par are report columns since contract 146 - a condition may
+    # only read the strategy's own report columns - so the section each context clause reads is part of the plan.
+    for header in (_context_headers_read(conditions) if context_sections else []):
+        spec = CONTEXT_SECTIONS[header]
+        sections.append(CustomSection(
+            title=spec["title"], sectionKey=_section_key(spec["title"]), benchmarkTicker=spec["benchmarkTicker"],
+            marketScope=spec["marketScope"], notes=notes,
+            columns=[Column.model_validate(c) for c in spec["columns"]]))
+    report = Report(anchor=thesis.anchor, sections=sections)
     verdicts = [c for c in conditions if c.get("verdict") in ("UP", "DOWN")]
     text = market_read_text(
         f"{thesis.name}. {thesis.description}".strip(), verdicts) if verdicts else ""
     return StrategyPlan(thesis=thesis, report=report, rules=rules,
                         conditions=conditions, market_read_text=text)
+
+
+def _context_headers_read(conditions: list[dict]) -> list[str]:
+    """The CONTEXT_SECTIONS headers the conditions read, in CONTEXT_SECTIONS order."""
+    read: set[str] = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            if node.get("kind") == "clause":
+                read.add((node.get("column") or {}).get("header"))
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+    walk([c.get("definition") for c in conditions])
+    return [h for h in CONTEXT_SECTIONS if h in read]
 
 
 def _clause_for(module: str, side: str, fade: bool) -> dict:
@@ -969,12 +995,13 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
     """A layered condition DAG, not one flat checklist.
 
     Building blocks carry verdict=None and are composed by conditionRef into the two
-    verdict-bearing conditions. Context comes from the AMBIENT sections, which cost
-    nothing against the column or token budget:
+    verdict-bearing conditions. Context: the crowd reads the platform's session-field headers (no column); the tape
+    and stablecoin par read a column the plan's report renders (omega.conditions.CONTEXT_SECTIONS, added by `_plan`
+    since v0.12.1 - the pre-146 ambient headers are refused):
 
-        {P}_RISK_ON    stablecoin pairs at par            (ambient, free)
-        {P}_CTX_UP     tape / crowd context for longs     (ambient, free)
-        {P}_CTX_DOWN   tape / crowd context for shorts    (ambient, free)
+        {P}_RISK_ON    USDT/USD at par                    (the "Stablecoin Par" section, one column)
+        {P}_CTX_UP     tape / crowd context for longs     (tape: the "Market Tape" section; crowd: session, free)
+        {P}_CTX_DOWN   tape / crowd context for shorts
         {P}_CORE_UP    N_OF checklist over the modules    (your columns)
         {P}_CORE_DOWN  ...
         {P}_UP         ALL(CORE_UP, CTX_UP, RISK_ON)      -> verdict UP
@@ -995,7 +1022,7 @@ def _build_conditions(thesis: Thesis) -> list[dict]:
     fade = thesis.stance == "FADE"
 
     out = [
-        condition(f"{prefix}_RISK_ON", "Stablecoin pairs at par",
+        condition(f"{prefix}_RISK_ON", "USDT at par",
                   stables_at_par(), verdict=None),
         condition(f"{prefix}_CTX_UP",
                   "Crowd leaning down - room to fade up" if fade else "Broad tape up",

@@ -185,7 +185,10 @@ def test_every_generated_section_carries_the_key_and_the_emitted_body_walks_the_
     doc = json.loads(Path(emit_plan(plan(PRESETS[preset]), preset, out_dir=tmp_path)).read_text(encoding="utf-8"))
     body = {k: v for k, v in doc.items() if not k.startswith("_")}
     sections = body["axes"]["REPORT"]["sections"]
-    assert sections and all(s["marketScope"] is None for s in sections if s["kind"] == "custom")
+    # every thesis section is per-coin (null); since v0.12.1 the Market Tape context section is a market section
+    # ("all") and Stablecoin Par a reference section bound to USDT_USD (null scope)
+    assert sections and all(s["marketScope"] == ("all" if s["title"] == "Market Tape" else None)
+                            for s in sections if s["kind"] == "custom")
     root = DOC["stage_strategy_draft"]["inputSchema"]
     findings = P.diff_schema(body, root, root)
     assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
@@ -278,5 +281,5 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
 
 def test_the_version_moved_past_v0_10_2():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    # 0.11.0 at 146.0.1 (2026-11-02); 0.12.0 since the cut at 161.0.0 (2026-11-10)
-    assert 'version = "0.10.2"' not in text and 'version = "0.12.0"' in text
+    # 0.11.0 at 146.0.1 (2026-11-02); 0.12.0 at 161.0.0 (2026-11-10); 0.12.1 the same day (no retired ambient header)
+    assert 'version = "0.10.2"' not in text and 'version = "0.12.1"' in text

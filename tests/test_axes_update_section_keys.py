@@ -39,6 +39,21 @@ CONTEXT_KEY = "custom:1035fbda-380e-8d68-86c5-eeb5534b8cfb"
 # Contract 108 retired the scoring-data columns (Thesis.show_scoring_data), so plan() gives the
 # committed report from the context alone.
 COMMITTED_THESIS = replace(PRESETS["trend-continuation"], context=["REGIME"])
+# v0.12.1 (2026-11-10): the context conditions read report columns now (Market Tape `mktBreadth`, Stablecoin Par
+# `parDev`), not the retired ambient headers the 10-09 body carries (refused at 161.0.0, CONDITION_COLUMN_UNKNOWN). So
+# an UPDATE of that body changes those three conditions and adds the two sections, keyless (never an invented key);
+# the key carrying these tests pin is about the thesis's own sections and conditions.
+CONTEXT_CONDS = {"TC_RISK_ON", "TC_CTX_UP", "TC_CTX_DOWN"}
+NEW_CONTEXT = {"TC_RISK_ON": [("parDev", None)], "TC_CTX_UP": [("mktBreadth", None)],
+               "TC_CTX_DOWN": [("mktBreadth", None)]}
+
+
+def _own(keys: dict) -> dict:
+    return {k: v for k, v in keys.items() if k not in CONTEXT_CONDS}
+
+
+def _own_conditions(axes: dict) -> list:
+    return [c for c in axes["CONDITIONS"]["conditions"] if c["conditionKey"] not in CONTEXT_CONDS]
 
 
 def _clauses(defn: dict) -> list[dict]:
@@ -89,14 +104,15 @@ def test_the_round_trip_restages_the_committed_body_exactly():
     axes_update(current) must carry the live keys so REPORT and CONDITIONS read back
     identical - the 14-line diff of action 62 collapses to nothing."""
     u = plan(COMMITTED_THESIS).axes_update(CURRENT)
-    assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY]
+    assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY, None, None]
     # the read-back is from 2026-10-10 (contract 108); since 146.0.0 (2026-11-01) a custom section REQUIRES
     # `marketScope`, which omega wires null (a per-coin section), so the re-stage carries that one key more
-    expected = {**CURRENT["REPORT"], "sections": [{**s, "marketScope": None} if s["kind"] == "custom" else s
-                                                   for s in CURRENT["REPORT"]["sections"]]}
-    assert u["REPORT"] == expected
-    assert _clause_keys(u) == _clause_keys(CURRENT)
-    assert u["CONDITIONS"] == CURRENT["CONDITIONS"]
+    expected = [{**s, "marketScope": None} if s["kind"] == "custom" else s for s in CURRENT["REPORT"]["sections"]]
+    assert u["REPORT"]["sections"][:2] == expected
+    assert [s["title"] for s in u["REPORT"]["sections"][2:]] == ["Market Tape", "Stablecoin Par"]
+    assert _own(_clause_keys(u)) == _own(_clause_keys(CURRENT))
+    assert _own_conditions(u) == _own_conditions(CURRENT)
+    assert {k: v for k, v in _clause_keys(u).items() if k in CONTEXT_CONDS} == NEW_CONTEXT
 
 
 def test_a_current_without_keys_leaves_the_nulls():
@@ -116,10 +132,10 @@ def test_a_dropped_custom_section_does_not_carry_its_key():
     reads, so every clause still inherits its key."""
     u = plan(PRESETS["trend-continuation"]).axes_update(CURRENT)
     customs = [s for s in u["REPORT"]["sections"] if s["kind"] == "custom"]
-    assert [s["title"] for s in customs] == ["Trend Continuation Signals"]
-    assert customs[0]["sectionKey"] == SIGNALS_KEY
+    assert [s["title"] for s in customs] == ["Trend Continuation Signals", "Market Tape", "Stablecoin Par"]
+    assert customs[0]["sectionKey"] == SIGNALS_KEY and all("sectionKey" not in s for s in customs[1:])
     assert CONTEXT_KEY not in json.dumps(u)
-    assert _clause_keys(u) == _clause_keys(CURRENT)
+    assert _own(_clause_keys(u)) == _own(_clause_keys(CURRENT))
 
 
 def test_a_changed_metric_does_not_inherit_a_key():
@@ -131,7 +147,7 @@ def test_a_changed_metric_does_not_inherit_a_key():
     col = next(c for c in signals["columns"] if c["metric"] == "MA_ALIGN")
     col["metric"] = "RSI14"
     u = plan(COMMITTED_THESIS).axes_update(cur)
-    assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY]
+    assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY, None, None]
     keys = _clause_keys(u)
     for cond in ("TC_CORE_UP", "TC_CORE_DOWN"):
         by_header = dict(keys[cond])
@@ -139,13 +155,14 @@ def test_a_changed_metric_does_not_inherit_a_key():
         assert by_header["MACDhist_trend"] == SIGNALS_KEY      # MACD_trend before contract 110
         assert by_header["OBV_trend"] == SIGNALS_KEY
         assert by_header["ADX14_now"] == SIGNALS_KEY       # ADX_now before contract v123
-    assert dict(keys["TC_CTX_UP"])["mktBreadth_all"] == "market-breadth"
+    assert keys["TC_CTX_UP"] == [("mktBreadth", None)]      # mktBreadth_all / "market-breadth" until v0.12.1
 
 
 def test_a_key_is_copied_only_within_the_same_condition_and_section():
     """TC_CTX_DOWN reads the same header as TC_CTX_UP; without a current TC_CTX_DOWN its
     clause stays null. A current key that contradicts where the header lives (a
-    `session-field` key on a market-breadth header) is never copied either."""
+    `session-field` key on a market-breadth header) is never copied either. Since v0.12.1 the context clauses read
+    new headers no current clause carries, so all three stay null; the thesis's own clauses still inherit."""
     cur = copy.deepcopy(CURRENT)
     conds = cur["CONDITIONS"]["conditions"]
     cur["CONDITIONS"]["conditions"] = [c for c in conds if c["conditionKey"] != "TC_CTX_DOWN"]
@@ -153,10 +170,8 @@ def test_a_key_is_copied_only_within_the_same_condition_and_section():
     up["definition"]["column"]["sectionKey"] = "session-field"
     u = plan(PRESETS["trend-continuation"]).axes_update(cur)
     keys = _clause_keys(u)
-    assert keys["TC_CTX_DOWN"] == [("mktBreadth_all", None)]
-    assert keys["TC_CTX_UP"] == [("mktBreadth_all", None)]
-    assert keys["TC_RISK_ON"] == [("usdtUsdDev_market", "reference-pairs"),
-                                  ("usdcUsdtDev_market", "reference-pairs")]
+    assert {k: v for k, v in keys.items() if k in CONTEXT_CONDS} == NEW_CONTEXT
+    assert dict(keys["TC_CORE_UP"])["OBV_trend"] == SIGNALS_KEY
 
 
 def test_an_illegal_key_is_never_sent():
@@ -189,14 +204,15 @@ def test_sections_match_by_title_then_by_position_only_when_unambiguous():
     for s, title in zip(renamed["REPORT"]["sections"], ("Alpha", "Beta")):
         s["title"] = title
     u = p.axes_update(renamed)
-    assert [s["sectionKey"] for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, CONTEXT_KEY]
-    assert u["CONDITIONS"] == CURRENT["CONDITIONS"]
+    # the position fallback needs equal counts: the two context sections make 4 against 2, so no retitled section
+    # is carried by position any more - only a title match carries
+    assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [None, None, None, None]
 
     partial = copy.deepcopy(CURRENT)
     partial["REPORT"]["sections"][1]["title"] = "Beta"
     u = p.axes_update(partial)
-    assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, None]
-    assert u["CONDITIONS"] == CURRENT["CONDITIONS"]
+    assert [s.get("sectionKey") for s in u["REPORT"]["sections"]] == [SIGNALS_KEY, None, None, None]
+    assert _own_conditions(u) == _own_conditions(CURRENT)
 
     # no title matches and the counts differ: nothing is carried
     short = copy.deepcopy(renamed)
@@ -204,13 +220,13 @@ def test_sections_match_by_title_then_by_position_only_when_unambiguous():
     u = p.axes_update(short)
     assert all("sectionKey" not in s for s in u["REPORT"]["sections"])
     assert SIGNALS_KEY not in json.dumps(u["CONDITIONS"])
-    assert dict(_clause_keys(u)["TC_CTX_UP"])["mktBreadth_all"] == "market-breadth"
+    assert _clause_keys(u)["TC_CTX_UP"] == [("mktBreadth", None)]
 
 
 def test_every_carried_key_is_schema_legal():
     u = plan(PRESETS["trend-continuation"]).axes_update(CURRENT)
     for s in u["REPORT"]["sections"]:
-        if s["kind"] == "custom":
+        if s["kind"] == "custom" and "sectionKey" in s:          # the new context sections carry none
             assert CUSTOM_KEY.match(s["sectionKey"])
     for ks in _clause_keys(u).values():
         for _, k in ks:

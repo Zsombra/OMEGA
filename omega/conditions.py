@@ -160,11 +160,13 @@ def _surface() -> dict:
 
 @lru_cache(maxsize=1)
 def ambient_headers() -> dict[str, dict]:
-    """Headers available to conditions without adding any column.
+    """Headers available to conditions without adding any column: the platform's session-field headers.
 
-    session-field, market-breadth and reference-pairs are provided by the platform.
-    They cost nothing against the report budget - which is why the includeMarketBreadth
-    and includeReferencePairs templates ship with zero columns.
+    Since contract 146 these are the only ones. Measured 2026-11-10 at 161.0.0: a condition on any other header the
+    report does not render is refused (CONDITION_COLUMN_UNKNOWN), and the refusal's allowed domain is the report's own
+    headers plus captConc_session, fieldBiasDir_session, fieldPlayers_session and fieldUpBias_session. The retired
+    market-breadth and reference-pairs sections (and picksSpread_session) are kept in the surface file's
+    `_retired146` for the record, and read nowhere.
     """
     out: dict[str, dict] = {}
     for section_key, section in _surface()["ambientSections"].items():
@@ -444,19 +446,23 @@ def close_on(cond: dict, *, name: str | None = None) -> dict:
     return exit_rule(key, name or f"Close on {source}", ref(source), SIDE_CLOSED_BY_VERDICT[verdict])
 
 
-# --- ambient clause library -----------------------------------------------
-# Clauses over the three platform-provided sections. They reference data the report
-# already carries, so they cost NOTHING against the column or token budget - the
-# cheapest context a strategy can buy.
+# --- context clause library ------------------------------------------------
+# The crowd clauses read the platform's session-field headers, which a condition may read without a column (the four
+# measured at 161.0.0, data/derived/condition_surface.json). The tape and stablecoin clauses read a column the REPORT
+# must render: since contract 146 the market tape is MKT_NET on a market section and stablecoin par PAR_DEV on a
+# reference section (`CONTEXT_SECTIONS`; omega.generate adds the section a plan's conditions read). Their pre-146
+# ambient headers (mktBreadth_all, usdtUsdDev_market, usdcUsdtDev_market) are refused, CONDITION_COLUMN_UNKNOWN:
+# "a condition may only read the strategy's own report columns" (measured 2026-11-10 at 161.0.0).
 
 def tape_bullish(threshold: float = 10.0) -> dict:
-    """Net breadth positive: more of the field closed up than down."""
-    return num("mktBreadth_all", "gt", threshold)
+    """Net breadth positive: more of the field closed up than down. `mktBreadth` is the up share minus the down share,
+    in percent, signed (MKT_NET on a market section; its served gloss, 2026-11-10)."""
+    return num("mktBreadth", "gt", threshold)
 
 
 def tape_bearish(threshold: float = -10.0) -> dict:
     """Net breadth negative - a broadly red field."""
-    return num("mktBreadth_all", "lt", threshold)
+    return num("mktBreadth", "lt", threshold)
 
 
 def crowd_leaning_up(threshold: float = 60.0) -> dict:
@@ -475,10 +481,23 @@ def crowd_concentrated(threshold: float = 40.0) -> dict:
 
 
 def stables_at_par(tolerance: float = 0.5) -> dict:
-    """Both stablecoin pairs near par. Use as a risk-off veto: a depeg is the market
-    telling you something the indicators have not priced yet."""
-    return all_of(between("usdtUsdDev_market", -tolerance, tolerance),
-                  between("usdcUsdtDev_market", -tolerance, tolerance))
+    """USDT/USD near par. Use as a risk-off veto: a depeg is the market telling you something the indicators have not
+    priced yet. `parDev` is ((close - par) / par) x 100, signed (PAR_DEV on a reference section bound to USDT_USD).
+    One pair only since v0.12.1: a second reference section renders a second `parDev`, and a bare header two sections
+    render is refused (CONDITION_COLUMN_AMBIGUOUS, measured 2026-11-10); qualifying it needs the section key the
+    platform mints at CREATE, which omega cannot know."""
+    return between("parDev", -tolerance, tolerance)
+
+
+# The report sections a context clause needs, by the header it reads (2026-11-10, contract 161.0.0). Each renders one
+# header: MKT_NET on a market section ("all", the scope the retired `_all` header read) and PAR_DEV on the USDT_USD
+# reference section. omega.generate appends the ones a plan's conditions read.
+CONTEXT_SECTIONS = {
+    "mktBreadth": {"title": "Market Tape", "benchmarkTicker": None, "marketScope": "all",
+                   "columns": [{"metric": "MKT_NET", "transformId": "value", "timeframe": {"rel": "anchor"}}]},
+    "parDev": {"title": "Stablecoin Par", "benchmarkTicker": "USDT_USD", "marketScope": None,
+               "columns": [{"metric": "PAR_DEV", "transformId": "value", "timeframe": {"rel": "anchor"}}]},
+}
 
 
 # v156 (README "Contract history - v156", Refused input): "A condition on a crowd reading no decided bar can serve is
@@ -645,7 +664,10 @@ def report_headers(report: Report) -> dict[str, dict]:
             for column in section.columns:
                 if column.metric not in c.metrics or not predictable(column, c):
                     continue                 # an unmeasured knob header (KNOB_SPELLING_UNMEASURED) is no header here
-                moved = not c.metric(column.metric).is_timeless
+                # a market or reference section reads another series, not this coin's candles (v0.12.1): no hold
+                # above 1 and no exit role, as the session-field headers
+                own_coin = section.marketScope is None and section.benchmarkTicker is None
+                moved = own_coin and not c.metric(column.metric).is_timeless
                 candle = moved and (column.offset or 0) == 0
                 above, below = _anchor_side(column, report.anchor, order)
                 # v117: a change over a horizon above the strategy timeframe is Developing whatever its selector

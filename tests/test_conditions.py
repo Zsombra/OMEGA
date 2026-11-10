@@ -55,23 +55,33 @@ def test_classify_zone_vocabulary_matches_live_render():
 
 
 # --- ambient headers ------------------------------------------------------
-def test_ambient_headers_are_available_without_columns():
+def test_ambient_headers_are_the_four_session_headers_measured_at_161():
+    """Measured 2026-11-10 at 161.0.0: the CONDITION_COLUMN_UNKNOWN refusal's allowed domain is the report's own
+    headers plus exactly these four. The pre-146 market-breadth / reference-pairs headers and picksSpread_session are
+    refused: retired, not ambient."""
     amb = ambient_headers()
-    for h in ("mktBreadth_all", "fieldUpBias_session", "usdtUsdDev_market", "fieldBiasDir_session"):
-        assert h in amb
-    # available even to an empty report
-    assert "mktBreadth_all" in report_headers(Report(anchor="1h", sections=[]))
+    assert set(amb) == {"captConc_session", "fieldBiasDir_session", "fieldPlayers_session", "fieldUpBias_session"}
+    empty = report_headers(Report(anchor="1h", sections=[]))
+    assert "fieldUpBias_session" in empty                       # available even to an empty report
+    for retired in ("mktBreadth_all", "usdtUsdDev_market", "usdcUsdtDev_market", "picksSpread_session"):
+        assert retired not in empty
 
 
-def test_ambient_condition_validates_with_no_columns():
+def test_ambient_condition_validates_with_no_columns_and_a_retired_header_is_refused():
     empty = Report(anchor="1h", sections=[])
-    conds = [condition("BREADTH_UP", "Broad tape", num("mktBreadth_all", "gt", 20), verdict="UP")]
+    conds = [condition("CROWD_UP", "Crowd up", num("fieldUpBias_session", "gt", 60), verdict="UP")]
     assert not [f for f in validate_conditions(empty, conds) if f.severity == "error"]
+    retired = [condition("BREADTH_UP", "Broad tape", num("mktBreadth_all", "gt", 20), verdict="UP")]
+    assert [f for f in validate_conditions(empty, retired) if f.severity == "error"]
 
 
-def test_a_header_with_no_operators_is_rejected():
+def test_a_header_with_no_operators_is_rejected(monkeypatch):
+    import omega.conditions as conditions_module
+    served = dict(conditions_module.ambient_headers())
+    served["noOps_session"] = dict(served["fieldUpBias_session"], ops=[])
+    monkeypatch.setattr(conditions_module, "ambient_headers", lambda: served)
     empty = Report(anchor="1h", sections=[])
-    conds = [condition("SPREAD", "n/a", num("picksSpread_session", "gt", 1))]
+    conds = [condition("SPREAD", "n/a", num("noOps_session", "gt", 1))]
     errs = [f for f in validate_conditions(empty, conds) if f.severity == "error"]
     assert any("no condition operators" in f.message for f in errs)
 
@@ -340,22 +350,39 @@ def test_top_level_conditions_are_built_from_condition_refs(name):
         assert kinds == {"conditionRef"}, f"{c['conditionKey']} should compose by reference"
 
 
-def test_ambient_context_costs_no_columns():
-    """Verified live: sectionColumns counted only the report's own columns."""
-    p = plan(PRESETS["squeeze-breakout"])
-    ambient = {"mktBreadth_all", "usdtUsdDev_market", "usdcUsdtDev_market",
-               "fieldUpBias_session"}
+def _headers_read(conditions) -> set:
     used = set()
+
     def walk(d):
         if d.get("kind") == "clause":
             used.add(d["column"]["header"])
         for m in d.get("members") or []:
             walk(m)
-    for c in p.conditions:
+    for c in conditions:
         walk(c["definition"])
-    assert used & ambient, "expected the generated plan to use free ambient context"
-    report_metrics = {col.metric for s in p.report.sections for col in s.columns}
-    assert "mktBreadth_all" not in report_metrics    # no column pays for it
+    return used
+
+
+def test_the_tape_and_par_context_reads_columns_the_report_renders():
+    """v0.12.1 (measured 2026-11-10 at 161.0.0): a condition may only read the strategy's own report columns, plus the
+    four session headers. The tape is MKT_NET on a market section (`mktBreadth`), stablecoin par PAR_DEV on the
+    USDT_USD reference section (`parDev`); each costs one column, in its own section."""
+    p = plan(PRESETS["squeeze-breakout"])            # ALIGN: the tape context and the par veto
+    used = _headers_read(p.conditions)
+    assert {"mktBreadth", "parDev"} <= used
+    by_title = {s.title: s for s in p.report.sections}
+    tape, par = by_title["Market Tape"], by_title["Stablecoin Par"]
+    assert (tape.marketScope, tape.benchmarkTicker, [c.metric for c in tape.columns]) == ("all", None, ["MKT_NET"])
+    assert (par.marketScope, par.benchmarkTicker, [c.metric for c in par.columns]) == (None, "USDT_USD", ["PAR_DEV"])
+    rendered = set(report_headers(p.report))
+    assert used <= rendered
+
+
+def test_a_fade_plan_reads_the_crowd_for_free_and_adds_no_tape_section():
+    p = plan(PRESETS["mean-reversion"])              # FADE: the crowd context, no tape
+    used = _headers_read(p.conditions)
+    assert "fieldUpBias_session" in used and "mktBreadth" not in used
+    assert "Market Tape" not in {s.title for s in p.report.sections}
 
 
 def test_fade_and_align_select_opposite_readings():
@@ -477,7 +504,7 @@ def _conditions_axis():
 
 
 def test_condition_emits_exactly_the_six_v91_keys_in_schema_order():
-    c = condition("CHK", "n", num("mktBreadth_all", "gt", 10))
+    c = condition("CHK", "n", num("fieldUpBias_session", "gt", 10))
     assert list(c) == ["conditionKey", "name", "definition", "verdict", "required", "exitSide"]
     assert c["exitSide"] is None
     axis, _ = _conditions_axis()
@@ -487,18 +514,18 @@ def test_condition_emits_exactly_the_six_v91_keys_in_schema_order():
 @pytest.mark.parametrize("retired", [{"clock": "LIVE"}, {"closes": 1}, {"exit": False}])
 def test_condition_refuses_the_retired_keywords(retired):
     with pytest.raises(TypeError):
-        condition("CHK", "n", num("mktBreadth_all", "gt", 10), **retired)
+        condition("CHK", "n", num("fieldUpBias_session", "gt", 10), **retired)
 
 
 @pytest.mark.parametrize("key,why", [("clock", "61.0.0"), ("closes", "84.0.0"), ("exit", "88.0.0")])
 def test_a_hand_built_condition_with_a_retired_key_is_an_error_naming_the_contract(key, why):
-    bare = dict(condition("CHK", "n", num("mktBreadth_all", "gt", 10)), **{key: 1})
+    bare = dict(condition("CHK", "n", num("fieldUpBias_session", "gt", 10)), **{key: 1})
     [f] = [f for f in validate_conditions(RSI_REPORT, [bare]) if f.path == f".{key}"]
     assert f.severity == "error" and why in f.message
 
 
 def test_an_undeclared_condition_key_is_an_error():
-    bare = dict(condition("CHK", "n", num("mktBreadth_all", "gt", 10)), extra=True)
+    bare = dict(condition("CHK", "n", num("fieldUpBias_session", "gt", 10)), extra=True)
     assert any(f.path == ".extra" and f.severity == "error"
                for f in validate_conditions(RSI_REPORT, [bare]))
 
@@ -602,7 +629,9 @@ def test_the_61_hold_operand_rule_is_now_a_warning_never_an_error(spec, header_p
 
 def test_a_group_hold_reaches_its_one_read_clauses():
     """A clause at {1,1} under a group holding 2 is still read over 2 bars."""
-    cond = condition("CHK", "n", all_of(stables_at_par()), hold=held(2))
+    # two ambient (frame-inert) clauses; stables_at_par() was the pair until v0.12.1 made it one report column
+    cond = condition("CHK", "n", all_of(num("fieldUpBias_session", "gt", 60), num("captConc_session", "gt", 40)),
+                     hold=held(2))
     warns = [f for f in validate_conditions(RSI_REPORT, [cond]) if f.severity == "warning"]
     assert len([f for f in warns if "CONDITION_HOLD_OPERAND_ILLEGAL" in f.message]) == 2
 
@@ -618,7 +647,7 @@ def test_a_group_hold_over_references_alone_warns():
 # exitSide (v88)
 
 def test_a_condition_without_exit_side_is_an_error():
-    bare = condition("CHK", "n", num("mktBreadth_all", "gt", 10))
+    bare = condition("CHK", "n", num("fieldUpBias_session", "gt", 10))
     del bare["exitSide"]
     assert ".exitSide" in {f.path for f in validate_conditions(RSI_REPORT, [bare]) if f.severity == "error"}
     bad = dict(bare, exitSide="UP")
@@ -683,7 +712,7 @@ def test_an_entry_condition_cannot_reference_an_exit_rule_but_an_exit_rule_may_r
 def test_an_exit_rule_needs_operands_a_completed_bar_moves():
     # keys are two characters: ^[A-Z][A-Z0-9_]{1,39}$ refuses a one-character key, and
     # that unrelated finding would mask the clean read below
-    inert = exit_rule("XX", "n", num("mktBreadth_all", "gt", 10), "BOTH")
+    inert = exit_rule("XX", "n", num("fieldUpBias_session", "gt", 10), "BOTH")
     errs = [f for f in validate_conditions(RSI_REPORT, [inert]) if f.severity == "error"]
     assert any("CONDITION_EXIT_READ_ILLEGAL" in f.message for f in errs)
     moved = exit_rule("YY", "n", num("RSI14_now", "gt", 50), "BOTH")
@@ -693,7 +722,7 @@ def test_an_exit_rule_needs_operands_a_completed_bar_moves():
 def test_a_close_on_rule_reads_its_source_closure():
     """CLOSE_ON_<key> is a conditionRef, so the exit read rule follows the reference: an
     entry condition over an ambient header cannot be split into a legal exit rule."""
-    entry = condition("TAPE", "n", num("mktBreadth_all", "gt", 10), verdict="UP")
+    entry = condition("TAPE", "n", num("fieldUpBias_session", "gt", 10), verdict="UP")
     findings = validate_conditions(RSI_REPORT, [entry, close_on(entry)])
     assert any(f.condition_key == "CLOSE_ON_TAPE" and "CONDITION_EXIT_READ_ILLEGAL" in f.message
                for f in findings if f.severity == "error")

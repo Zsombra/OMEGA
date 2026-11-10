@@ -324,8 +324,22 @@ def _without_market_scope(body: dict) -> dict:
     key, and every capture before it closes the custom-section arm against it (additionalProperties false), so a body
     is walked against a pre-146 capture only in this shape (history), never as emitted."""
     out = json.loads(json.dumps(body))
+    # v0.12.1 (2026-11-10): the context sections (Market Tape, Stablecoin Par) read MKT_NET / PAR_DEV on a market and a
+    # reference section - metrics and subjects contract 146 added, so no pre-146 capture can describe them
+    from omega.conditions import CONTEXT_SECTIONS
+    titles = {spec["title"] for spec in CONTEXT_SECTIONS.values()}
+    out["axes"]["REPORT"]["sections"] = [s for s in out["axes"]["REPORT"]["sections"] if s.get("title") not in titles]
     for s in out["axes"]["REPORT"]["sections"]:
         s.pop("marketScope", None)
+    return out
+
+
+def _with_scope_only(body: dict) -> dict:
+    """The body without the v0.12.1 context sections, `marketScope` kept: the 146 key alone against a pre-146 capture."""
+    out = _without_market_scope(body)
+    kept = {s["title"]: s for s in body["axes"]["REPORT"]["sections"]}
+    for s in out["axes"]["REPORT"]["sections"]:
+        s["marketScope"] = kept[s["title"]].get("marketScope")
     return out
 
 
@@ -341,7 +355,7 @@ def test_the_emitted_body_is_the_flat_v111_stage_and_walks_clean(tmp_path, prese
     # there (the arm is closed), and without it the 146 capture reads it MISSING_REQUIRED
     old = json.loads((ROOT / SCHEMA_110_13).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
     assert [f for f in P.diff_schema(_without_market_scope(body), old, old) if f.verdict == "FAIL"] == []
-    assert {f.cls for f in P.diff_schema(body, old, old) if f.verdict == "FAIL"} == {"UNDECLARED"}
+    assert {f.cls for f in P.diff_schema(_with_scope_only(body), old, old) if f.verdict == "FAIL"} == {"UNDECLARED"}
     assert {(f.cls, f.path.rsplit(".", 1)[-1]) for f in P.diff_schema(_without_market_scope(body), root, root)
             if f.verdict == "FAIL"} == {("MISSING_REQUIRED", "marketScope")}
 
