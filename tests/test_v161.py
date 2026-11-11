@@ -61,7 +61,7 @@ def test_omega_agrees_with_the_161_depth_probes():
     """The readable depth is 2500 bars (2436 less the 64-bar lookback budget): the K.RSI14.roc.* and O.* probes sit on
     each served maximum (accepted) and one past it (refused REPORT_COLUMN_DEPTH_EXCEEDED). omega judges both sides the same
     way, from the corpus's served maxima. (The N.* chained-window probes rendered one past the served maximum: see
-    test_omega_agrees_with_every_answer_of_the_161_probe.)"""
+    test_omega_agrees_with_every_answer_of_the_161_probe, and tests/test_v0_12_2.py for the joint bound they sit in.)"""
     from pathlib import Path
 
     from omega.contract import load
@@ -126,8 +126,8 @@ def _rendered_names(render) -> set:
 def test_omega_agrees_with_every_answer_of_the_161_probe():
     """63 previews at 161.0.0: every accepted one validates with no error (bar the duplicate header the platform itself
     flags in `duplicateHeaders`) and renders every header omega.fanout predicts; every refused one is refused by omega
-    with the finding above. N.chainedWindow.over / N.innerWindow.over rendered one past the served maximum, so omega
-    warns there (BEYOND_SERVED_MAXIMUM) and does not refuse."""
+    with the finding above. N.chainedWindow.over / N.innerWindow.over rendered one past the served maximum, and omega
+    has no finding there (see the end of the test)."""
     from pathlib import Path
 
     from pydantic import ValidationError
@@ -169,9 +169,13 @@ def test_omega_agrees_with_every_answer_of_the_161_probe():
             assert errors == expect, (p["probe"], errors)
             refused_seen.add(p["probe"])
     assert refused_seen == set(REFUSED_161), "every refused probe is listed, and every listed one was refused"
-    assert warned["N.chainedWindow.over"] == ["BEYOND_SERVED_MAXIMUM"]
-    assert warned["N.innerWindow.over"] == ["BEYOND_SERVED_MAXIMUM"]
-    assert "N.chainedWindow.max" not in warned and "N.innerWindow.max" not in warned
+    # Re-pinned at v0.12.2 (2026-11-11): these two were asserted to WARN, on the reading that one past a served maximum
+    # is past a limit whose real place was unmeasured. Measured since (data/audit/authoring_limits_161_2026-11-11.json):
+    # the limit is one joint bar count, need(inner, window) + need(outer, chainedWindow) - 1 <= 2436, and both cases sit
+    # inside it (window 14 + chainedWindow 2365 reads 2416 bars, window 698 + chainedWindow 5 reads 2419), which is why
+    # they rendered. Inside the bound omega has no finding at all, so the per-window warning is gone.
+    for inside in ("N.chainedWindow.max", "N.chainedWindow.over", "N.innerWindow.max", "N.innerWindow.over"):
+        assert inside not in warned, (inside, warned[inside])
 
 
 def test_the_manifest_records_the_161_extraction():

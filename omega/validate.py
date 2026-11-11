@@ -6,6 +6,7 @@ column is caught here instead of at submit time. Each Finding carries the
 """
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Iterable, get_args
@@ -44,6 +45,86 @@ def chained_operands(spec: dict, outer: str) -> list | None:
 def chained_window_maximum(spec: dict, outer: str) -> int | None:
     """The largest `window` a chain into `outer` accepts (v135 chainedOuters.<outer>.windowMaximum), else None."""
     return ((spec.get("chainedOuters") or {}).get(outer) or {}).get("windowMaximum")
+
+
+# --- the bars one value reads (contract 161.0.0; measured 2026-11-11) -------------------------------------------------
+# ln(1000): a smoother is read once its seed "weighs at most 0.1 %" (the catalogue's words on ema / rma / rsi).
+_LN_1000 = math.log(1000)
+_READS_WINDOW = frozenset({"aggregate", "wma", "cci", "zscore", "stddev", "linregSlope", "rollingMin", "rollingMax"})
+_READS_WINDOW_PLUS_ONE = frozenset({"roc", "pctl"})
+
+
+def bars_needed(transform_id: str, window: int) -> int | None:
+    """How many bars ONE value of a rolling transform reads at `window`: the platform's own count, the N of "reads N
+    bars for one value" (REPORT_COLUMN_DEPTH_EXCEEDED, details.receivedValue.need). None for a transform outside the
+    table: its depth is unmeasured, and the caller refuses the column rather than guess.
+
+    SERVED-EXACT - the catalogue's own sentence (data/contract/transforms/_authoring.json, the `window` description):
+    - aggregate, wma, cci, zscore, stddev, linregSlope, rollingMin, rollingMax read `window` bars ("One value reads
+      exactly the length in bars", "How many of this column's newest bars ...");
+    - roc and pctl read `window` + 1 ("the newest bar and the one length bars before it"; "bars before the newest ...
+      it reads the newest bar too").
+
+    FITTED, not served. The catalogue gives the rule in words ("the bars after which the average's seed weighs at most
+    0.1 %") and at one length each (73 bars at ema 20, 108 at rma 14, 109 at rsi 14); the closed forms were fitted to
+    the refusals' own figures on 2026-11-11 at 161.0.0:
+    - ema: ceil((window + 1) * ln(1000) / 2);
+    - rma: 1 at window 1, else window + ceil(ln(1000) / -ln(1 - 1 / window)) - the seed bars, then the settling bars;
+    - rsi: rma + 1 - the bar the oldest change starts from.
+
+    What pins the fitted forms (tests/test_v0_12_2.py): the replay of data/audit/authoring_limits_161_2026-11-11.json -
+    the count equals the platform's on all 19 depth refusals (two of them predicted on disk before they were sent) and
+    gives the hold room the platform serves on 73 rendered columns - and the corpus test, which reproduces every served
+    rolling-chain cell (15,106) and standalone depth maximum (2,184) of the 161.0.0 metric files. Two near forms fail
+    that corpus test (checked 2026-11-11): the exact 0.1 % decay count for ema, ceil(ln(1000) / -ln(1 - 2 / (window +
+    1))), reproduces 11,952 of the cells; a linear rma, window + ceil(window * ln(1000)), 9,628. If a re-extraction
+    breaks either test the platform's arithmetic moved: re-measure, never adjust a constant by hand.
+
+    Every form reads at least `window` bars and never fewer for a longer window (largest_window and the chain check's
+    clamp rest on both)."""
+    if transform_id in _READS_WINDOW:
+        return window
+    if transform_id in _READS_WINDOW_PLUS_ONE:
+        return window + 1
+    if transform_id == "ema":
+        return math.ceil((window + 1) * _LN_1000 / 2)
+    if transform_id in ("rma", "rsi"):
+        wilder = 1 if window == 1 else window + math.ceil(_LN_1000 / -math.log(1 - 1 / window))
+        return wilder + (1 if transform_id == "rsi" else 0)
+    return None
+
+
+def largest_window(transform_id: str, bars: int) -> int | None:
+    """The largest window at which one value of `transform_id` reads at most `bars` bars - the platform's "the largest
+    window that fits". None when not even a window of 1 does, or the transform is outside the need table. bars_needed
+    never falls as the window grows and is never below it, so the answer lies in 1 .. bars: a bisection."""
+    least = bars_needed(transform_id, 1)
+    if least is None or least > bars:
+        return None
+    lo, hi = 1, bars
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if bars_needed(transform_id, mid) <= bars:
+            lo = mid
+        else:
+            hi = mid - 1
+    return lo
+
+
+def depth_budget(m: Metric) -> int | None:
+    """The bars one value of a column over `m` may read, from served data: the metric's standalone `aggregate` window
+    maximum (data/contract/metrics/<METRIC>.json, transforms.aggregate.maximums.window with bounds.window `depth`).
+    aggregate reads exactly its window in bars (bars_needed), so its largest window IS the budget - 2436 on all 168
+    metrics that serve it at 161.0.0. It is the 2500 readable bars less the 64-bar columnLookback, as every depth
+    refusal says ("at most 2436 of the 2500 readable bars, leaving the lookback budget 64"; details.context depth 2500,
+    cap 64), but the corpus carries the maximum and not the 2500, so the maximum is the source. None where the metric
+    serves no depth-bound aggregate: the chain check then refuses the chain as unmeasured. tests/test_v0_12_2.py fails
+    if the served number moves."""
+    served = m.transforms.get("aggregate") or {}
+    if (served.get("bounds") or {}).get("window") != "depth":
+        return None
+    return (served.get("maximums") or {}).get("window")
+
 
 # A bare `CLOSE x value` column - no window, no offset - already reports
 # columnLookback 24/32. The contract publishes `value` as taking ONLY `offset` and no
@@ -237,13 +318,25 @@ def validate_column(
             out.append(Finding(
                 "error", "PARAMETER_OUT_OF_RANGE", f"{path}.touchAtr",
                 f"levelInteraction requires params.touchAtr >= {lo:g} in steps of {step:g} (got {column.touchAtr!r})"))
-        else:
-            hi = (((m.transforms.get("levelInteraction") or {}).get("maximums") or {}).get("touchAtr")
-                  if tid == "levelInteraction" else None)
+        elif tid == "levelInteraction":
+            hi = ((m.transforms.get("levelInteraction") or {}).get("maximums") or {}).get("touchAtr")
             if hi is not None and column.touchAtr > hi:
                 out.append(Finding(
                     "error", "PARAMETER_OUT_OF_RANGE", f"{path}.touchAtr",
                     f"params.touchAtr {column.touchAtr} on {m.metric} is over the served maximum {hi}"))
+        else:
+            # A CHAINED levelInteraction (rollingMax / rollingMin -> levelInteraction) is bounded as the transform is:
+            # measured 2026-11-11 at 161.0.0 on HIGH x rollingMax (20, offset 1) and LOW x rollingMin, touchAtr 2
+            # rendered (high_o1_max20_lvl_a2) and 2.1 / 100 were refused "[column-grammar] transform 'levelInteraction'
+            # requires params.touchAtr from 0.1 to 2 in steps of 0.1 (got 2.1)", REPORT_COLUMN_CONSTRUCTION_FAILED
+            # (data/audit/authoring_limits_161_2026-11-11.json, group B). HIGH and LOW serve no levelInteraction entry
+            # of their own, so the maximum is the served chain-outer one (Contract.chain_outer_parameters).
+            hi = ((c.chain_outer_parameters.get("levelInteraction") or {}).get("touchAtr") or {}).get("maximum")
+            if hi is not None and column.touchAtr > hi:
+                out.append(Finding(
+                    "error", "PARAMETER_OUT_OF_RANGE", f"{path}.touchAtr",
+                    f"params.touchAtr {column.touchAtr} on {m.metric} x {tid} -> levelInteraction is over the served "
+                    f"maximum {hi} (chainOuterParameters.levelInteraction.touchAtr.maximum)"))
     if column.chainedWindow is not None:
         outer_spec = (((m.transforms.get(tid) or {}).get("chainedOuters") or {}).get(column.chainedTransformId or "")
                       or {})
@@ -448,39 +541,21 @@ def validate_column(
                         f"({m.metric} x spread x {chained}) is only offered over the operands "
                         f"{served}, not {operand!r} (chainedOuters.{chained}.operands)."))
         outer_spec = (spec.get("chainedOuters") or {}).get(chained) or {}
-        rolling_inner = outer_spec.get("windowParameter") == "chainedWindow"
-        outer_win = column.chainedWindow if rolling_inner else column.window
-        inner_max = outer_spec.get("innerWindowMaximum")
-        if rolling_inner and inner_max is not None and column.window is not None and column.window > inner_max:
-            # 161.0.0: the inner keeps `window`, bounded by the chain's served innerWindowMaximum (ema 697 under an
-            # aggregate outer on RSI14 against 704 alone). Measured 2026-11-09: 698 was still rendered
-            # (RSI14_ema698_mean5, probe N.innerWindow.over), so the platform does not refuse at this bound: a WARNING,
-            # not an error (2026-11-10, review of the 161 step). The platform's own last accepted value is unmeasured.
-            out.append(Finding(
-                "warning", "BEYOND_SERVED_MAXIMUM", f"{path}.window",
-                f"window={column.window} is past the inner maximum {inner_max} the platform serves for the {chained} "
-                f"chain on {m.metric} x {tid} (chainedOuters.{chained}.innerWindowMaximum); one past it rendered on "
-                f"2026-11-09, the real limit is unmeasured"))
         window_max = chained_window_maximum(spec, chained)
-        if rolling_inner and window_max is not None and outer_win is not None and outer_win > window_max:
-            # 161.0.0: a rolling inner's chainedWindow past the served windowMaximum still renders - measured 2026-11-09,
-            # RSI14 x ema14 -> aggregate chainedWindow 2365 against 2364 served (RSI14_ema14_mean2365, probe
-            # N.chainedWindow.over). A WARNING, as the inner bound above; the platform's own limit is unmeasured.
-            out.append(Finding(
-                "warning", "BEYOND_SERVED_MAXIMUM", f"{path}.chainedWindow",
-                f"chainedWindow={outer_win} is past the maximum {window_max} the platform serves for the {chained} "
-                f"chain on {m.metric} x {tid} (chainedOuters.{chained}.windowMaximum); one past it rendered on "
-                f"2026-11-09, the real limit is unmeasured"))
-        elif window_max is not None and outer_win is not None and outer_win > window_max:
+        if outer_spec.get("windowParameter") == "chainedWindow":
+            # 161.0.0: a rolling inner keeps `window` and the outer reads `chainedWindow`. The two are bound JOINTLY, by
+            # the bars one value reads; the served windowMaximum / innerWindowMaximum are that bound with the other
+            # window at its default, so neither is compared here (measured 2026-11-11).
+            out.extend(_rolling_chain_depth(column, m, c, path))
+        elif window_max is not None and column.window is not None and column.window > window_max:
             # v135: efficiency's largest window is one below columnLookback (it reads window + 1 bars), and pctl's
             # likewise; each outer's maximum is served (chainedOuters.<outer>.windowMaximum). A maximum above the
             # columnLookback budget is the 1,000-bar depth's (v146.4): REPORT_COLUMN_DEPTH_EXCEEDED, measured 2026-11-07
             # at 149.1.0 on HIGH x distance -> ema window 270 ("the largest window that fits is 269").
             depth = window_max > c.budgets["columnLookback"]
-            field = "chainedWindow" if rolling_inner else "window"
             out.append(Finding(
-                "error", "DEPTH_EXCEEDED" if depth else "LOOKBACK_EXCEEDED", f"{path}.{field}",
-                f"{field}={outer_win} exceeds the maximum {window_max} the platform serves for the "
+                "error", "DEPTH_EXCEEDED" if depth else "LOOKBACK_EXCEEDED", f"{path}.window",
+                f"window={column.window} exceeds the maximum {window_max} the platform serves for the "
                 f"{chained} chain on {m.metric} x {tid} (chainedOuters.{chained}.windowMaximum"
                 + ("; the readable depth less the lookback budget: 2436 of 2500 bars since 161.0.0)" if depth else ")")))
         offset_min = ((spec.get("chainedOuters") or {}).get(chained) or {}).get("offsetMinimum")
@@ -628,6 +703,76 @@ def validate_column(
 
     out.extend(_knob_findings(column, m, spec, path))
     return out
+
+
+def _window_parameter(transform_id: str, c: Contract) -> dict:
+    """The catalogue's `window` parameter of a transform (authoring.parameters.window: defaultValue, minimum, ...)."""
+    return ((c.transforms.get(transform_id) or {}).get("parameters") or {}).get("window") or {}
+
+
+def _rolling_chain_depth(column: Column, m: Metric, c: Contract, path: str) -> list[Finding]:
+    """The ONE depth bound of a chain whose inner is a rolling transform (served windowParameter `chainedWindow`):
+
+        bars_needed(inner, window) + bars_needed(outer, chainedWindow) - 1  <=  depth_budget(metric)
+
+    Measured 2026-11-11 at 161.0.0 (data/audit/authoring_limits_161_2026-11-11.json): RSI14 x ema window 697 ->
+    aggregate chainedWindow 2364, each AT its served maximum, is refused - "Column 'RSI14 x ema' chainedWindow 2364
+    reads 4774 bars for one value - at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest
+    chainedWindow that fits is 26" (REPORT_COLUMN_DEPTH_EXCEEDED) - while 14 + 2385, 703 + 5, 704 + 2 and 1 + 2430,
+    each PAST a served maximum, render. The served chainedOuters.<outer>.windowMaximum / innerWindowMaximum are this
+    rule with the other window at its default (ema 20: 2364; aggregate 24: 697), so they are no threshold of their own:
+    inside the bound there is NO finding, past it an error. The same bound holds on a pinned and on a lower column
+    timeframe ({abs 4h}, {abs 1d}, {rel lower}). No rolling inner takes an offset, so the rule has no offset term.
+
+    An omitted window is the catalogue's default, as the platform fills it (N.no.window / N.no.chainedWindow rendered
+    close_ema20_mean5 / close_ema20_mean24 on 2026-11-09).
+
+    The finding names `chainedWindow` while some chainedWindow at or above the outer's minimum still fits beside the
+    sent window, else `window` - the field the platform names (704 + 5 -> chainedWindow, "the largest chainedWindow
+    that fits is 2"; 1394 + 5 and 705 + 1 -> window) - with the largest value that fits, the other window held as sent.
+
+    Fails closed: a transform outside the need table, a metric that serves no budget, or an omitted window with no
+    catalogued default is CHAIN_DEPTH_UNMEASURED - never a silent pass."""
+    tid, chained = column.transformId, column.chainedTransformId
+    budget = depth_budget(m)
+    window = column.window if column.window is not None else _window_parameter(tid, c).get("defaultValue")
+    chained_window = (column.chainedWindow if column.chainedWindow is not None
+                      else _window_parameter(chained, c).get("defaultValue"))
+    unknown = [t for t in (tid, chained) if bars_needed(t, 1) is None]
+    if unknown or budget is None or window is None or chained_window is None:
+        if unknown:
+            why = (f"{' and '.join(repr(t) for t in unknown)} {'is' if len(unknown) == 1 else 'are'} outside the need "
+                   f"table (omega.validate.bars_needed)")
+        elif budget is None:
+            why = f"{m.metric} serves no depth-bound aggregate maximum to read the bar budget from"
+        else:
+            why = f"the catalogue serves no default for the omitted {'window' if window is None else 'chainedWindow'}"
+        return [Finding(
+            "error", "CHAIN_DEPTH_UNMEASURED", f"{path}.chainedTransformId",
+            f"({m.metric} x {tid} -> {chained}) reads its outer window from chainedWindow, and how many bars one value "
+            f"of that chain reads is UNMEASURED: {why}. omega does not emit it until a preview past the bound is read "
+            f"(REPORT_COLUMN_DEPTH_EXCEEDED states the count) and the table extended")]
+    # Every form reads at least its window and never fewer for a longer one, so a window past the budget is judged at
+    # budget + 1: the same verdict, and the fitted forms are never evaluated outside 1 .. budget + 1 (omega's type sets
+    # no ceiling on a window, and Wilder's form divides by zero at a length past 2^53).
+    need_in = bars_needed(tid, min(window, budget + 1))
+    need_out = bars_needed(chained, min(chained_window, budget + 1))
+    if need_in + need_out - 1 <= budget:
+        return []
+    reads = need_in + need_out - 1 if max(window, chained_window) <= budget + 1 else f"more than {budget}"
+    fits = largest_window(chained, budget + 1 - need_in)
+    if fits is not None and fits >= (_window_parameter(chained, c).get("minimum") or 1):
+        field, beside = "chainedWindow", f"window {window}"
+    else:
+        field, beside, fits = "window", f"chainedWindow {chained_window}", largest_window(tid, budget + 1 - need_out)
+    return [Finding(
+        "error", "DEPTH_EXCEEDED", f"{path}.{field}",
+        f"{m.metric} x {tid} window {window} -> {chained} chainedWindow {chained_window} reads {reads} bars for one "
+        f"value - at most {budget} fit (the readable depth less the lookback budget); "
+        + (f"the largest {field} that fits beside {beside} is {fits} " if fits is not None
+           else f"no {field} fits beside {beside} ")
+        + f"(REPORT_COLUMN_DEPTH_EXCEEDED: one joint bound, need({tid}, window) + need({chained}, chainedWindow) - 1; "
+          f"measured 2026-11-11 at 161.0.0)")]
 
 
 # Why an off-default knob is refused under a transform (or chain outer) whose served `metricParametersAccepted` is

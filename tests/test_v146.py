@@ -281,5 +281,6 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
 
 def test_the_version_moved_past_v0_10_2():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    # 0.11.0 at 146.0.1 (2026-11-02); 0.12.0 at 161.0.0 (2026-11-10); 0.12.1 the same day (no retired ambient header)
-    assert 'version = "0.10.2"' not in text and 'version = "0.12.1"' in text
+    # 0.11.0 at 146.0.1 (2026-11-02); 0.12.0 at 161.0.0 (2026-11-10); 0.12.1 the same day (no retired ambient header);
+    # 0.12.2 on 2026-11-11 (the joint depth bound, the chained touchAtr maximum)
+    assert 'version = "0.10.2"' not in text and 'version = "0.12.2"' in text
