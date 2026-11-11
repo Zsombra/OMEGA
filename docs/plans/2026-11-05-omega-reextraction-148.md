@@ -825,6 +825,15 @@ manager's re-pin.
 
 ## v0.12.2, 2026-11-11: the joint depth bound and the chained touchAtr maximum (recorded 12:37Z)
 
+**Scope, added 18:20Z.** v0.12.2 mirrors contract **161.0.0**, which was live for every call below (the manager's
+watch read 161.0.0 / ab5b6252 at 07:38Z and 07:47Z). The platform moved to **168.2.0** / 5dcfd8c2 at 16:32Z the
+same day: a strategy's author now defines the trade level menu (`TRADE_LEVEL_POLICY.tradeLevelMenu`, required on
+stage; `entry.levels` on a level-triggered entry), `metricKey` is a pattern (the vocabulary is served by
+`list_strategy_vocabulary`, 581 metrics in 14 categories), a condition group gained `SEQUENCE`, and 47 metric keys
+were added. None of that is in v0.12.2: whether the joint depth bound still holds at 168 is unmeasured, and every
+v0.12.x plan is refused at 168 for the missing menu. The re-extraction at 168 is v0.13.0 (battlegrid-manager
+`docs/status/2026-11-11-contract-168.md`).
+
 **The defect.** Two things the 161 step left open (items 4(a) and 4(c) and the "Not measured" line above):
 - v0.12.1 compared a rolling-inner chain's `window` with the served `innerWindowMaximum` and its `chainedWindow` with
   the served `windowMaximum`, one at a time, and only warned (BEYOND_SERVED_MAXIMUM). Where the platform really
