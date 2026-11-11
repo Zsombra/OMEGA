@@ -778,12 +778,15 @@ then the 11-09 full-autonomy grant covered the merge and the tag. The README "Co
    past-maximum stays an error, each one measured refused; (b) the new branches (touchAtr, chainedWindow refusal,
    off-anchor operand, levelInteraction offset 0, roc offset) had no test: the probe replay above pins them all;
    (c) a touchAtr maximum on a *chained* levelInteraction is not checked - unmeasured either way, left as it is.
+   **(a) and (c) closed 2026-11-11, see "v0.12.2" below:** the limit is one joint bar count (both 11-09 cases sit
+   inside it; the warning and its code are gone), and a chained touchAtr is bounded as the unchained one.
 5. **The manifest's extraction block** had stayed at 146.0.1 (326 metrics) through the 149.1.0 model step, while the
    manager reads it (`manager.authoring.pin.extraction_manifest`). Moved to 161.0.0 / 2026-11-09 with counts measured on
    the corpus (534 metrics, 30 transforms, 4,493 legal cells, 25,915 structural shapes); 146.0.1 under `supersedes`.
 
 **Version 0.12.0** (pyproject). Not measured: the platform's own last accepted chained / inner window (one past the
-served maximum rendered; further is unprobed); `customSectionTemplates` (carried from 146.0.1).
+served maximum rendered; further is unprobed) - **measured 2026-11-11, see "v0.12.2" below**; `customSectionTemplates`
+(carried from 146.0.1).
 
 ## v0.12.1, 2026-11-10: no condition reads a retired ambient header (recorded 15:06Z)
 
@@ -819,6 +822,108 @@ plus four session headers (`captConc`, `fieldBiasDir`, `fieldPlayers`, `fieldUpB
 **Not measured:** whether a strategy STAGE (not a preview) accepts the market and reference sections. A stage is a
 write and needs the user's word. The manager's preflight check and the live re-preview of all five presets go with the
 manager's re-pin.
+
+## v0.12.2, 2026-11-11: the joint depth bound and the chained touchAtr maximum (recorded 12:37Z)
+
+**Scope, added 18:20Z.** v0.12.2 mirrors contract **161.0.0**, which was live for every call below (the manager's
+watch read 161.0.0 / ab5b6252 at 07:38Z and 07:47Z). The platform moved to **168.2.0** / 5dcfd8c2 at 16:32Z the
+same day: a strategy's author now defines the trade level menu (`TRADE_LEVEL_POLICY.tradeLevelMenu`, required on
+stage; `entry.levels` on a level-triggered entry), `metricKey` is a pattern (the vocabulary is served by
+`list_strategy_vocabulary`, 581 metrics in 14 categories), a condition group gained `SEQUENCE`, and 47 metric keys
+were added. None of that is in v0.12.2: whether the joint depth bound still holds at 168 is unmeasured, and every
+v0.12.x plan is refused at 168 for the missing menu. The re-extraction at 168 is v0.13.0 (battlegrid-manager
+`docs/status/2026-11-11-contract-168.md`).
+
+**The defect.** Two things the 161 step left open (items 4(a) and 4(c) and the "Not measured" line above):
+- v0.12.1 compared a rolling-inner chain's `window` with the served `innerWindowMaximum` and its `chainedWindow` with
+  the served `windowMaximum`, one at a time, and only warned (BEYOND_SERVED_MAXIMUM). Where the platform really
+  refuses was unmeasured.
+- A `touchAtr` maximum was checked only where `transformId` was levelInteraction. On a chain (rollingMax / rollingMin
+  -> levelInteraction) none was.
+
+**Measured 2026-11-11 at 161.0.0 (read-only):**
+- The run: 50 calls, 07:31:43Z - 07:50:11Z. 3 `get_metric_construction_hints` (RSI14, HIGH, BB_UPPER) and 47
+  `preview_strategy_report`: 23 rendered, 24 refused (15 depth, 9 touchAtr). BTC at a 1h strategy timeframe.
+- An independent verification: 5 more previews, 08:02:12Z - 08:03:29Z: 1 rendered, 4 refused (all depth).
+- Record: `data/audit/authoring_limits_161_2026-11-11.json` - all 52 previews: the columns sent, the headers and rows
+  rendered, each refusal verbatim.
+- The contract version was NOT read in either run. 161.0.0 rests on the three live hints being equal, as parsed JSON,
+  to the hints read at 161.0.0 (build ab5b6252) on 11-09.
+
+*(A) One joint bound, not two window limits.*
+- `need(inner, window) + need(outer, chainedWindow) - 1 <= 2436`. Past it: REPORT_COLUMN_DEPTH_EXCEEDED, "Column
+  'RSI14 x ema' chainedWindow 2364 reads 4774 bars for one value - at most 2436 of the 2500 readable bars, leaving the
+  lookback budget 64; the largest chainedWindow that fits is 26." The details carry the count (`receivedValue.need`),
+  the largest value that fits (`allowedDomain.maximum`) and `context` depth 2500, cap 64.
+- RSI14 x ema -> aggregate (served `windowMaximum` 2364, `innerWindowMaximum` 697; ema alone 704):
+
+  | held | moved | last rendered | first refused |
+  |---|---|---|---|
+  | window 14 | chainedWindow | 2385 | 2386 |
+  | window 20 (the default) | chainedWindow | 2364 | 2365 |
+  | window 1 | chainedWindow | 2430 | 2431 |
+  | chainedWindow 5 | window | 703 | 704 |
+  | chainedWindow 24 (the default) | window | 697 | 698 |
+  | chainedWindow 2, then 1 | window | 704 | 705 |
+
+  Window 697 with chainedWindow 2364, each at its served maximum: refused (4774 bars).
+- Other chains: CLOSE x aggregate 10 -> zscore 2427 rendered, 2428 refused (served 2413); RSI14 x rma 10 -> roc 2360 /
+  2361 (served 2328); CLOSE x aggregate 10 -> ema 701 / 702 (served 697).
+- So each served maximum is the rule with the OTHER window at its default. The two 11-09 cases rendered because they
+  sit inside the bound: 14 + 2365 reads 2416 bars, 698 + 5 reads 2419.
+- `need()`: aggregate, wma, cci, zscore, stddev, linregSlope, rollingMin, rollingMax read `w` bars; roc and pctl
+  `w + 1` (the catalogue's own sentences). FITTED, not served: ema `ceil((w + 1) * ln(1000) / 2)`; rma 1 at `w = 1`,
+  else `w + ceil(ln(1000) / -ln(1 - 1/w))`; rsi rma + 1.
+- What the fitted forms rest on:
+  - the count equals the platform's "reads N bars" on all 19 depth refusals. Two of them were predicted on disk before
+    they were sent (rma 100 -> ema 500: 2518 bars, largest chainedWindow 476; rsi 57 -> rma 280: 2659, largest 251);
+  - on 73 rendered columns the served `conditionHold.maxWindow` is the depth less the same count (2500 - bars on
+    CLOSE; 2486 - bars on RSI14, whose own 14 bars are charged there);
+  - offline, the rule reproduces every served rolling-chain cell of the corpus (15,106) and every standalone depth
+    maximum on the 168 metrics with a budget (2,184). Two near forms fail that check: an exact 0.1 % decay count for
+    ema reproduces 11,952 cells, a linear rma 9,628.
+- The field the platform names: `chainedWindow` while some chainedWindow still fits beside the sent window (704 + 5:
+  "the largest chainedWindow that fits is 2"), else `window` (1394 + 5; 705 + 1), with the largest value that fits
+  beside the other as sent.
+- Off the anchor the bound is the same: {abs 4h}, {abs 1d} and {rel lower} rendered at 2385, {abs 4h} and {abs 1d}
+  were refused at 2386. With `bars: closed` the boundary columns rendered too.
+- Values: every chain value came back null, and so did plain CLOSE and RSI14 (BTC, ETH, SOL at 1h). Standalone CLOSE x
+  aggregate returned numbers at windows 24 to 1100 and null from 1250. The cause of the nulls is not established.
+
+*(B) touchAtr on a chained levelInteraction is bounded as the unchained one.*
+- HIGH x rollingMax (20, offset 1) -> levelInteraction: 0.5 and 2 rendered (`high_o1_max20_lvl_a0.5`, `..._a2`); 2.1,
+  100, 0.05, 0.15 and 0 refused, REPORT_COLUMN_CONSTRUCTION_FAILED: "[column-grammar] transform 'levelInteraction'
+  requires params.touchAtr from 0.1 to 2 in steps of 0.1 (got 2.1)". LOW x rollingMin at 2.1: the same.
+- The unchained control (BB_UPPER x levelInteraction): 0.5 and 2 rendered; 2.1, 100 and 0.15 refused, the same message.
+
+v0.12.1 replayed over the 47 previews of the run was wrong on 18: 14 depth refusals it only warned on, 1 it passed
+with no finding (697 + 2364), 3 chained touchAtr refusals it passed. v0.12.2 agrees on all 52.
+
+**Changed:**
+- `omega.validate`: `bars_needed` (the need table), `largest_window` and `depth_budget`. The rolling-inner part of the
+  chain block is one joint check: past the bound an ERROR `DEPTH_EXCEEDED` on the field the platform names, inside it
+  no finding. The warning code BEYOND_SERVED_MAXIMUM is removed.
+- The budget is read from served data: the metric's standalone `aggregate` window maximum (bound `depth`), 2436. The
+  corpus carries that number, not the 2500.
+- Fail closed: a transform outside the need table, a metric with no served budget, or an omitted window with no
+  catalogued default is the new `CHAIN_DEPTH_UNMEASURED`. None fires on the 161.0.0 corpus.
+- An omitted window is the catalogue's default (ema 20, aggregate 24, ...).
+- `omega.contract`: `Contract.chain_outer_parameters` loads `data/contract/transforms/_chain_outer_parameters.json`
+  (on disk since v135, unread until now). A chained levelInteraction's touchAtr over its served maximum (2) is
+  `PARAMETER_OUT_OF_RANGE`. The unchained branch and the minimum / step branch are as they were.
+- `tests/test_v0_12_2.py` is new: the replay of all 52 answers, the corpus check, the measured boundaries, the
+  fail-closed cases, touchAtr. In `tests/test_v161.py` the two warning assertions became "no finding", with the reason.
+- Version 0.12.2 (pyproject).
+
+**Not measured:**
+- A strategy (anchor) timeframe other than 1h.
+- A coin other than BTC. One accepted preview carried ETH and SOL; no refusal was sent on another coin.
+- A market, reference or benchmark section.
+- Whether a deep window ever carries a value: all chain values were null at run time.
+- The served contract version at run time. Read `GET /mcp/version` before the manager re-pins.
+- A `chainedWindow` below the outer's served minimum (2 on zscore, stddev, linregSlope, cci and the rolling extremes):
+  not sent, and omega does not check it.
+- The ema / rma / rsi forms are fitted. A length never sent rests on the corpus check, not on a served formula.
 
 ## Not measured, and why
 

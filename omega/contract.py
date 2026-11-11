@@ -141,6 +141,14 @@ class Contract:
     # column using one (TRANSFORM_UNMEASURED / PARAMETER_UNMEASURED) instead of answering from the older corpus.
     unmeasured_chain_outers: dict[str, dict] = field(default_factory=dict)
     unmeasured_parameters: dict[str, dict[str, dict]] = field(default_factory=dict)
+    # get_metric_construction_hints `chainOuterParameters` (v135+), data/contract/transforms/_chain_outer_parameters.json
+    # (served identically on every metric, rewritten by scripts/refresh_metric_contracts.py): outer -> the parameters
+    # it takes AS A CHAIN OUTER. The only served source of a chained levelInteraction's `touchAtr` maximum (2): the
+    # catalogue above carries no maximum (one is recorded per metric, on its own transform entry's `maximums`) and
+    # HIGH / LOW, whose rolling extremes chain into it, serve no levelInteraction entry of their own. Measured
+    # 2026-11-11 at 161.0.0: a chained touchAtr 2 renders, 2.1 is refused "requires params.touchAtr from 0.1 to 2 in
+    # steps of 0.1" (data/audit/authoring_limits_161_2026-11-11.json).
+    chain_outer_parameters: dict[str, dict] = field(default_factory=dict)
 
     # -- lookups -------------------------------------------------------------
     def metric(self, name: str) -> Metric:
@@ -178,6 +186,7 @@ def load() -> Contract:
     """Load and cache the corpus."""
     shared = _load(CONTRACT_DIR / "vocabulary" / "_shared.json")
     authoring = _load(CONTRACT_DIR / "transforms" / "_authoring.json")
+    chain_outers = _load(CONTRACT_DIR / "transforms" / "_chain_outer_parameters.json")
     rules = _load(DERIVED_DIR / "composition_rules.json")
     privileged = _load(DERIVED_DIR / "platform_privileged.json")
     templates = _load(CONTRACT_DIR / "templates" / "platform" / "_all.json")
@@ -262,6 +271,7 @@ def load() -> Contract:
         unmeasured_transforms=unmeasured_transforms,
         unmeasured_chain_outers=unmeasured_outers,
         unmeasured_parameters=unmeasured_parameters,
+        chain_outer_parameters=chain_outers["chainOuterParameters"],
     )
 
 

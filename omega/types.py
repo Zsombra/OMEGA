@@ -82,7 +82,8 @@ class Column(BaseModel):
     buffer: Annotated[int, Field(ge=0, le=500)] | None = None
     # 161.0.0 (2026-11-09, undocumented; measured data/audit/authoring_probe_161_2026-11-09.json): the touch distance
     # as a multiple of ATR, levelInteraction's alternative to `buffer` - "accepts params.buffer or params.touchAtr,
-    # never both"; served minimum 0.1 and step 0.1, the maximum per metric. Header token `_a<value>` (bbUpper20_lvl_a0.5).
+    # never both"; served minimum 0.1 and step 0.1, the maximum per metric (on a chained levelInteraction the served
+    # chain-outer one; both 2, measured 2026-11-11). Header token `_a<value>` (bbUpper20_lvl_a0.5).
     # The schema's own column `buffer` maximum rose to 2^53-1 at 161, but levelInteraction still serves 0 - 500 and
     # refuses 501 (measured), so the bound above stays.
     touchAtr: Finite | None = None
