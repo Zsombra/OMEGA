@@ -710,11 +710,15 @@ class StrategyPlan:
         return copy.deepcopy(live)
 
     def update_menu_findings(self, current: dict | None) -> list:
-        """What the stage would say of the menu an UPDATE carries, offline: [] when the update does not stage
-        TRADE_LEVEL_POLICY. A live strategy's migrated menu can hold levels the report does not yield (the platform's
-        migration default names the Donchian and Bollinger bands on every strategy, measured 2026-11-11): restaging
-        the axis then is refused, and this says so before the stage does. A dial the restaged axis carries from the live
-        strategy off the stage's enforced step is a warning (EXECUTION_CARRIED_OFF_STEP, _carried_off_step)."""
+        """What the stage would say of the menu and dials the draft holds after an UPDATE, offline. A live strategy's
+        migrated menu can hold levels the report does not yield (the platform's migration default names the Donchian
+        and Bollinger bands on every strategy, measured 2026-11-11): restaging the axis then is refused, and this says
+        so before the stage does. The stage judges the WHOLE draft, so the live menu is judged too when this update
+        does not stage TRADE_LEVEL_POLICY (measured 2026-11-12, data/audit/update_rules_171_2026-11-12.json, A2 and
+        A3), and an off-step dial the draft would hold is refused (EXECUTION_CARRIED_OFF_STEP, _carried_off_step).
+
+        `current` is the strategy's axes as axes_update takes them: the held draft (get_strategy_draft), or the committed
+        strategy when none is held - both measured: A2's runner was the draft's, A3's menu the committed one."""
         from .trade_levels import validate_menu
         from .validate import Finding
         axes = self.axes_update(current)
@@ -723,47 +727,61 @@ class StrategyPlan:
         # strategy's current one (contract 171: a plan leaving a runner is refused while Trailing is off)
         trailing = (axes.get("POSITION_MANAGEMENT") or (current or {}).get("POSITION_MANAGEMENT") or {}).get(
             "trailingEnabled")
+        steps = self._carried_off_step(axes, current)
         if policy is not None:
             return validate_menu(policy["tradeLevelMenu"],
                                  dials={k: v for k, v in policy.items() if k != "tradeLevelMenu"},
                                  sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
-                                 trailing_enabled=trailing) + self._carried_off_step(axes)
+                                 trailing_enabled=trailing) + steps
         # (Trailing unknown here means neither TRADE_LEVEL_POLICY nor POSITION_MANAGEMENT is staged: this update leaves
         # the live runner and Trailing as they are, so the rule's TRAILING_UNKNOWN warning is not repeated below.)
         # The axis is not staged, so the live menu and dials stay as they are - but REPORT is restaged whole (the live
         # menu's levels were yielded by the OLD report), and POSITION_MANAGEMENT may be (switching Trailing off under
-        # a runner). Every probe was a create: whether a stage that omits the axis re-judges the live menu is
-        # unmeasured, so what the rule WOULD say is a warning.
+        # a runner). The stage re-judges the menu it is not sent, measured 2026-11-12 at 171.0.0: POSITION_MANAGEMENT
+        # staged alone with Trailing off drew the runner's draft error on the menu the draft held (A2), and REPORT
+        # staged alone without the Bollinger columns drew "not a level this strategy's report yields" on the COMMITTED
+        # menu's Bollinger stop (A3). What the rule says of the live menu is therefore an error, as on a staged axis.
         live = (current or {}).get("TRADE_LEVEL_POLICY") or {}
         if live.get("tradeLevelMenu") is None:
-            return []
+            return steps
         would = validate_menu(live["tradeLevelMenu"], dials={k: v for k, v in live.items() if k != "tradeLevelMenu"},
                               sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
                               trailing_enabled=trailing)
-        return [Finding("warning", f.code, f.path,
-                        f"(the live menu, not staged by this update, against the report and trailing this update "
-                        f"stages; whether the stage re-judges it is unmeasured) {f.message}")
-                for f in would if f.severity == "error"]
+        return [Finding("error", f.code, f.path,
+                        f"(the live menu, not staged by this update, judged against the report and Trailing this update "
+                        f"stages: the stage re-judges the axes it is not sent, probes A2, A3) {f.message}")
+                for f in would if f.severity == "error"] + steps
 
-    def _carried_off_step(self, axes: dict) -> list:
-        """A warning per dial an UPDATE carries from the live strategy (the thesis does not name it) that is off the
-        step the stage enforces on it (omega.execution.ENFORCED_STEPS: minRiskRewardRatio 0.25, probe W2). A thesis
-        dial off its step is validate_execution's error; a carried one was the platform's own value, and what the stage
-        answers when an UPDATE restages it is unmeasured (every probe was a CREATE), so it is a warning
-        (review 2026-11-12)."""
+    def _carried_off_step(self, axes: dict, current: dict | None = None) -> list:
+        """An error per dial the draft would hold off the step the stage enforces on it (omega.execution.ENFORCED_STEPS:
+        minRiskRewardRatio 0.25) that the thesis does not name (a named one is validate_execution's EXECUTION_OFF_STEP):
+        one this update carries in an axis it restages, or one the strategy holds in an axis it does not stage.
+
+        Measured 2026-11-12 at 171.0.0 (data/audit/update_rules_171_2026-11-12.json): an UPDATE restaging
+        minRiskRewardRatio 1.4 is a draft error on the dial ("minRiskRewardRatio must be a multiple of 0.25"), whether
+        it names the value (C1) or carries it as the draft holds it with another dial changed (C2); and a stage re-judges
+        the axes it is not sent (A2, A3). A COMMITTED off-step value is unmeasured - no unbound sandbox holds one, and
+        none of the 105 strategies list_strategies listed did - so it is refused here too, failing closed."""
         from .execution import ENFORCED_STEPS, off_step
         from .validate import Finding
         named = self.thesis.execution or {}
         out = []
         for axis in ("TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"):
-            for dial, value in (axes.get(axis) or {}).items():
-                if dial not in named and off_step(dial, value):
-                    out.append(Finding("warning", "EXECUTION_CARRIED_OFF_STEP", f"{axis}.{dial}",
-                                       f"this update restages {axis} carrying the live strategy's {dial}={value}, "
-                                       f"which is not a multiple of {ENFORCED_STEPS[dial]}: a CREATE is refused on it "
-                                       f"(\"{dial} must be a multiple of {ENFORCED_STEPS[dial]}\", probe W2); the "
-                                       f"stage's answer on an UPDATE is unmeasured. Name {dial} on its step in the "
-                                       f"thesis's execution to restage it"))
+            staged = axis in axes
+            held = (axes.get(axis) if staged else (current or {}).get(axis)) or {}
+            for dial, value in held.items():
+                if dial in named or not off_step(dial, value):
+                    continue
+                step = ENFORCED_STEPS[dial]
+                how = (f"this update restages {axis} carrying the strategy's {dial}={value}" if staged else
+                       f"the strategy holds {dial}={value} in {axis}, which this update does not stage (the stage "
+                       f"judges the whole draft, probes A2, A3)")
+                out.append(Finding("error", "EXECUTION_CARRIED_OFF_STEP", f"{axis}.{dial}",
+                                   f"{how}, and it is not a multiple of {step}: the stage refuses it as a draft error "
+                                   f"on the dial (\"{dial} must be a multiple of {step}\"; on an UPDATE named, probe "
+                                   f"C1, and carried as the draft holds it, C2; a committed off-step value is "
+                                   f"unmeasured and refused here, failing closed). Name {dial} on its step in the "
+                                   f"thesis's execution"))
         return out
 
     def _carry_section_keys(self, out: dict, current: dict) -> None:

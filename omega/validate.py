@@ -760,6 +760,13 @@ def _rolling_chain_depth(column: Column, m: Metric, c: Contract, path: str) -> l
     the same bar count and the same largest fit, on BTC and ETH and at every authorable main candle (5m, 15m, 1h, 4h -
     the budget is bars, not time), and a stage carries the same refusal as a draft error. The bound is the top of the
     chain window; its bottom is the outer's catalogued minimum (CHAINED_WINDOW_BELOW_MINIMUM, validate_column).
+    Whatever the section's subject (measured 2026-11-12 at 171.0.0, data/audit/update_rules_171_2026-11-12.json P1 - P4):
+    a market section (MKT_NET x ema 14 -> aggregate, marketScope all), a reference section (CLOSE x aggregate 10 ->
+    zscore and PAR_DEV x ema 14 -> aggregate, USDT_USD) and a benchmark section (RSI14 x ema 14 -> aggregate and CLOSE x
+    aggregate 10 -> zscore, ETH) render at the per-coin last fit (2385 / 2427) and refuse one past it with the same
+    count (2437 of 2436 of 2500, lookback 64) and the same largest fit. The bound is the authoring rule only: at that
+    depth the market and PAR_DEV values read null (the store holds less history than the window; PAR_DEV's gloss says a
+    lookback beyond it "reads absent"), which omega does not predict.
 
     An omitted window is the catalogue's default, as the platform fills it (N.no.window / N.no.chainedWindow rendered
     close_ema20_mean5 / close_ema20_mean24 on 2026-11-09).

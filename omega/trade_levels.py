@@ -37,8 +37,9 @@ only as the operand of a spread whose column carries a knob or an offset, or onl
 ({metric, transformId, window}, new at 168). A {rel: lower | regime} level against the column at the same rung
 spelled {abs: ...} is refused as not yielded (their equivalence is unmeasured; only the anchor's is).
 
-Every probe was a CREATE. Whether a stage that omits TRADE_LEVEL_POLICY re-judges the strategy's live menu against a
-restaged REPORT is unmeasured (StrategyPlan.update_menu_findings warns).
+Every 168 probe was a CREATE. A stage that omits TRADE_LEVEL_POLICY re-judges the strategy's menu against a restaged
+REPORT: measured 2026-11-12 at 171.0.0 (UPDATE_PROBES A3 - REPORT alone, dropping the Bollinger columns, drew "A LONG stop
+level is not a level this strategy's report yields" on the COMMITTED menu); StrategyPlan.update_menu_findings refuses it.
 
 **Contract 170.0.0 (2026-11-12, undocumented): exit plans replace the targets.** Per direction `targets` became
 `exitPlans`: 1 - 8 plans, each {targets: 1 - 4 legs {method: R_MULTIPLE {multiple} | LEVEL {level}, closePct: an
@@ -73,7 +74,9 @@ refused at input (RUNNER_PROBES; the probe names below):
   * A plan that leaves a runner is refused while POSITION_MANAGEMENT.trailingEnabled is false, as a draft error on the
     plan ("The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close
     100% across the plan's targets.": T1 2R 50%, T2 1.5R 50% + 3R 0%). Trailing off under plans that close 100% stages
-    clean (T3); the same runner with Trailing on too (T4). An UPDATE that only switches Trailing off is unmeasured.
+    clean (T3); the same runner with Trailing on too (T4). A runner after a LEVEL leg is refused the same way (UPDATE_PROBES
+    L1: a band level closing 50%). An UPDATE that switches Trailing off ALONE - POSITION_MANAGEMENT staged, the menu not
+    sent - draws the same draft error on the runner the strategy holds (A2, the runner held by the draft).
   * What a plan pays is SHARE-WEIGHTED over the whole position: each share at its leg's R, the runner at the R of the
     last leg that closes a share (plan_pays). v0.14.0 divided by the share the plan closes, which agrees only when the
     plan closes 100% or closes at one R: W1 1R 30% + 3R 30% "pays 2.4R" (v0.14.0 2.0) below 2.5; W2b the same plan at
@@ -89,15 +92,31 @@ refused at input (RUNNER_PROBES; the probe names below):
   * Refused at input (no draft): a 0% leg after legs closing 100% ("A target closing 0% needs a runner to govern; this
     plan closes everything before it", O2), a 0% leg that is not the last ("Only the last target of an exit plan may
     close 0%", O3; a 0% FIRST leg answers X7's message alone), a runner of 1 - 4% ("A runner holds 0% or at least 5% of
-    the position; this plan leaves 3%", S1: measured at 3% only), a leg closing 1 - 4% ("A target closes at least 5%",
-    S2: measured on a first leg only). Both extensions come from the message text and fail closed; a non-first 3% leg
-    and a 1% runner are to be probed.
+    the position; this plan leaves 3%", S1 at 3%; "... leaves 1%", UPDATE_PROBES S4 at 1%), a leg closing 1 - 4% ("A
+    target closes at least 5%", S2 on a first leg; UPDATE_PROBES S3 on a second leg, 1.5R 50% then 3R 3%).
   * minRiskRewardRatio is refused off its 0.25 step as a draft error on the dial ("minRiskRewardRatio must be a
-    multiple of 0.25", W2 at 2.2; omega.execution.validate_execution). An UPDATE restaging TRADE_LEVEL_POLICY carries
-    the live minRiskRewardRatio as read: one off the step is a warning (EXECUTION_CARRIED_OFF_STEP,
-    StrategyPlan.update_menu_findings), as the stage's answer on an UPDATE is unmeasured.
-  * Raising minRiskRewardRatio above an all-R plan's pay is, on a CREATE, the plan below the minimum (W1, O1). The
-    UPDATE that raises the dial alone is unmeasured (StrategyPlan.update_menu_findings judges the staged axis whole).
+    multiple of 0.25", W2 at 2.2; omega.execution.validate_execution) - on an UPDATE too, named (UPDATE_PROBES C1, 1.4)
+    or carried as the draft holds it with another dial changed (C2). StrategyPlan.update_menu_findings refuses a carried
+    off-step dial (EXECUTION_CARRIED_OFF_STEP); a COMMITTED off-step value is unmeasured and refused there, failing
+    closed.
+  * Raising minRiskRewardRatio above an all-R plan's pay is the plan below the minimum, on a CREATE (W1, O1) and on an
+    UPDATE alike: the dial cannot be staged without the menu (UPDATE_PROBES B1: TRADE_LEVEL_POLICY without
+    tradeLevelMenu is refused at input, "expected object, received undefined"), and the axis restaged whole with the
+    live menu carried and the dial raised draws "The LONG exit plan pays 1.5R, below this strategy's minimum risk-reward
+    of 2.5" (B2) - as StrategyPlan.update_menu_findings judges the staged axis.
+
+**Contract 171.0.0, the update rules (2026-11-12, 21:46 - 21:54Z; OMEGA v0.14.2):** UPDATE_PROBES records 8 UPDATE stages
+in 4 drafts on the unbound, archived sandbox "OMEGA-TEST: 110.8 stage probe" (each read back, discarded and read null;
+none committed), 2 CREATE stages refused at input, 4 report previews and 5 trade-level previews. Beyond the bullets above:
+
+  * The stage judges the WHOLE draft - the axes it sends over the axes the draft holds over the committed strategy - and
+    names only the first menu error it meets (A2 named exitPlans[0] of three plans leaving a runner; A3 the LONG stop
+    and none of the three other Bollinger entries).
+  * A runner after a LEVEL leg rides at that level's R: at a decision (preview_strategy_trade_levels on A1's draft) the
+    pair's risk-reward is plan_pays with each level leg at the R its price makes from that pair's stop - a band level
+    closing 50% read 5.183 / 3.455 / 2.591 (the level's R at stops ATR 1 / 1.5 / 2), 1R 30% + the level 30% read
+    0.3 + 0.7 x the level's R (3.928 / 2.719 / 2.114), and the refused pairs' computedRR follow the same sum. The stage
+    still does not judge it (A1 staged clean while the SHORT level paid 0.73R at the preview).
 
 The default menu (`default_menu`) is the ATR / R part of the platform's migration default, read 2026-11-11 from three
 live strategies (Dunkirk, VWAP Reject 4h, TPO Prior Session Levels LONG): stops ATR 1 / 1.5 / 2 whatever the strategy's
@@ -125,6 +144,7 @@ LEVEL_TRIGGERS = ("STOP_THROUGH_LEVEL", "ON_RETEST")
 PROBES = "data/audit/trade_level_menu_168_2026-11-11.json"
 EXIT_PLAN_PROBES = "data/audit/exit_plans_170_2026-11-12.json"
 RUNNER_PROBES = "data/audit/exit_plan_runner_171_2026-11-12.json"
+UPDATE_PROBES = "data/audit/update_rules_171_2026-11-12.json"
 EXIT_PLAN_FULL = 100          # a plan's legs close at most 100% of the position together
 EXIT_PLAN_SHARE_MIN = 5       # a closing leg closes, and a runner holds, at least 5% (probes S1, S2)
 
@@ -400,28 +420,44 @@ def _exact(value) -> Fraction:
     return Fraction(str(value))
 
 
-def plan_pays_exact(legs: list[dict]) -> Fraction | None:
+def plan_pays_exact(legs: list[dict], level_r: dict | None = None) -> Fraction | None:
     """plan_pays, computed exactly: each multiple and closePct read as the decimal it was written as, so a plan paying
     exactly the minimum compares equal to it. In binary floats 0.6R 50% + 1.4R 28% pays 0.9999999999999999 and
-    0.6R 50% + 1.9R 9% pays 1.2499999999999998; exactly they pay 1 and 1.25 (review 2026-11-12, finding 1)."""
-    closing = [leg for leg in legs if leg["closePct"] > 0]
-    closed = sum(leg["closePct"] for leg in closing)
-    if not closing or closed > EXIT_PLAN_FULL or any(leg["method"]["kind"] != "R_MULTIPLE" for leg in legs):
+    0.6R 50% + 1.9R 9% pays 1.2499999999999998; exactly they pay 1 and 1.25 (review 2026-11-12, finding 1).
+
+    `level_r` maps the index of each LEVEL leg to the R its price makes from one pair's stop at a decision
+    (|level price - entry| / |entry - stop|, as preview_strategy_trade_levels reads it): the same share-weighted sum,
+    a runner after a level leg riding at that level's R, is the risk-reward the decision reads for that pair (measured
+    2026-11-12 at 171.0.0 on the preview of UPDATE_PROBES A1: every setup and every refused pair's computedRR). A LEVEL
+    leg it does not name leaves the pay unknown - None, the stage's own reading: it never judges a plan with a level leg
+    (EXIT_PLAN_PROBES Z1 - Z3, UPDATE_PROBES A1)."""
+    level_r = level_r or {}
+    closing = [(i, leg) for i, leg in enumerate(legs) if leg["closePct"] > 0]
+    closed = sum(leg["closePct"] for _, leg in closing)
+    if not closing or closed > EXIT_PLAN_FULL:
         return None
+    r = []
+    for i, leg in enumerate(legs):
+        method = leg["method"]
+        if method["kind"] == "R_MULTIPLE":
+            r.append(_exact(method["multiple"]))
+        elif method["kind"] == "LEVEL" and _number(level_r.get(i)) and math.isfinite(level_r[i]):
+            r.append(_exact(level_r[i]))
+        else:
+            return None
     runner = EXIT_PLAN_FULL - _exact(closed)
-    return (sum(_exact(leg["method"]["multiple"]) * _exact(leg["closePct"]) for leg in closing)
-            + runner * _exact(closing[-1]["method"]["multiple"])) / EXIT_PLAN_FULL
+    return (sum(r[i] * _exact(leg["closePct"]) for i, leg in closing) + runner * r[closing[-1][0]]) / EXIT_PLAN_FULL
 
 
-def plan_pays(legs: list[dict]) -> float | None:
+def plan_pays(legs: list[dict], level_r: dict | None = None) -> float | None:
     """What an exit plan pays, as the stage judges it against minRiskRewardRatio: share-weighted over the whole
     position - each leg's closePct at its R, the runner (what the plan does not close) at the R of the LAST leg that
     closes a share; a last leg closing 0% (the trail objective) earns nothing. Measured at 171.0.0 (RUNNER_PROBES W1
     "pays 2.4R", O1 "pays 1.5R", the previews of T4 / W2b / W3 / O4); on a plan closing 100% it is v0.14.0's
     closePct-weighted mean (EXIT_PLAN_PROBES Y1 - Y8). None for a plan with a level leg (its R is known only at a
-    decision), one that closes nothing, or one closing more than 100% (refused at input, X4, X5). A float, for
-    display: the rule compares plan_pays_exact."""
-    exact = plan_pays_exact(legs)
+    decision; pass `level_r` to compute what a decision reads, plan_pays_exact), one that closes nothing, or one
+    closing more than 100% (refused at input, X4, X5). A float, for display: the rule compares plan_pays_exact."""
+    exact = plan_pays_exact(legs, level_r)
     return None if exact is None else float(exact)
 
 
@@ -449,15 +485,14 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
             out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_OVER_100", f"{ppath}.targets",
                                f"the {side} exit plan's legs close {closed}% together: the stage refuses it at input "
                                f"(\"The close percentages of an exit plan sum to at most 100\", probes X4, X5)"))
-        # RUNNER_UNDER_5 and LEG_UNDER_5 below each extend ONE measurement by the platform's own message text, and fail
-        # closed: S1 sent only a 3% runner ("A runner holds 0% or at least 5% of the position"), so a 1, 2 or 4% runner
-        # is refused on the sentence; S2 sent a 3% leg only as the FIRST leg ("A target closes at least 5%"), so a later
-        # leg of 1 - 4% is refused on the sentence too. Probe both at the next platform probe: a 3% leg that is not the
-        # first, and a 1% runner.
+        # RUNNER_UNDER_5 and LEG_UNDER_5 below are the platform's own sentences, measured at both ends of the range they
+        # name: a 3% runner (S1) and a 1% runner (UPDATE_PROBES S4, "this plan leaves 1%") are refused on `targets`; a 3%
+        # leg first (S2) and second (UPDATE_PROBES S3, 1.5R 50% then 3R 3%) on its closePct. A 2 or 4% share is the same
+        # sentence between measured points.
         elif 0 < runner < EXIT_PLAN_SHARE_MIN:
             out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_RUNNER_UNDER_5", f"{ppath}.targets",
                                f"the {side} exit plan leaves a {runner}% runner: the stage refuses it at input (\"A "
-                               f"runner holds 0% or at least 5% of the position\", probe S1)"))
+                               f"runner holds 0% or at least 5% of the position\", probes S1 at 3%, S4 at 1%)"))
         if legs[0]["closePct"] == 0:
             out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_FIRST_LEG_EMPTY", f"{ppath}.targets[0].closePct",
                                f"the {side} exit plan's first leg closes 0%: the stage refuses it at input (\"An exit "
@@ -467,7 +502,7 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
             if 0 < leg["closePct"] < EXIT_PLAN_SHARE_MIN:
                 out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_LEG_UNDER_5", lpath,
                                    f"the {side} exit plan's leg {i} closes {leg['closePct']}%: the stage refuses it at "
-                                   f"input (\"A target closes at least 5%\", probe S2)"))
+                                   f"input (\"A target closes at least 5%\", probes S2 on a first leg, S3 on a second)"))
             if i and leg["closePct"] == 0 and i < len(legs) - 1:
                 out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_ZERO_NOT_LAST", lpath,
                                    f"the {side} exit plan's leg {i} closes 0% and is not the last: the stage refuses "
@@ -481,7 +516,8 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
             out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING", ppath,
                                f"the {side} exit plan closes {closed}% and leaves a {runner}% runner while "
                                f"POSITION_MANAGEMENT.trailingEnabled is false: the stage refuses it (\"nothing would "
-                               f"exit it. Turn Trailing on, or close 100% across the plan's targets\", probes T1, T2)"))
+                               f"exit it. Turn Trailing on, or close 100% across the plan's targets\", probes T1, T2; "
+                               f"after a level leg L1; Trailing switched off alone under it A2)"))
         elif trailing_enabled is None and runner > 0:
             # the rule cannot be judged without Trailing: say so rather than pass the plan silently (review 2026-11-12)
             out.append(Finding("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN", ppath,

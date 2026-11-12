@@ -92,8 +92,9 @@ CATALOG_BOUNDS: dict = {"minAtrPct": (0.1, 10), "minRiskRewardRatio": (0.5, 3)}
 CATALOG_BOUND_ENFORCED: dict = {"minRiskRewardRatio": True, "minAtrPct": False}
 # A step the strategy write enforces as a draft error on the dial, below the published schema (which declares no
 # multipleOf): minRiskRewardRatio 2.2 staged at 171.0.0 answered "minRiskRewardRatio must be a multiple of 0.25"
-# (data/audit/exit_plan_runner_171_2026-11-12.json, probe W2); 2.25 and 2.5 staged without it (W2b, W1). No other
-# dial's step was sent.
+# (data/audit/exit_plan_runner_171_2026-11-12.json, probe W2); 2.25 and 2.5 staged without it (W2b, W1). An UPDATE
+# answers the same (data/audit/update_rules_171_2026-11-12.json: 1.4 named, C1, and carried as the draft holds it, C2;
+# StrategyPlan._carried_off_step). No other dial's step was sent.
 ENFORCED_STEPS: dict = {"minRiskRewardRatio": 0.25}
 
 
