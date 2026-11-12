@@ -55,8 +55,18 @@ Timeframe = RelTimeframe | AbsTimeframe
 
 
 class Operand(BaseModel):
+    """A spread operand: a metric, read as-is, or (contract 168) an average of it - `transformId` one of aggregate / ema
+    / rma / wma at a length `window`, both or neither (measured 2026-11-12 at 169.4.0, authoring_probe_169 group W:
+    "names both transformId and window, or neither"). The pair is typed loosely here so omega.validate states every
+    refusal as a finding (OPERAND_AVERAGE_*), the way the rest of a column is judged."""
     model_config = ConfigDict(extra="forbid")
     metric: str
+    transformId: str | None = None
+    window: int | None = None
+
+    @property
+    def averaged(self) -> bool:
+        return self.transformId is not None or self.window is not None
 
 
 # A number knob is a finite float: NaN passed every bound comparison and crashed the step check, and `wire()` would send

@@ -1,0 +1,11 @@
+{
+ "_what": "Headers minted live by preview_strategy_report in the 2026-11-12-c authoring probe at contract 169.4.0 (data/audit/authoring_probe_169_2026-11-12-c.json). HEADERS ONLY - render_coverage treats every string in this file as a seen header, so nothing else may be added here.",
+ "headers": [
+  "SMA200_close_mean2436_spread",
+  "close_4h_close_mean2436_spread",
+  "close_SMA200_ema704_spread",
+  "close_SMA200_mean2436_spread",
+  "close_ema704_close_mean2436_spread",
+  "close_mean2436_close_ema704_spread"
+ ]
+}

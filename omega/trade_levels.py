@@ -167,7 +167,9 @@ def report_readings(sections: list[dict], anchor: str) -> tuple[set[tuple], set[
             if column.get("bars") == "all":
                 developing.add(identity)
             for operand in operands:
-                if operand.get("transformId") or knobs or offset:
+                # a chained spread's operand (<metric> x ema -> spread, contract 168) is unmeasured as a level too
+                if (operand.get("transformId") or operand.get("window") or knobs or offset
+                        or column.get("transformId") != "spread"):
                     unmeasured.add(operand["metric"])
                 else:
                     operand_identity = _identity(operand["metric"], column["timeframe"], {}, 0, anchor)

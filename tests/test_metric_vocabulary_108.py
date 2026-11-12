@@ -61,8 +61,11 @@ def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
     # 2026-11-11, contract 168.3.0: the record was listed again that day - no metric, one chain outer: `spread`, which
     # 168 serves after aggregate / ema / rma / wma and no probe has rendered (tests/test_v148_surface.py,
     # tests/test_v149_surface.py) - so servedAt is 168.3.0 and listedOn 2026-11-11
-    assert RECORD["servedAt"] == "168.3.0" and RECORD["listedOn"] == "2026-11-11"
-    assert set(RECORD["chainOuters"]) == {"spread"} and RECORD["chainOuters"]["spread"]["servedAt"] == "168.3.0"
+    # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): `spread` measured and modelled - the record empty again, servedAt the
+    # contract it was emptied at, the entry in history169
+    assert RECORD["servedAt"] == "169.4.0" and RECORD["listedOn"] == "2026-11-11"
+    assert RECORD["chainOuters"] == {} and RECORD["history169"]["measuredOn"] == "2026-11-12"
+    assert RECORD["history169"]["formerlyUnmeasured"]["chainOuters"]["spread"]["servedAt"] == "168.3.0"
     assert RECORD["transformParameters"] == {}
     assert RECORD["history148"]["servedAt"] == "148.1.0"
 

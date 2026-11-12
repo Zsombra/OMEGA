@@ -1,0 +1,32 @@
+{
+ "_what": "Headers minted live by preview_strategy_report in the 2026-11-12 authoring probe at contract 169.4.0 (data/audit/authoring_probe_169_2026-11-12.json). HEADERS ONLY - render_coverage treats every string in this file as a seen header, so nothing else may be added here.",
+ "headers": [
+  "RSI14_RSI14_ema9_spread",
+  "RSI14_mean14_RSI7_spread",
+  "close_4h_close_ema20_spread",
+  "close_4h_ema20_SMA20_spread",
+  "close_SMA50_rma14_spread",
+  "close_close_ema20_spread",
+  "close_close_ema2_spread",
+  "close_close_ema704_spread",
+  "close_close_mean2436_spread",
+  "close_close_mean50_spread",
+  "close_close_rma308_spread",
+  "close_close_wma2436_spread",
+  "close_dev_close_ema20_spread",
+  "close_dev_ema20_EMA50_spread",
+  "close_ema20_EMA50_spread",
+  "close_ema20_asiaHi_spread",
+  "close_ema20_close_mean50_spread",
+  "close_ema704_SMA20_spread",
+  "close_high_wma10_spread",
+  "close_ltf_close_ema20_spread",
+  "close_mean2436_SMA20_spread",
+  "close_rma14_EMA20_spread",
+  "close_rma308_SMA20_spread",
+  "close_wma10_SMA50_spread",
+  "close_wma2436_SMA20_spread",
+  "quoteVol_mean20_buyQuoteVol_spread",
+  "quoteVol_quoteVol_mean20_spread"
+ ]
+}

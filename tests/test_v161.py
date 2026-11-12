@@ -189,6 +189,10 @@ def test_the_manifest_records_the_161_extraction():
     # 161 block's counts are re-measured on the 161.0.0 batches the refresh archived (archive_20261109_extraction);
     # its structuralShapes (25,915, enumerated on the corpus until 2026-11-11) stays as recorded - no loader reads an
     # archive. The measured-on-the-live-corpus check moves to the 168.3.0 block, below.
+    # 2026-11-12, contract 169.4.0 (extraction 20261112): one level deeper again - the 169.4.0 re-read on top (the corpus
+    # did not move), 168.3.0 its `supersedes`, the 161.0.0 block below that; tests/test_v169.py pins the top block
+    assert (current["servedContractVersion"], current["extractedOn"]) == ("169.4.0", "2026-11-12")
+    current = current["supersedes"]
     assert (current["servedContractVersion"], current["extractedOn"]) == ("168.3.0", "2026-11-11")
     m = current["supersedes"]
     assert (m["servedContractVersion"], m["extractedOn"]) == ("161.0.0", "2026-11-09")
@@ -215,5 +219,7 @@ def test_the_manifest_records_the_161_extraction():
     assert (n["metrics"], n["families"], n["authorableTransforms"]) == (
         len(c.metrics), len({x.family for x in c.metrics.values()}), len(c.transforms)) == (581, 14, 30)
     assert (n["composabilityCells"], n["composabilityLegal"]) == (len(c.metrics) * len(c.transforms), legal) == (17430, 4735)
-    assert n["structuralShapes"] == sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 26584
-    assert set(c.unmeasured_chain_outers) == {"spread"}
+    # the 168.3.0 block's structuralShapes stays as recorded: the space has held the chained spread's 660 shapes since
+    # 2026-11-12 (OMEGA v0.13.1), when nothing was unmeasured any more
+    assert n["structuralShapes"] == 26584 == sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) - 660
+    assert c.unmeasured_chain_outers == {}

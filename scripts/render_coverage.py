@@ -129,6 +129,18 @@ SEEN_FILES = [
     "_probe_168_knobs_2026-11-11-a.json",
     "_probe_168_knobs_2026-11-11-b.json",
     "_probe_168_knobs_2026-11-11-c.json",
+    # 2026-11-12: the authoring probe at contract 169.4.0 (data/audit/authoring_probe_169_2026-11-12.json, -c.json): what
+    # v0.13.0 left unmeasured - `spread` as a chain outer after aggregate / ema / rma / wma (close_ema20_EMA50_spread,
+    # RSI14_mean14_RSI7_spread, close_dev_ema20_EMA50_spread, ...) and a spread operand under an average
+    # (close_close_ema20_spread, close_SMA50_rma14_spread, close_ema704_close_mean2436_spread, ...): 27 + 6 headers
+    "_probe_169_2026-11-12.json",
+    "_probe_169_2026-11-12-c.json",
+    # 2026-11-12: the structural sweep at contract 169.4.0 (build c9703bf9) over the 660 chained-spread shapes v0.13.1
+    # put in the space (aggregate / ema / rma / wma -> spread on 165 metrics, each against its first served operand):
+    # 620 on coin sections and the 40 MKT_* ones on a market section (marketScope crypto), 660 headers, 0 refusals, 0
+    # predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-12.json, -market.json)
+    "_coverage_sweep_2026-11-12.json",
+    "_coverage_sweep_2026-11-12-market.json",
 ]
 
 

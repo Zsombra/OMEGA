@@ -306,3 +306,18 @@ Every transform shapes the token as before: `dist_<token>` (`dist_VWAP_4h`), `<t
 own present** (cookbook traps 11, 15 and 20 are history), and a condition over a pinned, offset or Developing column must
 name the tokened header. `omega.fanout` predicts it; `tests/test_header_tokens.py` replays both captures.
 
+
+## 2026-11-12: a spread after an average, and an operand under one (contract 168, measured at 169.4.0)
+
+Two spreads contract 168 added, rendered and modelled in OMEGA v0.13.1:
+
+- **`spread` as a chain outer** after `aggregate` / `ema` / `rma` / `wma`: the averaged series against one operand from
+  the inner's served `chainedOuters.spread.operands` (never the base itself). The header is the inner's, then the
+  operand, then `_spread` - `close_ema20_EMA50_spread`, `RSI14_mean14_RSI7_spread`, `close_4h_ema20_SMA20_spread`.
+- **An operand under an average**: `inputs: [{metric, transformId, window}]`, the transform one of the four averages
+  and the window at least 2, the metric one of the base's served `spreadAverageOperands`. The operand spells
+  `<code>_<mean|ema|rma|wma><window>` in the operand place - `close_close_ema20_spread`, `close_SMA50_rma14_spread`. No
+  outer chains over such a spread.
+
+Each side's window is bound by the standalone depth (2436 / 704 / 308 / 2436 bars for aggregate / ema / rma / wma); the
+two sides are never added. Record: `docs/plans/2026-11-12-omega-v0-13-1-unmeasured-168.md`.

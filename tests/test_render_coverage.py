@@ -93,7 +93,9 @@ def test_rendered_headers_spans_every_cache():
     # non-spread passes
     # 40 since 2026-11-11: + the 168.3.0 structural sweep over the 47 added keys (_coverage_sweep_2026-11-11.json), its
     # non-spread pass (-nonspread) and the three knob-spelling probe caches (_probe_168_knobs_2026-11-11-{a,b,c}.json)
-    assert len(SEEN_FILES) == 40   # 36 with the structural sweep alone; 35 since 2026-11-10; 30 from the second knob probe of 2026-11-08; 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
+    # 44 since 2026-11-12: + the 169.4.0 authoring probe headers (_probe_169_2026-11-12.json, -c.json) and the chained
+    # spread's structural sweep, coin and market (_coverage_sweep_2026-11-12.json, -market.json)
+    assert len(SEEN_FILES) == 44   # 40 since 2026-11-11; 36 with the structural sweep alone; 35 since 2026-11-10; 30 from the second knob probe of 2026-11-08; 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -208,7 +210,10 @@ def test_structural_coverage_is_complete(contract):
     # 161.0.0). The 557 more are exactly the shapes of the 168.3.0 structural sweep (data/audit/coverage_sweep_2026-11-11.json:
     # 557 shapes, 673 headers, 0 refusals, 0 predicted-but-not-rendered) - without its cache the stored renders cover
     # 23022 of them. The chained `spread` 168 serves is unmeasured, in no shape, and so on neither side of this pin.
-    assert (cov, len(unc)) == (23579, 0), (
+    # 24239 at 169.4.0 (2026-11-12, OMEGA v0.13.1): the chained `spread` is modelled and its 660 structural shapes are in
+    # the space; the sweep of that day rendered every one (620 on coin sections, 40 MKT_* on a market section, 0 refusals,
+    # 0 mispredicted: data/audit/coverage_sweep_2026-11-12.json, -market.json).
+    assert (cov, len(unc)) == (24239, 0), (
         "a structural shape is enumerated that has never been rendered")
 
 
@@ -260,6 +265,12 @@ def test_live_coverage_is_complete(contract):
     # non-spread expansions of EMA55 x distance -> rank (lo / far / near, _coverage_sweep_2026-11-11-nonspread.json).
     # The 293,126 unrendered are spread operand pairs only (the deliberate stop): 253,352 + 32,186 unchained pairs
     # (the 47 added keys as atoms and operands) + 7,588 chained ones. The chained `spread` outer 168 serves is in no shape.
-    assert (cov, len(unc)) == (53545, 293126), (
+    # 169.4.0 (2026-11-12, OMEGA v0.13.1): the chained `spread` is in the space - 161,516 operand-expanded shapes
+    # (aggregate / ema / rma / wma -> spread over every served operand). 54,208 rendered: the 53,545 above, the 660
+    # structural ones of that day's sweep and 3 more operand pairs the 169 authoring probe rendered. The deliberate stop
+    # extends to the chained spread's other operands, 160,853 pairs that re-mint `<inner>_<operandCode>_spread` with
+    # another operand code; they count under their inner transform (aggregate / ema / rma / wma) here.
+    assert (cov, len(unc)) == (54208, 293126 + 160853), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
-    assert byt["spread"] == 293126 and sum(byt.values()) == 293126
+    assert byt["spread"] == 293126 and sum(byt.values()) == 293126 + 160853
+    assert all(s.transform == "spread" or s.chained == "spread" for s in unc)

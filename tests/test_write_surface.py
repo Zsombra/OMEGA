@@ -233,6 +233,7 @@ SCHEMA_168 = "data/contract/stage_strategy_draft/schema_20261111T213257Z.json"  
 # the 168.2.0 capture of the same day (18:32Z): the surface the trade level menu was measured on; its six draft tools
 # are byte-identical to the 168.3.0 ones and the manifest does not name it
 SCHEMA_168_2 = "data/contract/stage_strategy_draft/schema_20261111T183243Z.json"
+SCHEMA_169 = "data/contract/stage_strategy_draft/schema_20261112T070510Z.json"   # 169.4.0 (2026-11-12)
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
@@ -243,23 +244,29 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     # 161.0.0 (2026-11-09): the 161.0.0 capture (live listing, build ab5b6252); the 149.1.0 block is one level down
     # 2026-11-11, contract 168.3.0: the manifest names the 168.3.0 capture (live listing 21:32Z, build af8b2c96); the
     # 161.0.0 block is its `supersedes` and every older block sits one level deeper than it did
-    assert ws["servedContractVersion"] == "168.3.0"
-    assert ws["buildSha"].startswith("af8b2c96") and ws["notedAt"] == "2026-11-11"
-    assert ws["schema"] == SCHEMA_168 and (ROOT / ws["schema"]).is_file()
+    # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): the manifest names the 169.4.0 capture (live listing 07:05Z, build
+    # c9703bf9), whose six draft tools are byte-identical to the 168.3.0 capture's - now its `supersedes`
+    assert ws["servedContractVersion"] == "169.4.0"
+    assert ws["buildSha"].startswith("c9703bf9") and ws["notedAt"] == "2026-11-12"
+    assert ws["schema"] == SCHEMA_169 and (ROOT / ws["schema"]).is_file()
     # the capture file says the same of itself
-    capture = json.loads((ROOT / SCHEMA_168).read_text(encoding="utf-8"))
+    capture = json.loads((ROOT / SCHEMA_169).read_text(encoding="utf-8"))
     assert (capture["contractVersion"], capture["buildSha"]) == (ws["servedContractVersion"], ws["buildSha"])
-    # the 168.2.0 capture is a record beside it: the same six tools, byte for byte, and no manifest entry names it
+    v168 = ws["supersedes"]
+    assert v168["servedContractVersion"] == "168.3.0" and v168["buildSha"].startswith("af8b2c96")
+    assert v168["notedAt"] == "2026-11-11" and v168["schema"] == SCHEMA_168 and (ROOT / SCHEMA_168).is_file()
+    # the 168.2.0 capture is a record beside them: the same six tools, byte for byte, and no manifest entry names it
     earlier = json.loads((ROOT / SCHEMA_168_2).read_text(encoding="utf-8"))
+    previous = json.loads((ROOT / SCHEMA_168).read_text(encoding="utf-8"))
     assert earlier["contractVersion"] == "168.2.0"
     for tool in sorted(V108_TOOLS):
-        assert earlier[tool] == capture[tool], tool
+        assert earlier[tool] == previous[tool] == capture[tool], tool
     named, node = [], ws
     while node:
         named.append(node["schema"])
         node = node.get("supersedes")
-    assert len(named) == 12 and SCHEMA_168_2 not in named      # eleven until 2026-11-11
-    v161 = ws["supersedes"]
+    assert len(named) == 13 and SCHEMA_168_2 not in named      # eleven until 2026-11-11, twelve until 2026-11-12
+    v161 = v168["supersedes"]
     assert v161["servedContractVersion"] == "161.0.0" and v161["buildSha"].startswith("ab5b6252")
     assert v161["schema"] == SCHEMA_161 and (ROOT / SCHEMA_161).is_file()
     v149 = v161["supersedes"]
@@ -301,10 +308,14 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     # and 61.2.0; 161.0.0 since the 2026-11-09 re-extraction, 146.0.1 under `supersedes` and the rest below it
     # 2026-11-11, contract 168.3.0 (extraction 20261111, 581 hints): the manifest's own extraction block is the 168.3.0
     # one; the 161.0.0 extraction is its `supersedes`, 146.0.1 and the rest one level deeper than they were
-    assert manifest["servedContractVersion"] == "168.3.0" and manifest["extractedOn"] == "2026-11-11"
+    # 2026-11-12, contract 169.4.0 (extraction 20261112, the 581 hints re-read and identical): the 169.4.0 block on top,
+    # the 168.3.0 one its `supersedes`, 161.0.0 and the rest one level deeper again
+    assert manifest["servedContractVersion"] == "169.4.0" and manifest["extractedOn"] == "2026-11-12"
     index = json.loads((ROOT / "data/contract/metrics/_index.json").read_text(encoding="utf-8"))
     assert (index["contractVersion"], index["buildSha"]) == (ws["servedContractVersion"], ws["buildSha"])
-    extraction_161 = manifest["supersedes"]
+    extraction_168 = manifest["supersedes"]
+    assert extraction_168["servedContractVersion"] == "168.3.0" and extraction_168["extractedOn"] == "2026-11-11"
+    extraction_161 = extraction_168["supersedes"]
     assert extraction_161["servedContractVersion"] == "161.0.0" and extraction_161["extractedOn"] == "2026-11-09"
     assert extraction_161["supersedes"]["servedContractVersion"] == "146.0.1"
     chain = extraction_161["supersedes"]["supersedes"]
@@ -329,8 +340,9 @@ def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     doc = C.stage_schema()
     # the eight axes did not move at 110 - 146, 148.1, 149.1 or 161
     # 2026-11-11, contract 168.3.0: the named capture is the 168.3.0 one; the same eight axes (168 moved what an axis
-    # holds - TRADE_LEVEL_POLICY.tradeLevelMenu, entry.levels - not which axes there are)
-    assert doc["contractVersion"] == "168.3.0"
+    # holds - TRADE_LEVEL_POLICY.tradeLevelMenu, entry.levels - not which axes there are); 2026-11-12: the 169.4.0 one,
+    # the same six tools byte for byte
+    assert doc["contractVersion"] == "169.4.0"
     assert V108_TOOLS <= set(doc)
     # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
     assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]
@@ -400,7 +412,8 @@ def test_the_emitted_body_is_the_flat_v111_stage_and_walks_clean(tmp_path, prese
     # capture reads it MISSING_REQUIRED; and the 146 capture below, which closes the axis, reads the key UNDECLARED -
     # that one finding and no other. So the pre-168 walks (history) run on the body minus that one key.
     current = C.stage_schema()["stage_strategy_draft"]["inputSchema"]
-    assert C.stage_schema()["contractVersion"] == "168.3.0" and _fails(P.diff_schema(body, current, current)) == []
+    # (the current capture is the 169.4.0 one since 2026-11-12; its six draft tools are the 168.3.0 ones)
+    assert C.stage_schema()["contractVersion"] == "169.4.0" and _fails(P.diff_schema(body, current, current)) == []
     pre_168 = _without_trade_level_menu(body)
     assert _fails(P.diff_schema(pre_168, current, current)) == [("MISSING_REQUIRED", MENU_PATH)]
     root = json.loads((ROOT / SCHEMA_146).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]

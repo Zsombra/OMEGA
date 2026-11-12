@@ -34,7 +34,10 @@ from .fanout import outputs_for, predictable
 from .types import CustomSection, PlatformSection, Report
 
 CONDITION_KEY = re.compile(r"^[A-Z][A-Z0-9_]{1,39}$")
-GROUP_OPS = ("ALL", "ANY", "NOT", "N_OF")
+GROUP_OPS = ("ALL", "ANY", "NOT", "N_OF", "SEQUENCE")
+# The ops an UNORDERED group takes (group() builds them); SEQUENCE, the ordered group contract 168 added, has its own
+# builder (sequence()) and rules (_walk_sequence). All four are measured as sequence steps (2026-11-12 at 169.4.0).
+SET_OPS = ("ALL", "ANY", "NOT", "N_OF")
 NUMERIC_OPS = ("lt", "lte", "gte", "gt")
 # Contract 98.0.0 (README "Contract history - v98 (a clause can read the bar before)"): six operators that compare a
 # column with its own previous completed bar. The 108 CONDITIONS axis places them in three arms
@@ -346,8 +349,10 @@ def ref(condition_key: str) -> dict:
 
 def group(op: str, members: list[dict], n: int | None = None, *,
           hold: tuple[int, int] = HOLD_ONE) -> dict:
-    if op not in GROUP_OPS:
-        raise ValueError(f"{op!r} is not one of {GROUP_OPS}")
+    if op == "SEQUENCE":
+        raise ValueError("a SEQUENCE is built by sequence(*steps, within=...): it carries a window and holds Once")
+    if op not in SET_OPS:
+        raise ValueError(f"{op!r} is not one of {SET_OPS}")
     if op == "N_OF" and n is None:
         raise ValueError("N_OF requires n")
     out: dict[str, Any] = {"kind": "group", "op": op, "hold": hold_of(hold), "members": members}
@@ -371,6 +376,91 @@ def not_(member: dict, *, hold: tuple[int, int] = HOLD_ONE) -> dict:
 
 def n_of(n: int, *members: dict, hold: tuple[int, int] = HOLD_ONE) -> dict:
     return group("N_OF", list(members), n=n, hold=hold)
+
+
+# --- SEQUENCE: steps read in order within a window (contract 168, "In order") -----------------------------------------
+# Served since 168.2.0 (the group arm's op enum and an integer `within` > 0) and undocumented: the vendor README stops at
+# v156. Every rule below was measured on 2026-11-12 at 169.4.0 by preview_strategy_report, whose condition grammar is
+# the stage's (data/audit/sequence_probe_169_2026-11-12*.json, rounds 1 - 7). The platform states the whole rule in its
+# refusal (CONDITION_SEQUENCE_INVALID, allowedDomainRule):
+SEQUENCE_RULE = ("a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, "
+                 "and orders at least 2 steps - each a clause, a group of clauses, or a reference to a condition that "
+                 "reads one bar - every step and row held Once")
+SEQUENCE_SOURCE = "measured 2026-11-12 at 169.4.0 (data/audit/sequence_probe_169_2026-11-12*.json)"
+# "a sequence's window is a whole number of at least 2, because two steps never match the same bar"
+# (CONDITION_SEQUENCE_WINDOW_INVALID). Its upper edge is the history stored behind each step's column - 2449 closes on a
+# 1h trajectory header - which the builder judges per column, as it judges a hold's `of` (conditionHold.maxWindow); the
+# frame-read budget bounds it offline (frame_reads).
+SEQUENCE_MIN_WITHIN = 2
+# The longest stored history measured behind any column: 2499 closes (MAalign, a native candle classification at 1h; the
+# readable depth is 2500 bars, and `within` 2500 was refused). A step column may hold less - MACDhist_trend 2449 - which
+# only the preview serves (conditionHold.maxWindow), so OMEGA refuses above 2499 and leaves the column's own bound below
+# it to the builder.
+SEQUENCE_MAX_WITHIN = 2499
+SEQUENCE_MIN_STEPS = 2          # "a sequence of 1 step - a sequence orders at least 2"
+STEP_ONCE = "a step is read once on each bar of the window, so it cannot count closes of its own"
+
+
+def _step_problem(step: object, *, referenced: bool = False) -> str | None:
+    """Why `step` cannot be a sequence step, or None. `referenced`: `step` is the definition of a condition a
+    conditionRef step names, which must itself "read one bar" (round 5: TC_CORE_UP, an ALL over an N_OF, was refused
+    STEP_NESTS_GROUP; round 6: a condition holding its row 3 closes, STEP_HOLDS_WINDOW)."""
+    if not isinstance(step, dict):
+        return "a step is a clause, a group of clauses or a conditionRef"
+    kind = step.get("kind")
+    if kind == "conditionRef":
+        # a step may reference a condition; a referenced condition that is itself only a reference is unmeasured
+        return "a referenced condition must read its own rows (one that only references another is unmeasured)" \
+            if referenced else None
+    if kind == "clause":
+        return None if _is_one_read(step.get("hold")) else STEP_ONCE
+    if kind != "group":
+        return f"unknown definition kind {kind!r}"
+    op = step.get("op")
+    if op == "SEQUENCE":
+        return ("it is in order: a sequence is a condition's whole definition" if referenced else
+                "a sequence is a condition's whole definition: make it its own condition and reference it from this "
+                "group")
+    if not _is_one_read(step.get("hold")):
+        return STEP_ONCE
+    for member in step.get("members") or []:
+        mkind = member.get("kind") if isinstance(member, dict) else None
+        if mkind == "group":
+            return "a step is one row or one group of rows - this one holds a group inside a group"
+        if mkind == "conditionRef":
+            return (f"a step group reads its own rows on each bar: make {member.get('conditionKey')!r} a step of its "
+                    f"own")
+        if mkind == "clause" and not _is_one_read(member.get("hold")):
+            return STEP_ONCE
+    return None
+
+
+def sequence(*steps: dict, within: int) -> dict:
+    """An ordered group (contract 168): TRUE on the bar its last step matches, when each step matched, in order, on an
+    earlier bar inside the last `within` closes (the preview's evidence: each step's `matchedBar {timeframe,
+    closesBack}`). The rule is SEQUENCE_RULE; a step is a clause, a group of clauses (ALL / ANY / NOT / N_OF) or a
+    conditionRef to a condition that reads one bar.
+
+    A sequence is a condition's WHOLE definition - wrap it with condition(), and reference that condition from a group
+    to combine it. It is entry only: an exit rule may neither be one nor read one (CONDITION_EXIT_SEQUENCE_UNSUPPORTED).
+    Its verdict may be UP, DOWN, NEITHER or none, and it may be required."""
+    if not _is_count(within) or within < SEQUENCE_MIN_WITHIN:
+        raise ValueError(f"a sequence's window 'within' is a whole number of at least {SEQUENCE_MIN_WITHIN}, because "
+                         f"two steps never match the same bar; got {within!r}")
+    if within > SEQUENCE_MAX_WITHIN:
+        raise ValueError(f"a sequence's window 'within' {within} is past the longest stored history measured behind "
+                         f"any column ({SEQUENCE_MAX_WITHIN} closes)")
+    if len(steps) < SEQUENCE_MIN_STEPS:
+        raise ValueError(f"a sequence of {len(steps)} step(s) - a sequence orders at least {SEQUENCE_MIN_STEPS}")
+    for i, step in enumerate(steps, 1):
+        problem = _step_problem(step)
+        if problem:
+            raise ValueError(f"step {i}: {problem} ({SEQUENCE_RULE})")
+    return {"kind": "group", "op": "SEQUENCE", "hold": hold_of(HOLD_ONE), "members": list(steps), "within": within}
+
+
+def is_sequence(definition: object) -> bool:
+    return isinstance(definition, dict) and definition.get("kind") == "group" and definition.get("op") == "SEQUENCE"
 
 
 def _nested_holds(defn: dict) -> list[dict]:
@@ -400,6 +490,12 @@ def condition(key: str, name: str, definition: dict, *,
     wrap the reference in a group if a held reading of it is what you mean."""
     if exit_side is not None and exit_side not in EXIT_SIDES:
         raise ValueError(f"exit_side must be one of {EXIT_SIDES} or None (v88), got {exit_side!r}")
+    if is_sequence(definition):
+        if exit_side is not None:
+            raise ValueError(f"{key}: an in-order condition is entry only - the exit sweep never reads one "
+                             f"(CONDITION_EXIT_SEQUENCE_UNSUPPORTED, {SEQUENCE_SOURCE})")
+        if hold is not None:
+            raise ValueError(f"{key}: a sequence reads its window and holds Once ({SEQUENCE_SOURCE})")
     if hold is not None:
         if definition.get("kind") == "conditionRef":
             raise ValueError(f"{key}: a conditionRef carries no hold (v84); the hold goes on a "
@@ -435,6 +531,9 @@ def close_on(cond: dict, *, name: str | None = None) -> dict:
     if cond.get("exitSide") is not None:
         raise ValueError(f"{cond.get('conditionKey')!r} is already an exit rule "
                          f"(exitSide {cond.get('exitSide')!r}); only an entry condition is split")
+    if is_sequence(cond.get("definition")):
+        raise ValueError(f"{cond.get('conditionKey')!r} is in order: an exit rule cannot read an in-order condition "
+                         f"- the exit sweep never reads one (CONDITION_EXIT_SEQUENCE_UNSUPPORTED, {SEQUENCE_SOURCE})")
     source = cond["conditionKey"]
     key = f"{EXIT_RULE_PREFIX}{source}"
     if not CONDITION_KEY.match(key):
@@ -761,15 +860,87 @@ def _is_one_read(h: dict | None) -> bool:
     return not isinstance(h, dict) or (h.get("atLeast"), h.get("of")) == HOLD_ONE
 
 
+def _walk_sequence(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
+                   out: list[ConditionFinding], depth: int, defs: dict[str, dict]) -> int:
+    """A SEQUENCE node (contract 168): SEQUENCE_RULE, each refusal as the platform words it (SEQUENCE_SOURCE). Each step
+    is then walked like any member, read on `within` bars (the hold-room warnings see that window)."""
+    h = _check_hold(defn, key, path, out)
+    if depth > 0:
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"nests a sequence at {path} - a sequence is a condition's whole definition: make it its own condition and "
+            f"reference it from this group (CONDITION_SEQUENCE_INVALID, {SEQUENCE_SOURCE})"))
+    if h is not None and not _is_one_read(h):
+        out.append(ConditionFinding(
+            "error", key, f"{path}.hold",
+            f"holds its sequence {h} - a sequence reads its window and holds Once (CONDITION_SEQUENCE_INVALID)"))
+    if "n" in defn:
+        out.append(ConditionFinding(
+            "error", key, f"{path}.n",
+            "SEQUENCE takes no threshold - 'n' belongs to N_OF only (CONDITION_N_OF_THRESHOLD_INVALID)"))
+    within = defn.get("within")
+    if within is None:
+        out.append(ConditionFinding("error", key, path, "is a sequence with no window 'within' "
+                                                        "(CONDITION_SEQUENCE_INVALID)"))
+    elif not _is_count(within):
+        out.append(ConditionFinding("error", key, f"{path}.within",
+                                    f"within must be an integer above 0 (the schema), got {within!r}"))
+    elif within < SEQUENCE_MIN_WITHIN:
+        out.append(ConditionFinding(
+            "error", key, f"{path}.within",
+            f"reads its steps within {within} closes - a sequence's window is a whole number of at least "
+            f"{SEQUENCE_MIN_WITHIN}, because two steps never match the same bar (CONDITION_SEQUENCE_WINDOW_INVALID)"))
+    elif within > SEQUENCE_MAX_WITHIN:
+        out.append(ConditionFinding(
+            "error", key, f"{path}.within",
+            f"reads its steps within {within} closes, but no step column's stored history was measured past "
+            f"{SEQUENCE_MAX_WITHIN} closes (the readable depth is 2500 bars; MACDhist_trend holds 2449) "
+            f"(CONDITION_SEQUENCE_WINDOW_INVALID, {SEQUENCE_SOURCE})"))
+    members = defn.get("members") or []
+    if len(members) < SEQUENCE_MIN_STEPS:
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"is a sequence of {len(members)} step(s) - a sequence orders at least {SEQUENCE_MIN_STEPS} "
+            f"(CONDITION_SEQUENCE_INVALID)"))
+    step_mode = _Mode(window=within if _is_count(within) else 1)
+    total = 0
+    for i, step in enumerate(members):
+        spath = f"{path}.members[{i}]"
+        if isinstance(step, dict) and step.get("kind") == "conditionRef":
+            target = step.get("conditionKey", "")
+            target_defn = defs.get(target)
+            problem = _step_problem(target_defn, referenced=True) if target_defn is not None and target != key \
+                else None
+            if problem:
+                out.append(ConditionFinding(
+                    "error", key, spath,
+                    f"steps on {target!r} at step {i + 1}, but {target!r} cannot be a step: {problem} "
+                    f"(CONDITION_SEQUENCE_INVALID; {SEQUENCE_RULE})"))
+        else:
+            problem = _step_problem(step)
+            if problem:
+                out.append(ConditionFinding("error", key, spath, f"step {i + 1}: {problem} (CONDITION_SEQUENCE_INVALID)"))
+            if not isinstance(step, dict):
+                continue
+        total += _walk(step, key, spath, headers, known_keys, out, depth + 1, step_mode, defs)
+    return total
+
+
 def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
           out: list[ConditionFinding], depth: int = 0,
-          mode: _Mode | None = None) -> int:
+          mode: _Mode | None = None, defs: dict[str, dict] | None = None) -> int:
     """Validate one definition node. Returns the number of clauses beneath it.
 
     conditionRef is an edge, not a descent: the target's own clauses are validated
-    when that condition's turn comes, and closure rules are handled separately.
+    when that condition's turn comes, and closure rules are handled separately. `defs` (conditionKey -> definition) lets
+    a SEQUENCE judge the conditions its reference steps name.
     """
     mode = mode or _Mode()
+    defs = defs or {}
+    if not isinstance(defn, dict):
+        # a member that is not an object (a string, null): the schema refuses it, and reading it must not raise
+        out.append(ConditionFinding("error", key, path, f"a definition node is an object, got {defn!r}"))
+        return 0
     kind = defn.get("kind")
 
     if kind == "conditionRef":
@@ -786,9 +957,16 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
                                         f"references unknown condition {target!r}"))
         return 0
 
+    if kind == "group" and defn.get("op") == "SEQUENCE":
+        return _walk_sequence(defn, key, path, headers, known_keys, out, depth, defs)
     if kind == "group":
         h = _check_hold(defn, key, path, out)
         op, members = defn.get("op"), defn.get("members") or []
+        if "within" in defn:
+            out.append(ConditionFinding(
+                "error", key, f"{path}.within",
+                f"has a {op} group at {path} carrying a window - only a sequence (In order) carries 'within' "
+                f"(CONDITION_SEQUENCE_INVALID, {SEQUENCE_SOURCE})"))
         if depth + 1 == GROUP_DEPTH_MAX + 1:
             # once, at the first group past the limit; a conditionRef is a leaf here (its definition is walked on
             # its own turn), so referencing a condition never adds depth
@@ -833,7 +1011,7 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
         total = 0
         for i, member in enumerate(members):
             total += _walk(member, key, f"{path}.members[{i}]", headers, known_keys,
-                           out, depth + 1, inner)
+                           out, depth + 1, inner, defs)
         if not _is_one_read(h) and total == 0:
             # The 61.0.1 CONDITION_HOLD_ILLEGAL sentence: a referenced condition "is
             # resolved once and contributes the same answer to every bar". Pre-v84
@@ -1155,7 +1333,21 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
                     f"(CONDITION_ENTRY_REFERENCES_EXIT_RULE); an exit rule may reference "
                     f"anything, not the other way round"))
         clauses = _walk(cond.get("definition") or {}, key, ".definition", headers,
-                        known, out, 0, _Mode())
+                        known, out, 0, _Mode(), defn_by_key)
+        # 168: an in-order condition is entry only - "the exit sweep never reads one" - whether the exit rule is the
+        # sequence or reads it (X3.ref.from.exit: "is an exit rule but reads 'SEQ_PROBE', which is in order"). The
+        # reference was measured one step deep; deeper in the closure is refused too (the exit read rules are stated
+        # over the closure).
+        if is_exit:
+            for owner in _closure_keys(key, defn_by_key):
+                if is_sequence(defn_by_key.get(owner)):
+                    out.append(ConditionFinding(
+                        "error", key, ".definition",
+                        (f"{key!r} is an exit rule but is in order" if owner == key else
+                         f"{key!r} is an exit rule but reads {owner!r}, which is in order")
+                        + ". An in-order condition is entry only - the exit sweep never reads one. Close on a "
+                          "condition that reads its rows on the decided bar, or drop the exit role "
+                          f"(CONDITION_EXIT_SEQUENCE_UNSUPPORTED, {SEQUENCE_SOURCE})"))
         if clauses > clause_cap:
             out.append(ConditionFinding("error", key, ".definition",
                                         f"{clauses} clauses exceeds the budget of {clause_cap}"))
@@ -1196,7 +1388,81 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
                         f"{header!r} is not moved by a completed bar (or is a developing "
                         f"read); an exit rule needs a closure every operand of which a "
                         f"completed bar moves (CONDITION_EXIT_READ_ILLEGAL)"))
+
+    cap = c.budgets.get("conditionFrameReads")
+    reads = frame_reads(conditions)
+    if cap is not None and reads > cap:
+        out.append(ConditionFinding(
+            "error", "<report>", "",
+            f"the conditions declare {reads} condition frame reads (the closes each clause's hold counts, plus the "
+            f"bar before for a prior-bar operator, summed) - the cap is {cap} (CONDITION_FRAME_READ_BUDGET_EXCEEDED). "
+            f"Count fewer closes on a clause or group, or split the set"))
     return out
+
+
+# --- the condition frame-read budget (served budgets.conditionFrameReads, 5048 since 149.x) ------------------------
+# "the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed" (the platform's
+# CONDITION_FRAME_READ_BUDGET_EXCEEDED). The arithmetic was measured on 2026-11-12 at 169.4.0 from the counts its
+# refusals state (data/audit/sequence_probe_169_2026-11-12-*.json), over the trend-continuation preset's 11 one-bar
+# clauses:
+#   - a clause counts the window it is read on: the `of` of the OUTERMOST hold above Once on its path, else its own
+#     `of` - a clause held 5100 under a one-read group counts 5100 (5112), clauses under a group held 3000 count 3000
+#     each (6011), a clause held 3 under a group held 2400 counts 2400 (7211; a group held above Once over a row that
+#     counts its own closes is refused anyway, MEMBER_HOLDS_WINDOW), rows held 2400 under a group held 3 count 3 each;
+#   - a prior-bar operator adds ONE close, not one per bar: an `enters` step in a 2449 window counts 2450 (7359), under a
+#     group held 2400, 2401 (7212);
+#   - a SEQUENCE's `within` is the window of every clause in its steps: 3 x 2449 + 11 = 7358, a group step of two rows
+#     2 x 2449 (9807);
+#   - a conditionRef costs nothing where it is a member (the referenced condition is counted once, as itself), but as a
+#     SEQUENCE step the referenced condition is read on every bar of the window: a step on a one-clause condition counted
+#     2449 (9807 = 4 x 2449 + 11). A referenced condition of k rows is counted k x within here - measured at k = 1 only.
+def frame_reads(conditions: list[dict]) -> int:
+    """The condition frame reads a condition set declares (the platform's count; see above)."""
+    defs = {x.get("conditionKey", ""): (x.get("definition") or {}) for x in conditions if isinstance(x, dict)}
+    return sum(_frame_reads(d, 1, defs) for d in defs.values())
+
+
+def _frame_reads(defn: object, window: int, defs: dict[str, dict]) -> int:
+    if not isinstance(defn, dict):
+        return 0
+    kind = defn.get("kind")
+    if kind == "clause":
+        hold = defn.get("hold")
+        own = hold["of"] if isinstance(hold, dict) and _is_count(hold.get("of")) else 1
+        return (window if window > 1 else own) + (1 if defn.get("op") in PRIOR_BAR_OPS else 0)
+    if kind != "group":
+        return 0                                    # a conditionRef member: counted as its own condition
+    members = defn.get("members") or []
+    if defn.get("op") == "SEQUENCE":
+        within = defn.get("within")
+        span = within if _is_count(within) else 1
+        total = 0
+        for step in members:
+            if isinstance(step, dict) and step.get("kind") == "conditionRef":
+                target = defs.get(step.get("conditionKey", ""))
+                if isinstance(target, dict) and target.get("kind") != "conditionRef" and not is_sequence(target):
+                    total += _frame_reads(target, span, defs)
+            else:
+                total += _frame_reads(step, span, defs)
+        return total
+    hold = defn.get("hold")
+    of = hold["of"] if isinstance(hold, dict) and _is_count(hold.get("of")) else 1
+    return sum(_frame_reads(m, window if window > 1 else of, defs) for m in members)
+
+
+def _closure_keys(key: str, defn_by_key: dict[str, dict]) -> list[str]:
+    """`key` and every condition reached from it through conditionRef, transitively (each once)."""
+    seen: list[str] = []
+    queue = [key]
+    while queue:
+        cur = queue.pop(0)
+        if cur in seen or cur not in defn_by_key:
+            continue
+        seen.append(cur)
+        edges: set[str] = set()
+        _reference_edges(defn_by_key[cur], edges)
+        queue.extend(sorted(edges))
+    return seen
 
 
 def _reference_edges(defn: dict, out: set[str]) -> None:

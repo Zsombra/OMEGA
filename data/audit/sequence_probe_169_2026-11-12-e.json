@@ -1,0 +1,121 @@
+{
+ "_what": "OMEGA read-only probe of the `SEQUENCE` condition group contract 168 added (2026-11-12).",
+ "startedAt": "2026-11-12T07:34:38Z",
+ "tickers": [
+  "BTC",
+  "ETH",
+  "SOL"
+ ],
+ "timeframe": "1h",
+ "clauses": [
+  {
+   "header": "MAalign",
+   "op": "is"
+  },
+  {
+   "header": "MACDhist_trend",
+   "op": "is"
+  },
+  {
+   "header": "OBV_trend",
+   "op": "is"
+  }
+ ],
+ "probes": [
+  {
+   "probe": "X.control",
+   "condition": null,
+   "accepted": true,
+   "outcomes": [],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X5.reads.seq.ref4.step",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "conditionRef",
+       "conditionKey": "TC_CORE_UP"
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2449
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' steps on 'TC_CORE_UP' at step 1, but 'TC_CORE_UP' cannot be a step: A step is one row or one group of rows — this condition holds a group inside a group.",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": "TC_CORE_UP",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "referencedConditionKey": "TC_CORE_UP",
+     "step": 1,
+     "refusal": "STEP_NESTS_GROUP"
+    }
+   },
+   "answerKind": "refusal"
+  }
+ ],
+ "round": 5,
+ "contractVersion": "169.4.0",
+ "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "versionAtEnd": "169.4.0",
+ "buildShaAtEnd": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "contractMoved": false,
+ "capturedAt": "2026-11-12T07:34:48Z"
+}

@@ -643,3 +643,20 @@ level-interaction header).
 So the warnings of 2026-10-11 that quoted those rules are now **errors** citing the measurement; only a header whose
 kind omega cannot see (ambient, platform-section) keeps a warning. Two operator-table corrections came with it: a date
 header admits no operator, and a boolean admits `in` as well as `is`.
+
+## 2026-11-12: `SEQUENCE` and the frame-read budget, measured at contract 169.4.0
+
+Contract 168 added a fifth group op, `SEQUENCE` ("In order"), with an integer `within`. The schema says nothing more; the
+platform's refusal states the rule: *a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within'
+of at least 2, and orders at least 2 steps - each a clause, a group of clauses, or a reference to a condition that
+reads one bar - every step and row held Once.* It is TRUE on the bar its last step matches when each step matched, in
+order, inside the last `within` closes. Build one with `omega.conditions.sequence(*steps, within=n)` and wrap it in
+`condition()`; to combine it with anything else, reference that condition from a group. It is entry only: an exit rule
+may neither be a sequence nor read one. `within` above a step column's stored history (its served
+`conditionHold.maxWindow`) is the builder's to refuse, as a hold's `of` is.
+
+Every condition set also spends a **frame-read budget** (5048 since 149.x): each clause counts the window it is read
+on - the outermost hold above Once on its path, or a sequence's `within`, else its own `of` - plus one close for a
+prior-bar operator. A sequence of three steps within 2449 closes is 7347 reads on its own. `omega.conditions.frame_reads`
+gives the platform's count (replayed against the counts its refusals state) and `validate_conditions` refuses a set over
+the budget. Record: `docs/plans/2026-11-12-omega-v0-13-1-unmeasured-168.md`.

@@ -99,9 +99,11 @@ def test_structural_shape_count_is_1018():
     # 13 outers, spread x 15, relativeTo x 15). NOT counted: the 660 `spread` chain successors 168 serves after aggregate /
     # ema / rma / wma on 165 metrics - recorded unmeasured (_unmeasured_108.json chainOuters.spread), so enumerate_shapes
     # holds no shape for them: 22509 served chainSuccessors entries - 660 = 21849.
+    # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): the chained `spread` is measured and modelled, so the 660 are shapes
+    # (each with its first served operand): 22509 chained, 4735 + 22509 = 27244. The corpus did not move.
     assert len(atoms) == 4735
-    assert len(chained) == 21849
-    assert len(shapes) == 26584
+    assert len(chained) == 22509
+    assert len(shapes) == 27244
 
 
 def test_enumeration_agrees_with_the_matrix_on_which_atoms_are_legal():
@@ -159,7 +161,12 @@ def test_chain_successors_split_93_and_19():
     # 2026-11-11, contract 168.3.0: 1183 = 169 metrics x 7 inners (1162 = 166 x 7 at 161.0.0: + EMA55, HIGH_DEV, LOW_DEV).
     # The corpus now also lists `spread` after aggregate / ema / rma / wma on 165 of the 169; it is recorded unmeasured and
     # enumerate_shapes skips it, so the ENUMERATED successor set of those inners is still these thirteen.
-    assert len([k for k, v in by_atom.items() if v == (nine | smoothers6) - {"trajectory", "efficiency"}]) == 1183
+    # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): `spread` is enumerated, so 660 of the 1183 (aggregate / ema / rma /
+    # wma on 165 metrics) take the thirteen AND spread; 523 the thirteen alone (rsi / cci / roc everywhere, and the
+    # averages on the four metrics that serve no spread after them)
+    thirteen = (nine | smoothers6) - {"trajectory", "efficiency"}
+    assert len([k for k, v in by_atom.items() if v == thirteen]) == 523
+    assert len([k for k, v in by_atom.items() if v == thirteen | {"spread"}]) == 660
     # 148.1.0: rollingMin / rollingMax -> distance (offsetMinimum 1), and the two structure levels' distance / spread
     # chain into trajectory and efficiency only; 161.0.0: levelInteraction became a chain outer on those 190 atoms (184 at 149.1.0)
     # 2026-11-11, contract 168.3.0: 192 (+ EMA55's rollingMin and rollingMax)
@@ -205,7 +212,9 @@ def test_expanding_operands_and_orderings_gives_8999():
     # metrics offer spread and are operands, so 372 existing pools gained 41 names and 10 gained 2 (15272, _moves_168.json
     # spreadOperandListsMoved) and the 43 new atoms bring their own pools (41 x 412 + 2 x 11 = 16914). The chained `spread`
     # 168 serves after an average is unmeasured and in none of the three.
-    assert len(enumerate_shapes(expand_operands=True)) == 346691   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0: the 206 keys, the smoothers over each spread (then the 13 chained-window outers, roc, VWMA20)
+    # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): 508207 = 346691 + 161516 chained-spread shapes (aggregate / ema / rma
+    # / wma -> spread over every operand the inner serves in chainedOuters.spread.operands); the corpus did not move.
+    assert len(enumerate_shapes(expand_operands=True)) == 508207   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0: the 206 keys, the smoothers over each spread (then the 13 chained-window outers, roc, VWMA20)
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -305,10 +314,12 @@ def test_query_can_isolate_what_the_platform_never_uses():
     assert not ({(s.metric, s.transform) for s in used}
                 & {(s.metric, s.transform) for s in unused})
     # 2026-11-11, contract 168.3.0 (extraction 20261111): the structural space of test_structural_shape_count_is_1018
-    assert len(unused) + len(used) == 26584   # 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0; 6122 at 146.0.1; 5845 at 144.0.0; 2604 at 135.2.0
+    # 2026-11-12, contract 169.4.0: 27244 (the chained spread's 660 joined it)
+    assert len(unused) + len(used) == 27244   # 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0; 6122 at 146.0.1; 5845 at 144.0.0; 2604 at 135.2.0
 
 
 def test_query_with_no_filters_is_the_whole_space():
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 26584 structural / 346691 expanded, the two counts derived above
-    assert len(query()) == 26584                      # 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0; 6122 at 146.0.1; 5845 at 144.0.0; 2604 at 135.2.0, 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
-    assert len(query(expand_operands=True)) == 346691  # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0; 115035 at 146.0.1; 113934 at 144.0.0; 30761 at 135.2.0; 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0
+    # 2026-11-12, contract 169.4.0: 27244 / 508207 (the chained spread modelled)
+    assert len(query()) == 27244                      # 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0; 6122 at 146.0.1; 5845 at 144.0.0; 2604 at 135.2.0, 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
+    assert len(query(expand_operands=True)) == 508207  # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0; 115035 at 146.0.1; 113934 at 144.0.0; 30761 at 135.2.0; 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0

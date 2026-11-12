@@ -1,0 +1,6391 @@
+{
+ "_what": "OMEGA read-only authoring probe of what contract 168 added and OMEGA v0.13.0 left unmeasured (2026-11-12).",
+ "contractVersion": "169.4.0",
+ "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "startedAt": "2026-11-12T07:21:28Z",
+ "capturedAt": "2026-11-12T07:23:46Z",
+ "probes": [
+  {
+   "probe": "V.accept",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "wma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA50"
+        }
+       ]
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "rma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "EMA20"
+        }
+       ]
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "RSI7"
+        }
+       ]
+      },
+      {
+       "metric": "QUOTE_VOL",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "BUY_QUOTE_VOL"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:33651fe6-c0ff-875b-824b-0fcbdf25a4e2': spread operand 'CLOSE' is not a legal relational operand for base 'CLOSE' — it must declare a numeric output in the base's OWN unit AND resolve in one of the two homes (candle extractor or bundle scalar), or the column would resolve null for every coin or compute a ratio across incommensurable units",
+    "authoringCode": "REPORT_COLUMN_OPERAND_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     1,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CLOSE",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "ASIA_HIGH",
+      "ASIA_LOW",
+      "ASIA_OPEN",
+      "BB_LOWER",
+      "BB_UPPER",
+      "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
+      "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
+      "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
+      "EMA13",
+      "EMA20",
+      "EMA21",
+      "EMA5",
+      "EMA50",
+      "EMA55",
+      "EMA8",
+      "EMA9",
+      "EQH_LEVEL",
+      "EQL_LEVEL",
+      "HIGH",
+      "HL2",
+      "HLC3",
+      "HMA20",
+      "IB_EXT_DOWN_150",
+      "IB_EXT_DOWN_200",
+      "IB_EXT_UP_150",
+      "IB_EXT_UP_200",
+      "ICHI_BASE",
+      "ICHI_CONV",
+      "ICHI_LAG",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "INTERNAL_PENDING_HIGH",
+      "INTERNAL_PENDING_LOW",
+      "INTERNAL_STRUCTURE_LEVEL",
+      "KC_LOWER",
+      "KC_UPPER",
+      "LAST",
+      "LIQUIDITY_POOL_ABOVE",
+      "LIQUIDITY_POOL_ABOVE_RETIRED",
+      "LIQUIDITY_POOL_BELOW",
+      "LIQUIDITY_POOL_BELOW_RETIRED",
+      "LONDON_HIGH",
+      "LONDON_LOW",
+      "LONDON_OPEN",
+      "LOW",
+      "MARK",
+      "MONTH_TPO_POC",
+      "MONTH_TPO_VAH",
+      "MONTH_TPO_VAL",
+      "NAKED_POC_ABOVE",
+      "NAKED_POC_BELOW",
+      "NAKED_SINGLE_PRINT_ABOVE",
+      "NAKED_SINGLE_PRINT_BELOW",
+      "NEW_YORK_HIGH",
+      "NEW_YORK_LOW",
+      "NEW_YORK_OPEN",
+      "OHLC4",
+      "OPEN",
+      "OR15_HIGH",
+      "OR15_LOW",
+      "OR30_HIGH",
+      "OR30_LOW",
+      "ORACLE",
+      "PDH",
+      "PDL",
+      "PDO",
+      "PIVOT_CAM_R1",
+      "PIVOT_CAM_R2",
+      "PIVOT_CAM_R3",
+      "PIVOT_CAM_R4",
+      "PIVOT_CAM_R5",
+      "PIVOT_CAM_S1",
+      "PIVOT_CAM_S2",
+      "PIVOT_CAM_S3",
+      "PIVOT_CAM_S4",
+      "PIVOT_CAM_S5",
+      "PIVOT_CLASSIC_R3",
+      "PIVOT_CLASSIC_R4",
+      "PIVOT_CLASSIC_S3",
+      "PIVOT_CLASSIC_S4",
+      "PIVOT_DM_P",
+      "PIVOT_DM_R1",
+      "PIVOT_DM_S1",
+      "PIVOT_FIB_R1",
+      "PIVOT_FIB_R2",
+      "PIVOT_FIB_S1",
+      "PIVOT_FIB_S2",
+      "PIVOT_MONTH_CAM_R1",
+      "PIVOT_MONTH_CAM_R2",
+      "PIVOT_MONTH_CAM_R3",
+      "PIVOT_MONTH_CAM_R4",
+      "PIVOT_MONTH_CAM_R5",
+      "PIVOT_MONTH_CAM_S1",
+      "PIVOT_MONTH_CAM_S2",
+      "PIVOT_MONTH_CAM_S3",
+      "PIVOT_MONTH_CAM_S4",
+      "PIVOT_MONTH_CAM_S5",
+      "PIVOT_MONTH_CLASSIC_R3",
+      "PIVOT_MONTH_CLASSIC_R4",
+      "PIVOT_MONTH_CLASSIC_S3",
+      "PIVOT_MONTH_CLASSIC_S4",
+      "PIVOT_MONTH_DM_P",
+      "PIVOT_MONTH_DM_R1",
+      "PIVOT_MONTH_DM_S1",
+      "PIVOT_MONTH_FIB_R1",
+      "PIVOT_MONTH_FIB_R2",
+      "PIVOT_MONTH_FIB_S1",
+      "PIVOT_MONTH_FIB_S2",
+      "PIVOT_MONTH_P",
+      "PIVOT_MONTH_R1",
+      "PIVOT_MONTH_R2",
+      "PIVOT_MONTH_R3",
+      "PIVOT_MONTH_R4",
+      "PIVOT_MONTH_R5",
+      "PIVOT_MONTH_S1",
+      "PIVOT_MONTH_S2",
+      "PIVOT_MONTH_S3",
+      "PIVOT_MONTH_S4",
+      "PIVOT_MONTH_S5",
+      "PIVOT_MONTH_WOODIE_P",
+      "PIVOT_MONTH_WOODIE_R1",
+      "PIVOT_MONTH_WOODIE_R2",
+      "PIVOT_MONTH_WOODIE_R3",
+      "PIVOT_MONTH_WOODIE_R4",
+      "PIVOT_MONTH_WOODIE_S1",
+      "PIVOT_MONTH_WOODIE_S2",
+      "PIVOT_MONTH_WOODIE_S3",
+      "PIVOT_MONTH_WOODIE_S4",
+      "PIVOT_P",
+      "PIVOT_QUARTER_CAM_R1",
+      "PIVOT_QUARTER_CAM_R2",
+      "PIVOT_QUARTER_CAM_R3",
+      "PIVOT_QUARTER_CAM_R4",
+      "PIVOT_QUARTER_CAM_R5",
+      "PIVOT_QUARTER_CAM_S1",
+      "PIVOT_QUARTER_CAM_S2",
+      "PIVOT_QUARTER_CAM_S3",
+      "PIVOT_QUARTER_CAM_S4",
+      "PIVOT_QUARTER_CAM_S5",
+      "PIVOT_QUARTER_CLASSIC_R3",
+      "PIVOT_QUARTER_CLASSIC_R4",
+      "PIVOT_QUARTER_CLASSIC_S3",
+      "PIVOT_QUARTER_CLASSIC_S4",
+      "PIVOT_QUARTER_DM_P",
+      "PIVOT_QUARTER_DM_R1",
+      "PIVOT_QUARTER_DM_S1",
+      "PIVOT_QUARTER_FIB_R1",
+      "PIVOT_QUARTER_FIB_R2",
+      "PIVOT_QUARTER_FIB_S1",
+      "PIVOT_QUARTER_FIB_S2",
+      "PIVOT_QUARTER_P",
+      "PIVOT_QUARTER_R1",
+      "PIVOT_QUARTER_R2",
+      "PIVOT_QUARTER_R3",
+      "PIVOT_QUARTER_R4",
+      "PIVOT_QUARTER_R5",
+      "PIVOT_QUARTER_S1",
+      "PIVOT_QUARTER_S2",
+      "PIVOT_QUARTER_S3",
+      "PIVOT_QUARTER_S4",
+      "PIVOT_QUARTER_S5",
+      "PIVOT_QUARTER_WOODIE_P",
+      "PIVOT_QUARTER_WOODIE_R1",
+      "PIVOT_QUARTER_WOODIE_R2",
+      "PIVOT_QUARTER_WOODIE_R3",
+      "PIVOT_QUARTER_WOODIE_R4",
+      "PIVOT_QUARTER_WOODIE_S1",
+      "PIVOT_QUARTER_WOODIE_S2",
+      "PIVOT_QUARTER_WOODIE_S3",
+      "PIVOT_QUARTER_WOODIE_S4",
+      "PIVOT_R1",
+      "PIVOT_R2",
+      "PIVOT_R3",
+      "PIVOT_R4",
+      "PIVOT_R5",
+      "PIVOT_S1",
+      "PIVOT_S2",
+      "PIVOT_S3",
+      "PIVOT_S4",
+      "PIVOT_S5",
+      "PIVOT_WEEK_CAM_R1",
+      "PIVOT_WEEK_CAM_R2",
+      "PIVOT_WEEK_CAM_R3",
+      "PIVOT_WEEK_CAM_R4",
+      "PIVOT_WEEK_CAM_R5",
+      "PIVOT_WEEK_CAM_S1",
+      "PIVOT_WEEK_CAM_S2",
+      "PIVOT_WEEK_CAM_S3",
+      "PIVOT_WEEK_CAM_S4",
+      "PIVOT_WEEK_CAM_S5",
+      "PIVOT_WEEK_CLASSIC_R3",
+      "PIVOT_WEEK_CLASSIC_R4",
+      "PIVOT_WEEK_CLASSIC_S3",
+      "PIVOT_WEEK_CLASSIC_S4",
+      "PIVOT_WEEK_DM_P",
+      "PIVOT_WEEK_DM_R1",
+      "PIVOT_WEEK_DM_S1",
+      "PIVOT_WEEK_FIB_R1",
+      "PIVOT_WEEK_FIB_R2",
+      "PIVOT_WEEK_FIB_S1",
+      "PIVOT_WEEK_FIB_S2",
+      "PIVOT_WEEK_P",
+      "PIVOT_WEEK_R1",
+      "PIVOT_WEEK_R2",
+      "PIVOT_WEEK_R3",
+      "PIVOT_WEEK_R4",
+      "PIVOT_WEEK_R5",
+      "PIVOT_WEEK_S1",
+      "PIVOT_WEEK_S2",
+      "PIVOT_WEEK_S3",
+      "PIVOT_WEEK_S4",
+      "PIVOT_WEEK_S5",
+      "PIVOT_WEEK_WOODIE_P",
+      "PIVOT_WEEK_WOODIE_R1",
+      "PIVOT_WEEK_WOODIE_R2",
+      "PIVOT_WEEK_WOODIE_R3",
+      "PIVOT_WEEK_WOODIE_R4",
+      "PIVOT_WEEK_WOODIE_S1",
+      "PIVOT_WEEK_WOODIE_S2",
+      "PIVOT_WEEK_WOODIE_S3",
+      "PIVOT_WEEK_WOODIE_S4",
+      "PIVOT_WOODIE_P",
+      "PIVOT_WOODIE_R1",
+      "PIVOT_WOODIE_R2",
+      "PIVOT_WOODIE_R3",
+      "PIVOT_WOODIE_R4",
+      "PIVOT_WOODIE_S1",
+      "PIVOT_WOODIE_S2",
+      "PIVOT_WOODIE_S3",
+      "PIVOT_WOODIE_S4",
+      "PIVOT_YEAR_CAM_R1",
+      "PIVOT_YEAR_CAM_R2",
+      "PIVOT_YEAR_CAM_R3",
+      "PIVOT_YEAR_CAM_R4",
+      "PIVOT_YEAR_CAM_R5",
+      "PIVOT_YEAR_CAM_S1",
+      "PIVOT_YEAR_CAM_S2",
+      "PIVOT_YEAR_CAM_S3",
+      "PIVOT_YEAR_CAM_S4",
+      "PIVOT_YEAR_CAM_S5",
+      "PIVOT_YEAR_CLASSIC_R3",
+      "PIVOT_YEAR_CLASSIC_R4",
+      "PIVOT_YEAR_CLASSIC_S3",
+      "PIVOT_YEAR_CLASSIC_S4",
+      "PIVOT_YEAR_DM_P",
+      "PIVOT_YEAR_DM_R1",
+      "PIVOT_YEAR_DM_S1",
+      "PIVOT_YEAR_FIB_R1",
+      "PIVOT_YEAR_FIB_R2",
+      "PIVOT_YEAR_FIB_S1",
+      "PIVOT_YEAR_FIB_S2",
+      "PIVOT_YEAR_P",
+      "PIVOT_YEAR_R1",
+      "PIVOT_YEAR_R2",
+      "PIVOT_YEAR_R3",
+      "PIVOT_YEAR_R4",
+      "PIVOT_YEAR_R5",
+      "PIVOT_YEAR_S1",
+      "PIVOT_YEAR_S2",
+      "PIVOT_YEAR_S3",
+      "PIVOT_YEAR_S4",
+      "PIVOT_YEAR_S5",
+      "PIVOT_YEAR_WOODIE_P",
+      "PIVOT_YEAR_WOODIE_R1",
+      "PIVOT_YEAR_WOODIE_R2",
+      "PIVOT_YEAR_WOODIE_R3",
+      "PIVOT_YEAR_WOODIE_R4",
+      "PIVOT_YEAR_WOODIE_S1",
+      "PIVOT_YEAR_WOODIE_S2",
+      "PIVOT_YEAR_WOODIE_S3",
+      "PIVOT_YEAR_WOODIE_S4",
+      "PMH",
+      "PML",
+      "PRIOR_ASIA_DEMAND_AVG",
+      "PRIOR_ASIA_DEMAND_EDGE",
+      "PRIOR_ASIA_DEMAND_WAVG",
+      "PRIOR_ASIA_HIGH",
+      "PRIOR_ASIA_LOW",
+      "PRIOR_ASIA_OPEN",
+      "PRIOR_ASIA_SUPPLY_AVG",
+      "PRIOR_ASIA_SUPPLY_EDGE",
+      "PRIOR_ASIA_SUPPLY_WAVG",
+      "PRIOR_DAY_DEMAND_AVG",
+      "PRIOR_DAY_DEMAND_EDGE",
+      "PRIOR_DAY_DEMAND_WAVG",
+      "PRIOR_DAY_SUPPLY_AVG",
+      "PRIOR_DAY_SUPPLY_EDGE",
+      "PRIOR_DAY_SUPPLY_WAVG",
+      "PRIOR_LONDON_DEMAND_AVG",
+      "PRIOR_LONDON_DEMAND_EDGE",
+      "PRIOR_LONDON_DEMAND_WAVG",
+      "PRIOR_LONDON_HIGH",
+      "PRIOR_LONDON_LOW",
+      "PRIOR_LONDON_OPEN",
+      "PRIOR_LONDON_SUPPLY_AVG",
+      "PRIOR_LONDON_SUPPLY_EDGE",
+      "PRIOR_LONDON_SUPPLY_WAVG",
+      "PRIOR_MONTH_TPO_POC",
+      "PRIOR_MONTH_TPO_VAH",
+      "PRIOR_MONTH_TPO_VAL",
+      "PRIOR_NEW_YORK_DEMAND_AVG",
+      "PRIOR_NEW_YORK_DEMAND_EDGE",
+      "PRIOR_NEW_YORK_DEMAND_WAVG",
+      "PRIOR_NEW_YORK_HIGH",
+      "PRIOR_NEW_YORK_LOW",
+      "PRIOR_NEW_YORK_OPEN",
+      "PRIOR_NEW_YORK_SUPPLY_AVG",
+      "PRIOR_NEW_YORK_SUPPLY_EDGE",
+      "PRIOR_NEW_YORK_SUPPLY_WAVG",
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW",
+      "PRIOR_TPO_IB_HIGH",
+      "PRIOR_TPO_IB_LOW",
+      "PRIOR_TPO_POC",
+      "PRIOR_TPO_VAH",
+      "PRIOR_TPO_VAL",
+      "PRIOR_TPO_VPOC",
+      "PRIOR_TPO_VVAH",
+      "PRIOR_TPO_VVAL",
+      "PRIOR_WEEK_TPO_POC",
+      "PRIOR_WEEK_TPO_VAH",
+      "PRIOR_WEEK_TPO_VAL",
+      "PSAR",
+      "PWH",
+      "PWL",
+      "SMA20",
+      "SMA200",
+      "SMA50",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB",
+      "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW",
+      "SWING_PENDING_HIGH",
+      "SWING_PENDING_LOW",
+      "SWING_STRUCTURE_LEVEL",
+      "TPO_IB_HIGH",
+      "TPO_IB_LOW",
+      "TPO_POC",
+      "TPO_SINGLE_PRINT_ABOVE",
+      "TPO_SINGLE_PRINT_BELOW",
+      "TPO_VAH",
+      "TPO_VAL",
+      "TPO_VPOC",
+      "TPO_VVAH",
+      "TPO_VVAL",
+      "VWAP",
+      "VWAP_LB1",
+      "VWAP_LB2",
+      "VWAP_LB3",
+      "VWAP_MONTH",
+      "VWAP_MONTH_LB1",
+      "VWAP_MONTH_LB2",
+      "VWAP_MONTH_LB3",
+      "VWAP_MONTH_UB1",
+      "VWAP_MONTH_UB2",
+      "VWAP_MONTH_UB3",
+      "VWAP_ROLLING_1H",
+      "VWAP_ROLLING_1H_LB1",
+      "VWAP_ROLLING_1H_LB2",
+      "VWAP_ROLLING_1H_LB3",
+      "VWAP_ROLLING_1H_UB1",
+      "VWAP_ROLLING_1H_UB2",
+      "VWAP_ROLLING_1H_UB3",
+      "VWAP_ROLLING_24H",
+      "VWAP_ROLLING_24H_LB1",
+      "VWAP_ROLLING_24H_LB2",
+      "VWAP_ROLLING_24H_LB3",
+      "VWAP_ROLLING_24H_UB1",
+      "VWAP_ROLLING_24H_UB2",
+      "VWAP_ROLLING_24H_UB3",
+      "VWAP_ROLLING_4H",
+      "VWAP_ROLLING_4H_LB1",
+      "VWAP_ROLLING_4H_LB2",
+      "VWAP_ROLLING_4H_LB3",
+      "VWAP_ROLLING_4H_UB1",
+      "VWAP_ROLLING_4H_UB2",
+      "VWAP_ROLLING_4H_UB3",
+      "VWAP_SWING_HIGH",
+      "VWAP_SWING_LOW",
+      "VWAP_TRADING_SESSION",
+      "VWAP_TRADING_SESSION_LB1",
+      "VWAP_TRADING_SESSION_LB2",
+      "VWAP_TRADING_SESSION_LB3",
+      "VWAP_TRADING_SESSION_UB1",
+      "VWAP_TRADING_SESSION_UB2",
+      "VWAP_TRADING_SESSION_UB3",
+      "VWAP_UB1",
+      "VWAP_UB2",
+      "VWAP_UB3",
+      "VWAP_WEEK",
+      "VWAP_WEEK_LB1",
+      "VWAP_WEEK_LB2",
+      "VWAP_WEEK_LB3",
+      "VWAP_WEEK_UB1",
+      "VWAP_WEEK_UB2",
+      "VWAP_WEEK_UB3",
+      "VWMA20",
+      "WEEK_TPO_POC",
+      "WEEK_TPO_VAH",
+      "WEEK_TPO_VAL",
+      "ZONE_RESIST_HIGH",
+      "ZONE_RESIST_LOW",
+      "ZONE_RESIST_MID",
+      "ZONE_SUPPORT_HIGH",
+      "ZONE_SUPPORT_LOW",
+      "ZONE_SUPPORT_MID"
+     ]
+    },
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:33651fe6-c0ff-875b-824b-0fcbdf25a4e2",
+     "transformId": "aggregate"
+    }
+   }
+  },
+  {
+   "probe": "V.accept#0",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:81249c43-71a6-8e42-88fa-7c2f76758ae6",
+      "shape": "table",
+      "title": "V.accept#0",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ema20_EMA50_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ema20: exponential moving average (ta.ema).",
+         "close_ema20_EMA50_spread: % gap close_ema20 vs EMA50."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.258867556722464
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.accept#0",
+      "header": "close_ema20_EMA50_spread",
+      "meaning": "close_ema20: exponential moving average (ta.ema). close_ema20_EMA50_spread: % gap close_ema20 vs EMA50.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ema20_EMA50_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2377,
+       "maxAtLeast": 2377,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.accept#1",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "CLOSE"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:8caa6606-82d3-8fa2-84e7-e58d6661969c': spread operand 'CLOSE' is not a legal relational operand for base 'CLOSE' — it must declare a numeric output in the base's OWN unit AND resolve in one of the two homes (candle extractor or bundle scalar), or the column would resolve null for every coin or compute a ratio across incommensurable units",
+    "authoringCode": "REPORT_COLUMN_OPERAND_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "CLOSE",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "ASIA_HIGH",
+      "ASIA_LOW",
+      "ASIA_OPEN",
+      "BB_LOWER",
+      "BB_UPPER",
+      "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
+      "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
+      "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
+      "EMA13",
+      "EMA20",
+      "EMA21",
+      "EMA5",
+      "EMA50",
+      "EMA55",
+      "EMA8",
+      "EMA9",
+      "EQH_LEVEL",
+      "EQL_LEVEL",
+      "HIGH",
+      "HL2",
+      "HLC3",
+      "HMA20",
+      "IB_EXT_DOWN_150",
+      "IB_EXT_DOWN_200",
+      "IB_EXT_UP_150",
+      "IB_EXT_UP_200",
+      "ICHI_BASE",
+      "ICHI_CONV",
+      "ICHI_LAG",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "INTERNAL_PENDING_HIGH",
+      "INTERNAL_PENDING_LOW",
+      "INTERNAL_STRUCTURE_LEVEL",
+      "KC_LOWER",
+      "KC_UPPER",
+      "LAST",
+      "LIQUIDITY_POOL_ABOVE",
+      "LIQUIDITY_POOL_ABOVE_RETIRED",
+      "LIQUIDITY_POOL_BELOW",
+      "LIQUIDITY_POOL_BELOW_RETIRED",
+      "LONDON_HIGH",
+      "LONDON_LOW",
+      "LONDON_OPEN",
+      "LOW",
+      "MARK",
+      "MONTH_TPO_POC",
+      "MONTH_TPO_VAH",
+      "MONTH_TPO_VAL",
+      "NAKED_POC_ABOVE",
+      "NAKED_POC_BELOW",
+      "NAKED_SINGLE_PRINT_ABOVE",
+      "NAKED_SINGLE_PRINT_BELOW",
+      "NEW_YORK_HIGH",
+      "NEW_YORK_LOW",
+      "NEW_YORK_OPEN",
+      "OHLC4",
+      "OPEN",
+      "OR15_HIGH",
+      "OR15_LOW",
+      "OR30_HIGH",
+      "OR30_LOW",
+      "ORACLE",
+      "PDH",
+      "PDL",
+      "PDO",
+      "PIVOT_CAM_R1",
+      "PIVOT_CAM_R2",
+      "PIVOT_CAM_R3",
+      "PIVOT_CAM_R4",
+      "PIVOT_CAM_R5",
+      "PIVOT_CAM_S1",
+      "PIVOT_CAM_S2",
+      "PIVOT_CAM_S3",
+      "PIVOT_CAM_S4",
+      "PIVOT_CAM_S5",
+      "PIVOT_CLASSIC_R3",
+      "PIVOT_CLASSIC_R4",
+      "PIVOT_CLASSIC_S3",
+      "PIVOT_CLASSIC_S4",
+      "PIVOT_DM_P",
+      "PIVOT_DM_R1",
+      "PIVOT_DM_S1",
+      "PIVOT_FIB_R1",
+      "PIVOT_FIB_R2",
+      "PIVOT_FIB_S1",
+      "PIVOT_FIB_S2",
+      "PIVOT_MONTH_CAM_R1",
+      "PIVOT_MONTH_CAM_R2",
+      "PIVOT_MONTH_CAM_R3",
+      "PIVOT_MONTH_CAM_R4",
+      "PIVOT_MONTH_CAM_R5",
+      "PIVOT_MONTH_CAM_S1",
+      "PIVOT_MONTH_CAM_S2",
+      "PIVOT_MONTH_CAM_S3",
+      "PIVOT_MONTH_CAM_S4",
+      "PIVOT_MONTH_CAM_S5",
+      "PIVOT_MONTH_CLASSIC_R3",
+      "PIVOT_MONTH_CLASSIC_R4",
+      "PIVOT_MONTH_CLASSIC_S3",
+      "PIVOT_MONTH_CLASSIC_S4",
+      "PIVOT_MONTH_DM_P",
+      "PIVOT_MONTH_DM_R1",
+      "PIVOT_MONTH_DM_S1",
+      "PIVOT_MONTH_FIB_R1",
+      "PIVOT_MONTH_FIB_R2",
+      "PIVOT_MONTH_FIB_S1",
+      "PIVOT_MONTH_FIB_S2",
+      "PIVOT_MONTH_P",
+      "PIVOT_MONTH_R1",
+      "PIVOT_MONTH_R2",
+      "PIVOT_MONTH_R3",
+      "PIVOT_MONTH_R4",
+      "PIVOT_MONTH_R5",
+      "PIVOT_MONTH_S1",
+      "PIVOT_MONTH_S2",
+      "PIVOT_MONTH_S3",
+      "PIVOT_MONTH_S4",
+      "PIVOT_MONTH_S5",
+      "PIVOT_MONTH_WOODIE_P",
+      "PIVOT_MONTH_WOODIE_R1",
+      "PIVOT_MONTH_WOODIE_R2",
+      "PIVOT_MONTH_WOODIE_R3",
+      "PIVOT_MONTH_WOODIE_R4",
+      "PIVOT_MONTH_WOODIE_S1",
+      "PIVOT_MONTH_WOODIE_S2",
+      "PIVOT_MONTH_WOODIE_S3",
+      "PIVOT_MONTH_WOODIE_S4",
+      "PIVOT_P",
+      "PIVOT_QUARTER_CAM_R1",
+      "PIVOT_QUARTER_CAM_R2",
+      "PIVOT_QUARTER_CAM_R3",
+      "PIVOT_QUARTER_CAM_R4",
+      "PIVOT_QUARTER_CAM_R5",
+      "PIVOT_QUARTER_CAM_S1",
+      "PIVOT_QUARTER_CAM_S2",
+      "PIVOT_QUARTER_CAM_S3",
+      "PIVOT_QUARTER_CAM_S4",
+      "PIVOT_QUARTER_CAM_S5",
+      "PIVOT_QUARTER_CLASSIC_R3",
+      "PIVOT_QUARTER_CLASSIC_R4",
+      "PIVOT_QUARTER_CLASSIC_S3",
+      "PIVOT_QUARTER_CLASSIC_S4",
+      "PIVOT_QUARTER_DM_P",
+      "PIVOT_QUARTER_DM_R1",
+      "PIVOT_QUARTER_DM_S1",
+      "PIVOT_QUARTER_FIB_R1",
+      "PIVOT_QUARTER_FIB_R2",
+      "PIVOT_QUARTER_FIB_S1",
+      "PIVOT_QUARTER_FIB_S2",
+      "PIVOT_QUARTER_P",
+      "PIVOT_QUARTER_R1",
+      "PIVOT_QUARTER_R2",
+      "PIVOT_QUARTER_R3",
+      "PIVOT_QUARTER_R4",
+      "PIVOT_QUARTER_R5",
+      "PIVOT_QUARTER_S1",
+      "PIVOT_QUARTER_S2",
+      "PIVOT_QUARTER_S3",
+      "PIVOT_QUARTER_S4",
+      "PIVOT_QUARTER_S5",
+      "PIVOT_QUARTER_WOODIE_P",
+      "PIVOT_QUARTER_WOODIE_R1",
+      "PIVOT_QUARTER_WOODIE_R2",
+      "PIVOT_QUARTER_WOODIE_R3",
+      "PIVOT_QUARTER_WOODIE_R4",
+      "PIVOT_QUARTER_WOODIE_S1",
+      "PIVOT_QUARTER_WOODIE_S2",
+      "PIVOT_QUARTER_WOODIE_S3",
+      "PIVOT_QUARTER_WOODIE_S4",
+      "PIVOT_R1",
+      "PIVOT_R2",
+      "PIVOT_R3",
+      "PIVOT_R4",
+      "PIVOT_R5",
+      "PIVOT_S1",
+      "PIVOT_S2",
+      "PIVOT_S3",
+      "PIVOT_S4",
+      "PIVOT_S5",
+      "PIVOT_WEEK_CAM_R1",
+      "PIVOT_WEEK_CAM_R2",
+      "PIVOT_WEEK_CAM_R3",
+      "PIVOT_WEEK_CAM_R4",
+      "PIVOT_WEEK_CAM_R5",
+      "PIVOT_WEEK_CAM_S1",
+      "PIVOT_WEEK_CAM_S2",
+      "PIVOT_WEEK_CAM_S3",
+      "PIVOT_WEEK_CAM_S4",
+      "PIVOT_WEEK_CAM_S5",
+      "PIVOT_WEEK_CLASSIC_R3",
+      "PIVOT_WEEK_CLASSIC_R4",
+      "PIVOT_WEEK_CLASSIC_S3",
+      "PIVOT_WEEK_CLASSIC_S4",
+      "PIVOT_WEEK_DM_P",
+      "PIVOT_WEEK_DM_R1",
+      "PIVOT_WEEK_DM_S1",
+      "PIVOT_WEEK_FIB_R1",
+      "PIVOT_WEEK_FIB_R2",
+      "PIVOT_WEEK_FIB_S1",
+      "PIVOT_WEEK_FIB_S2",
+      "PIVOT_WEEK_P",
+      "PIVOT_WEEK_R1",
+      "PIVOT_WEEK_R2",
+      "PIVOT_WEEK_R3",
+      "PIVOT_WEEK_R4",
+      "PIVOT_WEEK_R5",
+      "PIVOT_WEEK_S1",
+      "PIVOT_WEEK_S2",
+      "PIVOT_WEEK_S3",
+      "PIVOT_WEEK_S4",
+      "PIVOT_WEEK_S5",
+      "PIVOT_WEEK_WOODIE_P",
+      "PIVOT_WEEK_WOODIE_R1",
+      "PIVOT_WEEK_WOODIE_R2",
+      "PIVOT_WEEK_WOODIE_R3",
+      "PIVOT_WEEK_WOODIE_R4",
+      "PIVOT_WEEK_WOODIE_S1",
+      "PIVOT_WEEK_WOODIE_S2",
+      "PIVOT_WEEK_WOODIE_S3",
+      "PIVOT_WEEK_WOODIE_S4",
+      "PIVOT_WOODIE_P",
+      "PIVOT_WOODIE_R1",
+      "PIVOT_WOODIE_R2",
+      "PIVOT_WOODIE_R3",
+      "PIVOT_WOODIE_R4",
+      "PIVOT_WOODIE_S1",
+      "PIVOT_WOODIE_S2",
+      "PIVOT_WOODIE_S3",
+      "PIVOT_WOODIE_S4",
+      "PIVOT_YEAR_CAM_R1",
+      "PIVOT_YEAR_CAM_R2",
+      "PIVOT_YEAR_CAM_R3",
+      "PIVOT_YEAR_CAM_R4",
+      "PIVOT_YEAR_CAM_R5",
+      "PIVOT_YEAR_CAM_S1",
+      "PIVOT_YEAR_CAM_S2",
+      "PIVOT_YEAR_CAM_S3",
+      "PIVOT_YEAR_CAM_S4",
+      "PIVOT_YEAR_CAM_S5",
+      "PIVOT_YEAR_CLASSIC_R3",
+      "PIVOT_YEAR_CLASSIC_R4",
+      "PIVOT_YEAR_CLASSIC_S3",
+      "PIVOT_YEAR_CLASSIC_S4",
+      "PIVOT_YEAR_DM_P",
+      "PIVOT_YEAR_DM_R1",
+      "PIVOT_YEAR_DM_S1",
+      "PIVOT_YEAR_FIB_R1",
+      "PIVOT_YEAR_FIB_R2",
+      "PIVOT_YEAR_FIB_S1",
+      "PIVOT_YEAR_FIB_S2",
+      "PIVOT_YEAR_P",
+      "PIVOT_YEAR_R1",
+      "PIVOT_YEAR_R2",
+      "PIVOT_YEAR_R3",
+      "PIVOT_YEAR_R4",
+      "PIVOT_YEAR_R5",
+      "PIVOT_YEAR_S1",
+      "PIVOT_YEAR_S2",
+      "PIVOT_YEAR_S3",
+      "PIVOT_YEAR_S4",
+      "PIVOT_YEAR_S5",
+      "PIVOT_YEAR_WOODIE_P",
+      "PIVOT_YEAR_WOODIE_R1",
+      "PIVOT_YEAR_WOODIE_R2",
+      "PIVOT_YEAR_WOODIE_R3",
+      "PIVOT_YEAR_WOODIE_R4",
+      "PIVOT_YEAR_WOODIE_S1",
+      "PIVOT_YEAR_WOODIE_S2",
+      "PIVOT_YEAR_WOODIE_S3",
+      "PIVOT_YEAR_WOODIE_S4",
+      "PMH",
+      "PML",
+      "PRIOR_ASIA_DEMAND_AVG",
+      "PRIOR_ASIA_DEMAND_EDGE",
+      "PRIOR_ASIA_DEMAND_WAVG",
+      "PRIOR_ASIA_HIGH",
+      "PRIOR_ASIA_LOW",
+      "PRIOR_ASIA_OPEN",
+      "PRIOR_ASIA_SUPPLY_AVG",
+      "PRIOR_ASIA_SUPPLY_EDGE",
+      "PRIOR_ASIA_SUPPLY_WAVG",
+      "PRIOR_DAY_DEMAND_AVG",
+      "PRIOR_DAY_DEMAND_EDGE",
+      "PRIOR_DAY_DEMAND_WAVG",
+      "PRIOR_DAY_SUPPLY_AVG",
+      "PRIOR_DAY_SUPPLY_EDGE",
+      "PRIOR_DAY_SUPPLY_WAVG",
+      "PRIOR_LONDON_DEMAND_AVG",
+      "PRIOR_LONDON_DEMAND_EDGE",
+      "PRIOR_LONDON_DEMAND_WAVG",
+      "PRIOR_LONDON_HIGH",
+      "PRIOR_LONDON_LOW",
+      "PRIOR_LONDON_OPEN",
+      "PRIOR_LONDON_SUPPLY_AVG",
+      "PRIOR_LONDON_SUPPLY_EDGE",
+      "PRIOR_LONDON_SUPPLY_WAVG",
+      "PRIOR_MONTH_TPO_POC",
+      "PRIOR_MONTH_TPO_VAH",
+      "PRIOR_MONTH_TPO_VAL",
+      "PRIOR_NEW_YORK_DEMAND_AVG",
+      "PRIOR_NEW_YORK_DEMAND_EDGE",
+      "PRIOR_NEW_YORK_DEMAND_WAVG",
+      "PRIOR_NEW_YORK_HIGH",
+      "PRIOR_NEW_YORK_LOW",
+      "PRIOR_NEW_YORK_OPEN",
+      "PRIOR_NEW_YORK_SUPPLY_AVG",
+      "PRIOR_NEW_YORK_SUPPLY_EDGE",
+      "PRIOR_NEW_YORK_SUPPLY_WAVG",
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW",
+      "PRIOR_TPO_IB_HIGH",
+      "PRIOR_TPO_IB_LOW",
+      "PRIOR_TPO_POC",
+      "PRIOR_TPO_VAH",
+      "PRIOR_TPO_VAL",
+      "PRIOR_TPO_VPOC",
+      "PRIOR_TPO_VVAH",
+      "PRIOR_TPO_VVAL",
+      "PRIOR_WEEK_TPO_POC",
+      "PRIOR_WEEK_TPO_VAH",
+      "PRIOR_WEEK_TPO_VAL",
+      "PSAR",
+      "PWH",
+      "PWL",
+      "SMA20",
+      "SMA200",
+      "SMA50",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB",
+      "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW",
+      "SWING_PENDING_HIGH",
+      "SWING_PENDING_LOW",
+      "SWING_STRUCTURE_LEVEL",
+      "TPO_IB_HIGH",
+      "TPO_IB_LOW",
+      "TPO_POC",
+      "TPO_SINGLE_PRINT_ABOVE",
+      "TPO_SINGLE_PRINT_BELOW",
+      "TPO_VAH",
+      "TPO_VAL",
+      "TPO_VPOC",
+      "TPO_VVAH",
+      "TPO_VVAL",
+      "VWAP",
+      "VWAP_LB1",
+      "VWAP_LB2",
+      "VWAP_LB3",
+      "VWAP_MONTH",
+      "VWAP_MONTH_LB1",
+      "VWAP_MONTH_LB2",
+      "VWAP_MONTH_LB3",
+      "VWAP_MONTH_UB1",
+      "VWAP_MONTH_UB2",
+      "VWAP_MONTH_UB3",
+      "VWAP_ROLLING_1H",
+      "VWAP_ROLLING_1H_LB1",
+      "VWAP_ROLLING_1H_LB2",
+      "VWAP_ROLLING_1H_LB3",
+      "VWAP_ROLLING_1H_UB1",
+      "VWAP_ROLLING_1H_UB2",
+      "VWAP_ROLLING_1H_UB3",
+      "VWAP_ROLLING_24H",
+      "VWAP_ROLLING_24H_LB1",
+      "VWAP_ROLLING_24H_LB2",
+      "VWAP_ROLLING_24H_LB3",
+      "VWAP_ROLLING_24H_UB1",
+      "VWAP_ROLLING_24H_UB2",
+      "VWAP_ROLLING_24H_UB3",
+      "VWAP_ROLLING_4H",
+      "VWAP_ROLLING_4H_LB1",
+      "VWAP_ROLLING_4H_LB2",
+      "VWAP_ROLLING_4H_LB3",
+      "VWAP_ROLLING_4H_UB1",
+      "VWAP_ROLLING_4H_UB2",
+      "VWAP_ROLLING_4H_UB3",
+      "VWAP_SWING_HIGH",
+      "VWAP_SWING_LOW",
+      "VWAP_TRADING_SESSION",
+      "VWAP_TRADING_SESSION_LB1",
+      "VWAP_TRADING_SESSION_LB2",
+      "VWAP_TRADING_SESSION_LB3",
+      "VWAP_TRADING_SESSION_UB1",
+      "VWAP_TRADING_SESSION_UB2",
+      "VWAP_TRADING_SESSION_UB3",
+      "VWAP_UB1",
+      "VWAP_UB2",
+      "VWAP_UB3",
+      "VWAP_WEEK",
+      "VWAP_WEEK_LB1",
+      "VWAP_WEEK_LB2",
+      "VWAP_WEEK_LB3",
+      "VWAP_WEEK_UB1",
+      "VWAP_WEEK_UB2",
+      "VWAP_WEEK_UB3",
+      "VWMA20",
+      "WEEK_TPO_POC",
+      "WEEK_TPO_VAH",
+      "WEEK_TPO_VAL",
+      "ZONE_RESIST_HIGH",
+      "ZONE_RESIST_LOW",
+      "ZONE_RESIST_MID",
+      "ZONE_SUPPORT_HIGH",
+      "ZONE_SUPPORT_LOW",
+      "ZONE_SUPPORT_MID"
+     ]
+    },
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:8caa6606-82d3-8fa2-84e7-e58d6661969c",
+     "transformId": "aggregate"
+    }
+   }
+  },
+  {
+   "probe": "V.accept#2",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "wma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:03a6a08a-b714-86f2-8b1b-89a7428513dd",
+      "shape": "table",
+      "title": "V.accept#2",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_wma10_SMA50_spread",
+        "group": "close",
+        "role": "wma",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 10,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_wma10: linearly weighted moving average (ta.wma).",
+         "close_wma10_SMA50_spread: % gap close_wma10 vs SMA50."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.2908544934393817
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.accept#2",
+      "header": "close_wma10_SMA50_spread",
+      "meaning": "close_wma10: linearly weighted moving average (ta.wma). close_wma10_SMA50_spread: % gap close_wma10 vs SMA50.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_wma10_SMA50_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2440,
+       "maxAtLeast": 2440,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.accept#3",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "rma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "EMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:d7369999-23ac-89a0-8c11-f640084ecfe9",
+      "shape": "table",
+      "title": "V.accept#3",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_rma14_EMA20_spread",
+        "group": "close",
+        "role": "rma",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 14,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_rma14: Wilder's moving average (ta.rma).",
+         "close_rma14_EMA20_spread: % gap close_rma14 vs EMA20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       0.047024167479543875
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.accept#3",
+      "header": "close_rma14_EMA20_spread",
+      "meaning": "close_rma14: Wilder's moving average (ta.rma). close_rma14_EMA20_spread: % gap close_rma14 vs EMA20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_rma14_EMA20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2372,
+       "maxAtLeast": 2372,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.accept#4",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "RSI7"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:d8780b96-bfc2-85a5-811a-5b7cd8b0f272",
+      "shape": "table",
+      "title": "V.accept#4",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "RSI14_mean14_RSI7_spread",
+        "group": "RSI14",
+        "role": "aggregate",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 14,
+        "bars": "Confirmed",
+        "unit": "points",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "RSI14_mean14: windowed mean.",
+         "RSI14_mean14_RSI7_spread: RSI14_mean14 − RSI7 in pts."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       19.26487315214286
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.accept#4",
+      "header": "RSI14_mean14_RSI7_spread",
+      "meaning": "RSI14_mean14: windowed mean. RSI14_mean14_RSI7_spread: RSI14_mean14 − RSI7 in pts.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "RSI14_mean14_RSI7_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2472,
+       "maxAtLeast": 2472,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "momentum",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.accept#5",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "QUOTE_VOL",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "BUY_QUOTE_VOL"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:8d9fba47-f3ec-80cf-8951-c6ba93997dcf",
+      "shape": "table",
+      "title": "V.accept#5",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "quoteVol_mean20_buyQuoteVol_spread",
+        "group": "quoteVol",
+        "role": "aggregate",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "usdLargeCount",
+        "precision": 1,
+        "lookback": null,
+        "spanFragments": [
+         "quoteVol_mean20: windowed mean.",
+         "quoteVol_mean20_buyQuoteVol_spread: quoteVol_mean20 − buyQuoteVol in USD."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       88357553.98776157
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.accept#5",
+      "header": "quoteVol_mean20_buyQuoteVol_spread",
+      "meaning": "quoteVol_mean20: windowed mean. quoteVol_mean20_buyQuoteVol_spread: quoteVol_mean20 − buyQuoteVol in USD.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "quoteVol_mean20_buyQuoteVol_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2480,
+       "maxAtLeast": 2480,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "volumeFlow",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.CLOSE.aggregate.spread.inner.max2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 2436,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:242620ba-cc4c-8364-8c2a-398ce544703e",
+      "shape": "table",
+      "title": "V.CLOSE.aggregate.spread.inner.max2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_mean2436_SMA20_spread",
+        "group": "close",
+        "role": "aggregate",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 2436,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_mean2436: windowed mean.",
+         "close_mean2436_SMA20_spread: % gap close_mean2436 vs SMA20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       4.68314471346878
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.CLOSE.aggregate.spread.inner.max2436",
+      "header": "close_mean2436_SMA20_spread",
+      "meaning": "close_mean2436: windowed mean. close_mean2436_SMA20_spread: % gap close_mean2436 vs SMA20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_mean2436_SMA20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 44,
+       "maxAtLeast": 44,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.CLOSE.aggregate.spread.inner.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 2437,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × aggregate' window 2437 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest window that fits is 2436.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 2437,
+     "need": 2437
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2436,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "aggregate",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "V.CLOSE.ema.spread.inner.max704",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 704,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:d27a568c-689d-8864-82df-842459eb416e",
+      "shape": "table",
+      "title": "V.CLOSE.ema.spread.inner.max704",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ema704_SMA20_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 704,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ema704: exponential moving average (ta.ema).",
+         "close_ema704_SMA20_spread: % gap close_ema704 vs SMA20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       5.959147924777311
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.CLOSE.ema.spread.inner.max704",
+      "header": "close_ema704_SMA20_spread",
+      "meaning": "close_ema704: exponential moving average (ta.ema). close_ema704_SMA20_spread: % gap close_ema704 vs SMA20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ema704_SMA20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 45,
+       "maxAtLeast": 45,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.CLOSE.ema.spread.inner.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 705,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × ema' window 705 reads 2439 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest window that fits is 704.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 705,
+     "need": 2439
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 704,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "V.CLOSE.rma.spread.inner.max308",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "rma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 308,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:f5b53fe9-d106-82f3-80d7-d0c8dc25183c",
+      "shape": "table",
+      "title": "V.CLOSE.rma.spread.inner.max308",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_rma308_SMA20_spread",
+        "group": "close",
+        "role": "rma",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 308,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_rma308: Wilder's moving average (ta.rma).",
+         "close_rma308_SMA20_spread: % gap close_rma308 vs SMA20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       5.553940556788891
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.CLOSE.rma.spread.inner.max308",
+      "header": "close_rma308_SMA20_spread",
+      "meaning": "close_rma308: Wilder's moving average (ta.rma). close_rma308_SMA20_spread: % gap close_rma308 vs SMA20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_rma308_SMA20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 47,
+       "maxAtLeast": 47,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.CLOSE.rma.spread.inner.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "rma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 309,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × rma' window 309 reads 2441 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest window that fits is 308.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 309,
+     "need": 2441
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 308,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "rma",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "V.CLOSE.wma.spread.inner.max2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "wma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 2436,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:69bfea10-3345-8e5c-81f2-ebd9a7da2567",
+      "shape": "table",
+      "title": "V.CLOSE.wma.spread.inner.max2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_wma2436_SMA20_spread",
+        "group": "close",
+        "role": "wma",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 2436,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_wma2436: linearly weighted moving average (ta.wma).",
+         "close_wma2436_SMA20_spread: % gap close_wma2436 vs SMA20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       7.8648162979267005
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.CLOSE.wma.spread.inner.max2436",
+      "header": "close_wma2436_SMA20_spread",
+      "meaning": "close_wma2436: linearly weighted moving average (ta.wma). close_wma2436_SMA20_spread: % gap close_wma2436 vs SMA20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_wma2436_SMA20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 44,
+       "maxAtLeast": 44,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.CLOSE.wma.spread.inner.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "wma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 2437,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × wma' window 2437 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest window that fits is 2436.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 2437,
+     "need": 2437
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2436,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "wma",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "V.no.inner.window",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:c5f9a3e6-8604-8978-8748-69c428f21d3d",
+      "shape": "table",
+      "title": "V.no.inner.window",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ema20_EMA50_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ema20: exponential moving average (ta.ema).",
+         "close_ema20_EMA50_spread: % gap close_ema20 vs EMA50."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.258867556722464
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.no.inner.window",
+      "header": "close_ema20_EMA50_spread",
+      "meaning": "close_ema20: exponential moving average (ta.ema). close_ema20_EMA50_spread: % gap close_ema20 vs EMA50.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ema20_EMA50_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2377,
+       "maxAtLeast": 2377,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.no.inputs",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'ema' × 'spread' requires params.inputs",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CLOSE",
+     "transformId": "ema",
+     "chainedTransformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract"
+    },
+    "candidateCount": 3,
+    "context": {
+     "sectionKey": "custom:ab917a39-fa32-8513-8df2-a45c04dd17f4",
+     "metric": "CLOSE",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "V.chainedWindow",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "chainedWindow": 5,
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'ema' × 'spread' does not accept params.chainedWindow",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CLOSE",
+     "transformId": "ema",
+     "chainedTransformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20,
+     "chainedWindow": 5,
+     "inputs": [
+      {
+       "metric": "EMA50"
+      }
+     ]
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract"
+    },
+    "candidateCount": 3,
+    "context": {
+     "sectionKey": "custom:52e1b249-ac5c-8b0a-81bc-1a4023a67fb9",
+     "metric": "CLOSE",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "V.operand.other.unit",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "RSI14"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:c2be7876-5d7f-8ee1-81bb-8f1990e5722d': spread operand 'RSI14' is not a legal relational operand for base 'CLOSE' — it must declare a numeric output in the base's OWN unit AND resolve in one of the two homes (candle extractor or bundle scalar), or the column would resolve null for every coin or compute a ratio across incommensurable units",
+    "authoringCode": "REPORT_COLUMN_OPERAND_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "RSI14",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "ASIA_HIGH",
+      "ASIA_LOW",
+      "ASIA_OPEN",
+      "BB_LOWER",
+      "BB_UPPER",
+      "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
+      "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
+      "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
+      "EMA13",
+      "EMA20",
+      "EMA21",
+      "EMA5",
+      "EMA50",
+      "EMA55",
+      "EMA8",
+      "EMA9",
+      "EQH_LEVEL",
+      "EQL_LEVEL",
+      "HIGH",
+      "HL2",
+      "HLC3",
+      "HMA20",
+      "IB_EXT_DOWN_150",
+      "IB_EXT_DOWN_200",
+      "IB_EXT_UP_150",
+      "IB_EXT_UP_200",
+      "ICHI_BASE",
+      "ICHI_CONV",
+      "ICHI_LAG",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "INTERNAL_PENDING_HIGH",
+      "INTERNAL_PENDING_LOW",
+      "INTERNAL_STRUCTURE_LEVEL",
+      "KC_LOWER",
+      "KC_UPPER",
+      "LAST",
+      "LIQUIDITY_POOL_ABOVE",
+      "LIQUIDITY_POOL_ABOVE_RETIRED",
+      "LIQUIDITY_POOL_BELOW",
+      "LIQUIDITY_POOL_BELOW_RETIRED",
+      "LONDON_HIGH",
+      "LONDON_LOW",
+      "LONDON_OPEN",
+      "LOW",
+      "MARK",
+      "MONTH_TPO_POC",
+      "MONTH_TPO_VAH",
+      "MONTH_TPO_VAL",
+      "NAKED_POC_ABOVE",
+      "NAKED_POC_BELOW",
+      "NAKED_SINGLE_PRINT_ABOVE",
+      "NAKED_SINGLE_PRINT_BELOW",
+      "NEW_YORK_HIGH",
+      "NEW_YORK_LOW",
+      "NEW_YORK_OPEN",
+      "OHLC4",
+      "OPEN",
+      "OR15_HIGH",
+      "OR15_LOW",
+      "OR30_HIGH",
+      "OR30_LOW",
+      "ORACLE",
+      "PDH",
+      "PDL",
+      "PDO",
+      "PIVOT_CAM_R1",
+      "PIVOT_CAM_R2",
+      "PIVOT_CAM_R3",
+      "PIVOT_CAM_R4",
+      "PIVOT_CAM_R5",
+      "PIVOT_CAM_S1",
+      "PIVOT_CAM_S2",
+      "PIVOT_CAM_S3",
+      "PIVOT_CAM_S4",
+      "PIVOT_CAM_S5",
+      "PIVOT_CLASSIC_R3",
+      "PIVOT_CLASSIC_R4",
+      "PIVOT_CLASSIC_S3",
+      "PIVOT_CLASSIC_S4",
+      "PIVOT_DM_P",
+      "PIVOT_DM_R1",
+      "PIVOT_DM_S1",
+      "PIVOT_FIB_R1",
+      "PIVOT_FIB_R2",
+      "PIVOT_FIB_S1",
+      "PIVOT_FIB_S2",
+      "PIVOT_MONTH_CAM_R1",
+      "PIVOT_MONTH_CAM_R2",
+      "PIVOT_MONTH_CAM_R3",
+      "PIVOT_MONTH_CAM_R4",
+      "PIVOT_MONTH_CAM_R5",
+      "PIVOT_MONTH_CAM_S1",
+      "PIVOT_MONTH_CAM_S2",
+      "PIVOT_MONTH_CAM_S3",
+      "PIVOT_MONTH_CAM_S4",
+      "PIVOT_MONTH_CAM_S5",
+      "PIVOT_MONTH_CLASSIC_R3",
+      "PIVOT_MONTH_CLASSIC_R4",
+      "PIVOT_MONTH_CLASSIC_S3",
+      "PIVOT_MONTH_CLASSIC_S4",
+      "PIVOT_MONTH_DM_P",
+      "PIVOT_MONTH_DM_R1",
+      "PIVOT_MONTH_DM_S1",
+      "PIVOT_MONTH_FIB_R1",
+      "PIVOT_MONTH_FIB_R2",
+      "PIVOT_MONTH_FIB_S1",
+      "PIVOT_MONTH_FIB_S2",
+      "PIVOT_MONTH_P",
+      "PIVOT_MONTH_R1",
+      "PIVOT_MONTH_R2",
+      "PIVOT_MONTH_R3",
+      "PIVOT_MONTH_R4",
+      "PIVOT_MONTH_R5",
+      "PIVOT_MONTH_S1",
+      "PIVOT_MONTH_S2",
+      "PIVOT_MONTH_S3",
+      "PIVOT_MONTH_S4",
+      "PIVOT_MONTH_S5",
+      "PIVOT_MONTH_WOODIE_P",
+      "PIVOT_MONTH_WOODIE_R1",
+      "PIVOT_MONTH_WOODIE_R2",
+      "PIVOT_MONTH_WOODIE_R3",
+      "PIVOT_MONTH_WOODIE_R4",
+      "PIVOT_MONTH_WOODIE_S1",
+      "PIVOT_MONTH_WOODIE_S2",
+      "PIVOT_MONTH_WOODIE_S3",
+      "PIVOT_MONTH_WOODIE_S4",
+      "PIVOT_P",
+      "PIVOT_QUARTER_CAM_R1",
+      "PIVOT_QUARTER_CAM_R2",
+      "PIVOT_QUARTER_CAM_R3",
+      "PIVOT_QUARTER_CAM_R4",
+      "PIVOT_QUARTER_CAM_R5",
+      "PIVOT_QUARTER_CAM_S1",
+      "PIVOT_QUARTER_CAM_S2",
+      "PIVOT_QUARTER_CAM_S3",
+      "PIVOT_QUARTER_CAM_S4",
+      "PIVOT_QUARTER_CAM_S5",
+      "PIVOT_QUARTER_CLASSIC_R3",
+      "PIVOT_QUARTER_CLASSIC_R4",
+      "PIVOT_QUARTER_CLASSIC_S3",
+      "PIVOT_QUARTER_CLASSIC_S4",
+      "PIVOT_QUARTER_DM_P",
+      "PIVOT_QUARTER_DM_R1",
+      "PIVOT_QUARTER_DM_S1",
+      "PIVOT_QUARTER_FIB_R1",
+      "PIVOT_QUARTER_FIB_R2",
+      "PIVOT_QUARTER_FIB_S1",
+      "PIVOT_QUARTER_FIB_S2",
+      "PIVOT_QUARTER_P",
+      "PIVOT_QUARTER_R1",
+      "PIVOT_QUARTER_R2",
+      "PIVOT_QUARTER_R3",
+      "PIVOT_QUARTER_R4",
+      "PIVOT_QUARTER_R5",
+      "PIVOT_QUARTER_S1",
+      "PIVOT_QUARTER_S2",
+      "PIVOT_QUARTER_S3",
+      "PIVOT_QUARTER_S4",
+      "PIVOT_QUARTER_S5",
+      "PIVOT_QUARTER_WOODIE_P",
+      "PIVOT_QUARTER_WOODIE_R1",
+      "PIVOT_QUARTER_WOODIE_R2",
+      "PIVOT_QUARTER_WOODIE_R3",
+      "PIVOT_QUARTER_WOODIE_R4",
+      "PIVOT_QUARTER_WOODIE_S1",
+      "PIVOT_QUARTER_WOODIE_S2",
+      "PIVOT_QUARTER_WOODIE_S3",
+      "PIVOT_QUARTER_WOODIE_S4",
+      "PIVOT_R1",
+      "PIVOT_R2",
+      "PIVOT_R3",
+      "PIVOT_R4",
+      "PIVOT_R5",
+      "PIVOT_S1",
+      "PIVOT_S2",
+      "PIVOT_S3",
+      "PIVOT_S4",
+      "PIVOT_S5",
+      "PIVOT_WEEK_CAM_R1",
+      "PIVOT_WEEK_CAM_R2",
+      "PIVOT_WEEK_CAM_R3",
+      "PIVOT_WEEK_CAM_R4",
+      "PIVOT_WEEK_CAM_R5",
+      "PIVOT_WEEK_CAM_S1",
+      "PIVOT_WEEK_CAM_S2",
+      "PIVOT_WEEK_CAM_S3",
+      "PIVOT_WEEK_CAM_S4",
+      "PIVOT_WEEK_CAM_S5",
+      "PIVOT_WEEK_CLASSIC_R3",
+      "PIVOT_WEEK_CLASSIC_R4",
+      "PIVOT_WEEK_CLASSIC_S3",
+      "PIVOT_WEEK_CLASSIC_S4",
+      "PIVOT_WEEK_DM_P",
+      "PIVOT_WEEK_DM_R1",
+      "PIVOT_WEEK_DM_S1",
+      "PIVOT_WEEK_FIB_R1",
+      "PIVOT_WEEK_FIB_R2",
+      "PIVOT_WEEK_FIB_S1",
+      "PIVOT_WEEK_FIB_S2",
+      "PIVOT_WEEK_P",
+      "PIVOT_WEEK_R1",
+      "PIVOT_WEEK_R2",
+      "PIVOT_WEEK_R3",
+      "PIVOT_WEEK_R4",
+      "PIVOT_WEEK_R5",
+      "PIVOT_WEEK_S1",
+      "PIVOT_WEEK_S2",
+      "PIVOT_WEEK_S3",
+      "PIVOT_WEEK_S4",
+      "PIVOT_WEEK_S5",
+      "PIVOT_WEEK_WOODIE_P",
+      "PIVOT_WEEK_WOODIE_R1",
+      "PIVOT_WEEK_WOODIE_R2",
+      "PIVOT_WEEK_WOODIE_R3",
+      "PIVOT_WEEK_WOODIE_R4",
+      "PIVOT_WEEK_WOODIE_S1",
+      "PIVOT_WEEK_WOODIE_S2",
+      "PIVOT_WEEK_WOODIE_S3",
+      "PIVOT_WEEK_WOODIE_S4",
+      "PIVOT_WOODIE_P",
+      "PIVOT_WOODIE_R1",
+      "PIVOT_WOODIE_R2",
+      "PIVOT_WOODIE_R3",
+      "PIVOT_WOODIE_R4",
+      "PIVOT_WOODIE_S1",
+      "PIVOT_WOODIE_S2",
+      "PIVOT_WOODIE_S3",
+      "PIVOT_WOODIE_S4",
+      "PIVOT_YEAR_CAM_R1",
+      "PIVOT_YEAR_CAM_R2",
+      "PIVOT_YEAR_CAM_R3",
+      "PIVOT_YEAR_CAM_R4",
+      "PIVOT_YEAR_CAM_R5",
+      "PIVOT_YEAR_CAM_S1",
+      "PIVOT_YEAR_CAM_S2",
+      "PIVOT_YEAR_CAM_S3",
+      "PIVOT_YEAR_CAM_S4",
+      "PIVOT_YEAR_CAM_S5",
+      "PIVOT_YEAR_CLASSIC_R3",
+      "PIVOT_YEAR_CLASSIC_R4",
+      "PIVOT_YEAR_CLASSIC_S3",
+      "PIVOT_YEAR_CLASSIC_S4",
+      "PIVOT_YEAR_DM_P",
+      "PIVOT_YEAR_DM_R1",
+      "PIVOT_YEAR_DM_S1",
+      "PIVOT_YEAR_FIB_R1",
+      "PIVOT_YEAR_FIB_R2",
+      "PIVOT_YEAR_FIB_S1",
+      "PIVOT_YEAR_FIB_S2",
+      "PIVOT_YEAR_P",
+      "PIVOT_YEAR_R1",
+      "PIVOT_YEAR_R2",
+      "PIVOT_YEAR_R3",
+      "PIVOT_YEAR_R4",
+      "PIVOT_YEAR_R5",
+      "PIVOT_YEAR_S1",
+      "PIVOT_YEAR_S2",
+      "PIVOT_YEAR_S3",
+      "PIVOT_YEAR_S4",
+      "PIVOT_YEAR_S5",
+      "PIVOT_YEAR_WOODIE_P",
+      "PIVOT_YEAR_WOODIE_R1",
+      "PIVOT_YEAR_WOODIE_R2",
+      "PIVOT_YEAR_WOODIE_R3",
+      "PIVOT_YEAR_WOODIE_R4",
+      "PIVOT_YEAR_WOODIE_S1",
+      "PIVOT_YEAR_WOODIE_S2",
+      "PIVOT_YEAR_WOODIE_S3",
+      "PIVOT_YEAR_WOODIE_S4",
+      "PMH",
+      "PML",
+      "PRIOR_ASIA_DEMAND_AVG",
+      "PRIOR_ASIA_DEMAND_EDGE",
+      "PRIOR_ASIA_DEMAND_WAVG",
+      "PRIOR_ASIA_HIGH",
+      "PRIOR_ASIA_LOW",
+      "PRIOR_ASIA_OPEN",
+      "PRIOR_ASIA_SUPPLY_AVG",
+      "PRIOR_ASIA_SUPPLY_EDGE",
+      "PRIOR_ASIA_SUPPLY_WAVG",
+      "PRIOR_DAY_DEMAND_AVG",
+      "PRIOR_DAY_DEMAND_EDGE",
+      "PRIOR_DAY_DEMAND_WAVG",
+      "PRIOR_DAY_SUPPLY_AVG",
+      "PRIOR_DAY_SUPPLY_EDGE",
+      "PRIOR_DAY_SUPPLY_WAVG",
+      "PRIOR_LONDON_DEMAND_AVG",
+      "PRIOR_LONDON_DEMAND_EDGE",
+      "PRIOR_LONDON_DEMAND_WAVG",
+      "PRIOR_LONDON_HIGH",
+      "PRIOR_LONDON_LOW",
+      "PRIOR_LONDON_OPEN",
+      "PRIOR_LONDON_SUPPLY_AVG",
+      "PRIOR_LONDON_SUPPLY_EDGE",
+      "PRIOR_LONDON_SUPPLY_WAVG",
+      "PRIOR_MONTH_TPO_POC",
+      "PRIOR_MONTH_TPO_VAH",
+      "PRIOR_MONTH_TPO_VAL",
+      "PRIOR_NEW_YORK_DEMAND_AVG",
+      "PRIOR_NEW_YORK_DEMAND_EDGE",
+      "PRIOR_NEW_YORK_DEMAND_WAVG",
+      "PRIOR_NEW_YORK_HIGH",
+      "PRIOR_NEW_YORK_LOW",
+      "PRIOR_NEW_YORK_OPEN",
+      "PRIOR_NEW_YORK_SUPPLY_AVG",
+      "PRIOR_NEW_YORK_SUPPLY_EDGE",
+      "PRIOR_NEW_YORK_SUPPLY_WAVG",
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW",
+      "PRIOR_TPO_IB_HIGH",
+      "PRIOR_TPO_IB_LOW",
+      "PRIOR_TPO_POC",
+      "PRIOR_TPO_VAH",
+      "PRIOR_TPO_VAL",
+      "PRIOR_TPO_VPOC",
+      "PRIOR_TPO_VVAH",
+      "PRIOR_TPO_VVAL",
+      "PRIOR_WEEK_TPO_POC",
+      "PRIOR_WEEK_TPO_VAH",
+      "PRIOR_WEEK_TPO_VAL",
+      "PSAR",
+      "PWH",
+      "PWL",
+      "SMA20",
+      "SMA200",
+      "SMA50",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB",
+      "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW",
+      "SWING_PENDING_HIGH",
+      "SWING_PENDING_LOW",
+      "SWING_STRUCTURE_LEVEL",
+      "TPO_IB_HIGH",
+      "TPO_IB_LOW",
+      "TPO_POC",
+      "TPO_SINGLE_PRINT_ABOVE",
+      "TPO_SINGLE_PRINT_BELOW",
+      "TPO_VAH",
+      "TPO_VAL",
+      "TPO_VPOC",
+      "TPO_VVAH",
+      "TPO_VVAL",
+      "VWAP",
+      "VWAP_LB1",
+      "VWAP_LB2",
+      "VWAP_LB3",
+      "VWAP_MONTH",
+      "VWAP_MONTH_LB1",
+      "VWAP_MONTH_LB2",
+      "VWAP_MONTH_LB3",
+      "VWAP_MONTH_UB1",
+      "VWAP_MONTH_UB2",
+      "VWAP_MONTH_UB3",
+      "VWAP_ROLLING_1H",
+      "VWAP_ROLLING_1H_LB1",
+      "VWAP_ROLLING_1H_LB2",
+      "VWAP_ROLLING_1H_LB3",
+      "VWAP_ROLLING_1H_UB1",
+      "VWAP_ROLLING_1H_UB2",
+      "VWAP_ROLLING_1H_UB3",
+      "VWAP_ROLLING_24H",
+      "VWAP_ROLLING_24H_LB1",
+      "VWAP_ROLLING_24H_LB2",
+      "VWAP_ROLLING_24H_LB3",
+      "VWAP_ROLLING_24H_UB1",
+      "VWAP_ROLLING_24H_UB2",
+      "VWAP_ROLLING_24H_UB3",
+      "VWAP_ROLLING_4H",
+      "VWAP_ROLLING_4H_LB1",
+      "VWAP_ROLLING_4H_LB2",
+      "VWAP_ROLLING_4H_LB3",
+      "VWAP_ROLLING_4H_UB1",
+      "VWAP_ROLLING_4H_UB2",
+      "VWAP_ROLLING_4H_UB3",
+      "VWAP_SWING_HIGH",
+      "VWAP_SWING_LOW",
+      "VWAP_TRADING_SESSION",
+      "VWAP_TRADING_SESSION_LB1",
+      "VWAP_TRADING_SESSION_LB2",
+      "VWAP_TRADING_SESSION_LB3",
+      "VWAP_TRADING_SESSION_UB1",
+      "VWAP_TRADING_SESSION_UB2",
+      "VWAP_TRADING_SESSION_UB3",
+      "VWAP_UB1",
+      "VWAP_UB2",
+      "VWAP_UB3",
+      "VWAP_WEEK",
+      "VWAP_WEEK_LB1",
+      "VWAP_WEEK_LB2",
+      "VWAP_WEEK_LB3",
+      "VWAP_WEEK_UB1",
+      "VWAP_WEEK_UB2",
+      "VWAP_WEEK_UB3",
+      "VWMA20",
+      "WEEK_TPO_POC",
+      "WEEK_TPO_VAH",
+      "WEEK_TPO_VAL",
+      "ZONE_RESIST_HIGH",
+      "ZONE_RESIST_LOW",
+      "ZONE_RESIST_MID",
+      "ZONE_SUPPORT_HIGH",
+      "ZONE_SUPPORT_LOW",
+      "ZONE_SUPPORT_MID"
+     ]
+    },
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:c2be7876-5d7f-8ee1-81bb-8f1990e5722d",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "V.operand.timeless",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "ASIA_HIGH"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:a8d5b68b-6e13-8afd-8ba4-fa2367ca6d38",
+      "shape": "table",
+      "title": "V.operand.timeless",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ema20_asiaHi_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ema20: exponential moving average (ta.ema).",
+         "close_ema20_asiaHi_spread: % gap close_ema20 vs asiaHi."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.40590366970511643
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.operand.timeless",
+      "header": "close_ema20_asiaHi_spread",
+      "meaning": "close_ema20: exponential moving average (ta.ema). close_ema20_asiaHi_spread: % gap close_ema20 vs asiaHi.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ema20_asiaHi_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "HISTORY"
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.abs4h.offanchor.operand",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "abs": "4h"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "SMA20"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:5012a063-4b0c-831a-8207-170758342435",
+      "shape": "table",
+      "title": "V.abs4h.offanchor.operand",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_4h_ema20_SMA20_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "4h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_4h_ema20: exponential moving average (ta.ema).",
+         "close_4h_ema20_SMA20_spread: % gap close_4h_ema20 vs SMA20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       0.17788880544470043
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.abs4h.offanchor.operand",
+      "header": "close_4h_ema20_SMA20_spread",
+      "meaning": "close_4h_ema20: exponential moving average (ta.ema). close_4h_ema20_SMA20_spread: % gap close_4h_ema20 vs SMA20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_4h_ema20_SMA20_spread",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 2407,
+       "maxAtLeast": 2407,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.abs4h.anchor.only.operand",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "abs": "4h"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "PIVOT_WEEK_P"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:afb4ff6e-7b3e-8fd1-8d4b-4ef4bf3de20b': spread operand 'PIVOT_WEEK_P' is a level read per anchor bar (a per-bar session-profile level or a zone edge) — a relation meets it only at the strategy's anchor rung ({ rel: 'anchor' }), because it is read at the anchor bars alone",
+    "authoringCode": "REPORT_COLUMN_OPERAND_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "PIVOT_WEEK_P",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "BB_LOWER",
+      "BB_UPPER",
+      "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
+      "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
+      "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
+      "EMA13",
+      "EMA20",
+      "EMA21",
+      "EMA5",
+      "EMA50",
+      "EMA55",
+      "EMA8",
+      "EMA9",
+      "EQH_LEVEL",
+      "EQL_LEVEL",
+      "HIGH",
+      "HL2",
+      "HLC3",
+      "HMA20",
+      "ICHI_BASE",
+      "ICHI_CONV",
+      "ICHI_LAG",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "INTERNAL_PENDING_HIGH",
+      "INTERNAL_PENDING_LOW",
+      "INTERNAL_STRUCTURE_LEVEL",
+      "KC_LOWER",
+      "KC_UPPER",
+      "LAST",
+      "LIQUIDITY_POOL_ABOVE",
+      "LIQUIDITY_POOL_ABOVE_RETIRED",
+      "LIQUIDITY_POOL_BELOW",
+      "LIQUIDITY_POOL_BELOW_RETIRED",
+      "LOW",
+      "MARK",
+      "OHLC4",
+      "OPEN",
+      "ORACLE",
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW",
+      "PSAR",
+      "SMA20",
+      "SMA200",
+      "SMA50",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB",
+      "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW",
+      "SWING_PENDING_HIGH",
+      "SWING_PENDING_LOW",
+      "SWING_STRUCTURE_LEVEL",
+      "VWAP",
+      "VWAP_LB1",
+      "VWAP_LB2",
+      "VWAP_LB3",
+      "VWAP_MONTH",
+      "VWAP_MONTH_LB1",
+      "VWAP_MONTH_LB2",
+      "VWAP_MONTH_LB3",
+      "VWAP_MONTH_UB1",
+      "VWAP_MONTH_UB2",
+      "VWAP_MONTH_UB3",
+      "VWAP_ROLLING_1H",
+      "VWAP_ROLLING_1H_LB1",
+      "VWAP_ROLLING_1H_LB2",
+      "VWAP_ROLLING_1H_LB3",
+      "VWAP_ROLLING_1H_UB1",
+      "VWAP_ROLLING_1H_UB2",
+      "VWAP_ROLLING_1H_UB3",
+      "VWAP_ROLLING_24H",
+      "VWAP_ROLLING_24H_LB1",
+      "VWAP_ROLLING_24H_LB2",
+      "VWAP_ROLLING_24H_LB3",
+      "VWAP_ROLLING_24H_UB1",
+      "VWAP_ROLLING_24H_UB2",
+      "VWAP_ROLLING_24H_UB3",
+      "VWAP_ROLLING_4H",
+      "VWAP_ROLLING_4H_LB1",
+      "VWAP_ROLLING_4H_LB2",
+      "VWAP_ROLLING_4H_LB3",
+      "VWAP_ROLLING_4H_UB1",
+      "VWAP_ROLLING_4H_UB2",
+      "VWAP_ROLLING_4H_UB3",
+      "VWAP_SWING_HIGH",
+      "VWAP_SWING_LOW",
+      "VWAP_TRADING_SESSION",
+      "VWAP_TRADING_SESSION_LB1",
+      "VWAP_TRADING_SESSION_LB2",
+      "VWAP_TRADING_SESSION_LB3",
+      "VWAP_TRADING_SESSION_UB1",
+      "VWAP_TRADING_SESSION_UB2",
+      "VWAP_TRADING_SESSION_UB3",
+      "VWAP_UB1",
+      "VWAP_UB2",
+      "VWAP_UB3",
+      "VWAP_WEEK",
+      "VWAP_WEEK_LB1",
+      "VWAP_WEEK_LB2",
+      "VWAP_WEEK_LB3",
+      "VWAP_WEEK_UB1",
+      "VWAP_WEEK_UB2",
+      "VWAP_WEEK_UB3",
+      "VWMA20"
+     ]
+    },
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:afb4ff6e-7b3e-8fd1-8d4b-4ef4bf3de20b",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "V.bars.closed",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "bars": "closed",
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:c0738452-1eeb-8bf5-82ce-79ff20a92552",
+      "shape": "table",
+      "title": "V.bars.closed",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ema20_EMA50_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ema20: exponential moving average (ta.ema).",
+         "close_ema20_EMA50_spread: % gap close_ema20 vs EMA50."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.258867556722464
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.bars.closed",
+      "header": "close_ema20_EMA50_spread",
+      "meaning": "close_ema20: exponential moving average (ta.ema). close_ema20_EMA50_spread: % gap close_ema20 vs EMA50.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ema20_EMA50_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2377,
+       "maxAtLeast": 2377,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.bars.all",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "bars": "all",
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:ea6d08bd-d90b-87fc-87cd-67f7d0ac8422",
+      "shape": "table",
+      "title": "V.bars.all",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_dev_ema20_EMA50_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Developing",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_dev_ema20: exponential moving average (ta.ema).",
+         "close_dev_ema20_EMA50_spread: % gap close_dev_ema20 vs EMA50."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.2743495139874226
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.bars.all",
+      "header": "close_dev_ema20_EMA50_spread",
+      "meaning": "close_dev_ema20: exponential moving average (ta.ema). close_dev_ema20_EMA50_spread: % gap close_dev_ema20 vs EMA50.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_dev_ema20_EMA50_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2377,
+       "maxAtLeast": 2377,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.offset1",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "offset": 1,
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'ema' × 'spread' does not accept params.offset",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CLOSE",
+     "transformId": "ema",
+     "chainedTransformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 20,
+     "offset": 1,
+     "inputs": [
+      {
+       "metric": "EMA50"
+      }
+     ]
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract"
+    },
+    "candidateCount": 3,
+    "context": {
+     "sectionKey": "custom:ae484dfb-eb3a-85fd-84de-4a8b3c60a0f9",
+     "metric": "CLOSE",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "V.averaged.operand",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "aggregate",
+         "window": 50
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:0599ac22-8525-8f79-890d-73462ad03a93",
+      "shape": "table",
+      "title": "V.averaged.operand",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ema20_close_mean50_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 20,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ema20: exponential moving average (ta.ema).",
+         "close_ema20_close_mean50_spread: % gap close_ema20 vs close_mean50."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.06844269498272731
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "V.averaged.operand",
+      "header": "close_ema20_close_mean50_spread",
+      "meaning": "close_ema20: exponential moving average (ta.ema). close_ema20_close_mean50_spread: % gap close_ema20 vs close_mean50.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ema20_close_mean50_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2427,
+       "maxAtLeast": 2427,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "V.after.distance",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "distance",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:d36b8376-7db9-8f22-8046-d10b1aba2728': (CLOSE × distance × spread) is not a composable chain — the engine has no resolution home for it — 'close' is the reference price a distance is measured from, so its distance is 0 at every bar",
+    "authoringCode": "REPORT_COLUMN_CHAIN_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedTransformId"
+    ],
+    "receivedValue": {
+     "transformId": "distance",
+     "chainedTransformId": "spread"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output"
+    },
+    "candidateCount": 15,
+    "context": {
+     "sectionKey": "custom:d36b8376-7db9-8f22-8046-d10b1aba2728"
+    }
+   }
+  },
+  {
+   "probe": "V.after.zscore",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "zscore",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 20,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "RSI7"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:54e9b659-97bb-8965-8277-b1ef5fc144ba': (RSI14 × zscore × spread) is not a composable chain — the engine has no resolution home for it",
+    "authoringCode": "REPORT_COLUMN_CHAIN_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedTransformId"
+    ],
+    "receivedValue": {
+     "transformId": "zscore",
+     "chainedTransformId": "spread"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output"
+    },
+    "candidateCount": 0,
+    "context": {
+     "sectionKey": "custom:54e9b659-97bb-8965-8277-b1ef5fc144ba"
+    }
+   }
+  },
+  {
+   "probe": "W.accept",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "aggregate",
+         "window": 50
+        }
+       ]
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "HIGH",
+         "transformId": "wma",
+         "window": 10
+        }
+       ]
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "SMA50",
+         "transformId": "rma",
+         "window": 14
+        }
+       ]
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "RSI14",
+         "transformId": "ema",
+         "window": 9
+        }
+       ]
+      },
+      {
+       "metric": "QUOTE_VOL",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "QUOTE_VOL",
+         "transformId": "aggregate",
+         "window": 20
+        }
+       ]
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 2
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:c2d9942b-dd26-8e6d-8a4a-f91d957a60d3",
+      "shape": "table",
+      "title": "W.accept",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_close_ema20_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_close_ema20_spread: % gap close vs close_ema20."
+        ]
+       },
+       {
+        "key": "close_close_mean50_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_close_mean50_spread: % gap close vs close_mean50."
+        ]
+       },
+       {
+        "key": "close_high_wma10_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_high_wma10_spread: % gap close vs high_wma10."
+        ]
+       },
+       {
+        "key": "close_SMA50_rma14_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_SMA50_rma14_spread: % gap close vs SMA50_rma14."
+        ]
+       },
+       {
+        "key": "RSI14_RSI14_ema9_spread",
+        "group": "RSI14",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "points",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "RSI14_RSI14_ema9_spread: RSI14 − RSI14_ema9 in pts."
+        ]
+       },
+       {
+        "key": "quoteVol_quoteVol_mean20_spread",
+        "group": "quoteVol",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "usdLargeCount",
+        "precision": 1,
+        "lookback": null,
+        "spanFragments": [
+         "quoteVol_quoteVol_mean20_spread: quoteVol − quoteVol_mean20 in USD."
+        ]
+       },
+       {
+        "key": "close_close_ema2_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_close_ema2_spread: % gap close vs close_ema2."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.5264028759903022,
+       -0.5944852866582352,
+       -0.5762565193830672,
+       -0.9503137047331381,
+       -4.708263344345937,
+       -61033154.411771566,
+       -0.056456810454665725
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.accept",
+      "header": "close_close_ema20_spread",
+      "meaning": "close_close_ema20_spread: % gap close vs close_ema20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_close_ema20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2427,
+       "maxAtLeast": 2427,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     },
+     {
+      "section": "W.accept",
+      "header": "close_close_mean50_spread",
+      "meaning": "close_close_mean50_spread: % gap close vs close_mean50.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_close_mean50_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2450,
+       "maxAtLeast": 2450,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     },
+     {
+      "section": "W.accept",
+      "header": "close_high_wma10_spread",
+      "meaning": "close_high_wma10_spread: % gap close vs high_wma10.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_high_wma10_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2490,
+       "maxAtLeast": 2490,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     },
+     {
+      "section": "W.accept",
+      "header": "close_SMA50_rma14_spread",
+      "meaning": "close_SMA50_rma14_spread: % gap close vs SMA50_rma14.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_SMA50_rma14_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2342,
+       "maxAtLeast": 2342,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     },
+     {
+      "section": "W.accept",
+      "header": "RSI14_RSI14_ema9_spread",
+      "meaning": "RSI14_RSI14_ema9_spread: RSI14 − RSI14_ema9 in pts.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "RSI14_RSI14_ema9_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2451,
+       "maxAtLeast": 2451,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "momentum",
+      "readBy": []
+     },
+     {
+      "section": "W.accept",
+      "header": "quoteVol_quoteVol_mean20_spread",
+      "meaning": "quoteVol_quoteVol_mean20_spread: quoteVol − quoteVol_mean20 in USD.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "quoteVol_quoteVol_mean20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2480,
+       "maxAtLeast": 2480,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "volumeFlow",
+      "readBy": []
+     },
+     {
+      "section": "W.accept",
+      "header": "close_close_ema2_spread",
+      "meaning": "close_close_ema2_spread: % gap close vs close_ema2.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_close_ema2_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2489,
+       "maxAtLeast": 2489,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.window1",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 1
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'spread' operand 'close_ema1' requires a length of at least 2 (got 1) — at 1 an average is its own source",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "window": 1
+      }
+     ]
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract"
+    },
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:f74bb29d-a95d-8483-81f2-0a3811de3c00",
+     "metric": "CLOSE",
+     "transformId": "spread"
+    }
+   }
+  },
+  {
+   "probe": "W.no.window",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "An averaged operand names both transformId and window, or neither",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "allowedDomain": null,
+    "candidateCount": null,
+    "context": null
+   }
+  },
+  {
+   "probe": "W.window.no.transform",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "An averaged operand names both transformId and window, or neither",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "allowedDomain": null,
+    "candidateCount": null,
+    "context": null
+   }
+  },
+  {
+   "probe": "W.transform.rsi",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "rsi",
+         "window": 14
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid option: expected one of \"aggregate\"|\"ema\"|\"rma\"|\"wma\"",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "allowedDomain": null,
+    "candidateCount": null,
+    "context": null
+   }
+  },
+  {
+   "probe": "W.transform.zscore",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "zscore",
+         "window": 14
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid option: expected one of \"aggregate\"|\"ema\"|\"rma\"|\"wma\"",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "allowedDomain": null,
+    "candidateCount": null,
+    "context": null
+   }
+  },
+  {
+   "probe": "W.transform.trajectory",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "trajectory",
+         "window": 14
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid option: expected one of \"aggregate\"|\"ema\"|\"rma\"|\"wma\"",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "allowedDomain": null,
+    "candidateCount": null,
+    "context": null
+   }
+  },
+  {
+   "probe": "W.aggregate.window.2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "aggregate",
+         "window": 2436
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:4b95806d-b2c0-86d2-86e2-4459b8a66670",
+      "shape": "table",
+      "title": "W.aggregate.window.2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_close_mean2436_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_close_mean2436_spread: % gap close vs close_mean2436."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -5.100704024190525
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.aggregate.window.2436",
+      "header": "close_close_mean2436_spread",
+      "meaning": "close_close_mean2436_spread: % gap close vs close_mean2436.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_close_mean2436_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 64,
+       "maxAtLeast": 64,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.aggregate.window.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "aggregate",
+         "window": 2437
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × spread' operand window 2437 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest operand window that fits is 2436.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 2437,
+     "need": 2437
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2436,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "W.ema.window.704",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 704
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:ff0e50ea-a570-8340-8791-68b0d066dce4",
+      "shape": "table",
+      "title": "W.ema.window.704",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_close_ema704_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_close_ema704_spread: % gap close vs close_ema704."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -6.243519994190749
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.ema.window.704",
+      "header": "close_close_ema704_spread",
+      "meaning": "close_close_ema704_spread: % gap close vs close_ema704.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_close_ema704_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 65,
+       "maxAtLeast": 65,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.ema.window.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 705
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × spread' operand window 705 reads 2439 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest operand window that fits is 704.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 705,
+     "need": 2439
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 704,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "W.rma.window.308",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "rma",
+         "window": 308
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:753a5afe-cb96-8c5a-85ec-05c15032de4b",
+      "shape": "table",
+      "title": "W.rma.window.308",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_close_rma308_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_close_rma308_spread: % gap close vs close_rma308."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -5.88360148906802
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.rma.window.308",
+      "header": "close_close_rma308_spread",
+      "meaning": "close_close_rma308_spread: % gap close vs close_rma308.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_close_rma308_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 67,
+       "maxAtLeast": 67,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.rma.window.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "rma",
+         "window": 309
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × spread' operand window 309 reads 2441 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest operand window that fits is 308.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 309,
+     "need": 2441
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 308,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "W.wma.window.2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "wma",
+         "window": 2436
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:23301f7e-e3f9-892d-867f-4b5b3ddfb851",
+      "shape": "table",
+      "title": "W.wma.window.2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_close_wma2436_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_close_wma2436_spread: % gap close vs close_wma2436."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -7.8999336873397175
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.wma.window.2436",
+      "header": "close_close_wma2436_spread",
+      "meaning": "close_close_wma2436_spread: % gap close vs close_wma2436.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_close_wma2436_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 64,
+       "maxAtLeast": 64,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.wma.window.over",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "wma",
+         "window": 2437
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × spread' operand window 2437 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest operand window that fits is 2436.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "window"
+    ],
+    "receivedValue": {
+     "window": 2437,
+     "need": 2437
+    },
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2436,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "W.operand.timeless",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "ASIA_HIGH",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:d785f532-78d1-89b0-868c-ca52bd0ba98b': 'ASIA_HIGH' is not a legal averaged spread operand for base 'CLOSE' — an average folds a per-bar candle value of the base's own unit on the column's bars: BB_LOWER, BB_UPPER, CLOSE, DONCHIAN_BROKEN_HI, DONCHIAN_BROKEN_HI_PRIOR, DONCHIAN_BROKEN_LO, DONCHIAN_BROKEN_LO_PRIOR, DONCHIAN_LOWER, DONCHIAN_LOWER_PRIOR, DONCHIAN_UPPER, DONCHIAN_UPPER_PRIOR, EMA13, EMA20, EMA21, EMA5, EMA50, EMA55, EMA8, EMA9, HIGH, HL2, HLC3, HMA20, ICHI_BASE, ICHI_CONV, ICHI_LAG, ICHI_SPAN_A, ICHI_SPAN_B, KC_LOWER, KC_UPPER, LOW, OHLC4, OPEN, PRIOR_SWING_FRACTAL_HIGH, PRIOR_SWING_FRACTAL_LOW, PSAR, SMA20, SMA200, SMA50, SPOT_CLOSE_BN, SPOT_CLOSE_CB, ST_LINE, SWING_FRACTAL_HIGH, SWING_FRACTAL_LOW, VWAP, VWAP_LB1, VWAP_LB2, VWAP_LB3, VWAP_MONTH, VWAP_MONTH_LB1, VWAP_MONTH_LB2, VWAP_MONTH_LB3, VWAP_MONTH_UB1, VWAP_MONTH_UB2, VWAP_MONTH_UB3, VWAP_ROLLING_1H, VWAP_ROLLING_1H_LB1, VWAP_ROLLING_1H_LB2, VWAP_ROLLING_1H_LB3, VWAP_ROLLING_1H_UB1, VWAP_ROLLING_1H_UB2, VWAP_ROLLING_1H_UB3, VWAP_ROLLING_24H, VWAP_ROLLING_24H_LB1, VWAP_ROLLING_24H_LB2, VWAP_ROLLING_24H_LB3, VWAP_ROLLING_24H_UB1, VWAP_ROLLING_24H_UB2, VWAP_ROLLING_24H_UB3, VWAP_ROLLING_4H, VWAP_ROLLING_4H_LB1, VWAP_ROLLING_4H_LB2, VWAP_ROLLING_4H_LB3, VWAP_ROLLING_4H_UB1, VWAP_ROLLING_4H_UB2, VWAP_ROLLING_4H_UB3, VWAP_SWING_HIGH, VWAP_SWING_LOW, VWAP_TRADING_SESSION, VWAP_TRADING_SESSION_LB1, VWAP_TRADING_SESSION_LB2, VWAP_TRADING_SESSION_LB3, VWAP_TRADING_SESSION_UB1, VWAP_TRADING_SESSION_UB2, VWAP_TRADING_SESSION_UB3, VWAP_UB1, VWAP_UB2, VWAP_UB3, VWAP_WEEK, VWAP_WEEK_LB1, VWAP_WEEK_LB2, VWAP_WEEK_LB3, VWAP_WEEK_UB1, VWAP_WEEK_UB2, VWAP_WEEK_UB3, VWMA20",
+    "authoringCode": "REPORT_COLUMN_OPERAND_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "ASIA_HIGH",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "BB_LOWER",
+      "BB_UPPER",
+      "CLOSE",
+      "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
+      "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
+      "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
+      "EMA13",
+      "EMA20",
+      "EMA21",
+      "EMA5",
+      "EMA50",
+      "EMA55",
+      "EMA8",
+      "EMA9",
+      "HIGH",
+      "HL2",
+      "HLC3",
+      "HMA20",
+      "ICHI_BASE",
+      "ICHI_CONV",
+      "ICHI_LAG",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "KC_LOWER",
+      "KC_UPPER",
+      "LOW",
+      "OHLC4",
+      "OPEN",
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW",
+      "PSAR",
+      "SMA20",
+      "SMA200",
+      "SMA50",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB",
+      "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW",
+      "VWAP",
+      "VWAP_LB1",
+      "VWAP_LB2",
+      "VWAP_LB3",
+      "VWAP_MONTH",
+      "VWAP_MONTH_LB1",
+      "VWAP_MONTH_LB2",
+      "VWAP_MONTH_LB3",
+      "VWAP_MONTH_UB1",
+      "VWAP_MONTH_UB2",
+      "VWAP_MONTH_UB3",
+      "VWAP_ROLLING_1H",
+      "VWAP_ROLLING_1H_LB1",
+      "VWAP_ROLLING_1H_LB2",
+      "VWAP_ROLLING_1H_LB3",
+      "VWAP_ROLLING_1H_UB1",
+      "VWAP_ROLLING_1H_UB2",
+      "VWAP_ROLLING_1H_UB3",
+      "VWAP_ROLLING_24H",
+      "VWAP_ROLLING_24H_LB1",
+      "VWAP_ROLLING_24H_LB2",
+      "VWAP_ROLLING_24H_LB3",
+      "VWAP_ROLLING_24H_UB1",
+      "VWAP_ROLLING_24H_UB2",
+      "VWAP_ROLLING_24H_UB3",
+      "VWAP_ROLLING_4H",
+      "VWAP_ROLLING_4H_LB1",
+      "VWAP_ROLLING_4H_LB2",
+      "VWAP_ROLLING_4H_LB3",
+      "VWAP_ROLLING_4H_UB1",
+      "VWAP_ROLLING_4H_UB2",
+      "VWAP_ROLLING_4H_UB3",
+      "VWAP_SWING_HIGH",
+      "VWAP_SWING_LOW",
+      "VWAP_TRADING_SESSION",
+      "VWAP_TRADING_SESSION_LB1",
+      "VWAP_TRADING_SESSION_LB2",
+      "VWAP_TRADING_SESSION_LB3",
+      "VWAP_TRADING_SESSION_UB1",
+      "VWAP_TRADING_SESSION_UB2",
+      "VWAP_TRADING_SESSION_UB3",
+      "VWAP_UB1",
+      "VWAP_UB2",
+      "VWAP_UB3",
+      "VWAP_WEEK",
+      "VWAP_WEEK_LB1",
+      "VWAP_WEEK_LB2",
+      "VWAP_WEEK_LB3",
+      "VWAP_WEEK_UB1",
+      "VWAP_WEEK_UB2",
+      "VWAP_WEEK_UB3",
+      "VWMA20"
+     ]
+    },
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:d785f532-78d1-89b0-868c-ca52bd0ba98b",
+     "transformId": "spread"
+    }
+   }
+  },
+  {
+   "probe": "W.operand.other.unit",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "RSI14",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:be038789-ec90-8617-81dd-da2e39827c91': 'RSI14' is not a legal averaged spread operand for base 'CLOSE' — an average folds a per-bar candle value of the base's own unit on the column's bars: BB_LOWER, BB_UPPER, CLOSE, DONCHIAN_BROKEN_HI, DONCHIAN_BROKEN_HI_PRIOR, DONCHIAN_BROKEN_LO, DONCHIAN_BROKEN_LO_PRIOR, DONCHIAN_LOWER, DONCHIAN_LOWER_PRIOR, DONCHIAN_UPPER, DONCHIAN_UPPER_PRIOR, EMA13, EMA20, EMA21, EMA5, EMA50, EMA55, EMA8, EMA9, HIGH, HL2, HLC3, HMA20, ICHI_BASE, ICHI_CONV, ICHI_LAG, ICHI_SPAN_A, ICHI_SPAN_B, KC_LOWER, KC_UPPER, LOW, OHLC4, OPEN, PRIOR_SWING_FRACTAL_HIGH, PRIOR_SWING_FRACTAL_LOW, PSAR, SMA20, SMA200, SMA50, SPOT_CLOSE_BN, SPOT_CLOSE_CB, ST_LINE, SWING_FRACTAL_HIGH, SWING_FRACTAL_LOW, VWAP, VWAP_LB1, VWAP_LB2, VWAP_LB3, VWAP_MONTH, VWAP_MONTH_LB1, VWAP_MONTH_LB2, VWAP_MONTH_LB3, VWAP_MONTH_UB1, VWAP_MONTH_UB2, VWAP_MONTH_UB3, VWAP_ROLLING_1H, VWAP_ROLLING_1H_LB1, VWAP_ROLLING_1H_LB2, VWAP_ROLLING_1H_LB3, VWAP_ROLLING_1H_UB1, VWAP_ROLLING_1H_UB2, VWAP_ROLLING_1H_UB3, VWAP_ROLLING_24H, VWAP_ROLLING_24H_LB1, VWAP_ROLLING_24H_LB2, VWAP_ROLLING_24H_LB3, VWAP_ROLLING_24H_UB1, VWAP_ROLLING_24H_UB2, VWAP_ROLLING_24H_UB3, VWAP_ROLLING_4H, VWAP_ROLLING_4H_LB1, VWAP_ROLLING_4H_LB2, VWAP_ROLLING_4H_LB3, VWAP_ROLLING_4H_UB1, VWAP_ROLLING_4H_UB2, VWAP_ROLLING_4H_UB3, VWAP_SWING_HIGH, VWAP_SWING_LOW, VWAP_TRADING_SESSION, VWAP_TRADING_SESSION_LB1, VWAP_TRADING_SESSION_LB2, VWAP_TRADING_SESSION_LB3, VWAP_TRADING_SESSION_UB1, VWAP_TRADING_SESSION_UB2, VWAP_TRADING_SESSION_UB3, VWAP_UB1, VWAP_UB2, VWAP_UB3, VWAP_WEEK, VWAP_WEEK_LB1, VWAP_WEEK_LB2, VWAP_WEEK_LB3, VWAP_WEEK_UB1, VWAP_WEEK_UB2, VWAP_WEEK_UB3, VWMA20",
+    "authoringCode": "REPORT_COLUMN_OPERAND_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "RSI14",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "BB_LOWER",
+      "BB_UPPER",
+      "CLOSE",
+      "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
+      "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
+      "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
+      "EMA13",
+      "EMA20",
+      "EMA21",
+      "EMA5",
+      "EMA50",
+      "EMA55",
+      "EMA8",
+      "EMA9",
+      "HIGH",
+      "HL2",
+      "HLC3",
+      "HMA20",
+      "ICHI_BASE",
+      "ICHI_CONV",
+      "ICHI_LAG",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "KC_LOWER",
+      "KC_UPPER",
+      "LOW",
+      "OHLC4",
+      "OPEN",
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW",
+      "PSAR",
+      "SMA20",
+      "SMA200",
+      "SMA50",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB",
+      "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW",
+      "VWAP",
+      "VWAP_LB1",
+      "VWAP_LB2",
+      "VWAP_LB3",
+      "VWAP_MONTH",
+      "VWAP_MONTH_LB1",
+      "VWAP_MONTH_LB2",
+      "VWAP_MONTH_LB3",
+      "VWAP_MONTH_UB1",
+      "VWAP_MONTH_UB2",
+      "VWAP_MONTH_UB3",
+      "VWAP_ROLLING_1H",
+      "VWAP_ROLLING_1H_LB1",
+      "VWAP_ROLLING_1H_LB2",
+      "VWAP_ROLLING_1H_LB3",
+      "VWAP_ROLLING_1H_UB1",
+      "VWAP_ROLLING_1H_UB2",
+      "VWAP_ROLLING_1H_UB3",
+      "VWAP_ROLLING_24H",
+      "VWAP_ROLLING_24H_LB1",
+      "VWAP_ROLLING_24H_LB2",
+      "VWAP_ROLLING_24H_LB3",
+      "VWAP_ROLLING_24H_UB1",
+      "VWAP_ROLLING_24H_UB2",
+      "VWAP_ROLLING_24H_UB3",
+      "VWAP_ROLLING_4H",
+      "VWAP_ROLLING_4H_LB1",
+      "VWAP_ROLLING_4H_LB2",
+      "VWAP_ROLLING_4H_LB3",
+      "VWAP_ROLLING_4H_UB1",
+      "VWAP_ROLLING_4H_UB2",
+      "VWAP_ROLLING_4H_UB3",
+      "VWAP_SWING_HIGH",
+      "VWAP_SWING_LOW",
+      "VWAP_TRADING_SESSION",
+      "VWAP_TRADING_SESSION_LB1",
+      "VWAP_TRADING_SESSION_LB2",
+      "VWAP_TRADING_SESSION_LB3",
+      "VWAP_TRADING_SESSION_UB1",
+      "VWAP_TRADING_SESSION_UB2",
+      "VWAP_TRADING_SESSION_UB3",
+      "VWAP_UB1",
+      "VWAP_UB2",
+      "VWAP_UB3",
+      "VWAP_WEEK",
+      "VWAP_WEEK_LB1",
+      "VWAP_WEEK_LB2",
+      "VWAP_WEEK_LB3",
+      "VWAP_WEEK_UB1",
+      "VWAP_WEEK_UB2",
+      "VWAP_WEEK_UB3",
+      "VWMA20"
+     ]
+    },
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:be038789-ec90-8617-81dd-da2e39827c91",
+     "transformId": "spread"
+    }
+   }
+  },
+  {
+   "probe": "W.operand.not.averageable",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "MARK",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:512f7faf-25fb-8c53-8506-000e32ee3a35': 'MARK' is not a legal averaged spread operand for base 'CLOSE' — an average folds a per-bar candle value of the base's own unit on the column's bars: BB_LOWER, BB_UPPER, CLOSE, DONCHIAN_BROKEN_HI, DONCHIAN_BROKEN_HI_PRIOR, DONCHIAN_BROKEN_LO, DONCHIAN_BROKEN_LO_PRIOR, DONCHIAN_LOWER, DONCHIAN_LOWER_PRIOR, DONCHIAN_UPPER, DONCHIAN_UPPER_PRIOR, EMA13, EMA20, EMA21, EMA5, EMA50, EMA55, EMA8, EMA9, HIGH, HL2, HLC3, HMA20, ICHI_BASE, ICHI_CONV, ICHI_LAG, ICHI_SPAN_A, ICHI_SPAN_B, KC_LOWER, KC_UPPER, LOW, OHLC4, OPEN, PRIOR_SWING_FRACTAL_HIGH, PRIOR_SWING_FRACTAL_LOW, PSAR, SMA20, SMA200, SMA50, SPOT_CLOSE_BN, SPOT_CLOSE_CB, ST_LINE, SWING_FRACTAL_HIGH, SWING_FRACTAL_LOW, VWAP, VWAP_LB1, VWAP_LB2, VWAP_LB3, VWAP_MONTH, VWAP_MONTH_LB1, VWAP_MONTH_LB2, VWAP_MONTH_LB3, VWAP_MONTH_UB1, VWAP_MONTH_UB2, VWAP_MONTH_UB3, VWAP_ROLLING_1H, VWAP_ROLLING_1H_LB1, VWAP_ROLLING_1H_LB2, VWAP_ROLLING_1H_LB3, VWAP_ROLLING_1H_UB1, VWAP_ROLLING_1H_UB2, VWAP_ROLLING_1H_UB3, VWAP_ROLLING_24H, VWAP_ROLLING_24H_LB1, VWAP_ROLLING_24H_LB2, VWAP_ROLLING_24H_LB3, VWAP_ROLLING_24H_UB1, VWAP_ROLLING_24H_UB2, VWAP_ROLLING_24H_UB3, VWAP_ROLLING_4H, VWAP_ROLLING_4H_LB1, VWAP_ROLLING_4H_LB2, VWAP_ROLLING_4H_LB3, VWAP_ROLLING_4H_UB1, VWAP_ROLLING_4H_UB2, VWAP_ROLLING_4H_UB3, VWAP_SWING_HIGH, VWAP_SWING_LOW, VWAP_TRADING_SESSION, VWAP_TRADING_SESSION_LB1, VWAP_TRADING_SESSION_LB2, VWAP_TRADING_SESSION_LB3, VWAP_TRADING_SESSION_UB1, VWAP_TRADING_SESSION_UB2, VWAP_TRADING_SESSION_UB3, VWAP_UB1, VWAP_UB2, VWAP_UB3, VWAP_WEEK, VWAP_WEEK_LB1, VWAP_WEEK_LB2, VWAP_WEEK_LB3, VWAP_WEEK_UB1, VWAP_WEEK_UB2, VWAP_WEEK_UB3, VWMA20",
+    "authoringCode": "REPORT_COLUMN_OPERAND_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "inputs",
+     0,
+     "metric"
+    ],
+    "receivedValue": "MARK",
+    "allowedDomainKind": "enum",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "BB_LOWER",
+      "BB_UPPER",
+      "CLOSE",
+      "DONCHIAN_BROKEN_HI",
+      "DONCHIAN_BROKEN_HI_PRIOR",
+      "DONCHIAN_BROKEN_LO",
+      "DONCHIAN_BROKEN_LO_PRIOR",
+      "DONCHIAN_LOWER",
+      "DONCHIAN_LOWER_PRIOR",
+      "DONCHIAN_UPPER",
+      "DONCHIAN_UPPER_PRIOR",
+      "EMA13",
+      "EMA20",
+      "EMA21",
+      "EMA5",
+      "EMA50",
+      "EMA55",
+      "EMA8",
+      "EMA9",
+      "HIGH",
+      "HL2",
+      "HLC3",
+      "HMA20",
+      "ICHI_BASE",
+      "ICHI_CONV",
+      "ICHI_LAG",
+      "ICHI_SPAN_A",
+      "ICHI_SPAN_B",
+      "KC_LOWER",
+      "KC_UPPER",
+      "LOW",
+      "OHLC4",
+      "OPEN",
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW",
+      "PSAR",
+      "SMA20",
+      "SMA200",
+      "SMA50",
+      "SPOT_CLOSE_BN",
+      "SPOT_CLOSE_CB",
+      "ST_LINE",
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW",
+      "VWAP",
+      "VWAP_LB1",
+      "VWAP_LB2",
+      "VWAP_LB3",
+      "VWAP_MONTH",
+      "VWAP_MONTH_LB1",
+      "VWAP_MONTH_LB2",
+      "VWAP_MONTH_LB3",
+      "VWAP_MONTH_UB1",
+      "VWAP_MONTH_UB2",
+      "VWAP_MONTH_UB3",
+      "VWAP_ROLLING_1H",
+      "VWAP_ROLLING_1H_LB1",
+      "VWAP_ROLLING_1H_LB2",
+      "VWAP_ROLLING_1H_LB3",
+      "VWAP_ROLLING_1H_UB1",
+      "VWAP_ROLLING_1H_UB2",
+      "VWAP_ROLLING_1H_UB3",
+      "VWAP_ROLLING_24H",
+      "VWAP_ROLLING_24H_LB1",
+      "VWAP_ROLLING_24H_LB2",
+      "VWAP_ROLLING_24H_LB3",
+      "VWAP_ROLLING_24H_UB1",
+      "VWAP_ROLLING_24H_UB2",
+      "VWAP_ROLLING_24H_UB3",
+      "VWAP_ROLLING_4H",
+      "VWAP_ROLLING_4H_LB1",
+      "VWAP_ROLLING_4H_LB2",
+      "VWAP_ROLLING_4H_LB3",
+      "VWAP_ROLLING_4H_UB1",
+      "VWAP_ROLLING_4H_UB2",
+      "VWAP_ROLLING_4H_UB3",
+      "VWAP_SWING_HIGH",
+      "VWAP_SWING_LOW",
+      "VWAP_TRADING_SESSION",
+      "VWAP_TRADING_SESSION_LB1",
+      "VWAP_TRADING_SESSION_LB2",
+      "VWAP_TRADING_SESSION_LB3",
+      "VWAP_TRADING_SESSION_UB1",
+      "VWAP_TRADING_SESSION_UB2",
+      "VWAP_TRADING_SESSION_UB3",
+      "VWAP_UB1",
+      "VWAP_UB2",
+      "VWAP_UB3",
+      "VWAP_WEEK",
+      "VWAP_WEEK_LB1",
+      "VWAP_WEEK_LB2",
+      "VWAP_WEEK_LB3",
+      "VWAP_WEEK_UB1",
+      "VWAP_WEEK_UB2",
+      "VWAP_WEEK_UB3",
+      "VWMA20"
+     ]
+    },
+    "candidateCount": null,
+    "context": {
+     "sectionKey": "custom:512f7faf-25fb-8c53-8506-000e32ee3a35",
+     "transformId": "spread"
+    }
+   }
+  },
+  {
+   "probe": "W.abs4h",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "abs": "4h"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:31abc0b6-126a-8218-877d-6642994c47ce",
+      "shape": "table",
+      "title": "W.abs4h",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_4h_close_ema20_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "4h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_4h_close_ema20_spread: % gap close_4h vs close_ema20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.8576637347538068
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.abs4h",
+      "header": "close_4h_close_ema20_spread",
+      "meaning": "close_4h_close_ema20_spread: % gap close_4h vs close_ema20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_4h_close_ema20_spread",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 2427,
+       "maxAtLeast": 2427,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.lower",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "lower"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:341b1d07-26e0-834d-8324-83b6899044b4",
+      "shape": "table",
+      "title": "W.lower",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ltf_close_ema20_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "15m",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ltf_close_ema20_spread: % gap close_ltf vs close_ema20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.2346593965749975
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.lower",
+      "header": "close_ltf_close_ema20_spread",
+      "meaning": "close_ltf_close_ema20_spread: % gap close_ltf vs close_ema20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ltf_close_ema20_spread",
+      "conditionHold": {
+       "timeframe": "15m",
+       "maxWindow": 2427,
+       "maxAtLeast": 2427,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.offset1",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "offset": 1,
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'spread' does not accept params.offset",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "offset": 1,
+     "inputs": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "window": 20
+      }
+     ]
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract"
+    },
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:b7097541-bc17-809b-8615-b50d1aa71dab",
+     "metric": "CLOSE",
+     "transformId": "spread"
+    }
+   }
+  },
+  {
+   "probe": "W.bars.all",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "bars": "all",
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:ec32dd24-fc8f-87d3-87d0-6e38d5f579af",
+      "shape": "table",
+      "title": "W.bars.all",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_dev_close_ema20_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Developing",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_dev_close_ema20_spread: % gap close_dev vs close_ema20."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -0.4360557027677824
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "W.bars.all",
+      "header": "close_dev_close_ema20_spread",
+      "meaning": "close_dev_close_ema20_spread: % gap close_dev vs close_ema20.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_dev_close_ema20_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 2427,
+       "maxAtLeast": 2427,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "W.chain.trajectory",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ],
+       "chainedTransformId": "trajectory",
+       "window": 4
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:6b1c99e4-143a-815f-804b-6f100ebb50b2': (CLOSE × spread × trajectory) is not a composable chain — the engine has no resolution home for it — operand 'close_ema20' is an averaged spread operand: the comparison is read frame by frame, and no rank or series outer chains over it",
+    "authoringCode": "REPORT_COLUMN_CHAIN_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedTransformId"
+    ],
+    "receivedValue": {
+     "transformId": "spread",
+     "chainedTransformId": "trajectory"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output"
+    },
+    "candidateCount": 0,
+    "context": {
+     "sectionKey": "custom:6b1c99e4-143a-815f-804b-6f100ebb50b2"
+    }
+   }
+  },
+  {
+   "probe": "W.chain.aggregate",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ],
+       "chainedTransformId": "aggregate",
+       "window": 10
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:e9891391-5301-8fba-8ced-c6569ff6d727': (CLOSE × spread × aggregate) is not a composable chain — the engine has no resolution home for it — operand 'close_ema20' is an averaged spread operand: the comparison is read frame by frame, and no rank or series outer chains over it",
+    "authoringCode": "REPORT_COLUMN_CHAIN_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedTransformId"
+    ],
+    "receivedValue": {
+     "transformId": "spread",
+     "chainedTransformId": "aggregate"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output"
+    },
+    "candidateCount": 0,
+    "context": {
+     "sectionKey": "custom:e9891391-5301-8fba-8ced-c6569ff6d727"
+    }
+   }
+  },
+  {
+   "probe": "W.chain.rank",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        }
+       ],
+       "chainedTransformId": "rank",
+       "ordering": "hi"
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[report-column] draft preview section 'custom:940f2235-5f19-804d-8fbb-86ab5c7f02fc': (CLOSE × spread × rank) is not a composable chain — the engine has no resolution home for it — operand 'close_ema20' is an averaged spread operand: the comparison is read frame by frame, and no rank or series outer chains over it",
+    "authoringCode": "REPORT_COLUMN_CHAIN_UNSUPPORTED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedTransformId"
+    ],
+    "receivedValue": {
+     "transformId": "spread",
+     "chainedTransformId": "rank"
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "chainedTransformId must be a transform the engine resolves over this metric's transformId output"
+    },
+    "candidateCount": 0,
+    "context": {
+     "sectionKey": "custom:940f2235-5f19-804d-8fbb-86ab5c7f02fc"
+    }
+   }
+  },
+  {
+   "probe": "W.two.inputs",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 20
+        },
+        {
+         "metric": "EMA50"
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'spread' requires exactly 1 operand — its operand order declares inputs[0] (got 2)",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "window": 20
+      },
+      {
+       "metric": "EMA50"
+      }
+     ]
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract"
+    },
+    "candidateCount": 2,
+    "context": {
+     "sectionKey": "custom:79e95d3d-bc73-84fb-8ac4-3d86eedb35f3",
+     "metric": "CLOSE",
+     "transformId": "spread"
+    }
+   }
+  }
+ ],
+ "versionAtEnd": "169.4.0",
+ "buildShaAtEnd": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "contractMoved": false,
+ "complete": true,
+ "aborted": null,
+ "how": "preview_strategy_report via the mcporter CLI, read-only, detail detailed, BTC at a 1h anchor; one custom section per probe, its benchmarkTicker / marketScope as recorded; GET /mcp/version before and after",
+ "counts": {
+  "probes": 54,
+  "accepted": 23,
+  "refused": 31,
+  "transient": 0,
+  "headersMinted": 27
+ },
+ "headersWritten": true
+}
