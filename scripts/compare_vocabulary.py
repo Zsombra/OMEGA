@@ -113,18 +113,34 @@ def _axes(definition: dict) -> dict[str, dict]:
     return axes
 
 
+READ_TOOL = "get_strategy"
+
+
+def read_roster(tools: dict) -> list | None:
+    """Contract 168 (2026-11-11): every INPUT schema names a metric by pattern (`$defs/metricKey`:
+    ^[A-Z][A-Z0-9_]*$, "A metric key list_strategy_vocabulary serves") - the roster left the inputs. It is still
+    enumerated in a READ tool's output schema: `get_strategy` outputSchema `$defs/metricKey` (581 keys at 168.3.0).
+    -> that enum when the surface carries the tool's `outputSchema`, else None. The battlegrid-manager's
+    `surface_tools` holds inputs only; its `manager_schemas` row holds the output schema, and a caller merges it in."""
+    node = (((tools.get(READ_TOOL) or {}).get("outputSchema") or {}).get("$defs") or {}).get("metricKey")
+    return node["enum"] if isinstance(node, dict) and isinstance(node.get("enum"), list) else None
+
+
 def live_enums(surface: dict) -> dict[str, set[str]]:
     tools = {t["name"]: t for t in surface["tools"]}
     _input_schema(tools, STAGE_TOOL)                    # refuses a surface without the tool
     axes = _axes(tools[STAGE_TOOL])
     found = {
-        "metrics": first_enum(_input_schema(tools, "get_metric_construction_hints"), "metric"),
+        # the hint tool's input enum to contract 161; since 168 the read schema's roster (read_roster)
+        "metrics": first_enum(_input_schema(tools, "get_metric_construction_hints"), "metric") or read_roster(tools),
         "sectionKeys": first_enum(axes.get("REPORT", {}), "sectionKey"),
     }
     missing = [k for k, v in found.items() if not v]
     if missing:
         # An absent enum is unreadable, not empty: comparing it would report every stored value as removed.
-        raise ValueError(f"no enum found on the surface for: {', '.join(missing)}")
+        hint = (f" (since contract 168 the metric roster is {READ_TOOL}'s outputSchema $defs/metricKey: the surface "
+                f"must carry that tool's output schema)" if "metrics" in missing else "")
+        raise ValueError(f"no enum found on the surface for: {', '.join(missing)}{hint}")
     return {k: set(v) for k, v in found.items()}
 
 

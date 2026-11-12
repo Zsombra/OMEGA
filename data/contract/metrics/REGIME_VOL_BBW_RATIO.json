@@ -42,5 +42,11 @@
   "spreadOperandsOffAnchor": [
     "RVOL",
     "REGIME_VOL_ATR_RATIO"
+  ],
+  "spreadAverageOperands": [
+    "RVOL"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "RVOL"
   ]
 }

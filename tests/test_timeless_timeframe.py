@@ -91,7 +91,12 @@ def test_every_timeless_metric_is_covered(contract):
     # REGIME_WARNING_* are timeless (the 13 MKT_* and PAR_DEV keep a candle grid).
     # 310 since the refresh at 149.1.0, 2026-11-07 (_moves_149.json): the 198 pivots of 148.1.0 are timeless; the rule
     # was probed live on PIVOT_WEEK_P that day ({abs: 4h} and {rel: lower} refused, data/audit/authoring_probe_149_2026-11-07.json)
-    assert len(timeless) == 310
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 338 = 369 served timeless - 31 on the frozen UNMEASURED list (310 =
+    # 341 - 31 at 161.0.0). + 30: the timeless among the 47 added (_moves_168.json) - the 24 PRIOR_<session>_DEMAND_* /
+    # _SUPPLY_* levels and the six ZONE_SUPPORT_* / ZONE_RESIST_*; - 2: HIGH_DEV and LOW_DEV are served timeframeMode
+    # `candle` at 168 (timeless at 161; they gained the series transforms). The rule was NOT probed live on the 30: it
+    # follows from the served timeframeMode and is checked offline by the loop below, as for every addition but PIVOT_WEEK_P.
+    assert len(timeless) == 338
     for name in timeless:
         codes = [f.code for f in _findings(name, {"rel": "regime"}, contract)]
         assert "REPORT_COLUMN_CONSTRUCTION_FAILED" in codes, name

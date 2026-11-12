@@ -437,6 +437,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -452,6 +453,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -582,6 +608,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -597,6 +624,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -727,6 +779,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -742,6 +795,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -872,6 +950,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -887,6 +966,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA",
+            "SPOT_CVD"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1550,6 +1654,26 @@
     "SPOT_CVD"
   ],
   "spreadOperandsOffAnchor": [
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "ATR",
+    "CVD",
+    "CUM_VOLUME_DELTA",
+    "SPOT_CVD"
+  ],
+  "spreadAverageOperands": [
+    "SQZ_MOM",
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "ATR",
+    "CVD",
+    "CUM_VOLUME_DELTA",
+    "SPOT_CVD"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "SQZ_MOM",
     "MACD_HIST",
     "MACD_LINE",
     "MACD_SIGNAL",

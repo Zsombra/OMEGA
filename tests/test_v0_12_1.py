@@ -63,7 +63,14 @@ def test_the_emitted_body_names_no_retired_header_and_walks_the_161_schema_clean
     text = json.dumps(body)
     assert not [h for h in RETIRED if h in text]
     root = json.loads((ROOT / SCHEMA_161).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
-    assert [(f.cls, f.path) for f in P.diff_schema(body, root, root)
+    # 2026-11-11, contract 168.3.0: the emitted body carries `tradeLevelMenu`, which the 161 capture's closed
+    # TRADE_LEVEL_POLICY reads as UNDECLARED - exactly that one key. Without it the body walks 161 clean, as before.
+    as_emitted = [(f.cls, f.path) for f in P.diff_schema(body, root, root)
+                  if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"]
+    assert as_emitted == [("UNDECLARED", "axes.TRADE_LEVEL_POLICY.tradeLevelMenu")]
+    before_168 = json.loads(text)
+    del before_168["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]
+    assert [(f.cls, f.path) for f in P.diff_schema(before_168, root, root)
             if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
 
 

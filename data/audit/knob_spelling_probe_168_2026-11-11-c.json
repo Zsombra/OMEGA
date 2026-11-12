@@ -1,0 +1,285 @@
+{
+ "_what": "Knob header spellings omega.fanout predicts but the 2026-11-07 authoring probe never rendered, rendered at 149.1.0.",
+ "contractVersion": "168.3.0",
+ "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+ "versionAtEnd": "168.3.0",
+ "buildShaAtEnd": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+ "contractMoved": false,
+ "startedAt": "2026-11-11T23:30:10Z",
+ "capturedAt": "2026-11-11T23:30:28Z",
+ "columnsFrom": "C:/Users/rafae/omega-v012-hints/v168/knobs/knobs_168_c.json",
+ "complete": true,
+ "aborted": null,
+ "transient": [],
+ "entries": [
+  {
+   "columns": [
+    {
+     "metric": "PRIOR_LONDON_SUPPLY_EDGE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_LONDON_SUPPLY_EDGE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "PRIOR_LONDON_SUPPLY_WAVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_LONDON_SUPPLY_WAVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_DEMAND_AVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_DEMAND_AVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_DEMAND_EDGE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_DEMAND_EDGE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_DEMAND_WAVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_DEMAND_WAVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_SUPPLY_AVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_SUPPLY_AVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_SUPPLY_EDGE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_SUPPLY_EDGE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_SUPPLY_WAVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_NEW_YORK_SUPPLY_WAVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "count",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "usedUpOnClose": true
+    },
+    {
+     "metric": "SWING_PENDING_HIGH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 51
+    },
+    {
+     "metric": "SWING_PENDING_LOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 51
+    },
+    {
+     "metric": "ZONE_RESIST_HIGH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "usedUpOnClose": true
+    },
+    {
+     "metric": "ZONE_RESIST_LOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "usedUpOnClose": true
+    },
+    {
+     "metric": "ZONE_RESIST_MID",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "usedUpOnClose": true
+    },
+    {
+     "metric": "ZONE_SUPPORT_HIGH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "usedUpOnClose": true
+    },
+    {
+     "metric": "ZONE_SUPPORT_LOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "usedUpOnClose": true
+    },
+    {
+     "metric": "ZONE_SUPPORT_MID",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "usedUpOnClose": true
+    },
+    {
+     "metric": "INTERNAL_PENDING_HIGH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "confluenceFilter": true,
+     "swingLength": 51
+    },
+    {
+     "metric": "EQH_LEVEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4,
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "PRIOR_ASIA_DEMAND_AVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51,
+     "supplyDemandThreshold": 10.5
+    }
+   ],
+   "predicted": null,
+   "rendered": [
+    "pLondonSupEdge_vt10.5",
+    "pLondonSupEdge_res51",
+    "pLondonSupWavg_vt10.5",
+    "pLondonSupWavg_res51",
+    "pNyDemAvg_vt10.5",
+    "pNyDemAvg_res51",
+    "pNyDemEdge_vt10.5",
+    "pNyDemEdge_res51",
+    "pNyDemWavg_vt10.5",
+    "pNyDemWavg_res51",
+    "pNySupAvg_vt10.5",
+    "pNySupAvg_res51",
+    "pNySupEdge_vt10.5",
+    "pNySupEdge_res51",
+    "pNySupWavg_vt10.5",
+    "pNySupWavg_res51",
+    "zones_close_count",
+    "structHi_s51",
+    "structLo_s51",
+    "zoneResHi_close",
+    "zoneResLo_close",
+    "zoneResMid_close",
+    "zoneSupHi_close",
+    "zoneSupLo_close",
+    "zoneSupMid_close",
+    "iStructHi_s51_cf",
+    "eqhLvl_e4_atr0.2",
+    "pAsiaDemAvg_vt10.5res51"
+   ],
+   "refusal": null,
+   "agree": null,
+   "unpredicted": "PRIOR_LONDON_SUPPLY_EDGE: PRIOR_LONDON_SUPPLY_EDGE serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_LONDON_SUPPLY_EDGE: PRIOR_LONDON_SUPPLY_EDGE serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_LONDON_SUPPLY_WAVG: PRIOR_LONDON_SUPPLY_WAVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_LONDON_SUPPLY_WAVG: PRIOR_LONDON_SUPPLY_WAVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_DEMAND_AVG: PRIOR_NEW_YORK_DEMAND_AVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_DEMAND_AVG: PRIOR_NEW_YORK_DEMAND_AVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_DEMAND_EDGE: PRIOR_NEW_YORK_DEMAND_EDGE serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_DEMAND_EDGE: PRIOR_NEW_YORK_DEMAND_EDGE serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_DEMAND_WAVG: PRIOR_NEW_YORK_DEMAND_WAVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_DEMAND_WAVG: PRIOR_NEW_YORK_DEMAND_WAVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_SUPPLY_AVG: PRIOR_NEW_YORK_SUPPLY_AVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_SUPPLY_AVG: PRIOR_NEW_YORK_SUPPLY_AVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_SUPPLY_EDGE: PRIOR_NEW_YORK_SUPPLY_EDGE serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_SUPPLY_EDGE: PRIOR_NEW_YORK_SUPPLY_EDGE serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_SUPPLY_WAVG: PRIOR_NEW_YORK_SUPPLY_WAVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_NEW_YORK_SUPPLY_WAVG: PRIOR_NEW_YORK_SUPPLY_WAVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; STRUCT_ZONES: STRUCT_ZONES serves knobs whose header spelling was never rendered: ['usedUpOnClose']; SWING_PENDING_HIGH: SWING_PENDING_HIGH at ['swingLength'] off its default was never rendered (KNOB_SPELLING_RENDERED); SWING_PENDING_LOW: SWING_PENDING_LOW at ['swingLength'] off its default was never rendered (KNOB_SPELLING_RENDERED); ZONE_RESIST_HIGH: ZONE_RESIST_HIGH serves knobs whose header spelling was never rendered: ['usedUpOnClose']; ZONE_RESIST_LOW: ZONE_RESIST_LOW serves knobs whose header spelling was never rendered: ['usedUpOnClose']; ZONE_RESIST_MID: ZONE_RESIST_MID serves knobs whose header spelling was never rendered: ['usedUpOnClose']; ZONE_SUPPORT_HIGH: ZONE_SUPPORT_HIGH serves knobs whose header spelling was never rendered: ['usedUpOnClose']; ZONE_SUPPORT_LOW: ZONE_SUPPORT_LOW serves knobs whose header spelling was never rendered: ['usedUpOnClose']; ZONE_SUPPORT_MID: ZONE_SUPPORT_MID serves knobs whose header spelling was never rendered: ['usedUpOnClose']; INTERNAL_PENDING_HIGH: INTERNAL_PENDING_HIGH at ['swingLength', 'confluenceFilter'] off its default was never rendered (KNOB_SPELLING_RENDERED); EQH_LEVEL: EQH_LEVEL at ['equalBars', 'equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); PRIOR_ASIA_DEMAND_AVG: PRIOR_ASIA_DEMAND_AVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']"
+  }
+ ],
+ "agree": null,
+ "refused": 0,
+ "unpredicted": 1,
+ "headersWritten": true
+}

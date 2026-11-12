@@ -1,0 +1,3530 @@
+{
+ "category": "momentum",
+ "metrics": [
+  {
+   "metric": "RSI14",
+   "label": "RSI (14)",
+   "code": "RSI14",
+   "gloss": "14-period relative strength index (0–100)",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "RSI7",
+   "label": "RSI (7)",
+   "code": "RSI7",
+   "gloss": "7-period relative strength index (0–100)",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "RSI2",
+   "label": "RSI (2)",
+   "code": "RSI2",
+   "gloss": "2-period relative strength index (0–100) — the Connors mean-reversion horizon",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "MACD_HIST",
+   "label": "MACD histogram",
+   "code": "MACDhist",
+   "gloss": "MACD histogram — the 12/26 line minus its 9-period signal",
+   "family": "momentum",
+   "study": "macd",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ]
+  },
+  {
+   "metric": "MACD_LINE",
+   "label": "MACD line",
+   "code": "MACDline",
+   "gloss": "MACD line — the 12-period EMA of close minus the 26-period EMA, in price units",
+   "family": "momentum",
+   "study": "macd",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ]
+  },
+  {
+   "metric": "MACD_SIGNAL",
+   "label": "MACD signal",
+   "code": "MACDsig",
+   "gloss": "MACD signal — the 9-period EMA of the 12/26 MACD line",
+   "family": "momentum",
+   "study": "macd",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ]
+  },
+  {
+   "metric": "STOCH_K",
+   "label": "Stochastic %K",
+   "code": "K",
+   "gloss": "stochastic %K (14,1,3)",
+   "family": "momentum",
+   "study": "stochastic",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 0,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "STOCH_D",
+   "label": "Stochastic %D",
+   "code": "D",
+   "gloss": "stochastic %D — the %K signal line",
+   "family": "momentum",
+   "study": "stochastic",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 0,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "MFI14",
+   "label": "MFI (14)",
+   "code": "MFI14",
+   "gloss": "14-period money flow index (volume-weighted RSI, 0–100)",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "PPO_HIST",
+   "label": "PPO histogram",
+   "code": "PPOhist",
+   "gloss": "PPO histogram — the 12/26 PPO line minus its 9-period signal, in percent",
+   "family": "momentum",
+   "study": "macd",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "PPO_LINE",
+   "label": "PPO line",
+   "code": "PPOline",
+   "gloss": "PPO line — the 12-period EMA of close minus the 26-period EMA, as a % of the 26-period EMA",
+   "family": "momentum",
+   "study": "macd",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "PPO_SIGNAL",
+   "label": "PPO signal",
+   "code": "PPOsig",
+   "gloss": "PPO signal — the 9-period EMA of the 12/26 PPO line, in percent",
+   "family": "momentum",
+   "study": "macd",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "ROC9",
+   "label": "ROC (9)",
+   "code": "ROC9",
+   "gloss": "rate of change vs 9 bars ago (%)",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "ROC12",
+   "label": "ROC (12)",
+   "code": "ROC12",
+   "gloss": "rate of change vs 12 bars ago (%)",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "ROC15",
+   "label": "ROC (15)",
+   "code": "ROC15",
+   "gloss": "rate of change vs 15 bars ago (%)",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "SQZ_MOM",
+   "label": "Squeeze momentum (20)",
+   "code": "sqzMom20",
+   "gloss": "LazyBear's squeeze momentum — the 20-bar linear regression end point of the close's distance from the average of the 20-bar Donchian midline and simple mean, in price units: the direction a TTM squeeze releases",
+   "family": "momentum",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "signedPrice",
+    "precision": 4
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "crossDetect",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ]
+  },
+  {
+   "metric": "CCI20",
+   "label": "CCI (20)",
+   "code": "CCI20",
+   "gloss": "20-period commodity channel index (±100 reference)",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CLOSE_CHANGE",
+   "label": "Close change",
+   "code": "closeChg",
+   "gloss": "the bar's own change, ((close − open) / open) × 100",
+   "family": "momentum",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "CHG_5M",
+   "label": "Change (5m)",
+   "code": "chg5m",
+   "gloss": "the frame price against the open of the 5m bar in force at the frame's instant, ((frame price − 5m bar open) / 5m bar open) × 100 — read live, so it moves until that bar closes",
+   "family": "momentum",
+   "study": "multiTimeframeChange",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "CHG_15M",
+   "label": "Change (15m)",
+   "code": "chg15m",
+   "gloss": "the frame price against the open of the 15m bar in force at the frame's instant, ((frame price − 15m bar open) / 15m bar open) × 100 — read live, so it moves until that bar closes",
+   "family": "momentum",
+   "study": "multiTimeframeChange",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "CHG_1H",
+   "label": "Change (1h)",
+   "code": "chg1h",
+   "gloss": "the frame price against the open of the 1h bar in force at the frame's instant, ((frame price − 1h bar open) / 1h bar open) × 100 — read live, so it moves until that bar closes",
+   "family": "momentum",
+   "study": "multiTimeframeChange",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "CHG_4H",
+   "label": "Change (4h)",
+   "code": "chg4h",
+   "gloss": "the frame price against the open of the 4h bar in force at the frame's instant, ((frame price − 4h bar open) / 4h bar open) × 100 — read live, so it moves until that bar closes",
+   "family": "momentum",
+   "study": "multiTimeframeChange",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "CHG_24H",
+   "label": "Change (1d)",
+   "code": "chg24h",
+   "gloss": "the frame price against the open of the 1d bar in force at the frame's instant, ((frame price − 1d bar open) / 1d bar open) × 100 — read live, so it moves until that bar closes; the 1d bar opens at the UTC day's 00:00, so this is the change since that open — not a rolling 24h change",
+   "family": "momentum",
+   "study": "multiTimeframeChange",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "percent",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "spread"
+   ]
+  },
+  {
+   "metric": "WT1",
+   "label": "WaveTrend",
+   "code": "wt1",
+   "gloss": "the WaveTrend oscillator (10, 21) — the typical price’s distance from its own channel, in mean-deviation units",
+   "family": "momentum",
+   "study": "waveTrend",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "WT2",
+   "label": "WaveTrend signal",
+   "code": "wt2",
+   "gloss": "the WaveTrend signal line, a 4-period mean of the oscillator",
+   "family": "momentum",
+   "study": "waveTrend",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "QQE_RSI_MA",
+   "label": "QQE smoothed RSI",
+   "code": "qqeRsi",
+   "gloss": "the QQE smoothed RSI — a 5-period EMA of RSI(14), on the 0–100 RSI scale",
+   "family": "momentum",
+   "study": "qqe",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "QQE_STOP",
+   "label": "QQE trailing stop",
+   "code": "qqeStop",
+   "gloss": "the QQE trailing stop, on the same 0–100 scale as the smoothed RSI it brackets",
+   "family": "momentum",
+   "study": "qqe",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 2,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "WILLR14",
+   "label": "Williams %R (14)",
+   "code": "willR14",
+   "gloss": "14-period Williams %R — where the close sits in the 14-bar window ending at this bar, 0 at the high and −100 at the low",
+   "family": "momentum",
+   "study": null,
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 1,
+    "range": {
+     "min": -100,
+     "max": 0
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "STOCH_RSI_K",
+   "label": "Stoch RSI %K",
+   "code": "stochRsiK",
+   "gloss": "Stoch RSI %K (14,14,3,3) — where RSI(14) sits in its own 14-bar range, 0–100, smoothed over 3 bars",
+   "family": "momentum",
+   "study": "stochRsi",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 0,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  },
+  {
+   "metric": "STOCH_RSI_D",
+   "label": "Stoch RSI %D",
+   "code": "stochRsiD",
+   "gloss": "Stoch RSI %D — the 3-bar mean of Stoch RSI %K, its signal line",
+   "family": "momentum",
+   "study": "stochRsi",
+   "provenance": "tradingView",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "oscillator",
+    "precision": 0,
+    "range": {
+     "min": 0,
+     "max": 100
+    }
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "classifyZone",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "maxShare",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "rank"
+   ]
+  }
+ ],
+ "studies": [
+  {
+   "study": "macd",
+   "label": "MACD (12, 26, 9)",
+   "gloss": "the 12- and 26-period EMAs of close are inputs, not metrics: the MACD line is their difference, the signal is a 9-period EMA of the line, and the histogram is line minus signal. PPO is the same construction in percent of the 26-period EMA (12, 26, 9)",
+   "family": "momentum",
+   "members": [
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "stochastic",
+   "label": "Stochastic (14, 1, 3)",
+   "gloss": "where the close sits in the 14-bar high–low range: %K is that position smoothed over 1 bars, and %D is a 3-bar mean of %K",
+   "family": "momentum",
+   "members": [
+    "STOCH_K",
+    "STOCH_D"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "stochRsi",
+   "label": "Stoch RSI (3, 3, 14, 14)",
+   "gloss": "where RSI(14) sits in its own 14-bar range, 0–100: %K is that position smoothed over 3 bars, and %D is a 3-bar mean of %K",
+   "family": "momentum",
+   "members": [
+    "STOCH_RSI_K",
+    "STOCH_RSI_D"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "waveTrend",
+   "label": "WaveTrend (10, 21)",
+   "gloss": "the typical price's distance from its 10-period EMA channel in mean-deviation units, averaged over 21 bars; the signal is a 4-bar mean of that oscillator",
+   "family": "momentum",
+   "members": [
+    "WT1",
+    "WT2"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "qqe",
+   "label": "QQE (14, 5, 4.236)",
+   "gloss": "RSI (14) smoothed by a 5-period EMA, bracketed by a trailing stop set 4.236 × the smoothed RSI's average range away",
+   "family": "momentum",
+   "members": [
+    "QQE_RSI_MA",
+    "QQE_STOP"
+   ],
+   "levelSets": []
+  },
+  {
+   "study": "multiTimeframeChange",
+   "label": "Multi-timeframe change",
+   "gloss": "the frame price against the open of each fixed horizon's bar in force at the frame's instant, read live",
+   "family": "momentum",
+   "members": [
+    "CHG_5M",
+    "CHG_15M",
+    "CHG_1H",
+    "CHG_4H",
+    "CHG_24H"
+   ],
+   "levelSets": []
+  }
+ ],
+ "indicators": [
+  {
+   "key": "rsi",
+   "label": "RSI",
+   "family": "momentum",
+   "gloss": "Wilder's relative strength index of the chosen price over the chosen number of bars, 0 to 100 (TradingView ta.rsi)",
+   "aliases": [
+    "rsi",
+    "ta.rsi",
+    "relative strength index"
+   ],
+   "inputs": [
+    {
+     "key": "source",
+     "label": "Source",
+     "options": [
+      {
+       "value": "CLOSE",
+       "label": "Close price"
+      },
+      {
+       "value": "OPEN",
+       "label": "Open price"
+      },
+      {
+       "value": "HIGH",
+       "label": "High price"
+      },
+      {
+       "value": "LOW",
+       "label": "Low price"
+      },
+      {
+       "value": "HL2",
+       "label": "Median price (HL2)"
+      },
+      {
+       "value": "HLC3",
+       "label": "Typical price (HLC3)"
+      },
+      {
+       "value": "OHLC4",
+       "label": "Average price (OHLC4)"
+      }
+     ]
+    }
+   ],
+   "length": {
+    "label": "Length"
+   },
+   "points": [
+    {
+     "metric": "RSI14",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 14
+    },
+    {
+     "metric": "RSI7",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 7
+    },
+    {
+     "metric": "RSI2",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 2
+    }
+   ],
+   "routes": [
+    {
+     "at": {
+      "source": "CLOSE"
+     },
+     "base": "CLOSE",
+     "transformId": "rsi",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 14,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "OPEN"
+     },
+     "base": "OPEN",
+     "transformId": "rsi",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 14,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "HIGH"
+     },
+     "base": "HIGH",
+     "transformId": "rsi",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 14,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "LOW"
+     },
+     "base": "LOW",
+     "transformId": "rsi",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 14,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "HL2"
+     },
+     "base": "HL2",
+     "transformId": "rsi",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 14,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "HLC3"
+     },
+     "base": "HLC3",
+     "transformId": "rsi",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 14,
+     "windowMaximum": 308
+    },
+    {
+     "at": {
+      "source": "OHLC4"
+     },
+     "base": "OHLC4",
+     "transformId": "rsi",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 14,
+     "windowMaximum": 308
+    }
+   ]
+  },
+  {
+   "key": "macd",
+   "label": "MACD (12, 26, 9)",
+   "family": "momentum",
+   "gloss": "the 12- and 26-period EMAs of close are inputs, not metrics: the MACD line is their difference, the signal is a 9-period EMA of the line, and the histogram is line minus signal. PPO is the same construction in percent of the 26-period EMA (12, 26, 9)",
+   "aliases": [
+    "macd",
+    "ta.macd",
+    "ppo",
+    "percentage price oscillator"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "MACD_HIST",
+       "label": "MACD histogram"
+      },
+      {
+       "value": "MACD_LINE",
+       "label": "MACD line"
+      },
+      {
+       "value": "MACD_SIGNAL",
+       "label": "MACD signal"
+      },
+      {
+       "value": "PPO_HIST",
+       "label": "PPO histogram"
+      },
+      {
+       "value": "PPO_LINE",
+       "label": "PPO line"
+      },
+      {
+       "value": "PPO_SIGNAL",
+       "label": "PPO signal"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "MACD_HIST",
+     "at": {
+      "output": "MACD_HIST"
+     },
+     "length": null
+    },
+    {
+     "metric": "MACD_LINE",
+     "at": {
+      "output": "MACD_LINE"
+     },
+     "length": null
+    },
+    {
+     "metric": "MACD_SIGNAL",
+     "at": {
+      "output": "MACD_SIGNAL"
+     },
+     "length": null
+    },
+    {
+     "metric": "PPO_HIST",
+     "at": {
+      "output": "PPO_HIST"
+     },
+     "length": null
+    },
+    {
+     "metric": "PPO_LINE",
+     "at": {
+      "output": "PPO_LINE"
+     },
+     "length": null
+    },
+    {
+     "metric": "PPO_SIGNAL",
+     "at": {
+      "output": "PPO_SIGNAL"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "stochastic",
+   "label": "Stochastic (14, 1, 3)",
+   "family": "momentum",
+   "gloss": "where the close sits in the 14-bar high–low range: %K is that position smoothed over 1 bars, and %D is a 3-bar mean of %K",
+   "aliases": [
+    "stoch",
+    "stochastic",
+    "ta.stoch"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "STOCH_K",
+       "label": "Stochastic %K"
+      },
+      {
+       "value": "STOCH_D",
+       "label": "Stochastic %D"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "STOCH_K",
+     "at": {
+      "output": "STOCH_K"
+     },
+     "length": null
+    },
+    {
+     "metric": "STOCH_D",
+     "at": {
+      "output": "STOCH_D"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "MFI14",
+   "label": "MFI (14)",
+   "family": "momentum",
+   "gloss": "14-period money flow index (volume-weighted RSI, 0–100)",
+   "aliases": [
+    "mfi",
+    "ta.mfi",
+    "money flow index"
+   ],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "MFI14",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "roc",
+   "label": "ROC",
+   "family": "momentum",
+   "gloss": "the percentage change of the chosen price over the chosen number of bars (TradingView ta.roc)",
+   "aliases": [
+    "roc",
+    "ta.roc",
+    "rate of change"
+   ],
+   "inputs": [
+    {
+     "key": "source",
+     "label": "Source",
+     "options": [
+      {
+       "value": "CLOSE",
+       "label": "Close price"
+      },
+      {
+       "value": "OPEN",
+       "label": "Open price"
+      },
+      {
+       "value": "HIGH",
+       "label": "High price"
+      },
+      {
+       "value": "LOW",
+       "label": "Low price"
+      },
+      {
+       "value": "HL2",
+       "label": "Median price (HL2)"
+      },
+      {
+       "value": "HLC3",
+       "label": "Typical price (HLC3)"
+      },
+      {
+       "value": "OHLC4",
+       "label": "Average price (OHLC4)"
+      }
+     ]
+    }
+   ],
+   "length": {
+    "label": "Length"
+   },
+   "points": [
+    {
+     "metric": "ROC9",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 9
+    },
+    {
+     "metric": "ROC12",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 12
+    },
+    {
+     "metric": "ROC15",
+     "at": {
+      "source": "CLOSE"
+     },
+     "length": 15
+    }
+   ],
+   "routes": [
+    {
+     "at": {
+      "source": "CLOSE"
+     },
+     "base": "CLOSE",
+     "transformId": "roc",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 9,
+     "windowMaximum": 2435
+    },
+    {
+     "at": {
+      "source": "OPEN"
+     },
+     "base": "OPEN",
+     "transformId": "roc",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 9,
+     "windowMaximum": 2435
+    },
+    {
+     "at": {
+      "source": "HIGH"
+     },
+     "base": "HIGH",
+     "transformId": "roc",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 9,
+     "windowMaximum": 2435
+    },
+    {
+     "at": {
+      "source": "LOW"
+     },
+     "base": "LOW",
+     "transformId": "roc",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 9,
+     "windowMaximum": 2435
+    },
+    {
+     "at": {
+      "source": "HL2"
+     },
+     "base": "HL2",
+     "transformId": "roc",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 9,
+     "windowMaximum": 2435
+    },
+    {
+     "at": {
+      "source": "HLC3"
+     },
+     "base": "HLC3",
+     "transformId": "roc",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 9,
+     "windowMaximum": 2435
+    },
+    {
+     "at": {
+      "source": "OHLC4"
+     },
+     "base": "OHLC4",
+     "transformId": "roc",
+     "offset": null,
+     "windowMinimum": 1,
+     "windowDefault": 9,
+     "windowMaximum": 2435
+    }
+   ]
+  },
+  {
+   "key": "SQZ_MOM",
+   "label": "Squeeze momentum (20)",
+   "family": "momentum",
+   "gloss": "LazyBear's squeeze momentum — the 20-bar linear regression end point of the close's distance from the average of the 20-bar Donchian midline and simple mean, in price units: the direction a TTM squeeze releases",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "SQZ_MOM",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "cci",
+   "label": "CCI",
+   "family": "momentum",
+   "gloss": "the commodity channel index of the chosen price over the chosen number of bars: its distance from its mean in mean deviations, ±100 the usual bands (TradingView ta.cci)",
+   "aliases": [
+    "cci",
+    "ta.cci",
+    "commodity channel index"
+   ],
+   "inputs": [
+    {
+     "key": "source",
+     "label": "Source",
+     "options": [
+      {
+       "value": "CLOSE",
+       "label": "Close price"
+      },
+      {
+       "value": "OPEN",
+       "label": "Open price"
+      },
+      {
+       "value": "HIGH",
+       "label": "High price"
+      },
+      {
+       "value": "LOW",
+       "label": "Low price"
+      },
+      {
+       "value": "HL2",
+       "label": "Median price (HL2)"
+      },
+      {
+       "value": "HLC3",
+       "label": "Typical price (HLC3)"
+      },
+      {
+       "value": "OHLC4",
+       "label": "Average price (OHLC4)"
+      }
+     ]
+    }
+   ],
+   "length": {
+    "label": "Length"
+   },
+   "points": [
+    {
+     "metric": "CCI20",
+     "at": {
+      "source": "HLC3"
+     },
+     "length": 20
+    }
+   ],
+   "routes": [
+    {
+     "at": {
+      "source": "CLOSE"
+     },
+     "base": "CLOSE",
+     "transformId": "cci",
+     "offset": null,
+     "windowMinimum": 2,
+     "windowDefault": 20,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "OPEN"
+     },
+     "base": "OPEN",
+     "transformId": "cci",
+     "offset": null,
+     "windowMinimum": 2,
+     "windowDefault": 20,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HIGH"
+     },
+     "base": "HIGH",
+     "transformId": "cci",
+     "offset": null,
+     "windowMinimum": 2,
+     "windowDefault": 20,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "LOW"
+     },
+     "base": "LOW",
+     "transformId": "cci",
+     "offset": null,
+     "windowMinimum": 2,
+     "windowDefault": 20,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HL2"
+     },
+     "base": "HL2",
+     "transformId": "cci",
+     "offset": null,
+     "windowMinimum": 2,
+     "windowDefault": 20,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "HLC3"
+     },
+     "base": "HLC3",
+     "transformId": "cci",
+     "offset": null,
+     "windowMinimum": 2,
+     "windowDefault": 20,
+     "windowMaximum": 2436
+    },
+    {
+     "at": {
+      "source": "OHLC4"
+     },
+     "base": "OHLC4",
+     "transformId": "cci",
+     "offset": null,
+     "windowMinimum": 2,
+     "windowDefault": 20,
+     "windowMaximum": 2436
+    }
+   ]
+  },
+  {
+   "key": "CLOSE_CHANGE",
+   "label": "Close change",
+   "family": "momentum",
+   "gloss": "the bar's own change, ((close − open) / open) × 100",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "CLOSE_CHANGE",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "multiTimeframeChange",
+   "label": "Multi-timeframe change",
+   "family": "momentum",
+   "gloss": "the frame price against the open of each fixed horizon's bar in force at the frame's instant, read live",
+   "aliases": [],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "CHG_5M",
+       "label": "Change (5m)"
+      },
+      {
+       "value": "CHG_15M",
+       "label": "Change (15m)"
+      },
+      {
+       "value": "CHG_1H",
+       "label": "Change (1h)"
+      },
+      {
+       "value": "CHG_4H",
+       "label": "Change (4h)"
+      },
+      {
+       "value": "CHG_24H",
+       "label": "Change (1d)"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "CHG_5M",
+     "at": {
+      "output": "CHG_5M"
+     },
+     "length": null
+    },
+    {
+     "metric": "CHG_15M",
+     "at": {
+      "output": "CHG_15M"
+     },
+     "length": null
+    },
+    {
+     "metric": "CHG_1H",
+     "at": {
+      "output": "CHG_1H"
+     },
+     "length": null
+    },
+    {
+     "metric": "CHG_4H",
+     "at": {
+      "output": "CHG_4H"
+     },
+     "length": null
+    },
+    {
+     "metric": "CHG_24H",
+     "at": {
+      "output": "CHG_24H"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "waveTrend",
+   "label": "WaveTrend (10, 21)",
+   "family": "momentum",
+   "gloss": "the typical price's distance from its 10-period EMA channel in mean-deviation units, averaged over 21 bars; the signal is a 4-bar mean of that oscillator",
+   "aliases": [
+    "wavetrend",
+    "wave trend",
+    "wt"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "WT1",
+       "label": "WaveTrend"
+      },
+      {
+       "value": "WT2",
+       "label": "WaveTrend signal"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "WT1",
+     "at": {
+      "output": "WT1"
+     },
+     "length": null
+    },
+    {
+     "metric": "WT2",
+     "at": {
+      "output": "WT2"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "qqe",
+   "label": "QQE (14, 5, 4.236)",
+   "family": "momentum",
+   "gloss": "RSI (14) smoothed by a 5-period EMA, bracketed by a trailing stop set 4.236 × the smoothed RSI's average range away",
+   "aliases": [
+    "qqe",
+    "quantitative qualitative estimation"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "QQE_RSI_MA",
+       "label": "QQE smoothed RSI"
+      },
+      {
+       "value": "QQE_STOP",
+       "label": "QQE trailing stop"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "QQE_RSI_MA",
+     "at": {
+      "output": "QQE_RSI_MA"
+     },
+     "length": null
+    },
+    {
+     "metric": "QQE_STOP",
+     "at": {
+      "output": "QQE_STOP"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "WILLR14",
+   "label": "Williams %R (14)",
+   "family": "momentum",
+   "gloss": "14-period Williams %R — where the close sits in the 14-bar window ending at this bar, 0 at the high and −100 at the low",
+   "aliases": [
+    "williams %r",
+    "%r",
+    "willr",
+    "ta.wpr"
+   ],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "WILLR14",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "stochRsi",
+   "label": "Stoch RSI (3, 3, 14, 14)",
+   "family": "momentum",
+   "gloss": "where RSI(14) sits in its own 14-bar range, 0–100: %K is that position smoothed over 3 bars, and %D is a 3-bar mean of %K",
+   "aliases": [
+    "stoch rsi",
+    "stochastic rsi",
+    "stochrsi"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "STOCH_RSI_K",
+       "label": "Stoch RSI %K"
+      },
+      {
+       "value": "STOCH_RSI_D",
+       "label": "Stoch RSI %D"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "STOCH_RSI_K",
+     "at": {
+      "output": "STOCH_RSI_K"
+     },
+     "length": null
+    },
+    {
+     "metric": "STOCH_RSI_D",
+     "at": {
+      "output": "STOCH_RSI_D"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  }
+ ],
+ "transforms": [
+  {
+   "id": "value",
+   "label": "Value"
+  },
+  {
+   "id": "trajectory",
+   "label": "Trajectory"
+  },
+  {
+   "id": "distance",
+   "label": "Distance from price"
+  },
+  {
+   "id": "spread",
+   "label": "Spread vs metric"
+  },
+  {
+   "id": "relativeTo",
+   "label": "Relative to coin"
+  },
+  {
+   "id": "aggregate",
+   "label": "Moving average (SMA)"
+  },
+  {
+   "id": "ema",
+   "label": "Exponential average (EMA)"
+  },
+  {
+   "id": "rma",
+   "label": "Wilder average (RMA)"
+  },
+  {
+   "id": "wma",
+   "label": "Weighted average (WMA)"
+  },
+  {
+   "id": "rsi",
+   "label": "Relative strength index (RSI)"
+  },
+  {
+   "id": "cci",
+   "label": "Commodity channel index (CCI)"
+  },
+  {
+   "id": "roc",
+   "label": "Rate of change (ROC)"
+  },
+  {
+   "id": "efficiency",
+   "label": "Efficiency (ER)"
+  },
+  {
+   "id": "zscore",
+   "label": "Z-score"
+  },
+  {
+   "id": "stddev",
+   "label": "Std deviation"
+  },
+  {
+   "id": "linregSlope",
+   "label": "Regression slope"
+  },
+  {
+   "id": "pctl",
+   "label": "Percentile"
+  },
+  {
+   "id": "rollingMin",
+   "label": "Rolling min"
+  },
+  {
+   "id": "rollingMax",
+   "label": "Rolling max"
+  },
+  {
+   "id": "classifyZone",
+   "label": "Zone label"
+  },
+  {
+   "id": "maxShare",
+   "label": "Largest share"
+  },
+  {
+   "id": "rank",
+   "label": "Peer rank"
+  },
+  {
+   "id": "crossDetect",
+   "label": "Cross detect"
+  },
+  {
+   "id": "levelInteraction",
+   "label": "Level interaction"
+  },
+  {
+   "id": "count",
+   "label": "Zone count"
+  },
+  {
+   "id": "nearestZoneType",
+   "label": "Nearest zone type"
+  },
+  {
+   "id": "nearestZoneRange",
+   "label": "Nearest zone range"
+  },
+  {
+   "id": "nearestZoneDist",
+   "label": "Nearest zone distance"
+  },
+  {
+   "id": "nearestZoneAge",
+   "label": "Nearest zone age"
+  }
+ ],
+ "timeframeRefs": [
+  {
+   "rel": "anchor",
+   "resolvedByAnchor": {
+    "5m": "5m",
+    "15m": "15m",
+    "1h": "1h",
+    "4h": "4h"
+   }
+  },
+  {
+   "rel": "lower",
+   "resolvedByAnchor": {
+    "5m": "1m",
+    "15m": "5m",
+    "1h": "15m",
+    "4h": "1h"
+   }
+  },
+  {
+   "rel": "regime",
+   "resolvedByAnchor": {
+    "5m": null,
+    "15m": null,
+    "1h": null,
+    "4h": null
+   }
+  }
+ ],
+ "budgets": {
+  "sections": 32,
+  "sectionColumns": 32,
+  "columnLookback": 64,
+  "distinctTimeframes": 8,
+  "strategyConditions": 32,
+  "conditionClauses": 32,
+  "conditionFrameReads": 5048,
+  "reportNoteChars": 3200,
+  "marketReadChars": 4000
+ },
+ "previewExecutionLimits": {
+  "maxResultChars": 150000,
+  "deadlineMs": 15000
+ },
+ "timeframes": [
+  "5m",
+  "15m",
+  "1h",
+  "4h"
+ ],
+ "rankedTimeframes": [
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+  "1d"
+ ],
+ "conditionGrammar": {
+  "maxGroupDepth": 2,
+  "operators": [
+   "lt",
+   "lte",
+   "gte",
+   "gt",
+   "between",
+   "is",
+   "in",
+   "crossesAbove",
+   "crossesBelow",
+   "increased",
+   "decreased",
+   "enters",
+   "exits"
+  ],
+  "groupOperators": [
+   "ALL",
+   "ANY",
+   "NOT",
+   "N_OF",
+   "SEQUENCE"
+  ],
+  "rootOnlyGroupOperators": [
+   "SEQUENCE"
+  ],
+  "verdicts": [
+   "UP",
+   "DOWN",
+   "NEITHER"
+  ]
+ },
+ "templates": [
+  {
+   "kind": "platform",
+   "sectionKey": "includePriceAction",
+   "title": "Price Action",
+   "columns": [
+    {
+     "metric": "LAST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 5,
+     "bars": "closed"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CHG_5M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_15M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_1H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_4H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_24H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSubTimeframe",
+   "title": "Candle Breakdown",
+   "columns": [
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "efficiency",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "maxShare",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRsi",
+   "title": "RSI",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMacd",
+   "title": "MACD",
+   "columns": [
+    {
+     "metric": "MACD_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MACD_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolume",
+   "title": "Volume",
+   "columns": [
+    {
+     "metric": "RVOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OBV",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolatility",
+   "title": "Volatility",
+   "columns": [
+    {
+     "metric": "ATR",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "HIGH_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "LOW_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeBollingerBands",
+   "title": "Bollinger Bands",
+   "columns": [
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMovingAverages",
+   "title": "Moving Averages",
+   "columns": [
+    {
+     "metric": "SMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA50",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA13",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA200",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "spread",
+     "chainedTransformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "EMA13"
+      }
+     ]
+    },
+    {
+     "metric": "EMA_CROSS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStochastic",
+   "title": "Stochastic",
+   "columns": [
+    {
+     "metric": "STOCH_K",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_K",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeFundingRates",
+   "title": "Funding Rates",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "FUNDING_ANN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_LABEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MARK",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "ORACLE"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeOpenInterest",
+   "title": "Open Interest",
+   "columns": [
+    {
+     "metric": "OI",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_CHG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "OI_VELOCITY",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_PX_REGIME",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRelativeStrength",
+   "title": "Relative Strength",
+   "columns": [
+    {
+     "metric": "PPO_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PPO_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "RVOL",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSupportResistance",
+   "title": "Support & Resistance",
+   "columns": [
+    {
+     "metric": "DONCHIAN_UPPER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_UPPER"
+      }
+     ]
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_LOWER"
+      }
+     ]
+    },
+    {
+     "metric": "PRICE_ZONE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeTrendStrength",
+   "title": "Trend Strength",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMfi",
+   "title": "Money Flow Index",
+   "columns": [
+    {
+     "metric": "MFI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MFI14",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvd",
+   "title": "Volume Delta (CVD)",
+   "columns": [
+    {
+     "metric": "CVD",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CVD",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_PRESSURE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SELL_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeHigherTimeframe",
+   "title": "Higher Timeframe Context",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRegimeContext",
+   "title": "Regime Context",
+   "columns": [
+    {
+     "metric": "REGIME_TREND",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_MOM",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_STATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_CONVICTION",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_RUN_BARS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_CRASH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_GATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_MARGIN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_SOURCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_ATR_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_BBW_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCrowdIntelligence",
+   "title": "Crowd Intelligence",
+   "columns": [
+    {
+     "metric": "CROWD_PICK",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_PICK_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvdCrowdConvergence",
+   "title": "CVD-Crowd Convergence",
+   "columns": [
+    {
+     "metric": "FLOW_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMART_RETAIL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CAPTAIN_CONF",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CONFIDENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStructureZones",
+   "title": "Price Structure Zones",
+   "columns": [
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "count",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includePerpSpotFlow",
+   "title": "Perp/Spot Flow",
+   "columns": [
+    {
+     "metric": "SPOT_CVD",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_FLOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_GAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_STRENGTH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_CONFIRMS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "custom",
+   "templateKey": "momentum-composite",
+   "title": "Momentum Composite",
+   "description": "RSI, MACD, and Stochastic %K read at the section anchor — a one-glance momentum panel.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "volatility-trend",
+   "title": "Volatility & Trend",
+   "description": "ATR, ADX, and Bollinger width % at the section anchor — regime and expansion at a glance.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "venue-dislocation",
+   "title": "Venue Dislocation",
+   "description": "Where the spot venues and the perp disagree at the section anchor — the Coinbase premium over Binance, the perp basis over each venue, the cross-venue buy-share gap, and the composite spot tape.",
+   "columnCount": 6
+  }
+ ],
+ "scalarFamilies": [
+  {
+   "moduleKey": null,
+   "sectionKey": "session-field",
+   "title": "Session Field",
+   "metrics": [
+    {
+     "metric": "fieldPlayers",
+     "gloss": "players in this session",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldPlayers_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldUpBias",
+     "gloss": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldUpBias_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldBiasDir",
+     "gloss": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+     "conditionOperators": [
+      "is",
+      "in"
+     ],
+     "conditionVocabulary": [
+      "UP",
+      "DOWN"
+     ],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldBiasDir_session"
+      }
+     ]
+    },
+    {
+     "metric": "captConc",
+     "gloss": "share of captain picks landing on the single most-captained coin (%)",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "captConc_session"
+      }
+     ]
+    },
+    {
+     "metric": "picksSpread",
+     "gloss": "distinct coins picked, over distinct coins available",
+     "conditionOperators": [],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "picksSpread_session"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -89,7 +89,18 @@ KNOB_SPELLING = {"fast": "fast", "slow": "slow", "signal": "sig", "period": "p",
                  # 161.0.0, measured 2026-11-09 (authoring_probe_161 group Q): Ichimoku's set, kijun_conv9base27spanB52disp26
                  "conversionPeriod": "conv", "basePeriod": "base", "spanBPeriod": "spanB", "displacement": "disp"}
 KNOB_OWN_TOKEN = {"rsiPeriod": "rsi"}
-KNOB_SINGLE = {"equalBars": "e", "equalThreshold": "atr", "swingLength": "s", "confluenceFilter": "cf"}
+KNOB_SINGLE = {"equalBars": "e", "equalThreshold": "atr", "swingLength": "s", "confluenceFilter": "cf",
+               # 168.3.0, rendered 2026-11-11 (data/audit/knob_spelling_probe_168_2026-11-11-c.json): the structure zones'
+               # flag, zoneResHi_close, zones_close_count
+               "usedUpOnClose": "close"}
+# A third regime, measured 2026-11-11 at 168.3.0 on the 24 prior-session supply / demand zones
+# (data/audit/knob_spelling_probe_168_2026-11-11-{a,b,c}.json): each knob is spelled only when it is off its default, as
+# in the SINGLE regime, but the spelled ones share ONE token in the served order - pAsiaDemAvg_vt10.5,
+# pAsiaDemAvg_res51, and both off pAsiaDemAvg_vt10.5res51 (not _vt10.5_res51, and not the SET regime's whole spelling).
+KNOB_JOINED = {"supplyDemandThreshold": "vt", "supplyDemandResolution": "res"}
+# Every knob name one of the regimes spells; a served knob outside it has no measured spelling at all (knob_token raises,
+# omega.validate refuses the column). One set, read by both, so a new regime cannot be known to one and not the other.
+KNOB_SPELLED = frozenset(KNOB_SPELLING) | frozenset(KNOB_OWN_TOKEN) | frozenset(KNOB_SINGLE) | frozenset(KNOB_JOINED)
 # Each (metric, knob) whose header has been RENDERED with that knob off its default, at 149.1.0: the authoring probe
 # (2026-11-07), the knob-spelling probe (11-07, thirteen columns) and its second run (2026-11-08, the 27 cells neither had
 # rendered: MACD_SIGNAL and PPO_HIST had no render at all). The spelling tables above are keyed by knob name, so a metric
@@ -143,6 +154,22 @@ KNOB_SPELLING_RENDERED = {
     "VWMA20": frozenset({'period'}),
     **{m: frozenset({'conversionPeriod', 'basePeriod', 'spanBPeriod', 'displacement'})
        for m in ("ICHI_BASE", "ICHI_CONV", "ICHI_LAG", "ICHI_SPAN_A", "ICHI_SPAN_B")},
+    # 168.3.0, rendered 2026-11-11 (data/audit/knob_spelling_probe_168_2026-11-11-{a,b,c}.json: 88 columns, 0 refusals):
+    # the 85 cells contract 168 opened on 47 metrics, each knob off alone, and one metric per family with two off
+    # together (eqhLvl_e4_atr0.2, iStructHi_s51_cf, pAsiaDemAvg_vt10.5res51). The known names spell on the added keys
+    # as on the old ones (eqhLvl_e4, poolAbove_atr0.2, iStructHi_cf, structHi_s51).
+    **{m: frozenset({'equalBars', 'equalThreshold'})
+       for m in ("EQH_LEVEL", "EQL_LEVEL",
+                 *(f"LIQUIDITY_POOL_{side}{suffix}" for side in ("ABOVE", "BELOW")
+                   for suffix in ("", "_INTACT", "_RECLAIMED", "_RETIRED", "_TOUCHES")))},
+    **{m: frozenset({'swingLength', 'confluenceFilter'}) for m in ("INTERNAL_PENDING_HIGH", "INTERNAL_PENDING_LOW")},
+    **{m: frozenset({'swingLength'}) for m in ("SWING_PENDING_HIGH", "SWING_PENDING_LOW")},
+    **{f"PRIOR_{session}_{side}_{kind}": frozenset({'supplyDemandThreshold', 'supplyDemandResolution'})
+       for session in ("ASIA", "DAY", "LONDON", "NEW_YORK") for side in ("DEMAND", "SUPPLY")
+       for kind in ("AVG", "EDGE", "WAVG")},
+    **{m: frozenset({'usedUpOnClose'})
+       for m in ("STRUCT_ZONES", *(f"ZONE_{side}_{edge}" for side in ("RESIST", "SUPPORT")
+                                   for edge in ("HIGH", "LOW", "MID")))},
 }
 
 
@@ -181,7 +208,7 @@ def knob_token(column: Column, contract: Contract) -> str:
     def value(k: str):
         return values[k] if values[k] is not None else served[k].get("defaultValue")
 
-    unknown = [k for k in served if k not in KNOB_SPELLING and k not in KNOB_OWN_TOKEN and k not in KNOB_SINGLE]
+    unknown = [k for k in served if k not in KNOB_SPELLED]
     if unknown and any(is_off(k) for k in served):
         # Any knob off, not only an unknown one: in the SET regime an unspelled knob at its default still belongs in the
         # header, and which regime an unknown knob is in was never rendered either (review 2026-11-08).
@@ -190,12 +217,14 @@ def knob_token(column: Column, contract: Contract) -> str:
     if unrendered:
         raise KnobSpellingUnmeasured(
             f"{column.metric} at {unrendered} off its default was never rendered (KNOB_SPELLING_RENDERED)")
-    set_knobs = [k for k in served if k not in KNOB_SINGLE]
+    set_knobs = [k for k in served if k not in KNOB_SINGLE and k not in KNOB_JOINED]
     out = ""
     if any(is_off(k) for k in set_knobs):
         out += "".join(f"_{KNOB_OWN_TOKEN[k]}{_knob_number(value(k))}" for k in set_knobs if k in KNOB_OWN_TOKEN)
         rest = "".join(f"{KNOB_SPELLING[k]}{_knob_number(value(k))}" for k in set_knobs if k in KNOB_SPELLING)
         out += f"_{rest}" if rest else ""
+    joined = "".join(f"{KNOB_JOINED[k]}{_knob_number(values[k])}" for k in served if k in KNOB_JOINED and is_off(k))
+    out += f"_{joined}" if joined else ""
     for k in served:
         if k in KNOB_SINGLE and is_off(k):
             out += f"_{KNOB_SINGLE[k]}" + ("" if served[k].get("bound") == "flag" else _knob_number(values[k]))

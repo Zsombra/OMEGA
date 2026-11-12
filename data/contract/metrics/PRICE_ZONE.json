@@ -2,7 +2,7 @@
   "metric": "PRICE_ZONE",
   "label": "Price zone",
   "code": "zone",
-  "family": "structure",
+  "family": "channels",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

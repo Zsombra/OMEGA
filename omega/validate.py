@@ -12,7 +12,7 @@ from decimal import Decimal
 from typing import Iterable, get_args
 
 from .contract import REFERENCE_PAIRS, Contract, Metric, load, section_subject
-from .fanout import (KNOB_OWN_TOKEN, KNOB_SINGLE, KNOB_SPELLING, KNOB_SPELLING_RENDERED, ROLLING_INNERS, SMOOTHERS,
+from .fanout import (KNOB_SPELLED, KNOB_SPELLING_RENDERED, ROLLING_INNERS, SMOOTHERS,
                      takes_offset)
 from .types import KNOBS, MARKET_SCOPE, Column, CustomSection, PlatformSection, Report, Section
 
@@ -866,7 +866,7 @@ def _knob_findings(column: Column, m: Metric, spec: dict, path: str) -> list[Fin
         # The header of an off-default knob is a measured spelling (omega.fanout): a served knob none of the tables
         # spells, or a (metric, knob) never rendered off its default, is refused here as unmeasured rather than raised
         # out of the header prediction (review 2026-11-08, pass 2).
-        unspelled = [k for k in m.parameters if k not in KNOB_SPELLING and k not in KNOB_OWN_TOKEN and k not in KNOB_SINGLE]
+        unspelled = [k for k in m.parameters if k not in KNOB_SPELLED]
         unrendered = [k for k in off_default if k not in KNOB_SPELLING_RENDERED.get(m.metric, ())]
         if unspelled or unrendered:
             out.append(Finding(

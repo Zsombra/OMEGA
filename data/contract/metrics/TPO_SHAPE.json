@@ -2,7 +2,7 @@
   "metric": "TPO_SHAPE",
   "label": "TPO profile shape",
   "code": "tpoShape",
-  "family": "structure",
+  "family": "vwapProfile",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

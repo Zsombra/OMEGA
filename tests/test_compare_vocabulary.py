@@ -88,7 +88,8 @@ def test_main_exits_0_when_identical_and_1_when_an_enum_moved(tmp_path, capsys):
     assert main([str(moved)]) == 1
     printed = json.loads(capsys.readouterr().out)
     assert printed["results"]["sectionKeys"]["liveNotStored"] == ["newSection"]
-    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"   # 161.0.0 (2026-11-09); 149.1.0 was schema_20261105T181932Z
+    # 168.3.0 (2026-11-11, schema_20261111T213257Z); 161.0.0 was schema_20261109T162100Z, 149.1.0 schema_20261105T181932Z
+    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261111T213257Z.json"
 
 
 def test_the_stored_enums_are_read_off_the_saved_108_stage_schema():
@@ -179,4 +180,59 @@ def test_the_saved_144_stage_schema_reads_through_its_recursive_defs_without_loo
     from omega.preflight import resolve_axes
     axes, _ = resolve_axes(stage)
     assert first_enum(axes["REPORT"], "metric") is None                       # the axis alone holds no `$defs`
-    assert set(first_enum(axes["REPORT"], "metric", root=stage["inputSchema"])) == stored["metrics"]
+    # 2026-11-11, contract 168.3.0: the pinned capture's `$defs/metricKey` is a pattern, so the pointer resolves to a
+    # node with no enum and the read is None (to 161 it read the whole roster through the ref). The same walk over
+    # the 161.0.0 capture, which the manifest keeps as history, still reads its 534 keys.
+    assert first_enum(axes["REPORT"], "metric", root=stage["inputSchema"]) is None
+    assert "enum" not in stage["inputSchema"]["$defs"]["metricKey"]
+    from omega.contract import ROOT
+    old = json.loads((ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json")
+                     .read_text(encoding="utf-8"))["stage_strategy_draft"]
+    old_axes, _ = resolve_axes(old)
+    assert len(first_enum(old_axes["REPORT"], "metric", root=old["inputSchema"])) == 534
+
+
+# --- contract 168 (2026-11-11): the roster left the input schemas ---------------------------------------------------
+
+# get_metric_construction_hints' inputSchema as the battlegrid-manager watch stored it at 168.3.0 (build af8b2c96),
+# verbatim: the metric is a pattern, no enum
+HINT_INPUT_168 = {"type": "object", "properties": {"metric": {"$ref": "#/$defs/metricKey"}}, "required": ["metric"],
+                  "additionalProperties": False,
+                  "$defs": {"metricKey": {"type": "string", "minLength": 1, "maxLength": 64,
+                                          "pattern": "^[A-Z][A-Z0-9_]*$",
+                                          "description": "A metric key list_strategy_vocabulary serves; search it with "
+                                                         "`query`."}}}
+
+
+def _surface_168(*, with_read_schema: bool) -> dict:
+    """The pinned 168.3.0 capture as a surface: its stage and get_strategy tools, plus the hint tool's stored input.
+    `with_read_schema` False drops the output schemas - what the manager's `surface_tools` row holds."""
+    from omega.contract import stage_schema
+    doc = stage_schema()
+    tools = [{"name": "get_metric_construction_hints", "inputSchema": HINT_INPUT_168}]
+    for name in ("stage_strategy_draft", "get_strategy"):
+        tool = {"name": name, "inputSchema": doc[name]["inputSchema"]}
+        if with_read_schema:
+            tool["outputSchema"] = doc[name]["outputSchema"]
+        tools.append(tool)
+    return {"contractVersion": doc["contractVersion"], "buildSha": doc["buildSha"], "observedAt": doc["observedAt"],
+            "tools": tools}
+
+
+def test_a_168_surface_reads_the_roster_from_the_read_schema_and_compares_identical():
+    from scripts.compare_vocabulary import read_roster, stored_unmeasured
+    surface = _surface_168(with_read_schema=True)
+    assert first_enum(HINT_INPUT_168, "metric") is None          # the input names a pattern: no enum to read
+    roster = read_roster({t["name"]: t for t in surface["tools"]})
+    assert len(roster) == 581
+    results = compare(live_enums(surface), stored_enums(), stored_unmeasured())
+    assert results["metrics"] == {"live": 581, "stored": 581, "liveNotStored": [], "storedNotLive": [],
+                                  "storedUnmeasured": []}
+    assert results["sectionKeys"]["liveNotStored"] == [] and results["sectionKeys"]["storedNotLive"] == []
+    assert results["sectionKeys"]["live"] == results["sectionKeys"]["stored"] == 22
+
+
+def test_a_168_surface_without_the_read_schema_is_unreadable_not_empty():
+    # the manager's `surface_tools` row: inputs only. Comparing an absent roster would report all 581 as removed.
+    with pytest.raises(ValueError, match="metrics.*get_strategy's outputSchema"):
+        live_enums(_surface_168(with_read_schema=False))

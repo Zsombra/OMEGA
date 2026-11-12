@@ -70,20 +70,23 @@
   },
   {
    "category": "trend",
-   "metricCount": 23,
+   "metricCount": 26,
    "label": "Trend",
-   "purpose": "Describe direction, persistence, and price location relative to trend references.",
+   "purpose": "Describe direction, persistence, and price location relative to trend references — the moving averages, and the trailing stops (Supertrend, Parabolic SAR) that follow a trend from behind.",
    "whenToUse": [
     "Confirm directional structure.",
-    "Measure price extension from a moving reference."
+    "Measure price extension from a moving reference.",
+    "Hold a position while price stays on the trend side of a trailing stop."
    ],
    "bestPractices": [
     "Use slower references for regime context and faster references for timing.",
-    "Read distance together with direction."
+    "Read distance together with direction.",
+    "Read a trailing stop with its direction: the stop is a level, the direction says which side of it price holds."
    ],
    "commonMisuses": [
     "Assuming a lagging average predicts a reversal.",
-    "Comparing trend levels without matching timeframes."
+    "Comparing trend levels without matching timeframes.",
+    "Treating a trailing stop as support or resistance it has not been tested at — it moves only with the trend."
    ],
    "examples": [
     {
@@ -129,6 +132,43 @@
       }
      },
      "clause": null
+    }
+   ]
+  },
+  {
+   "category": "channels",
+   "metricCount": 14,
+   "label": "Bands & Channels",
+   "purpose": "Describe the envelope around price — Bollinger, Keltner and Donchian channels — its edges, and where price sits inside it.",
+   "whenToUse": [
+    "Spot price stretched beyond its usual envelope.",
+    "Trade a breakout through a channel edge.",
+    "Measure room left to the opposite edge."
+   ],
+   "bestPractices": [
+    "Read where price sits in the envelope (%B) rather than the raw edge when comparing coins.",
+    "Confirm a break of an edge with volume or a close beyond it."
+   ],
+   "commonMisuses": [
+    "Treating a touch of the upper band as a sell signal by itself — price walks the band in a trend.",
+    "Comparing a band width across assets in price units rather than as a share of price."
+   ],
+   "examples": [
+    {
+     "title": "Riding the upper Bollinger band",
+     "description": "Hold the close at or just beyond the upper band: %B between 0.8 and 1.2.",
+     "column": {
+      "metric": "BB_PCT_B",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     "clause": {
+      "op": "between",
+      "low": 0.8,
+      "high": 1.2
+     }
     }
    ]
   },
@@ -202,40 +242,24 @@
    ]
   },
   {
-   "category": "structure",
-   "metricCount": 363,
-   "label": "Structure",
-   "purpose": "Describe price location, reference levels, and active support or resistance zones.",
+   "category": "vwapProfile",
+   "metricCount": 81,
+   "label": "VWAP & Profile",
+   "purpose": "Describe where volume traded — the anchored VWAPs and their standard-deviation bands, the TPO and volume profiles, their value areas and points of control.",
    "whenToUse": [
-    "Plan entries around meaningful levels.",
-    "Measure room to nearby support or resistance."
+    "Plan entries around the session or anchored VWAP.",
+    "Judge whether price trades inside or outside the value area.",
+    "Find a naked point of control price has not revisited."
    ],
    "bestPractices": [
-    "Select the side relevant to the proposed direction.",
-    "Use structure with momentum or flow confirmation."
+    "Choose the anchor that matches the holding period: the UTC day for intraday, the week or month for swings.",
+    "Read distance from VWAP in percent so coins compare."
    ],
    "commonMisuses": [
-    "Treating every nearby level as equally strong.",
-    "Reading a zone column as the decision timeframe’s levels when its timeframe reference names another rung — a zone column reads zones on its own resolved timeframe."
+    "Treating VWAP as a fixed support level when its anchor resets.",
+    "Reading a developing profile’s value area as settled before its session closes."
    ],
    "examples": [
-    {
-     "title": "Approaching support",
-     "description": "Measure signed distance to the nearest active support zone’s midpoint, held at most 1.5% above it.",
-     "column": {
-      "metric": "STRUCT_ZONES",
-      "transformId": "nearestZoneDist",
-      "timeframe": {
-       "rel": "anchor"
-      },
-      "side": "support"
-     },
-     "clause": {
-      "op": "between",
-      "low": 0,
-      "high": 1.5
-     }
-    },
     {
      "title": "Price within ±2% of VWAP",
      "description": "Hold price within two percent of the session VWAP, on either side.",
@@ -250,6 +274,81 @@
       "op": "between",
       "low": -2,
       "high": 2
+     }
+    }
+   ]
+  },
+  {
+   "category": "levels",
+   "metricCount": 274,
+   "label": "Sessions & Levels",
+   "purpose": "Describe the fixed prices a period or a session left behind — the trading sessions’ highs, lows and opens, the opening ranges, the initial-balance extensions, the prior day’s, week’s and month’s highs and lows, and the floor pivots.",
+   "whenToUse": [
+    "Plan entries around the prior day’s high or low.",
+    "Trade the break or the sweep of a session’s range.",
+    "Use the pivots as targets and stops."
+   ],
+   "bestPractices": [
+    "Read a level as a distance in percent so coins compare.",
+    "Pair a level with how price reached it — a sweep and a break are different reads."
+   ],
+   "commonMisuses": [
+    "Treating every pivot as equally strong.",
+    "Reading a session’s high before the session has closed as its final high."
+   ],
+   "examples": [
+    {
+     "title": "Within ±0.5% of the prior day’s high",
+     "description": "Hold price within half a percent of the previous UTC day’s high, on either side.",
+     "column": {
+      "metric": "PDH",
+      "transformId": "distance",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     "clause": {
+      "op": "between",
+      "low": -0.5,
+      "high": 0.5
+     }
+    }
+   ]
+  },
+  {
+   "category": "structure",
+   "metricCount": 38,
+   "label": "Market Structure",
+   "purpose": "Describe the swings price has made, the structure breaks between them, and the active support and resistance zones.",
+   "whenToUse": [
+    "Plan entries around active support or resistance zones.",
+    "Measure room to the nearest zone.",
+    "Confirm a trend by its higher highs and lows, or a reversal by a break of structure."
+   ],
+   "bestPractices": [
+    "Select the side relevant to the proposed direction.",
+    "Use structure with momentum or flow confirmation."
+   ],
+   "commonMisuses": [
+    "Treating every swing as an equally strong level.",
+    "Reading a zone column as the decision timeframe’s levels when its timeframe reference names another rung — a zone column reads zones on its own resolved timeframe."
+   ],
+   "examples": [
+    {
+     "title": "Approaching support",
+     "description": "Measure signed distance to the nearest active support zone’s top, 0 inside it, held at most 1.5% above it.",
+     "column": {
+      "metric": "STRUCT_ZONES",
+      "transformId": "nearestZoneDist",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "side": "support"
+     },
+     "clause": {
+      "op": "between",
+      "low": 0,
+      "high": 1.5
      }
     }
    ]
@@ -661,60 +760,80 @@
   }
  ],
  "_refreshed": {
-  "at": "2026-11-09T16:22Z",
-  "contractVersion": "161.0.0",
-  "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261109T1622Z/_categories.json",
+  "at": "2026-11-11T22:32Z",
+  "contractVersion": "168.3.0",
+  "how": "list_strategy_categories via one long-lived mcporter runtime (EXTRACTION_TRANSPORT=runtime) (read-only), data/contract/vocabulary/20261111T2232Z/_categories.json",
   "moved": [
-   "structure 362 -> 363",
-   "trend 22 -> 23"
+   "nothing"
   ],
   "previous": {
-   "at": "2026-11-07T17:36Z",
-   "contractVersion": "149.1.0",
-   "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261107T1736Z/_categories.json",
+   "at": "2026-11-11T18:23Z",
+   "contractVersion": "168.2.0",
+   "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261111T1823Z/_categories.json",
    "moved": [
-    "nothing: the eleven categories, their counts (sum 532) and prose, and the 22 modules are as at 148.1.0"
+    "channels None -> 14",
+    "levels None -> 274",
+    "structure 363 -> 38",
+    "trend 23 -> 26",
+    "vwapProfile None -> 81"
    ],
    "previous": {
-    "at": "2026-11-05T09:43Z",
-    "contractVersion": "148.1.0",
-    "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261105T0943Z/_categories.json",
+    "at": "2026-11-09T16:22Z",
+    "contractVersion": "161.0.0",
+    "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261109T1622Z/_categories.json",
     "moved": [
-     "structure 156 -> 362",
-     "the 206 metric keys v146.5 / .8 / .10 / .11 added are all `structure` (sum 532)",
-     "modules: the 22 of 146.0.0, byte-identical"
+     "structure 362 -> 363",
+     "trend 22 -> 23"
     ],
     "previous": {
-     "at": "2026-11-02T05:55Z",
-     "contractVersion": "146.0.1",
-     "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261102T0555Z/_categories.json",
+     "at": "2026-11-07T17:36Z",
+     "contractVersion": "149.1.0",
+     "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261107T1736Z/_categories.json",
      "moved": [
-      "price 26 -> 27",
-      "regime 16 -> 18",
-      "crowd 9 -> 17",
-      "market NEW (13 metrics: the MKT_* family, study marketBreadth)",
-      "modules: the 22 of 146.0.0, unchanged"
+      "nothing: the eleven categories, their counts (sum 532) and prose, and the 22 modules are as at 148.1.0"
      ],
      "previous": {
-      "at": "2026-11-01T06:17:33Z",
-      "contractVersion": "146.0.0",
-      "how": "modules: the sectionKey enum of the 146.0.0 stage schema (data/contract/stage_strategy_draft/schema_20261101T061733Z.json), copied from the battlegrid-manager fixture; list_strategy_categories was NOT re-read (no platform call), so the ten categories' metricCount and the 22 remaining module entries are the 2026-10-30 read at 144.0.0",
+      "at": "2026-11-05T09:43Z",
+      "contractVersion": "148.1.0",
+      "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261105T0943Z/_categories.json",
       "moved": [
-       "modules: includeMarketBreadth and includeReferencePairs retired (contract 146.0.0, undocumented in the README; absent from the served sectionKey enums and from agent contextSources), 24 -> 22",
-       "the 24 metric keys 146.0.0 added ($defs/metricKey 302 -> 326) belong to no category file here until list_strategy_categories is re-read"
+       "structure 156 -> 362",
+       "the 206 metric keys v146.5 / .8 / .10 / .11 added are all `structure` (sum 532)",
+       "modules: the 22 of 146.0.0, byte-identical"
       ],
       "previous": {
-       "at": "2026-10-30T03:45Z",
-       "contractVersion": "144.0.0",
-       "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261030T0345Z/_categories.json",
+       "at": "2026-11-02T05:55Z",
+       "contractVersion": "146.0.1",
+       "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261102T0555Z/_categories.json",
        "moved": [
-        "momentum 27 -> 30",
-        "volatility 7 -> 6",
-        "volumeFlow 14 -> 22",
-        "structure 90 -> 156",
-        "modules: includePerpSpotFlow description and one bullet re-worded ('crypto coins a spot venue lists' -> 'crypto coins the spot lane lists', README v139)"
+        "price 26 -> 27",
+        "regime 16 -> 18",
+        "crowd 9 -> 17",
+        "market NEW (13 metrics: the MKT_* family, study marketBreadth)",
+        "modules: the 22 of 146.0.0, unchanged"
        ],
-       "previous": "2026-10-26 from list_strategy_categories at contract 135.2.0 (mcporter, read-only); price 22 -> 26; trend 21 -> 22; volumeFlow 13 -> 14; structure 54 -> 90; derived 7 -> 8; modules: includeMtfConfluence retired (README v134). Previous: 2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+       "previous": {
+        "at": "2026-11-01T06:17:33Z",
+        "contractVersion": "146.0.0",
+        "how": "modules: the sectionKey enum of the 146.0.0 stage schema (data/contract/stage_strategy_draft/schema_20261101T061733Z.json), copied from the battlegrid-manager fixture; list_strategy_categories was NOT re-read (no platform call), so the ten categories' metricCount and the 22 remaining module entries are the 2026-10-30 read at 144.0.0",
+        "moved": [
+         "modules: includeMarketBreadth and includeReferencePairs retired (contract 146.0.0, undocumented in the README; absent from the served sectionKey enums and from agent contextSources), 24 -> 22",
+         "the 24 metric keys 146.0.0 added ($defs/metricKey 302 -> 326) belong to no category file here until list_strategy_categories is re-read"
+        ],
+        "previous": {
+         "at": "2026-10-30T03:45Z",
+         "contractVersion": "144.0.0",
+         "how": "list_strategy_categories via the mcporter CLI (read-only), data/contract/vocabulary/20261030T0345Z/_categories.json",
+         "moved": [
+          "momentum 27 -> 30",
+          "volatility 7 -> 6",
+          "volumeFlow 14 -> 22",
+          "structure 90 -> 156",
+          "modules: includePerpSpotFlow description and one bullet re-worded ('crypto coins a spot venue lists' -> 'crypto coins the spot lane lists', README v139)"
+         ],
+         "previous": "2026-10-26 from list_strategy_categories at contract 135.2.0 (mcporter, read-only); price 22 -> 26; trend 21 -> 22; volumeFlow 13 -> 14; structure 54 -> 90; derived 7 -> 8; modules: includeMtfConfluence retired (README v134). Previous: 2026-10-15 from list_strategy_categories at contract 110.8.0 (mcporter, read-only); structure 48 -> 54 (DONCHIAN_UPPER/LOWER_PRIOR, README v110.6; NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW, undocumented). Previous: 2026-10-14 from list_strategy_categories at contract 110.2.0 (mcporter, read-only); momentum 22 -> 27 (MACD, PPO out; MACD_HIST/LINE/SIGNAL, PPO_HIST/LINE/SIGNAL, ROC15 in) and structure 47 -> 48 (KC_MID out; DONCHIAN_BROKEN_HI/LO in), README v110. Previous: 2026-10-13 from list_strategy_categories at contract 108.4.0 (mcporter, read-only); price 10 -> 22 and structure 44 -> 47: the 15 metrics added at v100/v101.1. Previous: 2026-09-20T20:07:52Z from list_strategy_categories at contract 61.2.0 (build 7722a45be989); the `modules` block is a separate measurement and is carried over from the 2026-09-09 refresh unchanged."
+        }
+       }
       }
      }
     }

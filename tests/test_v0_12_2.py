@@ -235,7 +235,10 @@ def test_the_depth_budget_is_the_metrics_served_aggregate_maximum(contract, prob
     lookback budget every depth refusal states (context depth 2500, cap 64 = the served budgets.columnLookback). The
     corpus carries the maximum, not the 2500. This fails when the served number moves."""
     rolling = [m for m in contract.metrics.values() if _rolling_chains(m)]
-    assert len(rolling) == 166
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 169 (166 at 161.0.0): EMA55 (added) and HIGH_DEV / LOW_DEV (which
+    # gained the series transforms: _moves_168.json transformsGainedByExistingMetrics) serve the rolling chains too. The
+    # served aggregate maximum is 2436 on each of the three as on the 166 (the loop below): the budget did not move.
+    assert len(rolling) == 169
     for m in rolling:
         served = m.transforms["aggregate"]
         assert served["bounds"]["window"] == "depth", m.metric
@@ -282,7 +285,14 @@ def test_the_joint_rule_reproduces_every_served_rolling_chain_cell_and_depth_max
             if largest_window(tid, budget) != t["maximums"]["window"]:
                 wrong.append((m.metric, tid, t["maximums"]["window"], largest_window(tid, budget)))
     assert wrong == []
-    assert (cells, standalone) == (15106, 2184)
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 15,379 chain cells (169 metrics x 7 inners x 13 outers) and 2,223
+    # standalone maxima (171 metrics x 13 transforms); 15,106 = 166 x 91 and 2,184 = 168 x 13 at 161.0.0. EMA55, HIGH_DEV
+    # and LOW_DEV joined both rosters (_moves_168.json) and the joint rule reproduces every served cell of theirs (`wrong`
+    # is empty above), so the platform's arithmetic did not move - only the roster. The 660 chained `spread` cells 168
+    # serves after aggregate / ema / rma / wma carry windowParameter `window` and windowMaximum null, not `chainedWindow`:
+    # they are not rolling-chain cells (their innerWindowMaximum is the inner's standalone maximum, 2436 / 704 / 308 /
+    # 2436, on all 660), and the chain is refused TRANSFORM_UNMEASURED before any depth is judged.
+    assert (cells, standalone) == (15379, 2223)
     assert no_budget == [("OBV", tid) for tid in ("zscore", "stddev", "linregSlope", "pctl")]
 
 

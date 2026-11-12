@@ -1,0 +1,3027 @@
+{
+ "category": "structure",
+ "metrics": [
+  {
+   "metric": "STRUCT_ZONES",
+   "label": "Structure zones",
+   "code": "zones",
+   "gloss": "the ACTIVE structure-zone set (fair-value gaps and order blocks), each used up by a wick past its far edge",
+   "family": "structure",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "entitySet",
+    "entity": "structureZone"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "count",
+    "nearestZoneType",
+    "nearestZoneRange",
+    "nearestZoneDist",
+    "nearestZoneAge"
+   ]
+  },
+  {
+   "metric": "ZONE_SUPPORT_HIGH",
+   "label": "Nearest support zone high",
+   "code": "zoneSupHi",
+   "gloss": "the high of the nearest support zone (fair-value gap or order block) price has not traded below — the zone's near edge; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "family": "structure",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ZONE_SUPPORT_LOW",
+   "label": "Nearest support zone low",
+   "code": "zoneSupLo",
+   "gloss": "the low of the nearest support zone (fair-value gap or order block) price has not traded below — the zone's far edge, which a low below uses up; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "family": "structure",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ZONE_RESIST_HIGH",
+   "label": "Nearest resistance zone high",
+   "code": "zoneResHi",
+   "gloss": "the high of the nearest resistance zone (fair-value gap or order block) price has not traded above — the zone's far edge, which a high above uses up; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "family": "structure",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ZONE_RESIST_LOW",
+   "label": "Nearest resistance zone low",
+   "code": "zoneResLo",
+   "gloss": "the low of the nearest resistance zone (fair-value gap or order block) price has not traded above — the zone's near edge; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "family": "structure",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ZONE_SUPPORT_MID",
+   "label": "Nearest support zone midpoint",
+   "code": "zoneSupMid",
+   "gloss": "the midpoint, (high + low) / 2, of the nearest support zone (fair-value gap or order block) price has not traded below — the zone this side's edges read (SMC's fair-value-gap split, ICT's 50% / consequent encroachment), never the rule that picks it; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "family": "structure",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "ZONE_RESIST_MID",
+   "label": "Nearest resistance zone midpoint",
+   "code": "zoneResMid",
+   "gloss": "the midpoint, (high + low) / 2, of the nearest resistance zone (fair-value gap or order block) price has not traded above — the zone this side's edges read (SMC's fair-value-gap split, ICT's 50% / consequent encroachment), never the rule that picks it; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "family": "structure",
+   "study": null,
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "timeless",
+   "transformIds": [
+    "value",
+    "distance",
+    "spread",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SWING_FRACTAL_HIGH",
+   "label": "Swing high (fractal 2/2)",
+   "code": "fractalHi",
+   "gloss": "the high of the most recent swing high — at or above the 2 highs before it and strictly above the 2 after it (Pine's ta.pivothigh tie rule) — published from the bar that completes its right side and held until the next swing high, or until it leaves reach",
+   "family": "structure",
+   "study": "swingFractal",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SWING_FRACTAL_LOW",
+   "label": "Swing low (fractal 2/2)",
+   "code": "fractalLo",
+   "gloss": "the low of the most recent swing low — at or below the 2 lows before it and strictly below the 2 after it (Pine's ta.pivotlow tie rule) — published from the bar that completes its right side and held until the next swing low, or until it leaves reach",
+   "family": "structure",
+   "study": "swingFractal",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "PRIOR_SWING_FRACTAL_HIGH",
+   "label": "Prior swing high (fractal 2/2)",
+   "code": "pFractalHi",
+   "gloss": "the high of the decided swing high before the most recent one, while it is in reach — the pivot the structure label compares a swing high with",
+   "family": "structure",
+   "study": "swingFractal",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "PRIOR_SWING_FRACTAL_LOW",
+   "label": "Prior swing low (fractal 2/2)",
+   "code": "pFractalLo",
+   "gloss": "the low of the decided swing low before the most recent one, while it is in reach — the pivot the structure label compares a swing low with",
+   "family": "structure",
+   "study": "swingFractal",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SWING_FRACTAL_HIGH_BARS_AGO",
+   "label": "Swing high age (bars)",
+   "code": "fractalHiAgo",
+   "gloss": "the bars from the most recent swing high's own bar to this bar — 2 on the bar that completes its right side, one more per bar after it",
+   "family": "structure",
+   "study": "swingFractal",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ]
+  },
+  {
+   "metric": "SWING_FRACTAL_LOW_BARS_AGO",
+   "label": "Swing low age (bars)",
+   "code": "fractalLoAgo",
+   "gloss": "the bars from the most recent swing low's own bar to this bar — 2 on the bar that completes its right side, one more per bar after it",
+   "family": "structure",
+   "study": "swingFractal",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "relativeTo",
+    "aggregate",
+    "ema",
+    "rma",
+    "wma",
+    "rsi",
+    "cci",
+    "roc",
+    "efficiency",
+    "zscore",
+    "stddev",
+    "linregSlope",
+    "pctl",
+    "rollingMin",
+    "rollingMax"
+   ]
+  },
+  {
+   "metric": "SWING_FRACTAL_LABEL",
+   "label": "Swing structure",
+   "code": "fractalLabel",
+   "gloss": "the most recent decided swing pivot (2 bars each side) against the previous pivot on its own side: HH or LH for a swing high (an equal high is LH), HL or LL for a swing low (an equal low is HL), none when no comparable pair is in reach — a state held between pivots, not an event",
+   "family": "structure",
+   "study": "swingFractal",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "HH",
+     "HL",
+     "LH",
+     "LL",
+     "none"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "INTERNAL_STRUCTURE_EVENT",
+   "label": "Internal structure break (internal 5, swing 50)",
+   "code": "iStructEvt",
+   "gloss": "the internal structure's break on this bar — BOS when the close crosses its latest uncrossed level with the bias, CHoCH against it — over pivots of length 5, unless the level is also the swing level of length 50; absent on a bar with no break — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "event",
+    "vocab": [
+     "BOS↑",
+     "BOS↓",
+     "CHoCH↑",
+     "CHoCH↓"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "INTERNAL_STRUCTURE_TREND",
+   "label": "Internal structure trend (internal 5, swing 50)",
+   "code": "iStructTrend",
+   "gloss": "the direction of the internal structure's latest break, over pivots of length 5, unless the level is also the swing level of length 50 — a state held between breaks, absent before the first break the bars prove — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "INTERNAL_STRUCTURE_LEVEL",
+   "label": "Internal structure level (internal 5, swing 50)",
+   "code": "iStructLvl",
+   "gloss": "the price of the level the internal structure's latest break crossed, over pivots of length 5, unless the level is also the swing level of length 50 — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "INTERNAL_PENDING_HIGH",
+   "label": "Pending internal high (internal 5, swing 50)",
+   "code": "iStructHi",
+   "gloss": "the internal structure's high level its next bullish break is tested against — the latest recorded pivot high while no close has crossed it (LuxAlgo's current level, not yet crossed) — over pivots of length 5, unless the level is also the swing level of length 50; it still reads on the bar whose close crosses it; a close through it that the internal break refuses (the level equal to the swing level, or the confluence filter) leaves it pending — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent once a close has crossed it, until the next pivot on its side is recorded, and absent until the bars read prove the level",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "INTERNAL_PENDING_LOW",
+   "label": "Pending internal low (internal 5, swing 50)",
+   "code": "iStructLo",
+   "gloss": "the internal structure's low level its next bearish break is tested against — the latest recorded pivot low while no close has crossed it (LuxAlgo's current level, not yet crossed) — over pivots of length 5, unless the level is also the swing level of length 50; it still reads on the bar whose close crosses it; a close through it that the internal break refuses (the level equal to the swing level, or the confluence filter) leaves it pending — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent once a close has crossed it, until the next pivot on its side is recorded, and absent until the bars read prove the level",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SWING_STRUCTURE_EVENT",
+   "label": "Swing structure break (50)",
+   "code": "structEvt",
+   "gloss": "the swing structure's break on this bar — BOS when the close crosses its latest uncrossed level with the bias, CHoCH against it — over pivots of length 50; absent on a bar with no break — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "event",
+    "vocab": [
+     "BOS↑",
+     "BOS↓",
+     "CHoCH↑",
+     "CHoCH↓"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "SWING_STRUCTURE_TREND",
+   "label": "Swing structure trend (50)",
+   "code": "structTrend",
+   "gloss": "the direction of the swing structure's latest break, over pivots of length 50 — a state held between breaks, absent before the first break the bars prove — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "classification",
+    "vocab": [
+     "bullish",
+     "bearish"
+    ]
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "SWING_STRUCTURE_LEVEL",
+   "label": "Swing structure level (50)",
+   "code": "structLvl",
+   "gloss": "the price of the level the swing structure's latest break crossed, over pivots of length 50 — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SWING_PENDING_HIGH",
+   "label": "Pending swing high (50)",
+   "code": "structHi",
+   "gloss": "the swing structure's high level its next bullish break is tested against — the latest recorded pivot high while no close has crossed it (LuxAlgo's current level, not yet crossed) — over pivots of length 50; it still reads on the bar whose close crosses it — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent once a close has crossed it, until the next pivot on its side is recorded, and absent until the bars read prove the level",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "SWING_PENDING_LOW",
+   "label": "Pending swing low (50)",
+   "code": "structLo",
+   "gloss": "the swing structure's low level its next bearish break is tested against — the latest recorded pivot low while no close has crossed it (LuxAlgo's current level, not yet crossed) — over pivots of length 50; it still reads on the bar whose close crosses it — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent once a close has crossed it, until the next pivot on its side is recorded, and absent until the bars read prove the level",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EQH",
+   "label": "Equal high (3, 0.1 ATR)",
+   "code": "eqh",
+   "gloss": "whether this bar recorded a pivot high of length 3 within 0.1 × ATR(200) of the previous recorded one — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; false on a bar that records no such pivot, absent until the bars read hold the ATR’s 800-bar window and a proven previous pivot",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "EQL",
+   "label": "Equal low (3, 0.1 ATR)",
+   "code": "eql",
+   "gloss": "whether this bar recorded a pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; false on a bar that records no such pivot, absent until the bars read hold the ATR’s 800-bar window and a proven previous pivot",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "EQH_LEVEL",
+   "label": "Equal-high level (3, 0.1 ATR)",
+   "code": "eqhLvl",
+   "gloss": "the price of the latest recorded pivot high of length 3 while it read equal — within 0.1 × ATR(200) of the previous recorded one, the newer end of LuxAlgo's EQH line — held until the next recorded pivot high of that length; no close retires it — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; false on a bar that records no such pivot, absent until the bars read hold the ATR’s 800-bar window and a proven previous pivot",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "EQL_LEVEL",
+   "label": "Equal-low level (3, 0.1 ATR)",
+   "code": "eqlLvl",
+   "gloss": "the price of the latest recorded pivot low of length 3 while it read equal — within 0.1 × ATR(200) of the previous recorded one, the newer end of LuxAlgo's EQL line — held until the next recorded pivot low of that length; no close retires it — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; false on a bar that records no such pivot, absent until the bars read hold the ATR’s 800-bar window and a proven previous pivot",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_ABOVE",
+   "label": "Liquidity pool above (buyside) (3, 0.1 ATR)",
+   "code": "poolAbove",
+   "gloss": "the nearest buyside liquidity pool above price: of the pools intact when this bar opened, the lowest, the newest at one price — a buyside pool forms on the bar that confirms an equal high — a recorded pivot high of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQH rule — at the newer pivot's price, and stays intact until a close above it retires it (LuxAlgo Liquidity Swings); several pools are kept at once; it still reads on the bar whose close retires it — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_ABOVE_INTACT",
+   "label": "Liquidity pool above (buyside) intact (3, 0.1 ATR)",
+   "code": "poolAboveOk",
+   "gloss": "whether the nearest buyside liquidity pool above price survived this bar: false only on the bar whose close is above it, which retires it — a buyside pool forms on the bar that confirms an equal high — a recorded pivot high of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQH rule — at the newer pivot's price, and stays intact until a close above it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_ABOVE_TOUCHES",
+   "label": "Liquidity pool above (buyside) touches since formed (3, 0.1 ATR)",
+   "code": "poolAboveTouch",
+   "gloss": "how many bars since the nearest buyside liquidity pool above price formed, through this one, touched or rejected it — levelInteraction's touch_* or reject_* against the pool at exact contact (buffer 0), a BattleGrid addition — a buyside pool forms on the bar that confirms an equal high — a recorded pivot high of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQH rule — at the newer pivot's price, and stays intact until a close above it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_BELOW",
+   "label": "Liquidity pool below (sellside) (3, 0.1 ATR)",
+   "code": "poolBelow",
+   "gloss": "the nearest sellside liquidity pool below price: of the pools intact when this bar opened, the highest, the newest at one price — a sellside pool forms on the bar that confirms an equal low — a recorded pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQL rule — at the newer pivot's price, and stays intact until a close below it retires it (LuxAlgo Liquidity Swings); several pools are kept at once; it still reads on the bar whose close retires it — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_BELOW_INTACT",
+   "label": "Liquidity pool below (sellside) intact (3, 0.1 ATR)",
+   "code": "poolBelowOk",
+   "gloss": "whether the nearest sellside liquidity pool below price survived this bar: false only on the bar whose close is below it, which retires it — a sellside pool forms on the bar that confirms an equal low — a recorded pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQL rule — at the newer pivot's price, and stays intact until a close below it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_BELOW_TOUCHES",
+   "label": "Liquidity pool below (sellside) touches since formed (3, 0.1 ATR)",
+   "code": "poolBelowTouch",
+   "gloss": "how many bars since the nearest sellside liquidity pool below price formed, through this one, touched or rejected it — levelInteraction's touch_* or reject_* against the pool at exact contact (buffer 0), a BattleGrid addition — a sellside pool forms on the bar that confirms an equal low — a recorded pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQL rule — at the newer pivot's price, and stays intact until a close below it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "spread",
+    "efficiency"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_ABOVE_RETIRED",
+   "label": "Liquidity pool above (buyside) retired last bar (3, 0.1 ATR)",
+   "code": "poolAboveRetired",
+   "gloss": "the buyside liquidity pool the previous bar's close retired: the nearest buyside pool above price that bar read, when its close was above it; absent on every other bar, so it reads only on the bar right after the retiring close — a buyside pool forms on the bar that confirms an equal high — a recorded pivot high of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQH rule — at the newer pivot's price, and stays intact until a close above it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+   "label": "Liquidity pool above (buyside) reclaimed (3, 0.1 ATR)",
+   "code": "poolAboveRecl",
+   "gloss": "whether this bar's close is back at or below the buyside liquidity pool the previous bar's close retired — true is a two-bar sweep of that pool, a close above it and then a close back; absent when the previous bar retired no buyside pool — a buyside pool forms on the bar that confirms an equal high — a recorded pivot high of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQH rule — at the newer pivot's price, and stays intact until a close above it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_BELOW_RETIRED",
+   "label": "Liquidity pool below (sellside) retired last bar (3, 0.1 ATR)",
+   "code": "poolBelowRetired",
+   "gloss": "the sellside liquidity pool the previous bar's close retired: the nearest sellside pool below price that bar read, when its close was below it; absent on every other bar, so it reads only on the bar right after the retiring close — a sellside pool forms on the bar that confirms an equal low — a recorded pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQL rule — at the newer pivot's price, and stays intact until a close below it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "numeric",
+    "unit": "price",
+    "precision": 2
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value",
+    "trajectory",
+    "distance",
+    "spread",
+    "efficiency",
+    "levelInteraction"
+   ]
+  },
+  {
+   "metric": "LIQUIDITY_POOL_BELOW_RECLAIMED",
+   "label": "Liquidity pool below (sellside) reclaimed (3, 0.1 ATR)",
+   "code": "poolBelowRecl",
+   "gloss": "whether this bar's close is back at or above the sellside liquidity pool the previous bar's close retired — true is a two-bar sweep of that pool, a close below it and then a close back; absent when the previous bar retired no sellside pool — a sellside pool forms on the bar that confirms an equal low — a recorded pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQL rule — at the newer pivot's price, and stays intact until a close below it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+   "family": "structure",
+   "study": "marketStructure",
+   "provenance": "battleGridDerived",
+   "nativeOutput": {
+    "kind": "boolean"
+   },
+   "timeframeMode": "candle",
+   "transformIds": [
+    "value"
+   ]
+  }
+ ],
+ "studies": [
+  {
+   "study": "swingFractal",
+   "label": "Swing fractal (2/2)",
+   "gloss": "the most recent swing high and low — a bar at least as extreme as the 2 bars before it and more extreme than the 2 after it — the prior swing high and low before them, how each latest pivot compares with its prior one, and how many bars ago each latest pivot printed",
+   "family": "structure",
+   "members": [
+    "SWING_FRACTAL_HIGH",
+    "SWING_FRACTAL_LOW",
+    "PRIOR_SWING_FRACTAL_HIGH",
+    "PRIOR_SWING_FRACTAL_LOW",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "SWING_FRACTAL_LABEL"
+   ],
+   "levelSets": [
+    {
+     "label": "Swing levels",
+     "levels": [
+      "SWING_FRACTAL_HIGH",
+      "SWING_FRACTAL_LOW"
+     ]
+    },
+    {
+     "label": "Prior pivots",
+     "levels": [
+      "PRIOR_SWING_FRACTAL_HIGH",
+      "PRIOR_SWING_FRACTAL_LOW"
+     ]
+    }
+   ]
+  },
+  {
+   "study": "marketStructure",
+   "label": "Market structure (LuxAlgo SMC)",
+   "gloss": "break of structure (BOS) and change of character (CHoCH) on the internal and swing structures, the trend they set, the level they broke, the pending highs and lows the next break is tested against, equal highs and lows with their levels, the nearest intact liquidity pools above and below price, and the pool the previous bar’s close retired with whether this bar closed back — LuxAlgo Smart Money Concepts v7.0, computed by the server over each column’s own bars",
+   "family": "structure",
+   "members": [
+    "INTERNAL_PENDING_HIGH",
+    "INTERNAL_PENDING_LOW",
+    "SWING_PENDING_HIGH",
+    "SWING_PENDING_LOW",
+    "EQH_LEVEL",
+    "EQL_LEVEL",
+    "LIQUIDITY_POOL_ABOVE",
+    "LIQUIDITY_POOL_BELOW",
+    "LIQUIDITY_POOL_ABOVE_RETIRED",
+    "LIQUIDITY_POOL_BELOW_RETIRED",
+    "INTERNAL_STRUCTURE_EVENT",
+    "INTERNAL_STRUCTURE_TREND",
+    "INTERNAL_STRUCTURE_LEVEL",
+    "SWING_STRUCTURE_EVENT",
+    "SWING_STRUCTURE_TREND",
+    "SWING_STRUCTURE_LEVEL",
+    "EQH",
+    "EQL",
+    "LIQUIDITY_POOL_ABOVE_INTACT",
+    "LIQUIDITY_POOL_ABOVE_TOUCHES",
+    "LIQUIDITY_POOL_BELOW_INTACT",
+    "LIQUIDITY_POOL_BELOW_TOUCHES",
+    "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+    "LIQUIDITY_POOL_BELOW_RECLAIMED"
+   ],
+   "levelSets": [
+    {
+     "label": "Pending internal levels",
+     "levels": [
+      "INTERNAL_PENDING_HIGH",
+      "INTERNAL_PENDING_LOW"
+     ]
+    },
+    {
+     "label": "Pending swing levels",
+     "levels": [
+      "SWING_PENDING_HIGH",
+      "SWING_PENDING_LOW"
+     ]
+    },
+    {
+     "label": "Equal-pivot levels",
+     "levels": [
+      "EQH_LEVEL",
+      "EQL_LEVEL"
+     ]
+    },
+    {
+     "label": "Liquidity pools",
+     "levels": [
+      "LIQUIDITY_POOL_ABOVE",
+      "LIQUIDITY_POOL_BELOW",
+      "LIQUIDITY_POOL_ABOVE_RETIRED",
+      "LIQUIDITY_POOL_BELOW_RETIRED"
+     ]
+    }
+   ]
+  }
+ ],
+ "indicators": [
+  {
+   "key": "STRUCT_ZONES",
+   "label": "Structure zones",
+   "family": "structure",
+   "gloss": "the ACTIVE structure-zone set (fair-value gaps and order blocks), each used up by a wick past its far edge",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "STRUCT_ZONES",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ZONE_SUPPORT_HIGH",
+   "label": "Nearest support zone high",
+   "family": "structure",
+   "gloss": "the high of the nearest support zone (fair-value gap or order block) price has not traded below — the zone's near edge; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "ZONE_SUPPORT_HIGH",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ZONE_SUPPORT_LOW",
+   "label": "Nearest support zone low",
+   "family": "structure",
+   "gloss": "the low of the nearest support zone (fair-value gap or order block) price has not traded below — the zone's far edge, which a low below uses up; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "ZONE_SUPPORT_LOW",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ZONE_RESIST_HIGH",
+   "label": "Nearest resistance zone high",
+   "family": "structure",
+   "gloss": "the high of the nearest resistance zone (fair-value gap or order block) price has not traded above — the zone's far edge, which a high above uses up; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "ZONE_RESIST_HIGH",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ZONE_RESIST_LOW",
+   "label": "Nearest resistance zone low",
+   "family": "structure",
+   "gloss": "the low of the nearest resistance zone (fair-value gap or order block) price has not traded above — the zone's near edge; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "ZONE_RESIST_LOW",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ZONE_SUPPORT_MID",
+   "label": "Nearest support zone midpoint",
+   "family": "structure",
+   "gloss": "the midpoint, (high + low) / 2, of the nearest support zone (fair-value gap or order block) price has not traded below — the zone this side's edges read (SMC's fair-value-gap split, ICT's 50% / consequent encroachment), never the rule that picks it; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "ZONE_SUPPORT_MID",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "ZONE_RESIST_MID",
+   "label": "Nearest resistance zone midpoint",
+   "family": "structure",
+   "gloss": "the midpoint, (high + low) / 2, of the nearest resistance zone (fair-value gap or order block) price has not traded above — the zone this side's edges read (SMC's fair-value-gap split, ICT's 50% / consequent encroachment), never the rule that picks it; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
+   "aliases": [],
+   "inputs": [],
+   "length": null,
+   "points": [
+    {
+     "metric": "ZONE_RESIST_MID",
+     "at": {},
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "swingFractal",
+   "label": "Swing fractal (2/2)",
+   "family": "structure",
+   "gloss": "the most recent swing high and low — a bar at least as extreme as the 2 bars before it and more extreme than the 2 after it — the prior swing high and low before them, how each latest pivot compares with its prior one, and how many bars ago each latest pivot printed",
+   "aliases": [
+    "fractal",
+    "swing high",
+    "swing low",
+    "ta.pivothigh",
+    "ta.pivotlow"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "SWING_FRACTAL_HIGH",
+       "label": "Swing high (fractal 2/2)"
+      },
+      {
+       "value": "SWING_FRACTAL_LOW",
+       "label": "Swing low (fractal 2/2)"
+      },
+      {
+       "value": "PRIOR_SWING_FRACTAL_HIGH",
+       "label": "Prior swing high (fractal 2/2)"
+      },
+      {
+       "value": "PRIOR_SWING_FRACTAL_LOW",
+       "label": "Prior swing low (fractal 2/2)"
+      },
+      {
+       "value": "SWING_FRACTAL_HIGH_BARS_AGO",
+       "label": "Swing high age (bars)"
+      },
+      {
+       "value": "SWING_FRACTAL_LOW_BARS_AGO",
+       "label": "Swing low age (bars)"
+      },
+      {
+       "value": "SWING_FRACTAL_LABEL",
+       "label": "Swing structure"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "SWING_FRACTAL_HIGH",
+     "at": {
+      "output": "SWING_FRACTAL_HIGH"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_FRACTAL_LOW",
+     "at": {
+      "output": "SWING_FRACTAL_LOW"
+     },
+     "length": null
+    },
+    {
+     "metric": "PRIOR_SWING_FRACTAL_HIGH",
+     "at": {
+      "output": "PRIOR_SWING_FRACTAL_HIGH"
+     },
+     "length": null
+    },
+    {
+     "metric": "PRIOR_SWING_FRACTAL_LOW",
+     "at": {
+      "output": "PRIOR_SWING_FRACTAL_LOW"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_FRACTAL_HIGH_BARS_AGO",
+     "at": {
+      "output": "SWING_FRACTAL_HIGH_BARS_AGO"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_FRACTAL_LOW_BARS_AGO",
+     "at": {
+      "output": "SWING_FRACTAL_LOW_BARS_AGO"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_FRACTAL_LABEL",
+     "at": {
+      "output": "SWING_FRACTAL_LABEL"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  },
+  {
+   "key": "marketStructure",
+   "label": "Market structure (LuxAlgo SMC)",
+   "family": "structure",
+   "gloss": "break of structure (BOS) and change of character (CHoCH) on the internal and swing structures, the trend they set, the level they broke, the pending highs and lows the next break is tested against, equal highs and lows with their levels, the nearest intact liquidity pools above and below price, and the pool the previous bar’s close retired with whether this bar closed back — LuxAlgo Smart Money Concepts v7.0, computed by the server over each column’s own bars",
+   "aliases": [
+    "market structure",
+    "bos",
+    "choch",
+    "smc",
+    "break of structure"
+   ],
+   "inputs": [
+    {
+     "key": "output",
+     "label": "Output",
+     "options": [
+      {
+       "value": "INTERNAL_PENDING_HIGH",
+       "label": "Pending internal high (internal 5, swing 50)"
+      },
+      {
+       "value": "INTERNAL_PENDING_LOW",
+       "label": "Pending internal low (internal 5, swing 50)"
+      },
+      {
+       "value": "SWING_PENDING_HIGH",
+       "label": "Pending swing high (50)"
+      },
+      {
+       "value": "SWING_PENDING_LOW",
+       "label": "Pending swing low (50)"
+      },
+      {
+       "value": "EQH_LEVEL",
+       "label": "Equal-high level (3, 0.1 ATR)"
+      },
+      {
+       "value": "EQL_LEVEL",
+       "label": "Equal-low level (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_ABOVE",
+       "label": "Liquidity pool above (buyside) (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_BELOW",
+       "label": "Liquidity pool below (sellside) (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_ABOVE_RETIRED",
+       "label": "Liquidity pool above (buyside) retired last bar (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_BELOW_RETIRED",
+       "label": "Liquidity pool below (sellside) retired last bar (3, 0.1 ATR)"
+      },
+      {
+       "value": "INTERNAL_STRUCTURE_EVENT",
+       "label": "Internal structure break (internal 5, swing 50)"
+      },
+      {
+       "value": "INTERNAL_STRUCTURE_TREND",
+       "label": "Internal structure trend (internal 5, swing 50)"
+      },
+      {
+       "value": "INTERNAL_STRUCTURE_LEVEL",
+       "label": "Internal structure level (internal 5, swing 50)"
+      },
+      {
+       "value": "SWING_STRUCTURE_EVENT",
+       "label": "Swing structure break (50)"
+      },
+      {
+       "value": "SWING_STRUCTURE_TREND",
+       "label": "Swing structure trend (50)"
+      },
+      {
+       "value": "SWING_STRUCTURE_LEVEL",
+       "label": "Swing structure level (50)"
+      },
+      {
+       "value": "EQH",
+       "label": "Equal high (3, 0.1 ATR)"
+      },
+      {
+       "value": "EQL",
+       "label": "Equal low (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_ABOVE_INTACT",
+       "label": "Liquidity pool above (buyside) intact (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_ABOVE_TOUCHES",
+       "label": "Liquidity pool above (buyside) touches since formed (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_BELOW_INTACT",
+       "label": "Liquidity pool below (sellside) intact (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_BELOW_TOUCHES",
+       "label": "Liquidity pool below (sellside) touches since formed (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+       "label": "Liquidity pool above (buyside) reclaimed (3, 0.1 ATR)"
+      },
+      {
+       "value": "LIQUIDITY_POOL_BELOW_RECLAIMED",
+       "label": "Liquidity pool below (sellside) reclaimed (3, 0.1 ATR)"
+      }
+     ]
+    }
+   ],
+   "length": null,
+   "points": [
+    {
+     "metric": "INTERNAL_PENDING_HIGH",
+     "at": {
+      "output": "INTERNAL_PENDING_HIGH"
+     },
+     "length": null
+    },
+    {
+     "metric": "INTERNAL_PENDING_LOW",
+     "at": {
+      "output": "INTERNAL_PENDING_LOW"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_PENDING_HIGH",
+     "at": {
+      "output": "SWING_PENDING_HIGH"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_PENDING_LOW",
+     "at": {
+      "output": "SWING_PENDING_LOW"
+     },
+     "length": null
+    },
+    {
+     "metric": "EQH_LEVEL",
+     "at": {
+      "output": "EQH_LEVEL"
+     },
+     "length": null
+    },
+    {
+     "metric": "EQL_LEVEL",
+     "at": {
+      "output": "EQL_LEVEL"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE",
+     "at": {
+      "output": "LIQUIDITY_POOL_ABOVE"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW",
+     "at": {
+      "output": "LIQUIDITY_POOL_BELOW"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_RETIRED",
+     "at": {
+      "output": "LIQUIDITY_POOL_ABOVE_RETIRED"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_RETIRED",
+     "at": {
+      "output": "LIQUIDITY_POOL_BELOW_RETIRED"
+     },
+     "length": null
+    },
+    {
+     "metric": "INTERNAL_STRUCTURE_EVENT",
+     "at": {
+      "output": "INTERNAL_STRUCTURE_EVENT"
+     },
+     "length": null
+    },
+    {
+     "metric": "INTERNAL_STRUCTURE_TREND",
+     "at": {
+      "output": "INTERNAL_STRUCTURE_TREND"
+     },
+     "length": null
+    },
+    {
+     "metric": "INTERNAL_STRUCTURE_LEVEL",
+     "at": {
+      "output": "INTERNAL_STRUCTURE_LEVEL"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_STRUCTURE_EVENT",
+     "at": {
+      "output": "SWING_STRUCTURE_EVENT"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_STRUCTURE_TREND",
+     "at": {
+      "output": "SWING_STRUCTURE_TREND"
+     },
+     "length": null
+    },
+    {
+     "metric": "SWING_STRUCTURE_LEVEL",
+     "at": {
+      "output": "SWING_STRUCTURE_LEVEL"
+     },
+     "length": null
+    },
+    {
+     "metric": "EQH",
+     "at": {
+      "output": "EQH"
+     },
+     "length": null
+    },
+    {
+     "metric": "EQL",
+     "at": {
+      "output": "EQL"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_INTACT",
+     "at": {
+      "output": "LIQUIDITY_POOL_ABOVE_INTACT"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_TOUCHES",
+     "at": {
+      "output": "LIQUIDITY_POOL_ABOVE_TOUCHES"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_INTACT",
+     "at": {
+      "output": "LIQUIDITY_POOL_BELOW_INTACT"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_TOUCHES",
+     "at": {
+      "output": "LIQUIDITY_POOL_BELOW_TOUCHES"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+     "at": {
+      "output": "LIQUIDITY_POOL_ABOVE_RECLAIMED"
+     },
+     "length": null
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_RECLAIMED",
+     "at": {
+      "output": "LIQUIDITY_POOL_BELOW_RECLAIMED"
+     },
+     "length": null
+    }
+   ],
+   "routes": []
+  }
+ ],
+ "transforms": [
+  {
+   "id": "value",
+   "label": "Value"
+  },
+  {
+   "id": "trajectory",
+   "label": "Trajectory"
+  },
+  {
+   "id": "distance",
+   "label": "Distance from price"
+  },
+  {
+   "id": "spread",
+   "label": "Spread vs metric"
+  },
+  {
+   "id": "relativeTo",
+   "label": "Relative to coin"
+  },
+  {
+   "id": "aggregate",
+   "label": "Moving average (SMA)"
+  },
+  {
+   "id": "ema",
+   "label": "Exponential average (EMA)"
+  },
+  {
+   "id": "rma",
+   "label": "Wilder average (RMA)"
+  },
+  {
+   "id": "wma",
+   "label": "Weighted average (WMA)"
+  },
+  {
+   "id": "rsi",
+   "label": "Relative strength index (RSI)"
+  },
+  {
+   "id": "cci",
+   "label": "Commodity channel index (CCI)"
+  },
+  {
+   "id": "roc",
+   "label": "Rate of change (ROC)"
+  },
+  {
+   "id": "efficiency",
+   "label": "Efficiency (ER)"
+  },
+  {
+   "id": "zscore",
+   "label": "Z-score"
+  },
+  {
+   "id": "stddev",
+   "label": "Std deviation"
+  },
+  {
+   "id": "linregSlope",
+   "label": "Regression slope"
+  },
+  {
+   "id": "pctl",
+   "label": "Percentile"
+  },
+  {
+   "id": "rollingMin",
+   "label": "Rolling min"
+  },
+  {
+   "id": "rollingMax",
+   "label": "Rolling max"
+  },
+  {
+   "id": "classifyZone",
+   "label": "Zone label"
+  },
+  {
+   "id": "maxShare",
+   "label": "Largest share"
+  },
+  {
+   "id": "rank",
+   "label": "Peer rank"
+  },
+  {
+   "id": "crossDetect",
+   "label": "Cross detect"
+  },
+  {
+   "id": "levelInteraction",
+   "label": "Level interaction"
+  },
+  {
+   "id": "count",
+   "label": "Zone count"
+  },
+  {
+   "id": "nearestZoneType",
+   "label": "Nearest zone type"
+  },
+  {
+   "id": "nearestZoneRange",
+   "label": "Nearest zone range"
+  },
+  {
+   "id": "nearestZoneDist",
+   "label": "Nearest zone distance"
+  },
+  {
+   "id": "nearestZoneAge",
+   "label": "Nearest zone age"
+  }
+ ],
+ "timeframeRefs": [
+  {
+   "rel": "anchor",
+   "resolvedByAnchor": {
+    "5m": "5m",
+    "15m": "15m",
+    "1h": "1h",
+    "4h": "4h"
+   }
+  },
+  {
+   "rel": "lower",
+   "resolvedByAnchor": {
+    "5m": "1m",
+    "15m": "5m",
+    "1h": "15m",
+    "4h": "1h"
+   }
+  },
+  {
+   "rel": "regime",
+   "resolvedByAnchor": {
+    "5m": null,
+    "15m": null,
+    "1h": null,
+    "4h": null
+   }
+  }
+ ],
+ "budgets": {
+  "sections": 32,
+  "sectionColumns": 32,
+  "columnLookback": 64,
+  "distinctTimeframes": 8,
+  "strategyConditions": 32,
+  "conditionClauses": 32,
+  "conditionFrameReads": 5048,
+  "reportNoteChars": 3200,
+  "marketReadChars": 4000
+ },
+ "previewExecutionLimits": {
+  "maxResultChars": 150000,
+  "deadlineMs": 15000
+ },
+ "timeframes": [
+  "5m",
+  "15m",
+  "1h",
+  "4h"
+ ],
+ "rankedTimeframes": [
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+  "1d"
+ ],
+ "conditionGrammar": {
+  "maxGroupDepth": 2,
+  "operators": [
+   "lt",
+   "lte",
+   "gte",
+   "gt",
+   "between",
+   "is",
+   "in",
+   "crossesAbove",
+   "crossesBelow",
+   "increased",
+   "decreased",
+   "enters",
+   "exits"
+  ],
+  "groupOperators": [
+   "ALL",
+   "ANY",
+   "NOT",
+   "N_OF",
+   "SEQUENCE"
+  ],
+  "rootOnlyGroupOperators": [
+   "SEQUENCE"
+  ],
+  "verdicts": [
+   "UP",
+   "DOWN",
+   "NEITHER"
+  ]
+ },
+ "templates": [
+  {
+   "kind": "platform",
+   "sectionKey": "includePriceAction",
+   "title": "Price Action",
+   "columns": [
+    {
+     "metric": "LAST",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 5,
+     "bars": "closed"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "VWAP",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CHG_5M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_15M",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_1H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_4H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CHG_24H",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSubTimeframe",
+   "title": "Candle Breakdown",
+   "columns": [
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "efficiency",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    {
+     "metric": "VOLUME",
+     "transformId": "maxShare",
+     "timeframe": {
+      "rel": "lower"
+     },
+     "window": 4,
+     "bars": "closed"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRsi",
+   "title": "RSI",
+   "columns": [
+    {
+     "metric": "RSI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "RSI7",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMacd",
+   "title": "MACD",
+   "columns": [
+    {
+     "metric": "MACD_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MACD_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolume",
+   "title": "Volume",
+   "columns": [
+    {
+     "metric": "RVOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OBV",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeVolatility",
+   "title": "Volatility",
+   "columns": [
+    {
+     "metric": "ATR",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    },
+    {
+     "metric": "ATR_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "HIGH_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "LOW_DEV",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeBollingerBands",
+   "title": "Bollinger Bands",
+   "columns": [
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BB_WIDTH_PCT",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "lo"
+    },
+    {
+     "metric": "BB_PCT_B",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CCI20",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMovingAverages",
+   "title": "Moving Averages",
+   "columns": [
+    {
+     "metric": "SMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA50",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA13",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA20",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMA200",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "EMA5",
+     "transformId": "spread",
+     "chainedTransformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "EMA13"
+      }
+     ]
+    },
+    {
+     "metric": "EMA_CROSS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStochastic",
+   "title": "Stochastic",
+   "columns": [
+    {
+     "metric": "STOCH_K",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_D",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "STOCH_K",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeFundingRates",
+   "title": "Funding Rates",
+   "columns": [
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_RATE",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "FUNDING_ANN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "FUNDING_LABEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MARK",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "ORACLE"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeOpenInterest",
+   "title": "Open Interest",
+   "columns": [
+    {
+     "metric": "OI",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_CHG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI",
+     "transformId": "aggregate",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 24
+    },
+    {
+     "metric": "OI_VELOCITY",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "OI_PX_REGIME",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRelativeStrength",
+   "title": "Relative Strength",
+   "columns": [
+    {
+     "metric": "PPO_HIST",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PPO_HIST",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ROC12",
+     "transformId": "crossDetect",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CLOSE_CHANGE",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "far"
+    },
+    {
+     "metric": "RVOL",
+     "transformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "hi"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeSupportResistance",
+   "title": "Support & Resistance",
+   "columns": [
+    {
+     "metric": "DONCHIAN_UPPER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "DONCHIAN_LOWER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "DONCHIAN_UPPER_PRIOR",
+     "transformId": "distance",
+     "chainedTransformId": "rank",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "ordering": "near"
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_UPPER"
+      }
+     ]
+    },
+    {
+     "metric": "CLOSE",
+     "transformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "inputs": [
+      {
+       "metric": "DONCHIAN_LOWER"
+      }
+     ]
+    },
+    {
+     "metric": "PRICE_ZONE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BAR_FORMING",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeTrendStrength",
+   "title": "Trend Strength",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeMfi",
+   "title": "Money Flow Index",
+   "columns": [
+    {
+     "metric": "MFI14",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "MFI14",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvd",
+   "title": "Volume Delta (CVD)",
+   "columns": [
+    {
+     "metric": "CVD",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CVD",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_PRESSURE",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "BUY_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SELL_TRADES",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeHigherTimeframe",
+   "title": "Higher Timeframe Context",
+   "columns": [
+    {
+     "metric": "ADX",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "ADX",
+     "transformId": "classifyState",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "RSI14",
+     "transformId": "classifyZone",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "MA_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "regime"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeRegimeContext",
+   "title": "Regime Context",
+   "columns": [
+    {
+     "metric": "REGIME_TREND",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_MOM",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_STATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_CONVICTION",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_RUN_BARS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_CRASH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_WARNING_DIVERGENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_GATE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_MARGIN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_TREND_SOURCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_ATR_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "REGIME_VOL_BBW_RATIO",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCrowdIntelligence",
+   "title": "Crowd Intelligence",
+   "columns": [
+    {
+     "metric": "CROWD_PICK",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_PICK_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UPBIAS_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_LEAN_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_UP_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_CAPT_EXCESS_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CROWD_ACC_EDGE_Z_LIVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeCvdCrowdConvergence",
+   "title": "CVD-Crowd Convergence",
+   "columns": [
+    {
+     "metric": "FLOW_ALIGN",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "SMART_RETAIL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CAPTAIN_CONF",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "CONFIDENCE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includeStructureZones",
+   "title": "Price Structure Zones",
+   "columns": [
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "count",
+     "timeframe": {
+      "rel": "regime"
+     }
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "support"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneType",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneRange",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneDist",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    },
+    {
+     "metric": "STRUCT_ZONES",
+     "transformId": "nearestZoneAge",
+     "timeframe": {
+      "rel": "regime"
+     },
+     "side": "resistance"
+    }
+   ]
+  },
+  {
+   "kind": "platform",
+   "sectionKey": "includePerpSpotFlow",
+   "title": "Perp/Spot Flow",
+   "columns": [
+    {
+     "metric": "SPOT_CVD",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_FLOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_GAP",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_STRENGTH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    {
+     "metric": "PERP_SPOT_CONFIRMS",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    }
+   ]
+  },
+  {
+   "kind": "custom",
+   "templateKey": "momentum-composite",
+   "title": "Momentum Composite",
+   "description": "RSI, MACD, and Stochastic %K read at the section anchor — a one-glance momentum panel.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "volatility-trend",
+   "title": "Volatility & Trend",
+   "description": "ATR, ADX, and Bollinger width % at the section anchor — regime and expansion at a glance.",
+   "columnCount": 3
+  },
+  {
+   "kind": "custom",
+   "templateKey": "venue-dislocation",
+   "title": "Venue Dislocation",
+   "description": "Where the spot venues and the perp disagree at the section anchor — the Coinbase premium over Binance, the perp basis over each venue, the cross-venue buy-share gap, and the composite spot tape.",
+   "columnCount": 6
+  }
+ ],
+ "scalarFamilies": [
+  {
+   "moduleKey": null,
+   "sectionKey": "session-field",
+   "title": "Session Field",
+   "metrics": [
+    {
+     "metric": "fieldPlayers",
+     "gloss": "players in this session",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldPlayers_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldUpBias",
+     "gloss": "share of the field’s directional picks that are up (%); absent when no bias has been measured",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldUpBias_session"
+      }
+     ]
+    },
+    {
+     "metric": "fieldBiasDir",
+     "gloss": "the direction the field leans, derived from the share; absent whenever the bias is, and at an exact 50/50 where no side dominates",
+     "conditionOperators": [
+      "is",
+      "in"
+     ],
+     "conditionVocabulary": [
+      "UP",
+      "DOWN"
+     ],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "fieldBiasDir_session"
+      }
+     ]
+    },
+    {
+     "metric": "captConc",
+     "gloss": "share of captain picks landing on the single most-captained coin (%)",
+     "conditionOperators": [
+      "lt",
+      "lte",
+      "gte",
+      "gt",
+      "between"
+     ],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "captConc_session"
+      }
+     ]
+    },
+    {
+     "metric": "picksSpread",
+     "gloss": "distinct coins picked, over distinct coins available",
+     "conditionOperators": [],
+     "conditionVocabulary": [],
+     "conditionHold": {
+      "timeframe": null,
+      "maxWindow": 1,
+      "maxAtLeast": 1,
+      "refusal": "NOT_REWINDABLE"
+     },
+     "developingRead": false,
+     "scopes": [
+      {
+       "scope": "session",
+       "header": "picksSpread_session"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

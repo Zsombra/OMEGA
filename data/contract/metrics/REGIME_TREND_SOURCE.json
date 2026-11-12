@@ -27,7 +27,7 @@
   "study": "regimeTrendEvidence",
   "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "which evidence class voted the trend direction — a decisive DI spread, or the EMA-vs-SMA fallback that fires precisely when the DI spread is indecisive",
+  "gloss": "which evidence class voted the trend direction — a decisive DI spread, or the EMA(21)/EMA(55) alignment fallback that fires precisely when the DI spread is indecisive",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

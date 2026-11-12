@@ -57,6 +57,7 @@ import time
 import urllib.request
 
 sys.path.insert(0, ".")
+from scripts.mcporter_transport import RUNTIME, TRANSPORT     # noqa: E402
 
 PROBE_DATE = os.environ.get("PROBE_DATE", "2026-11-07")
 HINTS = os.environ.get("PROBE_HINTS")       # required by main(); read lazily so the module imports for tests
@@ -191,24 +192,36 @@ def call(tool, args, timeout=240, attempts=4):
         if wait > 0:
             time.sleep(wait)
         _last[0] = time.monotonic()
-        p = subprocess.Popen(
-            ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
-             "--output", "json", "--args", "-"],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        try:
-            out, serr = p.communicate(json.dumps(args).encode(), timeout=timeout)
-        except subprocess.TimeoutExpired:
-            p.kill()
+        timed_out = False
+        if TRANSPORT == "runtime":
+            # 2026-11-11: one long-lived mcporter runtime instead of a process per preview
+            # (scripts/mcporter_transport.py); it answers in the CLI's terms, so the rules below read it unchanged
+            try:
+                txt, errtxt = RUNTIME.send(tool, args, timeout)
+            except TimeoutError:
+                timed_out = True
+        else:
+            p = subprocess.Popen(
+                ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
+                 "--output", "json", "--args", "-"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                out, serr = p.communicate(json.dumps(args).encode(), timeout=timeout)
+            except subprocess.TimeoutExpired:
+                p.kill()
+                timed_out = True
+            else:
+                txt, errtxt = out.decode("utf-8", errors="replace"), serr.decode(errors="replace")
+        if timed_out:
             err = "TIMEOUT"
         else:
-            txt = out.decode("utf-8", errors="replace")
             if txt.strip():
                 try:
                     return json.loads(txt)
                 except json.JSONDecodeError:
                     err = f"stdout is not JSON: {txt[:400]}"
             else:
-                err = (serr.decode(errors="replace") or "empty stdout")[:400]
+                err = (errtxt or "empty stdout")[:400]
                 if any(marker in err for marker in AUTH_MARKERS):
                     raise TransportFailure(f"mcporter has no usable credential for battlegrid-anbu (re-authorizing is "
                                            f"the user's step): {err}")

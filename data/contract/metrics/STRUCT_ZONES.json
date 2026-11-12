@@ -12,32 +12,39 @@
   "transforms": [
     {
       "id": "count",
-      "metricParametersAccepted": false
+      "metricParametersAccepted": true
     },
     {
       "id": "nearestZoneType",
-      "metricParametersAccepted": false
+      "metricParametersAccepted": true
     },
     {
       "id": "nearestZoneRange",
-      "metricParametersAccepted": false
+      "metricParametersAccepted": true
     },
     {
       "id": "nearestZoneDist",
-      "metricParametersAccepted": false
+      "metricParametersAccepted": true
     },
     {
       "id": "nearestZoneAge",
-      "metricParametersAccepted": false
+      "metricParametersAccepted": true
     }
   ],
   "study": null,
   "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "the ACTIVE structure-zone set (fair-value gaps and order blocks)",
+  "gloss": "the ACTIVE structure-zone set (fair-value gaps and order blocks), each used up by a wick past its far edge",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"
   ],
-  "parameters": null
+  "parameters": {
+    "usedUpOnClose": {
+      "required": false,
+      "description": "Whether a structure zone is used up only by a close past its far edge; off, by a wick past it (LuxAlgo’s High/Low mitigation).",
+      "defaultValue": false,
+      "bound": "flag"
+    }
+  }
 }

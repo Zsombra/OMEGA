@@ -214,8 +214,22 @@ def test_whole_axes_send_every_dial_at_the_measured_defaults(name):
     assert list(a["POSITION_MANAGEMENT"]) == list(POSITION_MANAGEMENT_DIALS)
     assert a["POSITION_MANAGEMENT"]["decisionInvalidationExitEnabled"] is True
     # v108: minAtrPct is required on TRADE_LEVEL_POLICY, in the 108 schema's `required` order
-    assert list(a["TRADE_LEVEL_POLICY"]) == list(TRADE_LEVEL_DIALS) == [
+    assert list(TRADE_LEVEL_DIALS) == [
         "minAtrPct", "minStopLossAtrMultiple", "maxStopLossAtrMultiple", "minRiskRewardRatio"]
+    # 2026-11-11, contract 168.3.0: the axis REQUIRES `tradeLevelMenu` as well (the author defines the trade levels), so
+    # every plan emits it after the four dials - the 168 capture's `required` order; the four dials did not move
+    from omega.contract import stage_schema
+    from omega.trade_levels import default_menu
+    axis = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["axes"]["properties"]["TRADE_LEVEL_POLICY"]
+    assert list(a["TRADE_LEVEL_POLICY"]) == [*TRADE_LEVEL_DIALS, "tradeLevelMenu"] == axis["required"]
+    # no preset names a menu, so each sends the default: ATR 1 / 1.5 / 2 stops and, from its minRiskRewardRatio (1.5)
+    # up, R 1.5 / 2 / 3 targets, the same for both directions (omega.trade_levels.default_menu)
+    assert PRESETS[name].trade_level_menu is None and a["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] == 1.5
+    side = {"stops": [{"kind": "ATR", "atrMultiple": 1}, {"kind": "ATR", "atrMultiple": 1.5},
+                      {"kind": "ATR", "atrMultiple": 2}],
+            "targets": [{"kind": "R_MULTIPLE", "multiple": 1.5}, {"kind": "R_MULTIPLE", "multiple": 2},
+                        {"kind": "R_MULTIPLE", "multiple": 3}]}
+    assert a["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] == default_menu(1.5) == {"LONG": side, "SHORT": side}
     sent = {**a["TRADE_LEVEL_POLICY"], **a["POSITION_MANAGEMENT"]}
     assert all(sent[k] == v for k, v in PLATFORM_EXECUTION_DEFAULTS.items())
 

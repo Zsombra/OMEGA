@@ -114,6 +114,11 @@ def enumerate_shapes(expand_operands: bool = False,
             for operand, ordering in _variants(m, transform, expand_operands):
                 out.append(ColumnShape(name, transform, None, operand, ordering, instrument))
                 for succ in (flags.get("chainSuccessors") or ()):
+                    if succ in c.unmeasured_chain_outers:
+                        # Served, never rendered (data/contract/metrics/_unmeasured_108.json `chainOuters`; 168:
+                        # `spread` after aggregate / ema / rma / wma): omega.validate refuses the column
+                        # (TRANSFORM_UNMEASURED), so the space does not hold a shape for it either.
+                        continue
                     if succ == "rank" and expand_operands:
                         # Chaining to rank NARROWS the legal operand set. The contract
                         # publishes the rankable operands (rankableSpreadOperands; chainedOuters.rank.operands

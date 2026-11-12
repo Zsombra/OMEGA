@@ -112,7 +112,11 @@ def test_the_preflight_refuses_the_two_removed_axes_as_undeclared():
     body = dict(plan(PRESETS["trend-continuation"]).axes())
     body["SETUP_GATES"] = {"minAggregateScore": 0.6, "minRequiredCount": 0, "minAtrPct": 0.5}
     body["SIGNAL_RULES"] = {"rules": []}
-    body["TRADE_LEVEL_POLICY"] = {k: v for k, v in body["TRADE_LEVEL_POLICY"].items() if k != "minAtrPct"}
+    # 2026-11-11, contract 168.3.0: a plan's TRADE_LEVEL_POLICY now carries `tradeLevelMenu`, a key this 110 capture's
+    # closed axis reads as UNDECLARED; it is dropped here so the walk stays about the two removed axes and minAtrPct
+    # (the menu against an old capture is pinned in tests/test_write_surface.py and tests/test_v146.py)
+    body["TRADE_LEVEL_POLICY"] = {k: v for k, v in body["TRADE_LEVEL_POLICY"].items()
+                                  if k not in ("minAtrPct", "tradeLevelMenu")}
     fails = {(f.cls, f.path) for f in P.diff_axes(body, axis_schemas, root) if f.verdict == "FAIL"}
     assert fails == {("UNDECLARED", "axes.SETUP_GATES"), ("UNDECLARED", "axes.SIGNAL_RULES"),
                      ("MISSING_REQUIRED", "axes.TRADE_LEVEL_POLICY.minAtrPct")}

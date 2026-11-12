@@ -269,7 +269,11 @@ def test_the_moves_record(contract):
     assert len(MOVES["parametersServed"]) == 36
     assert MOVES["subjectKindsCounts"] == {"evaluated-coin + benchmark": 489, "evaluated-coin": 25, "market": 13,
                                            "evaluated-coin + benchmark + reference": 4, "reference": 1}
-    assert set(MOVES["added"]) <= set(contract.metrics) and len(contract.metrics) == 534   # 532 at 149.1.0
+    # 532 at 149.1.0; 534 at 161.0.0
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 - the 47 keys of _moves_168.json in, none out
+    moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
+    assert (len(moves_168["added"]), moves_168["retired"]) == (47, [])
+    assert set(MOVES["added"]) <= set(contract.metrics) and len(contract.metrics) == 534 + len(moves_168["added"]) == 581
     for key, knobs in MOVES["parametersServed"].items():
         assert list(contract.metric(key).parameters) == knobs, key
 
@@ -278,8 +282,14 @@ def test_the_vocabulary_read_at_149_1_0(contract):
     shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")
     # 161.0.0 (2026-11-09): _shared.json was re-read at 161.0.0 (2026-11-09T16:22Z, `roc` added: 29 transforms); the 149.1.0
     # read is its `previous` and its own snapshot (20261107T1736Z) keeps the 28 as read
-    assert shared["_refreshed"]["contractVersion"] == "161.0.0" and shared["_refreshed"]["at"] == "2026-11-09T16:22Z"
-    prev = shared["_refreshed"]["previous"]
+    # 2026-11-11, contract 168: re-read twice that day (18:23Z at 168.2.0: conditionGrammar moved; 22:32Z at 168.3.0:
+    # nothing), so the 161.0.0 read is two `previous` down and the 149.1.0 read three; the transforms are still 29
+    assert shared["_refreshed"]["contractVersion"] == "168.3.0" and shared["_refreshed"]["at"] == "2026-11-11T22:32Z"
+    assert shared["_refreshed"]["previous"]["contractVersion"] == "168.2.0"
+    assert shared["_refreshed"]["previous"]["moved"] == ["conditionGrammar"]
+    read_161 = shared["_refreshed"]["previous"]["previous"]
+    assert read_161["contractVersion"] == "161.0.0" and read_161["at"] == "2026-11-09T16:22Z"
+    prev = read_161["previous"]
     assert prev["contractVersion"] == "149.1.0" and prev["at"] == "2026-11-07T17:36Z"
     assert len(shared["transforms"]) == 29 and contract.budgets["conditionFrameReads"] == 5048
     snap = CONTRACT_DIR / "vocabulary" / "20261107T1736Z"

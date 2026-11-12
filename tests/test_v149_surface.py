@@ -65,10 +65,13 @@ def test_the_capture_names_its_contract_build_and_source():
     for tool in TOOLS:
         assert {"description", "inputSchema", "outputSchema", "annotations"} <= set(DOC[tool]), tool
     # 161.0.0 (2026-11-09): the manifest's writeSurface names the 161.0.0 capture; the 149.1.0 block is its `supersedes`
-    assert C.stage_schema()["contractVersion"] == "161.0.0"
+    # 2026-11-11, contract 168.3.0: the manifest names the 168.3.0 capture, the 161.0.0 block is its `supersedes` and
+    # the 149.1.0 block sits under that - two levels down, it was one
+    assert C.stage_schema()["contractVersion"] == "168.3.0"
     current = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
-    assert current["servedContractVersion"] == "161.0.0"
-    ws = current["supersedes"]
+    assert current["servedContractVersion"] == "168.3.0"
+    assert current["supersedes"]["servedContractVersion"] == "161.0.0"
+    ws = current["supersedes"]["supersedes"]
     assert ws["servedContractVersion"] == "149.1.0"
     assert ws["schema"] == "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
     # cross-checked against the manager's own live observation when its stack came back (2026-11-07T03:16:53Z)
@@ -163,11 +166,18 @@ def test_the_five_smoothers_are_measured_as_transform_and_as_chain_outer():
     """Unmeasured (served, never extracted) from 2026-11-07 03:22Z until the refresh folded the 2026-11-06 hints in and
     the probe rendered them the same day (RSI14_rma14, dist_close_rma10, ...)."""
     contract = load()
-    assert contract.unmeasured_transforms == {} and contract.unmeasured_chain_outers == {}
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): no transform is unmeasured, and the five smoothers are
+    # measured as chain outers still; the one unmeasured chain outer is `spread`, which 168 added to
+    # chainedTransformId (19 -> 20, not in the 149.1.0 enum) and no probe has rendered (_unmeasured_108.json chainOuters)
+    assert contract.unmeasured_transforms == {} and set(contract.unmeasured_chain_outers) == {"spread"}
+    assert contract.unmeasured_chain_outers["spread"]["servedAt"] == "168.3.0"
+    assert ({"ema"} | NEW_TRANSFORMS).isdisjoint(contract.unmeasured_chain_outers)
     assert {"ema"} | NEW_TRANSFORMS <= set(contract.transforms)
     history = C._load(CONTRACT_DIR / "metrics" / "_unmeasured_108.json")["history149"]
     assert set(history["chainOuters"]) == {"distance", "ema"} | NEW_TRANSFORMS
     assert set(history["chainOuters"]) <= set(V["reportColumn"]["chainedTransformId"]["enum"])
+    assert "spread" not in V["reportColumn"]["chainedTransformId"]["enum"]
+    assert "spread" in vocabulary()["reportColumn"]["chainedTransformId"]["enum"]
 
 
 @pytest.mark.parametrize("transform", sorted(NEW_TRANSFORMS))

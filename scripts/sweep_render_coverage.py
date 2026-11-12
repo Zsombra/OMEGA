@@ -53,6 +53,12 @@ from omega.fanout import outputs_for                 # noqa: E402
 from scripts.probe_authoring_148 import (            # noqa: E402  the answer and end-of-run rules the probes share
     VERSION_URL, classify, contract_fields, is_rate_limit, read_version_safely, withheld_because,
 )
+from scripts.mcporter_transport import RUNTIME, TRANSPORT     # noqa: E402
+
+# what the run record's `how` names (the 2026-11-11 record was written before this line existed and was corrected by
+# hand: that sweep ran over the runtime)
+VIA = ("one long-lived mcporter runtime (scripts/mcporter_runtime.mjs, EXTRACTION_TRANSPORT=runtime)"
+       if TRANSPORT == "runtime" else "the mcporter CLI")
 from scripts.render_coverage import (                # noqa: E402
     QUARANTINED, coverage, is_placeholder, rendered_headers,
 )
@@ -146,18 +152,26 @@ def call(tool, args, timeout=240, attempts=4):
     for attempt in range(1, attempts + 1):
         _calls[0] += 1
         time.sleep(0.45)                      # one worker, well under the account's 3 req/s
-        p = subprocess.Popen(
-            ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
-             "--output", "json", "--args", "-"],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        try:
-            out, err = p.communicate(json.dumps(args).encode(), timeout=timeout)
-        except subprocess.TimeoutExpired:
-            p.kill()
-            raise Transient("TIMEOUT") from None
-        txt = out.decode(errors="replace")
+        if TRANSPORT == "runtime":
+            # 2026-11-11: one long-lived mcporter runtime instead of a process per preview
+            # (scripts/mcporter_transport.py); it answers in the CLI's terms, so every rule below reads it unchanged
+            try:
+                txt, errtxt = RUNTIME.send(tool, args, timeout)
+            except TimeoutError:
+                raise Transient("TIMEOUT") from None
+        else:
+            p = subprocess.Popen(
+                ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
+                 "--output", "json", "--args", "-"],
+                stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                out, err = p.communicate(json.dumps(args).encode(), timeout=timeout)
+            except subprocess.TimeoutExpired:
+                p.kill()
+                raise Transient("TIMEOUT") from None
+            txt, errtxt = out.decode(errors="replace"), err.decode(errors="replace")
         if not txt.strip():
-            msg = (err.decode(errors="replace") or "empty stdout")[:400]
+            msg = (errtxt or "empty stdout")[:400]
             if any(marker in msg for marker in AUTH_MARKERS):
                 raise SweepStopped(f"mcporter has no usable credential for battlegrid-anbu: {msg}")
             _stop_on_outage(msg)
@@ -360,7 +374,7 @@ def run_record(scope, targets, out, mismatches, versions=None):
                       "strings can be mistaken for a rendered header. A stopped run (complete false) "
                       "judges header agreement on the shapes it sent, never on the ones it did not."),
             "capturedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            "how": ("preview_strategy_report via the mcporter CLI, read-only, BTC only, "
+            "how": ("preview_strategy_report via " + VIA + ", read-only, BTC only, "
                     f"{COLS_PER_SECTION} columns per custom section, up to {SECTIONS_PER_CALL} "
                     "sections per call; refused batches bisected to the offending column."),
             "scope": scope, "marketScope": SWEEP_MARKET_SCOPE, "benchmarkTicker": SWEEP_BENCHMARK,

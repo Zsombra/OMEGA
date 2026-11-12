@@ -1,0 +1,33 @@
+{
+ "_what": "Headers minted live by data/audit/knob_spelling_probe_168_2026-11-11-c.json. HEADERS ONLY - render_coverage treats every string in this file as a seen header.",
+ "headers": [
+  "eqhLvl_e4_atr0.2",
+  "iStructHi_s51_cf",
+  "pAsiaDemAvg_vt10.5res51",
+  "pLondonSupEdge_res51",
+  "pLondonSupEdge_vt10.5",
+  "pLondonSupWavg_res51",
+  "pLondonSupWavg_vt10.5",
+  "pNyDemAvg_res51",
+  "pNyDemAvg_vt10.5",
+  "pNyDemEdge_res51",
+  "pNyDemEdge_vt10.5",
+  "pNyDemWavg_res51",
+  "pNyDemWavg_vt10.5",
+  "pNySupAvg_res51",
+  "pNySupAvg_vt10.5",
+  "pNySupEdge_res51",
+  "pNySupEdge_vt10.5",
+  "pNySupWavg_res51",
+  "pNySupWavg_vt10.5",
+  "structHi_s51",
+  "structLo_s51",
+  "zoneResHi_close",
+  "zoneResLo_close",
+  "zoneResMid_close",
+  "zoneSupHi_close",
+  "zoneSupLo_close",
+  "zoneSupMid_close",
+  "zones_close_count"
+ ]
+}

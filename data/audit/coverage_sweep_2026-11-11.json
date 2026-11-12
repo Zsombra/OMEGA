@@ -1,0 +1,51 @@
+{
+ "contractVersion": "168.3.0",
+ "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+ "versionAtEnd": "168.3.0",
+ "buildShaAtEnd": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+ "contractMoved": false,
+ "_what": "Run record for the 2026-11-11 live coverage sweep: what was asked for, what the platform refused, and every shape whose omega-predicted header did not turn up in the render. Kept OUT of data/contract/columns/ so none of these strings can be mistaken for a rendered header. A stopped run (complete false) judges header agreement on the shapes it sent, never on the ones it did not.",
+ "capturedAt": "2026-11-11T22:20:35Z",
+ "how": "preview_strategy_report via one long-lived mcporter runtime (scripts/mcporter_runtime.mjs, EXTRACTION_TRANSPORT=runtime), read-only, BTC only, 32 columns per custom section, up to 4 sections per call; refused batches bisected to the offending column.",
+ "scope": "structural",
+ "marketScope": null,
+ "benchmarkTicker": null,
+ "metricsRestrictedTo": null,
+ "shapesTargeted": 557,
+ "shapesRequested": 557,
+ "batches": [
+  {
+   "batch": 1,
+   "columns": 128,
+   "headers": 140
+  },
+  {
+   "batch": 2,
+   "columns": 128,
+   "headers": 152
+  },
+  {
+   "batch": 3,
+   "columns": 128,
+   "headers": 192
+  },
+  {
+   "batch": 4,
+   "columns": 128,
+   "headers": 128
+  },
+  {
+   "batch": 5,
+   "columns": 45,
+   "headers": 61
+  }
+ ],
+ "complete": true,
+ "aborted": null,
+ "headersMinted": 673,
+ "refusalCount": 0,
+ "refusals": [],
+ "predictedButNotRenderedCount": 0,
+ "predictedButNotRendered": [],
+ "headersWritten": true
+}

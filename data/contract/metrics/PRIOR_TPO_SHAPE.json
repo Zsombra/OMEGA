@@ -2,7 +2,7 @@
   "metric": "PRIOR_TPO_SHAPE",
   "label": "TPO profile shape (prior UTC day)",
   "code": "pTpoShape",
-  "family": "structure",
+  "family": "vwapProfile",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

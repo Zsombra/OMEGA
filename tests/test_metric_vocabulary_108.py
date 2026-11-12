@@ -43,13 +43,27 @@ def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
     # re-extraction at 148.1.0 stopped at its hint step before reaching any of them (RECORD["why"])
     # 532 in the corpus since the refresh at 149.1.0, 2026-11-07 (_moves_149.json); the 206 under history148
     # 534 since 161.0.0 (2026-11-09, _moves_161.json): BB_TOUCH retired, VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR added
-    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 534
-    assert len(c.metrics) == 534 and RECORD["metrics"] == {} and c.unmeasured_metrics == {}
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 - the 47 keys of _moves_168.json added, none retired, all
+    # 47 measured the same day (581 hints), so the record's `metrics` stays empty. SERVED is no longer the stage
+    # schema's enum: since 168 that schema names a metric by pattern and the roster is the same capture's read schema
+    # (get_strategy outputSchema $defs/metricKey), which omega.condition_vocabulary carries as reportColumn.metric.enum
+    moves_168 = json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))
+    assert (len(moves_168["added"]), moves_168["retired"]) == (47, []) and set(moves_168["added"]) <= set(SERVED)
+    metric = vocabulary()["reportColumn"]["metric"]
+    assert metric["pattern"] == "^[A-Z][A-Z0-9_]*$" and metric["enumPointer"] == "/get_strategy/outputSchema/$defs/metricKey"
+    assert metric["count"] == len(SERVED) == len(set(SERVED))
+    assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED) and len(SERVED) == 534 + len(moves_168["added"]) == 581
+    assert len(c.metrics) == 581 and RECORD["metrics"] == {} and c.unmeasured_metrics == {}
     assert len(RECORD["history148"]["formerlyUnmeasured"]) == 206
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
     assert len(RECORD["history146"]["formerlyUnmeasured"]) == 24 and RECORD["history146"]["measuredOn"] == "2026-11-02"
     # listed 2026-11-05 at 148.1.0; the record's servedAt follows the served contract (149.1.0 when it was emptied)
-    assert RECORD["servedAt"] == "149.1.0" and RECORD["listedOn"] == "2026-11-05"
+    # 2026-11-11, contract 168.3.0: the record was listed again that day - no metric, one chain outer: `spread`, which
+    # 168 serves after aggregate / ema / rma / wma and no probe has rendered (tests/test_v148_surface.py,
+    # tests/test_v149_surface.py) - so servedAt is 168.3.0 and listedOn 2026-11-11
+    assert RECORD["servedAt"] == "168.3.0" and RECORD["listedOn"] == "2026-11-11"
+    assert set(RECORD["chainOuters"]) == {"spread"} and RECORD["chainOuters"]["spread"]["servedAt"] == "168.3.0"
+    assert RECORD["transformParameters"] == {}
     assert RECORD["history148"]["servedAt"] == "148.1.0"
 
 

@@ -2,7 +2,7 @@
   "metric": "PRIOR_ASIA_LOW_SWEPT",
   "label": "Asia 00–08 UTC low swept",
   "code": "pAsiaLoSwept",
-  "family": "structure",
+  "family": "levels",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

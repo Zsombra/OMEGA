@@ -5,7 +5,7 @@
    "label": "Value",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "offset": {
@@ -28,7 +28,7 @@
    "label": "Trajectory",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -53,7 +53,7 @@
    "label": "Distance from price",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     }
    },
@@ -74,11 +74,11 @@
    "label": "Spread vs metric",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "inputs": {
-     "description": "Exactly one candle-backed operand metric, resolved at the base column timeframe.",
+     "description": "Exactly one operand at the base column timeframe: a same-unit metric `{ metric }`, or a metric under one average at a length `{ metric, transformId, window }` — transformId one of aggregate, ema, rma, wma (aggregate is the simple average), window at least 2, the metric the base itself or any of its operands with a per-bar candle value.",
      "required": true
     }
    },
@@ -88,7 +88,7 @@
     "base",
     "inputs[0]"
    ],
-   "nullBehavior": "Returns null when either operand is null, or, for an asset-relative unit, when the operand is zero. A session-profile level is read at each completed bar as it stood when the bar opened: a level formed before the bar from that bar's own snapshot, a level formed from its own bar (a developing value area, a session's running high) from the prior bar's snapshot in the same period instance, so a value stamped inside a completed bar is never part of that bar's read; null on the instance's first bar and where the snapshot is not held. A live read's forming bar reads the level bound at the read instant, the value a display shows.",
+   "nullBehavior": "Returns null when either operand is null, or, for an asset-relative unit, when the operand is zero. An averaged side (an operand `{ metric, transformId, window }`, or the base of `metric × average × spread`) is the average with each bar as its newest, null where that average is. A session-profile level is read at each completed bar as it stood when the bar opened: a level formed before the bar from that bar's own snapshot, a level formed from its own bar (a developing value area, a session's running high) from the prior bar's snapshot in the same period instance, so a value stamped inside a completed bar is never part of that bar's read; null on the instance's first bar and where the snapshot is not held. A live read's forming bar reads the level bound at the read instant, the value a display shows.",
    "operandRequired": true,
    "emits": 1,
    "chainSuccessorsWhenCandle": [
@@ -101,7 +101,7 @@
    "label": "Efficiency (ER)",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -141,7 +141,7 @@
    "label": "Zone label",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     }
    },
@@ -157,7 +157,7 @@
    "label": "Largest share",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -208,7 +208,7 @@
    "label": "Cross detect",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     }
    },
@@ -224,7 +224,7 @@
    "label": "Moving average (SMA)",
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -301,12 +301,12 @@
      "required": true
     }
    },
-   "calculationSummary": "Measure the signed percentage of price from the nearest zone's midpoint.",
-   "formula": "output = (({price} − midpoint(nearest zone)) / midpoint(nearest zone)) × 100",
+   "calculationSummary": "Measure the signed percentage of price from the nearest zone's near edge (a support zone's high, a resistance zone's low); 0 while price is inside the zone.",
+   "formula": "output = 0 when low ≤ {price} ≤ high, else (({price} − nearEdge(nearest zone)) / nearEdge(nearest zone)) × 100",
    "operandOrder": [
     "base"
    ],
-   "nullBehavior": "Returns null when no active zone exists on the selected side or its midpoint is zero.",
+   "nullBehavior": "Returns null when no active zone exists on the selected side or its near edge is zero.",
    "sideRequired": true,
    "emits": 1,
    "appliesTo": "entitySet metrics only"
@@ -338,7 +338,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "buffer": {
@@ -369,7 +369,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -393,7 +393,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -417,7 +417,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "offset": {
@@ -447,7 +447,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "offset": {
@@ -477,7 +477,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -501,7 +501,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -526,7 +526,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "instrument": {
@@ -547,7 +547,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -571,7 +571,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -595,7 +595,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -619,7 +619,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -643,7 +643,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {
@@ -667,7 +667,7 @@
    ],
    "parameters": {
     "bars": {
-     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column above the strategy timeframe reads Confirmed and one at or below it reads the series as the frame carries it.",
+     "description": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
      "required": false
     },
     "window": {

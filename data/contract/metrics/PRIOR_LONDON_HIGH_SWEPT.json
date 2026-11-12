@@ -2,7 +2,7 @@
   "metric": "PRIOR_LONDON_HIGH_SWEPT",
   "label": "London 08–13 UTC high swept",
   "code": "pLondonHiSwept",
-  "family": "structure",
+  "family": "levels",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

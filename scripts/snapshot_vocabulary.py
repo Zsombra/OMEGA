@@ -21,6 +21,10 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from scripts.mcporter_transport import RUNTIME, TRANSPORT     # noqa: E402
+
+VIA = "one long-lived mcporter runtime (EXTRACTION_TRANSPORT=runtime)" if TRANSPORT == "runtime" else "the mcporter CLI"
 VOCAB = ROOT / "data" / "contract" / "vocabulary"
 READ_TOOLS = ("list_strategy_categories", "list_strategy_vocabulary")
 # the blocks every category's answer repeats; _shared.json holds them once
@@ -42,9 +46,15 @@ def version() -> dict:
 def call(tool: str, args: dict, timeout: int = 240) -> dict:
     assert tool in READ_TOOLS, tool
     time.sleep(0.45)
-    p = subprocess.run(["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}", "--output", "json",
-                        "--args", "-"], input=json.dumps(args).encode(), capture_output=True, timeout=timeout)
-    out, err = p.stdout.decode("utf-8", errors="replace"), p.stderr.decode("utf-8", errors="replace")
+    if TRANSPORT == "runtime":          # 2026-11-11: one long-lived mcporter runtime (scripts/mcporter_transport.py)
+        try:
+            out, err = RUNTIME.send(tool, args, timeout)
+        except TimeoutError as exc:
+            sys.exit(f"{tool}: no answer: {exc}")
+    else:
+        p = subprocess.run(["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}", "--output", "json",
+                            "--args", "-"], input=json.dumps(args).encode(), capture_output=True, timeout=timeout)
+        out, err = p.stdout.decode("utf-8", errors="replace"), p.stderr.decode("utf-8", errors="replace")
     if not out.strip():
         if any(m in err for m in AUTH_MARKERS):
             sys.exit(f"mcporter has no usable credential for battlegrid-anbu (re-authorizing is the user's step): "
@@ -100,7 +110,7 @@ def main() -> int:
         shared[k] = first.get(k)
     shared["_refreshed"] = {
         "at": at, "contractVersion": v0.get("contractVersion"),
-        "how": (f"scripts/snapshot_vocabulary.py: list_strategy_vocabulary per category via the mcporter CLI "
+        "how": (f"scripts/snapshot_vocabulary.py: list_strategy_vocabulary per category via {VIA} "
                 f"(read-only); raw responses in data/contract/vocabulary/{stamp}/" +
                 (f"; refused: {refused}" if refused else "")),
         "moved": moved or ["nothing: every category-invariant block is as stored"],
@@ -118,7 +128,7 @@ def main() -> int:
         cat_moved += [] if cats["modules"] == stored.get("modules") else ["modules"]
         stored["modules"] = cats["modules"]
     stored["_refreshed"] = {"at": at, "contractVersion": v0.get("contractVersion"),
-                            "how": f"list_strategy_categories via the mcporter CLI (read-only), "
+                            "how": f"list_strategy_categories via {VIA} (read-only), "
                                    f"data/contract/vocabulary/{stamp}/_categories.json",
                             "moved": cat_moved or ["nothing"], "previous": stored.get("_refreshed")}
     cat_path.write_text(json.dumps(stored, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

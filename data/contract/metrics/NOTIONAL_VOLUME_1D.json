@@ -46,5 +46,15 @@
     "BUY_QUOTE_VOL",
     "SELL_QUOTE_VOL",
     "OI"
+  ],
+  "spreadAverageOperands": [
+    "QUOTE_VOL",
+    "BUY_QUOTE_VOL",
+    "SELL_QUOTE_VOL"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "QUOTE_VOL",
+    "BUY_QUOTE_VOL",
+    "SELL_QUOTE_VOL"
   ]
 }

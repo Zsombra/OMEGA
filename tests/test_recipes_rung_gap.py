@@ -45,6 +45,19 @@ UPDATE = json.loads((FIXTURES / "diagnostics_action62_update_20261010T0634Z.json
 RUNG_MAP = json.loads((ROOT / "data/derived/signal_data_rungs_91.json").read_text(encoding="utf-8"))["signals"]
 
 
+def _column_timeframe_arms(schema: dict) -> list[dict]:
+    """The two arms of a custom column's `timeframe` in a stage input schema: {rel} and {abs}.
+
+    2026-11-11, contract 168.3.0: the union is no longer spelled inline on the column. Through the 161.0.0 capture the
+    column's `timeframe` WAS `{anyOf: [{rel}, {abs}]}`; the 168 captures hoist it to `$defs/timeframeRef` (the level
+    reference 168 added - conditionLevelRef, for the trade level menu and entry.levels - names the same definition) and
+    the column carries the `$ref`. The arms are read through that one `$ref`, and through nothing else."""
+    column = (schema["properties"]["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["oneOf"][1]
+              ["properties"]["columns"]["items"])
+    assert column["properties"]["timeframe"] == {"$ref": "#/$defs/timeframeRef"}
+    return schema["$defs"]["timeframeRef"]["anyOf"]
+
+
 def _by_code(diagnostics: dict) -> dict[str, dict[str, set[tuple[str, str]]]]:
     out: dict[str, dict[str, set[tuple[str, str]]]] = {}
     for m in diagnostics["mismatches"]:
@@ -95,9 +108,16 @@ def test_the_vocabulary_puts_the_rung_on_the_column_not_the_section():
             ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["oneOf"])   # oneOf since v115.1
     custom = arms[1]
     assert "timeframe" not in custom["properties"] and custom["additionalProperties"] is False
-    tf = custom["properties"]["columns"]["items"]["properties"]["timeframe"]["anyOf"]
-    assert tf[0]["properties"]["rel"]["enum"] == ["anchor", "lower", "regime"]
-    assert "abs" in tf[1]["properties"]
+    # 2026-11-11, contract 168.3.0: the same two arms, read through the column's `$ref` to $defs/timeframeRef (inline
+    # `anyOf` on the column until the 161.0.0 capture); the 161.0.0 capture's inline union names the same rels
+    tf = _column_timeframe_arms(stage_schema()["stage_strategy_draft"]["inputSchema"])
+    assert len(tf) == 2 and all(arm["additionalProperties"] is False for arm in tf)
+    assert tf[0]["properties"]["rel"]["enum"] == ["anchor", "lower", "regime"] and tf[0]["required"] == ["rel"]
+    assert "abs" in tf[1]["properties"] and tf[1]["required"] == ["abs"]
+    v161 = json.loads((FIXTURES / "schema_20261109T162100Z.json").read_text(encoding="utf-8"))
+    inline = (v161["stage_strategy_draft"]["inputSchema"]["properties"]["axes"]["properties"]["REPORT"]["properties"]
+              ["sections"]["items"]["oneOf"][1]["properties"]["columns"]["items"]["properties"]["timeframe"]["anyOf"])
+    assert inline[0] == tf[0] and list(inline[1]["properties"]) == list(tf[1]["properties"]) == ["abs"]
     c = load()
     higher = c.platform_templates["includeHigherTimeframe"]["columns"]
     assert {(x["metric"], x["transformId"], x["timeframe"]["rel"]) for x in higher} >= {
@@ -323,9 +343,10 @@ def test_every_added_column_is_a_vocabulary_value():
     enum - and the non-anchor MA_ALIGN / ADX / RSI14 columns are the platform's own template
     columns (includeHigherTimeframe at regime, includeMtfConfluence at lower)."""
     c = load()
-    rel_enum = (stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]
-                ["axes"]["properties"]["REPORT"]["properties"]["sections"]["items"]["oneOf"][1]["properties"]
-                ["columns"]["items"]["properties"]["timeframe"]["anyOf"][0]["properties"]["rel"]["enum"])
+    # 2026-11-11, contract 168.3.0: the rel enum is read through the column's `$ref` to $defs/timeframeRef (the union
+    # was inline on the column until the 161.0.0 capture); the enum itself did not move
+    rel_enum = _column_timeframe_arms(stage_schema()["stage_strategy_draft"]["inputSchema"])[0]["properties"]["rel"]["enum"]
+    assert rel_enum == ["anchor", "lower", "regime"]
     templated = {(x["metric"], x["transformId"], x["timeframe"]["rel"])
                  for x in c.platform_templates["includeHigherTimeframe"]["columns"]}
     # includeMtfConfluence (retired at v134) showed these at {rel: lower}; v134 names its lower-rung reads as custom

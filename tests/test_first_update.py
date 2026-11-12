@@ -14,14 +14,18 @@ from pathlib import Path
 import pytest
 
 from omega.generate import PRESETS, plan
+from omega.trade_levels import default_menu
 
 ROOT = Path(__file__).resolve().parents[1]
 
 # A tuned existing strategy as a 108 read: every dial differs from omega's 08-28 defaults, and minAtrPct sits on
 # TRADE_LEVEL_POLICY (README "Contract history - v108").
+# Contract 168 (2026-11-11): a read at 168 carries the trade level menu on TRADE_LEVEL_POLICY (the platform's
+# migration gave every strategy one). LIVE_MENU stands for it: ATR stops, R targets from this strategy's 1.8 up.
+LIVE_MENU = default_menu(1.8)
 CURRENT = {
     "TRADE_LEVEL_POLICY": {"minAtrPct": 0.8, "minStopLossAtrMultiple": 1.2, "maxStopLossAtrMultiple": 2.5,
-                           "minRiskRewardRatio": 1.8},
+                           "minRiskRewardRatio": 1.8, "tradeLevelMenu": LIVE_MENU},
     "POSITION_MANAGEMENT": {
         "breakEvenEnabled": False, "breakEvenTriggerR": 1.5, "trailingEnabled": False,
         "trailingTriggerR": 1.2, "trailingGivebackPct": 30, "trailingBufferPct": 0.5,
@@ -62,6 +66,9 @@ def test_an_override_moves_exactly_its_own_dial_on_an_update():
     t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})
     up = plan(t).axes_update(CURRENT)
     assert up["TRADE_LEVEL_POLICY"] == {**CURRENT["TRADE_LEVEL_POLICY"], "minRiskRewardRatio": 2.0}
+    # contract 168: the axis is staged whole, so the live menu rides with it, verbatim and as a copy
+    assert up["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] == LIVE_MENU
+    assert up["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] is not LIVE_MENU
     assert "POSITION_MANAGEMENT" not in up
     t = replace(PRESETS["trend-continuation"], execution={"trailingTriggerR": 1.5})
     up = plan(t).axes_update(CURRENT)
@@ -79,9 +86,14 @@ def test_an_update_refuses_rather_than_invent_a_dial_it_cannot_read():
     with pytest.raises(ValueError, match="minAtrPct"):
         plan(replace(t, execution={"minRiskRewardRatio": 2.0})).axes_update(
             {"TRADE_LEVEL_POLICY": {k: v for k, v in CURRENT["TRADE_LEVEL_POLICY"].items() if k != "minAtrPct"}})
-    # a thesis naming all four trade-level dials needs no read
+    # a thesis naming all four trade-level dials needed no read until contract 168; the axis now carries the menu too,
+    # and a menu named neither by the thesis nor by a read is never invented (2026-11-11)
     four = {"minAtrPct": 0.6, "minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 2, "minRiskRewardRatio": 1.5}
-    assert plan(replace(t, execution=four)).axes_update(None)["TRADE_LEVEL_POLICY"] == four
+    with pytest.raises(ValueError, match="never invents a live strategy's menu"):
+        plan(replace(t, execution=four)).axes_update(None)
+    own = default_menu(1.5)
+    assert plan(replace(t, execution=four, trade_level_menu=own)).axes_update(None)["TRADE_LEVEL_POLICY"] == {
+        **four, "tradeLevelMenu": own}
     # a dial override on an axis the read does not carry cannot be completed
     t = replace(PRESETS["trend-continuation"], execution={**four, "trailingTriggerR": 1.5})
     with pytest.raises(ValueError, match="POSITION_MANAGEMENT"):
@@ -93,9 +105,14 @@ def test_an_update_refuses_rather_than_invent_a_dial_it_cannot_read():
 # What get_strategy_draft returned for a strategy at v91..v106: SETUP_GATES carried minAtrPct, TRADE_LEVEL_POLICY
 # the three others, SIGNAL_RULES the scorecard (data/contract/stage_strategy_draft/
 # current_7534b2ee_from_get_strategy_20261010T0634Z.json is one such read).
+# Since contract 168 an update that stages TRADE_LEVEL_POLICY needs a menu, and a pre-108 read has none: the theses
+# below that move a trade-level dial name their own (RR_2), so these tests stay about the old axis layout.
+RR_2 = {"execution": {"minRiskRewardRatio": 2.0}, "trade_level_menu": default_menu(2.0)}
 CURRENT_PRE_108 = {
     "SETUP_GATES": {"minAggregateScore": 0.4, "minRequiredCount": 0, "minAtrPct": 0.8},
-    "TRADE_LEVEL_POLICY": {k: v for k, v in CURRENT["TRADE_LEVEL_POLICY"].items() if k != "minAtrPct"},
+    # (no tradeLevelMenu either: the menu came with contract 168)
+    "TRADE_LEVEL_POLICY": {k: v for k, v in CURRENT["TRADE_LEVEL_POLICY"].items()
+                           if k not in ("minAtrPct", "tradeLevelMenu")},
     "POSITION_MANAGEMENT": CURRENT["POSITION_MANAGEMENT"],
     "SIGNAL_RULES": {"rules": [{"signalId": "rsi_oversold", "allocation": 2, "required": False}]},
 }
@@ -103,20 +120,24 @@ CURRENT_PRE_108 = {
 
 def test_a_pre_108_current_is_accepted_and_its_retired_axes_are_never_staged():
     for t in (PRESETS["trend-continuation"],
-              replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0}),
+              replace(PRESETS["trend-continuation"], **RR_2),
               replace(PRESETS["trend-continuation"], execution={"trailingTriggerR": 1.5})):
         u = plan(t).axes_update(CURRENT_PRE_108)
         assert not {"SETUP_GATES", "SIGNAL_RULES"} & set(u)
+    # the same dial move with no menu named: the pre-108 read has none to carry, and none is invented
+    with pytest.raises(ValueError, match="never invents a live strategy's menu"):
+        plan(replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})).axes_update(CURRENT_PRE_108)
 
 
 def test_a_pre_108_current_gives_min_atr_pct_from_its_setup_gates():
     """minAtrPct missing from the old TRADE_LEVEL_POLICY is taken from the old SETUP_GATES."""
-    t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})
+    t = replace(PRESETS["trend-continuation"], **RR_2)
     u = plan(t).axes_update(CURRENT_PRE_108)
     assert u["TRADE_LEVEL_POLICY"] == {"minAtrPct": 0.8, "minStopLossAtrMultiple": 1.2,
-                                       "maxStopLossAtrMultiple": 2.5, "minRiskRewardRatio": 2.0}
+                                       "maxStopLossAtrMultiple": 2.5, "minRiskRewardRatio": 2.0,
+                                       "tradeLevelMenu": RR_2["trade_level_menu"]}
     assert list(u["TRADE_LEVEL_POLICY"]) == ["minAtrPct", "minStopLossAtrMultiple", "maxStopLossAtrMultiple",
-                                             "minRiskRewardRatio"]
+                                             "minRiskRewardRatio", "tradeLevelMenu"]
 
 
 def test_the_new_axis_wins_over_the_old_setup_gates():
@@ -132,7 +153,7 @@ def test_the_committed_7534b2ee_read_is_a_pre_108_current():
     rec = json.loads((ROOT / "data/contract/stage_strategy_draft/current_7534b2ee_from_get_strategy_20261010T0634Z.json")
                      .read_text(encoding="utf-8"))["draft"]["content"]
     assert {"SETUP_GATES", "SIGNAL_RULES"} <= set(rec) and "minAtrPct" not in rec["TRADE_LEVEL_POLICY"]
-    t = replace(PRESETS["trend-continuation"], execution={"minRiskRewardRatio": 2.0})
+    t = replace(PRESETS["trend-continuation"], **RR_2)
     u = plan(t).axes_update(rec)
     assert u["TRADE_LEVEL_POLICY"]["minAtrPct"] == rec["SETUP_GATES"]["minAtrPct"]
     assert not {"SETUP_GATES", "SIGNAL_RULES"} & set(u)

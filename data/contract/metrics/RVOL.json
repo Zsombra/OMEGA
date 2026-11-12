@@ -197,6 +197,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -212,6 +213,21 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "operandsOffAnchor": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -342,6 +358,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -357,6 +374,21 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "operandsOffAnchor": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -487,6 +519,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -502,6 +535,21 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "operandsOffAnchor": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -632,6 +680,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -647,6 +696,21 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "operandsOffAnchor": [
+            "REGIME_VOL_ATR_RATIO",
+            "REGIME_VOL_BBW_RATIO"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1300,6 +1364,12 @@
   "spreadOperandsOffAnchor": [
     "REGIME_VOL_ATR_RATIO",
     "REGIME_VOL_BBW_RATIO"
+  ],
+  "spreadAverageOperands": [
+    "RVOL"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "RVOL"
   ],
   "rankOrderings": [
     "hi",

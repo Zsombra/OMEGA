@@ -109,5 +109,10 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     # 5845 / 113934 since the re-extraction at 144.0.0, 2026-10-30 (data/contract/metrics/_moves_144.json).
     # 6122 / 115035 since the re-extraction at 146.0.1, 2026-11-02 (data/contract/metrics/_moves_146.json).
     # 9884 / 270913 since the refresh at 149.1.0, 2026-11-07 (data/contract/metrics/_moves_149.json).
-    assert len(enumerate_shapes(contract=contract)) == 25915   # 161.0.0 (2026-11-09); 9884 at 149.1.0
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 306357   # 161.0.0 (2026-11-09); 270913 at 149.1.0
+    # 26584 / 346691 since the re-extraction at 168.3.0, 2026-11-11 (extraction 20261111, data/contract/metrics/_moves_168.json):
+    # 581 metrics, recounted from the corpus as in tests/test_space.py (structural 4735 atoms + 21849 chained; expanded
+    # 171232 unchained spread pairs + 151660 chained + 23799 of other transforms). This rule still drops every timeless
+    # operand of a series chain (asserted above), the 30 timeless among the 47 added metrics included; the chained `spread`
+    # 168 serves after an average is a different chain (spread as the OUTER), recorded unmeasured and in neither count.
+    assert len(enumerate_shapes(contract=contract)) == 26584   # 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 346691   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0

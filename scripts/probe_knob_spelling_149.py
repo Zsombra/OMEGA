@@ -46,10 +46,12 @@ from omega.types import Column
 from scripts.probe_authoring_148 import (C, REFUSAL_CODE, TransportFailure, contract_fields, digest, preview,
                                          read_version_safely, refusal, section, version, withheld_because)
 
-CONTRACT = "149.1.0"
+# 2026-11-11: PROBE_CONTRACT names the contract a later run measures (168.3.0 that day: the knobs contract 168 added and
+# the served cells of its 47 new metrics); the outputs carry its major version. Default: the 149.1.0 runs' own.
+CONTRACT = os.environ.get("PROBE_CONTRACT", "149.1.0")
 DATE = os.environ.get("PROBE_DATE", "2026-11-07")
-RECORD_OUT = f"data/audit/knob_spelling_probe_149_{DATE}.json"
-HEADERS_OUT = f"data/contract/columns/_probe_149_knobs_{DATE}.json"
+RECORD_OUT = f"data/audit/knob_spelling_probe_{CONTRACT.split('.')[0]}_{DATE}.json"
+HEADERS_OUT = f"data/contract/columns/_probe_{CONTRACT.split('.')[0]}_knobs_{DATE}.json"
 # the pause before the one re-send of a deadline answer
 RETRY_PAUSE = 20.0
 

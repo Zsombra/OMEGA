@@ -43,7 +43,10 @@ def test_the_108_4_corpus_is_the_v103_shape_and_the_catalogue_carries_the_requir
     # 4242 at 149.1.0 (2026-11-07): + 1635 (the 206 keys of 148.1.0, and the five smoothers on 165 metrics: _moves_149.json)
     # 4493 at 161.0.0 (2026-11-09): + 251 (`roc` on every metric that serves it, VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR in,
     # BB_TOUCH out, levelInteraction on 33 more levels, distance off CLOSE / LAST / DONCHIAN_UPPER / DONCHIAN_LOWER: _moves_161.json)
-    assert cells == 4493   # 4242 at 149.1.0; 2607 at 146.0.1; 2429 at 144.0.0 (2026-10-30): + 980 (78 metrics added, 2 retired, relativeTo on every metric with a series home); 670 at 108.4.0; 705 at 110.2.0 (2026-10-14): - 18 retired + 53 added; 731 at 110.8.0 (2026-10-15): + 26 added
+    # 4735 at 168.3.0 (2026-11-11, extraction 20261111): + 242 = 212 cells on the 47 added metrics + 30 on HIGH_DEV / LOW_DEV
+    # (fifteen series transforms each: _moves_168.json transformsGainedByExistingMetrics); none lost. It is the matrix's
+    # legal count (data/derived/composability_matrix.csv, 4735 of 16849) and the manifest's composabilityLegal.
+    assert cells == 4735   # 4493 at 161.0.0; 4242 at 149.1.0; 2607 at 146.0.1; 2429 at 144.0.0 (2026-10-30): + 980 (78 metrics added, 2 retired, relativeTo on every metric with a series home); 670 at 108.4.0; 705 at 110.2.0 (2026-10-14): - 18 retired + 53 added; 731 at 110.8.0 (2026-10-15): + 26 added
 
 
 def test_the_catalogue_names_exactly_spread_and_the_four_zone_transforms():

@@ -436,6 +436,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -451,6 +452,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -580,6 +606,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -595,6 +622,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -724,6 +776,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -739,6 +792,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -868,6 +946,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -883,6 +962,31 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "operandsOffAnchor": [
+            "MACD_HIST",
+            "MACD_LINE",
+            "MACD_SIGNAL",
+            "SQZ_MOM",
+            "ATR",
+            "CVD",
+            "CUM_VOLUME_DELTA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1519,7 +1623,7 @@
   "study": "spotFlow",
   "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "order-flow composite centralized-exchange spot cumulative volume delta at each bar, the listed venues that publish their trade history (Binance, Coinbase) summed through the bar's last minute since the daily 00:00-UTC anchor, in this coin's own unit (crypto coins the spot lane lists)",
+  "gloss": "order-flow composite centralized-exchange spot cumulative volume delta at each bar, the listed venues that publish their trade history (Binance, Coinbase) summed through the bar's last minute since the daily 00:00-UTC anchor, in this coin's own unit (crypto coins the spot lane lists); it reads no value for the rest of the UTC day after a minute any listed venue left uncovered, never a partial sum",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"
@@ -1535,6 +1639,26 @@
     "CUM_VOLUME_DELTA"
   ],
   "spreadOperandsOffAnchor": [
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "SQZ_MOM",
+    "ATR",
+    "CVD",
+    "CUM_VOLUME_DELTA"
+  ],
+  "spreadAverageOperands": [
+    "SPOT_CVD",
+    "MACD_HIST",
+    "MACD_LINE",
+    "MACD_SIGNAL",
+    "SQZ_MOM",
+    "ATR",
+    "CVD",
+    "CUM_VOLUME_DELTA"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "SPOT_CVD",
     "MACD_HIST",
     "MACD_LINE",
     "MACD_SIGNAL",

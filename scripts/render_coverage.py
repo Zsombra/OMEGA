@@ -113,6 +113,22 @@ SEEN_FILES = [
     "_coverage_sweep_2026-11-10-market.json",
     "_coverage_sweep_2026-11-10-reference.json",
     "_coverage_sweep_2026-11-10-nonspread.json",
+    # 2026-11-11: the structural sweep at contract 168.3.0 (build af8b2c96) over the 557 shapes the 168 refresh opened -
+    # the 47 added keys (EMA55, the EQH / EQL levels, the liquidity pools, the prior-session supply / demand zones,
+    # the pending swings, ZONE_SUPPORT / ZONE_RESIST), coin sections, over one mcporter runtime: 673 headers, 0
+    # refusals, 0 predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-11.json). The chained `spread` 168 also
+    # serves is not in the space (unmeasured: data/contract/metrics/_unmeasured_108.json).
+    "_coverage_sweep_2026-11-11.json",
+    # 2026-11-11, second pass (SWEEP_SCOPE=nonspread): the three uncovered expansions that were not spread pairs -
+    # EMA55 x distance -> rank at lo / far / near (dist_EMA55_rank_lo, _far, _near; `hi` rendered in the structural
+    # pass) - 0 refusals, 0 predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-11-nonspread.json)
+    "_coverage_sweep_2026-11-11-nonspread.json",
+    # 2026-11-11: the knob-spelling probe at 168.3.0 (data/audit/knob_spelling_probe_168_2026-11-11-{a,b,c}.json): the
+    # 85 served (metric, knob) cells contract 168 opened, each off its default (eqhLvl_e4, poolAbove_atr0.2,
+    # iStructHi_s51_cf, pAsiaDemAvg_vt10.5res51, zoneResHi_close ...), 88 columns, all as omega.fanout now predicts
+    "_probe_168_knobs_2026-11-11-a.json",
+    "_probe_168_knobs_2026-11-11-b.json",
+    "_probe_168_knobs_2026-11-11-c.json",
 ]
 
 
