@@ -1,0 +1,300 @@
+{
+ "_what": "Knob header spellings omega.fanout predicts but the 2026-11-07 authoring probe never rendered, rendered at 149.1.0.",
+ "contractVersion": "168.3.0",
+ "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+ "versionAtEnd": "168.3.0",
+ "buildShaAtEnd": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+ "contractMoved": false,
+ "startedAt": "2026-11-11T23:29:23Z",
+ "capturedAt": "2026-11-11T23:29:43Z",
+ "columnsFrom": "C:/Users/rafae/omega-v012-hints/v168/knobs/knobs_168_a.json",
+ "complete": true,
+ "aborted": null,
+ "transient": [],
+ "entries": [
+  {
+   "columns": [
+    {
+     "metric": "EQH_LEVEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "EQH_LEVEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "EQL_LEVEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "EQL_LEVEL",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "INTERNAL_PENDING_HIGH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 51
+    },
+    {
+     "metric": "INTERNAL_PENDING_HIGH",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "confluenceFilter": true
+    },
+    {
+     "metric": "INTERNAL_PENDING_LOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "swingLength": 51
+    },
+    {
+     "metric": "INTERNAL_PENDING_LOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "confluenceFilter": true
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_INTACT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_INTACT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_RETIRED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_RETIRED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_TOUCHES",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_ABOVE_TOUCHES",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_INTACT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_INTACT",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_RECLAIMED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_RECLAIMED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_RETIRED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_RETIRED",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_TOUCHES",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalBars": 4
+    },
+    {
+     "metric": "LIQUIDITY_POOL_BELOW_TOUCHES",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "equalThreshold": 0.2
+    },
+    {
+     "metric": "PRIOR_ASIA_DEMAND_AVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandThreshold": 10.5
+    },
+    {
+     "metric": "PRIOR_ASIA_DEMAND_AVG",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "supplyDemandResolution": 51
+    }
+   ],
+   "predicted": null,
+   "rendered": [
+    "eqhLvl_e4",
+    "eqhLvl_atr0.2",
+    "eqlLvl_e4",
+    "eqlLvl_atr0.2",
+    "iStructHi_s51",
+    "iStructHi_cf",
+    "iStructLo_s51",
+    "iStructLo_cf",
+    "poolAbove_e4",
+    "poolAbove_atr0.2",
+    "poolAboveOk_e4",
+    "poolAboveOk_atr0.2",
+    "poolAboveRecl_e4",
+    "poolAboveRecl_atr0.2",
+    "poolAboveRetired_e4",
+    "poolAboveRetired_atr0.2",
+    "poolAboveTouch_e4",
+    "poolAboveTouch_atr0.2",
+    "poolBelow_e4",
+    "poolBelow_atr0.2",
+    "poolBelowOk_e4",
+    "poolBelowOk_atr0.2",
+    "poolBelowRecl_e4",
+    "poolBelowRecl_atr0.2",
+    "poolBelowRetired_e4",
+    "poolBelowRetired_atr0.2",
+    "poolBelowTouch_e4",
+    "poolBelowTouch_atr0.2",
+    "pAsiaDemAvg_vt10.5",
+    "pAsiaDemAvg_res51"
+   ],
+   "refusal": null,
+   "agree": null,
+   "unpredicted": "EQH_LEVEL: EQH_LEVEL at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); EQH_LEVEL: EQH_LEVEL at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); EQL_LEVEL: EQL_LEVEL at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); EQL_LEVEL: EQL_LEVEL at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); INTERNAL_PENDING_HIGH: INTERNAL_PENDING_HIGH at ['swingLength'] off its default was never rendered (KNOB_SPELLING_RENDERED); INTERNAL_PENDING_HIGH: INTERNAL_PENDING_HIGH at ['confluenceFilter'] off its default was never rendered (KNOB_SPELLING_RENDERED); INTERNAL_PENDING_LOW: INTERNAL_PENDING_LOW at ['swingLength'] off its default was never rendered (KNOB_SPELLING_RENDERED); INTERNAL_PENDING_LOW: INTERNAL_PENDING_LOW at ['confluenceFilter'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE: LIQUIDITY_POOL_ABOVE at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE: LIQUIDITY_POOL_ABOVE at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_INTACT: LIQUIDITY_POOL_ABOVE_INTACT at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_INTACT: LIQUIDITY_POOL_ABOVE_INTACT at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_RECLAIMED: LIQUIDITY_POOL_ABOVE_RECLAIMED at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_RECLAIMED: LIQUIDITY_POOL_ABOVE_RECLAIMED at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_RETIRED: LIQUIDITY_POOL_ABOVE_RETIRED at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_RETIRED: LIQUIDITY_POOL_ABOVE_RETIRED at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_TOUCHES: LIQUIDITY_POOL_ABOVE_TOUCHES at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_ABOVE_TOUCHES: LIQUIDITY_POOL_ABOVE_TOUCHES at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW: LIQUIDITY_POOL_BELOW at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW: LIQUIDITY_POOL_BELOW at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_INTACT: LIQUIDITY_POOL_BELOW_INTACT at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_INTACT: LIQUIDITY_POOL_BELOW_INTACT at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_RECLAIMED: LIQUIDITY_POOL_BELOW_RECLAIMED at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_RECLAIMED: LIQUIDITY_POOL_BELOW_RECLAIMED at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_RETIRED: LIQUIDITY_POOL_BELOW_RETIRED at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_RETIRED: LIQUIDITY_POOL_BELOW_RETIRED at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_TOUCHES: LIQUIDITY_POOL_BELOW_TOUCHES at ['equalBars'] off its default was never rendered (KNOB_SPELLING_RENDERED); LIQUIDITY_POOL_BELOW_TOUCHES: LIQUIDITY_POOL_BELOW_TOUCHES at ['equalThreshold'] off its default was never rendered (KNOB_SPELLING_RENDERED); PRIOR_ASIA_DEMAND_AVG: PRIOR_ASIA_DEMAND_AVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']; PRIOR_ASIA_DEMAND_AVG: PRIOR_ASIA_DEMAND_AVG serves knobs whose header spelling was never rendered: ['supplyDemandThreshold', 'supplyDemandResolution']"
+  }
+ ],
+ "agree": null,
+ "refused": 0,
+ "unpredicted": 1,
+ "headersWritten": true
+}

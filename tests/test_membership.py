@@ -106,7 +106,12 @@ def test_mapped_plus_dead_covers_the_whole_corpus():
                      | set(MOVES_144["added"]) | set(MOVES_146["added"])
                      | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"])
                      # 161.0.0 (2026-11-09): VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR joined after membership left discovery
-                     | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_161.json").read_text(encoding="utf-8"))["added"]))
+                     | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_161.json").read_text(encoding="utf-8"))["added"])
+                     # 2026-11-11, contract 168.3.0 (extraction 20261111): the 47 metrics 157 - 168 added (_moves_168.json
+                     # `added`: EMA55, EQH_LEVEL / EQL_LEVEL, the LIQUIDITY_POOL_*, the PRIOR_<session>_DEMAND_* /
+                     # _SUPPLY_*, the *_PENDING_* and the ZONE_*) joined after membership left discovery too: no signal
+                     # module exists for them to feed, so the map (84 mapped + 72 dead, the 156 probed) names none of them
+                     | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))["added"]))
     measured_then = (mapped | dead) - set(CONTRACT.retired_metrics)
     assert measured_then == set(CONTRACT.metrics) - never_probed, (
         f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - never_probed - measured_then)}")

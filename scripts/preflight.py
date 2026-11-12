@@ -84,6 +84,27 @@ def _load_capture(path: str) -> tuple[dict, dict]:
     return doc, doc["response"]
 
 
+def _roster_for(definition: dict) -> frozenset | None:
+    """Contract 168: the served metric keys a pattern-named metric is checked against (omega.preflight.read_roster).
+    The capture envelope holds the stage tool alone, and the roster sits in another tool's output schema, so it is
+    taken from the repo's pinned capture - but only when that capture's stage INPUT schema is this definition's, i.e.
+    the envelope is the surface the roster was captured with. Any other definition gets none, and the walk then says
+    `metric-roster-unchecked` for every metric key rather than vouching for it."""
+    from omega.contract import stage_schema
+    pinned = stage_schema()
+    try:
+        # the definition's input root, whichever key holds it (`inputSchema`, or the `parameters` of a ToolSearch read)
+        same = P._input_root(pinned["stage_strategy_draft"]) == P._input_root(definition)
+    except (KeyError, TypeError, P.UnsupportedSchema):
+        same = False
+    return P.read_roster(pinned) if same else None
+
+
+def _names_metric_by_pattern(root: dict) -> bool:
+    node = (root.get("$defs") or {}).get("metricKey") if isinstance(root, dict) else None
+    return isinstance(node, dict) and "enum" not in node
+
+
 def _now(arg: str | None) -> datetime:
     return P.parse_iso(arg) if arg else datetime.now(timezone.utc).replace(microsecond=0)
 
@@ -152,7 +173,14 @@ def cmd_run(a) -> int:
         axis_schemas, root, template_keys=repo_template_keys(), timeframes=repo_timeframes())
     schema_fp_ok = not findings
     if schema_fp_ok:
-        findings += P.diff_schema(body, request_schema, root)
+        roster = _roster_for(definition)
+        findings += P.diff_schema(body, request_schema, root, roster=roster)
+        if roster is None and _names_metric_by_pattern(root):
+            # contract 168: without the roster the walk cannot refuse an unserved metric key (to 161 the schema's own
+            # enum did). That is a WARN on the receipt, never a silent PASS (review 2026-11-12).
+            findings.append(P.Finding("UNSUPPORTED", "", "metric keys were NOT checked: this definition names a metric "
+                                      "by pattern and is not the pinned capture's stage schema, so no served roster "
+                                      "applies (omega.preflight.read_roster)", "WARN"))
         if a.previous_schema:
             _, prev_def = _load_capture(a.previous_schema)
             prev_request, prev_root = P.resolve_request(prev_def)

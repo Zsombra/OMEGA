@@ -183,13 +183,37 @@ def test_the_manifest_records_the_161_extraction():
     step); its counts are measured on the corpus, the 146.0.1 block sits under `supersedes`."""
     from omega import space
     from omega.contract import load
-    m = json.loads((CONTRACT_DIR / "_manifest.json").read_text(encoding="utf-8"))
+    current = json.loads((CONTRACT_DIR / "_manifest.json").read_text(encoding="utf-8"))
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): the top-level block is the 168.3.0 extraction now and the
+    # 161.0.0 block is its `supersedes` (146.0.1 one level deeper than it was). The live corpus is the 168 one, so the
+    # 161 block's counts are re-measured on the 161.0.0 batches the refresh archived (archive_20261109_extraction);
+    # its structuralShapes (25,915, enumerated on the corpus until 2026-11-11) stays as recorded - no loader reads an
+    # archive. The measured-on-the-live-corpus check moves to the 168.3.0 block, below.
+    assert (current["servedContractVersion"], current["extractedOn"]) == ("168.3.0", "2026-11-11")
+    m = current["supersedes"]
     assert (m["servedContractVersion"], m["extractedOn"]) == ("161.0.0", "2026-11-09")
     assert "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7" in m["contractVersionSource"]
     assert m["supersedes"]["servedContractVersion"] == "146.0.1"
-    c = load()
-    legal = sum(len(x.transforms) for x in c.metrics.values())
+    archive = CONTRACT_DIR / "metrics" / "archive_20261109_extraction"
+    archived = [r for p in sorted(archive.glob("_batch*.json")) for r in json.loads(p.read_text(encoding="utf-8"))]
     n = m["counts"]
-    assert (n["metrics"], n["families"], n["authorableTransforms"]) == (len(c.metrics), 11, len(c.transforms)) == (534, 11, 30)
-    assert (n["composabilityCells"], n["composabilityLegal"]) == (len(c.metrics) * len(c.transforms), legal)
-    assert n["structuralShapes"] == sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 25915
+    assert (n["metrics"], n["families"], n["authorableTransforms"]) == (
+        len({r["metric"] for r in archived}), len({r["family"] for r in archived}), 30) == (534, 11, 30)
+    assert (n["composabilityCells"], n["composabilityLegal"]) == (
+        534 * 30, sum(len(r["transforms"]) for r in archived)) == (16020, 4493)
+    assert n["structuralShapes"] == 25915
+    # the 168.3.0 block: every count measured on the live corpus, as the 161 block's were until 2026-11-11. 47 keys
+    # added and none retired (_moves_168.json) -> 581; three categories split out of structure -> 14 families; the
+    # chained `spread` 168 serves is unmeasured and in no shape (the block's own _note)
+    c = load()
+    assert "af8b2c9632fa71620e9dcc1802904ee963d305a4" in current["contractVersionSource"]
+    moves = json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))
+    assert set(c.metrics) - {r["metric"] for r in archived} == set(moves["added"]) and len(moves["added"]) == 47
+    assert {r["metric"] for r in archived} <= set(c.metrics) and moves["retired"] == []
+    legal = sum(len(x.transforms) for x in c.metrics.values())
+    n = current["counts"]
+    assert (n["metrics"], n["families"], n["authorableTransforms"]) == (
+        len(c.metrics), len({x.family for x in c.metrics.values()}), len(c.transforms)) == (581, 14, 30)
+    assert (n["composabilityCells"], n["composabilityLegal"]) == (len(c.metrics) * len(c.transforms), legal) == (17430, 4735)
+    assert n["structuralShapes"] == sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 26584
+    assert set(c.unmeasured_chain_outers) == {"spread"}

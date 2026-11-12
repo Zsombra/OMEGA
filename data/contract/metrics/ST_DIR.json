@@ -24,7 +24,7 @@
       }
     }
   ],
-  "study": null,
+  "study": "supertrend",
   "provenance": "tradingView",
   "rankScope": null,
   "gloss": "which side of the Supertrend stop price is on — a state that persists between flips, not a flip event",

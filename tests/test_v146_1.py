@@ -88,7 +88,11 @@ def test_the_24_are_in_the_corpus_and_nothing_is_unmeasured(contract):
     assert MOVES["contractVersion"] == "146.0.1" and MOVES["buildSha"].startswith("a07740c0")
     assert set(MOVES["added"]) == ADDED and len(MOVES["added"]) == 24 and MOVES["retired"] == {}
     assert set(MOVES["added_detail"]) == ADDED
-    assert ADDED <= set(contract.metrics) and len(contract.metrics) == 534   # 326 until the 149.1.0 refresh; 532 at 149.1.0; 534 since 161.0.0 (2026-11-09: BB_TOUCH out, three in)
+    # 326 until the 149.1.0 refresh; 532 at 149.1.0; 534 at 161.0.0 (2026-11-09: BB_TOUCH out, three in)
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 - the 47 keys of _moves_168.json in, none out
+    moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
+    assert (len(moves_168["added"]), moves_168["retired"], moves_168["metrics"]) == (47, [], {"at161": 534, "at168": 581})
+    assert ADDED <= set(contract.metrics) and len(contract.metrics) == 534 + len(moves_168["added"]) == 581
     for key in sorted(ADDED):
         assert (CONTRACT_DIR / "metrics" / f"{key}.json").is_file(), key
     # since 2026-11-05 the record lists the 206 keys of the 148.1.0 capture by name (none of these 24)
@@ -102,10 +106,17 @@ def test_the_market_family_is_the_13_mkt_metrics(contract):
     assert {m for m in contract.metrics if contract.metric(m).family == "market"} == MKT
     categories = _j(CONTRACT_DIR / "categories.json")
     market = [c for c in categories["categories"] if c["category"] == "market"]
-    assert len(categories["categories"]) == 11 and len(market) == 1 and market[0]["metricCount"] == 13
+    # 2026-11-11, contract 168: fourteen categories (eleven until then) - the platform split channels, vwapProfile and
+    # levels out of structure (_moves_168.json familiesMoved); `market` is untouched, still the 13 MKT_*
+    assert len(categories["categories"]) == 14 and len(market) == 1 and market[0]["metricCount"] == 13
+    at_161 = {c["category"] for c in _j(CONTRACT_DIR / "vocabulary" / "20261109T1622Z" / "_categories.json")["categories"]}
+    assert len(at_161) == 11 and {c["category"] for c in categories["categories"]} - at_161 == {
+        "channels", "vwapProfile", "levels"}
+    assert not any("market" in move for move in _j(CONTRACT_DIR / "metrics" / "_moves_168.json")["familiesMoved"]["byMove"])
     # re-read 2026-11-05 at 148.1.0 (structure 156 -> 362, market unchanged) and 2026-11-07 at 149.1.0 (nothing moved);
-    # the 146.0.1 read three `previous` down since the 161.0.0 re-read of 2026-11-09 (it was two before it)
-    assert categories["_refreshed"]["previous"]["previous"]["previous"]["contractVersion"] == "146.0.1"
+    # the 146.0.1 read three `previous` down since the 161.0.0 re-read of 2026-11-09 (it was two before it); five down
+    # since 2026-11-11, which read the categories twice (18:23Z at 168.2.0, 22:32Z at 168.3.0)
+    assert categories["_refreshed"]["previous"]["previous"]["previous"]["previous"]["previous"]["contractVersion"] == "146.0.1"
     # a market metric spreads over market metrics only (the served spreadOperands of each of the ten that offer spread)
     for key in sorted(MKT):
         m = contract.metric(key)
@@ -141,8 +152,13 @@ def test_the_subject_domains_partition_the_served_enum(contract):
     added_148 = set(_j(CONTRACT_DIR / "metrics" / "_moves_149.json")["added"])
     # 161.0.0 (2026-11-09): the three keys 161 added are outside that measurement, and BB_TOUCH (which it covered) is retired
     moves_161 = _j(CONTRACT_DIR / "metrics" / "_moves_161.json")
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): the 47 keys 168 added (_moves_168.json, none retired) are
+    # outside that measurement too
+    moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
+    assert len(moves_168["added"]) == 47 and moves_168["retired"] == []
     assert set(coin["metrics"]) | set(market["metrics"]) | set(SUBJECTS["noSubject"]) == (
-        (set(contract.metrics) - added_148 - set(moves_161["added"])) | set(moves_161["retired"]))
+        (set(contract.metrics) - added_148 - set(moves_161["added"]) - set(moves_168["added"]))
+        | set(moves_161["retired"]))
     assert SUBJECTS["servedEnumCount"] == 326 and list(SUBJECTS["noSubject"]) == ["PAR_DEV"]
     assert "is not read on a evaluated-coin section's bars" in coin["refusal"]
     assert "is not read on a market section's bars" in market["refusal"]
@@ -297,13 +313,19 @@ def test_the_live_surface_compared_clean():
 
 def test_the_manifest_chain_and_the_templates():
     # the 146.0.1 extraction is the one under `supersedes` since the 161.0.0 extraction (2026-11-09; test_v161.py)
-    ext = MANIFEST["supersedes"]
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): the manifest's own block is the 168.3.0 extraction, the 161.0.0
+    # one is its `supersedes` and the 146.0.1 one sits under that - two levels down, it was one
+    assert (MANIFEST["servedContractVersion"], MANIFEST["supersedes"]["servedContractVersion"]) == ("168.3.0", "161.0.0")
+    ext = MANIFEST["supersedes"]["supersedes"]
     assert ext["servedContractVersion"] == "146.0.1" and ext["extractedOn"] == "2026-11-02"
     assert ext["supersedes"]["servedContractVersion"] == "144.0.0"
     assert ext["counts"]["metrics"] == 326 and ext["counts"]["families"] == 11
     # the write surface moved to the 148.1.0 capture on 2026-11-05 and to the 149.1.0 one on 2026-11-07; the 146.0.1
-    # live check is two levels under `supersedes`; three since the 161.0.0 capture of 2026-11-09 (149.1.0 sits between)
-    assert MANIFEST["writeSurface"]["supersedes"]["supersedes"]["supersedes"]["liveCheckedAt"]["contractVersion"] == "146.0.1"
+    # live check is two levels under `supersedes`; three since the 161.0.0 capture of 2026-11-09 (149.1.0 sits between);
+    # four since the 168.3.0 capture of 2026-11-11 (168.3.0 -> 161.0.0 -> 149.1.0 -> 148.1.0 -> the 146.0.0 capture)
+    v146_capture = MANIFEST["writeSurface"]["supersedes"]["supersedes"]["supersedes"]["supersedes"]
+    assert v146_capture["servedContractVersion"] == "146.0.0"
+    assert v146_capture["liveCheckedAt"]["contractVersion"] == "146.0.1"
     assert "derive_strategy_rule_view" not in MANIFEST["toolsUsed"]
     templates = _j(CONTRACT_DIR / "templates" / "platform" / "_all.json")
     by_key = {t["sectionKey"]: t for t in templates["templates"]}
@@ -313,10 +335,16 @@ def test_the_manifest_chain_and_the_templates():
     crowd = {(c["metric"], c["transformId"]) for c in by_key["includeCrowdIntelligence"]["columns"]}
     assert {(k, "value") for k in CROWD_Z} <= crowd
     # re-read 2026-11-05 at 148.1.0 (ema, conditionFrameReads 2048) and 2026-11-07 at 149.1.0; 146.0.1 two `previous` down
-    assert _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]["previous"]["previous"]["previous"]["contractVersion"] == "146.0.1"   # 161.0.0 (2026-11-09): three down, was two
+    # 161.0.0 (2026-11-09): three down, was two
+    # 2026-11-11, contract 168: five down - the shared blocks were read twice that day (18:23Z at 168.2.0, 22:32Z at
+    # 168.3.0), each read pushing the earlier ones one `previous` deeper
+    shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]
+    assert (shared["contractVersion"], shared["previous"]["contractVersion"]) == ("168.3.0", "168.2.0")
+    assert shared["previous"]["previous"]["previous"]["previous"]["previous"]["contractVersion"] == "146.0.1"
 
 
 def test_the_version_moved_past_0_11_0():
     # 0.11.0 was this re-extraction's release; 0.12.0 since the cut at contract 161.0.0 (2026-11-10); 0.12.2 since
-    # 2026-11-11 (the joint depth bound of a rolling-inner chain, tests/test_v0_12_2.py)
-    assert 'version = "0.12.2"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    # 2026-11-11 (the joint depth bound of a rolling-inner chain, tests/test_v0_12_2.py); 0.13.0 the same day (the
+    # re-extraction at contract 168.3.0, tests/test_v168.py)
+    assert 'version = "0.13.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")

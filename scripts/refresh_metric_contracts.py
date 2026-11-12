@@ -41,12 +41,15 @@ EXTRACTION_CONTRACT differs from it. _index.json records contractVersion / build
 Re-run 2026-09-20 at contract 61.2.0. EXTRACTION_SCRATCH and EXTRACTION_STAMP replace the constants the
 first run pinned to one session's scratch directory, which no longer exists.
 """
+import atexit
 import glob
 import json
 import os
+import queue
 import re
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 
@@ -84,6 +87,13 @@ AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthori
 # script runs standalone (a copy in a throwaway tree in the tests), so it does not import it.
 VERSION_URL = os.environ.get("EXTRACTION_VERSION_URL") or "https://mcp.battlegrid.trade/mcp/version"
 VERSION_EVERY = 40                    # fetches between two version reads (the 11-06 fetch_hints.py gate)
+# How a tool is called: "cli" (one `npx mcporter call` process per call, the path of every extraction to 2026-11-11) or
+# "runtime" (one long-lived mcporter runtime, `_Runtime` below). Anything else stops the run.
+TRANSPORT = os.environ.get("EXTRACTION_TRANSPORT") or "cli"
+if TRANSPORT not in ("cli", "runtime"):
+    sys.exit(f"EXTRACTION_TRANSPORT is {TRANSPORT!r}: 'cli' or 'runtime'")
+RUNTIME_HELPER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcporter_runtime.mjs")
+MIN_INTERVAL_S = float(os.environ.get("EXTRACTION_MIN_INTERVAL_S") or 0.4)    # runtime only: 3 requests a second max
 VERSION_FILE = os.path.join(RAW, "_version.json")
 ASSERTED = os.environ.get("EXTRACTION_CONTRACT") or None
 
@@ -140,7 +150,102 @@ def same_contract(a, b):
     return (a.get("contractVersion"), a.get("buildSha")) == (b.get("contractVersion"), b.get("buildSha"))
 
 
+class _Runtime:
+    """EXTRACTION_TRANSPORT=runtime: every call goes through ONE long-lived mcporter runtime
+    (scripts/mcporter_runtime.mjs: a JSON line in, a JSON line out) instead of one `npx mcporter call` process each.
+
+    Measured 2026-11-11: 240 hints through the CLI took 162 minutes on a CPU-starved host and the contract moved under
+    the read; through the runtime two hints took 11 seconds including its start, and EMA20's answer equalled the CLI's.
+    The helper never starts an interactive authorization (`disableOAuth`). Calls are spaced MIN_INTERVAL_S apart: the
+    platform's limit is 3 requests a second and one session no longer paces itself by starting slowly. A call that
+    times out kills the helper (its answer could arrive under the next call's id); the next call starts a new one."""
+
+    def __init__(self):
+        self.p = self.lines = self.errors = None
+        self.n = 0
+        self.last = 0.0
+
+    @staticmethod
+    def _pump(stream, sink):
+        for raw in iter(stream.readline, b""):
+            sink.put(raw.decode("utf-8", errors="replace"))
+        sink.put(None)
+
+    def _stderr_tail(self):
+        tail = []
+        while self.errors is not None and not self.errors.empty():
+            line = self.errors.get_nowait()
+            if line:
+                tail.append(line.strip())
+        return " | ".join(tail)[-300:]
+
+    def _line(self, timeout):
+        try:
+            line = self.lines.get(timeout=timeout)
+        except queue.Empty:
+            return None, "TIMEOUT"
+        if line is None:
+            return None, f"the runtime exited ({self._stderr_tail() or 'no stderr'})"
+        try:
+            return json.loads(line), None
+        except ValueError:
+            return None, f"the runtime printed a line that is not JSON: {line[:200]}"
+
+    def _start(self):
+        self.p = subprocess.Popen(["node", RUNTIME_HELPER], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE)
+        self.lines, self.errors = queue.Queue(), queue.Queue()
+        threading.Thread(target=self._pump, args=(self.p.stdout, self.lines), daemon=True).start()
+        threading.Thread(target=self._pump, args=(self.p.stderr, self.errors), daemon=True).start()
+        ready, err = self._line(120)
+        if ready is None or not ready.get("ready"):
+            why = err or str((ready or {}).get("error"))
+            self.stop()
+            return f"the mcporter runtime did not start: {why}"[:300]
+        return None
+
+    def stop(self):
+        if self.p is not None:
+            self.p.kill()
+        self.p = None
+
+    def call(self, tool, args, timeout):
+        if self.p is None or self.p.poll() is not None:
+            err = self._start()
+            if err:
+                return None, err
+        wait = MIN_INTERVAL_S - (time.monotonic() - self.last)
+        if wait > 0:
+            time.sleep(wait)
+        self.last = time.monotonic()
+        self.n += 1
+        request = {"id": self.n, "tool": tool, "args": args, "timeoutMs": int(timeout * 1000)}
+        try:
+            self.p.stdin.write((json.dumps(request) + "\n").encode("utf-8"))
+            self.p.stdin.flush()
+        except OSError as exc:
+            self.stop()
+            return None, f"the runtime's stdin closed ({type(exc).__name__}): {self._stderr_tail()}"[:300]
+        sent = self.n
+        answer, err = self._line(timeout + 10)          # the helper enforces `timeoutMs` itself first
+        if answer is None:
+            self.stop()
+            return None, err
+        if answer.get("id") != sent:
+            self.stop()
+            return None, f"the runtime answered call {answer.get('id')}, not {sent}"
+        if not answer.get("ok"):
+            return None, str(answer.get("error"))[:300]
+        return answer.get("value"), None
+
+
+_runtime = _Runtime()
+atexit.register(_runtime.stop)          # the helper is a child process: it does not outlive this run
+
+
 def call(tool, args, timeout=120):
+    if TRANSPORT == "runtime":
+        return _runtime.call(tool, args, timeout)
     p = subprocess.Popen(
         ["cmd", "/c", "npx", "mcporter", "call", f"battlegrid-anbu.{tool}",
          "--output", "json", "--args", "-"],
@@ -280,6 +385,9 @@ for i, name in enumerate(names, 1):
             break
         continue
     problem = hint_problem(resp)
+    if problem is None and resp["metric"].get("metric") != name:
+        # one session serves every call on the runtime transport: the answer must be the metric that was asked
+        problem = f"the hint is for {resp['metric'].get('metric')!r}, not {name!r}"
     if problem:                    # an answer, but not a hint: a fetch failure, never cached
         print(f"  [{i}/{len(names)}] {name}: FAILED (not cached) {problem}")
         failed.append(name)
@@ -318,9 +426,45 @@ else:
 print(f"contract: {CONTRACT_FIELDS['contractVersion']} ({CONTRACT_FIELDS['contractKnownBy']})")
 
 
+OPERAND_LISTS = ("spreadOperands", "spreadOperandsOffAnchor", "spreadAverageOperands", "spreadAverageOperandsOffAnchor")
+
+
+def operand_list(value, sets, where):
+    """168 (2026-11-11, undocumented): an operand list is served ONCE per response, under the top-level `operandSets`,
+    and named where it applies by its id ("operands-144"); to 161 the list itself was served there. Returns the list
+    either way, so a record keeps the shape every reader has (the first 168 build stored the id string, and
+    omega.contract read its characters as metric names: `KeyError: "unknown metric 'o'"`). An id the response does not
+    define raises, which stops the build with nothing written."""
+    if isinstance(value, str):
+        if value not in sets:
+            raise KeyError(f"{where} names operand set {value!r}, which the response's operandSets does not define "
+                           f"({sorted(sets)[:6]})")
+        if not isinstance(sets[value], list):
+            # list() of a string is its characters and of a dict its keys - the very bug this function closed
+            raise TypeError(f"{where}: operand set {value!r} is a {type(sets[value]).__name__}, not a list")
+        return list(sets[value])
+    return value
+
+
+OPERAND_SET_ID = re.compile(r"^operands-\d+$")
+
+
+def unresolved_operand_ids(node, path=""):
+    """Every string in a built record that still looks like an operand-set id: a key build_record does not resolve
+    would otherwise be stored as the id (review 2026-11-12)."""
+    if isinstance(node, str):
+        return [path] if OPERAND_SET_ID.match(node) else []
+    if isinstance(node, dict):
+        return [p for k, v in node.items() for p in unresolved_operand_ids(v, f"{path}.{k}" if path else str(k))]
+    if isinstance(node, list):
+        return [p for i, v in enumerate(node) for p in unresolved_operand_ids(v, f"{path}[{i}]")]
+    return []
+
+
 def build_record(name, resp):
     """One metric file's content (and the transform side-tables) from its raw hint. Nothing is written here."""
     m = resp["metric"] if isinstance(resp, dict) and "metric" in resp and isinstance(resp["metric"], dict) else resp
+    sets = (resp.get("operandSets") or {}) if isinstance(resp, dict) else {}
     if isinstance(resp, dict) and "chainOuterParameters" in resp:
         outer_params_seen.setdefault(json.dumps(resp["chainOuterParameters"], sort_keys=True), []).append(name)
     rec = {
@@ -353,6 +497,15 @@ def build_record(name, resp):
         for flag in TRANSFORM_FLAGS:
             if flag in t:
                 entry[flag] = t[flag]
+        # 168: a chained outer's `operands` (and the new `operandsOffAnchor`) name an operand set by id; the lists are
+        # stored. Its other members (windowMaximum, windowParameter, innerWindowMaximum and, new at 168, offsetMinimum
+        # and metricParametersAccepted) are recorded as served.
+        if isinstance(entry.get("chainedOuters"), dict):
+            entry["chainedOuters"] = {
+                outer: ({k: operand_list(v, sets, f"{name}.{t['id']}.chainedOuters.{outer}.{k}")
+                         if k in ("operands", "operandsOffAnchor") else v for k, v in spec.items()}
+                        if isinstance(spec, dict) else spec)
+                for outer, spec in entry["chainedOuters"].items()}
         # v146.9: whether this column accepts the metric's knobs off their defaults (false on a metric with none, and
         # where an off-default knob is refused: rank / relativeTo / aggregate / ema). Per metric x transform.
         if "metricParametersAccepted" in t:
@@ -388,14 +541,20 @@ def build_record(name, resp):
                     win["description"] = win["description"][:found.start()]
             blob = json.dumps(auth, sort_keys=True)
             authoring_seen.setdefault(t["id"], {}).setdefault(blob, []).append(m["metric"])
-    if m.get("spreadOperands"):
-        rec["spreadOperands"] = m["spreadOperands"]
-    # 161.0.0 (2026-11-09, undocumented): the operands a spread takes when it reads off the anchor bar, served per
-    # metric beside spreadOperands (null on a metric with none). Recorded as served.
-    if m.get("spreadOperandsOffAnchor"):
-        rec["spreadOperandsOffAnchor"] = m["spreadOperandsOffAnchor"]
+    # spreadOperands; 161.0.0 (2026-11-09, undocumented): spreadOperandsOffAnchor, the operands a spread takes when it
+    # reads off the anchor bar; 168 (2026-11-11, undocumented): spreadAverageOperands and
+    # spreadAverageOperandsOffAnchor, the operands a spread takes UNDER AN AVERAGE ({metric, transformId, window} on
+    # `inputs[]`: "a metric under one average at a length"). Each is null on a metric with none, and recorded as the
+    # served list (an operand-set id is resolved, see operand_list).
+    for key in OPERAND_LISTS:
+        if m.get(key):
+            rec[key] = operand_list(m[key], sets, f"{name}.{key}")
     if m.get("rankOrderings"):
         rec["rankOrderings"] = m["rankOrderings"]
+    # last, over the whole record: an id under any key copied as served would otherwise be stored as the id
+    left = unresolved_operand_ids(rec)
+    if left:
+        raise KeyError(f"{name}: operand-set ids left unresolved at {left[:5]} - a key this script does not resolve yet")
     return rec
 
 

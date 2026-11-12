@@ -177,10 +177,25 @@ def test_knob_spelling_rendered_is_what_the_three_records_rendered(contract):
             for s in p["sections"]:
                 for col in s["columns"]:
                     take(col)
+    # 168.3.0 (2026-11-11): three more records - the knob-spelling probe at 168.3.0 rendered the 85 cells contract 168
+    # opened on 47 metrics (the three new knobs on the 24 prior-session zones and the seven structure-zone metrics; the
+    # known equalBars / equalThreshold / swingLength / confluenceFilter on the sixteen added keys that serve them),
+    # 88 columns in three previews, 0 refusals
+    probed_168 = 0
+    for batch in "abc":
+        rec = _j(f"knob_spelling_probe_168_2026-11-11-{batch}.json")
+        assert rec["contractVersion"] == rec["versionAtEnd"] == "168.3.0" and rec["refused"] == 0 and rec["complete"]
+        for e in rec["entries"]:
+            # every header this probe rendered is what omega.fanout predicts now that the cells are in the table
+            assert e["rendered"] == [o.header for col in e["columns"] for o in outputs_for(Column(**col), contract)]
+            for col in e["columns"]:
+                take(col)
+                probed_168 += 1
+    assert probed_168 == 88
     assert {m: frozenset(v) for m, v in rendered.items()} == KNOB_SPELLING_RENDERED
-    # and that is every served cell: 81 of 81 on 36 metrics at 149.1.0
+    # and that is every served cell: 81 of 81 on 36 metrics at 149.1.0; 106 on 46 at 161.0.0; 191 on 93 at 168.3.0
     served = {n: frozenset(m.parameters) for n, m in contract.metrics.items() if m.parameters}
-    assert served == KNOB_SPELLING_RENDERED and sum(map(len, served.values())) == 106
+    assert served == KNOB_SPELLING_RENDERED and (sum(map(len, served.values())), len(served)) == (191, 93)
 
 
 def test_a_known_knob_name_on_a_metric_never_rendered_with_it_raises(contract):

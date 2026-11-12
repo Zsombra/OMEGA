@@ -63,6 +63,8 @@
             "DAY_OF_WEEK",
             "SWING_FRACTAL_HIGH_BARS_AGO",
             "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
             "TRADES",
             "SELL_TRADES"
           ],
@@ -71,6 +73,8 @@
             "DAY_OF_WEEK",
             "SWING_FRACTAL_HIGH_BARS_AGO",
             "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
             "TRADES",
             "SELL_TRADES"
           ],
@@ -247,6 +251,8 @@
             "DAY_OF_WEEK",
             "SWING_FRACTAL_HIGH_BARS_AGO",
             "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
             "TRADES",
             "SELL_TRADES"
           ],
@@ -255,6 +261,8 @@
             "DAY_OF_WEEK",
             "SWING_FRACTAL_HIGH_BARS_AGO",
             "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
             "TRADES",
             "SELL_TRADES"
           ],
@@ -563,6 +571,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -578,6 +587,39 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "operandsOffAnchor": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -707,6 +749,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -722,6 +765,39 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "operandsOffAnchor": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -851,6 +927,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -866,6 +943,39 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "operandsOffAnchor": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -995,6 +1105,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -1010,6 +1121,39 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "operandsOffAnchor": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "LIQUIDITY_POOL_BELOW_TOUCHES",
+            "TRADES",
+            "SELL_TRADES",
+            "REGIME_RUN_BARS",
+            "REGIME_MOM_BULL_VOTES",
+            "REGIME_MOM_BEAR_VOTES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1661,6 +1805,8 @@
     "DAY_OF_WEEK",
     "SWING_FRACTAL_HIGH_BARS_AGO",
     "SWING_FRACTAL_LOW_BARS_AGO",
+    "LIQUIDITY_POOL_ABOVE_TOUCHES",
+    "LIQUIDITY_POOL_BELOW_TOUCHES",
     "TRADES",
     "SELL_TRADES",
     "REGIME_RUN_BARS",
@@ -1672,11 +1818,31 @@
     "DAY_OF_WEEK",
     "SWING_FRACTAL_HIGH_BARS_AGO",
     "SWING_FRACTAL_LOW_BARS_AGO",
+    "LIQUIDITY_POOL_ABOVE_TOUCHES",
+    "LIQUIDITY_POOL_BELOW_TOUCHES",
     "TRADES",
     "SELL_TRADES",
     "REGIME_RUN_BARS",
     "REGIME_MOM_BULL_VOTES",
     "REGIME_MOM_BEAR_VOTES"
+  ],
+  "spreadAverageOperands": [
+    "BUY_TRADES",
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "TRADES",
+    "SELL_TRADES"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "BUY_TRADES",
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "TRADES",
+    "SELL_TRADES"
   ],
   "rankOrderings": [
     "hi",

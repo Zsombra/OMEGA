@@ -443,6 +443,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -458,6 +459,25 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "operandsOffAnchor": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -587,6 +607,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -602,6 +623,25 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "operandsOffAnchor": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -731,6 +771,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -746,6 +787,25 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "operandsOffAnchor": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -875,6 +935,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -890,6 +951,25 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "operandsOffAnchor": [
+            "QUOTE_VOL",
+            "SELL_QUOTE_VOL",
+            "NOTIONAL_VOLUME_1D",
+            "OI"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1547,6 +1627,16 @@
     "SELL_QUOTE_VOL",
     "NOTIONAL_VOLUME_1D",
     "OI"
+  ],
+  "spreadAverageOperands": [
+    "BUY_QUOTE_VOL",
+    "QUOTE_VOL",
+    "SELL_QUOTE_VOL"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "BUY_QUOTE_VOL",
+    "QUOTE_VOL",
+    "SELL_QUOTE_VOL"
   ],
   "rankOrderings": [
     "hi",

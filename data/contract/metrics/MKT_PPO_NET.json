@@ -496,6 +496,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -511,6 +512,35 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "operandsOffAnchor": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -640,6 +670,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -655,6 +686,35 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "operandsOffAnchor": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -784,6 +844,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -799,6 +860,35 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "operandsOffAnchor": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -928,6 +1018,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -943,6 +1034,35 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "operandsOffAnchor": [
+            "MKT_UP",
+            "MKT_DOWN",
+            "MKT_NET",
+            "MKT_AVG_CHG",
+            "MKT_DISPERSION",
+            "MKT_PPO_UP",
+            "MKT_PPO_DOWN",
+            "MKT_AVG_PPO",
+            "MKT_ABOVE_EMA"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1596,6 +1716,30 @@
     "MKT_ABOVE_EMA"
   ],
   "spreadOperandsOffAnchor": [
+    "MKT_UP",
+    "MKT_DOWN",
+    "MKT_NET",
+    "MKT_AVG_CHG",
+    "MKT_DISPERSION",
+    "MKT_PPO_UP",
+    "MKT_PPO_DOWN",
+    "MKT_AVG_PPO",
+    "MKT_ABOVE_EMA"
+  ],
+  "spreadAverageOperands": [
+    "MKT_PPO_NET",
+    "MKT_UP",
+    "MKT_DOWN",
+    "MKT_NET",
+    "MKT_AVG_CHG",
+    "MKT_DISPERSION",
+    "MKT_PPO_UP",
+    "MKT_PPO_DOWN",
+    "MKT_AVG_PPO",
+    "MKT_ABOVE_EMA"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "MKT_PPO_NET",
     "MKT_UP",
     "MKT_DOWN",
     "MKT_NET",

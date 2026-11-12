@@ -30,6 +30,7 @@ from .preflight import union_key
 OUT = DERIVED_DIR / "condition_vocabulary_108.json"
 STAGE = "stage_strategy_draft"
 PREVIEW = "preview_strategy_report"
+READ = "get_strategy"
 # The keys every clause arm shares; what is left on an arm is its operand.
 CLAUSE_FRAME = ("kind", "column", "op", "hold")
 _POINTER_KEYS = ("pointer", "opPointer", "holdPointer", "itemsRef", "definitionPointer")
@@ -229,6 +230,22 @@ def _column_enums(doc: dict) -> dict:
     out: dict[str, Any] = {"pointer": pointer(column), "fields": sorted(node["properties"])}
     for name in ("metric", "transformId", "chainedTransformId"):
         p, n = _deref(doc, base, column + ["properties", name])
+        if name == "metric" and "enum" not in n:
+            # Contract 168 (2026-11-11): the write schema names a metric by PATTERN ("A metric key
+            # list_strategy_vocabulary serves; search it with `query`") - the roster left the write schema. The same
+            # capture's get_strategy OUTPUT schema still enumerates every key (`$defs/metricKey`, 581 at 168.3.0, each
+            # confirmed by a served construction hint), so that enum is the roster here and `enumSource` says where it
+            # was read. A capture whose read schema lists none either has no roster: that raises (KeyError), it is not
+            # guessed.
+            roster_parts = [READ, "outputSchema", "$defs", "metricKey"]
+            roster = resolve(doc, pointer(roster_parts))
+            out[name] = {"pointer": pointer(p), "pattern": n["pattern"],
+                         "length": {k: n[k] for k in ("minLength", "maxLength") if k in n},
+                         "enumPointer": pointer(roster_parts),
+                         "enumSource": f"{READ} outputSchema $defs/metricKey: since contract 168 the write schema "
+                                       "names a metric by pattern, and the read schema keeps the roster",
+                         "count": len(roster["enum"]), "enum": list(roster["enum"])}
+            continue
         out[name] = {"pointer": pointer(p), "count": len(n["enum"]), "enum": list(n["enum"])}
     # the numeric fields' bounds: window/offset keep only their floors since v103; buffer is 0-500 (v100); since
     # v146.9 / v146.11 the knobs leftBars / rightBars / swingLength / equalBars (integer >= 1) and equalThreshold (number

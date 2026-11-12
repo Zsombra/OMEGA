@@ -71,7 +71,13 @@ def test_the_column_integer_bounds_are_derived():
                                               "rsiPeriod", "signal", "slow", "basePeriod", "chainedWindow",
                                               "conversionPeriod", "displacement", "spanBPeriod")},
                                           **{k: {} for k in ("multiplier", "stdDev", "touchAtr", "accelerationStart",   # touchAtr: 161.0.0 (2026-11-09), a bare number
-                                                             "accelerationIncrement", "accelerationMaximum")}}
+                                                             "accelerationIncrement", "accelerationMaximum",
+                                                             # 2026-11-11, contract 168.3.0 (the capture of
+                                                             # schema_20261111T213257Z.json): two of the three knobs 168
+                                                             # added to the column are bare numbers ({"type": "number"},
+                                                             # no minimum / maximum); the third, usedUpOnClose, is a
+                                                             # boolean and so has no numeric bound to derive
+                                                             "supplyDemandThreshold", "supplyDemandResolution")}}
 
 
 def test_the_gaps_name_only_the_retired_section_field():
@@ -90,8 +96,9 @@ def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     assert set(C.retired_transforms) == {"bandTouch"}
     # retired at 108 (README v100/v108); `servedAt` is the schema checked, the 110.13.0 (v111) capture since 2026-10-16
     # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30, the 146.0.0 one since 2026-11-01, the
-    # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07, the 161.0.0 one since 2026-11-09)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "161.0.0"   # 161.0.0 (2026-11-09): was 149.1.0
+    # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07, the 161.0.0 one since 2026-11-09, the 168.3.0 one
+    # since 2026-11-11: data/derived/condition_vocabulary_108.json source.contractVersion, the schema the enum is read from)
+    assert C.retired_transforms["bandTouch"]["servedAt"] == "168.3.0"   # 2026-11-11: was 161.0.0 (2026-11-09), 149.1.0 before
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -111,7 +118,11 @@ def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
     # 352 since 161.0.0 (2026-11-09, _moves_161.json): +33 existing levels (the session highs / lows / opens, IB extensions,
     # opening ranges and the TPO / week / month profile levels), -2 (DONCHIAN_BROKEN_HI / LO) and +3 added (VWMA20 and the
     # two DONCHIAN_BROKEN_*_PRIOR)
-    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 352   # 118 at 144.0.0; 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 393 = 352 + 41 of the 47 added metrics (_moves_168.json): EMA55,
+    # EQH_LEVEL / EQL_LEVEL, the four *_PENDING_* levels, LIQUIDITY_POOL_ABOVE / _BELOW and their _RETIRED, the 24
+    # PRIOR_<session>_DEMAND_* / _SUPPLY_* and the six ZONE_*; not the four pool flags (_INTACT / _RECLAIMED) nor the two
+    # _TOUCHES counts. No existing metric gained or lost it.
+    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 393   # 352 at 161.0.0; 118 at 144.0.0; 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
 
 
 def test_a_retired_transform_is_refused_naming_its_replacement():
@@ -121,6 +132,10 @@ def test_a_retired_transform_is_refused_naming_its_replacement():
     # 161.0.0 (2026-11-09): the retired transform is judged against the 161.0.0 schema, and BB_TOUCH itself is gone
     # from the enum (the message names its replacement BB_PCT_B / BB_UPPER x levelInteraction)
     assert "BB_TOUCH" in msg and "levelInteraction" in msg and "161.0.0" in msg
+    # 2026-11-11, contract 168.3.0: the schema judged against is the 168.3.0 capture. "161.0.0" above still holds, but
+    # only through the replacement text ("BB_TOUCH itself was removed at contract 161.0.0"), so the served version is
+    # pinned on its own here - without this line the assertion above no longer tracks the schema the message names.
+    assert "the contract 168.3.0 write schema" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():
@@ -150,7 +165,8 @@ def test_level_interaction_headers_are_the_measured_ones():
 def test_the_space_never_enumerates_a_retired_transform_and_does_enumerate_level_interaction():
     shapes = enumerate_shapes(expand_operands=True)
     assert not [s for s in shapes if "bandTouch" in (s.transform, s.chained)]
-    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 352      # 352 at 161.0.0 (2026-11-09: 318 at 149.1.0); 118 at 146.0.1; 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 393, one atom per metric that offers it (the count above)
+    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 393      # 352 at 161.0.0 (2026-11-09: 318 at 149.1.0); 118 at 146.0.1; 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
 
 
 # --- buffer ----------------------------------------------------------------------------------------

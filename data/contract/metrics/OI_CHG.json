@@ -79,6 +79,32 @@
     "FUNDING_RATE",
     "FUNDING_ANN"
   ],
+  "spreadAverageOperands": [
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC9",
+    "ROC12",
+    "ROC15",
+    "CLOSE_CHANGE",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC9",
+    "ROC12",
+    "ROC15",
+    "CLOSE_CHANGE",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV"
+  ],
   "rankOrderings": [
     "hi",
     "lo",

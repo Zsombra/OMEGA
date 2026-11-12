@@ -64,7 +64,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -74,7 +76,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -91,7 +95,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -101,7 +107,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -118,7 +126,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -128,7 +138,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -145,7 +157,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -155,7 +169,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -172,7 +188,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -182,7 +200,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -199,7 +219,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -209,7 +231,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -226,7 +250,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -236,7 +262,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -253,7 +281,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -263,7 +293,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -280,7 +312,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -290,7 +324,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -307,7 +343,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -317,7 +355,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -334,7 +374,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -344,7 +386,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -361,7 +405,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -371,7 +417,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -388,7 +436,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -398,7 +448,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -415,7 +467,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -425,7 +479,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -442,7 +498,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "operandsOffAnchor": [
             "PPO_HIST",
@@ -452,7 +510,9 @@
             "ROC15",
             "CLOSE_CHANGE",
             "ATR_PCT",
-            "BB_WIDTH_PCT"
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -625,6 +685,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -640,6 +701,53 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -770,6 +878,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -785,6 +894,53 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -915,6 +1071,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -930,6 +1087,53 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -1060,6 +1264,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -1075,6 +1280,53 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "operandsOffAnchor": [
+            "PPO_HIST",
+            "PPO_LINE",
+            "PPO_SIGNAL",
+            "ROC12",
+            "ROC15",
+            "CLOSE_CHANGE",
+            "CHG_5M",
+            "CHG_15M",
+            "CHG_1H",
+            "CHG_4H",
+            "CHG_24H",
+            "ATR_PCT",
+            "BB_WIDTH_PCT",
+            "HIGH_DEV",
+            "LOW_DEV",
+            "FUNDING_RATE",
+            "FUNDING_ANN",
+            "OI_CHG"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1771,6 +2023,32 @@
     "FUNDING_RATE",
     "FUNDING_ANN",
     "OI_CHG"
+  ],
+  "spreadAverageOperands": [
+    "ROC9",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC12",
+    "ROC15",
+    "CLOSE_CHANGE",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "ROC9",
+    "PPO_HIST",
+    "PPO_LINE",
+    "PPO_SIGNAL",
+    "ROC12",
+    "ROC15",
+    "CLOSE_CHANGE",
+    "ATR_PCT",
+    "BB_WIDTH_PCT",
+    "HIGH_DEV",
+    "LOW_DEV"
   ],
   "rankOrderings": [
     "hi",

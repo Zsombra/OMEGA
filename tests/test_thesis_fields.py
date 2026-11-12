@@ -19,8 +19,10 @@ def _names() -> list[str]:
 
 
 # The field list at contract 108, in order (battlegrid-manager's THESIS_KEYS must equal it).
+# Contract 168 (2026-11-11, OMEGA v0.13.0): `trade_level_menu` after `execution` - the menu TRADE_LEVEL_POLICY requires
+# (omega/trade_levels.py); None means the default built from the thesis's minRiskRewardRatio.
 THESIS_FIELDS_108 = ("name", "tagline", "description", "anchor", "weights", "stance", "context",
-                     "coin_selection", "execution", "exits")
+                     "coin_selection", "execution", "trade_level_menu", "exits")
 
 
 def test_the_field_list_at_108_is_exactly_this():

@@ -24,8 +24,10 @@ def test_the_stored_batches_reconcile_with_the_served_roster(capsys):
     records = bc.merge_metrics()
     bc.verify(records, CATEGORIES)
     # (532, 206, 326) from 2026-11-05 until the refresh at 149.1.0 on 2026-11-07 folded the 206 in
-    assert (len(bc.METRIC_ENUM), len(bc.UNMEASURED), len(bc.MEASURED)) == (534, 0, 534)   # 161.0.0 (2026-11-09): 534 (BB_TOUCH retired, three added)
-    assert "534/534 metrics measured;" in capsys.readouterr().out
+    # 161.0.0 (2026-11-09): 534 (BB_TOUCH retired, three added); 168.3.0 (2026-11-11): 581 (47 added, _moves_168.json) -
+    # the roster is now the read schema's enum (condition_vocabulary_108.json reportColumn.metric.enumSource)
+    assert (len(bc.METRIC_ENUM), len(bc.UNMEASURED), len(bc.MEASURED)) == (581, 0, 581)
+    assert "581/581 metrics measured;" in capsys.readouterr().out
 
 
 def test_a_missing_measured_metric_still_fails():
@@ -73,7 +75,7 @@ def test_the_matrix_has_no_column_for_a_served_but_unextracted_transform():
     ids = [t["id"] for t in shared["transforms"]]
     assert {"ema", "rma", "wma", "rsi", "cci"} <= set(ids) and len(ids) == 29   # 161.0.0 (2026-11-09): roc added (29 catalogue ids)
     rows = bc.build_composability(bc.merge_metrics(), shared)
-    assert {"ema", "rma", "wma", "rsi", "cci"} <= {r["transform"] for r in rows} and len(rows) == 534 * 29   # 161.0.0 (2026-11-09): 534 metrics x 29 transforms
+    assert {"ema", "rma", "wma", "rsi", "cci"} <= {r["transform"] for r in rows} and len(rows) == 581 * 29   # 161.0.0 (2026-11-09): 534 metrics x 29 transforms; 168.3.0 (2026-11-11): 581 x 29
     fake = json.loads(json.dumps(shared))
     fake["transforms"].append({"id": "notExtracted", "label": "x"})
     assert "notExtracted" not in {r["transform"] for r in bc.build_composability(bc.merge_metrics(), fake)}

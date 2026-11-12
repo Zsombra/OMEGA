@@ -82,9 +82,15 @@ def test_the_affected_set_is_exactly_the_candle_categoricals(contract):
     # and v135.1's TRADING_SESSION (asia / london / newYork / late, a fact of the read bar's open time)
     # and the six structure categoricals contract 148.1.0 added (v146.11: EQH / EQL and the four TREND / EVENT keys),
     # in the corpus since 2026-11-07
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): and the four liquidity-pool flags among the 47 metrics 157 - 168
+    # added (_moves_168.json): timeframeMode `candle`, nativeOutput kind `boolean` - the only candle categoricals of the 47
+    # (13 are candle numerics, 30 timeless). HIGH_DEV / LOW_DEV went timeless -> candle at 168 but are numeric, so they
+    # do not join. Offset on the four was not probed; like the fourteen before them they joined after v94.
     JOINED_AFTER_V94 = ["BAR_CONTAINMENT", "CANDLE_DOJI", "CANDLE_ENGULFING", "CANDLE_PIN", "GAP", "GAP_RANGE_CLEAR",
                         "SWING_FRACTAL_LABEL", "TRADING_SESSION", "EQH", "EQL", "INTERNAL_STRUCTURE_EVENT",
-                        "INTERNAL_STRUCTURE_TREND", "SWING_STRUCTURE_EVENT", "SWING_STRUCTURE_TREND"]
+                        "INTERNAL_STRUCTURE_TREND", "SWING_STRUCTURE_EVENT", "SWING_STRUCTURE_TREND",
+                        "LIQUIDITY_POOL_ABOVE_INTACT", "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+                        "LIQUIDITY_POOL_BELOW_INTACT", "LIQUIDITY_POOL_BELOW_RECLAIMED"]
     # 161.0.0 (2026-11-09): BB_TOUCH was retired by the platform (_moves_161.json, author BB_PCT_B): it is no longer in
     # the corpus, so the live affected set loses it; the stored 2026-08-28 audit keeps its measured history.
     assert "BB_TOUCH" in contract.retired_metrics and "BB_TOUCH" not in contract.metrics

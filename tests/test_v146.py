@@ -35,7 +35,8 @@ from scripts.compare_vocabulary import compare, live_enums, stored_enums, stored
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_146 = "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
 SCHEMA_144 = "data/contract/stage_strategy_draft/schema_20261029T152942Z.json"
-FIXTURE = Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/fixtures/2026-11-01-surface-146.0.0/"
+SCHEMA_161 = "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"   # the last capture with a metricKey ENUM on the stage schema
+FIXTURE =Path("C:/Users/rafae/Documents/GitHub/battlegrid-manager/tests/fixtures/2026-11-01-surface-146.0.0/"
                "manager_schemas_146.0.0.json")
 DOC = json.loads((ROOT / SCHEMA_146).read_text(encoding="utf-8"))
 DOC_144 = json.loads((ROOT / SCHEMA_144).read_text(encoding="utf-8"))
@@ -112,7 +113,11 @@ def test_the_capture_names_its_contract_build_and_source():
     # superseded as the write surface by the 148.1.0 capture on 2026-11-05 and the 149.1.0 one on 2026-11-07 (the
     # v0.12 branch, unreleased: pyproject.toml stays 0.11.0 until the full re-extraction lands); kept as history
     # and by the 161.0.0 one on 2026-11-09 (the 149.1.0 capture is the manifest's `supersedes`)
-    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "161.0.0"   # 149.1.0 until 2026-11-09
+    # 2026-11-11, contract 168.3.0: and by the 168.3.0 capture (the 161.0.0 one is the manifest's `supersedes` now); this
+    # 146.0.0 capture is four `supersedes` down the write surface chain (161.0.0, 149.1.0, 148.1.0, then it)
+    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "168.3.0"   # 149.1.0 until 2026-11-09, 161.0.0 until 2026-11-11
+    surface = json.loads((CONTRACT_DIR / "_manifest.json").read_text(encoding="utf-8"))["writeSurface"]
+    assert surface["supersedes"]["supersedes"]["supersedes"]["supersedes"]["schema"] == SCHEMA_146
 
 
 @pytest.mark.skipif(not FIXTURE.exists(), reason="the battlegrid-manager checkout is not beside this repo")
@@ -190,7 +195,18 @@ def test_every_generated_section_carries_the_key_and_the_emitted_body_walks_the_
     assert sections and all(s["marketScope"] == ("all" if s["title"] == "Market Tape" else None)
                             for s in sections if s["kind"] == "custom")
     root = DOC["stage_strategy_draft"]["inputSchema"]
-    findings = P.diff_schema(body, root, root)
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): every plan emits TRADE_LEVEL_POLICY.tradeLevelMenu, which 168
+    # requires and this 146 capture's closed axis does not declare. As emitted the body walks the CURRENT capture clean
+    # (strict, the key present) and the 146 capture reads exactly that one key UNDECLARED; the 146 walk this test is
+    # about runs on a copy without that one key (the key must be there to take out).
+    current = C.stage_schema()["stage_strategy_draft"]["inputSchema"]
+    assert [(f.cls, f.path) for f in P.diff_schema(body, current, current)
+            if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
+    assert [(f.cls, f.path) for f in P.diff_schema(body, root, root)
+            if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == [("UNDECLARED", "axes.TRADE_LEVEL_POLICY.tradeLevelMenu")]
+    pre_168 = copy.deepcopy(body)
+    del pre_168["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]
+    findings = P.diff_schema(pre_168, root, root)
     assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
     validator = _section_validator(DOC)
     for s in sections:
@@ -240,8 +256,18 @@ def test_the_added_metrics_are_served_and_now_in_the_corpus():
     added_148 = set(json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"])
     # 161.0.0 (2026-11-09): BB_TOUCH, served at 146, is retired (_moves_161.json) and its three additions are in the corpus
     moves_161 = json.loads((CONTRACT_DIR / "metrics" / "_moves_161.json").read_text(encoding="utf-8"))
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 47 keys added, none retired (_moves_168.json). The 47 are the
+    # 168.3.0 roster (the capture's get_strategy outputSchema $defs/metricKey - the stage schema names a metric by
+    # pattern now) less the 161.0.0 stage enum, and the corpus is that roster: 534 -> 581
+    moves_168 = json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))
+    roster_168 = set(C.stage_schema()["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"])
+    roster_161 = set(json.loads((ROOT / SCHEMA_161).read_text(encoding="utf-8"))
+                     ["stage_strategy_draft"]["inputSchema"]["$defs"]["metricKey"]["enum"])
+    assert set(moves_168["added"]) == roster_168 - roster_161 and len(moves_168["added"]) == 47
+    assert moves_168["retired"] == [] and not roster_161 - roster_168
     assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == (
-        (served - set(moves_161["retired"])) | added_148 | set(moves_161["added"]))
+        (served - set(moves_161["retired"])) | added_148 | set(moves_161["added"]) | set(moves_168["added"]))
+    assert set(contract.metrics) == roster_168 and len(roster_168) == 581
     record = json.loads((CONTRACT_DIR / "metrics" / "_unmeasured_108.json").read_text(encoding="utf-8"))
     assert set(record["metrics"]).isdisjoint(ADDED_METRICS)
     assert set(record["history146"]["formerlyUnmeasured"]) == ADDED_METRICS
@@ -274,7 +300,11 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
     added_148 = json.loads((CONTRACT_DIR / "metrics" / "_moves_149.json").read_text(encoding="utf-8"))["added"]
     # and, since 161.0.0 (2026-11-09), VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR (_moves_161.json)
     added_161 = json.loads((CONTRACT_DIR / "metrics" / "_moves_161.json").read_text(encoding="utf-8"))["added"]
-    assert results["metrics"]["storedNotLive"] == sorted(added_148 + added_161) and len(added_148) == 206
+    # and, since 168.3.0 (2026-11-11, extraction 20261111), the 47 keys of _moves_168.json (none retired, so
+    # liveNotStored above is still BB_TOUCH alone)
+    added_168 = json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))["added"]
+    assert len(added_161) == 3 and len(added_168) == 47
+    assert results["metrics"]["storedNotLive"] == sorted(added_148 + added_161 + added_168) and len(added_148) == 206
     assert (results["metrics"]["live"], results["sectionKeys"]["live"]) == (326, 22)
     assert results["metrics"]["storedUnmeasured"] == []
 
@@ -282,5 +312,6 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
 def test_the_version_moved_past_v0_10_2():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     # 0.11.0 at 146.0.1 (2026-11-02); 0.12.0 at 161.0.0 (2026-11-10); 0.12.1 the same day (no retired ambient header);
-    # 0.12.2 on 2026-11-11 (the joint depth bound, the chained touchAtr maximum)
-    assert 'version = "0.10.2"' not in text and 'version = "0.12.2"' in text
+    # 0.12.2 on 2026-11-11 (the joint depth bound, the chained touchAtr maximum); 0.13.0 the same day (re-extracted at
+    # contract 168.3.0: the trade level menu, 581 metrics, tests/test_v168.py)
+    assert 'version = "0.10.2"' not in text and 'version = "0.13.0"' in text

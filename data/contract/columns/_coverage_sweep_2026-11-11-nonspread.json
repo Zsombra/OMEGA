@@ -1,0 +1,8 @@
+{
+ "_what": "Headers minted live by preview_strategy_report during the 2026-11-11-nonspread coverage sweep. HEADERS ONLY - render_coverage treats every string in this file as a seen header, so nothing else may be added here.",
+ "headers": [
+  "dist_EMA55_rank_far",
+  "dist_EMA55_rank_lo",
+  "dist_EMA55_rank_near"
+ ]
+}

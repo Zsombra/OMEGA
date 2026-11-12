@@ -310,6 +310,10 @@ class Thesis:
     # MEASURED platform defaults (Decision 1a, 2026-08-28) - since v85 sent whole on their
     # axes, see omega/execution.py.
     execution: dict | None = None
+    # Contract 168 (2026-11-11): the trade level menu the strategy offers - {LONG, SHORT}, each {stops, targets}
+    # (omega/trade_levels.py). None means the ATR / R part of the platform's own migration default, with the R targets
+    # taken from this thesis's minRiskRewardRatio up (trade_levels.default_menu).
+    trade_level_menu: dict | None = None
     # Condition ROLES (EXIT_ROLES: "UP", "CORE_DOWN", ...) whose entry condition is also an
     # exit: each gains the v88 split, an exit rule CLOSE_ON_<key> closing the side its
     # verdict opposes (omega.conditions.close_on). Empty: every condition is an entry
@@ -470,6 +474,16 @@ class StrategyPlan:
         from .execution import PLATFORM_EXECUTION_DEFAULTS, validate_execution
         ov = self.thesis.execution or {}
         out += [f"execution {f.severity}: {f}" for f in validate_execution(ov)]
+        # the menu a CREATE stages; an UPDATE that stages TRADE_LEVEL_POLICY carries the live strategy's menu instead,
+        # judged by update_menu_findings(current)
+        findings = self.menu_findings()
+        out += [f"trade level menu {f.severity}: {f}" for f in findings]
+        menu = self.trade_level_menu()
+        sizes = ("" if any(f.severity == "error" for f in findings) or not isinstance(menu, dict) else
+                 " - " + "; ".join(f"{side} {len(menu[side]['stops'])} stop(s), {len(menu[side]['targets'])} target(s)"
+                                   for side in menu))
+        out.append("trade level menu: " + ("the thesis's own" if self.thesis.trade_level_menu is not None else
+                                           "default (the platform's migration ATR stops and R targets)") + sizes)
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **ov}
         out.append(
             f"execution: {'platform defaults' if not ov else f'{len(ov)} override(s)'}"
@@ -539,13 +553,33 @@ class StrategyPlan:
             for s in all_signals
         ]
 
+    def trade_level_menu(self) -> dict:
+        """The menu this plan stages (contract 168): the thesis's own, else the default built from the effective
+        minRiskRewardRatio. A copy: the caller may rewrite it."""
+        from .execution import PLATFORM_EXECUTION_DEFAULTS
+        from .trade_levels import default_menu
+        if self.thesis.trade_level_menu is not None:
+            return copy.deepcopy(self.thesis.trade_level_menu)
+        eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
+        return default_menu(eff["minRiskRewardRatio"])
+
+    def menu_findings(self) -> list:
+        """What the stage would say of this plan's trade level menu, offline (omega.trade_levels.validate_menu): the
+        menu against the plan's own dials and the levels its REPORT yields."""
+        from .execution import PLATFORM_EXECUTION_DEFAULTS, TRADE_LEVEL_DIALS
+        from .trade_levels import validate_menu
+        eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
+        return validate_menu(self.trade_level_menu(), dials={k: eff[k] for k in TRADE_LEVEL_DIALS},
+                             sections=self._sections(), anchor=self.thesis.anchor)
+
     def axes(self) -> dict:
         """The `axes` of a CREATE stage_strategy_draft request (no strategyId,
         draftVersion 0): all eight axes, each WHOLE, keyed and shaped by the 108 schema
         (data/contract/stage_strategy_draft/schema_20261010T215326Z.json). TRADE_LEVEL_POLICY
-        carries minAtrPct beside the stop-loss multiples and the risk-reward minimum (v108).
-        The ten-axis v91 form (SETUP_GATES, SIGNAL_RULES) and the flat compile body before
-        it are in git history."""
+        carries minAtrPct beside the stop-loss multiples and the risk-reward minimum (v108)
+        and, since contract 168, the trade level menu (`tradeLevelMenu`, required; see
+        omega/trade_levels.py). The ten-axis v91 form (SETUP_GATES, SIGNAL_RULES) and the flat
+        compile body before it are in git history."""
         from .execution import (PLATFORM_EXECUTION_DEFAULTS, POSITION_MANAGEMENT_DIALS,
                                 POSITION_MANAGEMENT_MIRROR, TRADE_LEVEL_DIALS)
         t = self.thesis
@@ -558,7 +592,8 @@ class StrategyPlan:
             "MARKET_READ": {"marketReadText": self.market_read_text},
             "CONDITIONS": {"conditions": self.conditions},
             "ENTRY": {"entry": dict(ENTRY_MIRROR)},
-            "TRADE_LEVEL_POLICY": {k: eff[k] for k in TRADE_LEVEL_DIALS},
+            "TRADE_LEVEL_POLICY": {**{k: eff[k] for k in TRADE_LEVEL_DIALS},
+                                   "tradeLevelMenu": self.trade_level_menu()},
             "POSITION_MANAGEMENT": {k: eff[k] for k in POSITION_MANAGEMENT_DIALS},
         }
 
@@ -643,7 +678,53 @@ class StrategyPlan:
                 out[axis] = complete(axis, dials)
             else:
                 del out[axis]
-        return out
+        # Contract 168: TRADE_LEVEL_POLICY is staged WHOLE with its menu. The axis goes on an update when the thesis
+        # names one of its dials OR a menu; the part the thesis does not name is the live strategy's own - its dials
+        # (complete) and its menu, carried verbatim. A strategy read with no menu and a thesis naming none raises:
+        # omega never invents a live strategy's menu, any more than a dial.
+        if "TRADE_LEVEL_POLICY" in out or self.thesis.trade_level_menu is not None:
+            out["TRADE_LEVEL_POLICY"] = {**(out.get("TRADE_LEVEL_POLICY") or complete("TRADE_LEVEL_POLICY", TRADE_LEVEL_DIALS)),
+                                         "tradeLevelMenu": self.update_menu(current)}
+        return {axis: out[axis] for axis in AXES if axis in out}          # the published order, whichever path added it
+
+    def update_menu(self, current: dict | None) -> dict:
+        """The menu an UPDATE stages: the thesis's own, else the live strategy's (`current` TRADE_LEVEL_POLICY
+        `tradeLevelMenu`), copied. Neither: ValueError."""
+        if self.thesis.trade_level_menu is not None:
+            return copy.deepcopy(self.thesis.trade_level_menu)
+        live = ((current or {}).get("TRADE_LEVEL_POLICY") or {}).get("tradeLevelMenu")
+        if live is None:
+            raise ValueError(
+                "TRADE_LEVEL_POLICY: `tradeLevelMenu` is named neither by the thesis nor by the strategy's current "
+                "axes - read them with get_strategy_draft and pass them as `current` (contract 168 stages the axis "
+                "whole, menu included); omega never invents a live strategy's menu")
+        return copy.deepcopy(live)
+
+    def update_menu_findings(self, current: dict | None) -> list:
+        """What the stage would say of the menu an UPDATE carries, offline: [] when the update does not stage
+        TRADE_LEVEL_POLICY. A live strategy's migrated menu can hold levels the report does not yield (the platform's
+        migration default names the Donchian and Bollinger bands on every strategy, measured 2026-11-11): restaging
+        the axis then is refused, and this says so before the stage does."""
+        from .trade_levels import validate_menu
+        from .validate import Finding
+        axes = self.axes_update(current)
+        policy = axes.get("TRADE_LEVEL_POLICY")
+        if policy is not None:
+            return validate_menu(policy["tradeLevelMenu"],
+                                 dials={k: v for k, v in policy.items() if k != "tradeLevelMenu"},
+                                 sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor)
+        # The axis is not staged, so the live menu and dials stay as they are - but REPORT is restaged whole, and the
+        # live menu's levels were yielded by the OLD report. Every probe was a create: whether a stage that omits the
+        # axis re-judges the live menu against the new report is unmeasured, so what the rule WOULD say is a warning.
+        live = (current or {}).get("TRADE_LEVEL_POLICY") or {}
+        if live.get("tradeLevelMenu") is None:
+            return []
+        would = validate_menu(live["tradeLevelMenu"], dials={k: v for k, v in live.items() if k != "tradeLevelMenu"},
+                              sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor)
+        return [Finding("warning", f.code, f.path,
+                        f"(the live menu, not staged by this update, against the report this update stages; whether "
+                        f"the stage re-judges it is unmeasured) {f.message}")
+                for f in would if f.severity == "error"]
 
     def _carry_section_keys(self, out: dict, current: dict) -> None:
         """Copy the current strategy's section keys onto `out`'s REPORT custom sections and

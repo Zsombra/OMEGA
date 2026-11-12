@@ -220,9 +220,21 @@ def test_pick_branch_ignores_a_branch_with_an_unknown_type_name():
 
 
 def test_walker_reports_pattern_unchecked_once_per_path_as_info():
+    """2026-11-11 (contract 168 names a metric key by pattern): a PLAIN pattern is judged - a match is no finding, a
+    miss is a PATTERN failure. Only a pattern Python cannot judge (a Unicode property class, an invalid regex) is still
+    declared-but-unchecked: one INFO, never an error. To 161 every pattern was the INFO."""
     arm, root = _create_arm()
-    infos = [f for f in P.diff_schema(_good_body(), arm, root) if f.cls == "INFO"]
-    assert any(f.path == "conditions[0].conditionKey" and "pattern" in f.detail for f in infos)
+    key = "conditions[0].conditionKey"                       # ^[A-Z][A-Z0-9_]{1,39}$, value A_ONE
+    assert [f for f in P.diff_schema(_good_body(), arm, root) if f.path == key] == []
+    lower = _good_body()
+    lower["conditions"][0]["conditionKey"] = "a one"
+    assert [(f.cls, f.verdict) for f in P.diff_schema(lower, arm, root) if f.path == key] == [("PATTERN", "FAIL")]
+    mini = copy.deepcopy(MINI)
+    mini["parameters"]["properties"]["request"]["anyOf"][0]["properties"]["conditions"]["items"]["properties"][
+        "conditionKey"]["pattern"] = r"^\p{Lu}[\p{Lu}0-9_]*$"
+    arms, uroot = P.resolve_arms(mini)
+    infos = [f for f in P.diff_schema(_good_body(), arms["CREATE"], uroot) if f.cls == "INFO" and f.path == key]
+    assert len(infos) == 1 and "pattern-unchecked" in infos[0].detail and infos[0].verdict == "INFO"
 
 
 def test_walker_reports_unknown_keywords_as_unsupported_and_keeps_walking():
@@ -559,11 +571,29 @@ def test_the_walker_descends_nested_unions_to_the_arm_the_clause_means():
 
 def test_the_entry_union_is_told_apart_by_its_trigger():
     axes, root = _v91()
-    level = {"trigger": "ON_RETEST", "levelOffsetAtrMultiple": 0.5, "validForBars": 3}
-    assert _fails(P.diff_axes({"ENTRY": {"entry": level}}, axes, root)) == []
+    # 2026-11-11, contract 168.3.0: a level-triggered entry (STOP_THROUGH_LEVEL, ON_RETEST) REQUIRES `levels`
+    # {LONG, SHORT}, each a $defs/conditionLevelRef with all six of its keys; the three-key entry that walked clean
+    # through 161.0.0 is MISSING_REQUIRED on `levels` now, and still walks the 161.0.0 capture clean (history)
+    from omega.trade_levels import level_ref
+    dials = {"trigger": "ON_RETEST", "levelOffsetAtrMultiple": 0.5, "validForBars": 3}
+    level = {**dials, "levels": {"LONG": level_ref("DONCHIAN_UPPER"), "SHORT": level_ref("DONCHIAN_LOWER")}}
+    assert set(level["levels"]["LONG"]) == set(root["$defs"]["conditionLevelRef"]["required"])
+    for trigger in ("ON_RETEST", "STOP_THROUGH_LEVEL"):
+        assert _fails(P.diff_axes({"ENTRY": {"entry": {**level, "trigger": trigger}}}, axes, root)) == []
+        assert _fails(P.diff_axes({"ENTRY": {"entry": {**dials, "trigger": trigger}}}, axes, root)) == [
+            ("MISSING_REQUIRED", "axes.ENTRY.entry.levels")]
+    one_sided = {**level, "levels": {"LONG": level["levels"]["LONG"]}}
+    assert _fails(P.diff_axes({"ENTRY": {"entry": one_sided}}, axes, root)) == [
+        ("MISSING_REQUIRED", "axes.ENTRY.entry.levels.SHORT")]
+    v161_axes, v161_root = P.resolve_axes(json.loads(
+        (ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json").read_text(encoding="utf-8")))
+    assert _fails(P.diff_axes({"ENTRY": {"entry": dials}}, v161_axes, v161_root)) == []
     dialled = {"trigger": "ON_CANDLE_CLOSE", "levelOffsetAtrMultiple": 0, "validForBars": 4}
     assert _fails(P.diff_axes({"ENTRY": {"entry": dialled}}, axes, root)), \
         "v85: ON_CANDLE_CLOSE naming either dial is refused"
+    # ... and naming `levels`: the ON_CANDLE_CLOSE arm is `trigger` alone
+    assert _fails(P.diff_axes({"ENTRY": {"entry": {"trigger": "ON_CANDLE_CLOSE", "levels": level["levels"]}}},
+                              axes, root)) == [("UNDECLARED", "axes.ENTRY.entry.levels")]
     del level["validForBars"]
     assert _fails(P.diff_axes({"ENTRY": {"entry": level}}, axes, root)) == [
         ("MISSING_REQUIRED", "axes.ENTRY.entry.validForBars")]

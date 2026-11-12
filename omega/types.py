@@ -35,7 +35,10 @@ KNOBS = ("leftBars", "rightBars", "swingLength", "confluenceFilter", "equalBars"
          "slow", "signal", "kSmoothing", "dSmoothing", "rsiPeriod", "atrPeriod", "stdDev", "multiplier",
          "accelerationStart", "accelerationIncrement", "accelerationMaximum",
          # 161.0.0 (2026-11-09, undocumented): Ichimoku's four lengths, served on the five ICHI_* metrics
-         "conversionPeriod", "basePeriod", "spanBPeriod", "displacement")
+         "conversionPeriod", "basePeriod", "spanBPeriod", "displacement",
+         # 168 (2026-11-11, undocumented; extraction 20261111 at 168.3.0): the prior-session supply / demand zones' two
+         # settings (24 PRIOR_*_DEMAND_* / PRIOR_*_SUPPLY_* levels) and the structure zones' flag (STRUCT_ZONES, ZONE_*)
+         "supplyDemandThreshold", "supplyDemandResolution", "usedUpOnClose")
 
 
 class RelTimeframe(BaseModel):
@@ -130,6 +133,12 @@ class Column(BaseModel):
     basePeriod: Annotated[int, Field(ge=1)] | None = None
     spanBPeriod: Annotated[int, Field(ge=1)] | None = None
     displacement: Annotated[int, Field(ge=1)] | None = None
+    # 168: the write schema types the first two `number` (no bound of its own) and the third `boolean`; each metric
+    # serves the range (threshold 0 - 100 step 0.5, resolution 2 - 500 step 1) and omega.validate judges against that.
+    # Their header spelling was rendered the same day (omega.fanout KNOB_JOINED, KNOB_SINGLE: _vt10.5, _res51, _close).
+    supplyDemandThreshold: Finite | None = None
+    supplyDemandResolution: Finite | None = None
+    usedUpOnClose: bool | None = None
 
     def knobs(self) -> dict:
         """The metric knobs this column sets (explicit defaults included), in field order."""

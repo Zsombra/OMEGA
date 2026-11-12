@@ -229,6 +229,10 @@ SCHEMA_146 = "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
 SCHEMA_148 = "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
 SCHEMA_149 = "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
 SCHEMA_161 = "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"   # 161.0.0 (2026-11-09)
+SCHEMA_168 = "data/contract/stage_strategy_draft/schema_20261111T213257Z.json"   # 168.3.0 (2026-11-11)
+# the 168.2.0 capture of the same day (18:32Z): the surface the trade level menu was measured on; its six draft tools
+# are byte-identical to the 168.3.0 ones and the manifest does not name it
+SCHEMA_168_2 = "data/contract/stage_strategy_draft/schema_20261111T183243Z.json"
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
@@ -237,10 +241,28 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     # the 149.1.0 capture since 2026-11-07 (offline, from battlegrid-manager's fixture); 148.1.0 under `supersedes`,
     # then 146.0.0, 144.0.0, 135.2.0, 110.13.0 (v111, flat arguments), 110.8.0, 110.2.0, 108.0.0 and 91.0.0
     # 161.0.0 (2026-11-09): the 161.0.0 capture (live listing, build ab5b6252); the 149.1.0 block is one level down
-    assert ws["servedContractVersion"] == "161.0.0"
-    assert ws["buildSha"].startswith("ab5b6252")
-    assert ws["schema"] == SCHEMA_161 and (ROOT / ws["schema"]).is_file()
-    v149 = ws["supersedes"]
+    # 2026-11-11, contract 168.3.0: the manifest names the 168.3.0 capture (live listing 21:32Z, build af8b2c96); the
+    # 161.0.0 block is its `supersedes` and every older block sits one level deeper than it did
+    assert ws["servedContractVersion"] == "168.3.0"
+    assert ws["buildSha"].startswith("af8b2c96") and ws["notedAt"] == "2026-11-11"
+    assert ws["schema"] == SCHEMA_168 and (ROOT / ws["schema"]).is_file()
+    # the capture file says the same of itself
+    capture = json.loads((ROOT / SCHEMA_168).read_text(encoding="utf-8"))
+    assert (capture["contractVersion"], capture["buildSha"]) == (ws["servedContractVersion"], ws["buildSha"])
+    # the 168.2.0 capture is a record beside it: the same six tools, byte for byte, and no manifest entry names it
+    earlier = json.loads((ROOT / SCHEMA_168_2).read_text(encoding="utf-8"))
+    assert earlier["contractVersion"] == "168.2.0"
+    for tool in sorted(V108_TOOLS):
+        assert earlier[tool] == capture[tool], tool
+    named, node = [], ws
+    while node:
+        named.append(node["schema"])
+        node = node.get("supersedes")
+    assert len(named) == 12 and SCHEMA_168_2 not in named      # eleven until 2026-11-11
+    v161 = ws["supersedes"]
+    assert v161["servedContractVersion"] == "161.0.0" and v161["buildSha"].startswith("ab5b6252")
+    assert v161["schema"] == SCHEMA_161 and (ROOT / SCHEMA_161).is_file()
+    v149 = v161["supersedes"]
     assert v149["servedContractVersion"] == "149.1.0" and v149["buildSha"].startswith("aa4ab640")
     assert v149["schema"] == SCHEMA_149 and (ROOT / SCHEMA_149).is_file()
     v148 = v149["supersedes"]
@@ -277,9 +299,15 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     # re-extraction (61.2.0 before, kept under `supersedes`), while the write surface above is still the 108.0.0 capture
     # 146.0.1 since the 2026-11-02 re-extraction; 144.0.0 under `supersedes`, then 135.2.0, 110.8.0, 110.2.0, 108.4.0
     # and 61.2.0; 161.0.0 since the 2026-11-09 re-extraction, 146.0.1 under `supersedes` and the rest below it
-    assert manifest["servedContractVersion"] == "161.0.0"
-    assert manifest["supersedes"]["servedContractVersion"] == "146.0.1"
-    chain = manifest["supersedes"]["supersedes"]
+    # 2026-11-11, contract 168.3.0 (extraction 20261111, 581 hints): the manifest's own extraction block is the 168.3.0
+    # one; the 161.0.0 extraction is its `supersedes`, 146.0.1 and the rest one level deeper than they were
+    assert manifest["servedContractVersion"] == "168.3.0" and manifest["extractedOn"] == "2026-11-11"
+    index = json.loads((ROOT / "data/contract/metrics/_index.json").read_text(encoding="utf-8"))
+    assert (index["contractVersion"], index["buildSha"]) == (ws["servedContractVersion"], ws["buildSha"])
+    extraction_161 = manifest["supersedes"]
+    assert extraction_161["servedContractVersion"] == "161.0.0" and extraction_161["extractedOn"] == "2026-11-09"
+    assert extraction_161["supersedes"]["servedContractVersion"] == "146.0.1"
+    chain = extraction_161["supersedes"]["supersedes"]
     assert chain["servedContractVersion"] == "144.0.0"
     assert chain["supersedes"]["servedContractVersion"] == "135.2.0"
     assert chain["supersedes"]["supersedes"]["servedContractVersion"] == "110.8.0"
@@ -299,7 +327,10 @@ def test_the_saved_v91_schema_holds_the_six_draft_tools_and_the_ten_axes():
 
 def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     doc = C.stage_schema()
-    assert doc["contractVersion"] == "161.0.0"          # the eight axes did not move at 110 - 146, 148.1, 149.1 or 161
+    # the eight axes did not move at 110 - 146, 148.1, 149.1 or 161
+    # 2026-11-11, contract 168.3.0: the named capture is the 168.3.0 one; the same eight axes (168 moved what an axis
+    # holds - TRADE_LEVEL_POLICY.tradeLevelMenu, entry.levels - not which axes there are)
+    assert doc["contractVersion"] == "168.3.0"
     assert V108_TOOLS <= set(doc)
     # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
     assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]
@@ -343,26 +374,53 @@ def _with_scope_only(body: dict) -> dict:
     return out
 
 
+MENU_PATH = "axes.TRADE_LEVEL_POLICY.tradeLevelMenu"
+
+
+def _without_trade_level_menu(body: dict) -> dict:
+    """The body as v0.12.2 emitted it: no `tradeLevelMenu` on TRADE_LEVEL_POLICY. Contract 168 (2026-11-11) REQUIRES the
+    key, and every capture before it closes the axis against it (additionalProperties false), so a body is walked
+    against a pre-168 capture only in this shape (history), never as emitted. The key must be there to take out."""
+    out = json.loads(json.dumps(body))
+    del out["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]
+    return out
+
+
+def _fails(findings) -> list[tuple[str, str]]:
+    return [(f.cls, f.path) for f in findings if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"]
+
+
 @pytest.mark.parametrize("preset", sorted(PRESETS))
 def test_the_emitted_body_is_the_flat_v111_stage_and_walks_clean(tmp_path, preset):
     from omega import preflight as P
     body = _emitted_body(tmp_path, preset)
     assert set(body) == {"draftVersion", "axes"} and body["draftVersion"] == 0
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): every plan emits TRADE_LEVEL_POLICY.tradeLevelMenu, which 168
+    # requires. AS EMITTED the body walks the CURRENT capture clean (strict, the key present); without the key that
+    # capture reads it MISSING_REQUIRED; and the 146 capture below, which closes the axis, reads the key UNDECLARED -
+    # that one finding and no other. So the pre-168 walks (history) run on the body minus that one key.
+    current = C.stage_schema()["stage_strategy_draft"]["inputSchema"]
+    assert C.stage_schema()["contractVersion"] == "168.3.0" and _fails(P.diff_schema(body, current, current)) == []
+    pre_168 = _without_trade_level_menu(body)
+    assert _fails(P.diff_schema(pre_168, current, current)) == [("MISSING_REQUIRED", MENU_PATH)]
     root = json.loads((ROOT / SCHEMA_146).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
-    findings = P.diff_schema(body, root, root)
+    assert _fails(P.diff_schema(body, root, root)) == [("UNDECLARED", MENU_PATH)]
+    findings = P.diff_schema(pre_168, root, root)
     assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
     # history: the same body, minus the 146 key, walks the 110.13.0 (v111) capture clean; with the key it is UNDECLARED
     # there (the arm is closed), and without it the 146 capture reads it MISSING_REQUIRED
     old = json.loads((ROOT / SCHEMA_110_13).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
-    assert [f for f in P.diff_schema(_without_market_scope(body), old, old) if f.verdict == "FAIL"] == []
-    assert {f.cls for f in P.diff_schema(_with_scope_only(body), old, old) if f.verdict == "FAIL"} == {"UNDECLARED"}
-    assert {(f.cls, f.path.rsplit(".", 1)[-1]) for f in P.diff_schema(_without_market_scope(body), root, root)
+    assert [f for f in P.diff_schema(_without_market_scope(pre_168), old, old) if f.verdict == "FAIL"] == []
+    assert {f.cls for f in P.diff_schema(_with_scope_only(pre_168), old, old) if f.verdict == "FAIL"} == {"UNDECLARED"}
+    assert {(f.cls, f.path.rsplit(".", 1)[-1]) for f in P.diff_schema(_without_market_scope(pre_168), root, root)
             if f.verdict == "FAIL"} == {("MISSING_REQUIRED", "marketScope")}
 
 
 def test_the_pre_v111_envelope_is_refused_by_the_110_13_schema_and_the_flat_body_by_the_110_8_one(tmp_path):
     from omega import preflight as P
-    body = _without_market_scope(_emitted_body(tmp_path, "trend-continuation"))     # the pre-146 shape (history)
+    # the pre-146 shape (history); since 2026-11-11 also minus the 168 key tradeLevelMenu, which both captures here
+    # (110.13.0, 110.8.0) read UNDECLARED on their closed TRADE_LEVEL_POLICY axis
+    body = _without_market_scope(_without_trade_level_menu(_emitted_body(tmp_path, "trend-continuation")))
     root = json.loads((ROOT / SCHEMA_110_13).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
     fails = {(f.cls, f.path) for f in P.diff_schema({"request": body}, root, root) if f.verdict == "FAIL"}
     assert ("UNDECLARED", "request") in fails

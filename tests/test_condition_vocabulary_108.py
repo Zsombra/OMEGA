@@ -20,7 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 # of 2026-10-26, the 110.13.0 one of 2026-10-16, the 110.8.0 one of 2026-10-15, the 110.2.0 one of 2026-10-14 and the
 # 108.0.0 one are kept below as history).
 # 161.0.0 (2026-11-09): the manifest names the 161.0.0 capture (build ab5b6252); the 149.1.0 one it supersedes stays below.
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"
+# 2026-11-11: the pinned capture is 168.3.0 (schema_20261111T213257Z.json); 161.0.0 was schema_20261109T162100Z.json
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261111T213257Z.json"
+SCHEMA_161 = ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"
 SCHEMA_149 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
 SCHEMA_148 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
 SCHEMA_146 = ROOT / "data/contract/stage_strategy_draft/schema_20261101T061733Z.json"
@@ -77,10 +79,11 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261109T162100Z.json",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261111T213257Z.json",
                            # 161.0.0 (2026-11-09): was 149.1.0 / build aa4ab640 (schema_20261105T181932Z.json)
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "161.0.0",
-                           "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+                           # 168.3.0 (2026-11-11): was 161.0.0 / build ab5b6252 (schema_20261109T162100Z.json)
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "168.3.0",
+                           "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -103,7 +106,8 @@ def test_every_pointer_resolves_to_what_the_inventory_says_is_there():
     assert CV.resolve(DOC, G["conditionRef"]["pointer"])["properties"]["kind"]["const"] == "conditionRef"
     for key in ("metric", "transformId", "chainedTransformId"):
         entry = V["reportColumn"][key]
-        assert CV.resolve(DOC, entry["pointer"])["enum"] == entry["enum"]
+        # 168 (2026-11-11): the metric's own node is a pattern; its enum is read at `enumPointer` (the read schema)
+        assert CV.resolve(DOC, entry.get("enumPointer", entry["pointer"]))["enum"] == entry["enum"]
     served = V["servedPerHeader"]
     assert CV.resolve(DOC, served["conditionOperators"]["pointer"])["enum"] == served["conditionOperators"]["enum"]
     assert CV.resolve(DOC, served["conditionHold"]["refusal"]["pointer"])["enum"] == \
@@ -176,7 +180,10 @@ def test_every_clause_and_group_carries_the_same_hold_and_a_ref_carries_none():
 
 
 def test_groups_conditions_and_the_conditions_array():
-    assert G["group"]["ops"] == ["ALL", "ANY", "NOT", "N_OF"]
+    # 168 (2026-11-11): SEQUENCE joined the group ops, with an optional integer `within` (> 0). Served, and not a group
+    # omega builds or accepts (omega.conditions.GROUP_OPS; the schema states no semantics for it)
+    assert G["group"]["ops"] == ["ALL", "ANY", "NOT", "N_OF", "SEQUENCE"]
+    assert json.loads(SCHEMA_161.read_text(encoding="utf-8"))["contractVersion"] == "161.0.0"
     assert (G["group"]["members"]["minItems"], G["group"]["members"]["maxItems"]) == (1, 64)
     assert G["group"]["n"]["schema"] == {"exclusiveMinimum": 0, "maximum": 64, "type": "integer"}
     assert G["condition"]["required"] == ["conditionKey", "name", "definition", "verdict", "required", "exitSide"]
@@ -211,7 +218,13 @@ def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
     `cci` to both (the 149.1.0 capture, 2026-11-07), and no metric."""
     col = V["reportColumn"]
     # 161.0.0 (2026-11-09): 534 (BB_TOUCH retired; VWMA20 and the two DONCHIAN_BROKEN_*_PRIOR added)
-    assert col["metric"]["count"] == 534 == len(set(col["metric"]["enum"]))
+    # 168.3.0 (2026-11-11): 581 (47 added, none retired - _moves_168.json). The write schema names a metric by pattern
+    # now, and the enum is the read schema's (`enumPointer`): the same capture's get_strategy outputSchema
+    assert col["metric"]["count"] == 581 == len(set(col["metric"]["enum"]))
+    assert col["metric"]["pattern"] == "^[A-Z][A-Z0-9_]*$"
+    assert col["metric"]["enumPointer"] == "/get_strategy/outputSchema/$defs/metricKey"
+    assert CV.resolve(DOC, col["metric"]["enumPointer"])["enum"] == col["metric"]["enum"]
+    assert "enum" not in CV.resolve(DOC, col["metric"]["pointer"])
     assert col["metric"]["pointer"] == "/stage_strategy_draft/inputSchema/$defs/metricKey"   # v137.2: named once
     assert set(MOVES_144["retired"]).isdisjoint(col["metric"]["enum"]) and set(MOVES_144["added"]) <= set(col["metric"]["enum"])
     stats = ["zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax"]
@@ -219,8 +232,11 @@ def test_the_column_metric_enum_is_171_and_the_transform_enum_17():
         "value", "trajectory", "classifyZone", "classifyState", "distance", "spread", "relativeTo", "crossDetect", "aggregate",
         "ema", "rma", "wma", "rsi", "cci", "roc", "efficiency", "maxShare", *stats, "rank", "count", "nearestZoneType",
         "nearestZoneRange", "nearestZoneDist", "nearestZoneAge", "levelInteraction"]
-    assert col["chainedTransformId"]["enum"] == ["trajectory", "distance", "aggregate", "ema", "rma", "wma", "rsi",
-                                                 "cci", "roc", "efficiency", "maxShare", *stats, "rank", "levelInteraction"]
+    # 168 (2026-11-11): `spread` joined the chain outers (after `distance`): served after aggregate / ema / rma / wma,
+    # recorded unmeasured (data/contract/metrics/_unmeasured_108.json chainOuters) and refused offline
+    assert col["chainedTransformId"]["enum"] == ["trajectory", "distance", "spread", "aggregate", "ema", "rma", "wma",
+                                                 "rsi", "cci", "roc", "efficiency", "maxShare", *stats, "rank",
+                                                 "levelInteraction"]
     # 161.0.0 (2026-11-09): `roc` joined both transform enums (after `cci`), and levelInteraction became a chain outer.
     # v146.9 / v146.11: the six author-set knobs, at the schema's bounds (not modelled by omega.types.Column: unmeasured)
     assert {k: col["types"][k] for k in ("leftBars", "rightBars", "swingLength", "equalBars", "equalThreshold",
@@ -361,7 +377,8 @@ def test_the_gaps_between_the_schema_and_omega():
     # closed 2026-10-11: the six v98 operators have builders and validate_conditions checks their arms
     # (tests/test_conditions_prior_bar.py); before, schemaOnly was exactly PRIOR_BAR
     assert gaps["clauseOperators"] == {"schemaOnly": [], "omegaOnly": []}
-    assert gaps["groupOperators"] == {"schemaOnly": [], "omegaOnly": []}
+    # 168 (2026-11-11): SEQUENCE is served and deliberately not modelled (tests/test_v168.py)
+    assert gaps["groupOperators"] == {"schemaOnly": ["SEQUENCE"], "omegaOnly": []}
     # known by name since 2026-10-11 (data/contract/metrics/_unmeasured_108.json); before, schemaOnly was these 15
     assert gaps["metrics"] == {"schemaOnly": [], "omegaOnly": []}
     # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2);

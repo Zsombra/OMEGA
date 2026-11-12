@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 
 from omega import contract as C
-from omega.condition_vocabulary import derive
+from omega.condition_vocabulary import derive, vocabulary
 from omega.contract import CONTRACT_DIR, load
 from omega.types import Column
 from omega.validate import validate_column
@@ -67,7 +67,13 @@ def test_the_capture_names_its_contract_build_and_source():
         assert {"description", "inputSchema", "outputSchema", "annotations"} <= set(DOC[tool]), tool
     # the write surface until 2026-11-07, when the 149.1.0 capture superseded it (kept under `supersedes`); two levels
     # down since the 161.0.0 capture of 2026-11-09 (the 149.1.0 one is the first `supersedes`)
-    manifest = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["supersedes"]["supersedes"]
+    # 2026-11-11, contract 168.3.0: three levels down - the manifest names the 168.3.0 capture, the 161.0.0 one is its
+    # `supersedes`, then 149.1.0, then this one
+    surface = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
+    assert [surface["servedContractVersion"], surface["supersedes"]["servedContractVersion"],
+            surface["supersedes"]["supersedes"]["servedContractVersion"]] == ["168.3.0", "161.0.0", "149.1.0"]
+    manifest = surface["supersedes"]["supersedes"]["supersedes"]
+    assert manifest["servedContractVersion"] == "148.1.0"
     assert manifest["schema"] == "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
     assert manifest["liveCheckedAt"]["observedAt"] == "2026-11-05T09:38:43Z"
     assert manifest["supersedes"]["servedContractVersion"] == "146.0.0"
@@ -173,7 +179,15 @@ def test_the_unmeasured_chain_outers_are_the_served_enums_delta():
     assert set(history["transformParameters"]) == {"rollingMax", "rollingMin"}
     assert all(set(p) == {"offset"} for p in history["transformParameters"].values())
     # rendered by the 149.1.0 probe (groups A, B, J): nothing is left unmeasured
-    assert load().unmeasured_chain_outers == {} and load().unmeasured_parameters == {}
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): nothing OF THESE is left unmeasured. The record is not empty
+    # any more: 168 serves `spread` as a chain outer (chainedTransformId 19 -> 20) and no probe has rendered it, so it
+    # is the one unmeasured chain outer (served at 168.3.0); `distance` and `ema` stay measured, no parameter is listed
+    unmeasured = load().unmeasured_chain_outers
+    assert set(unmeasured) == {"spread"} and unmeasured["spread"]["servedAt"] == "168.3.0"
+    assert set(unmeasured) == set(UNMEASURED["chainOuters"]) and {"distance", "ema"}.isdisjoint(unmeasured)
+    current = vocabulary()["reportColumn"]["chainedTransformId"]["enum"]        # the 168.3.0 capture's, 20 ids
+    assert set(unmeasured) <= set(current) - set(served) and "spread" not in served
+    assert load().unmeasured_parameters == {}
     assert "2026-11-05: 206" in UNMEASURED["_what"] and "2026-11-07: EMPTY again" in UNMEASURED["_what"]
 
 
@@ -261,23 +275,53 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")
     # re-read 2026-11-07 at 149.1.0 (rma / wma / rsi / cci, conditionFrameReads 5048) and 2026-11-09 at 161.0.0 (roc); the
     # 148.1.0 read is two `previous` down since 161.0.0 (it was one)
-    assert shared["_refreshed"]["previous"]["contractVersion"] == "149.1.0"
-    assert shared["_refreshed"]["previous"]["previous"]["contractVersion"] == "148.1.0"
-    assert "budgets.conditionFrameReads 256 -> 2048 (v146.4)" in shared["_refreshed"]["previous"]["previous"]["moved"]
+    # 2026-11-11, contract 168: the shared blocks were read twice that day (18:23Z at 168.2.0, 22:32Z at 168.3.0), so
+    # the 161.0.0 read is two `previous` down, the 149.1.0 one three and the 148.1.0 one four
+    refreshed = shared["_refreshed"]
+    assert [refreshed["contractVersion"], refreshed["previous"]["contractVersion"],
+            refreshed["previous"]["previous"]["contractVersion"]] == ["168.3.0", "168.2.0", "161.0.0"]
+    at_161 = refreshed["previous"]["previous"]
+    assert at_161["previous"]["contractVersion"] == "149.1.0"
+    assert at_161["previous"]["previous"]["contractVersion"] == "148.1.0"
+    assert "budgets.conditionFrameReads 256 -> 2048 (v146.4)" in at_161["previous"]["previous"]["moved"]
     assert {"id": "ema", "label": "Exponential average (EMA)"} in shared["transforms"]
     categories = _j(CONTRACT_DIR / "categories.json")
     counts = {c["category"]: c["metricCount"] for c in categories["categories"]}
     # 161.0.0 (2026-11-09): structure 363 and trend 23, sum 534 (the re-read moved `structure 362 -> 363`, `trend 22 -> 23`);
     # the 148.1.0 move (`structure 156 -> 362`) is two `previous` down
-    assert counts["structure"] == 363 and counts["trend"] == 23 and sum(counts.values()) == 534 and len(counts) == 11
-    assert categories["_refreshed"]["moved"][:2] == ["structure 362 -> 363", "trend 22 -> 23"]
-    assert categories["_refreshed"]["previous"]["previous"]["moved"][0] == "structure 156 -> 362"
+    # 2026-11-11, contract 168 (extraction 20261111, _moves_168.json): the platform split channels, vwapProfile and
+    # levels out of structure and added 47 keys, so structure is 363 - 347 re-homed + 22 added = 38, trend
+    # 23 + 2 re-homed + 1 added = 26, the sum 534 + 47 = 581 over fourteen categories. The 168.2.0 read (one `previous`
+    # down) recorded the move; the 161.0.0 read is two down and the 148.1.0 one four
+    moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
+    rehomed, added = moves_168["familiesMoved"]["byMove"], moves_168["addedByFamily"]
+    assert rehomed == {"structure -> channels": 14, "structure -> levels": 250, "structure -> trend": 2,
+                       "structure -> vwapProfile": 81} and added == {"levels": 24, "structure": 22, "trend": 1}
+    assert counts["structure"] == 363 - sum(rehomed.values()) + added["structure"] == 38
+    assert counts["trend"] == 23 + rehomed["structure -> trend"] + added["trend"] == 26
+    assert sum(counts.values()) == 534 + sum(added.values()) == 581 and len(counts) == 14
+    assert categories["_refreshed"]["previous"]["moved"] == [
+        "channels None -> 14", "levels None -> 274", "structure 363 -> 38", "trend 23 -> 26", "vwapProfile None -> 81"]
+    categories_161 = categories["_refreshed"]["previous"]["previous"]
+    assert categories_161["contractVersion"] == "161.0.0"
+    assert categories_161["moved"][:2] == ["structure 362 -> 363", "trend 22 -> 23"]
+    assert categories_161["previous"]["previous"]["moved"][0] == "structure 156 -> 362"
     # the 206 added are all `structure`; the corpus holds all 362 since 2026-11-07 (156 before)
     # 363 since 161.0.0 (2026-11-09)
-    assert sum(1 for m in load().metrics.values() if m.family == "structure") == 363
+    # 2026-11-11, contract 168: 38 - of the 206, the 198 pivot levels were re-homed to `levels` and the eight market
+    # structure keys (STRUCTURE above) stayed
+    families = {key: m.family for key, m in load().metrics.items()}
+    assert sum(1 for family in families.values() if family == "structure") == 38
+    the_206 = set(UNMEASURED["history148"]["formerlyUnmeasured"])
+    assert {k for k in the_206 if families[k] == "structure"} == STRUCTURE
+    assert {families[k] for k in the_206 - STRUCTURE} == {"levels"} and len(the_206 - STRUCTURE) == 198
     templates = _j(CONTRACT_DIR / "templates" / "platform" / "_all.json")
     # re-read at 161.0.0 (2026-11-09: includeBollingerBands and includeSupportResistance moved); the 148.1.0 read is `previous`
-    assert templates["_refreshed"]["contractVersion"] == "161.0.0" and templates["_refreshed"]["previous"]["contractVersion"] == "148.1.0"
+    # 2026-11-11, contract 168.3.0: re-read 22:32Z, nothing moved (the 22 templates as stored at 161.0.0); the 161.0.0
+    # read is `previous` and the 148.1.0 one two down
+    assert templates["_refreshed"]["contractVersion"] == "168.3.0"
+    assert templates["_refreshed"]["previous"]["contractVersion"] == "161.0.0"
+    assert templates["_refreshed"]["previous"]["previous"]["contractVersion"] == "148.1.0"
     assert len(templates["templates"]) == 22
 
 

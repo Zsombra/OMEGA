@@ -1,0 +1,1712 @@
+{
+ "_what": "What the re-extraction at contract 168.3.0 moved in the metric corpus: the hints of all 581 served metrics read 2026-11-11 21:24 - 21:36Z over one mcporter runtime (scripts/refresh_metric_contracts.py, EXTRACTION_STAMP=20261111, EXTRACTION_TRANSPORT=runtime; the 161.0.0 batches archived as archive_20261109_extraction), against the committed 161.0.0 records (v0.12.2, fe459b4). 157 - 168 are not in the vendor README (newest entry v156), so every move here is read from the served hints. Header spellings are the structural sweep's (data/audit/coverage_sweep_2026-11-11.json: 557 shapes, 673 headers, 0 refusals, 0 mispredicted), not this file's.",
+ "contractVersion": "168.3.0",
+ "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+ "hintsReadOn": "2026-11-11",
+ "foldedOn": "2026-11-11",
+ "metrics": {
+  "at161": 534,
+  "at168": 581
+ },
+ "added": [
+  "EMA55",
+  "EQH_LEVEL",
+  "EQL_LEVEL",
+  "INTERNAL_PENDING_HIGH",
+  "INTERNAL_PENDING_LOW",
+  "LIQUIDITY_POOL_ABOVE",
+  "LIQUIDITY_POOL_ABOVE_INTACT",
+  "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+  "LIQUIDITY_POOL_ABOVE_RETIRED",
+  "LIQUIDITY_POOL_ABOVE_TOUCHES",
+  "LIQUIDITY_POOL_BELOW",
+  "LIQUIDITY_POOL_BELOW_INTACT",
+  "LIQUIDITY_POOL_BELOW_RECLAIMED",
+  "LIQUIDITY_POOL_BELOW_RETIRED",
+  "LIQUIDITY_POOL_BELOW_TOUCHES",
+  "PRIOR_ASIA_DEMAND_AVG",
+  "PRIOR_ASIA_DEMAND_EDGE",
+  "PRIOR_ASIA_DEMAND_WAVG",
+  "PRIOR_ASIA_SUPPLY_AVG",
+  "PRIOR_ASIA_SUPPLY_EDGE",
+  "PRIOR_ASIA_SUPPLY_WAVG",
+  "PRIOR_DAY_DEMAND_AVG",
+  "PRIOR_DAY_DEMAND_EDGE",
+  "PRIOR_DAY_DEMAND_WAVG",
+  "PRIOR_DAY_SUPPLY_AVG",
+  "PRIOR_DAY_SUPPLY_EDGE",
+  "PRIOR_DAY_SUPPLY_WAVG",
+  "PRIOR_LONDON_DEMAND_AVG",
+  "PRIOR_LONDON_DEMAND_EDGE",
+  "PRIOR_LONDON_DEMAND_WAVG",
+  "PRIOR_LONDON_SUPPLY_AVG",
+  "PRIOR_LONDON_SUPPLY_EDGE",
+  "PRIOR_LONDON_SUPPLY_WAVG",
+  "PRIOR_NEW_YORK_DEMAND_AVG",
+  "PRIOR_NEW_YORK_DEMAND_EDGE",
+  "PRIOR_NEW_YORK_DEMAND_WAVG",
+  "PRIOR_NEW_YORK_SUPPLY_AVG",
+  "PRIOR_NEW_YORK_SUPPLY_EDGE",
+  "PRIOR_NEW_YORK_SUPPLY_WAVG",
+  "SWING_PENDING_HIGH",
+  "SWING_PENDING_LOW",
+  "ZONE_RESIST_HIGH",
+  "ZONE_RESIST_LOW",
+  "ZONE_RESIST_MID",
+  "ZONE_SUPPORT_HIGH",
+  "ZONE_SUPPORT_LOW",
+  "ZONE_SUPPORT_MID"
+ ],
+ "addedByFamily": {
+  "levels": 24,
+  "structure": 22,
+  "trend": 1
+ },
+ "retired": [],
+ "familiesMoved": {
+  "_what": "the platform re-homed existing metrics when it split out channels, vwapProfile and levels (11 -> 14 categories); `byMove` counts metrics, `metrics` names each",
+  "byMove": {
+   "structure -> channels": 14,
+   "structure -> levels": 250,
+   "structure -> trend": 2,
+   "structure -> vwapProfile": 81
+  },
+  "metrics": {
+   "ASIA_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "ASIA_LOW": [
+    "structure",
+    "levels"
+   ],
+   "ASIA_OPEN": [
+    "structure",
+    "levels"
+   ],
+   "BB_LOWER": [
+    "structure",
+    "channels"
+   ],
+   "BB_PCT_B": [
+    "structure",
+    "channels"
+   ],
+   "BB_UPPER": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_BROKEN_HI": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_BROKEN_HI_PRIOR": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_BROKEN_LO": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_BROKEN_LO_PRIOR": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_LOWER": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_LOWER_PRIOR": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_UPPER": [
+    "structure",
+    "channels"
+   ],
+   "DONCHIAN_UPPER_PRIOR": [
+    "structure",
+    "channels"
+   ],
+   "IB_EXT_DOWN_150": [
+    "structure",
+    "levels"
+   ],
+   "IB_EXT_DOWN_200": [
+    "structure",
+    "levels"
+   ],
+   "IB_EXT_UP_150": [
+    "structure",
+    "levels"
+   ],
+   "IB_EXT_UP_200": [
+    "structure",
+    "levels"
+   ],
+   "KC_LOWER": [
+    "structure",
+    "channels"
+   ],
+   "KC_UPPER": [
+    "structure",
+    "channels"
+   ],
+   "LONDON_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "LONDON_LOW": [
+    "structure",
+    "levels"
+   ],
+   "LONDON_OPEN": [
+    "structure",
+    "levels"
+   ],
+   "MONTH_TPO_POC": [
+    "structure",
+    "vwapProfile"
+   ],
+   "MONTH_TPO_VAH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "MONTH_TPO_VAL": [
+    "structure",
+    "vwapProfile"
+   ],
+   "NAKED_POC_ABOVE": [
+    "structure",
+    "vwapProfile"
+   ],
+   "NAKED_POC_BELOW": [
+    "structure",
+    "vwapProfile"
+   ],
+   "NAKED_SINGLE_PRINT_ABOVE": [
+    "structure",
+    "vwapProfile"
+   ],
+   "NAKED_SINGLE_PRINT_BELOW": [
+    "structure",
+    "vwapProfile"
+   ],
+   "NEW_YORK_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "NEW_YORK_LOW": [
+    "structure",
+    "levels"
+   ],
+   "NEW_YORK_OPEN": [
+    "structure",
+    "levels"
+   ],
+   "OR15_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "OR15_LOW": [
+    "structure",
+    "levels"
+   ],
+   "OR30_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "OR30_LOW": [
+    "structure",
+    "levels"
+   ],
+   "PDH": [
+    "structure",
+    "levels"
+   ],
+   "PDL": [
+    "structure",
+    "levels"
+   ],
+   "PDO": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CAM_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CLASSIC_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CLASSIC_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CLASSIC_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_CLASSIC_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_DM_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_DM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_DM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_FIB_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_FIB_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_FIB_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_FIB_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CAM_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CLASSIC_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CLASSIC_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CLASSIC_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_CLASSIC_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_DM_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_DM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_DM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_FIB_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_FIB_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_FIB_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_FIB_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_MONTH_WOODIE_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CAM_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CLASSIC_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CLASSIC_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CLASSIC_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_CLASSIC_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_DM_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_DM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_DM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_FIB_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_FIB_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_FIB_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_FIB_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_QUARTER_WOODIE_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CAM_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CLASSIC_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CLASSIC_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CLASSIC_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_CLASSIC_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_DM_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_DM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_DM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_FIB_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_FIB_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_FIB_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_FIB_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WEEK_WOODIE_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_WOODIE_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CAM_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CLASSIC_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CLASSIC_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CLASSIC_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_CLASSIC_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_DM_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_DM_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_DM_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_FIB_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_FIB_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_FIB_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_FIB_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_R5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_S4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_S5": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_P": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_R1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_R2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_R3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_R4": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_S1": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_S2": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_S3": [
+    "structure",
+    "levels"
+   ],
+   "PIVOT_YEAR_WOODIE_S4": [
+    "structure",
+    "levels"
+   ],
+   "PMH": [
+    "structure",
+    "levels"
+   ],
+   "PML": [
+    "structure",
+    "levels"
+   ],
+   "PRICE_ZONE": [
+    "structure",
+    "channels"
+   ],
+   "PRIOR_ASIA_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_ASIA_HIGH_SWEPT": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_ASIA_LOW": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_ASIA_LOW_SWEPT": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_ASIA_OPEN": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_LONDON_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_LONDON_HIGH_SWEPT": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_LONDON_LOW": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_LONDON_LOW_SWEPT": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_LONDON_OPEN": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_MONTH_TPO_POC": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_MONTH_TPO_VAH": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_MONTH_TPO_VAL": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_NEW_YORK_HIGH": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_NEW_YORK_HIGH_SWEPT": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_NEW_YORK_LOW": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_NEW_YORK_LOW_SWEPT": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_NEW_YORK_OPEN": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_TPO_IB_HIGH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_IB_LOW": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_POC": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_SHAPE": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_VAH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_VAL": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_VPOC": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_VVAH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_TPO_VVAL": [
+    "structure",
+    "vwapProfile"
+   ],
+   "PRIOR_WEEK_TPO_POC": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_WEEK_TPO_VAH": [
+    "structure",
+    "levels"
+   ],
+   "PRIOR_WEEK_TPO_VAL": [
+    "structure",
+    "levels"
+   ],
+   "PSAR": [
+    "structure",
+    "trend"
+   ],
+   "PWH": [
+    "structure",
+    "levels"
+   ],
+   "PWL": [
+    "structure",
+    "levels"
+   ],
+   "ST_LINE": [
+    "structure",
+    "trend"
+   ],
+   "TPO_IB_HIGH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_IB_LOW": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_POC": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_SHAPE": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_SINGLE_PRINT_ABOVE": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_SINGLE_PRINT_BELOW": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_VAH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_VAL": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_VPOC": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_VVAH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "TPO_VVAL": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_LB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_LB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_LB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_MONTH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_MONTH_LB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_MONTH_LB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_MONTH_LB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_MONTH_UB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_MONTH_UB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_MONTH_UB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_1H": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_1H_LB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_1H_LB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_1H_LB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_1H_UB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_1H_UB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_1H_UB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_24H": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_24H_LB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_24H_LB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_24H_LB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_24H_UB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_24H_UB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_24H_UB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_4H": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_4H_LB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_4H_LB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_4H_LB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_4H_UB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_4H_UB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_ROLLING_4H_UB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_SWING_HIGH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_SWING_LOW": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_TRADING_SESSION": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_TRADING_SESSION_LB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_TRADING_SESSION_LB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_TRADING_SESSION_LB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_TRADING_SESSION_UB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_TRADING_SESSION_UB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_TRADING_SESSION_UB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_UB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_UB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_UB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_WEEK": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_WEEK_LB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_WEEK_LB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_WEEK_LB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_WEEK_UB1": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_WEEK_UB2": [
+    "structure",
+    "vwapProfile"
+   ],
+   "VWAP_WEEK_UB3": [
+    "structure",
+    "vwapProfile"
+   ],
+   "WEEK_TPO_POC": [
+    "structure",
+    "vwapProfile"
+   ],
+   "WEEK_TPO_VAH": [
+    "structure",
+    "vwapProfile"
+   ],
+   "WEEK_TPO_VAL": [
+    "structure",
+    "vwapProfile"
+   ]
+  }
+ },
+ "transformsGainedByExistingMetrics": {
+  "aggregate": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "cci": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "ema": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "linregSlope": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "pctl": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "relativeTo": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "rma": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "roc": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "rollingMax": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "rollingMin": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "rsi": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "stddev": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "trajectory": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "wma": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ],
+  "zscore": [
+   "HIGH_DEV",
+   "LOW_DEV"
+  ]
+ },
+ "transformsLostByExistingMetrics": {},
+ "chainOutersGained": {
+  "aggregate->spread": 162,
+  "ema->spread": 162,
+  "rma->spread": 162,
+  "spread->aggregate": 2,
+  "spread->cci": 2,
+  "spread->efficiency": 2,
+  "spread->ema": 2,
+  "spread->linregSlope": 2,
+  "spread->pctl": 2,
+  "spread->rma": 2,
+  "spread->roc": 2,
+  "spread->rollingMax": 2,
+  "spread->rollingMin": 2,
+  "spread->rsi": 2,
+  "spread->stddev": 2,
+  "spread->trajectory": 2,
+  "spread->wma": 2,
+  "spread->zscore": 2,
+  "wma->spread": 162
+ },
+ "chainOutersLost": {},
+ "parametersAdded": {
+  "STRUCT_ZONES": [
+   "usedUpOnClose"
+  ]
+ },
+ "parametersRemoved": {},
+ "parametersMoved": {},
+ "headerCodesMoved": [],
+ "nativeOutputMoved": {},
+ "timeframeModeMoved": {
+  "_what": "HIGH_DEV and LOW_DEV were timeless and are served `candle` at 168: they gained the series transforms and became spread operands of a series chain",
+  "metrics": {
+   "HIGH_DEV": [
+    "timeless",
+    "candle"
+   ],
+   "LOW_DEV": [
+    "timeless",
+    "candle"
+   ]
+  }
+ },
+ "outputKindMoved": {},
+ "spreadOperandListsMoved": {
+  "metrics": 382,
+  "byShape": [
+   {
+    "list": "spreadOperands",
+    "gained": 2,
+    "lost": 0,
+    "metrics": 10
+   },
+   {
+    "list": "spreadOperands",
+    "gained": 41,
+    "lost": 0,
+    "metrics": 372
+   },
+   {
+    "list": "spreadOperandsOffAnchor",
+    "gained": 2,
+    "lost": 0,
+    "metrics": 10
+   },
+   {
+    "list": "spreadOperandsOffAnchor",
+    "gained": 11,
+    "lost": 0,
+    "metrics": 372
+   }
+  ]
+ },
+ "hintShape": {
+  "operandSets": "an operand list is served once per response under the top-level `operandSets` and named by id where it applies (spreadOperands, spreadOperandsOffAnchor, spreadAverageOperands, spreadAverageOperandsOffAnchor, chainedOuters.<outer>.operands / .operandsOffAnchor); the corpus stores the lists (scripts/refresh_metric_contracts.py operand_list)",
+  "newMetricFields": [
+   "spreadAverageOperands",
+   "spreadAverageOperandsOffAnchor"
+  ],
+  "newChainedOuterFields": [
+   "operandsOffAnchor",
+   "offsetMinimum",
+   "metricParametersAccepted"
+  ]
+ },
+ "authoringTextMoved": {
+  "calculationSummary changed": [
+   "nearestZoneDist"
+  ],
+  "formula changed": [
+   "nearestZoneDist"
+  ],
+  "nullBehavior changed": [
+   "nearestZoneDist",
+   "spread"
+  ],
+  "parameters/bars/description changed": [
+   "aggregate",
+   "cci",
+   "classifyZone",
+   "crossDetect",
+   "distance",
+   "efficiency",
+   "ema",
+   "levelInteraction",
+   "linregSlope",
+   "maxShare",
+   "pctl",
+   "relativeTo",
+   "rma",
+   "roc",
+   "rollingMax",
+   "rollingMin",
+   "rsi",
+   "spread",
+   "stddev",
+   "trajectory",
+   "value",
+   "wma",
+   "zscore"
+  ],
+  "parameters/inputs/description changed": [
+   "spread"
+  ]
+ },
+ "authoringTextMovedQuotes": {
+  "bars": "Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.",
+  "nearestZoneDist.formula": "output = 0 when low ≤ {price} ≤ high, else (({price} − nearEdge(nearest zone)) / nearEdge(nearest zone)) × 100",
+  "nearestZoneDist.calculationSummary": "Measure the signed percentage of price from the nearest zone's near edge (a support zone's high, a resistance zone's low); 0 while price is inside the zone.",
+  "spread.inputs": "Exactly one operand at the base column timeframe: a same-unit metric `{ metric }`, or a metric under one average at a length `{ metric, transformId, window }` — transformId one of aggregate, ema, rma, wma (aggregate is the simple average), window at least 2, the metric the base itself or any of its operands with a per-bar candle value."
+ },
+ "platformTemplatesChanged": [],
+ "addedByContract": {
+  "157 - 168 (undocumented)": [
+   "EMA55",
+   "EQH_LEVEL",
+   "EQL_LEVEL",
+   "INTERNAL_PENDING_HIGH",
+   "INTERNAL_PENDING_LOW",
+   "LIQUIDITY_POOL_ABOVE",
+   "LIQUIDITY_POOL_ABOVE_INTACT",
+   "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+   "LIQUIDITY_POOL_ABOVE_RETIRED",
+   "LIQUIDITY_POOL_ABOVE_TOUCHES",
+   "LIQUIDITY_POOL_BELOW",
+   "LIQUIDITY_POOL_BELOW_INTACT",
+   "LIQUIDITY_POOL_BELOW_RECLAIMED",
+   "LIQUIDITY_POOL_BELOW_RETIRED",
+   "LIQUIDITY_POOL_BELOW_TOUCHES",
+   "PRIOR_ASIA_DEMAND_AVG",
+   "PRIOR_ASIA_DEMAND_EDGE",
+   "PRIOR_ASIA_DEMAND_WAVG",
+   "PRIOR_ASIA_SUPPLY_AVG",
+   "PRIOR_ASIA_SUPPLY_EDGE",
+   "PRIOR_ASIA_SUPPLY_WAVG",
+   "PRIOR_DAY_DEMAND_AVG",
+   "PRIOR_DAY_DEMAND_EDGE",
+   "PRIOR_DAY_DEMAND_WAVG",
+   "PRIOR_DAY_SUPPLY_AVG",
+   "PRIOR_DAY_SUPPLY_EDGE",
+   "PRIOR_DAY_SUPPLY_WAVG",
+   "PRIOR_LONDON_DEMAND_AVG",
+   "PRIOR_LONDON_DEMAND_EDGE",
+   "PRIOR_LONDON_DEMAND_WAVG",
+   "PRIOR_LONDON_SUPPLY_AVG",
+   "PRIOR_LONDON_SUPPLY_EDGE",
+   "PRIOR_LONDON_SUPPLY_WAVG",
+   "PRIOR_NEW_YORK_DEMAND_AVG",
+   "PRIOR_NEW_YORK_DEMAND_EDGE",
+   "PRIOR_NEW_YORK_DEMAND_WAVG",
+   "PRIOR_NEW_YORK_SUPPLY_AVG",
+   "PRIOR_NEW_YORK_SUPPLY_EDGE",
+   "PRIOR_NEW_YORK_SUPPLY_WAVG",
+   "SWING_PENDING_HIGH",
+   "SWING_PENDING_LOW",
+   "ZONE_RESIST_HIGH",
+   "ZONE_RESIST_LOW",
+   "ZONE_RESIST_MID",
+   "ZONE_SUPPORT_HIGH",
+   "ZONE_SUPPORT_LOW",
+   "ZONE_SUPPORT_MID"
+  ]
+ }
+}

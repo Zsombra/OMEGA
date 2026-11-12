@@ -52,7 +52,11 @@ def _refusal(col: dict) -> str:
 def test_the_roster_moved_as_recorded(contract):
     """302 metrics at 144.0.0: 226 - 2 retired + 78 added (_moves_144.json), every added key a record of its own; 326
     since the re-extraction at 146.0.1 (2026-11-02, _moves_146.json: 24 added, none retired)."""
-    assert len(contract.metrics) == 534   # 326 at 146.0.1; 532 at 149.1.0 (_moves_149.json); 534 since 161.0.0 (2026-11-09, _moves_161.json: BB_TOUCH out, three in)
+    # 326 at 146.0.1; 532 at 149.1.0 (_moves_149.json); 534 at 161.0.0 (2026-11-09, _moves_161.json: BB_TOUCH out, three in)
+    # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 (_moves_168.json: 47 in, none out)
+    moves_168 = json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))
+    assert (len(moves_168["added"]), moves_168["retired"]) == (47, [])
+    assert len(contract.metrics) == 534 + len(moves_168["added"]) == 581
     assert MOVES["contractVersion"] == "144.0.0" and len(MOVES["added"]) == 78
     assert set(MOVES["added"]) <= set(contract.metrics)
     assert set(MOVES["retired"]) == {"STOCH_RSI14", "BB_WIDTH"}
@@ -259,4 +263,10 @@ def test_the_condition_vocabulary_carries_the_new_knobs():
     assert "instrument" in col["fields"] and "scope" in col["fields"]
     # 302 at 144.0.0; 326 since the 146.0.0 capture (2026-11-01, 24 unmeasured); 532 since the 148.1.0 one (2026-11-05,
     # 206 unmeasured); 534 since the 161.0.0 one (2026-11-09: BB_TOUCH out, three in)
-    assert col["metric"]["count"] == 534
+    # 2026-11-11, contract 168.3.0: 581. The stage schema names a metric by PATTERN since 168 ($defs/metricKey has no
+    # enum), so the count is the roster the same capture's read schema keeps (get_strategy outputSchema $defs/metricKey),
+    # which is the corpus: 534 + the 47 of _moves_168.json
+    assert col["metric"]["count"] == len(col["metric"]["enum"]) == 581
+    assert col["metric"]["pattern"] == "^[A-Z][A-Z0-9_]*$"
+    assert col["metric"]["enumPointer"] == "/get_strategy/outputSchema/$defs/metricKey"
+    assert set(col["metric"]["enum"]) == set(load().metrics)

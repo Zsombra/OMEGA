@@ -2,7 +2,7 @@
   "metric": "PRIOR_NEW_YORK_HIGH_SWEPT",
   "label": "New York 13–21 UTC high swept",
   "code": "pNyHiSwept",
-  "family": "structure",
+  "family": "levels",
   "nativeOutput": {
     "kind": "classification",
     "vocab": [

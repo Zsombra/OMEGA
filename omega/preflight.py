@@ -30,10 +30,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
+from contextvars import ContextVar
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass
 
-CLASSES = ("UNDECLARED", "MISSING_REQUIRED", "MISSING_VS_RECORD", "ENUM", "BOUNDS",
+CLASSES = ("UNDECLARED", "MISSING_REQUIRED", "MISSING_VS_RECORD", "ENUM", "PATTERN", "BOUNDS",
            "UNSUPPORTED", "MIRROR", "CHANGELOG", "TRANSCRIPTION_SUSPECT", "INFO")
 VERDICTS = ("FAIL", "WARN", "INFO")
 DISCLAIMER = ("covers the published schema only (the read-back mirror is retired until a read-back at "
@@ -119,19 +121,24 @@ def resolve_axes(definition: dict) -> tuple[dict[str, dict], dict]:
     return {name: deref(node, root) for name, node in props.items()}, root
 
 
-def diff_axes(axes: dict, axis_schemas: dict[str, dict], root: dict) -> list[Finding]:
+def diff_axes(axes: dict, axis_schemas: dict[str, dict], root: dict, *,
+              roster: frozenset | None = None) -> list[Finding]:
     """Walk each staged axis against its own schema (paths `axes.<AXIS>...`). An axis the
     definition does not declare is UNDECLARED (the axes object is additionalProperties:false
     at 91.0.0 and 108.0.0 - a SIGNAL_RULES or SETUP_GATES axis is UNDECLARED against a 108 capture); an axis the
-    body omits is not a finding - "axes you omit keep their values"."""
+    body omits is not a finding - "axes you omit keep their values". `roster`: as diff_schema."""
     out: list[Finding] = []
-    for name, value in axes.items():
-        path = f"axes.{name}"
-        if name not in axis_schemas:
-            out.append(Finding("UNDECLARED", path, "not an axis of the published stage schema "
-                               f"({sorted(axis_schemas)})", "FAIL"))
-            continue
-        _walk(value, axis_schemas[name], root, path, out)
+    token = _ROSTER.set(roster)
+    try:
+        for name, value in axes.items():
+            path = f"axes.{name}"
+            if name not in axis_schemas:
+                out.append(Finding("UNDECLARED", path, "not an axis of the published stage schema "
+                                   f"({sorted(axis_schemas)})", "FAIL"))
+                continue
+            _walk(value, axis_schemas[name], root, path, out)
+    finally:
+        _ROSTER.reset(token)
     return out
 
 
@@ -280,6 +287,37 @@ def _check_unknown_keywords(schema: dict, path: str, out: list[Finding]) -> None
                             f"schema keyword(s) not modelled by the walker: {sorted(unknown)}", "WARN"))
 
 
+# Contract 168 (2026-11-11): the write schema names a metric by PATTERN (`$defs/metricKey`), so the schema alone no longer
+# refuses a key the platform does not serve - to 161 that was an ENUM failure. The roster is the READ schema's enum in the
+# same capture (`read_roster`); diff_schema / diff_axes take it and the walker checks every value a `$ref` to
+# `$defs/metricKey` names against it. A walk given no roster says so (INFO) instead of passing the key silently.
+READ_TOOL = "get_strategy"
+_ROSTER: ContextVar[frozenset | None] = ContextVar("omega_preflight_metric_roster", default=None)
+
+
+def read_roster(doc: dict) -> frozenset | None:
+    """The metric roster of a saved multi-tool capture: `get_strategy` outputSchema `$defs/metricKey` enum (581 keys at
+    168.3.0). None when the capture carries no such enum (a pre-168 capture needs none: its write schema is the enum)."""
+    node = (((doc.get(READ_TOOL) or {}).get("outputSchema") or {}).get("$defs") or {}).get("metricKey")
+    return frozenset(node["enum"]) if isinstance(node, dict) and isinstance(node.get("enum"), list) else None
+
+
+def _pattern_ok(pattern: str, value: str) -> bool | None:
+    """Does `value` match the schema's `pattern`? None when Python cannot judge it: the platform's patterns are ECMA
+    regexes, and one using a Unicode property class (backslash-p) or anything `re` refuses is left to the platform, as
+    before."""
+    if "\\p" in pattern or "\\P" in pattern:
+        return None
+    # ECMA semantics where Python's differ: `$` is the end of the input only (Python's also matches before a final
+    # newline: "ADX\n" would pass), and \d \w \s are ASCII
+    if pattern.endswith("$") and not pattern.endswith("\\$"):
+        pattern = pattern[:-1] + "\\Z"
+    try:
+        return re.search(pattern, value, re.ASCII) is not None
+    except re.error:
+        return None
+
+
 def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]) -> None:
     schema = deref(schema, root)
     _check_unknown_keywords(schema, path, out)
@@ -295,6 +333,17 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
             return
         schema = deref(branch, root)
         _check_unknown_keywords(schema, path, out)
+    # The node reached IS the root's `$defs/metricKey` (by identity: however it was reached - a direct `$ref`, a chain
+    # of them, or a union arm) and it carries no enum: the key is checked against the served roster.
+    if schema is (root.get("$defs") or {}).get("metricKey") and "enum" not in schema and isinstance(value, str):
+        roster = _ROSTER.get()
+        if roster is None:
+            out.append(Finding("INFO", path, "metric-roster-unchecked: the schema names a metric by pattern and no "
+                                             "roster was given (read_roster of the capture)", "INFO"))
+        elif value not in roster:
+            out.append(Finding("ENUM", path, f"{value!r} is not a metric the platform serves ({READ_TOOL} "
+                                             f"outputSchema $defs/metricKey, {len(roster)} keys)", "FAIL"))
+            return
     if "const" in schema and value != schema["const"]:
         out.append(Finding("ENUM", path, f"{value!r} is not the declared const {schema['const']!r}", "FAIL"))
         return
@@ -338,6 +387,16 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
                     _walk(v, items_schema, root, f"{path}[{i}]", out)
     elif _is_num(value):
         v = value
+        if v != v or v in (float("inf"), float("-inf")):
+            # NaN passes every bound comparison (each is False) and is not JSON; found by the 2026-11-12 review on
+            # a menu's bufferAtrMultiple
+            out.append(Finding("BOUNDS", path, f"{v!r} is not a finite number", "FAIL"))
+            return
+        if v != v or v in (float("inf"), float("-inf")):
+            # NaN passes every bound comparison (each is False) and is not JSON; found by the 2026-11-12 review on
+            # a menu's bufferAtrMultiple
+            out.append(Finding("BOUNDS", path, f"{v!r} is not a finite number", "FAIL"))
+            return
         if "minimum" in schema and v < schema["minimum"]:
             out.append(Finding("BOUNDS", path, f"{v} < minimum {schema['minimum']}", "FAIL"))
         if "maximum" in schema and v > schema["maximum"]:
@@ -370,17 +429,28 @@ def _walk(value: object, schema: dict, root: dict, path: str, out: list[Finding]
         if "maxLength" in schema and len(value) > schema["maxLength"]:
             out.append(Finding("BOUNDS", path, f"length {len(value)} > maxLength {schema['maxLength']}", "FAIL"))
         if "pattern" in schema:
-            out.append(Finding("INFO", path, f"pattern-unchecked: {schema['pattern']!r} (no regex engine "
-                                             "for \\p classes; validated by the platform, not here)", "INFO"))
+            matched = _pattern_ok(schema["pattern"], value)
+            if matched is None:
+                out.append(Finding("INFO", path, f"pattern-unchecked: {schema['pattern']!r} (no regex engine "
+                                                 "for \\p classes; validated by the platform, not here)", "INFO"))
+            elif not matched:
+                # contract 168: a metric key is a plain pattern (^[A-Z][A-Z0-9_]*$), and a plain pattern is judged here
+                out.append(Finding("PATTERN", path, f"{value!r} does not match the declared pattern "
+                                                    f"{schema['pattern']!r}", "FAIL"))
         if "format" in schema:
             out.append(Finding("INFO", path, f"format-unchecked: {schema['format']!r} (declared, not "
                                              "modelled; validated by the platform, not here)", "INFO"))
 
 
-def diff_schema(body: dict, arm: dict, root: dict) -> list[Finding]:
-    """Walk `body` against one operation arm of the published definition."""
+def diff_schema(body: dict, arm: dict, root: dict, *, roster: frozenset | None = None) -> list[Finding]:
+    """Walk `body` against one operation arm of the published definition. `roster` (read_roster of the capture) is
+    the served metric keys a pattern-named metric is checked against (contract 168)."""
     out: list[Finding] = []
-    _walk(body, arm, root, "", out)
+    token = _ROSTER.set(roster)
+    try:
+        _walk(body, arm, root, "", out)
+    finally:
+        _ROSTER.reset(token)
     return out
 
 

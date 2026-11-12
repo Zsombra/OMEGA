@@ -1,0 +1,180 @@
+{
+  "metric": "LIQUIDITY_POOL_BELOW_TOUCHES",
+  "label": "Liquidity pool below (sellside) touches since formed (3, 0.1 ATR)",
+  "code": "poolBelowTouch",
+  "family": "structure",
+  "nativeOutput": {
+    "kind": "numeric",
+    "unit": "count",
+    "precision": 0
+  },
+  "outputKind": "scalar",
+  "timeframeMode": "candle",
+  "transforms": [
+    {
+      "id": "value",
+      "metricParametersAccepted": true,
+      "maximums": {
+        "offset": 63
+      },
+      "bounds": {
+        "offset": "lookback"
+      }
+    },
+    {
+      "id": "trajectory",
+      "metricParametersAccepted": true,
+      "maximums": {
+        "window": 64
+      },
+      "bounds": {
+        "window": "lookback"
+      }
+    },
+    {
+      "id": "spread",
+      "chainSuccessors": [
+        "trajectory",
+        "efficiency"
+      ],
+      "chainedOuters": {
+        "trajectory": {
+          "windowMaximum": 64,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "TRADES",
+            "BUY_TRADES",
+            "SELL_TRADES"
+          ],
+          "operandsOffAnchor": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "TRADES",
+            "BUY_TRADES",
+            "SELL_TRADES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": true
+        },
+        "efficiency": {
+          "windowMaximum": 63,
+          "windowParameter": "window",
+          "innerWindowMaximum": null,
+          "operands": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "TRADES",
+            "BUY_TRADES",
+            "SELL_TRADES"
+          ],
+          "operandsOffAnchor": [
+            "UTC_HOUR",
+            "DAY_OF_WEEK",
+            "SWING_FRACTAL_HIGH_BARS_AGO",
+            "SWING_FRACTAL_LOW_BARS_AGO",
+            "LIQUIDITY_POOL_ABOVE_TOUCHES",
+            "TRADES",
+            "BUY_TRADES",
+            "SELL_TRADES"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": true
+        }
+      },
+      "metricParametersAccepted": true
+    },
+    {
+      "id": "efficiency",
+      "metricParametersAccepted": true,
+      "maximums": {
+        "window": 63
+      },
+      "bounds": {
+        "window": "lookback"
+      }
+    }
+  ],
+  "study": "marketStructure",
+  "provenance": "battleGridDerived",
+  "rankScope": null,
+  "gloss": "how many bars since the nearest sellside liquidity pool below price formed, through this one, touched or rejected it — levelInteraction's touch_* or reject_* against the pool at exact contact (buffer 0), a BattleGrid addition — a sellside pool forms on the bar that confirms an equal low — a recorded pivot low of length 3 within 0.1 × ATR(200) of the previous recorded one, LuxAlgo Smart Money Concepts v7.0's EQL rule — at the newer pivot's price, and stays intact until a close below it retires it (LuxAlgo Liquidity Swings); several pools are kept at once — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent when no pool is intact, and absent where a pool formed before the bars read prove the equal pivots could be nearer, so it can read absent while price trades beyond every close the bars read since then",
+  "subjectKinds": [
+    "evaluated-coin",
+    "benchmark"
+  ],
+  "parameters": {
+    "equalBars": {
+      "required": false,
+      "description": "The equal highs and lows’ pivot length, each side (LuxAlgo’s Bars Confirmation).",
+      "defaultValue": 3,
+      "minimum": 1,
+      "bound": "depth",
+      "maximum": 2435
+    },
+    "equalThreshold": {
+      "required": false,
+      "description": "How close two pivots must be to be equal, as a fraction of ATR(200) at the deciding bar.",
+      "defaultValue": 0.1,
+      "minimum": 0,
+      "maximum": 0.5,
+      "step": 0.1,
+      "bound": "range"
+    }
+  },
+  "spreadOperands": [
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "LIQUIDITY_POOL_ABOVE_TOUCHES",
+    "TRADES",
+    "BUY_TRADES",
+    "SELL_TRADES",
+    "REGIME_RUN_BARS",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_MOM_BEAR_VOTES"
+  ],
+  "spreadOperandsOffAnchor": [
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "LIQUIDITY_POOL_ABOVE_TOUCHES",
+    "TRADES",
+    "BUY_TRADES",
+    "SELL_TRADES",
+    "REGIME_RUN_BARS",
+    "REGIME_MOM_BULL_VOTES",
+    "REGIME_MOM_BEAR_VOTES"
+  ],
+  "spreadAverageOperands": [
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "TRADES",
+    "BUY_TRADES",
+    "SELL_TRADES"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "UTC_HOUR",
+    "DAY_OF_WEEK",
+    "SWING_FRACTAL_HIGH_BARS_AGO",
+    "SWING_FRACTAL_LOW_BARS_AGO",
+    "TRADES",
+    "BUY_TRADES",
+    "SELL_TRADES"
+  ]
+}

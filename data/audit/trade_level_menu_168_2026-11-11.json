@@ -1,0 +1,3672 @@
+{
+ "_what": "Thirty create drafts staged to measure the rules of TRADE_LEVEL_POLICY.tradeLevelMenu and ENTRY.entry.levels, which stage_strategy_draft's description does not state: fifteen at contract 168.2.0 (2026-11-11 19:05 - 19:34Z) and fifteen at 168.3.0 - six on 2026-11-11 21:44 - 21:46Z (what makes a level one 'this strategy's report yields') and nine on 2026-11-12 00:21 - 00:24Z (the cases the first 21 confounded or never staged: the transform, a non-price reading through `value`, like-for-like offset and timeframe, a Developing column, a spread's base, the level asking bars 'all'). Each staged draft was read back (get_strategy_draft) and discarded; none was committed, and get_strategy_draft read `draft: null` after every discard. The six draft tools are byte-identical between the two contracts (data/contract/stage_strategy_draft/schema_20261111T183243Z.json and schema_20261111T213257Z.json).",
+ "measuredAt": [
+  {
+   "contractVersion": "168.2.0",
+   "buildSha": "5dcfd8c271084029c92deae27a01c7956bb4eb5c",
+   "from": "2026-11-11T19:05:01.623Z",
+   "to": "2026-11-11T19:34:04.636Z"
+  },
+  {
+   "contractVersion": "168.3.0",
+   "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+   "from": "2026-11-11T21:44:36.479Z",
+   "to": "2026-11-12T00:23:49.144Z"
+  }
+ ],
+ "basePlan": {
+  "what": "OMEGA v0.12.1 preset trend-continuation as a CREATE (battlegrid-manager plan 72's request), with the menu added",
+  "anchor": "1h",
+  "dials": {
+   "minAtrPct": 0.5,
+   "minStopLossAtrMultiple": 1,
+   "maxStopLossAtrMultiple": 2,
+   "minRiskRewardRatio": 1.5
+  },
+  "entry": {
+   "entry": {
+    "trigger": "ON_CANDLE_CLOSE"
+   }
+  },
+  "reportColumns": [
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "MA_ALIGN",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "EMA5",
+    "transformId": "spread",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": [
+     "EMA13"
+    ]
+   },
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "SMA200",
+    "transformId": "distance",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "ADX",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "MACD_HIST",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "MACD_HIST",
+    "transformId": "crossDetect",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "RVOL",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Trend Continuation Signals",
+    "metric": "OBV",
+    "transformId": "trajectory",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Market Tape",
+    "metric": "MKT_NET",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   },
+   {
+    "section": "Stablecoin Par",
+    "metric": "PAR_DEV",
+    "transformId": "value",
+    "timeframe": {
+     "rel": "anchor"
+    },
+    "inputs": null
+   }
+  ],
+  "reportSections": [
+   {
+    "kind": "custom",
+    "title": "Trend Continuation Signals",
+    "columns": [
+     {
+      "metric": "MA_ALIGN",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "EMA5",
+      "transformId": "spread",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "chainedTransformId": "trajectory",
+      "window": 4,
+      "inputs": [
+       {
+        "metric": "EMA13"
+       }
+      ]
+     },
+     {
+      "metric": "SMA200",
+      "transformId": "distance",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "ADX",
+      "transformId": "trajectory",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "window": 4,
+      "bars": "closed"
+     },
+     {
+      "metric": "MACD_HIST",
+      "transformId": "trajectory",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "window": 4,
+      "bars": "closed"
+     },
+     {
+      "metric": "MACD_HIST",
+      "transformId": "crossDetect",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     },
+     {
+      "metric": "RVOL",
+      "transformId": "trajectory",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "window": 4,
+      "bars": "closed"
+     },
+     {
+      "metric": "OBV",
+      "transformId": "trajectory",
+      "timeframe": {
+       "rel": "anchor"
+      },
+      "window": 4,
+      "bars": "closed"
+     }
+    ],
+    "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+    "benchmarkTicker": null,
+    "marketScope": null
+   },
+   {
+    "kind": "custom",
+    "title": "Market Tape",
+    "marketScope": "all",
+    "columns": [
+     {
+      "metric": "MKT_NET",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    ],
+    "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+    "benchmarkTicker": null
+   },
+   {
+    "kind": "custom",
+    "title": "Stablecoin Par",
+    "benchmarkTicker": "USDT_USD",
+    "columns": [
+     {
+      "metric": "PAR_DEV",
+      "transformId": "value",
+      "timeframe": {
+       "rel": "anchor"
+      }
+     }
+    ],
+    "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+    "marketScope": null
+   }
+  ]
+ },
+ "counts": {
+  "probes": 30,
+  "staged": 29,
+  "refusedAtInput": 1,
+  "stagedWithErrors": 10,
+  "discarded": 29
+ },
+ "probes": {
+  "tc_default_menu": {
+   "what": "the platform's own migration default: ATR 1 / 1.5 / 2 and the Donchian and Bollinger band on the losing side; R 1.5 / 2 / 3 and the two bands on the winning side",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_UPPER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        }
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_UPPER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        }
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_UPPER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_UPPER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        }
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        }
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:05:01.623Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[3].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "tc_atr_r_menu": {
+   "what": "ATR 1 / 1.5 / 2 stops and R 1.5 / 2 / 3 targets, both directions",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:06:49.925Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V1.level.sma200.distance_column": {
+   "what": "a LEVEL stop on SMA200, which the report reads through a `distance` column",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:11:13.473Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V2.level.ema13.operand_only": {
+   "what": "a LEVEL stop on EMA13, which the report holds only as a spread operand",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "EMA13",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "EMA13",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:12:16.524Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V3.atr5.r1.outside_dials": {
+   "what": "one ATR 5 stop (maxStopLossAtrMultiple 2) and one R 1 target (minRiskRewardRatio 1.5)",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:14:27.812Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.targets[0].multiple",
+      "message": "The LONG 1R target is below this strategy's minimum risk-reward of 1.5: every pair it makes would be refused. Remove it or lower the minimum.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V4.percent.stop": {
+   "what": "one PERCENT 2 stop",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "PERCENT",
+        "percent": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "PERCENT",
+        "percent": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:16:24.076Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V5.nine_stops": {
+   "what": "nine ATR stops",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 0.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 0.75
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.0
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.25
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.75
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2.0
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2.25
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 0.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 0.75
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.0
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.25
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.75
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2.0
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2.25
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": null,
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "Too big: expected array to have <=8 items",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "LONG",
+        "stops"
+       ],
+       "message": "Too big: expected array to have <=8 items"
+      },
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "SHORT",
+        "stops"
+       ],
+       "message": "Too big: expected array to have <=8 items"
+      }
+     ]
+    }
+   },
+   "keptAsSent": null,
+   "discarded": null,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V6.level.donchian.value_column": {
+   "what": "the report gains a DONCHIAN_LOWER value column; that level is a LONG stop and a SHORT target",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        }
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "DONCHIAN_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:19:38.545Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V7.duplicate_stops": {
+   "what": "ATR 1 twice among the stops",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:21:13.703Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V8.level.buffer": {
+   "what": "SMA200 as a LEVEL stop (buffer 0.5 ATR) AND a LEVEL target of the same direction",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        }
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        }
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:23:06.844Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.targets[3].level",
+      "message": "The LONG target is also a LONG stop option: one level cannot be both the loss side and the profit side of a trade.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V9.atr5.atr0_5.outside_stop_range": {
+   "what": "ATR 5 and ATR 0.5 stops (the strategy's stop range is 1 - 2), valid targets",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 0.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 0.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:26:05.372Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V10.level.sma200.other_timeframe": {
+   "what": "a LEVEL stop on SMA200 at 4h; the report reads SMA200 at the anchor",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:28:01.975Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[3].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "V11.level.buffer_only": {
+   "what": "SMA200 as a LEVEL stop with a 0.5 ATR buffer, no target on it",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0.5
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:29:41.723Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "E1.stop_through_level.sma200": {
+   "what": "entry STOP_THROUGH_LEVEL with `levels` on SMA200 (a level the report reads)",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "STOP_THROUGH_LEVEL",
+      "levelOffsetAtrMultiple": 0.1,
+      "validForBars": 4,
+      "levels": {
+       "LONG": {
+        "metric": "SMA200",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "bars": null,
+        "offset": 0,
+        "knobs": {},
+        "windowExtreme": null
+       },
+       "SHORT": {
+        "metric": "SMA200",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "bars": null,
+        "offset": 0,
+        "knobs": {},
+        "windowExtreme": null
+       }
+      }
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:31:39.096Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "E2.on_retest.unyielded_level": {
+   "what": "entry ON_RETEST with `levels` on the Donchian bands (the report reads neither)",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_RETEST",
+      "levelOffsetAtrMultiple": 0.1,
+      "validForBars": 4,
+      "levels": {
+       "LONG": {
+        "metric": "DONCHIAN_UPPER",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "bars": null,
+        "offset": 0,
+        "knobs": {},
+        "windowExtreme": null
+       },
+       "SHORT": {
+        "metric": "DONCHIAN_LOWER",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "bars": null,
+        "offset": 0,
+        "knobs": {},
+        "windowExtreme": null
+       }
+      }
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T19:34:04.636Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "entry.levels.LONG",
+      "message": "The LONG entry level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.2.0"
+  },
+  "L1.level.adx.non_price": {
+   "what": "a LEVEL stop on ADX, an oscillator the report reads (trajectory): a non-price reading",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "ADX",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "ADX",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T21:44:36.479Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[3].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "L2.level.sma200.abs_anchor_spelling": {
+   "what": "a LEVEL stop on SMA200 at {abs: 1h}; the report reads it at {rel: anchor} and the anchor is 1h",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "abs": "1h"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "abs": "1h"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T21:44:51.542Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "L3a.level.bb_lower.column_knob_level_plain": {
+   "what": "the report gains BB_LOWER with period 10; the level names BB_LOWER with no knob",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "BB_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 10
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T21:45:08.506Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[3].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "L3b.level.bb_lower.column_knob_level_knob": {
+   "what": "the report gains BB_LOWER with period 10; the level names BB_LOWER with knobs {period: 10}",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {
+          "period": 10
+         },
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {
+          "period": 10
+         },
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "BB_LOWER",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "period": 10
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T21:45:39.734Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "L4.level.sma200.offset_1": {
+   "what": "a LEVEL stop on SMA200 one bar back (offset 1); the report's column reads offset 0",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 1,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 1,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T21:45:56.438Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[3].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "L5.level.sma200.bars_closed": {
+   "what": "a LEVEL stop on SMA200 with bars 'closed'; the report's column leaves bars unset",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": "closed",
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": "closed",
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-11T21:46:10.615Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M1.price_via_trajectory": {
+   "what": "the report gains SMA50 through `trajectory` only; the level names SMA50",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "SMA50",
+     "transformId": "trajectory",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 4,
+     "bars": "closed"
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:21:41.746Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M2.non_price_via_value": {
+   "what": "the report gains ADX through `value`; the level names ADX (a non-price reading, isolated)",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "ADX",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "ADX",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "ADX",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     }
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:21:59.660Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[3].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M3.offset_like_for_like": {
+   "what": "the report gains SMA50 value at offset 1; the level names SMA50 at offset 1",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 1,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 1,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "SMA50",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "offset": 1
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:22:14.676Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M4.abs_4h_like_for_like": {
+   "what": "the report gains SMA50 value at {abs: 4h}; the level names SMA50 at {abs: 4h}",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "abs": "4h"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "SMA50",
+     "transformId": "value",
+     "timeframe": {
+      "abs": "4h"
+     }
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:22:30.492Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M5.column_bars_all": {
+   "what": "the report gains SMA50 value reading bars 'all'; the level leaves bars unset",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "SMA50",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "bars": "all"
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:22:45.488Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M6.spread_base": {
+   "what": "the level names EMA5, which the report holds only as the BASE of `EMA5 spread EMA13`",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "EMA5",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "EMA5",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:23:05.138Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M7.column_abs_anchor_level_rel": {
+   "what": "the report gains SMA50 value at {abs: 1h} (the anchor); the level names it at {rel: anchor}",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "SMA50",
+     "transformId": "value",
+     "timeframe": {
+      "abs": "1h"
+     }
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:23:21.808Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M8.rel_lower_like_for_like": {
+   "what": "the report gains SMA50 value at {rel: lower}; the level names it at {rel: lower}",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "lower"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA50",
+         "timeframe": {
+          "rel": "lower"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": {
+     "metric": "SMA50",
+     "transformId": "value",
+     "timeframe": {
+      "rel": "lower"
+     }
+    },
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:23:35.578Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  },
+  "M9.level_bars_all": {
+   "what": "the level names SMA200 with bars 'all'; the report's SMA200 column leaves bars unset",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": "all",
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "SMA200",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": "all",
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "targets": [
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 1.5
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 2
+       },
+       {
+        "kind": "R_MULTIPLE",
+        "multiple": 3
+       }
+      ]
+     }
+    },
+    "addedColumn": null,
+    "entry": {
+     "entry": {
+      "trigger": "ON_CANDLE_CLOSE"
+     }
+    }
+   },
+   "stagedAt": "2026-11-12T00:23:49.144Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[3].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "discarded": true,
+   "draftAfterDiscard": null,
+   "contractVersion": "168.3.0"
+  }
+ }
+}

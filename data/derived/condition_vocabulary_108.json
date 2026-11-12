@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261109T162100Z.json",
-  "sha256": "779d03ac28f173b36d5974b6b55b3026f692a0e1b552deffb8d1b45403c38bf1",
-  "contractVersion": "161.0.0",
-  "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
-  "observedAt": "2026-11-09T06:56:56Z"
+  "schema": "data/contract/stage_strategy_draft/schema_20261111T213257Z.json",
+  "sha256": "f2e3b5a90392273d3338200a5060677cec869dbe6f76299bf89ae06fcb1c7cc7",
+  "contractVersion": "168.3.0",
+  "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+  "observedAt": "2026-11-11T20:52:17Z"
  },
  "clauseOperators": [
   "lt",
@@ -26,7 +26,8 @@
   "ALL",
   "ANY",
   "NOT",
-  "N_OF"
+  "N_OF",
+  "SEQUENCE"
  ],
  "conditionsArray": {
   "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/CONDITIONS/properties/conditions",
@@ -439,7 +440,8 @@
     "ALL",
     "ANY",
     "NOT",
-    "N_OF"
+    "N_OF",
+    "SEQUENCE"
    ],
    "opPointer": "/stage_strategy_draft/inputSchema/$defs/conditionNode/anyOf/1/properties/op",
    "required": [
@@ -584,15 +586,25 @@
    "slow",
    "spanBPeriod",
    "stdDev",
+   "supplyDemandResolution",
+   "supplyDemandThreshold",
    "swingLength",
    "timeframe",
    "touchAtr",
    "transformId",
+   "usedUpOnClose",
    "window"
   ],
   "metric": {
    "pointer": "/stage_strategy_draft/inputSchema/$defs/metricKey",
-   "count": 534,
+   "pattern": "^[A-Z][A-Z0-9_]*$",
+   "length": {
+    "minLength": 1,
+    "maxLength": 64
+   },
+   "enumPointer": "/get_strategy/outputSchema/$defs/metricKey",
+   "enumSource": "get_strategy outputSchema $defs/metricKey: since contract 168 the write schema names a metric by pattern, and the read schema keeps the roster",
+   "count": 581,
    "enum": [
     "OPEN",
     "HIGH",
@@ -656,6 +668,7 @@
     "EMA9",
     "EMA21",
     "EMA50",
+    "EMA55",
     "EMA_CROSS",
     "MA_ALIGN",
     "ATR",
@@ -726,6 +739,12 @@
     "VWAP_SWING_LOW",
     "PRICE_ZONE",
     "STRUCT_ZONES",
+    "ZONE_SUPPORT_HIGH",
+    "ZONE_SUPPORT_LOW",
+    "ZONE_RESIST_HIGH",
+    "ZONE_RESIST_LOW",
+    "ZONE_SUPPORT_MID",
+    "ZONE_RESIST_MID",
     "TPO_POC",
     "TPO_VAH",
     "TPO_VAL",
@@ -774,6 +793,24 @@
     "PRIOR_NEW_YORK_OPEN",
     "PRIOR_NEW_YORK_HIGH_SWEPT",
     "PRIOR_NEW_YORK_LOW_SWEPT",
+    "PRIOR_ASIA_SUPPLY_EDGE",
+    "PRIOR_ASIA_SUPPLY_AVG",
+    "PRIOR_ASIA_SUPPLY_WAVG",
+    "PRIOR_ASIA_DEMAND_EDGE",
+    "PRIOR_ASIA_DEMAND_AVG",
+    "PRIOR_ASIA_DEMAND_WAVG",
+    "PRIOR_LONDON_SUPPLY_EDGE",
+    "PRIOR_LONDON_SUPPLY_AVG",
+    "PRIOR_LONDON_SUPPLY_WAVG",
+    "PRIOR_LONDON_DEMAND_EDGE",
+    "PRIOR_LONDON_DEMAND_AVG",
+    "PRIOR_LONDON_DEMAND_WAVG",
+    "PRIOR_NEW_YORK_SUPPLY_EDGE",
+    "PRIOR_NEW_YORK_SUPPLY_AVG",
+    "PRIOR_NEW_YORK_SUPPLY_WAVG",
+    "PRIOR_NEW_YORK_DEMAND_EDGE",
+    "PRIOR_NEW_YORK_DEMAND_AVG",
+    "PRIOR_NEW_YORK_DEMAND_WAVG",
     "OR15_HIGH",
     "OR15_LOW",
     "OR30_HIGH",
@@ -798,11 +835,27 @@
     "INTERNAL_STRUCTURE_EVENT",
     "INTERNAL_STRUCTURE_TREND",
     "INTERNAL_STRUCTURE_LEVEL",
+    "INTERNAL_PENDING_HIGH",
+    "INTERNAL_PENDING_LOW",
     "SWING_STRUCTURE_EVENT",
     "SWING_STRUCTURE_TREND",
     "SWING_STRUCTURE_LEVEL",
+    "SWING_PENDING_HIGH",
+    "SWING_PENDING_LOW",
     "EQH",
     "EQL",
+    "EQH_LEVEL",
+    "EQL_LEVEL",
+    "LIQUIDITY_POOL_ABOVE",
+    "LIQUIDITY_POOL_ABOVE_INTACT",
+    "LIQUIDITY_POOL_ABOVE_TOUCHES",
+    "LIQUIDITY_POOL_BELOW",
+    "LIQUIDITY_POOL_BELOW_INTACT",
+    "LIQUIDITY_POOL_BELOW_TOUCHES",
+    "LIQUIDITY_POOL_ABOVE_RETIRED",
+    "LIQUIDITY_POOL_ABOVE_RECLAIMED",
+    "LIQUIDITY_POOL_BELOW_RETIRED",
+    "LIQUIDITY_POOL_BELOW_RECLAIMED",
     "HMA20",
     "WT1",
     "WT2",
@@ -826,6 +879,12 @@
     "PDH",
     "PDL",
     "PDO",
+    "PRIOR_DAY_SUPPLY_EDGE",
+    "PRIOR_DAY_SUPPLY_AVG",
+    "PRIOR_DAY_SUPPLY_WAVG",
+    "PRIOR_DAY_DEMAND_EDGE",
+    "PRIOR_DAY_DEMAND_AVG",
+    "PRIOR_DAY_DEMAND_WAVG",
     "WEEK_TPO_POC",
     "WEEK_TPO_VAH",
     "WEEK_TPO_VAL",
@@ -1168,10 +1227,11 @@
   },
   "chainedTransformId": {
    "pointer": "/stage_strategy_draft/inputSchema/properties/axes/properties/REPORT/properties/sections/items/oneOf/1/properties/columns/items/properties/chainedTransformId",
-   "count": 19,
+   "count": 20,
    "enum": [
     "trajectory",
     "distance",
+    "spread",
     "aggregate",
     "ema",
     "rma",
@@ -1270,6 +1330,8 @@
     "maximum": 9007199254740991
    },
    "stdDev": {},
+   "supplyDemandResolution": {},
+   "supplyDemandThreshold": {},
    "swingLength": {
     "minimum": 1,
     "maximum": 9007199254740991
@@ -1314,9 +1376,12 @@
    "slow": "integer",
    "spanBPeriod": "integer",
    "stdDev": "number",
+   "supplyDemandResolution": "number",
+   "supplyDemandThreshold": "number",
    "swingLength": "integer",
    "touchAtr": "number",
    "transformId": "string",
+   "usedUpOnClose": "boolean",
    "window": "integer"
   },
   "refs": {
@@ -1328,16 +1393,19 @@
    "displacement": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "equalBars": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "fast": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "instrument": "/stage_strategy_draft/inputSchema/$defs/coinSymbol",
    "kSmoothing": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "leftBars": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "metric": "/stage_strategy_draft/inputSchema/$defs/metricKey",
    "period": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "rightBars": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "rsiPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "scope": "/stage_strategy_draft/inputSchema/$defs/breadthScope",
    "signal": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "slow": "/stage_strategy_draft/inputSchema/$defs/barCount",
    "spanBPeriod": "/stage_strategy_draft/inputSchema/$defs/barCount",
-   "swingLength": "/stage_strategy_draft/inputSchema/$defs/barCount"
+   "swingLength": "/stage_strategy_draft/inputSchema/$defs/barCount",
+   "timeframe": "/stage_strategy_draft/inputSchema/$defs/timeframeRef"
   }
  }
 }

@@ -2,7 +2,7 @@
   "metric": "BB_PCT_B",
   "label": "Bollinger %B",
   "code": "pctB20",
-  "family": "structure",
+  "family": "channels",
   "nativeOutput": {
     "kind": "numeric",
     "unit": "fraction",
@@ -531,6 +531,7 @@
     {
       "id": "aggregate",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -546,6 +547,27 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "operandsOffAnchor": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2413,
           "windowParameter": "chainedWindow",
@@ -676,6 +698,7 @@
     {
       "id": "ema",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -691,6 +714,27 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 704,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "operandsOffAnchor": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2364,
           "windowParameter": "chainedWindow",
@@ -821,6 +865,7 @@
     {
       "id": "rma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -836,6 +881,27 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 308,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "operandsOffAnchor": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2329,
           "windowParameter": "chainedWindow",
@@ -966,6 +1032,7 @@
     {
       "id": "wma",
       "chainSuccessors": [
+        "spread",
         "aggregate",
         "ema",
         "rma",
@@ -981,6 +1048,27 @@
         "rollingMax"
       ],
       "chainedOuters": {
+        "spread": {
+          "windowMaximum": null,
+          "windowParameter": "window",
+          "innerWindowMaximum": 2436,
+          "operands": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "operandsOffAnchor": [
+            "CLOSE_LOCATION",
+            "BUY_PRESSURE",
+            "BUY_PRES_CB",
+            "BUY_PRES_BN",
+            "SPOT_DOMINANCE"
+          ],
+          "offsetMinimum": null,
+          "metricParametersAccepted": false
+        },
         "aggregate": {
           "windowMaximum": 2417,
           "windowParameter": "chainedWindow",
@@ -1664,6 +1752,22 @@
     "SPOT_DOMINANCE"
   ],
   "spreadOperandsOffAnchor": [
+    "CLOSE_LOCATION",
+    "BUY_PRESSURE",
+    "BUY_PRES_CB",
+    "BUY_PRES_BN",
+    "SPOT_DOMINANCE"
+  ],
+  "spreadAverageOperands": [
+    "BB_PCT_B",
+    "CLOSE_LOCATION",
+    "BUY_PRESSURE",
+    "BUY_PRES_CB",
+    "BUY_PRES_BN",
+    "SPOT_DOMINANCE"
+  ],
+  "spreadAverageOperandsOffAnchor": [
+    "BB_PCT_B",
     "CLOSE_LOCATION",
     "BUY_PRESSURE",
     "BUY_PRES_CB",
