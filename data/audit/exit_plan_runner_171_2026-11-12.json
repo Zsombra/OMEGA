@@ -1,0 +1,3389 @@
+{
+ "_what": "Fourteen create stages at contract 171.0.0 (2026-11-12 14:52 - 14:58Z, build 588e449a) to measure the exit-plan RUNNER rules OMEGA v0.14.0 did not model, which the vendor skill pack 32.0.94 states (a plan that leaves a runner while trailingEnabled is false; the share-weighted risk-reward with the runner at the last target that closes a share; the 0% trail objective; the share minimums). Each changes only the menu - and where named the TRADE_LEVEL_POLICY minRiskRewardRatio or the POSITION_MANAGEMENT trailingEnabled - of the trend-continuation plan (the v0.14.0 base plan, data/audit/exit_plans_170_2026-11-12.json: plan 72's request, trailingEnabled true, trailingGivebackPct 45, minRiskRewardRatio 1.5, stops ATR 1 / 1.5 / 2). Every staged draft was read back (kept as sent every time), previewed with preview_strategy_trade_levels on its DRAFT (BTC, read-only), discarded, and read `draft: null` after; none was committed. list_strategy_drafts at 14:58Z listed none of them. GET /mcp/version read 171.0.0 / 588e449a at 14:52:09Z, before and after each of the four runs, and at 14:58:10Z. Probe script: C:/Users/rafae/omega-v012-hints/v169/stage_exit_plan_runner_171.py.",
+ "measuredAt": [
+  {
+   "contractVersion": "171.0.0",
+   "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+   "versionAtEnd": "171.0.0",
+   "buildShaAtEnd": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+   "runs": [
+    {
+     "variants": [
+      "T3.full_plans_trailing_off"
+     ],
+     "startedAt": "2026-11-12T14:52:45Z"
+    },
+    {
+     "variants": [
+      "T1.runner_trailing_off",
+      "T2.trail_objective_trailing_off",
+      "T4.runner_trailing_on",
+      "W1.r1_30_r3_30_min_2_5",
+      "W2.r1_30_r3_30_min_2_2",
+      "W3.r1_50_r2_2_20_min_1_5",
+      "O1.trail_objective_min_2",
+      "O2.zero_after_full_plan",
+      "O3.zero_in_the_middle",
+      "S1.runner_3pct",
+      "S2.closing_target_3pct"
+     ],
+     "startedAt": "2026-11-12T14:53:30Z",
+     "endedAt": "2026-11-12T14:55:48Z"
+    },
+    {
+     "variants": [
+      "W2b.r1_30_r3_30_min_2_25"
+     ],
+     "startedAt": "2026-11-12T14:56:15Z",
+     "endedAt": "2026-11-12T14:56:43Z"
+    },
+    {
+     "variants": [
+      "O4.trail_objective_min_1_5"
+     ],
+     "startedAt": "2026-11-12T14:57:12Z",
+     "endedAt": "2026-11-12T14:57:44Z"
+    }
+   ]
+  }
+ ],
+ "basePlan": {
+  "what": "the v0.14.0 base plan (exit_plans_170 basePlan): OMEGA v0.12.1 preset trend-continuation as a CREATE, plan 72's request",
+  "dials": {
+   "minAtrPct": 0.5,
+   "minStopLossAtrMultiple": 1,
+   "maxStopLossAtrMultiple": 2,
+   "minRiskRewardRatio": 1.5
+  },
+  "positionManagement": {
+   "trailingEnabled": true,
+   "trailingTriggerR": 1,
+   "trailingGivebackPct": 45,
+   "trailingBufferPct": 0.25
+  },
+  "previewCoin": "BTC"
+ },
+ "counts": {
+  "stages": 14,
+  "staged": 10,
+  "refusedAtInput": 4,
+  "discarded": 10,
+  "committed": 0,
+  "previews": 10,
+  "previewsRendered": 5,
+  "previewsRefused": 5
+ },
+ "probes": {
+  "T1.runner_trailing_off": {
+   "what": "one plan of 2R closing 50% (a 50% runner), trailingEnabled false",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 50
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 50
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": false
+   },
+   "stagedAt": "2026-11-12T14:53:57Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.exitPlans[0]",
+      "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": false,
+   "preview": {
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+     "field": "tradeLevelMenu.LONG.exitPlans[0]"
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "T2.trail_objective_trailing_off": {
+   "what": "1.5R closing 50% then 3R closing 0% (a runner and its trail objective), trailingEnabled false",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": false
+   },
+   "stagedAt": "2026-11-12T14:54:14Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.exitPlans[0]",
+      "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": false,
+   "preview": {
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+     "field": "tradeLevelMenu.LONG.exitPlans[0]"
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "T3.full_plans_trailing_off": {
+   "what": "the default menu (one-leg plans closing 100%: no runner), trailingEnabled false - the control: Trailing off alone is not refused",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 100
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 100
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": false
+   },
+   "stagedAt": "2026-11-12T14:53:17Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": false,
+   "preview": {
+    "coinTicker": "BTC",
+    "directions": {
+     "LONG": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71554,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72198.211711885,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72412.94894917999,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 2,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72842.42342376999,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 3,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72520.3175678275,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72842.42342377,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 2,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 73486.635135655,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 3,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72842.42342377,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 73271.89789836001,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 2,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 74130.84684754002,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 3,
+        "runnerTrail": null
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71554,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70909.788288115,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70695.05105082001,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 2,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70265.57657623001,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 3,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70587.6824321725,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70265.57657623,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 2,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 69621.364864345,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 3,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70265.57657623,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 69836.10210163999,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 2,
+        "runnerTrail": null
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 68977.15315245998,
+          "closePct": 100
+         }
+        ],
+        "riskRewardRatio": 3,
+        "runnerTrail": null
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     }
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "T4.runner_trailing_on": {
+   "what": "1.5R 50% + 3R 30% (v0.14.0 X3: a 20% runner) with trailingEnabled true, at 171 - the preview reads what it pays beside each stop",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:54:33Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": true,
+   "preview": {
+    "coinTicker": "BTC",
+    "directions": {
+     "LONG": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71470,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72114.211711885,
+          "closePct": 50
+         },
+         {
+          "price": 72758.42342376999,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 1.35,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72436.3175678275,
+          "closePct": 50
+         },
+         {
+          "price": 73402.635135655,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.03,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72758.42342377,
+          "closePct": 50
+         },
+         {
+          "price": 74046.84684754002,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 1.35
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71470,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70825.788288115,
+          "closePct": 50
+         },
+         {
+          "price": 70181.57657623001,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 1.35,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70503.6824321725,
+          "closePct": 50
+         },
+         {
+          "price": 69537.364864345,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.03,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70181.57657623,
+          "closePct": 50
+         },
+         {
+          "price": 68893.15315245998,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 1.35
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     }
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "W1.r1_30_r3_30_min_2_5": {
+   "what": "1R 30% + 3R 30% (a 40% runner) at minRiskRewardRatio 2.5: v0.14.0's mean pays 2.0, the runner at the last closing target 2.4 - the refusal names the number",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 30
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 30
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 2.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:54:49Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.exitPlans[0]",
+      "message": "The LONG exit plan pays 2.4R, below this strategy's minimum risk-reward of 2.5: every pair it makes would be refused. Change the plan or lower the minimum.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": true,
+   "preview": {
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "The LONG exit plan pays 2.4R, below this strategy's minimum risk-reward of 2.5: every pair it makes would be refused. Change the plan or lower the minimum.",
+     "field": "tradeLevelMenu.LONG.exitPlans[0]"
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "W2.r1_30_r3_30_min_2_2": {
+   "what": "the same plan at minRiskRewardRatio 2.2 (meant to straddle: 2.0 below, 2.4 above)",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 30
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 30
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 2.2
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:55:05Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "minRiskRewardRatio",
+      "message": "minRiskRewardRatio must be a multiple of 0.25",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": true,
+   "preview": {
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "minRiskRewardRatio must be a multiple of 0.25",
+     "field": "minRiskRewardRatio"
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "W2b.r1_30_r3_30_min_2_25": {
+   "what": "the same plan at minRiskRewardRatio 2.25 (W2's value is off the 0.25 step): 2.0 below it, 2.4 above",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 30
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 30
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 2.25
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:56:41Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": true,
+   "preview": {
+    "coinTicker": "BTC",
+    "directions": {
+     "LONG": {
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "entryPrice": 71471,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 71900.47447459,
+          "closePct": 30
+         },
+         {
+          "price": 72759.42342376999,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.4,
+        "runnerTrail": {
+         "atrMultiple": 1.35,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72115.211711885,
+          "closePct": 30
+         },
+         {
+          "price": 73403.635135655,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.4,
+        "runnerTrail": {
+         "atrMultiple": 2.03,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72329.94894918,
+          "closePct": 30
+         },
+         {
+          "price": 74047.84684754002,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.4,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 1.35
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "entryPrice": 71471,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 71041.52552541,
+          "closePct": 30
+         },
+         {
+          "price": 70182.57657623001,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.4,
+        "runnerTrail": {
+         "atrMultiple": 1.35,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70826.788288115,
+          "closePct": 30
+         },
+         {
+          "price": 69538.364864345,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.4,
+        "runnerTrail": {
+         "atrMultiple": 2.03,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70612.05105082,
+          "closePct": 30
+         },
+         {
+          "price": 68894.15315245998,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.4,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 1.35
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     }
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "W3.r1_50_r2_2_20_min_1_5": {
+   "what": "1R 50% + 2.2R 20% (a 30% runner) at 1.5: v0.14.0's mean 1.343 refuses it, the runner at the last closing target pays 1.6",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2.2
+          },
+          "closePct": 20
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2.2
+          },
+          "closePct": 20
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:55:24Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": true,
+   "preview": {
+    "coinTicker": "BTC",
+    "directions": {
+     "LONG": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71375.9,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 71805.37447458999,
+          "closePct": 50
+         },
+         {
+          "price": 72320.74384409799,
+          "closePct": 20
+         }
+        ],
+        "riskRewardRatio": 1.6,
+        "runnerTrail": {
+         "atrMultiple": 1,
+         "rMultiple": 1
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72020.111711885,
+          "closePct": 50
+         },
+         {
+          "price": 72793.165766147,
+          "closePct": 20
+         }
+        ],
+        "riskRewardRatio": 1.6,
+        "runnerTrail": {
+         "atrMultiple": 1.49,
+         "rMultiple": 0.99
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72234.84894918,
+          "closePct": 50
+         },
+         {
+          "price": 73265.587688196,
+          "closePct": 20
+         }
+        ],
+        "riskRewardRatio": 1.6,
+        "runnerTrail": {
+         "atrMultiple": 1.98,
+         "rMultiple": 0.99
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71375.9,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70946.42552541,
+          "closePct": 50
+         },
+         {
+          "price": 70431.056155902,
+          "closePct": 20
+         }
+        ],
+        "riskRewardRatio": 1.6,
+        "runnerTrail": {
+         "atrMultiple": 1,
+         "rMultiple": 1
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70731.688288115,
+          "closePct": 50
+         },
+         {
+          "price": 69958.634233853,
+          "closePct": 20
+         }
+        ],
+        "riskRewardRatio": 1.6,
+        "runnerTrail": {
+         "atrMultiple": 1.49,
+         "rMultiple": 0.99
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70516.95105081999,
+          "closePct": 50
+         },
+         {
+          "price": 69486.21231180399,
+          "closePct": 20
+         }
+        ],
+        "riskRewardRatio": 1.6,
+        "runnerTrail": {
+         "atrMultiple": 1.98,
+         "rMultiple": 0.99
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     }
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "O1.trail_objective_min_2": {
+   "what": "1R 50% + 2R 20% + 6R 0% at minRiskRewardRatio 2: the runner at 2R pays 1.5, at the 0% target (6R) 2.7, v0.14.0's mean 1.286",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 20
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 6
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 20
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 6
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 2
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:55:39Z",
+   "answer": {
+    "staged": true,
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.exitPlans[0]",
+      "message": "The LONG exit plan pays 1.5R, below this strategy's minimum risk-reward of 2: every pair it makes would be refused. Change the plan or lower the minimum.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": true,
+   "preview": {
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "The LONG exit plan pays 1.5R, below this strategy's minimum risk-reward of 2: every pair it makes would be refused. Change the plan or lower the minimum.",
+     "field": "tradeLevelMenu.LONG.exitPlans[0]"
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "O4.trail_objective_min_1_5": {
+   "what": "the O1 plan at 1.5 (it pays 1.5 exactly): the preview reads the runner's trail beside the 6R trail objective",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 20
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 6
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 20
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 6
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:57:42Z",
+   "answer": {
+    "staged": true,
+    "errors": [],
+    "warnings": []
+   },
+   "keptAsSent": true,
+   "keptTrailingEnabled": true,
+   "preview": {
+    "coinTicker": "BTC",
+    "directions": {
+     "LONG": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71370,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 20
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 6
+            },
+            "closePct": 0
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 71799.47447459,
+          "closePct": 50
+         },
+         {
+          "price": 72228.94894917999,
+          "closePct": 20
+         },
+         {
+          "price": 73946.84684753997,
+          "closePct": 0
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 2.7
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 20
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 6
+            },
+            "closePct": 0
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72014.211711885,
+          "closePct": 50
+         },
+         {
+          "price": 72658.42342377,
+          "closePct": 20
+         },
+         {
+          "price": 75235.27027131,
+          "closePct": 0
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": {
+         "atrMultiple": 4.05,
+         "rMultiple": 2.7
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 20
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 6
+            },
+            "closePct": 0
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72228.94894918,
+          "closePct": 50
+         },
+         {
+          "price": 73087.89789836001,
+          "closePct": 20
+         },
+         {
+          "price": 76523.69369508003,
+          "closePct": 0
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": {
+         "atrMultiple": 5.4,
+         "rMultiple": 2.7
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71370,
+      "atr": 429.47447459,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 20
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 6
+            },
+            "closePct": 0
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70940.52552541,
+          "closePct": 50
+         },
+         {
+          "price": 70511.05105082001,
+          "closePct": 20
+         },
+         {
+          "price": 68793.15315246003,
+          "closePct": 0
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 2.7
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 20
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 6
+            },
+            "closePct": 0
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70725.788288115,
+          "closePct": 50
+         },
+         {
+          "price": 70081.57657623,
+          "closePct": 20
+         },
+         {
+          "price": 67504.72972869,
+          "closePct": 0
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": {
+         "atrMultiple": 4.05,
+         "rMultiple": 2.7
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 20
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 6
+            },
+            "closePct": 0
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70511.05105082,
+          "closePct": 50
+         },
+         {
+          "price": 69652.10210163999,
+          "closePct": 20
+         },
+         {
+          "price": 66216.30630491997,
+          "closePct": 0
+         }
+        ],
+        "riskRewardRatio": 1.5,
+        "runnerTrail": {
+         "atrMultiple": 5.4,
+         "rMultiple": 2.7
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     }
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  "O2.zero_after_full_plan": {
+   "what": "1.5R closing 100% then 3R closing 0% (no runner left for the 0% target)",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 0
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:55:41Z",
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "A target closing 0% needs a runner to govern; this plan closes everything before it",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "LONG",
+        "exitPlans",
+        0,
+        "targets",
+        1,
+        "closePct"
+       ],
+       "message": "A target closing 0% needs a runner to govern; this plan closes everything before it"
+      },
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "SHORT",
+        "exitPlans",
+        0,
+        "targets",
+        1,
+        "closePct"
+       ],
+       "message": "A target closing 0% needs a runner to govern; this plan closes everything before it"
+      }
+     ]
+    }
+   }
+  },
+  "O3.zero_in_the_middle": {
+   "what": "1.5R 50%, 2R 0%, 3R 30%: a 0% target that is not the last",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 0
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 0
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 30
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:55:43Z",
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "Only the last target of an exit plan may close 0%",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "LONG",
+        "exitPlans",
+        0,
+        "targets",
+        1,
+        "closePct"
+       ],
+       "message": "Only the last target of an exit plan may close 0%"
+      },
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "SHORT",
+        "exitPlans",
+        0,
+        "targets",
+        1,
+        "closePct"
+       ],
+       "message": "Only the last target of an exit plan may close 0%"
+      }
+     ]
+    }
+   }
+  },
+  "S1.runner_3pct": {
+   "what": "one plan of 2R closing 97%: a 3% runner",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 97
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 97
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:55:45Z",
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "A runner holds 0% or at least 5% of the position; this plan leaves 3%",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "LONG",
+        "exitPlans",
+        0,
+        "targets"
+       ],
+       "message": "A runner holds 0% or at least 5% of the position; this plan leaves 3%"
+      },
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "SHORT",
+        "exitPlans",
+        0,
+        "targets"
+       ],
+       "message": "A runner holds 0% or at least 5% of the position; this plan leaves 3%"
+      }
+     ]
+    }
+   }
+  },
+  "S2.closing_target_3pct": {
+   "what": "1.5R closing 3% then 3R closing 97%: a closing target under 5%",
+   "sent": {
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 3
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 97
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 3
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 97
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "stagedAt": "2026-11-12T14:55:46Z",
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "A target closes at least 5%",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "LONG",
+        "exitPlans",
+        0,
+        "targets",
+        0,
+        "closePct"
+       ],
+       "message": "A target closes at least 5%"
+      },
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "SHORT",
+        "exitPlans",
+        0,
+        "targets",
+        0,
+        "closePct"
+       ],
+       "message": "A target closes at least 5%"
+      }
+     ]
+    }
+   }
+  }
+ }
+}

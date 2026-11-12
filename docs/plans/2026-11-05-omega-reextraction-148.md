@@ -925,6 +925,12 @@ with no finding (697 + 2364), 3 chained touchAtr refusals it passed. v0.12.2 agr
   not sent, and omega does not check it.
 - The ema / rma / rsi forms are fitted. A length never sent rests on the corpus check, not on a served formula.
 
+**Measured 2026-11-12 at 171.0.0 (v0.14.1, `docs/plans/2026-11-12-omega-v0-14-1-limits.md`):** the main candle (5m,
+15m, 4h answer as 1h; 1d is not a main candle), another coin (ETH answers as BTC), the values (every rendered cell holds
+a number at 171), the served version (read before and after), and a `chainedWindow` below the outer's minimum (refused
+"requires params.chainedWindow >= 2 (got 1)" on the six min-2 outers; omega now checks it). Every 161 boundary answered
+the same at 171. The touchAtr maximum (B) was not re-probed: the 171 corpus serves the same range.
+
 ## Not measured, and why
 
 - **The 206 added keys as rendered** (headers, refusals, subjects): no probe or sweep ran. Their hints: 144 of the 206

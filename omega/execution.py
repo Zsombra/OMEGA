@@ -90,6 +90,19 @@ SCHEMA_BOUNDS: dict = {
 #   values draw a warning for the agent-facing surface, not an error.
 CATALOG_BOUNDS: dict = {"minAtrPct": (0.1, 10), "minRiskRewardRatio": (0.5, 3)}
 CATALOG_BOUND_ENFORCED: dict = {"minRiskRewardRatio": True, "minAtrPct": False}
+# A step the strategy write enforces as a draft error on the dial, below the published schema (which declares no
+# multipleOf): minRiskRewardRatio 2.2 staged at 171.0.0 answered "minRiskRewardRatio must be a multiple of 0.25"
+# (data/audit/exit_plan_runner_171_2026-11-12.json, probe W2); 2.25 and 2.5 staged without it (W2b, W1). No other
+# dial's step was sent.
+ENFORCED_STEPS: dict = {"minRiskRewardRatio": 0.25}
+
+
+def off_step(dial: str, value) -> bool:
+    """True when `value` is a number off the step ENFORCED_STEPS names for `dial` (False for any other dial)."""
+    if dial not in ENFORCED_STEPS or not isinstance(value, (int, float)) or isinstance(value, bool):
+        return False
+    step = ENFORCED_STEPS[dial]
+    return abs(value / step - round(value / step)) > 1e-9
 
 
 def validate_execution(overrides: dict) -> list[Finding]:
@@ -110,6 +123,11 @@ def validate_execution(overrides: dict) -> list[Finding]:
                                    f"{'-inf' if lo is None else lo}-{'inf' if hi is None else hi}; "
                                    f"the v91 axes declare none, and since v89 the operator "
                                    f"bounds in the draft's diagnostics decide"))
+        if off_step(k, v):
+            step = ENFORCED_STEPS[k]
+            out.append(Finding("error", "EXECUTION_OFF_STEP", f"execution.{k}",
+                               f"{k}={v} is not a multiple of {step}: the stage refuses it as a draft error on "
+                               f"the dial (\"{k} must be a multiple of {step}\", measured 2026-11-12, probe W2)"))
         if k in CATALOG_BOUNDS and isinstance(v, (int, float)):
             lo, hi = CATALOG_BOUNDS[k]
             if not (lo <= v <= hi):

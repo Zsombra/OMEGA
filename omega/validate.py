@@ -347,6 +347,20 @@ def validate_column(
                 f"transform {tid!r} -> {column.chainedTransformId!r} does not accept params.chainedWindow: only a chain "
                 f"whose inner is a rolling transform ({', '.join(ROLLING_INNERS)}) reads its outer window from it "
                 f"(served chainedOuters.<outer>.windowParameter; REPORT_COLUMN_CONSTRUCTION_FAILED, 161.0.0)"))
+        else:
+            outer_min = _window_parameter(column.chainedTransformId or "", c).get("minimum")
+            if outer_min is not None and column.chainedWindow < outer_min:
+                # The low end of the chain window. Measured 2026-11-12 at 171.0.0 (data/audit/
+                # authoring_limits_171_2026-11-12.json, M.* and S3): RSI14 x ema 14 -> zscore / stddev / linregSlope / cci /
+                # rollingMin / rollingMax at chainedWindow 1 is refused "[column-grammar] transform 'zscore' requires
+                # params.chainedWindow >= 2 (got 1)" (REPORT_COLUMN_CONSTRUCTION_FAILED; a stage carries it as a draft
+                # error), 2 renders. The minimum is the outer's catalogued window minimum (authoring.parameters.window
+                # .minimum: 2 on those six, 1 elsewhere - the schema's own floor); the depth refusal's allowedDomain
+                # .minimum states the same 2 (CLOSE x aggregate -> zscore). The joint depth bound judges the top.
+                out.append(Finding(
+                    "error", "CHAINED_WINDOW_BELOW_MINIMUM", f"{path}.chainedWindow",
+                    f"transform {column.chainedTransformId!r} requires params.chainedWindow >= {outer_min} (got "
+                    f"{column.chainedWindow}) (REPORT_COLUMN_CONSTRUCTION_FAILED, measured 2026-11-12 at 171.0.0)"))
     if column.buffer is not None and not level:
         out.append(Finding(
             "error", "BUFFER_UNDECLARED", f"{path}.buffer",
@@ -742,6 +756,10 @@ def _rolling_chain_depth(column: Column, m: Metric, c: Contract, path: str) -> l
     rule with the other window at its default (ema 20: 2364; aggregate 24: 697), so they are no threshold of their own:
     inside the bound there is NO finding, past it an error. The same bound holds on a pinned and on a lower column
     timeframe ({abs 4h}, {abs 1d}, {rel lower}). No rolling inner takes an offset, so the rule has no offset term.
+    Re-measured 2026-11-12 at 171.0.0 (data/audit/authoring_limits_171_2026-11-12.json): every 161 boundary answered
+    the same bar count and the same largest fit, on BTC and ETH and at every authorable main candle (5m, 15m, 1h, 4h -
+    the budget is bars, not time), and a stage carries the same refusal as a draft error. The bound is the top of the
+    chain window; its bottom is the outer's catalogued minimum (CHAINED_WINDOW_BELOW_MINIMUM, validate_column).
 
     An omitted window is the catalogue's default, as the platform fills it (N.no.window / N.no.chainedWindow rendered
     close_ema20_mean5 / close_ema20_mean24 on 2026-11-09).
