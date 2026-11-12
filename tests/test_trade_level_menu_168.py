@@ -275,12 +275,18 @@ def test_an_update_carries_the_live_menu_and_never_invents_one():
 
     untouched = plan(base)
     assert "TRADE_LEVEL_POLICY" not in untouched.axes_update(current)          # no dial and no menu named: not staged
-    # the axis is not staged, but REPORT is, and the live menu names bands the new report does not read: whether the
-    # stage re-judges the live menu then is unmeasured (every probe was a create), so it is a warning, not an error
+    # the axis is not staged, but REPORT is, and the live menu names bands the new report does not read. v0.14.1 warned
+    # (every probe was a create); measured 2026-11-12 at 171.0.0, the stage re-judges the menu it is not sent - REPORT
+    # staged alone without the Bollinger columns drew the level refusal on the COMMITTED menu (tests/
+    # test_update_rules_171.py, probe A3) - so it is an error
     would = untouched.update_menu_findings(current)
-    assert would and {(f.severity, f.code) for f in would} == {("warning", "TRADE_MENU_LEVEL_NOT_YIELDED")}
-    assert all("unmeasured" in f.message for f in would)
-    assert untouched.update_menu_findings({"TRADE_LEVEL_POLICY": dict(BASE["dials"])}) == []          # no live menu read
+    assert would and {(f.severity, f.code) for f in would} == {("error", "TRADE_MENU_LEVEL_NOT_YIELDED")}
+    assert all("A3" in f.message for f in would)
+    # no live menu read: e52f745 passed it ([]) while the stage judges the menu omega never saw - refused, failing
+    # closed (v0.14.2 review, 2026-11-12; tests/test_update_rules_171.py, a partial `current`)
+    unread = untouched.update_menu_findings({"TRADE_LEVEL_POLICY": dict(BASE["dials"])})
+    assert [(f.severity, f.code, f.path) for f in unread] == [
+        ("error", "TRADE_MENU_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.tradeLevelMenu")]
 
     dial = plan(Thesis(**{**base.__dict__, "execution": {"minAtrPct": 0.4}}))
     staged = dial.axes_update(current)["TRADE_LEVEL_POLICY"]

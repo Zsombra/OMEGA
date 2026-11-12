@@ -151,7 +151,11 @@ def test_a_plan_paying_exactly_the_minimum_is_not_refused_and_one_tick_below_is(
         "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR"}
 
 
-def test_an_update_carrying_a_live_minimum_off_its_step_is_warned():
+def test_an_update_carrying_a_live_minimum_off_its_step_is_refused():
+    # v0.14.1 warned here (every probe was a CREATE). Measured 2026-11-12 at 171.0.0 (tests/test_update_rules_171.py):
+    # an UPDATE restaging an off-step minimum is a draft error on the dial, named (C1) or carried as the draft holds it
+    # (C2) - both SENT the value in a restaged TRADE_LEVEL_POLICY; one carried from the committed strategy, or held in
+    # an axis the update does not stage, is unmeasured and refused too, failing closed
     base = PRESETS["trend-continuation"]
     current = plan(base).axes()
     current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.6          # a live value off the 0.25 step
@@ -161,17 +165,22 @@ def test_an_update_carrying_a_live_minimum_off_its_step_is_warned():
     assert staged["minRiskRewardRatio"] == 1.6                              # carried as read
     found = carried.update_menu_findings(current)
     assert [(f.severity, f.code, f.path) for f in found if f.code == "EXECUTION_CARRIED_OFF_STEP"] == [
-        ("warning", "EXECUTION_CARRIED_OFF_STEP", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
-    assert all("unmeasured" in f.message for f in found if f.code == "EXECUTION_CARRIED_OFF_STEP")
-    # named on its step by the thesis: nothing carried, nothing warned
+        ("error", "EXECUTION_CARRIED_OFF_STEP", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
+    assert all("C1" in f.message and "C2" in f.message for f in found if f.code == "EXECUTION_CARRIED_OFF_STEP")
+    # named on its step by the thesis: nothing carried, nothing refused
     fixed = plan(Thesis(**{**base.__dict__, "execution": {"minAtrPct": 0.4, "minRiskRewardRatio": 1.5}}))
     assert [f for f in fixed.update_menu_findings(current) if f.code == "EXECUTION_CARRIED_OFF_STEP"] == []
-    # a live value on its step: nothing to warn
+    # a live value on its step: nothing to refuse
     current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.5
     assert [f for f in carried.update_menu_findings(current) if f.code == "EXECUTION_CARRIED_OFF_STEP"] == []
-    # the axis not restaged: the live value is not carried, so not warned
+    # the axis not restaged: the strategy still holds the value. A2 and A3 measured a rule tying two axes re-judged when
+    # ONE of them is staged; no probe left TRADE_LEVEL_POLICY unsent with an off-step value in it - so this is
+    # unmeasured, refused on the axis that holds it, failing closed, and labelled so (v0.14.1 passed it)
     current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.6
-    assert [f for f in plan(base).update_menu_findings(current) if f.code == "EXECUTION_CARRIED_OFF_STEP"] == []
+    held = [f for f in plan(base).update_menu_findings(current) if f.code == "EXECUTION_CARRIED_OFF_STEP"]
+    assert [(f.severity, f.path) for f in held] == [("error", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
+    assert all(s in held[0].message for s in ("does not stage", "unmeasured", "failing closed"))
+    assert "the stage refuses it" not in held[0].message          # not claimed as the stage's measured answer
 
 
 def test_what_a_plan_pays_is_the_number_the_stage_names():
@@ -245,15 +254,17 @@ def test_a_plan_reads_trailing_from_its_own_position_management():
     assert plain.menu_findings() == []
 
 
-def test_an_update_that_switches_trailing_off_under_a_live_runner_is_warned():
-    # unmeasured on an update (every probe was a create): the rule's verdict is a warning on the live menu
+def test_an_update_that_switches_trailing_off_under_a_live_runner_is_refused():
+    # v0.14.1 warned here (every probe was a create). Measured 2026-11-12 at 171.0.0 (tests/test_update_rules_171.py,
+    # A2): POSITION_MANAGEMENT staged alone with Trailing off draws the runner's draft error on the menu the strategy holds
     base = PRESETS["trend-continuation"]
     p = plan(Thesis(**{**base.__dict__, "execution": {"trailingEnabled": False}}))
     current = plan(base).axes()
     current["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] = _runner_menu()
     found = p.update_menu_findings(current)
     assert found and {(f.severity, f.code) for f in found} == {
-        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
+        ("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
+    assert all("A2" in f.message for f in found)
     # a TRADE_LEVEL_POLICY update beside the live Trailing off is judged as the create was: an error
     current["POSITION_MANAGEMENT"]["trailingEnabled"] = False
     named = plan(Thesis(**{**base.__dict__, "trade_level_menu": _runner_menu()}))

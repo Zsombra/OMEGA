@@ -1,0 +1,5842 @@
+{
+ "_what": "OMEGA v0.14.2 probe at contract 171.0.0 (2026-11-12 21:46:40 - 21:54:05Z, build 588e449a): the six items docs/plans/2026-11-12-omega-v0-14-1-limits.md left unmeasured - (1) an UPDATE that switches Trailing off under a runner the strategy holds, (2) an UPDATE that raises minRiskRewardRatio alone above a plan's pay, (3) an UPDATE restaging an off-step minRiskRewardRatio carried from the strategy, (4) the 5% rules on a non-first leg (3%) and a 1% runner, (5) a deep chain in a market, reference or benchmark section (previews only), (6) a runner after a LEVEL leg. 4 preview_strategy_report calls (FIELDS, BTC, 1h), 2 CREATE stages on the v0.14.0 base plan (both refused at input: no draft), and 8 UPDATE stages in 4 drafts on the unbound, archived sandbox 'OMEGA-TEST: 110.8 stage probe' (7 staged, 1 refused at input). Every draft was read back with get_strategy_draft, previewed with preview_strategy_trade_levels on the DRAFT where it adds an answer (BTC, read-only), discarded at the version read, and read `draft: null` after. Nothing was committed, bound, deployed, restored or archived; the sandbox read revision 2, boundAgentCount 0, openPositionCount 0 and no held draft before each of the four drafts. list_strategy_drafts at 21:54Z listed only a draft that is not this probe's (VWAP Reject 15m, last written 2026-10-23 by the commander). GET /mcp/version read 171.0.0 / 588e449a before and after every phase (14 reads). Probe script: C:/Users/rafae/omega-v012-hints/v171/probe_v0142.py (with rt2.py, the mcporter runtime paced at one call per 2.1 s; every call's arguments and answer in calls.jsonl beside it, the raw run in run_v0142.json); this record is built from them by build_record.py there.",
+ "measuredAt": {
+  "contractVersion": "171.0.0",
+  "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+  "startedAt": "2026-11-12T21:46:40Z",
+  "endedAt": "2026-11-12T21:54:05Z",
+  "versionReads": [
+   {
+    "tag": "before previews",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:46:40Z"
+   },
+   {
+    "tag": "after previews",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:47:01Z"
+   },
+   {
+    "tag": "before creates",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:47:52Z"
+   },
+   {
+    "tag": "after creates",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:48:03Z"
+   },
+   {
+    "tag": "before d1",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:48:12Z"
+   },
+   {
+    "tag": "after d1",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:49:27Z"
+   },
+   {
+    "tag": "before d2",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:50:25Z"
+   },
+   {
+    "tag": "after d2",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:51:50Z"
+   },
+   {
+    "tag": "before d3",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:52:02Z"
+   },
+   {
+    "tag": "after d3",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:52:54Z"
+   },
+   {
+    "tag": "before d4",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:53:10Z"
+   },
+   {
+    "tag": "after d4",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:53:51Z"
+   },
+   {
+    "tag": "before final",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:53:54Z"
+   },
+   {
+    "tag": "after final",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+    "readAt": "2026-11-12T21:54:05Z"
+   }
+  ],
+  "phases": [
+   {
+    "phase": "previews",
+    "startedAt": "2026-11-12T21:46:44Z",
+    "endedAt": "2026-11-12T21:46:59Z"
+   },
+   {
+    "phase": "creates",
+    "startedAt": "2026-11-12T21:47:57Z",
+    "endedAt": "2026-11-12T21:48:01Z"
+   },
+   {
+    "phase": "d1",
+    "startedAt": "2026-11-12T21:48:16Z",
+    "endedAt": "2026-11-12T21:49:24Z"
+   },
+   {
+    "phase": "d2",
+    "startedAt": "2026-11-12T21:50:29Z",
+    "endedAt": "2026-11-12T21:51:48Z"
+   },
+   {
+    "phase": "d3",
+    "startedAt": "2026-11-12T21:52:08Z",
+    "endedAt": "2026-11-12T21:52:51Z"
+   },
+   {
+    "phase": "d4",
+    "startedAt": "2026-11-12T21:53:14Z",
+    "endedAt": "2026-11-12T21:53:49Z"
+   },
+   {
+    "phase": "final",
+    "startedAt": "2026-11-12T21:53:58Z",
+    "endedAt": "2026-11-12T21:54:03Z"
+   }
+  ]
+ },
+ "how": "The mcporter runtime (OMEGA scripts/mcporter_runtime.mjs, EXTRACTION_TRANSPORT=runtime): one runtime process, holding one MCP session, per phase (calls.jsonl's `n` restarts at 1 on each phase's first call), sequential, one call per >= 2.1 s (a public-history reader ran at 1 request/s beside it). rt2.Runtime.call stamps each call's `at` in calls.jsonl after its pacing wait, immediately before the request is written. A probe's `sentAt`, a draft's `discardedAt` and listStrategyDraftsAtEnd's `at` are that `at` (`callLine` / `discardCallLine`: the call's line in calls.jsonl, from 0; `calls` tallies the log). The `at` of a read-back, of a preview and of sandboxReadBefore, and readAfterDiscardAt, are the clock read after the answer returned (probe_v0142.py).",
+ "sandbox": {
+  "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+  "name": "OMEGA-TEST: 110.8 stage probe",
+  "why": "UPDATE stages run only on an UNBOUND OMEGA-TEST sandbox. list_strategies (includeInactive, 21:35Z) lists six OMEGA-TEST strategies, all archived; three have boundAgentCount 0 and three have an archived agent bound (not used). This one was created 2026-10-23 for stage probes. Staging a draft on an archived strategy is accepted; a commit of it would RESTORE the strategy (get_strategy_draft impact.operation, read on A1) - none was made.",
+  "omegaTestStrategies": [
+   {
+    "strategyId": "56c08ef6-480b-4293-8136-81beed2161cf",
+    "name": "OMEGA-TEST: TPO Value Migration",
+    "isActive": false,
+    "revision": 6,
+    "boundAgentCount": 1,
+    "agents": [
+     "TPO Alpha (ARCHIVED)"
+    ]
+   },
+   {
+    "strategyId": "430f9037-ead7-4a50-9fb5-0618163251bc",
+    "name": "OMEGA-TEST: TPO Compression Breakout",
+    "isActive": false,
+    "revision": 8,
+    "boundAgentCount": 1,
+    "agents": [
+     "BRK Alpha (ARCHIVED)"
+    ]
+   },
+   {
+    "strategyId": "6c58dd38-9d27-4a80-98c4-3a88513eb2db",
+    "name": "OMEGA-TEST: TPO Rotation to POC",
+    "isActive": false,
+    "revision": 7,
+    "boundAgentCount": 1,
+    "agents": [
+     "ROT Alpha (ARCHIVED)"
+    ]
+   },
+   {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "name": "OMEGA-TEST: 110.8 stage probe",
+    "isActive": false,
+    "revision": 2,
+    "boundAgentCount": 0,
+    "agents": []
+   },
+   {
+    "strategyId": "43f16fa4-b04a-4ebe-84fb-73ffc0082af6",
+    "name": "OMEGA-TEST: From Scratch",
+    "isActive": false,
+    "revision": 3,
+    "boundAgentCount": 0,
+    "agents": []
+   },
+   {
+    "strategyId": "f0d2d328-b09f-4509-b8f2-ffa4e3c08181",
+    "name": "OMEGA-TEST: Fork Build",
+    "isActive": false,
+    "revision": 7,
+    "boundAgentCount": 0,
+    "agents": []
+   }
+  ],
+  "committed": {
+   "anchor": "1h",
+   "revision": 2,
+   "TRADE_LEVEL_POLICY": {
+    "minAtrPct": 0.5,
+    "minStopLossAtrMultiple": 1,
+    "maxStopLossAtrMultiple": 2,
+    "minRiskRewardRatio": 1.5,
+    "tradeLevelMenu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_LOWER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "LEVEL",
+           "level": {
+            "metric": "DONCHIAN_UPPER",
+            "timeframe": {
+             "rel": "anchor"
+            },
+            "bars": null,
+            "offset": 0,
+            "knobs": {},
+            "windowExtreme": null
+           }
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "LEVEL",
+           "level": {
+            "metric": "BB_UPPER",
+            "timeframe": {
+             "rel": "anchor"
+            },
+            "bars": null,
+            "offset": 0,
+            "knobs": {},
+            "windowExtreme": null
+           }
+          },
+          "closePct": 100
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "DONCHIAN_UPPER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       },
+       {
+        "kind": "LEVEL",
+        "level": {
+         "metric": "BB_UPPER",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "bars": null,
+         "offset": 0,
+         "knobs": {},
+         "windowExtreme": null
+        },
+        "bufferAtrMultiple": 0
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "LEVEL",
+           "level": {
+            "metric": "DONCHIAN_LOWER",
+            "timeframe": {
+             "rel": "anchor"
+            },
+            "bars": null,
+            "offset": 0,
+            "knobs": {},
+            "windowExtreme": null
+           }
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "LEVEL",
+           "level": {
+            "metric": "BB_LOWER",
+            "timeframe": {
+             "rel": "anchor"
+            },
+            "bars": null,
+            "offset": 0,
+            "knobs": {},
+            "windowExtreme": null
+           }
+          },
+          "closePct": 100
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "POSITION_MANAGEMENT": {
+    "breakEvenEnabled": true,
+    "breakEvenTriggerR": 1.08,
+    "trailingEnabled": true,
+    "trailingTriggerR": 1,
+    "trailingGivebackPct": 45,
+    "trailingBufferPct": 0.25,
+    "timeDecayEnabled": true,
+    "timeDecayGracePeriodMinutes": 60,
+    "timeDecayIntervalMinutes": 15,
+    "timeDecayTightenPct": 5,
+    "timeDecayMaxTightenPct": 50,
+    "timeDecayStaleThresholdTpProgressPct": 25,
+    "decisionInvalidationExitEnabled": true
+   },
+   "REPORT": {
+    "sections": [
+     {
+      "kind": "custom",
+      "sectionKey": "custom:c5d8bc8a-5f33-8aa8-8c2c-c96b83065515",
+      "title": "OMEGA-TEST: 110.8 stage probe Signals",
+      "benchmarkTicker": null,
+      "marketScope": null,
+      "notes": "Generated by omega.generate from the 'OMEGA-TEST: 110.8 stage probe' thesis (stance ALIGN, anchor 1h).",
+      "columns": [
+       {
+        "metric": "MA_ALIGN",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "EMA5",
+        "transformId": "spread",
+        "chainedTransformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "inputs": [
+         {
+          "metric": "EMA13"
+         }
+        ]
+       },
+       {
+        "metric": "SMA200",
+        "transformId": "distance",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "ADX",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       },
+       {
+        "metric": "MACD_HIST",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       },
+       {
+        "metric": "MACD_HIST",
+        "transformId": "crossDetect",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "RVOL",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       },
+       {
+        "metric": "OBV",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       }
+      ]
+     },
+     {
+      "kind": "custom",
+      "sectionKey": "custom:ec6e80f9-20aa-5f75-d97e-a84d952ea71b",
+      "title": "Market breadth · Whole market",
+      "benchmarkTicker": null,
+      "marketScope": "all",
+      "notes": null,
+      "columns": [
+       {
+        "metric": "MKT_NET",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       }
+      ]
+     },
+     {
+      "kind": "custom",
+      "sectionKey": "custom:0b7a66b7-c0ac-91e8-ff04-aadb6280a110",
+      "title": "USDT/USD peg",
+      "benchmarkTicker": "USDT_USD",
+      "marketScope": null,
+      "notes": null,
+      "columns": [
+       {
+        "metric": "PAR_DEV",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       }
+      ]
+     },
+     {
+      "kind": "custom",
+      "sectionKey": "custom:763b5d7e-f8fb-c9da-bbb8-3f0aa244cee6",
+      "title": "USDC/USDT peg",
+      "benchmarkTicker": "USDC_USDT",
+      "marketScope": null,
+      "notes": null,
+      "columns": [
+       {
+        "metric": "PAR_DEV",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       }
+      ]
+     },
+     {
+      "kind": "custom",
+      "sectionKey": "custom:b3c45960-c1e2-9caf-6ce8-b1add14c728a",
+      "title": "Trade levels",
+      "benchmarkTicker": null,
+      "marketScope": null,
+      "notes": null,
+      "columns": [
+       {
+        "metric": "DONCHIAN_UPPER",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "DONCHIAN_LOWER",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "BB_UPPER",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "BB_LOWER",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "listedMinRiskRewardRatios": {
+   "read": "list_strategies includeInactive, 2026-11-12T21:35Z (105 strategies, SYSTEM and owned)",
+   "counts": {
+    "1.5": 89,
+    "1": 2,
+    "2": 7,
+    "1.25": 5,
+    "1.75": 1,
+    "2.5": 1
+   }
+  }
+ },
+ "createBase": {
+  "what": "the v0.14.0 base plan (data/audit/exit_plans_170_2026-11-12.json basePlan; plan 72's request): trailingEnabled true, minRiskRewardRatio 1.5, stops ATR 1 / 1.5 / 2",
+  "dials": {
+   "minAtrPct": 0.5,
+   "minStopLossAtrMultiple": 1,
+   "maxStopLossAtrMultiple": 2,
+   "minRiskRewardRatio": 1.5
+  },
+  "trailingEnabled": true
+ },
+ "counts": {
+  "reportPreviews": 4,
+  "reportPreviewsAccepted": 1,
+  "reportPreviewsRefused": 3,
+  "stages": 10,
+  "createStages": 2,
+  "updateStages": 8,
+  "staged": 7,
+  "refusedAtInput": 3,
+  "drafts": 4,
+  "discarded": 4,
+  "committed": 0,
+  "tradeLevelPreviews": 5,
+  "tradeLevelPreviewsRendered": 1,
+  "tradeLevelPreviewsRefused": 4
+ },
+ "calls": {
+  "log": "C:/Users/rafae/omega-v012-hints/v171/calls.jsonl",
+  "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+  "what": "every call rt2.Runtime made on this track, one line each (tool, args, answer, at): 9 read-only discovery calls (discover.py, read_sandboxes.py; 2026-11-12T21:35:09Z - 2026-11-12T21:38:15Z) and the 47 calls of the probe run (2026-11-12T21:46:44Z - 2026-11-12T21:53:58Z). `byTool` tallies the whole log; `lines` holds \"<at> <tool>\" for each line of it, from 0 - the line a probe's `callLine` and a draft's `discardCallLine` name",
+  "total": 56,
+  "byTool": {
+   "discard_strategy_draft": 4,
+   "get_strategy": 7,
+   "get_strategy_draft": 22,
+   "list_intelligence_agents": 1,
+   "list_strategies": 1,
+   "list_strategy_drafts": 2,
+   "preview_strategy_report": 4,
+   "preview_strategy_trade_levels": 5,
+   "stage_strategy_draft": 10
+  },
+  "lines": [
+   "2026-11-12T21:35:09Z list_strategies",
+   "2026-11-12T21:35:24Z list_intelligence_agents",
+   "2026-11-12T21:35:29Z list_strategy_drafts",
+   "2026-11-12T21:37:45Z get_strategy",
+   "2026-11-12T21:37:52Z get_strategy_draft",
+   "2026-11-12T21:37:58Z get_strategy",
+   "2026-11-12T21:38:04Z get_strategy_draft",
+   "2026-11-12T21:38:10Z get_strategy",
+   "2026-11-12T21:38:15Z get_strategy_draft",
+   "2026-11-12T21:46:44Z preview_strategy_report",
+   "2026-11-12T21:46:53Z preview_strategy_report",
+   "2026-11-12T21:46:56Z preview_strategy_report",
+   "2026-11-12T21:46:59Z preview_strategy_report",
+   "2026-11-12T21:47:57Z stage_strategy_draft",
+   "2026-11-12T21:48:00Z stage_strategy_draft",
+   "2026-11-12T21:48:16Z get_strategy",
+   "2026-11-12T21:48:23Z get_strategy_draft",
+   "2026-11-12T21:48:30Z stage_strategy_draft",
+   "2026-11-12T21:48:38Z get_strategy_draft",
+   "2026-11-12T21:48:46Z preview_strategy_trade_levels",
+   "2026-11-12T21:48:50Z stage_strategy_draft",
+   "2026-11-12T21:48:58Z get_strategy_draft",
+   "2026-11-12T21:49:02Z preview_strategy_trade_levels",
+   "2026-11-12T21:49:09Z get_strategy_draft",
+   "2026-11-12T21:49:13Z discard_strategy_draft",
+   "2026-11-12T21:49:20Z get_strategy_draft",
+   "2026-11-12T21:50:29Z get_strategy",
+   "2026-11-12T21:50:37Z get_strategy_draft",
+   "2026-11-12T21:50:41Z stage_strategy_draft",
+   "2026-11-12T21:50:44Z stage_strategy_draft",
+   "2026-11-12T21:50:49Z get_strategy_draft",
+   "2026-11-12T21:50:53Z preview_strategy_trade_levels",
+   "2026-11-12T21:51:05Z stage_strategy_draft",
+   "2026-11-12T21:51:13Z get_strategy_draft",
+   "2026-11-12T21:51:20Z stage_strategy_draft",
+   "2026-11-12T21:51:28Z get_strategy_draft",
+   "2026-11-12T21:51:32Z get_strategy_draft",
+   "2026-11-12T21:51:38Z discard_strategy_draft",
+   "2026-11-12T21:51:46Z get_strategy_draft",
+   "2026-11-12T21:52:08Z get_strategy",
+   "2026-11-12T21:52:15Z get_strategy_draft",
+   "2026-11-12T21:52:19Z stage_strategy_draft",
+   "2026-11-12T21:52:25Z get_strategy_draft",
+   "2026-11-12T21:52:31Z preview_strategy_trade_levels",
+   "2026-11-12T21:52:38Z get_strategy_draft",
+   "2026-11-12T21:52:42Z discard_strategy_draft",
+   "2026-11-12T21:52:49Z get_strategy_draft",
+   "2026-11-12T21:53:14Z get_strategy",
+   "2026-11-12T21:53:20Z get_strategy_draft",
+   "2026-11-12T21:53:25Z stage_strategy_draft",
+   "2026-11-12T21:53:30Z get_strategy_draft",
+   "2026-11-12T21:53:34Z preview_strategy_trade_levels",
+   "2026-11-12T21:53:38Z get_strategy_draft",
+   "2026-11-12T21:53:42Z discard_strategy_draft",
+   "2026-11-12T21:53:47Z get_strategy_draft",
+   "2026-11-12T21:53:58Z list_strategy_drafts"
+  ]
+ },
+ "probes": {
+  "P1.last_fit_market_reference_benchmark": {
+   "items": [
+    5
+   ],
+   "what": "the per-coin last fits (MKT_NET x ema 14 -> aggregate 2385 on a market section, marketScope all; CLOSE x aggregate 10 -> zscore 2427 and PAR_DEV x ema 14 -> aggregate 2385 on a reference section, benchmarkTicker USDT_USD; RSI14 x ema 14 -> aggregate 2385 and CLOSE x aggregate 10 -> zscore 2427 on a benchmark section, benchmarkTicker ETH) in one preview",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T21:46:44Z",
+   "callLine": 9,
+   "sent": {
+    "coinSelection": {
+     "mode": "explicit",
+     "tickers": [
+      "BTC"
+     ]
+    },
+    "detail": "detailed",
+    "timeframe": "1h",
+    "sections": [
+     {
+      "kind": "custom",
+      "title": "Deep chain market",
+      "benchmarkTicker": null,
+      "marketScope": "all",
+      "notes": null,
+      "columns": [
+       {
+        "metric": "MKT_NET",
+        "transformId": "ema",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 14,
+        "chainedTransformId": "aggregate",
+        "chainedWindow": 2385
+       }
+      ]
+     },
+     {
+      "kind": "custom",
+      "title": "Deep chain reference",
+      "benchmarkTicker": "USDT_USD",
+      "marketScope": null,
+      "notes": null,
+      "columns": [
+       {
+        "metric": "CLOSE",
+        "transformId": "aggregate",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 10,
+        "chainedTransformId": "zscore",
+        "chainedWindow": 2427
+       },
+       {
+        "metric": "PAR_DEV",
+        "transformId": "ema",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 14,
+        "chainedTransformId": "aggregate",
+        "chainedWindow": 2385
+       }
+      ]
+     },
+     {
+      "kind": "custom",
+      "title": "Deep chain benchmark",
+      "benchmarkTicker": "ETH",
+      "marketScope": null,
+      "notes": null,
+      "columns": [
+       {
+        "metric": "RSI14",
+        "transformId": "ema",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 14,
+        "chainedTransformId": "aggregate",
+        "chainedWindow": 2385
+       },
+       {
+        "metric": "CLOSE",
+        "transformId": "aggregate",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 10,
+        "chainedTransformId": "zscore",
+        "chainedWindow": 2427
+       }
+      ]
+     }
+    ]
+   },
+   "accepted": true,
+   "render": {
+    "headers": [
+     "mktBreadth_ema14_mean2385",
+     "close_mean10_z2427",
+     "parDev_ema14_mean2385",
+     "RSI14_ema14_mean2385",
+     "close_mean10_z2427"
+    ],
+    "subjects": [
+     {
+      "title": "Deep chain market (Whole market)",
+      "provenance": [
+       "Every reading below describes the market — Whole market, measured across its coins — not the coin being evaluated."
+      ],
+      "benchmarkTicker": null,
+      "marketScope": "all",
+      "rowIdentity": "Whole market"
+     },
+     {
+      "title": "Deep chain reference (USDT/USD)",
+      "provenance": [
+       "Every reading below is USDT/USD's, not the coin being evaluated — this section is bound to USDT/USD."
+      ],
+      "benchmarkTicker": "USDT_USD",
+      "marketScope": null,
+      "rowIdentity": "USDT/USD"
+     },
+     {
+      "title": "Deep chain benchmark (ETH)",
+      "provenance": [
+       "Every reading below is ETH's, not the coin being evaluated — this section is bound to ETH."
+      ],
+      "benchmarkTicker": "ETH",
+      "marketScope": null,
+      "rowIdentity": "ETH"
+     }
+    ],
+    "values": {
+     "Deep chain market/mktBreadth_ema14_mean2385": null,
+     "Deep chain reference/close_mean10_z2427": -0.9379605360998641,
+     "Deep chain reference/parDev_ema14_mean2385": null,
+     "Deep chain benchmark/RSI14_ema14_mean2385": 50.27117863198952,
+     "Deep chain benchmark/close_mean10_z2427": -1.4072305502997757
+    },
+    "conditionHoldMaxWindow": {
+     "Deep chain market/mktBreadth_ema14_mean2385": 64,
+     "Deep chain reference/close_mean10_z2427": 64,
+     "Deep chain reference/parDev_ema14_mean2385": 64,
+     "Deep chain benchmark/RSI14_ema14_mean2385": 50,
+     "Deep chain benchmark/close_mean10_z2427": 64
+    },
+    "resolvedCoinTickers": [
+     "BTC"
+    ],
+    "budgetUsage": {
+     "sections": {
+      "used": 3,
+      "cap": 32
+     },
+     "sectionColumns": {
+      "used": 2,
+      "cap": 32
+     },
+     "columnLookback": {
+      "used": 1,
+      "cap": 64
+     },
+     "distinctTimeframes": {
+      "used": 1,
+      "cap": 8
+     },
+     "resultChars": {
+      "used": 8258,
+      "cap": 150000
+     },
+     "reportNoteChars": {
+      "used": 0,
+      "cap": 3200
+     }
+    }
+   }
+  },
+  "P2.market_agg2386": {
+   "items": [
+    5
+   ],
+   "what": "MKT_NET x ema 14 -> aggregate 2386 on a market section (marketScope all)",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T21:46:53Z",
+   "callLine": 10,
+   "sent": {
+    "coinSelection": {
+     "mode": "explicit",
+     "tickers": [
+      "BTC"
+     ]
+    },
+    "detail": "concise",
+    "timeframe": "1h",
+    "sections": [
+     {
+      "kind": "custom",
+      "title": "Deep chain market",
+      "benchmarkTicker": null,
+      "marketScope": "all",
+      "notes": null,
+      "columns": [
+       {
+        "metric": "MKT_NET",
+        "transformId": "ema",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 14,
+        "chainedTransformId": "aggregate",
+        "chainedWindow": 2386
+       }
+      ]
+     }
+    ]
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'MKT_NET × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2386,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2385,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "MKT_NET",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  "P3.reference_z2428": {
+   "items": [
+    5
+   ],
+   "what": "CLOSE x aggregate 10 -> zscore 2428 on a reference section (USDT_USD)",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T21:46:56Z",
+   "callLine": 11,
+   "sent": {
+    "coinSelection": {
+     "mode": "explicit",
+     "tickers": [
+      "BTC"
+     ]
+    },
+    "detail": "concise",
+    "timeframe": "1h",
+    "sections": [
+     {
+      "kind": "custom",
+      "title": "Deep chain reference",
+      "benchmarkTicker": "USDT_USD",
+      "marketScope": null,
+      "notes": null,
+      "columns": [
+       {
+        "metric": "CLOSE",
+        "transformId": "aggregate",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 10,
+        "chainedTransformId": "zscore",
+        "chainedWindow": 2428
+       }
+      ]
+     }
+    ]
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'CLOSE × aggregate' chainedWindow 2428 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2427.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2428,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 2,
+     "maximum": 2427,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "aggregate",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  "P4.benchmark_agg2386": {
+   "items": [
+    5
+   ],
+   "what": "RSI14 x ema 14 -> aggregate 2386 on a benchmark section (ETH)",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T21:46:59Z",
+   "callLine": 12,
+   "sent": {
+    "coinSelection": {
+     "mode": "explicit",
+     "tickers": [
+      "BTC"
+     ]
+    },
+    "detail": "concise",
+    "timeframe": "1h",
+    "sections": [
+     {
+      "kind": "custom",
+      "title": "Deep chain benchmark",
+      "benchmarkTicker": "ETH",
+      "marketScope": null,
+      "notes": null,
+      "columns": [
+       {
+        "metric": "RSI14",
+        "transformId": "ema",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 14,
+        "chainedTransformId": "aggregate",
+        "chainedWindow": 2386
+       }
+      ]
+     }
+    ]
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Column 'RSI14 × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2386,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2385,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  "S3.non_first_leg_3pct": {
+   "items": [
+    4
+   ],
+   "what": "1.5R closing 50% then 3R closing 3%: a 3% leg that is not the first (S2 sent one only as the first leg)",
+   "kind": "CREATE",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:47:57Z",
+   "callLine": 13,
+   "sent": {
+    "draftVersion": 0,
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 3
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 50
+         },
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 3
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "A target closes at least 5%",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "LONG",
+        "exitPlans",
+        0,
+        "targets",
+        1,
+        "closePct"
+       ],
+       "message": "A target closes at least 5%"
+      },
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "SHORT",
+        "exitPlans",
+        0,
+        "targets",
+        1,
+        "closePct"
+       ],
+       "message": "A target closes at least 5%"
+      }
+     ]
+    }
+   }
+  },
+  "S4.runner_1pct": {
+   "items": [
+    4
+   ],
+   "what": "one plan of 2R closing 99%: a 1% runner (S1 sent only a 3% runner)",
+   "kind": "CREATE",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:48:00Z",
+   "callLine": 14,
+   "sent": {
+    "draftVersion": 0,
+    "menu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 99
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 99
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "dials": {
+     "minAtrPct": 0.5,
+     "minStopLossAtrMultiple": 1,
+     "maxStopLossAtrMultiple": 2,
+     "minRiskRewardRatio": 1.5
+    },
+    "trailingEnabled": true
+   },
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "A runner holds 0% or at least 5% of the position; this plan leaves 1%",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "LONG",
+        "exitPlans",
+        0,
+        "targets"
+       ],
+       "message": "A runner holds 0% or at least 5% of the position; this plan leaves 1%"
+      },
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu",
+        "SHORT",
+        "exitPlans",
+        0,
+        "targets"
+       ],
+       "message": "A runner holds 0% or at least 5% of the position; this plan leaves 1%"
+      }
+     ]
+    }
+   }
+  },
+  "A1.runner_menu_staged": {
+   "items": [
+    1,
+    6
+   ],
+   "what": "UPDATE staging TRADE_LEVEL_POLICY alone (the committed dials) with three plans per side that leave a runner: the T4 plan 1.5R 50% + 3R 30%, a Donchian band level closing 50%, and 1R 30% + the band level 30% (DONCHIAN_UPPER for LONG, DONCHIAN_LOWER for SHORT; the sandbox's 'Trade levels' section reads both); Trailing on as committed. The preview reads what a runner after a level leg pays at a decision",
+   "kind": "UPDATE",
+   "draft": "D1",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:48:30Z",
+   "callLine": 17,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 0,
+    "axes": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 1,
+      "maxStopLossAtrMultiple": 2,
+      "minRiskRewardRatio": 1.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 50
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_LOWER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 50
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_LOWER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "version": 4,
+    "stagedAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "errors": [],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T21:48:43Z",
+    "draftVersion": 4,
+    "committedRevision": 2,
+    "draftAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "keptAsSent": true,
+    "diagnostics": {
+     "errors": [],
+     "warnings": []
+    },
+    "diffAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "diffChanges": {
+     "TRADE_LEVEL_POLICY": [
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "R_MULTIPLE"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[1].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": null,
+       "draft": 3
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_UPPER"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 3,
+       "draft": 1
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_UPPER"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "R_MULTIPLE"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[1].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": null,
+       "draft": 3
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_LOWER"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 3,
+       "draft": 1
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_LOWER"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].kind",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].kind",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.metric",
+       "itemName": null,
+       "live": "BB_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 2,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "BB_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].kind",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].kind",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.metric",
+       "itemName": null,
+       "live": "BB_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 2,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "BB_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      }
+     ]
+    },
+    "impact": {
+     "boundAgentCount": 0,
+     "openPositionCount": 0,
+     "timeframeChanged": false,
+     "operation": "RESTORE",
+     "admission": {
+      "quota": {
+       "used": 4,
+       "limit": 25,
+       "remaining": 21
+      },
+      "nameAvailable": true
+     },
+     "capital": []
+    }
+   },
+   "preview": {
+    "at": "2026-11-12T21:48:48Z",
+    "source": {
+     "kind": "DRAFT",
+     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+     "draftVersion": 4
+    },
+    "coinTicker": "BTC",
+    "directions": {
+     "LONG": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71575,
+      "atr": 478.90417317,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "stopLossPrice": 71096.09582683,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72293.356259755,
+          "closePct": 50
+         },
+         {
+          "price": 73011.71251951,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 1.35,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "stopLossPrice": 71096.09582683,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 74057,
+          "closePct": 50
+         }
+        ],
+        "riskRewardRatio": 5.183,
+        "runnerTrail": {
+         "atrMultiple": 2.33,
+         "rMultiple": 2.33
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "stopLossPrice": 71096.09582683,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72053.90417317,
+          "closePct": 30
+         },
+         {
+          "price": 74057,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 3.928,
+        "runnerTrail": {
+         "atrMultiple": 2.33,
+         "rMultiple": 2.33
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "stopLossPrice": 70856.643740245,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72652.5343896325,
+          "closePct": 50
+         },
+         {
+          "price": 73730.06877926501,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.03,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "stopLossPrice": 70856.643740245,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 74057,
+          "closePct": 50
+         }
+        ],
+        "riskRewardRatio": 3.455,
+        "runnerTrail": {
+         "atrMultiple": 2.33,
+         "rMultiple": 1.55
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "stopLossPrice": 70856.643740245,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72293.356259755,
+          "closePct": 30
+         },
+         {
+          "price": 74057,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.719,
+        "runnerTrail": {
+         "atrMultiple": 2.33,
+         "rMultiple": 1.55
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "stopLossPrice": 70617.19165366,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 74057,
+          "closePct": 50
+         }
+        ],
+        "riskRewardRatio": 2.591,
+        "runnerTrail": {
+         "atrMultiple": 2.33,
+         "rMultiple": 1.17
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "stopLossPrice": 70617.19165366,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 72532.80834634,
+          "closePct": 30
+         },
+         {
+          "price": 74057,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.114,
+        "runnerTrail": {
+         "atrMultiple": 2.33,
+         "rMultiple": 1.17
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "stopLossPrice": 70617.19165366,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 73011.71251951,
+          "closePct": 50
+         },
+         {
+          "price": 74448.42503901999,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 1.35
+        }
+       }
+      ],
+      "rejectedPairs": [],
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "entryPrice": 71575,
+      "atr": 478.90417317,
+      "setups": [
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "stopLossPrice": 72053.90417317,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70856.643740245,
+          "closePct": 50
+         },
+         {
+          "price": 70138.28748049,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 1.35,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "stopLossPrice": 72293.356259755,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70497.4656103675,
+          "closePct": 50
+         },
+         {
+          "price": 69419.93122073499,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.03,
+         "rMultiple": 1.35
+        }
+       },
+       {
+        "stop": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "stopLossPrice": 72532.80834634,
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ],
+        "targets": [
+         {
+          "price": 70138.28748049,
+          "closePct": 50
+         },
+         {
+          "price": 68701.57496098001,
+          "closePct": 30
+         }
+        ],
+        "riskRewardRatio": 2.25,
+        "runnerTrail": {
+         "atrMultiple": 2.7,
+         "rMultiple": 1.35
+        }
+       }
+      ],
+      "rejectedPairs": [
+       {
+        "reason": "RISK_REWARD_TOO_LOW",
+        "slMethod": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "slPrice": 72053.90417317,
+        "exitPlan": {
+         "targets": [
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "metric": "DONCHIAN_LOWER",
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "bars": null,
+             "offset": 0,
+             "knobs": {},
+             "windowExtreme": null
+            }
+           },
+           "closePct": 50
+          }
+         ]
+        },
+        "tpPrice": 71227,
+        "computedRR": 0.7267,
+        "slDistanceAtrMultiple": 1
+       },
+       {
+        "reason": "TARGETS_OUT_OF_ORDER",
+        "slMethod": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "slPrice": 72053.90417317,
+        "exitPlan": {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 1
+           },
+           "closePct": 30
+          },
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "metric": "DONCHIAN_LOWER",
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "bars": null,
+             "offset": 0,
+             "knobs": {},
+             "windowExtreme": null
+            }
+           },
+           "closePct": 30
+          }
+         ]
+        },
+        "tpPrice": 71227,
+        "computedRR": 0.8087,
+        "slDistanceAtrMultiple": 1
+       },
+       {
+        "reason": "RISK_REWARD_TOO_LOW",
+        "slMethod": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "slPrice": 72293.356259755,
+        "exitPlan": {
+         "targets": [
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "metric": "DONCHIAN_LOWER",
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "bars": null,
+             "offset": 0,
+             "knobs": {},
+             "windowExtreme": null
+            }
+           },
+           "closePct": 50
+          }
+         ]
+        },
+        "tpPrice": 71227,
+        "computedRR": 0.4844,
+        "slDistanceAtrMultiple": 1.5
+       },
+       {
+        "reason": "TARGETS_OUT_OF_ORDER",
+        "slMethod": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "slPrice": 72293.356259755,
+        "exitPlan": {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 1
+           },
+           "closePct": 30
+          },
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "metric": "DONCHIAN_LOWER",
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "bars": null,
+             "offset": 0,
+             "knobs": {},
+             "windowExtreme": null
+            }
+           },
+           "closePct": 30
+          }
+         ]
+        },
+        "tpPrice": 71227,
+        "computedRR": 0.6391,
+        "slDistanceAtrMultiple": 1.5
+       },
+       {
+        "reason": "RISK_REWARD_TOO_LOW",
+        "slMethod": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "slPrice": 72532.80834634,
+        "exitPlan": {
+         "targets": [
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "metric": "DONCHIAN_LOWER",
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "bars": null,
+             "offset": 0,
+             "knobs": {},
+             "windowExtreme": null
+            }
+           },
+           "closePct": 50
+          }
+         ]
+        },
+        "tpPrice": 71227,
+        "computedRR": 0.3633,
+        "slDistanceAtrMultiple": 2
+       },
+       {
+        "reason": "TARGETS_OUT_OF_ORDER",
+        "slMethod": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "slPrice": 72532.80834634,
+        "exitPlan": {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 1
+           },
+           "closePct": 30
+          },
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "metric": "DONCHIAN_LOWER",
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "bars": null,
+             "offset": 0,
+             "knobs": {},
+             "windowExtreme": null
+            }
+           },
+           "closePct": 30
+          }
+         ]
+        },
+        "tpPrice": 71227,
+        "computedRR": 0.5543,
+        "slDistanceAtrMultiple": 2
+       }
+      ],
+      "rejectedTakeProfits": []
+     }
+    }
+   }
+  },
+  "A2.trailing_off_alone": {
+   "items": [
+    1,
+    6
+   ],
+   "what": "UPDATE staging POSITION_MANAGEMENT alone (the committed dials, trailingEnabled false) on the draft holding A1's runner menu: the stage does not send the menu",
+   "kind": "UPDATE",
+   "draft": "D1",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:48:50Z",
+   "callLine": 20,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 4,
+    "axes": {
+     "POSITION_MANAGEMENT": {
+      "breakEvenEnabled": true,
+      "breakEvenTriggerR": 1.08,
+      "trailingEnabled": false,
+      "trailingTriggerR": 1,
+      "trailingGivebackPct": 45,
+      "trailingBufferPct": 0.25,
+      "timeDecayEnabled": true,
+      "timeDecayGracePeriodMinutes": 60,
+      "timeDecayIntervalMinutes": 15,
+      "timeDecayTightenPct": 5,
+      "timeDecayMaxTightenPct": 50,
+      "timeDecayStaleThresholdTpProgressPct": 25,
+      "decisionInvalidationExitEnabled": true
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "version": 5,
+    "stagedAxes": [
+     "POSITION_MANAGEMENT"
+    ],
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.exitPlans[0]",
+      "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T21:49:00Z",
+    "draftVersion": 5,
+    "committedRevision": 2,
+    "draftAxes": [
+     "POSITION_MANAGEMENT",
+     "TRADE_LEVEL_POLICY"
+    ],
+    "keptAsSent": true,
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "tradeLevelMenu.LONG.exitPlans[0]",
+       "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+       "details": null
+      }
+     ],
+     "warnings": []
+    },
+    "diffAxes": [
+     "TRADE_LEVEL_POLICY",
+     "POSITION_MANAGEMENT"
+    ],
+    "diffChanges": {
+     "TRADE_LEVEL_POLICY": [
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "R_MULTIPLE"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[1].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": null,
+       "draft": 3
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_UPPER"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 3,
+       "draft": 1
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_UPPER"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "R_MULTIPLE"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[1].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": null,
+       "draft": 3
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_LOWER"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 3,
+       "draft": 1
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": null,
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_LOWER"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[1].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": null,
+       "draft": 30
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].kind",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].kind",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.metric",
+       "itemName": null,
+       "live": "BB_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 2,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "BB_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].kind",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].kind",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.metric",
+       "itemName": null,
+       "live": "BB_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 2,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "BB_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      }
+     ],
+     "POSITION_MANAGEMENT": [
+      {
+       "field": "trailingEnabled",
+       "fieldKey": "trailingEnabled",
+       "itemName": null,
+       "live": true,
+       "draft": false
+      }
+     ]
+    },
+    "impact": null
+   },
+   "preview": {
+    "at": "2026-11-12T21:49:07Z",
+    "source": {
+     "kind": "DRAFT",
+     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+     "draftVersion": 5
+    },
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+     "field": "tradeLevelMenu.LONG.exitPlans[0]"
+    }
+   }
+  },
+  "B1.min_alone_without_menu": {
+   "items": [
+    2
+   ],
+   "what": "UPDATE staging TRADE_LEVEL_POLICY with its four dials only (minRiskRewardRatio raised 1.5 -> 2.5) and no tradeLevelMenu: the dial alone",
+   "kind": "UPDATE",
+   "draft": "D2",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:50:41Z",
+   "callLine": 28,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 0,
+    "axes": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 1,
+      "maxStopLossAtrMultiple": 2,
+      "minRiskRewardRatio": 2.5
+     }
+    }
+   },
+   "answer": {
+    "staged": false,
+    "refusal": {
+     "code": "VALIDATION_ERROR",
+     "message": "Invalid input: expected object, received undefined",
+     "issues": [
+      {
+       "path": [
+        "axes",
+        "TRADE_LEVEL_POLICY",
+        "tradeLevelMenu"
+       ],
+       "message": "Invalid input: expected object, received undefined"
+      }
+     ]
+    }
+   }
+  },
+  "B2.min_raised_live_menu_carried": {
+   "items": [
+    2
+   ],
+   "what": "UPDATE staging TRADE_LEVEL_POLICY whole: the committed menu carried verbatim (one-leg plans 1.5R, 2R, 3R and two band levels, each closing 100%) and minRiskRewardRatio raised 1.5 -> 2.5, above the 1.5R and 2R plans' pay - what omega's axes_update stages for an update naming only the dial",
+   "kind": "UPDATE",
+   "draft": "D2",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:50:44Z",
+   "callLine": 29,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 0,
+    "axes": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 1,
+      "maxStopLossAtrMultiple": 2,
+      "minRiskRewardRatio": 2.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "DONCHIAN_LOWER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "BB_LOWER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "BB_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "DONCHIAN_UPPER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "BB_UPPER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_LOWER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "BB_LOWER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "version": 7,
+    "stagedAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.exitPlans[0]",
+      "message": "The LONG exit plan pays 1.5R, below this strategy's minimum risk-reward of 2.5: every pair it makes would be refused. Change the plan or lower the minimum.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T21:50:51Z",
+    "draftVersion": 7,
+    "committedRevision": 2,
+    "draftAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "keptAsSent": true,
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "tradeLevelMenu.LONG.exitPlans[0]",
+       "message": "The LONG exit plan pays 1.5R, below this strategy's minimum risk-reward of 2.5: every pair it makes would be refused. Change the plan or lower the minimum.",
+       "details": null
+      }
+     ],
+     "warnings": []
+    },
+    "diffAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "diffChanges": {
+     "TRADE_LEVEL_POLICY": [
+      {
+       "field": "minRiskRewardRatio",
+       "fieldKey": "minRiskRewardRatio",
+       "itemName": null,
+       "live": 1.5,
+       "draft": 2.5
+      }
+     ]
+    },
+    "impact": null
+   },
+   "preview": {
+    "at": "2026-11-12T21:51:03Z",
+    "source": {
+     "kind": "DRAFT",
+     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+     "draftVersion": 7
+    },
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "The LONG exit plan pays 1.5R, below this strategy's minimum risk-reward of 2.5: every pair it makes would be refused. Change the plan or lower the minimum.",
+     "field": "tradeLevelMenu.LONG.exitPlans[0]"
+    }
+   }
+  },
+  "C1.off_step_min_named": {
+   "items": [
+    3
+   ],
+   "what": "UPDATE staging TRADE_LEVEL_POLICY whole with the committed menu and minRiskRewardRatio 1.4 (off the 0.25 step, below no plan's pay)",
+   "kind": "UPDATE",
+   "draft": "D2",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:51:05Z",
+   "callLine": 32,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 7,
+    "axes": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 1,
+      "maxStopLossAtrMultiple": 2,
+      "minRiskRewardRatio": 1.4,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "DONCHIAN_LOWER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "BB_LOWER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "BB_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "DONCHIAN_UPPER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "metric": "BB_UPPER",
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "bars": null,
+           "offset": 0,
+           "knobs": {},
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_LOWER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "BB_LOWER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "version": 8,
+    "stagedAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "minRiskRewardRatio",
+      "message": "minRiskRewardRatio must be a multiple of 0.25",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T21:51:18Z",
+    "draftVersion": 8,
+    "committedRevision": 2,
+    "draftAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "keptAsSent": true,
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "minRiskRewardRatio",
+       "message": "minRiskRewardRatio must be a multiple of 0.25",
+       "details": null
+      }
+     ],
+     "warnings": []
+    },
+    "diffAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "diffChanges": {
+     "TRADE_LEVEL_POLICY": [
+      {
+       "field": "minRiskRewardRatio",
+       "fieldKey": "minRiskRewardRatio",
+       "itemName": null,
+       "live": 1.5,
+       "draft": 1.4
+      }
+     ]
+    },
+    "impact": null
+   }
+  },
+  "C2.off_step_min_carried": {
+   "items": [
+    3
+   ],
+   "what": "UPDATE restaging TRADE_LEVEL_POLICY carrying the minRiskRewardRatio 1.4 the draft holds (the four dials and the menu as get_strategy_draft read them after C1, as omega's axes_update carries `current`), with minAtrPct changed 0.5 -> 0.4",
+   "kind": "UPDATE",
+   "draft": "D2",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:51:20Z",
+   "callLine": 34,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 8,
+    "axes": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.4,
+      "minStopLossAtrMultiple": 1,
+      "maxStopLossAtrMultiple": 2,
+      "minRiskRewardRatio": 1.4,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "bars": null,
+           "knobs": {},
+           "metric": "DONCHIAN_LOWER",
+           "offset": 0,
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "bars": null,
+           "knobs": {},
+           "metric": "BB_LOWER",
+           "offset": 0,
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "bars": null,
+              "knobs": {},
+              "metric": "DONCHIAN_UPPER",
+              "offset": 0,
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "bars": null,
+              "knobs": {},
+              "metric": "BB_UPPER",
+              "offset": 0,
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "bars": null,
+           "knobs": {},
+           "metric": "DONCHIAN_UPPER",
+           "offset": 0,
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         },
+         {
+          "kind": "LEVEL",
+          "level": {
+           "bars": null,
+           "knobs": {},
+           "metric": "BB_UPPER",
+           "offset": 0,
+           "timeframe": {
+            "rel": "anchor"
+           },
+           "windowExtreme": null
+          },
+          "bufferAtrMultiple": 0
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "bars": null,
+              "knobs": {},
+              "metric": "DONCHIAN_LOWER",
+              "offset": 0,
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "bars": null,
+              "knobs": {},
+              "metric": "BB_LOWER",
+              "offset": 0,
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "windowExtreme": null
+             }
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "version": 9,
+    "stagedAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "minRiskRewardRatio",
+      "message": "minRiskRewardRatio must be a multiple of 0.25",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T21:51:30Z",
+    "draftVersion": 9,
+    "committedRevision": 2,
+    "draftAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "keptAsSent": true,
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "minRiskRewardRatio",
+       "message": "minRiskRewardRatio must be a multiple of 0.25",
+       "details": null
+      }
+     ],
+     "warnings": []
+    },
+    "diffAxes": [
+     "TRADE_LEVEL_POLICY"
+    ],
+    "diffChanges": {
+     "TRADE_LEVEL_POLICY": [
+      {
+       "field": "minAtrPct",
+       "fieldKey": "minAtrPct",
+       "itemName": null,
+       "live": 0.5,
+       "draft": 0.4
+      },
+      {
+       "field": "minRiskRewardRatio",
+       "fieldKey": "minRiskRewardRatio",
+       "itemName": null,
+       "live": 1.5,
+       "draft": 1.4
+      }
+     ]
+    },
+    "impact": null
+   },
+   "carriedFrom": {
+    "draftVersion": 8,
+    "TRADE_LEVEL_POLICY": {
+     "minAtrPct": 0.5,
+     "tradeLevelMenu": {
+      "LONG": {
+       "stops": [
+        {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        {
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "DONCHIAN_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        {
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "BB_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        }
+       ],
+       "exitPlans": [
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 1.5
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 2
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 3
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "bars": null,
+             "knobs": {},
+             "metric": "DONCHIAN_UPPER",
+             "offset": 0,
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "windowExtreme": null
+            }
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "bars": null,
+             "knobs": {},
+             "metric": "BB_UPPER",
+             "offset": 0,
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "windowExtreme": null
+            }
+           },
+           "closePct": 100
+          }
+         ]
+        }
+       ]
+      },
+      "SHORT": {
+       "stops": [
+        {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        {
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "DONCHIAN_UPPER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        {
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "BB_UPPER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        }
+       ],
+       "exitPlans": [
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 1.5
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 2
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "R_MULTIPLE",
+            "multiple": 3
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "bars": null,
+             "knobs": {},
+             "metric": "DONCHIAN_LOWER",
+             "offset": 0,
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "windowExtreme": null
+            }
+           },
+           "closePct": 100
+          }
+         ]
+        },
+        {
+         "targets": [
+          {
+           "method": {
+            "kind": "LEVEL",
+            "level": {
+             "bars": null,
+             "knobs": {},
+             "metric": "BB_LOWER",
+             "offset": 0,
+             "timeframe": {
+              "rel": "anchor"
+             },
+             "windowExtreme": null
+            }
+           },
+           "closePct": 100
+          }
+         ]
+        }
+       ]
+      }
+     },
+     "minRiskRewardRatio": 1.4,
+     "maxStopLossAtrMultiple": 2,
+     "minStopLossAtrMultiple": 1
+    }
+   }
+  },
+  "A3.report_alone_rejudges_committed_menu": {
+   "items": [
+    1
+   ],
+   "what": "UPDATE staging REPORT alone: the committed sections verbatim but the 'Trade levels' section without its BB_UPPER and BB_LOWER columns, which the COMMITTED menu's Bollinger stops and plans read. The stage does not send the menu and no draft holds one",
+   "kind": "UPDATE",
+   "draft": "D3",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:52:19Z",
+   "callLine": 41,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 0,
+    "axes": {
+     "REPORT": {
+      "sections": [
+       {
+        "kind": "custom",
+        "sectionKey": "custom:c5d8bc8a-5f33-8aa8-8c2c-c96b83065515",
+        "title": "OMEGA-TEST: 110.8 stage probe Signals",
+        "benchmarkTicker": null,
+        "marketScope": null,
+        "notes": "Generated by omega.generate from the 'OMEGA-TEST: 110.8 stage probe' thesis (stance ALIGN, anchor 1h).",
+        "columns": [
+         {
+          "metric": "MA_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         },
+         {
+          "metric": "EMA5",
+          "transformId": "spread",
+          "chainedTransformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "inputs": [
+           {
+            "metric": "EMA13"
+           }
+          ]
+         },
+         {
+          "metric": "SMA200",
+          "transformId": "distance",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         },
+         {
+          "metric": "ADX",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         },
+         {
+          "metric": "MACD_HIST",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         },
+         {
+          "metric": "MACD_HIST",
+          "transformId": "crossDetect",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         },
+         {
+          "metric": "RVOL",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         },
+         {
+          "metric": "OBV",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         }
+        ]
+       },
+       {
+        "kind": "custom",
+        "sectionKey": "custom:ec6e80f9-20aa-5f75-d97e-a84d952ea71b",
+        "title": "Market breadth · Whole market",
+        "benchmarkTicker": null,
+        "marketScope": "all",
+        "notes": null,
+        "columns": [
+         {
+          "metric": "MKT_NET",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         }
+        ]
+       },
+       {
+        "kind": "custom",
+        "sectionKey": "custom:0b7a66b7-c0ac-91e8-ff04-aadb6280a110",
+        "title": "USDT/USD peg",
+        "benchmarkTicker": "USDT_USD",
+        "marketScope": null,
+        "notes": null,
+        "columns": [
+         {
+          "metric": "PAR_DEV",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         }
+        ]
+       },
+       {
+        "kind": "custom",
+        "sectionKey": "custom:763b5d7e-f8fb-c9da-bbb8-3f0aa244cee6",
+        "title": "USDC/USDT peg",
+        "benchmarkTicker": "USDC_USDT",
+        "marketScope": null,
+        "notes": null,
+        "columns": [
+         {
+          "metric": "PAR_DEV",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         }
+        ]
+       },
+       {
+        "kind": "custom",
+        "sectionKey": "custom:b3c45960-c1e2-9caf-6ce8-b1add14c728a",
+        "title": "Trade levels",
+        "benchmarkTicker": null,
+        "marketScope": null,
+        "notes": null,
+        "columns": [
+         {
+          "metric": "DONCHIAN_UPPER",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         },
+         {
+          "metric": "DONCHIAN_LOWER",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "version": 11,
+    "stagedAxes": [
+     "REPORT"
+    ],
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.stops[4].level",
+      "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T21:52:29Z",
+    "draftVersion": 11,
+    "committedRevision": 2,
+    "draftAxes": [
+     "REPORT"
+    ],
+    "keptAsSent": true,
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "tradeLevelMenu.LONG.stops[4].level",
+       "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+       "details": null
+      }
+     ],
+     "warnings": []
+    },
+    "diffAxes": [
+     "REPORT"
+    ],
+    "diffChanges": {
+     "REPORT": [
+      {
+       "field": "sections[4].columns[2].metric",
+       "fieldKey": "sections[].columns[].metric",
+       "itemName": null,
+       "live": "BB_UPPER",
+       "draft": null
+      },
+      {
+       "field": "sections[4].columns[2].transformId",
+       "fieldKey": "sections[].columns[].transformId",
+       "itemName": null,
+       "live": "value",
+       "draft": null
+      },
+      {
+       "field": "sections[4].columns[2].timeframe.rel",
+       "fieldKey": "sections[].columns[].timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "sections[4].columns[3].metric",
+       "fieldKey": "sections[].columns[].metric",
+       "itemName": null,
+       "live": "BB_LOWER",
+       "draft": null
+      },
+      {
+       "field": "sections[4].columns[3].transformId",
+       "fieldKey": "sections[].columns[].transformId",
+       "itemName": null,
+       "live": "value",
+       "draft": null
+      },
+      {
+       "field": "sections[4].columns[3].timeframe.rel",
+       "fieldKey": "sections[].columns[].timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      }
+     ]
+    },
+    "impact": null
+   },
+   "preview": {
+    "at": "2026-11-12T21:52:36Z",
+    "source": {
+     "kind": "DRAFT",
+     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+     "draftVersion": 11
+    },
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+     "field": "tradeLevelMenu.LONG.stops[4].level"
+    }
+   }
+  },
+  "L1.level_runner_trailing_off": {
+   "items": [
+    6
+   ],
+   "what": "UPDATE staging TRADE_LEVEL_POLICY (one plan per side: the Donchian band level closing 50%, a runner after a level leg as the first and only plan) and POSITION_MANAGEMENT (trailingEnabled false) together",
+   "kind": "UPDATE",
+   "draft": "D4",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T21:53:25Z",
+   "callLine": 49,
+   "sent": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "draftVersion": 0,
+    "axes": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 1,
+      "maxStopLossAtrMultiple": 2,
+      "minRiskRewardRatio": 1.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_UPPER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "LEVEL",
+             "level": {
+              "metric": "DONCHIAN_LOWER",
+              "timeframe": {
+               "rel": "anchor"
+              },
+              "bars": null,
+              "offset": 0,
+              "knobs": {},
+              "windowExtreme": null
+             }
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       }
+      }
+     },
+     "POSITION_MANAGEMENT": {
+      "breakEvenEnabled": true,
+      "breakEvenTriggerR": 1.08,
+      "trailingEnabled": false,
+      "trailingTriggerR": 1,
+      "trailingGivebackPct": 45,
+      "trailingBufferPct": 0.25,
+      "timeDecayEnabled": true,
+      "timeDecayGracePeriodMinutes": 60,
+      "timeDecayIntervalMinutes": 15,
+      "timeDecayTightenPct": 5,
+      "timeDecayMaxTightenPct": 50,
+      "timeDecayStaleThresholdTpProgressPct": 25,
+      "decisionInvalidationExitEnabled": true
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "version": 13,
+    "stagedAxes": [
+     "TRADE_LEVEL_POLICY",
+     "POSITION_MANAGEMENT"
+    ],
+    "errors": [
+     {
+      "code": "VALIDATION_ERROR",
+      "field": "tradeLevelMenu.LONG.exitPlans[0]",
+      "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+      "details": null
+     }
+    ],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T21:53:32Z",
+    "draftVersion": 13,
+    "committedRevision": 2,
+    "draftAxes": [
+     "POSITION_MANAGEMENT",
+     "TRADE_LEVEL_POLICY"
+    ],
+    "keptAsSent": true,
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "tradeLevelMenu.LONG.exitPlans[0]",
+       "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+       "details": null
+      }
+     ],
+     "warnings": []
+    },
+    "diffAxes": [
+     "TRADE_LEVEL_POLICY",
+     "POSITION_MANAGEMENT"
+    ],
+    "diffChanges": {
+     "TRADE_LEVEL_POLICY": [
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_UPPER"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": "LEVEL"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": null,
+       "draft": "DONCHIAN_LOWER"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": null,
+       "draft": 0
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": null,
+       "draft": "anchor"
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": 50
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].kind",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[3].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].kind",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.metric",
+       "itemName": null,
+       "live": "BB_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.stops[4].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.LONG.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[0].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 1.5,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 2,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 3,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[2].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[3].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "BB_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[4].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.LONG.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].kind",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[3].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].kind",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.metric",
+       "itemName": null,
+       "live": "BB_UPPER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.stops[4].bufferAtrMultiple",
+       "fieldKey": "tradeLevelMenu.SHORT.stops[].bufferAtrMultiple",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[0].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 1.5,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 2,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[1].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "R_MULTIPLE",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[0].method.multiple",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.multiple",
+       "itemName": null,
+       "live": 3,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[2].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "DONCHIAN_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[3].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.kind",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.kind",
+       "itemName": null,
+       "live": "LEVEL",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.metric",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.metric",
+       "itemName": null,
+       "live": "BB_LOWER",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.timeframe.rel",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.timeframe.rel",
+       "itemName": null,
+       "live": "anchor",
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].method.level.offset",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].method.level.offset",
+       "itemName": null,
+       "live": 0,
+       "draft": null
+      },
+      {
+       "field": "tradeLevelMenu.SHORT.exitPlans[4].targets[0].closePct",
+       "fieldKey": "tradeLevelMenu.SHORT.exitPlans[].targets[].closePct",
+       "itemName": null,
+       "live": 100,
+       "draft": null
+      }
+     ],
+     "POSITION_MANAGEMENT": [
+      {
+       "field": "trailingEnabled",
+       "fieldKey": "trailingEnabled",
+       "itemName": null,
+       "live": true,
+       "draft": false
+      }
+     ]
+    },
+    "impact": null
+   },
+   "preview": {
+    "at": "2026-11-12T21:53:36Z",
+    "source": {
+     "kind": "DRAFT",
+     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+     "draftVersion": 13
+    },
+    "refused": {
+     "code": "VALIDATION_ERROR",
+     "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+     "field": "tradeLevelMenu.LONG.exitPlans[0]"
+    }
+   }
+  }
+ },
+ "drafts": [
+  {
+   "draft": "D1",
+   "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+   "probes": [
+    "A1.runner_menu_staged",
+    "A2.trailing_off_alone"
+   ],
+   "sandboxReadBefore": {
+    "at": "2026-11-12T21:48:28Z",
+    "revision": 2,
+    "isActive": false,
+    "boundAgentCount": 0,
+    "openPositionCount": 0,
+    "heldDraft": null,
+    "draftVersion": 0,
+    "committedRevision": 2
+   },
+   "discardedAt": "2026-11-12T21:49:13Z",
+   "discardCallLine": 24,
+   "discardedAtVersion": 5,
+   "discardAnswer": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "discarded": true
+   },
+   "readAfterDiscardAt": "2026-11-12T21:49:24Z",
+   "draftAfterDiscard": null,
+   "draftVersionAfterDiscard": 0
+  },
+  {
+   "draft": "D2",
+   "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+   "probes": [
+    "B1.min_alone_without_menu",
+    "B2.min_raised_live_menu_carried",
+    "C1.off_step_min_named",
+    "C2.off_step_min_carried"
+   ],
+   "sandboxReadBefore": {
+    "at": "2026-11-12T21:50:39Z",
+    "revision": 2,
+    "isActive": false,
+    "boundAgentCount": 0,
+    "openPositionCount": 0,
+    "heldDraft": null,
+    "draftVersion": 0,
+    "committedRevision": 2
+   },
+   "discardedAt": "2026-11-12T21:51:38Z",
+   "discardCallLine": 37,
+   "discardedAtVersion": 9,
+   "discardAnswer": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "discarded": true
+   },
+   "readAfterDiscardAt": "2026-11-12T21:51:48Z",
+   "draftAfterDiscard": null,
+   "draftVersionAfterDiscard": 0
+  },
+  {
+   "draft": "D3",
+   "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+   "probes": [
+    "A3.report_alone_rejudges_committed_menu"
+   ],
+   "sandboxReadBefore": {
+    "at": "2026-11-12T21:52:17Z",
+    "revision": 2,
+    "isActive": false,
+    "boundAgentCount": 0,
+    "openPositionCount": 0,
+    "heldDraft": null,
+    "draftVersion": 0,
+    "committedRevision": 2
+   },
+   "discardedAt": "2026-11-12T21:52:42Z",
+   "discardCallLine": 45,
+   "discardedAtVersion": 11,
+   "discardAnswer": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "discarded": true
+   },
+   "readAfterDiscardAt": "2026-11-12T21:52:51Z",
+   "draftAfterDiscard": null,
+   "draftVersionAfterDiscard": 0
+  },
+  {
+   "draft": "D4",
+   "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+   "probes": [
+    "L1.level_runner_trailing_off"
+   ],
+   "sandboxReadBefore": {
+    "at": "2026-11-12T21:53:22Z",
+    "revision": 2,
+    "isActive": false,
+    "boundAgentCount": 0,
+    "openPositionCount": 0,
+    "heldDraft": null,
+    "draftVersion": 0,
+    "committedRevision": 2
+   },
+   "discardedAt": "2026-11-12T21:53:42Z",
+   "discardCallLine": 53,
+   "discardedAtVersion": 13,
+   "discardAnswer": {
+    "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
+    "discarded": true
+   },
+   "readAfterDiscardAt": "2026-11-12T21:53:49Z",
+   "draftAfterDiscard": null,
+   "draftVersionAfterDiscard": 0
+  }
+ ],
+ "listStrategyDraftsAtEnd": {
+  "at": "2026-11-12T21:53:58Z",
+  "callLine": 55,
+  "answer": {
+   "drafts": [
+    {
+     "strategyId": "c1fd5d4c-0a86-4b3f-9ab4-16ad57c46898",
+     "strategyExists": true,
+     "strategyName": "VWAP Reject 15m",
+     "baseRevision": 2,
+     "updatedAt": "2026-10-23T07:58:21.142Z",
+     "version": 9,
+     "lastSource": "commander",
+     "baseMoved": false,
+     "axes": [
+      "TRADE_LEVEL_POLICY"
+     ]
+    }
+   ],
+   "nextCursor": null
+  }
+ }
+}

@@ -1,6 +1,6 @@
 [project]
 name = "omega"
-version = "0.14.1"
+version = "0.14.2"
 description = "BattleGrid Strategy Builder: contract corpus, classification, and local column-authoring toolkit"
 requires-python = ">=3.10"
 dependencies = [
