@@ -62,16 +62,14 @@ def test_every_probe_ran_at_169_4_0_and_the_contract_did_not_move():
 
 
 def test_the_manifest_is_the_169_re_read_and_its_counts_are_the_corpus():
-    assert (MANIFEST["servedContractVersion"], MANIFEST["extractedOn"]) == ("169.4.0", "2026-11-12")
-    assert BUILD in MANIFEST["contractVersionSource"]
-    assert MANIFEST["supersedes"]["servedContractVersion"] == "168.3.0"
-    surface = MANIFEST["writeSurface"]
-    assert (surface["servedContractVersion"], surface["buildSha"]) == ("169.4.0", BUILD)
-    assert stage_schema()["contractVersion"] == "169.4.0"
-    index = _j(ROOT / "data/contract/metrics/_index.json")
-    assert (index["contractVersion"], index["buildSha"]) == ("169.4.0", BUILD)
+    # the 169.4.0 blocks, by version (tests/manifest_chain.py): 171.0.0 sits on top since later that morning
+    from tests.manifest_chain import extraction, surface
+    block = extraction("169.4.0", MANIFEST)
+    assert block["extractedOn"] == "2026-11-12" and BUILD in block["contractVersionSource"]
+    assert block["supersedes"]["servedContractVersion"] == "168.3.0"
+    assert surface("169.4.0", MANIFEST)["buildSha"] == BUILD
     c = load()
-    counts = MANIFEST["counts"]
+    counts = block["counts"]
     assert counts["metrics"] == len(c.metrics) == 581
     assert counts["structuralShapes"] == len(enumerate_shapes(contract=c)) == 27244
     assert counts["operandExpandedShapes"] == len(enumerate_shapes(expand_operands=True, contract=c)) == 508207

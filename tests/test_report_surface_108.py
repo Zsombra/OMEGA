@@ -16,7 +16,7 @@ import pydantic
 import pytest
 
 from omega import condition_vocabulary as CV
-from omega.contract import load
+from omega.contract import load, stage_schema
 from omega.probe import contract_request
 from omega.space import ColumnShape, enumerate_shapes
 from omega.types import Column, CustomSection, PlatformSection, RelTimeframe, Report
@@ -98,7 +98,7 @@ def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30, the 146.0.0 one since 2026-11-01, the
     # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07, the 161.0.0 one since 2026-11-09, the 168.3.0 one
     # since 2026-11-11: data/derived/condition_vocabulary_108.json source.contractVersion, the schema the enum is read from)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == "169.4.0"   # 2026-11-12: was 168.3.0 (2026-11-11), 161.0.0 (2026-11-09), 149.1.0 before
+    assert C.retired_transforms["bandTouch"]["servedAt"] == stage_schema()["contractVersion"] == "171.0.0"   # 2026-11-12: was 169.4.0 that morning, 168.3.0 (2026-11-11), 161.0.0 (2026-11-09), 149.1.0 before
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -135,8 +135,8 @@ def test_a_retired_transform_is_refused_naming_its_replacement():
     # 2026-11-11, contract 168.3.0: the schema judged against is the 168.3.0 capture. "161.0.0" above still holds, but
     # only through the replacement text ("BB_TOUCH itself was removed at contract 161.0.0"), so the served version is
     # pinned on its own here - without this line the assertion above no longer tracks the schema the message names.
-    # 2026-11-12: the 169.4.0 capture (its six draft tools byte-identical to 168.3.0's)
-    assert "the contract 169.4.0 write schema" in msg
+    # 2026-11-12: the pinned capture (171.0.0 since that morning's second re-pin)
+    assert f"the contract {stage_schema()['contractVersion']} write schema" in msg
 
 
 def test_level_interaction_validates_on_a_level_and_is_refused_on_a_price_fact():

@@ -1,7 +1,4 @@
 {
-  "contractVersion": "169.4.0",
-  "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
-  "contractKnownBy": "read: GET /mcp/version at 2026-11-12T07:06:41Z before the first fetch of extraction 20261112 (hints_20261112/_version.json)",
   "metricCount": 581,
   "byFamily": {
     "channels": [
@@ -613,5 +610,8 @@
       "WEEK_TPO_VAH",
       "WEEK_TPO_VAL"
     ]
-  }
+  },
+  "contractVersion": "171.0.0",
+  "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+  "contractKnownBy": "read: GET /mcp/version at 2026-11-12T09:18:24Z before the first fetch of extraction 20261112c (hints_20261112c/_version.json)"
 }

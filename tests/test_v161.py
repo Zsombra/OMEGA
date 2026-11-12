@@ -191,9 +191,11 @@ def test_the_manifest_records_the_161_extraction():
     # archive. The measured-on-the-live-corpus check moves to the 168.3.0 block, below.
     # 2026-11-12, contract 169.4.0 (extraction 20261112): one level deeper again - the 169.4.0 re-read on top (the corpus
     # did not move), 168.3.0 its `supersedes`, the 161.0.0 block below that; tests/test_v169.py pins the top block
-    assert (current["servedContractVersion"], current["extractedOn"]) == ("169.4.0", "2026-11-12")
-    current = current["supersedes"]
-    assert (current["servedContractVersion"], current["extractedOn"]) == ("168.3.0", "2026-11-11")
+    # (171.0.0 on top later that morning: by version from here on, tests/manifest_chain.py)
+    from tests.manifest_chain import extraction
+    assert current["servedContractVersion"] == "171.0.0"
+    current = extraction("168.3.0", current)
+    assert current["extractedOn"] == "2026-11-11"
     m = current["supersedes"]
     assert (m["servedContractVersion"], m["extractedOn"]) == ("161.0.0", "2026-11-09")
     assert "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7" in m["contractVersionSource"]

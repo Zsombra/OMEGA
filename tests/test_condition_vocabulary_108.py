@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # 108.0.0 one are kept below as history).
 # 161.0.0 (2026-11-09): the manifest names the 161.0.0 capture (build ab5b6252); the 149.1.0 one it supersedes stays below.
 # 2026-11-11: the pinned capture is 168.3.0 (schema_20261111T213257Z.json); 161.0.0 was schema_20261109T162100Z.json
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261112T070510Z.json"   # 169.4.0 since 2026-11-12
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261112T093211Z.json"   # 171.0.0 since 2026-11-12 (169.4.0 that morning)
 SCHEMA_161 = ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"
 SCHEMA_149 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
 SCHEMA_148 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
@@ -79,13 +79,15 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261112T070510Z.json",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261112T093211Z.json",
                            # 161.0.0 (2026-11-09): was 149.1.0 / build aa4ab640 (schema_20261105T181932Z.json)
                            # 168.3.0 (2026-11-11): was 161.0.0 / build ab5b6252 (schema_20261109T162100Z.json)
                            # 169.4.0 (2026-11-12): was 168.3.0 / build af8b2c96 (schema_20261111T213257Z.json); the
                            # derived grammar is unchanged - the six draft tools are byte-identical
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "169.4.0",
-                           "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+                           # 171.0.0 (2026-11-12): was 169.4.0 / build c9703bf9 (schema_20261112T070510Z.json); 170 moved
+                           # the trade level menu, not the condition grammar
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "171.0.0",
+                           "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
                            "observedAt": DOC["observedAt"]}
 
 
