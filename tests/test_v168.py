@@ -6,8 +6,9 @@ What 168 moved, and where each piece is pinned:
   the trade level menu (TRADE_LEVEL_POLICY.tradeLevelMenu, required)      tests/test_trade_level_menu_168.py
   the hints read over one mcporter runtime; operand sets resolved          tests/test_refresh_metric_contracts.py,
                                                                             tests/test_mcporter_transport.py
-  here: the manifest and the moves record, the roster read from the read schema, the three knobs, and what is served
-  and deliberately NOT modelled yet - the chained spread, a spread operand under an average, the SEQUENCE group.
+  here: the moves record, the roster read from the read schema, the three knobs, and what 168 served and v0.13.0 left
+  unmeasured - the chained spread, a spread operand under an average, the SEQUENCE group - each measured at 169.4.0
+  and modelled by v0.13.1 (tests/test_v169.py). The manifest moved to the 169.4.0 re-read (tests/test_v169.py).
 """
 from __future__ import annotations
 
@@ -40,34 +41,40 @@ def _codes(column: Column) -> list[tuple[str, str]]:
 # --- the manifest ------------------------------------------------------------------------------------------------
 
 def test_the_manifest_records_the_168_extraction_and_keeps_161_as_history():
-    assert (MANIFEST["servedContractVersion"], MANIFEST["extractedOn"]) == ("168.3.0", "2026-11-11")
-    assert BUILD in MANIFEST["contractVersionSource"]
-    previous = MANIFEST["supersedes"]
+    # since 2026-11-12 the 168.3.0 block is the `supersedes` of the 169.4.0 re-read (tests/test_v169.py), as are both
+    # write surfaces
+    extraction = MANIFEST["supersedes"]
+    assert (extraction["servedContractVersion"], extraction["extractedOn"]) == ("168.3.0", "2026-11-11")
+    assert BUILD in extraction["contractVersionSource"]
+    previous = extraction["supersedes"]
     assert (previous["servedContractVersion"], previous["extractedOn"], previous["counts"]["metrics"]) == (
         "161.0.0", "2026-11-09", 534)
     assert previous["supersedes"]["servedContractVersion"] == "146.0.1"
-    surface = MANIFEST["writeSurface"]
+    surface = MANIFEST["writeSurface"]["supersedes"]
     assert (surface["servedContractVersion"], surface["buildSha"]) == ("168.3.0", BUILD)
     assert surface["schema"] == "data/contract/stage_strategy_draft/schema_20261111T213257Z.json"
     assert surface["supersedes"]["servedContractVersion"] == "161.0.0"
 
 
 def test_the_manifest_counts_are_the_corpus():
+    # the 168.3.0 block's counts, on a corpus that did not move to 169.4.0; only the space grew since (the chained
+    # spread's 660 shapes, modelled 2026-11-12) - the top block's counts are pinned in tests/test_v169.py
     c = load()
     legal = sum(len(m.transforms) for m in c.metrics.values())
-    counts = MANIFEST["counts"]
+    counts = MANIFEST["supersedes"]["counts"]
     assert (counts["metrics"], counts["families"], counts["authorableTransforms"]) == (
         len(c.metrics), len({m.family for m in c.metrics.values()}), len(c.transforms)) == (581, 14, 30)
     assert (counts["composabilityCells"], counts["composabilityLegal"]) == (581 * 30, legal) == (17430, 4735)
-    assert counts["structuralShapes"] == len(enumerate_shapes()) == 26584
+    assert counts["structuralShapes"] == len(enumerate_shapes()) - 660 == 26584
     assert counts["platformSectionTemplates"] == len(c.platform_templates) == 22
 
 
 def test_the_two_captures_of_the_day_hold_the_same_six_tools():
     # the menu was measured at 168.2.0 (fifteen drafts) and at 168.3.0 (fifteen): one write surface
     first = json.loads((ROOT / "data/contract/stage_strategy_draft/schema_20261111T183243Z.json").read_text(encoding="utf-8"))
-    pinned = stage_schema()
+    pinned = json.loads((ROOT / MANIFEST["writeSurface"]["supersedes"]["schema"]).read_text(encoding="utf-8"))
     assert (first["contractVersion"], pinned["contractVersion"], pinned["buildSha"]) == ("168.2.0", "168.3.0", BUILD)
+    assert all(stage_schema()[tool] == pinned[tool] for tool in MANIFEST["writeSurface"]["tools"])   # the 169.4.0 one
     for tool in MANIFEST["writeSurface"]["tools"]:
         assert first[tool] == pinned[tool], tool
     assert all(all(parts.values()) for parts in pinned["managerRowAgrees"].values())
@@ -84,7 +91,7 @@ def test_the_write_schema_names_a_metric_by_pattern_and_the_roster_is_the_read_s
     assert served["enum"] == doc["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"]
     assert served["count"] == 581 and set(served["enum"]) == set(load().metrics)
     assert all(__import__("re").fullmatch(key["pattern"], name) for name in served["enum"])
-    assert UNMEASURED["metrics"] == {} and UNMEASURED["servedAt"] == "168.3.0"
+    assert UNMEASURED["metrics"] == {} and UNMEASURED["servedAt"] == "169.4.0"      # 168.3.0 until 2026-11-12
 
 
 def test_the_moves_record_is_the_corpus_against_161():
@@ -183,36 +190,45 @@ def test_the_structure_zone_flag_spells_close_and_every_168_knob_cell_is_rendere
 
 # --- served and not modelled yet ---------------------------------------------------------------------------------------
 
-def test_the_chained_spread_is_recorded_unmeasured_refused_and_in_no_shape():
+def test_the_chained_spread_was_unmeasured_at_168_and_is_modelled_since_169():
+    # v0.13.0 recorded `spread` as a chain outer unmeasured and refused it (TRANSFORM_UNMEASURED); v0.13.1 rendered it
+    # at 169.4.0 on 2026-11-12 (tests/test_v169.py) and moved the record into history169
     c = load()
-    assert list(UNMEASURED["chainOuters"]) == ["spread"] == list(c.unmeasured_chain_outers)
-    assert UNMEASURED["chainOuters"]["spread"]["servedAt"] == "168.3.0"
+    assert UNMEASURED["chainOuters"] == {} == c.unmeasured_chain_outers
+    was = UNMEASURED["history169"]["formerlyUnmeasured"]["chainOuters"]["spread"]
+    assert (was["servedAt"], UNMEASURED["history169"]["measuredAt"]) == ("168.3.0", "169.4.0")
     assert cv.vocabulary()["reportColumn"]["chainedTransformId"]["count"] == 20
     inners = Counter(t for m in c.metrics.values() for t, flags in m.transforms.items()
                      if "spread" in (flags.get("chainSuccessors") or ()))
     assert inners == Counter({"aggregate": 165, "ema": 165, "rma": 165, "wma": 165})
     assert MOVES["chainOutersGained"]["aggregate->spread"] == 162          # 165 less the three added keys that serve it
+    # ADX x aggregate -> spread is offered, and RSI14 is not one of its served operands (another unit)
     column = Column(metric="ADX", transformId="aggregate", timeframe=ANCHOR, window=20, chainedTransformId="spread",
                     inputs=[{"metric": "RSI14"}])
-    assert _codes(column) == [("TRANSFORM_UNMEASURED", "column.chainedTransformId")]
-    assert not any(shape.chained == "spread" for shape in enumerate_shapes())
+    assert _codes(column) == []                                  # RSI14 is one of its served operands (the 0-100 unit)
+    column = column.model_copy(update={"inputs": [Operand(metric="CLOSE")]})
+    assert _codes(column) == [("REPORT_COLUMN_OPERAND_UNSUPPORTED", "column.inputs[0]")]
+    assert sum(shape.chained == "spread" for shape in enumerate_shapes()) == 660
 
 
-def test_a_spread_operand_under_an_average_cannot_be_built():
-    # 168 serves `inputs[]` {metric, transformId, window}; the corpus records the operand lists (served on 501 metrics)
+def test_a_spread_operand_under_an_average_was_unbuildable_at_168_and_is_modelled_since_169():
+    # 168 serves `inputs[]` {metric, transformId, window}; the corpus records the operand lists (served on 501 metrics).
+    # v0.13.0's Operand admitted `metric` alone; v0.13.1 builds the average and omega.validate judges it
     c = load()
     assert sum(1 for name in c.metrics
                if json.loads((ROOT / f"data/contract/metrics/{name}.json").read_text(encoding="utf-8"))
                .get("spreadAverageOperands")) == 501
+    assert Operand(metric="EMA20", transformId="ema", window=5).averaged
+    assert not Operand(metric="EMA20").averaged
     with pytest.raises(ValidationError):
-        Operand(metric="EMA20", transformId="ema", window=5)
+        Operand(metric="EMA20", transformId="ema", window=5, offset=1)
 
 
-def test_sequence_is_served_and_not_a_group_omega_builds_or_accepts():
+def test_sequence_is_served_and_since_169_a_group_omega_builds_and_judges():
     grammar = cv.vocabulary()
     assert grammar["groupOperators"] == ["ALL", "ANY", "NOT", "N_OF", "SEQUENCE"]
-    assert GROUP_OPS == ("ALL", "ANY", "NOT", "N_OF")
-    assert cv.gaps()["groupOperators"] == {"schemaOnly": ["SEQUENCE"], "omegaOnly": []}
+    assert GROUP_OPS == ("ALL", "ANY", "NOT", "N_OF", "SEQUENCE")
+    assert cv.gaps()["groupOperators"] == {"schemaOnly": [], "omegaOnly": []}
     group = stage_schema()["stage_strategy_draft"]["inputSchema"]["$defs"]["conditionNode"]
     arms = group.get("anyOf") or group.get("oneOf")
     within = [arm["properties"]["within"] for arm in arms if "within" in arm.get("properties", {})]

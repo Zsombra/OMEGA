@@ -416,12 +416,16 @@ def validate_column(
 
     # --- spread operands ----------------------------------------------------
     # requiredness from the transform's authoring catalogue, not the per-metric flag v103 removed
-    if c.requires_operand(tid):
+    if column.chainedTransformId == "spread":
+        out.extend(_chained_spread_operand(column, m, spec, c, path))
+    elif c.requires_operand(tid):
         inputs = column.inputs or []
         if len(inputs) != 1:
             out.append(Finding(
                 "error", "OPERAND_REQUIRED", f"{path}.inputs",
                 f"{m.metric} x {tid} requires exactly one operand metric, got {len(inputs)}"))
+        elif inputs[0].averaged:
+            out.extend(_averaged_operand(inputs[0], m, column, c, f"{path}.inputs[0]"))
         else:
             operand = inputs[0].metric
             if operand == m.metric:
@@ -448,6 +452,13 @@ def validate_column(
             "error", "OPERAND_REFUSED", f"{path}.inputs",
             f"{tid} does not accept `inputs`: it reads {m.metric} against the same metric of the coin named by "
             f"`instrument` ({RELATIVE_DEFAULT_INSTRUMENT} when omitted)"))
+    elif column.inputs and any(o.averaged for o in column.inputs):
+        # 168: an operand under an average was measured on spread only (as a plain spread's or a chained spread's
+        # operand); anywhere else it is unmeasured, so refused rather than sent
+        out.append(Finding(
+            "error", "OPERAND_REFUSED", f"{path}.inputs",
+            f"an averaged operand ({{metric, transformId, window}}) was measured on `spread` only; {m.metric} x {tid} "
+            f"takes no operand"))
     elif column.inputs:
         out.append(Finding(
             "warning", "OPERAND_IGNORED", f"{path}.inputs",
@@ -484,7 +495,15 @@ def validate_column(
     if column.chainedTransformId:
         chained = column.chainedTransformId
         successors = spec.get("chainSuccessors", [])
-        if not successors:
+        if tid == "spread" and any(o.averaged for o in column.inputs or []):
+            # 168, measured 2026-11-12 at 169.4.0 (authoring_probe_169 W.chain.*: trajectory, aggregate and rank alike):
+            # "operand 'close_ema20' is an averaged spread operand: the comparison is read frame by frame, and no rank
+            # or series outer chains over it" - the served chainSuccessors of spread do not say so.
+            out.append(Finding(
+                "error", "REPORT_COLUMN_CHAIN_UNSUPPORTED", f"{path}.chainedTransformId",
+                f"({m.metric} x spread x {chained}) is not a composable chain: an averaged spread operand is read frame "
+                f"by frame, and no rank or series outer chains over it"))
+        elif not successors:
             out.append(Finding(
                 "error", "REPORT_COLUMN_CHAIN_UNSUPPORTED", f"{path}.chainedTransformId",
                 f"{m.metric} x {tid} produces no chainable output"))
@@ -886,6 +905,121 @@ def _knob_findings(column: Column, m: Metric, spec: dict, path: str) -> list[Fin
                 f"read under {under!r}: {_not_accepted_reason(under, m.code)} (metricParametersAccepted false; "
                 f"REPORT_COLUMN_CONSTRUCTION_FAILED)"))
     return out
+
+
+# --- spread operands under an average, and spread as a chain outer (contract 168) -------------------------------------
+# Both served since 168.2.0 and undocumented (the vendor README stops at v156); every rule below was measured on
+# 2026-11-12 at 169.4.0 by preview_strategy_report (data/audit/authoring_probe_169_2026-11-12.json groups V and W,
+# -c group J). The quoted words are the platform's refusals.
+AVERAGE_OPERAND_TRANSFORMS = ("aggregate", "ema", "rma", "wma")
+AVERAGE_OPERAND_MIN_WINDOW = 2
+
+
+def _off_anchor(column: Column) -> bool:
+    return getattr(column.timeframe, "rel", None) != "anchor"
+
+
+def default_window(transform_id: str, c: Contract) -> int | None:
+    """The window the platform fills when a column omits it: the catalogue's default (ema 20, rma 14, wma 20,
+    aggregate 24) - V.no.inner.window rendered `close_ema20_EMA50_spread`."""
+    return _window_parameter(transform_id, c).get("defaultValue")
+
+
+def _averaged_operand(op, m: Metric, column: Column, c: Contract, path: str) -> list[Finding]:
+    """A spread operand under an average, `{metric, transformId, window}`, on a plain spread or a chained one.
+
+    - both or neither: "An averaged operand names both transformId and window, or neither" (W.no.window and its mirror);
+    - transformId aggregate / ema / rma / wma: "expected one of ..." (W.transform.rsi / zscore / trajectory);
+    - window at least 2: "requires a length of at least 2 (got 1) - at 1 an average is its own source";
+    - the bars one operand value reads within the metric's depth: "operand window 705 reads 2439 bars for one value -
+      at most 2436 of the 2500 readable bars ...; the largest operand window that fits is 704" (2436 / 704 / 308 /
+      2436, the same as a standalone column's). The operand's own lookback does not shorten it: SMA200 under
+      aggregate 2436 rendered (J.op.SMA200.agg2436);
+    - the metric one of the served spreadAverageOperands (off the anchor rung spreadAverageOperandsOffAnchor): "'MARK'
+      is not a legal averaged spread operand for base 'CLOSE' - an average folds a per-bar candle value of the base's
+      own unit on the column's bars". The base itself is one (close_close_ema20_spread)."""
+    if op.transformId is None or op.window is None:
+        return [Finding("error", "OPERAND_AVERAGE_INCOMPLETE", path,
+                        f"spread operand {op.metric!r}: an averaged operand names both transformId and window, or "
+                        f"neither (got transformId {op.transformId!r}, window {op.window!r})")]
+    out: list[Finding] = []
+    if op.transformId not in AVERAGE_OPERAND_TRANSFORMS:
+        out.append(Finding("error", "OPERAND_AVERAGE_TRANSFORM", f"{path}.transformId",
+                           f"an averaged spread operand is read under one of {list(AVERAGE_OPERAND_TRANSFORMS)}, not "
+                           f"{op.transformId!r}"))
+    if op.window < AVERAGE_OPERAND_MIN_WINDOW:
+        out.append(Finding("error", "WINDOW_BELOW_MINIMUM", f"{path}.window",
+                           f"spread operand {op.metric!r} under {op.transformId} requires a length of at least "
+                           f"{AVERAGE_OPERAND_MIN_WINDOW} (got {op.window}) - at 1 an average is its own source"))
+    elif op.transformId in AVERAGE_OPERAND_TRANSFORMS:
+        budget = depth_budget(m)
+        need = bars_needed(op.transformId, op.window)
+        if budget is None:
+            out.append(Finding("error", "DEPTH_UNMEASURED", f"{path}.window",
+                               f"{m.metric} serves no depth-bound aggregate maximum, so how many bars the averaged "
+                               f"operand may read is unmeasured offline"))
+        elif need > budget:
+            out.append(Finding("error", "DEPTH_EXCEEDED", f"{path}.window",
+                               f"operand window {op.window} reads {need} bars for one value - at most {budget} of the "
+                               f"readable bars; the largest operand window that fits is "
+                               f"{largest_window(op.transformId, budget)}"))
+    off = _off_anchor(column)
+    allowed = m.spread_average_operands_off_anchor if off else m.spread_average_operands
+    if op.metric not in allowed:
+        out.append(Finding("error", "OPERAND_NOT_ALLOWED", f"{path}.metric",
+                           f"{op.metric!r} is not a legal averaged spread operand for base {m.metric!r}"
+                           f"{' off the anchor rung' if off else ''} - an average folds a per-bar candle value of the "
+                           f"base's own unit on the column's bars (served spreadAverageOperands"
+                           f"{'OffAnchor' if off else ''}: {list(allowed)})"))
+    return out
+
+
+def _chained_spread_operand(column: Column, m: Metric, spec: dict, c: Contract, path: str) -> list[Finding]:
+    """The operand of `spread` as a chain outer after an average (`<metric> x aggregate|ema|rma|wma -> spread`): the
+    averaged series spread against one operand at the column's own timeframe.
+
+    - exactly one operand: "transform 'ema' -> 'spread' requires params.inputs";
+    - a plain operand from the inner's chainedOuters.spread.operands (off the anchor rung operandsOffAnchor) - which
+      leaves the base out: "spread operand 'CLOSE' is not a legal relational operand for base 'CLOSE'"; and a level read
+      per anchor bar only at the anchor ("'PIVOT_WEEK_P' is a level read per anchor bar ... a relation meets it only at
+      the strategy's anchor rung");
+    - an averaged operand on the plain spread's rules (close_ema20_close_mean50_spread), except the chain's own
+      average: "operand 'close_rma308' is the chain's own average - a spread against itself is identically zero".
+    chainedWindow and offset are refused by their own checks (CHAINED_WINDOW_REFUSED, OFFSET_REFUSED); the inner window
+    keeps its standalone maximum (DEPTH_EXCEEDED, 2436 / 704 / 308 = the served innerWindowMaximum)."""
+    inputs = column.inputs or []
+    if len(inputs) != 1:
+        return [Finding("error", "OPERAND_REQUIRED", f"{path}.inputs",
+                        f"transform {column.transformId!r} -> 'spread' requires params.inputs: exactly one operand, got "
+                        f"{len(inputs)}")]
+    op = inputs[0]
+    tid = column.transformId
+    if op.averaged:
+        out = _averaged_operand(op, m, column, c, f"{path}.inputs[0]")
+        window = column.window if column.window is not None else default_window(tid, c)
+        if op.metric == m.metric and op.transformId == tid and op.window == window:
+            out.append(Finding("error", "OPERAND_SELF", f"{path}.inputs[0]",
+                               f"spread operand {op.metric!r} under {tid} {window} is the chain's own average - a "
+                               f"spread against itself is identically zero"))
+        return out
+    outer = (spec.get("chainedOuters") or {}).get("spread") or {}
+    off = _off_anchor(column)
+    served = outer.get("operandsOffAnchor") if off else outer.get("operands")
+    if served is None:
+        return [Finding("error", "TRANSFORM_UNMEASURED", f"{path}.inputs[0]",
+                        f"({m.metric} x {tid} -> spread) serves no operand list "
+                        f"(chainedOuters.spread.{'operandsOffAnchor' if off else 'operands'}): its operands are "
+                        f"unmeasured offline")]
+    if op.metric not in served:
+        on_anchor_only = off and op.metric in (outer.get("operands") or ())
+        return [Finding("error", "REPORT_COLUMN_OPERAND_UNSUPPORTED", f"{path}.inputs[0]",
+                        f"spread operand {op.metric!r} is a level read per anchor bar: a relation meets it only at the "
+                        f"strategy's anchor rung ({{rel: 'anchor'}}) (served chainedOuters.spread.operandsOffAnchor)"
+                        if on_anchor_only else
+                        f"spread operand {op.metric!r} is not a legal relational operand for ({m.metric} x {tid} -> "
+                        f"spread) (served chainedOuters.spread.{'operandsOffAnchor' if off else 'operands'}: "
+                        f"{list(served)})")]
+    return []
 
 
 def _unmeasured_parts(column: Column, tid: str, path: str, c: Contract) -> list[Finding]:

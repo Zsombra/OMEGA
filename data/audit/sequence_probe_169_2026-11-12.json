@@ -1,0 +1,1777 @@
+{
+ "_what": "OMEGA read-only probe of the `SEQUENCE` condition group contract 168 added (2026-11-12).",
+ "startedAt": "2026-11-12T07:23:49Z",
+ "tickers": [
+  "BTC",
+  "ETH",
+  "SOL"
+ ],
+ "timeframe": "1h",
+ "clauses": [
+  {
+   "header": "MAalign",
+   "op": "is"
+  },
+  {
+   "header": "MACDhist_trend",
+   "op": "is"
+  },
+  {
+   "header": "OBV_trend",
+   "op": "is"
+  }
+ ],
+ "probes": [
+  {
+   "probe": "X.control",
+   "condition": null,
+   "accepted": true,
+   "outcomes": [],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq2",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ]
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' is a sequence with no window 'within'",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": null,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.seq2.within2",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 2,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 2,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 2,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq2.within5",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq2.within1",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 1
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' reads its steps within 1 closes — a sequence's window is a whole number of at least 2, because two steps never match the same bar",
+    "authoringCode": "CONDITION_SEQUENCE_WINDOW_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition",
+     "within"
+    ],
+    "receivedValue": 1,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 2,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.seq2.within64",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 64
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 64,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 64,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 64,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq2.within1000",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 1000
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 1000,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 1000,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 1000,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq3.within10",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 10
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 10,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 10,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 10,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq1",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ]
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' is a sequence with no window 'within'",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": null,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.seq2.n1",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "n": 1
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' is a sequence with no window 'within'",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": null,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.all.within5",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "ALL",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' has a ALL group at definition carrying a window — only a sequence (In order) carries 'within'",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": 5,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.nof.within5",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "N_OF",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "n": 1,
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' has a N_OF group at definition carrying a window — only a sequence (In order) carries 'within'",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": 5,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.seq.in.all",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "ALL",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "group",
+       "op": "SEQUENCE",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MAalign"
+         },
+         "op": "is",
+         "label": "bullish",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MACDhist_trend"
+         },
+         "op": "is",
+         "label": "rising",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ],
+       "within": 5
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ]
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' nests a sequence at definition.0 — a sequence is a condition's whole definition: make it its own condition and reference it from this group",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": "SEQUENCE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition.0"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.seq.with.ref",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "conditionRef",
+       "conditionKey": "TC_RISK_ON"
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": "TC_RISK_ON"
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": "TC_RISK_ON"
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": "TC_RISK_ON"
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq.hold2of3",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 2,
+      "of": 3
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' holds its sequence together on at least 2 of 3 closes — a sequence reads its window and holds Once",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": {
+     "atLeast": 2,
+     "of": 3
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.seq.verdict.long",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": "LONG",
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid option: expected one of \"UP\"|\"DOWN\"|\"NEITHER\"",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "allowedDomain": null,
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X.seq.required",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": true,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X.seq.of.groups",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "group",
+       "op": "ALL",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MAalign"
+         },
+         "op": "is",
+         "label": "bullish",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ]
+      },
+      {
+       "kind": "group",
+       "op": "ANY",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MACDhist_trend"
+         },
+         "op": "is",
+         "label": "rising",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "OBV_trend"
+         },
+         "op": "is",
+         "label": "rising",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ]
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  }
+ ],
+ "contractVersion": "169.4.0",
+ "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "versionAtEnd": "169.4.0",
+ "buildShaAtEnd": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "contractMoved": false,
+ "capturedAt": "2026-11-12T07:24:42Z"
+}

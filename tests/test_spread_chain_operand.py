@@ -114,5 +114,7 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     # 171232 unchained spread pairs + 151660 chained + 23799 of other transforms). This rule still drops every timeless
     # operand of a series chain (asserted above), the 30 timeless among the 47 added metrics included; the chained `spread`
     # 168 serves after an average is a different chain (spread as the OUTER), recorded unmeasured and in neither count.
-    assert len(enumerate_shapes(contract=contract)) == 26584   # 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 346691   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0
+    # 27244 / 508207 since 2026-11-12 at 169.4.0 (OMEGA v0.13.1): the chained `spread` (spread as the OUTER, after an
+    # average) measured and modelled - 660 structural and 161516 operand-expanded shapes; this rule is untouched by them
+    assert len(enumerate_shapes(contract=contract)) == 27244   # 26584 at 168.3.0; 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 508207  # 346691 at 168.3.0   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0

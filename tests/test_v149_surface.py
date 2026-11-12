@@ -67,8 +67,11 @@ def test_the_capture_names_its_contract_build_and_source():
     # 161.0.0 (2026-11-09): the manifest's writeSurface names the 161.0.0 capture; the 149.1.0 block is its `supersedes`
     # 2026-11-11, contract 168.3.0: the manifest names the 168.3.0 capture, the 161.0.0 block is its `supersedes` and
     # the 149.1.0 block sits under that - two levels down, it was one
-    assert C.stage_schema()["contractVersion"] == "168.3.0"
+    # 2026-11-12, contract 169.4.0: one level deeper again - the 169.4.0 capture on top, 168.3.0 its `supersedes`
+    assert C.stage_schema()["contractVersion"] == "169.4.0"
     current = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
+    assert current["servedContractVersion"] == "169.4.0"
+    current = current["supersedes"]
     assert current["servedContractVersion"] == "168.3.0"
     assert current["supersedes"]["servedContractVersion"] == "161.0.0"
     ws = current["supersedes"]["supersedes"]
@@ -169,8 +172,8 @@ def test_the_five_smoothers_are_measured_as_transform_and_as_chain_outer():
     # 2026-11-11, contract 168.3.0 (extraction 20261111): no transform is unmeasured, and the five smoothers are
     # measured as chain outers still; the one unmeasured chain outer is `spread`, which 168 added to
     # chainedTransformId (19 -> 20, not in the 149.1.0 enum) and no probe has rendered (_unmeasured_108.json chainOuters)
-    assert contract.unmeasured_transforms == {} and set(contract.unmeasured_chain_outers) == {"spread"}
-    assert contract.unmeasured_chain_outers["spread"]["servedAt"] == "168.3.0"
+    # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): `spread` too is measured and modelled - nothing is unmeasured
+    assert contract.unmeasured_transforms == {} and contract.unmeasured_chain_outers == {}
     assert ({"ema"} | NEW_TRANSFORMS).isdisjoint(contract.unmeasured_chain_outers)
     assert {"ema"} | NEW_TRANSFORMS <= set(contract.transforms)
     history = C._load(CONTRACT_DIR / "metrics" / "_unmeasured_108.json")["history149"]

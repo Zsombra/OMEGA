@@ -353,6 +353,25 @@ def _level(base: str, column: Column) -> str:
     return f"{base}_lvl" + (f"_b{column.buffer}" if column.buffer else "")
 
 
+# Contract 168, measured 2026-11-12 at 169.4.0 (authoring_probe_169 groups V, W, J): an operand under an average spells
+# `<operand code>_<mean|ema|rma|wma><window>`, the window always written - close_close_ema20_spread,
+# close_close_mean50_spread, close_high_wma10_spread, close_SMA50_rma14_spread, RSI14_RSI14_ema9_spread,
+# quoteVol_quoteVol_mean20_spread. It carries no timeframe or `_dev` of its own: the operand is read at the column's
+# (close_4h_close_ema20_spread, close_ltf_close_ema20_spread, close_dev_close_ema20_spread).
+AVERAGE_OPERAND_SUFFIX = {"aggregate": "mean", "ema": "ema", "rma": "rma", "wma": "wma"}
+
+
+def operand_token(column: Column, contract: Contract) -> str:
+    """A spread's operand as its header spells it: the operand metric's code, or the averaged operand's token."""
+    if not column.inputs:
+        return "?"
+    op = column.inputs[0]
+    code = contract.metric(op.metric).code
+    if op.transformId is None:
+        return code
+    return f"{code}_{AVERAGE_OPERAND_SUFFIX.get(op.transformId, op.transformId)}{op.window}"
+
+
 def _stage1_header(column: Column, contract: Contract) -> str:
     """Header produced by the first transform stage (before any chaining): the token, shaped by the transform.
 
@@ -365,8 +384,7 @@ def _stage1_header(column: Column, contract: Contract) -> str:
     if tid == "distance":
         return f"dist_{token}"
     if tid == "spread":
-        operand = contract.metric(column.inputs[0].metric).code if column.inputs else "?"
-        return f"{token}_{operand}_spread"
+        return f"{token}_{operand_token(column, contract)}_spread"
     if tid == "relativeTo":
         return f"{token}_{instrument_token(column.instrument)}_rel"
     if tid == "efficiency":
@@ -432,6 +450,12 @@ def outputs_for(column: Column, contract: Contract | None = None) -> list[Output
     if column.chainedTransformId == "levelInteraction":
         # 161.0.0: a rolling extreme read as a level (high_o1_max20_lvl, low_o1_min20_lvl; measured group M)
         return [Output(_level(base, column), "classification", LEVEL_VOCABULARY)]
+    if column.chainedTransformId == "spread":
+        # 168 (measured 2026-11-12 at 169.4.0, group V): an average spread against one operand - the inner's header,
+        # then the operand, then `_spread`: close_ema20_EMA50_spread, close_wma10_SMA50_spread, RSI14_mean14_RSI7_spread,
+        # close_4h_ema20_SMA20_spread, close_dev_ema20_EMA50_spread, close_ema704_close_mean2436_spread (an omitted
+        # inner window spells the catalogue default: close_ema20_EMA50_spread)
+        return [Output(f"{base}_{operand_token(column, c)}_spread", "numeric")]
     if column.chainedTransformId == "distance":
         # 148.1.0 (v146.6): distance after an offset rolling extreme, a PREFIX as distance always is - dist_high_o1_max55,
         # dist_close_o2_min20, dist_high_4h_o1_max55 (measured 2026-11-07 at 149.1.0, group B / I)

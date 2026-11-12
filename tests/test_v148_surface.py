@@ -69,7 +69,10 @@ def test_the_capture_names_its_contract_build_and_source():
     # down since the 161.0.0 capture of 2026-11-09 (the 149.1.0 one is the first `supersedes`)
     # 2026-11-11, contract 168.3.0: three levels down - the manifest names the 168.3.0 capture, the 161.0.0 one is its
     # `supersedes`, then 149.1.0, then this one
+    # 2026-11-12, contract 169.4.0: four levels down - the 169.4.0 capture on top, then 168.3.0, 161.0.0, 149.1.0
     surface = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
+    assert surface["servedContractVersion"] == "169.4.0"
+    surface = surface["supersedes"]
     assert [surface["servedContractVersion"], surface["supersedes"]["servedContractVersion"],
             surface["supersedes"]["supersedes"]["servedContractVersion"]] == ["168.3.0", "161.0.0", "149.1.0"]
     manifest = surface["supersedes"]["supersedes"]["supersedes"]
@@ -182,11 +185,14 @@ def test_the_unmeasured_chain_outers_are_the_served_enums_delta():
     # 2026-11-11, contract 168.3.0 (extraction 20261111): nothing OF THESE is left unmeasured. The record is not empty
     # any more: 168 serves `spread` as a chain outer (chainedTransformId 19 -> 20) and no probe has rendered it, so it
     # is the one unmeasured chain outer (served at 168.3.0); `distance` and `ema` stay measured, no parameter is listed
+    # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): `spread` was rendered by the 169 authoring probe and modelled, so
+    # the record is empty again and `spread` sits in its history169
     unmeasured = load().unmeasured_chain_outers
-    assert set(unmeasured) == {"spread"} and unmeasured["spread"]["servedAt"] == "168.3.0"
-    assert set(unmeasured) == set(UNMEASURED["chainOuters"]) and {"distance", "ema"}.isdisjoint(unmeasured)
-    current = vocabulary()["reportColumn"]["chainedTransformId"]["enum"]        # the 168.3.0 capture's, 20 ids
-    assert set(unmeasured) <= set(current) - set(served) and "spread" not in served
+    assert unmeasured == {} == UNMEASURED["chainOuters"]
+    was = UNMEASURED["history169"]["formerlyUnmeasured"]["chainOuters"]
+    assert set(was) == {"spread"} and was["spread"]["servedAt"] == "168.3.0"
+    current = vocabulary()["reportColumn"]["chainedTransformId"]["enum"]        # the 169.4.0 capture's, 20 ids
+    assert set(was) <= set(current) - set(served) and "spread" not in served
     assert load().unmeasured_parameters == {}
     assert "2026-11-05: 206" in UNMEASURED["_what"] and "2026-11-07: EMPTY again" in UNMEASURED["_what"]
 

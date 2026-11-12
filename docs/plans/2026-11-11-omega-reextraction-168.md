@@ -13,7 +13,7 @@ the served schemas and hints are the source throughout.
 | 47 metric keys added, none retired; 347 metrics re-homed into the new `channels`, `vwapProfile`, `levels` categories | `data/contract/metrics/`, `_moves_168.json` |
 | hint shape: operand lists served once per response (`operandSets`) and named by id | `scripts/refresh_metric_contracts.py` `operand_list` |
 | three column knobs: `supplyDemandThreshold`, `supplyDemandResolution`, `usedUpOnClose` | `omega/types.py`; spellings in `omega/fanout.py` (`_vt10.5`, `_res51`, both `_vt10.5res51`, `_close`) |
-| `spread` as a chain outer after `aggregate` / `ema` / `rma` / `wma`; a spread operand under an average; the group op `SEQUENCE` | recorded, NOT modelled: `data/contract/metrics/_unmeasured_108.json` |
+| `spread` as a chain outer after `aggregate` / `ema` / `rma` / `wma`; a spread operand under an average; the group op `SEQUENCE` | recorded, NOT modelled: `data/contract/metrics/_unmeasured_108.json` (measured and modelled 2026-11-12 in v0.13.1: `docs/plans/2026-11-12-omega-v0-13-1-unmeasured-168.md`) |
 | served text: `bars` unset reads Confirmed at every timeframe; `nearestZoneDist` is measured from the zone's near edge, 0 inside it | `data/contract/transforms/_authoring.json` |
 
 ## What was measured, and how

@@ -119,6 +119,16 @@ def enumerate_shapes(expand_operands: bool = False,
                         # `spread` after aggregate / ema / rma / wma): omega.validate refuses the column
                         # (TRANSFORM_UNMEASURED), so the space does not hold a shape for it either.
                         continue
+                    if succ == "spread":
+                        # 168 (measured 2026-11-12 at 169.4.0): an average spread against ONE operand, taken from the
+                        # inner's served chainedOuters.spread.operands - the base itself is not one. Unexpanded, the
+                        # shape carries the first served operand so its column is authorable as written. An operand
+                        # under an average (`inputs[]` {metric, transformId, window}) is a parameter of the shape, like
+                        # a window, and is not enumerated.
+                        served = tuple(chained_operands(flags, "spread") or ())
+                        for o in (served if expand_operands else served[:1]):
+                            out.append(ColumnShape(name, transform, succ, o, None, instrument))
+                        continue
                     if succ == "rank" and expand_operands:
                         # Chaining to rank NARROWS the legal operand set. The contract
                         # publishes the rankable operands (rankableSpreadOperands; chainedOuters.rank.operands

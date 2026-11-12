@@ -1,0 +1,1189 @@
+{
+ "_what": "OMEGA read-only probe of the `SEQUENCE` condition group contract 168 added (2026-11-12).",
+ "startedAt": "2026-11-12T07:32:30Z",
+ "tickers": [
+  "BTC",
+  "ETH",
+  "SOL"
+ ],
+ "timeframe": "1h",
+ "clauses": [
+  {
+   "header": "MAalign",
+   "op": "is"
+  },
+  {
+   "header": "MACDhist_trend",
+   "op": "is"
+  },
+  {
+   "header": "OBV_trend",
+   "op": "is"
+  }
+ ],
+ "probes": [
+  {
+   "probe": "X.control",
+   "condition": null,
+   "accepted": true,
+   "outcomes": [],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X3.exit.short",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": "SHORT"
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' is an exit rule but is in order. An in-order condition is entry only — the exit sweep never reads one. Close on a condition that reads its rows on the decided bar, or drop the exit role.",
+    "authoringCode": "CONDITION_EXIT_SEQUENCE_UNSUPPORTED",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "exitSide"
+    ],
+    "receivedValue": "SEQ_PROBE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "an exit rule's closure holds no SEQUENCE",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "an exit rule's closure holds no SEQUENCE"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "exitSide": "SHORT",
+     "sequenceConditionKey": "SEQ_PROBE"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.exit.both",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": "BOTH"
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' is an exit rule but is in order. An in-order condition is entry only — the exit sweep never reads one. Close on a condition that reads its rows on the decided bar, or drop the exit role.",
+    "authoringCode": "CONDITION_EXIT_SEQUENCE_UNSUPPORTED",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "exitSide"
+    ],
+    "receivedValue": "SEQ_PROBE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "an exit rule's closure holds no SEQUENCE",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "an exit rule's closure holds no SEQUENCE"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "exitSide": "BOTH",
+     "sequenceConditionKey": "SEQ_PROBE"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.exit.verdict.up",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": "UP",
+    "required": false,
+    "exitSide": "SHORT"
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' is an exit rule but carries the verdict 'UP'. An exit rule closes the side it names and decides nothing about entry, so it carries no verdict and no enforcement — remove its exit role, or clear its verdict.",
+    "authoringCode": "CONDITION_EXIT_RULE_CARRIES_VERDICT",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "verdict"
+    ],
+    "receivedValue": "UP",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "an exit rule carries verdict null and required false",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "an exit rule carries verdict null and required false"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "exitSide": "SHORT"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.ref.from.group",
+   "condition": [
+    {
+     "conditionKey": "SEQ_PROBE",
+     "name": "sequence probe",
+     "definition": {
+      "kind": "group",
+      "op": "SEQUENCE",
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      },
+      "members": [
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": null,
+         "header": "MAalign"
+        },
+        "op": "is",
+        "label": "bullish",
+        "hold": {
+         "atLeast": 1,
+         "of": 1
+        }
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": null,
+         "header": "MACDhist_trend"
+        },
+        "op": "is",
+        "label": "rising",
+        "hold": {
+         "atLeast": 1,
+         "of": 1
+        }
+       }
+      ],
+      "within": 5
+     },
+     "verdict": null,
+     "required": false,
+     "exitSide": null
+    },
+    {
+     "conditionKey": "SEQ_USER",
+     "name": "sequence probe",
+     "definition": {
+      "kind": "group",
+      "op": "ALL",
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      },
+      "members": [
+       {
+        "kind": "conditionRef",
+        "conditionKey": "SEQ_PROBE"
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": null,
+         "header": "OBV_trend"
+        },
+        "op": "is",
+        "label": "rising",
+        "hold": {
+         "atLeast": 1,
+         "of": 1
+        }
+       }
+      ]
+     },
+     "verdict": null,
+     "required": false,
+     "exitSide": null
+    }
+   ],
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X3.ref.from.exit",
+   "condition": [
+    {
+     "conditionKey": "SEQ_PROBE",
+     "name": "sequence probe",
+     "definition": {
+      "kind": "group",
+      "op": "SEQUENCE",
+      "hold": {
+       "atLeast": 1,
+       "of": 1
+      },
+      "members": [
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": null,
+         "header": "MAalign"
+        },
+        "op": "is",
+        "label": "bullish",
+        "hold": {
+         "atLeast": 1,
+         "of": 1
+        }
+       },
+       {
+        "kind": "clause",
+        "column": {
+         "sectionKey": null,
+         "header": "MACDhist_trend"
+        },
+        "op": "is",
+        "label": "rising",
+        "hold": {
+         "atLeast": 1,
+         "of": 1
+        }
+       }
+      ],
+      "within": 5
+     },
+     "verdict": null,
+     "required": false,
+     "exitSide": null
+    },
+    {
+     "conditionKey": "CLOSE_ON_SEQ_PROBE",
+     "name": "sequence probe",
+     "definition": {
+      "kind": "conditionRef",
+      "conditionKey": "SEQ_PROBE"
+     },
+     "verdict": null,
+     "required": false,
+     "exitSide": "LONG"
+    }
+   ],
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'CLOSE_ON_SEQ_PROBE' is an exit rule but reads 'SEQ_PROBE', which is in order. An in-order condition is entry only — the exit sweep never reads one. Close on a condition that reads its rows on the decided bar, or drop the exit role.",
+    "authoringCode": "CONDITION_EXIT_SEQUENCE_UNSUPPORTED",
+    "path": [
+     "conditions",
+     "CLOSE_ON_SEQ_PROBE",
+     "exitSide"
+    ],
+    "receivedValue": "SEQ_PROBE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "an exit rule's closure holds no SEQUENCE",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "an exit rule's closure holds no SEQUENCE"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "CLOSE_ON_SEQ_PROBE",
+     "exitSide": "LONG",
+     "sequenceConditionKey": "SEQ_PROBE"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.seq3.w2449",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2449
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview declares 7358 condition frame reads (the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed) — the cap is 5048. Count fewer closes on a clause or group, or split the set.",
+    "authoringCode": "CONDITION_FRAME_READ_BUDGET_EXCEEDED",
+    "path": [
+     "conditions"
+    ],
+    "receivedValue": 7358,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "maximum": 5048,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.step.hold2of3",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 2,
+        "of": 3
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2449
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' holds step 1 at least 2 of 3 closes — A step is read once on each bar of the window, so it cannot count closes of its own.",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": {
+     "atLeast": 2,
+     "of": 3
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "step 1"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.step.hold3of3",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 3,
+        "of": 3
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2449
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' holds step 1 3 closes in a row — A step is read once on each bar of the window, so it cannot count closes of its own.",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": {
+     "atLeast": 3,
+     "of": 3
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "step 1"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.step.prior",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "enters",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2449
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview declares 7359 condition frame reads (the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed) — the cap is 5048. Count fewer closes on a clause or group, or split the set.",
+    "authoringCode": "CONDITION_FRAME_READ_BUDGET_EXCEEDED",
+    "path": [
+     "conditions"
+    ],
+    "receivedValue": 7359,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "maximum": 5048,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.step.group",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "group",
+       "op": "ALL",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MAalign"
+         },
+         "op": "is",
+         "label": "bullish",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MACDhist_trend"
+         },
+         "op": "is",
+         "label": "rising",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ]
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2449
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview declares 9807 condition frame reads (the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed) — the cap is 5048. Count fewer closes on a clause or group, or split the set.",
+    "authoringCode": "CONDITION_FRAME_READ_BUDGET_EXCEEDED",
+    "path": [
+     "conditions"
+    ],
+    "receivedValue": 9807,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "maximum": 5048,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.step.grouphold",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "group",
+       "op": "ALL",
+       "hold": {
+        "atLeast": 2,
+        "of": 3
+       },
+       "members": [
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MAalign"
+         },
+         "op": "is",
+         "label": "bullish",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MACDhist_trend"
+         },
+         "op": "is",
+         "label": "rising",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ]
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2449
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' holds step 1 together on at least 2 of 3 closes — A step is read once on each bar of the window, so it cannot count closes of its own.",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": {
+     "atLeast": 2,
+     "of": 3
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "step 1"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.group.hold",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "ALL",
+     "hold": {
+      "atLeast": 1,
+      "of": 3000
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ]
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview declares 6011 condition frame reads (the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed) — the cap is 5048. Count fewer closes on a clause or group, or split the set.",
+    "authoringCode": "CONDITION_FRAME_READ_BUDGET_EXCEEDED",
+    "path": [
+     "conditions"
+    ],
+    "receivedValue": 6011,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "maximum": 5048,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X3.reads.clause.hold",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "ALL",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 5100
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ]
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview declares 5112 condition frame reads (the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed) — the cap is 5048. Count fewer closes on a clause or group, or split the set.",
+    "authoringCode": "CONDITION_FRAME_READ_BUDGET_EXCEEDED",
+    "path": [
+     "conditions"
+    ],
+    "receivedValue": 5112,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "maximum": 5048,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  }
+ ],
+ "round": 3,
+ "contractVersion": "169.4.0",
+ "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "versionAtEnd": "169.4.0",
+ "buildShaAtEnd": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "contractMoved": false,
+ "capturedAt": "2026-11-12T07:32:58Z"
+}

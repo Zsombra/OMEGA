@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # 108.0.0 one are kept below as history).
 # 161.0.0 (2026-11-09): the manifest names the 161.0.0 capture (build ab5b6252); the 149.1.0 one it supersedes stays below.
 # 2026-11-11: the pinned capture is 168.3.0 (schema_20261111T213257Z.json); 161.0.0 was schema_20261109T162100Z.json
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261111T213257Z.json"
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261112T070510Z.json"   # 169.4.0 since 2026-11-12
 SCHEMA_161 = ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"
 SCHEMA_149 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
 SCHEMA_148 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
@@ -79,11 +79,13 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261111T213257Z.json",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261112T070510Z.json",
                            # 161.0.0 (2026-11-09): was 149.1.0 / build aa4ab640 (schema_20261105T181932Z.json)
                            # 168.3.0 (2026-11-11): was 161.0.0 / build ab5b6252 (schema_20261109T162100Z.json)
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "168.3.0",
-                           "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+                           # 169.4.0 (2026-11-12): was 168.3.0 / build af8b2c96 (schema_20261111T213257Z.json); the
+                           # derived grammar is unchanged - the six draft tools are byte-identical
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "169.4.0",
+                           "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
                            "observedAt": DOC["observedAt"]}
 
 
@@ -180,8 +182,8 @@ def test_every_clause_and_group_carries_the_same_hold_and_a_ref_carries_none():
 
 
 def test_groups_conditions_and_the_conditions_array():
-    # 168 (2026-11-11): SEQUENCE joined the group ops, with an optional integer `within` (> 0). Served, and not a group
-    # omega builds or accepts (omega.conditions.GROUP_OPS; the schema states no semantics for it)
+    # 168 (2026-11-11): SEQUENCE joined the group ops, with an optional integer `within` (> 0); the schema states no
+    # semantics for it. Measured and modelled 2026-11-12 at 169.4.0 (omega.conditions.sequence, tests/test_v169.py)
     assert G["group"]["ops"] == ["ALL", "ANY", "NOT", "N_OF", "SEQUENCE"]
     assert json.loads(SCHEMA_161.read_text(encoding="utf-8"))["contractVersion"] == "161.0.0"
     assert (G["group"]["members"]["minItems"], G["group"]["members"]["maxItems"]) == (1, 64)
@@ -377,8 +379,9 @@ def test_the_gaps_between_the_schema_and_omega():
     # closed 2026-10-11: the six v98 operators have builders and validate_conditions checks their arms
     # (tests/test_conditions_prior_bar.py); before, schemaOnly was exactly PRIOR_BAR
     assert gaps["clauseOperators"] == {"schemaOnly": [], "omegaOnly": []}
-    # 168 (2026-11-11): SEQUENCE is served and deliberately not modelled (tests/test_v168.py)
-    assert gaps["groupOperators"] == {"schemaOnly": ["SEQUENCE"], "omegaOnly": []}
+    # 168 (2026-11-11): SEQUENCE served and not modelled (schemaOnly SEQUENCE); modelled since 2026-11-12 at 169.4.0
+    # (omega.conditions.sequence, tests/test_v169.py)
+    assert gaps["groupOperators"] == {"schemaOnly": [], "omegaOnly": []}
     # known by name since 2026-10-11 (data/contract/metrics/_unmeasured_108.json); before, schemaOnly was these 15
     assert gaps["metrics"] == {"schemaOnly": [], "omegaOnly": []}
     # measured in the re-extraction at 108.4.0, 2026-10-13 (docs/plans/2026-10-13-omega-reextraction-108-4.md); before, these 15 (ADDED_SINCE_61_2);

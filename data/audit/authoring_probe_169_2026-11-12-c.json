@@ -1,0 +1,737 @@
+{
+ "_what": "OMEGA read-only authoring probe of what contract 168 added and OMEGA v0.13.0 left unmeasured (2026-11-12).",
+ "contractVersion": "169.4.0",
+ "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "startedAt": "2026-11-12T07:32:04Z",
+ "capturedAt": "2026-11-12T07:32:27Z",
+ "probes": [
+  {
+   "probe": "J.inner.ema704.op.agg2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 704,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "aggregate",
+         "window": 2436
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:9e478454-919a-8752-817b-04ec471374ad",
+      "shape": "table",
+      "title": "J.inner.ema704.op.agg2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_ema704_close_mean2436_spread",
+        "group": "close",
+        "role": "ema",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 704,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_ema704: exponential moving average (ta.ema).",
+         "close_ema704_close_mean2436_spread: % gap close_ema704 vs close_mean2436."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       1.21891944954569
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "J.inner.ema704.op.agg2436",
+      "header": "close_ema704_close_mean2436_spread",
+      "meaning": "close_ema704: exponential moving average (ta.ema). close_ema704_close_mean2436_spread: % gap close_ema704 vs close_mean2436.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_ema704_close_mean2436_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 64,
+       "maxAtLeast": 64,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "J.inner.agg2436.op.ema704",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 2436,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "ema",
+         "window": 704
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:98595142-a08f-875b-8203-3863804b4f2c",
+      "shape": "table",
+      "title": "J.inner.agg2436.op.ema704",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_mean2436_close_ema704_spread",
+        "group": "close",
+        "role": "aggregate",
+        "chainedRole": "spread",
+        "timeframe": "1h",
+        "window": 2436,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_mean2436: windowed mean.",
+         "close_mean2436_close_ema704_spread: % gap close_mean2436 vs close_ema704."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -1.2042407251277576
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "J.inner.agg2436.op.ema704",
+      "header": "close_mean2436_close_ema704_spread",
+      "meaning": "close_mean2436: windowed mean. close_mean2436_close_ema704_spread: % gap close_mean2436 vs close_ema704.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_mean2436_close_ema704_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 64,
+       "maxAtLeast": 64,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "J.inner.rma308.op.rma308",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "rma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 308,
+       "chainedTransformId": "spread",
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "rma",
+         "window": 308
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[column-grammar] transform 'spread' operand 'close_rma308' is the chain's own average — a spread against itself is identically zero",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "CLOSE",
+     "transformId": "rma",
+     "chainedTransformId": "spread",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 308,
+     "inputs": [
+      {
+       "metric": "CLOSE",
+       "transformId": "rma",
+       "window": 308
+      }
+     ]
+    },
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract"
+    },
+    "candidateCount": 3,
+    "context": {
+     "sectionKey": "custom:a378eacd-cb95-8ecb-8417-dd01f743212c",
+     "metric": "CLOSE",
+     "transformId": "rma"
+    }
+   }
+  },
+  {
+   "probe": "J.op.SMA200.agg2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "SMA200",
+         "transformId": "aggregate",
+         "window": 2436
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:abc7a8e2-eb37-8df7-8ca1-ae45937025e6",
+      "shape": "table",
+      "title": "J.op.SMA200.agg2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_SMA200_mean2436_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_SMA200_mean2436_spread: % gap close vs SMA200_mean2436."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -5.258323860616368
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "J.op.SMA200.agg2436",
+      "header": "close_SMA200_mean2436_spread",
+      "meaning": "close_SMA200_mean2436_spread: % gap close vs SMA200_mean2436.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_SMA200_mean2436_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "HISTORY"
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "J.op.SMA200.ema704",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "SMA200",
+         "transformId": "ema",
+         "window": 704
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:a6455b56-7e04-88f5-8702-c6789ddacbd8",
+      "shape": "table",
+      "title": "J.op.SMA200.ema704",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_SMA200_ema704_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_SMA200_ema704_spread: % gap close vs SMA200_ema704."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       null
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "J.op.SMA200.ema704",
+      "header": "close_SMA200_ema704_spread",
+      "meaning": "close_SMA200_ema704_spread: % gap close vs SMA200_ema704.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_SMA200_ema704_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "HISTORY"
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "J.base.SMA200.op.close.agg2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "SMA200",
+       "transformId": "spread",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "aggregate",
+         "window": 2436
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:54b6ef04-61bb-82be-828a-32f3c58dcebb",
+      "shape": "table",
+      "title": "J.base.SMA200.op.close.agg2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "SMA200_close_mean2436_spread",
+        "group": "SMA200",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "1h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "SMA200_close_mean2436_spread: % gap SMA200 vs close_mean2436."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -1.9795579925811748
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "J.base.SMA200.op.close.agg2436",
+      "header": "SMA200_close_mean2436_spread",
+      "meaning": "SMA200_close_mean2436_spread: % gap SMA200 vs close_mean2436.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "SMA200_close_mean2436_spread",
+      "conditionHold": {
+       "timeframe": "1h",
+       "maxWindow": 1,
+       "maxAtLeast": 1,
+       "refusal": "HISTORY"
+      },
+      "developingRead": false,
+      "family": "trend",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  },
+  {
+   "probe": "J.abs4h.op.agg2436",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "spread",
+       "timeframe": {
+        "abs": "4h"
+       },
+       "inputs": [
+        {
+         "metric": "CLOSE",
+         "transformId": "aggregate",
+         "window": 2436
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "accepted": true,
+   "render": {
+    "sections": [
+     {
+      "sectionKey": "custom:0d005f77-57a4-8124-858c-b15a1b24d8d9",
+      "shape": "table",
+      "title": "J.abs4h.op.agg2436",
+      "provenance": null,
+      "anchorTf": "1h",
+      "columns": [
+       {
+        "key": "coin",
+        "group": null,
+        "role": "identity",
+        "chainedRole": null,
+        "timeframe": null,
+        "window": null,
+        "bars": null,
+        "unit": null,
+        "precision": null,
+        "lookback": null,
+        "spanFragments": null
+       },
+       {
+        "key": "close_4h_close_mean2436_spread",
+        "group": "close",
+        "role": "spread",
+        "chainedRole": null,
+        "timeframe": "4h",
+        "window": null,
+        "bars": "Confirmed",
+        "unit": "percent",
+        "precision": 2,
+        "lookback": null,
+        "spanFragments": [
+         "close_4h_close_mean2436_spread: % gap close_4h vs close_mean2436."
+        ]
+       }
+      ],
+      "firstRow": [
+       "BTC",
+       -7.614042252393668
+      ],
+      "rowCount": 1
+     }
+    ],
+    "outputs": [
+     {
+      "section": "J.abs4h.op.agg2436",
+      "header": "close_4h_close_mean2436_spread",
+      "meaning": "close_4h_close_mean2436_spread: % gap close_4h vs close_mean2436.",
+      "conditionOperators": [
+       "lt",
+       "lte",
+       "gte",
+       "gt",
+       "between",
+       "crossesAbove",
+       "crossesBelow",
+       "increased",
+       "decreased"
+      ],
+      "conditionVocabulary": [],
+      "markerToken": "close_4h_close_mean2436_spread",
+      "conditionHold": {
+       "timeframe": "4h",
+       "maxWindow": 64,
+       "maxAtLeast": 64,
+       "refusal": null
+      },
+      "developingRead": false,
+      "family": "price",
+      "readBy": []
+     }
+    ],
+    "duplicateHeaders": [],
+    "missingConditionColumns": []
+   },
+   "refusal": null
+  }
+ ],
+ "versionAtEnd": "169.4.0",
+ "buildShaAtEnd": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "contractMoved": false,
+ "complete": true,
+ "aborted": null,
+ "how": "preview_strategy_report via the mcporter CLI, read-only, detail detailed, BTC at a 1h anchor; one custom section per probe, its benchmarkTicker / marketScope as recorded; GET /mcp/version before and after",
+ "counts": {
+  "probes": 7,
+  "accepted": 6,
+  "refused": 1,
+  "transient": 0,
+  "headersMinted": 6
+ },
+ "headersWritten": true
+}

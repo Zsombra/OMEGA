@@ -1,0 +1,1793 @@
+{
+ "_what": "OMEGA read-only probe of the `SEQUENCE` condition group contract 168 added (2026-11-12).",
+ "startedAt": "2026-11-12T07:25:56Z",
+ "tickers": [
+  "BTC",
+  "ETH",
+  "SOL"
+ ],
+ "timeframe": "1h",
+ "clauses": [
+  {
+   "header": "MAalign",
+   "op": "is"
+  },
+  {
+   "header": "MACDhist_trend",
+   "op": "is"
+  },
+  {
+   "header": "OBV_trend",
+   "op": "is"
+  }
+ ],
+ "probes": [
+  {
+   "probe": "X.control",
+   "condition": null,
+   "accepted": true,
+   "outcomes": [],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X2.seq1.within5",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' is a sequence of 1 step — a sequence orders at least 2",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": 1,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X2.seq2.n1.within5",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "n": 1,
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE': SEQUENCE takes no threshold — 'n' belongs to N_OF only",
+    "authoringCode": "CONDITION_N_OF_THRESHOLD_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition",
+     "n"
+    ],
+    "receivedValue": 1,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "only N_OF carries a threshold",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "only N_OF carries a threshold"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X2.seq.verdict.up",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": "UP",
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X2.seq.verdict.neither",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": "NEITHER",
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 5,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X2.seq.exit",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": "UP",
+    "required": false,
+    "exitSide": "DOWN"
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid option: expected one of \"LONG\"|\"SHORT\"|\"BOTH\"",
+    "authoringCode": null,
+    "path": null,
+    "receivedValue": null,
+    "allowedDomainKind": null,
+    "allowedDomainRule": null,
+    "allowedDomain": null,
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X2.seq.in.seq",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "group",
+       "op": "SEQUENCE",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MAalign"
+         },
+         "op": "is",
+         "label": "bullish",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "MACDhist_trend"
+         },
+         "op": "is",
+         "label": "rising",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ],
+       "within": 3
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "OBV_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 6
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' nests a sequence at definition.0 — a sequence is a condition's whole definition: make it its own condition and reference it from this group",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": "SEQUENCE",
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition.0"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X2.not.within5",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "NOT",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 5
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' has a NOT group at definition carrying a window — only a sequence (In order) carries 'within'",
+    "authoringCode": "CONDITION_SEQUENCE_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition"
+    ],
+    "receivedValue": 5,
+    "allowedDomainKind": "relation",
+    "allowedDomainRule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once",
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "a SEQUENCE is a condition's whole definition, holds Once, carries a window 'within' of at least 2, and orders at least 2 steps — each a clause, a group of clauses, or a reference to a condition that reads one bar — every step and row held Once"
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "node": "definition"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X2.seq.within2436",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2436
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": true,
+   "outcomes": [
+    {
+     "ticker": "BTC",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 2436,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "ETH",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 2436,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    },
+    {
+     "ticker": "SOL",
+     "outcome": "FALSE",
+     "evidence": [
+      {
+       "kind": "sequence",
+       "within": 2436,
+       "timeframe": "1h",
+       "outcome": "FALSE",
+       "steps": [
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        },
+        {
+         "outcome": "FALSE",
+         "matchedBar": null,
+         "reference": null
+        }
+       ],
+       "memberCount": 0
+      }
+     ]
+    }
+   ],
+   "register": {
+    "coin": null,
+    "verdict": null,
+    "row": null
+   }
+  },
+  {
+   "probe": "X2.seq.within2500",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 2500
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview condition 'SEQ_PROBE' reads its steps in order within 2500 closes, but 'custom:815513ac-1010-8032-89c2-85400ba4dd1a.MACDhist_trend' (step 2): the history stored behind it reaches 2449 closes at most.",
+    "authoringCode": "CONDITION_SEQUENCE_WINDOW_INVALID",
+    "path": [
+     "conditions",
+     "SEQ_PROBE",
+     "definition",
+     "within"
+    ],
+    "receivedValue": 2500,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 2,
+     "maximum": 2449,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": {
+     "conditionKey": "SEQ_PROBE",
+     "maxWindow": 2449,
+     "limitedBy": "1"
+    }
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X2.seq.within100000",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MACDhist_trend"
+       },
+       "op": "is",
+       "label": "rising",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 100000
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview declares 200011 condition frame reads (the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed) — the cap is 5048. Count fewer closes on a clause or group, or split the set.",
+    "authoringCode": "CONDITION_FRAME_READ_BUDGET_EXCEEDED",
+    "path": [
+     "conditions"
+    ],
+    "receivedValue": 200011,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "maximum": 5048,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  },
+  {
+   "probe": "X2.seq64.members",
+   "condition": {
+    "conditionKey": "SEQ_PROBE",
+    "name": "sequence probe",
+    "definition": {
+     "kind": "group",
+     "op": "SEQUENCE",
+     "hold": {
+      "atLeast": 1,
+      "of": 1
+     },
+     "members": [
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "MAalign"
+       },
+       "op": "is",
+       "label": "bullish",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      }
+     ],
+     "within": 100
+    },
+    "verdict": null,
+    "required": false,
+    "exitSide": null
+   },
+   "accepted": false,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "message": "[condition] strategy report preview declares 6411 condition frame reads (the closes each clause's hold counts, plus the bar before for a prior-bar operator, summed) — the cap is 5048. Count fewer closes on a clause or group, or split the set.",
+    "authoringCode": "CONDITION_FRAME_READ_BUDGET_EXCEEDED",
+    "path": [
+     "conditions"
+    ],
+    "receivedValue": 6411,
+    "allowedDomainKind": "range",
+    "allowedDomainRule": null,
+    "allowedDomain": {
+     "kind": "range",
+     "maximum": 5048,
+     "inclusive": true
+    },
+    "candidateCount": null,
+    "context": null
+   },
+   "answerKind": "refusal"
+  }
+ ],
+ "round": 2,
+ "contractVersion": "169.4.0",
+ "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "versionAtEnd": "169.4.0",
+ "buildShaAtEnd": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+ "contractMoved": false,
+ "capturedAt": "2026-11-12T07:26:32Z"
+}

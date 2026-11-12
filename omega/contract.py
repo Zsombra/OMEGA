@@ -51,6 +51,12 @@ class Metric:
     # (REPORT_COLUMN_OPERAND_UNSUPPORTED, measured 2026-11-09, authoring_probe_161 group P). Empty = no restriction
     # recorded (a corpus older than 161).
     spread_operands_off_anchor: tuple[str, ...] = ()
+    # 168 (served beside them, undocumented): the operands a spread may read UNDER AN AVERAGE (`inputs[]` {metric,
+    # transformId aggregate | ema | rma | wma, window}) - the metric itself and its per-bar candle-valued operands, no
+    # timeless level and no MARK (measured 2026-11-12 at 169.4.0, authoring_probe_169 group W: "'ASIA_HIGH' is not a
+    # legal averaged spread operand"); off the anchor rung the second list. Empty = the corpus serves none.
+    spread_average_operands: tuple[str, ...] = ()
+    spread_average_operands_off_anchor: tuple[str, ...] = ()
     rank_orderings: tuple[str, ...] = ()
     anchor: str | None = None
     """The one ABSOLUTE timeframe this metric accepts, when the platform declares one.
@@ -210,6 +216,8 @@ def load() -> Contract:
             transforms={t["id"]: t for t in rec["transforms"] if t["id"] not in retired},
             spread_operands=tuple(rec.get("spreadOperands", ())),
             spread_operands_off_anchor=tuple(rec.get("spreadOperandsOffAnchor", ())),
+            spread_average_operands=tuple(rec.get("spreadAverageOperands", ())),
+            spread_average_operands_off_anchor=tuple(rec.get("spreadAverageOperandsOffAnchor", ())),
             rank_orderings=tuple(rec.get("rankOrderings", ())),
             anchor=rec.get("anchor"),
             rank_scope=rec.get("rankScope"),

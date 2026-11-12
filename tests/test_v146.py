@@ -115,9 +115,10 @@ def test_the_capture_names_its_contract_build_and_source():
     # and by the 161.0.0 one on 2026-11-09 (the 149.1.0 capture is the manifest's `supersedes`)
     # 2026-11-11, contract 168.3.0: and by the 168.3.0 capture (the 161.0.0 one is the manifest's `supersedes` now); this
     # 146.0.0 capture is four `supersedes` down the write surface chain (161.0.0, 149.1.0, 148.1.0, then it)
-    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "168.3.0"   # 149.1.0 until 2026-11-09, 161.0.0 until 2026-11-11
+    # 2026-11-12, contract 169.4.0: five down (169.4.0 -> 168.3.0 -> 161.0.0 -> 149.1.0 -> 148.1.0 -> it)
+    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "169.4.0"   # 149.1.0 until 2026-11-09, 161.0.0 until 2026-11-11, 168.3.0 until 2026-11-12
     surface = json.loads((CONTRACT_DIR / "_manifest.json").read_text(encoding="utf-8"))["writeSurface"]
-    assert surface["supersedes"]["supersedes"]["supersedes"]["supersedes"]["schema"] == SCHEMA_146
+    assert surface["supersedes"]["supersedes"]["supersedes"]["supersedes"]["supersedes"]["schema"] == SCHEMA_146
 
 
 @pytest.mark.skipif(not FIXTURE.exists(), reason="the battlegrid-manager checkout is not beside this repo")
@@ -313,5 +314,6 @@ def test_the_version_moved_past_v0_10_2():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
     # 0.11.0 at 146.0.1 (2026-11-02); 0.12.0 at 161.0.0 (2026-11-10); 0.12.1 the same day (no retired ambient header);
     # 0.12.2 on 2026-11-11 (the joint depth bound, the chained touchAtr maximum); 0.13.0 the same day (re-extracted at
-    # contract 168.3.0: the trade level menu, 581 metrics, tests/test_v168.py)
-    assert 'version = "0.10.2"' not in text and 'version = "0.13.0"' in text
+    # contract 168.3.0: the trade level menu, 581 metrics, tests/test_v168.py); 0.13.1 on 2026-11-12 (what 168 served and
+    # 0.13.0 left unmeasured, measured at 169.4.0 and modelled: tests/test_v169.py)
+    assert 'version = "0.10.2"' not in text and 'version = "0.13.1"' in text
