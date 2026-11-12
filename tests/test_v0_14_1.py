@@ -41,7 +41,8 @@ REFUSES = {DEPTH: "DEPTH_EXCEEDED", GRAMMAR: "CHAINED_WINDOW_BELOW_MINIMUM"}
 MIN_TWO_OUTERS = ("zscore", "stddev", "linregSlope", "cci", "rollingMin", "rollingMax")
 ANCHOR = {"rel": "anchor"}
 # The room a plain value column serves beside its own one bar, measured at 161.0.0 (tests/test_v0_12_2.py: plain
-# `close` 2499, plain `RSI14` 2485, each + 1).
+# `close` 2499, plain `RSI14` 2485, each + 1). These are the 161 values: no plain column was rendered at 171, so the
+# hold-room test below reads the 171 chain rooms against the 161 plain room (review of v0.14.1, note 2).
 PLAIN_ROOM = {"CLOSE": 2500, "RSI14": 2486}
 
 
@@ -98,7 +99,10 @@ def test_the_record_holds_every_call_and_every_stage_was_discarded(record, probe
 
 def test_omega_agrees_with_every_preview_of_the_limit_probe(contract, probes):
     """Every accepted preview validates with NO finding and renders exactly the headers omega.fanout predicts; every
-    column refusal is refused by omega with the one finding that maps to the platform's code, on the field it names."""
+    column refusal is refused by omega with the one finding that maps to the platform's code. A depth refusal names
+    `chainedWindow` and omega names the same field. A grammar refusal (chainedWindow below the outer's minimum) names
+    the WHOLE column - its path ends at `columns[0]` - and omega narrows it to `columns[0].chainedWindow`, the one
+    parameter its sentence is about (review of v0.14.1, note 1)."""
     for p in probes:
         if p["refusal"] and p["refusal"]["authoringCode"] == ANCHOR_REFUSED:
             continue                                   # a main-candle refusal: no column was judged (next test)
@@ -112,7 +116,8 @@ def test_omega_agrees_with_every_preview_of_the_limit_probe(contract, probes):
         if refusal["authoringCode"] == DEPTH:
             assert found[0].path == f"section.columns[0].{refusal['path'][-1]}", p["probe"]
         else:
-            assert found[0].path == "section.columns[0].chainedWindow", p["probe"]
+            assert refusal["path"] == ["sections", 0, "columns", 0], p["probe"]          # the platform: the column
+            assert found[0].path == "section.columns[0].chainedWindow", p["probe"]      # omega: its chainedWindow
             # omega states the platform's own sentence, less its "[column-grammar] " prefix
             assert refusal["message"].removeprefix("[column-grammar] ") in found[0].message, found[0].message
 
@@ -224,7 +229,8 @@ def test_the_bound_is_bars_at_every_authorable_main_candle_and_on_eth(contract, 
 
 def test_the_hold_room_of_every_rendered_column_is_the_depth_less_its_bars(contract, probes):
     """conditionHold.maxWindow on every rendered chain is the plain column's room less the bars need() counts - the
-    count read where the platform RENDERED, at both ends of the chain window (2385 / 2427 / 2360 / 701 and 2)."""
+    count read where the platform RENDERED, at both ends of the chain window (2385 / 2427 / 2360 / 701 and 2). The
+    plain room (CLOSE 2500, RSI14 2486) is the 161.0.0 value (PLAIN_ROOM): no plain column was re-rendered at 171."""
     checked = 0
     for p in probes:
         if not p["accepted"]:

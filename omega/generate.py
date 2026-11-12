@@ -569,12 +569,14 @@ class StrategyPlan:
 
     def menu_findings(self) -> list:
         """What the stage would say of this plan's trade level menu, offline (omega.trade_levels.validate_menu): the
-        menu against the plan's own dials and the levels its REPORT yields."""
+        menu against the plan's own dials, the levels its REPORT yields and the trailingEnabled its POSITION_MANAGEMENT
+        stages (a plan that leaves a runner is refused while Trailing is off, contract 171)."""
         from .execution import PLATFORM_EXECUTION_DEFAULTS, TRADE_LEVEL_DIALS
         from .trade_levels import validate_menu
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
         return validate_menu(self.trade_level_menu(), dials={k: eff[k] for k in TRADE_LEVEL_DIALS},
-                             sections=self._sections(), anchor=self.thesis.anchor)
+                             sections=self._sections(), anchor=self.thesis.anchor,
+                             trailing_enabled=eff["trailingEnabled"])
 
     def axes(self) -> dict:
         """The `axes` of a CREATE stage_strategy_draft request (no strategyId,
@@ -716,21 +718,28 @@ class StrategyPlan:
         from .validate import Finding
         axes = self.axes_update(current)
         policy = axes.get("TRADE_LEVEL_POLICY")
+        # the trailingEnabled the draft will hold: this update's POSITION_MANAGEMENT when it stages one, else the
+        # strategy's current one (contract 171: a plan leaving a runner is refused while Trailing is off)
+        trailing = (axes.get("POSITION_MANAGEMENT") or (current or {}).get("POSITION_MANAGEMENT") or {}).get(
+            "trailingEnabled")
         if policy is not None:
             return validate_menu(policy["tradeLevelMenu"],
                                  dials={k: v for k, v in policy.items() if k != "tradeLevelMenu"},
-                                 sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor)
-        # The axis is not staged, so the live menu and dials stay as they are - but REPORT is restaged whole, and the
-        # live menu's levels were yielded by the OLD report. Every probe was a create: whether a stage that omits the
-        # axis re-judges the live menu against the new report is unmeasured, so what the rule WOULD say is a warning.
+                                 sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
+                                 trailing_enabled=trailing)
+        # The axis is not staged, so the live menu and dials stay as they are - but REPORT is restaged whole (the live
+        # menu's levels were yielded by the OLD report), and POSITION_MANAGEMENT may be (switching Trailing off under
+        # a runner). Every probe was a create: whether a stage that omits the axis re-judges the live menu is
+        # unmeasured, so what the rule WOULD say is a warning.
         live = (current or {}).get("TRADE_LEVEL_POLICY") or {}
         if live.get("tradeLevelMenu") is None:
             return []
         would = validate_menu(live["tradeLevelMenu"], dials={k: v for k, v in live.items() if k != "tradeLevelMenu"},
-                              sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor)
+                              sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
+                              trailing_enabled=trailing)
         return [Finding("warning", f.code, f.path,
-                        f"(the live menu, not staged by this update, against the report this update stages; whether "
-                        f"the stage re-judges it is unmeasured) {f.message}")
+                        f"(the live menu, not staged by this update, against the report and trailing this update "
+                        f"stages; whether the stage re-judges it is unmeasured) {f.message}")
                 for f in would if f.severity == "error"]
 
     def _carry_section_keys(self, out: dict, current: dict) -> None:
