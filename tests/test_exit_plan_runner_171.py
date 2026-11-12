@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 from pathlib import Path
 
 import pytest
@@ -91,12 +92,86 @@ def test_each_rule_has_its_own_code(name, code):
     assert {f.code for f in _offline(PROBES[name]) if f.severity == "error"} == {code}
 
 
-def test_trailing_off_alone_is_not_refused_and_the_runner_is_judged_only_when_trailing_is_known():
+def test_trailing_off_alone_is_not_refused_and_a_runner_with_trailing_unknown_is_warned():
     assert [f for f in _offline(PROBES["T3.full_plans_trailing_off"]) if f.severity == "error"] == []
     runner = PROBES["T1.runner_trailing_off"]["sent"]
-    for trailing in (True, None):            # the 170 probes staged Trailing on; a caller that does not say: unjudged
-        assert tl.validate_menu(runner["menu"], dials=runner["dials"], sections=BASE["reportSections"],
-                                anchor=BASE["anchor"], trailing_enabled=trailing) == []
+
+    def found(trailing):
+        return tl.validate_menu(runner["menu"], dials=runner["dials"], sections=BASE["reportSections"],
+                                anchor=BASE["anchor"], trailing_enabled=trailing)
+
+    assert found(True) == []                 # T4: the same runner with Trailing on stages clean
+    # a caller that does not say: the rule cannot be judged, so it warns instead of failing open (review 2026-11-12)
+    unknown = found(None)
+    assert {(f.severity, f.code, f.path) for f in unknown} == {
+        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN", f"tradeLevelMenu.{side}.exitPlans[0]")
+        for side in tl.SIDES}
+    # no runner, no warning: the default menu's plans close 100%
+    assert tl.validate_menu(tl.default_menu(1.5), dials=runner["dials"], sections=BASE["reportSections"],
+                            anchor=BASE["anchor"], trailing_enabled=None) == []
+
+
+def test_an_update_with_trailing_unknown_under_a_staged_runner_is_warned():
+    # neither the update nor `current` carries trailingEnabled: the restaged runner is warned, not passed
+    base = PRESETS["trend-continuation"]
+    named = plan(Thesis(**{**base.__dict__, "trade_level_menu": _runner_menu()}))
+    current = {"TRADE_LEVEL_POLICY": dict(BASE["dials"])}
+    assert "POSITION_MANAGEMENT" not in named.axes_update(current)
+    assert {(f.severity, f.code) for f in named.update_menu_findings(current)} == {
+        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN")}
+
+
+def _r_plan(*legs) -> dict:
+    side = {"stops": [{"kind": "ATR", "atrMultiple": 1}],
+            "exitPlans": [{"targets": [{"method": {"kind": "R_MULTIPLE", "multiple": m}, "closePct": c}
+                                       for m, c in legs]}]}
+    return {s: copy.deepcopy(side) for s in tl.SIDES}
+
+
+@pytest.mark.parametrize("at, below, minimum", [
+    # binary floats paid these 0.9999999999999999 and 1.2499999999999998 and refused them (review 2026-11-12)
+    (((0.6, 50), (1.4, 28)), ((0.6, 51), (1.4, 27)), 1),
+    (((0.6, 50), (1.9, 9)), ((0.6, 51), (1.9, 8)), 1.25),
+])
+def test_a_plan_paying_exactly_the_minimum_is_not_refused_and_one_tick_below_is(at, below, minimum):
+    dials = {**BASE["dials"], "minRiskRewardRatio": minimum}
+
+    def codes(menu, dials=dials):
+        return {f.code for f in tl.validate_menu(menu, dials=dials, sections=BASE["reportSections"],
+                                                 anchor=BASE["anchor"], trailing_enabled=True)}
+
+    legs = _r_plan(*at)["LONG"]["exitPlans"][0]["targets"]
+    assert tl.plan_pays_exact(legs) == tl._exact(minimum) and tl.plan_pays(legs) == minimum
+    assert codes(_r_plan(*at)) == set()
+    # one closePct tick (the integer step) moved from the far leg to the near one: below the minimum, refused
+    assert tl.plan_pays_exact(_r_plan(*below)["LONG"]["exitPlans"][0]["targets"]) < tl._exact(minimum)
+    assert codes(_r_plan(*below)) == {"TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR"}
+    # and the exact plan against a minimum one float tick above it is refused too
+    assert codes(_r_plan(*at), {**dials, "minRiskRewardRatio": math.nextafter(minimum, 2)}) == {
+        "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR"}
+
+
+def test_an_update_carrying_a_live_minimum_off_its_step_is_warned():
+    base = PRESETS["trend-continuation"]
+    current = plan(base).axes()
+    current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.6          # a live value off the 0.25 step
+    current["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] = tl.default_menu(1.5)
+    carried = plan(Thesis(**{**base.__dict__, "execution": {"minAtrPct": 0.4}}))
+    staged = carried.axes_update(current)["TRADE_LEVEL_POLICY"]
+    assert staged["minRiskRewardRatio"] == 1.6                              # carried as read
+    found = carried.update_menu_findings(current)
+    assert [(f.severity, f.code, f.path) for f in found if f.code == "EXECUTION_CARRIED_OFF_STEP"] == [
+        ("warning", "EXECUTION_CARRIED_OFF_STEP", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
+    assert all("unmeasured" in f.message for f in found if f.code == "EXECUTION_CARRIED_OFF_STEP")
+    # named on its step by the thesis: nothing carried, nothing warned
+    fixed = plan(Thesis(**{**base.__dict__, "execution": {"minAtrPct": 0.4, "minRiskRewardRatio": 1.5}}))
+    assert [f for f in fixed.update_menu_findings(current) if f.code == "EXECUTION_CARRIED_OFF_STEP"] == []
+    # a live value on its step: nothing to warn
+    current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.5
+    assert [f for f in carried.update_menu_findings(current) if f.code == "EXECUTION_CARRIED_OFF_STEP"] == []
+    # the axis not restaged: the live value is not carried, so not warned
+    current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.6
+    assert [f for f in plan(base).update_menu_findings(current) if f.code == "EXECUTION_CARRIED_OFF_STEP"] == []
 
 
 def test_what_a_plan_pays_is_the_number_the_stage_names():

@@ -82,15 +82,20 @@ refused at input (RUNNER_PROBES; the probe names below):
     T4 plan: 2.25 vs 2.0625), both above its 1.5 minimum.
   * A last leg closing 0% is the TRAIL OBJECTIVE: it earns nothing - O1 1R 50% + 2R 20% + 6R 0% "pays 1.5R" (the
     runner at 2R; at 6R it would pay 2.7) below 2; O4 the same plan at 1.5 stages clean - and the preview's runner trail
-    reads 2.7R beside every stop (2.7 = 6 x 0.45, the base plan's trailingGivebackPct 45; T4, W2b read 1.35 = 3 x 0.45,
-    W3 0.99 = 2.2 x 0.45: what the trail measures is recorded, not modelled - one giveback was sent).
+    reads 2.7R beside every stop. Each trail read the plan's farthest target x 0.45 (the base plan's
+    trailingGivebackPct 45: O4 2.7 = 6 x 0.45; T4, W2b 1.35 = 3 x 0.45; W3 0.99 = 2.2 x 0.45 at stops ATR 1.5 and 2)
+    except W3 at stop ATR 1, which read runnerTrail {atrMultiple 1, rMultiple 1} - 1.0R, apparently a one-ATR floor.
+    How the trail is sized is recorded, not modelled: one giveback was sent.
   * Refused at input (no draft): a 0% leg after legs closing 100% ("A target closing 0% needs a runner to govern; this
     plan closes everything before it", O2), a 0% leg that is not the last ("Only the last target of an exit plan may
     close 0%", O3; a 0% FIRST leg answers X7's message alone), a runner of 1 - 4% ("A runner holds 0% or at least 5% of
-    the position; this plan leaves 3%", S1), a leg closing 1 - 4% ("A target closes at least 5%", S2: measured on a
-    first leg, the message names any target).
+    the position; this plan leaves 3%", S1: measured at 3% only), a leg closing 1 - 4% ("A target closes at least 5%",
+    S2: measured on a first leg only). Both extensions come from the message text and fail closed; a non-first 3% leg
+    and a 1% runner are to be probed.
   * minRiskRewardRatio is refused off its 0.25 step as a draft error on the dial ("minRiskRewardRatio must be a
-    multiple of 0.25", W2 at 2.2; omega.execution.validate_execution).
+    multiple of 0.25", W2 at 2.2; omega.execution.validate_execution). An UPDATE restaging TRADE_LEVEL_POLICY carries
+    the live minRiskRewardRatio as read: one off the step is a warning (EXECUTION_CARRIED_OFF_STEP,
+    StrategyPlan.update_menu_findings), as the stage's answer on an UPDATE is unmeasured.
   * Raising minRiskRewardRatio above an all-R plan's pay is, on a CREATE, the plan below the minimum (W1, O1). The
     UPDATE that raises the dial alone is unmeasured (StrategyPlan.update_menu_findings judges the staged axis whole).
 
@@ -104,6 +109,8 @@ from __future__ import annotations
 
 import copy
 import json
+import math
+from fractions import Fraction
 
 from . import preflight as P
 from .contract import load, stage_schema
@@ -342,8 +349,9 @@ def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str, schem
     the stop range) beside the REPORT `sections` (wire form) of a strategy anchored at `anchor`, judged against the
     pinned write schema (or `schema`, a stage-schema capture). `trailing_enabled` is the POSITION_MANAGEMENT
     trailingEnabled the menu stages beside: False refuses a plan that leaves a runner (probes T1, T2); None (not
-    known to the caller) judges no runner against it. A menu the write schema refuses gets its shape findings and
-    nothing else: the rules are judged on a well-formed menu only."""
+    known to the caller) cannot judge the rule and warns on each such plan
+    (TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN) instead of passing it. A menu the write schema refuses gets its
+    shape findings and nothing else: the rules are judged on a well-formed menu only."""
     root = "tradeLevelMenu"
     shape = _shape(menu, _axis("TRADE_LEVEL_POLICY", schema)["properties"]["tradeLevelMenu"], root, "TRADE_MENU_SHAPE",
                    schema)
@@ -387,20 +395,34 @@ def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str, schem
     return out
 
 
+def _exact(value) -> Fraction:
+    """A number as the decimal it was written as: Fraction(str(x)), so 0.6 is 3/5, not the float nearest it."""
+    return Fraction(str(value))
+
+
+def plan_pays_exact(legs: list[dict]) -> Fraction | None:
+    """plan_pays, computed exactly: each multiple and closePct read as the decimal it was written as, so a plan paying
+    exactly the minimum compares equal to it. In binary floats 0.6R 50% + 1.4R 28% pays 0.9999999999999999 and
+    0.6R 50% + 1.9R 9% pays 1.2499999999999998; exactly they pay 1 and 1.25 (review 2026-11-12, finding 1)."""
+    closing = [leg for leg in legs if leg["closePct"] > 0]
+    closed = sum(leg["closePct"] for leg in closing)
+    if not closing or closed > EXIT_PLAN_FULL or any(leg["method"]["kind"] != "R_MULTIPLE" for leg in legs):
+        return None
+    runner = EXIT_PLAN_FULL - _exact(closed)
+    return (sum(_exact(leg["method"]["multiple"]) * _exact(leg["closePct"]) for leg in closing)
+            + runner * _exact(closing[-1]["method"]["multiple"])) / EXIT_PLAN_FULL
+
+
 def plan_pays(legs: list[dict]) -> float | None:
     """What an exit plan pays, as the stage judges it against minRiskRewardRatio: share-weighted over the whole
     position - each leg's closePct at its R, the runner (what the plan does not close) at the R of the LAST leg that
     closes a share; a last leg closing 0% (the trail objective) earns nothing. Measured at 171.0.0 (RUNNER_PROBES W1
     "pays 2.4R", O1 "pays 1.5R", the previews of T4 / W2b / W3 / O4); on a plan closing 100% it is v0.14.0's
     closePct-weighted mean (EXIT_PLAN_PROBES Y1 - Y8). None for a plan with a level leg (its R is known only at a
-    decision), one that closes nothing, or one closing more than 100% (refused at input, X4, X5)."""
-    closing = [leg for leg in legs if leg["closePct"] > 0]
-    closed = sum(leg["closePct"] for leg in closing)
-    if not closing or closed > EXIT_PLAN_FULL or any(leg["method"]["kind"] != "R_MULTIPLE" for leg in legs):
-        return None
-    runner = EXIT_PLAN_FULL - closed
-    return (sum(leg["method"]["multiple"] * leg["closePct"] for leg in closing)
-            + runner * closing[-1]["method"]["multiple"]) / EXIT_PLAN_FULL
+    decision), one that closes nothing, or one closing more than 100% (refused at input, X4, X5). A float, for
+    display: the rule compares plan_pays_exact."""
+    exact = plan_pays_exact(legs)
+    return None if exact is None else float(exact)
 
 
 def plan_pays_v0_14_0(legs: list[dict]) -> float | None:
@@ -427,6 +449,11 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
             out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_OVER_100", f"{ppath}.targets",
                                f"the {side} exit plan's legs close {closed}% together: the stage refuses it at input "
                                f"(\"The close percentages of an exit plan sum to at most 100\", probes X4, X5)"))
+        # RUNNER_UNDER_5 and LEG_UNDER_5 below each extend ONE measurement by the platform's own message text, and fail
+        # closed: S1 sent only a 3% runner ("A runner holds 0% or at least 5% of the position"), so a 1, 2 or 4% runner
+        # is refused on the sentence; S2 sent a 3% leg only as the FIRST leg ("A target closes at least 5%"), so a later
+        # leg of 1 - 4% is refused on the sentence too. Probe both at the next platform probe: a 3% leg that is not the
+        # first, and a 1% runner.
         elif 0 < runner < EXIT_PLAN_SHARE_MIN:
             out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_RUNNER_UNDER_5", f"{ppath}.targets",
                                f"the {side} exit plan leaves a {runner}% runner: the stage refuses it at input (\"A "
@@ -455,6 +482,12 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
                                f"the {side} exit plan closes {closed}% and leaves a {runner}% runner while "
                                f"POSITION_MANAGEMENT.trailingEnabled is false: the stage refuses it (\"nothing would "
                                f"exit it. Turn Trailing on, or close 100% across the plan's targets\", probes T1, T2)"))
+        elif trailing_enabled is None and runner > 0:
+            # the rule cannot be judged without Trailing: say so rather than pass the plan silently (review 2026-11-12)
+            out.append(Finding("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN", ppath,
+                               f"the {side} exit plan closes {closed}% and leaves a {runner}% runner, and "
+                               f"POSITION_MANAGEMENT.trailingEnabled is not known here: the stage refuses a runner "
+                               f"while Trailing is off (probes T1, T2). Pass the trailingEnabled the plan stages beside"))
         out_of_order = False
         for i, leg in enumerate(legs):
             method, lpath = leg["method"], f"{ppath}.targets[{i}]"
@@ -474,13 +507,13 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
                                    f"one before it\", probes X8, X9, X11, Z4)"))
         # a plan out of order is judged on its order alone: X11 (1.5R then 1.2R) pays 1.35R, below the minimum, and the
         # stage named only the order
-        pays = None if out_of_order else plan_pays(legs)
-        if pays is not None and _number(min_rr) and pays < min_rr:
+        pays = None if out_of_order else plan_pays_exact(legs)
+        if pays is not None and _number(min_rr) and math.isfinite(min_rr) and pays < _exact(min_rr):
             out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR", ppath,
-                               f"the {side} exit plan pays {round(pays, 4)}R (each share at its leg's R, a runner at the "
-                               f"last leg that closes a share), below this strategy's minimum risk-reward of {min_rr}: "
-                               f"the stage refuses it (\"every pair it makes would be refused\", probes Y1 - Y7, W1, "
-                               f"O1)"))
+                               f"the {side} exit plan pays {round(float(pays), 4)}R (each share at its leg's R, a "
+                               f"runner at the last leg that closes a share), below this strategy's minimum "
+                               f"risk-reward of {min_rr}: the stage refuses it (\"every pair it makes would be "
+                               f"refused\", probes Y1 - Y7, W1, O1)"))
         if len(legs) > 1 and any(leg["method"]["kind"] == "LEVEL" for leg in legs):
             out.append(Finding("warning", "TRADE_MENU_EXIT_PLAN_JUDGED_PER_DECISION", ppath,
                                f"the {side} exit plan mixes a level leg with others: the stage judges neither what it "

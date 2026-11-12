@@ -713,7 +713,8 @@ class StrategyPlan:
         """What the stage would say of the menu an UPDATE carries, offline: [] when the update does not stage
         TRADE_LEVEL_POLICY. A live strategy's migrated menu can hold levels the report does not yield (the platform's
         migration default names the Donchian and Bollinger bands on every strategy, measured 2026-11-11): restaging
-        the axis then is refused, and this says so before the stage does."""
+        the axis then is refused, and this says so before the stage does. A dial the restaged axis carries from the live
+        strategy off the stage's enforced step is a warning (EXECUTION_CARRIED_OFF_STEP, _carried_off_step)."""
         from .trade_levels import validate_menu
         from .validate import Finding
         axes = self.axes_update(current)
@@ -726,7 +727,9 @@ class StrategyPlan:
             return validate_menu(policy["tradeLevelMenu"],
                                  dials={k: v for k, v in policy.items() if k != "tradeLevelMenu"},
                                  sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
-                                 trailing_enabled=trailing)
+                                 trailing_enabled=trailing) + self._carried_off_step(axes)
+        # (Trailing unknown here means neither TRADE_LEVEL_POLICY nor POSITION_MANAGEMENT is staged: this update leaves
+        # the live runner and Trailing as they are, so the rule's TRAILING_UNKNOWN warning is not repeated below.)
         # The axis is not staged, so the live menu and dials stay as they are - but REPORT is restaged whole (the live
         # menu's levels were yielded by the OLD report), and POSITION_MANAGEMENT may be (switching Trailing off under
         # a runner). Every probe was a create: whether a stage that omits the axis re-judges the live menu is
@@ -741,6 +744,27 @@ class StrategyPlan:
                         f"(the live menu, not staged by this update, against the report and trailing this update "
                         f"stages; whether the stage re-judges it is unmeasured) {f.message}")
                 for f in would if f.severity == "error"]
+
+    def _carried_off_step(self, axes: dict) -> list:
+        """A warning per dial an UPDATE carries from the live strategy (the thesis does not name it) that is off the
+        step the stage enforces on it (omega.execution.ENFORCED_STEPS: minRiskRewardRatio 0.25, probe W2). A thesis
+        dial off its step is validate_execution's error; a carried one was the platform's own value, and what the stage
+        answers when an UPDATE restages it is unmeasured (every probe was a CREATE), so it is a warning
+        (review 2026-11-12)."""
+        from .execution import ENFORCED_STEPS, off_step
+        from .validate import Finding
+        named = self.thesis.execution or {}
+        out = []
+        for axis in ("TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT"):
+            for dial, value in (axes.get(axis) or {}).items():
+                if dial not in named and off_step(dial, value):
+                    out.append(Finding("warning", "EXECUTION_CARRIED_OFF_STEP", f"{axis}.{dial}",
+                                       f"this update restages {axis} carrying the live strategy's {dial}={value}, "
+                                       f"which is not a multiple of {ENFORCED_STEPS[dial]}: a CREATE is refused on it "
+                                       f"(\"{dial} must be a multiple of {ENFORCED_STEPS[dial]}\", probe W2); the "
+                                       f"stage's answer on an UPDATE is unmeasured. Name {dial} on its step in the "
+                                       f"thesis's execution to restage it"))
+        return out
 
     def _carry_section_keys(self, out: dict, current: dict) -> None:
         """Copy the current strategy's section keys onto `out`'s REPORT custom sections and

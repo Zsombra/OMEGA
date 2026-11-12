@@ -97,6 +97,14 @@ CATALOG_BOUND_ENFORCED: dict = {"minRiskRewardRatio": True, "minAtrPct": False}
 ENFORCED_STEPS: dict = {"minRiskRewardRatio": 0.25}
 
 
+def off_step(dial: str, value) -> bool:
+    """True when `value` is a number off the step ENFORCED_STEPS names for `dial` (False for any other dial)."""
+    if dial not in ENFORCED_STEPS or not isinstance(value, (int, float)) or isinstance(value, bool):
+        return False
+    step = ENFORCED_STEPS[dial]
+    return abs(value / step - round(value / step)) > 1e-9
+
+
 def validate_execution(overrides: dict) -> list[Finding]:
     out: list[Finding] = []
     for k, v in overrides.items():
@@ -115,12 +123,11 @@ def validate_execution(overrides: dict) -> list[Finding]:
                                    f"{'-inf' if lo is None else lo}-{'inf' if hi is None else hi}; "
                                    f"the v91 axes declare none, and since v89 the operator "
                                    f"bounds in the draft's diagnostics decide"))
-        if k in ENFORCED_STEPS and isinstance(v, (int, float)) and not isinstance(v, bool):
+        if off_step(k, v):
             step = ENFORCED_STEPS[k]
-            if abs(v / step - round(v / step)) > 1e-9:
-                out.append(Finding("error", "EXECUTION_OFF_STEP", f"execution.{k}",
-                                   f"{k}={v} is not a multiple of {step}: the stage refuses it as a draft error on "
-                                   f"the dial (\"{k} must be a multiple of {step}\", measured 2026-11-12, probe W2)"))
+            out.append(Finding("error", "EXECUTION_OFF_STEP", f"execution.{k}",
+                               f"{k}={v} is not a multiple of {step}: the stage refuses it as a draft error on "
+                               f"the dial (\"{k} must be a multiple of {step}\", measured 2026-11-12, probe W2)"))
         if k in CATALOG_BOUNDS and isinstance(v, (int, float)):
             lo, hi = CATALOG_BOUNDS[k]
             if not (lo <= v <= hi):
