@@ -1,0 +1,1736 @@
+{
+ "_what": "OMEGA limit probe at contract 171.0.0 (2026-11-12): (a) the platform's own last accepted chain window - the joint depth bound of a rolling-inner chain v0.12.2 measured at 161.0.0, re-measured at 171 on every 161 boundary, on every authorable main candle (5m, 15m, 1h, 4h) and on ETH - and its low end, a chainedWindow below the outer's served minimum (unsent and unchecked until now); three CREATE stages confirm the stage judges the column as the preview does. (b) the chained touchAtr maximum is NOT re-probed: v0.12.2 measured it at 161.0.0 (data/audit/authoring_limits_161_2026-11-11.json group B) and the served chainOuterParameters.levelInteraction.touchAtr are unchanged in the 171.0.0 corpus.",
+ "contractVersion": "171.0.0",
+ "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+ "contractVersionSource": "GET https://mcp.battlegrid.trade/mcp/version at 2026-11-12T14:08:58Z, 14:10:40Z (before the first preview), 14:12:57Z (before the first stage) and 14:14:48Z (after the last call): 171.0.0 / 588e449a every time.",
+ "startedAt": "2026-11-12T14:10:40Z",
+ "capturedAt": "2026-11-12T14:14:48Z",
+ "how": "The session's BattleGrid MCP tools (account connector), sequential, well under 3 requests/s. preview_strategy_report with source FIELDS, one custom section (benchmarkTicker and marketScope null); detail 'detailed' where a column renders (its conditionHold.maxWindow is recorded), 'concise' where a refusal is expected. stage_strategy_draft at draftVersion 0 (a CREATE: IDENTITY, TIMEFRAME_PROFILE, REPORT), each read back with get_strategy_draft, discarded with discard_strategy_draft at the version read, and read again (draft null). No draft was committed; nothing was bound, deployed or archived. `sentAt` / `stagedAt` is `date -u` read immediately before the call.",
+ "counts": {
+  "previews": 22,
+  "accepted": 4,
+  "refused": 18,
+  "refusedByCode": {
+   "REPORT_COLUMN_DEPTH_EXCEEDED": 10,
+   "REPORT_COLUMN_CONSTRUCTION_FAILED": 6,
+   "REPORT_TIMEFRAME_NOT_AUTHORABLE": 2
+  },
+  "stages": 3,
+  "staged": 3,
+  "stagedWithErrors": 2,
+  "discarded": 3,
+  "committed": 0,
+  "headersRendered": 14
+ },
+ "probes": [
+  {
+   "probe": "A1.last_accepted_batch",
+   "what": "every 161 'last rendered' boundary, and chainedWindow 2 (the served minimum) under each min-2 outer",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:10:40Z",
+   "tickers": [
+    "BTC",
+    "ETH"
+   ],
+   "timeframe": "1h",
+   "detail": "detailed",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2385
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 697,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 24
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "zscore",
+       "chainedWindow": 2427
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "rma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "roc",
+       "chainedWindow": 2360
+      },
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "ema",
+       "chainedWindow": 701
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "zscore",
+       "chainedWindow": 2
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "stddev",
+       "chainedWindow": 2
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "linregSlope",
+       "chainedWindow": 2
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "cci",
+       "chainedWindow": 2
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "rollingMin",
+       "chainedWindow": 2
+      },
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "rollingMax",
+       "chainedWindow": 2
+      }
+     ]
+    }
+   ],
+   "accepted": true,
+   "render": {
+    "headers": [
+     "RSI14_ema14_mean2385",
+     "RSI14_ema697_mean24",
+     "close_mean10_z2427",
+     "RSI14_rma10_roc2360",
+     "close_mean10_ema701",
+     "RSI14_ema14_z2",
+     "RSI14_ema14_sd2",
+     "RSI14_ema14_slope2",
+     "RSI14_ema14_cci2",
+     "RSI14_ema14_min2",
+     "RSI14_ema14_max2"
+    ],
+    "conditionHoldMaxWindow": {
+     "RSI14_ema14_mean2385": 50,
+     "RSI14_ema697_mean24": 52,
+     "close_mean10_z2427": 64,
+     "RSI14_rma10_roc2360": 50,
+     "close_mean10_ema701": 66,
+     "RSI14_ema14_z2": 2433,
+     "RSI14_ema14_sd2": 2433,
+     "RSI14_ema14_slope2": 2433,
+     "RSI14_ema14_cci2": 2433,
+     "RSI14_ema14_min2": 2433,
+     "RSI14_ema14_max2": 2433
+    },
+    "rows": [
+     [
+      "BTC",
+      50.75292125349677,
+      47.60710134604701,
+      -0.6281100862093796,
+      -31.427396299663755,
+      78338.30623403114,
+      -1,
+      1.0035398153442188,
+      -2.0070796306884375,
+      -66.66666666666667,
+      39.36800481947487,
+      41.37508445016331
+     ],
+     [
+      "ETH",
+      50.31926878620606,
+      46.450131557987525,
+      -1.304498670232114,
+      -34.73301723424023,
+      2300.57498791839,
+      -1,
+      0.8552907675617405,
+      -1.710581535123481,
+      -66.66666666666667,
+      38.634832818302606,
+      40.34541435342609
+     ]
+    ],
+    "budgetUsage": {
+     "sectionColumns": {
+      "used": 11,
+      "cap": 32
+     },
+     "columnLookback": {
+      "used": 1,
+      "cap": 64
+     },
+     "resultChars": {
+      "used": 11940,
+      "cap": 150000
+     }
+    }
+   },
+   "refusal": null
+  },
+  {
+   "probe": "A2.ema14.agg2386",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:17Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2386
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2386,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2385,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "A3.ema697.agg2364",
+   "what": "each window at its served maximum (innerWindowMaximum 697, windowMaximum 2364)",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:26Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 697,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2364
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × ema' chainedWindow 2364 reads 4774 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 26.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2364,
+     "need": 4774
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 26,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "A4.ema698.agg24",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:27Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 698,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 24
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × ema' chainedWindow 24 reads 2438 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 22.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 24,
+     "need": 2438
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 22,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "A5.close.agg10.z2428",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:38Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "zscore",
+       "chainedWindow": 2428
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'CLOSE × aggregate' chainedWindow 2428 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2427.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2428,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 2,
+     "maximum": 2427,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "aggregate",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "A6.rma10.roc2361",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:41Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "rma",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "roc",
+       "chainedWindow": 2361
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × rma' chainedWindow 2361 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2360.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2361,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2360,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "rma",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "A7.close.agg10.ema702",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:42Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "CLOSE",
+       "transformId": "aggregate",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 10,
+       "chainedTransformId": "ema",
+       "chainedWindow": 702
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'CLOSE × aggregate' chainedWindow 702 reads 2438 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 701.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 702,
+     "need": 2438
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 701,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "CLOSE",
+     "transformId": "aggregate",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "M.zscore.cw1",
+   "what": "chainedWindow 1, below the outer's served window minimum 2",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:53Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "zscore",
+       "chainedWindow": 1
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "message": "[column-grammar] transform 'zscore' requires params.chainedWindow >= 2 (got 1)",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "chainedTransformId": "zscore",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 14,
+     "chainedWindow": 1
+    },
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+     "candidates": [
+      "bars",
+      "chainedWindow",
+      "window"
+     ]
+    },
+    "context": {
+     "sectionKey": "custom:f2af8d41-7a55-89b2-8f00-c640f730f891",
+     "metric": "RSI14",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "M.stddev.cw1",
+   "what": "chainedWindow 1, below the outer's served window minimum 2",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:56Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "stddev",
+       "chainedWindow": 1
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "message": "[column-grammar] transform 'stddev' requires params.chainedWindow >= 2 (got 1)",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "chainedTransformId": "stddev",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 14,
+     "chainedWindow": 1
+    },
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+     "candidates": [
+      "bars",
+      "chainedWindow",
+      "window"
+     ]
+    },
+    "context": {
+     "sectionKey": "custom:fc4141b9-2a88-890a-8c52-ffc3cc396572",
+     "metric": "RSI14",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "M.linregSlope.cw1",
+   "what": "chainedWindow 1, below the outer's served window minimum 2",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:11:58Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "linregSlope",
+       "chainedWindow": 1
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "message": "[column-grammar] transform 'linregSlope' requires params.chainedWindow >= 2 (got 1)",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "chainedTransformId": "linregSlope",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 14,
+     "chainedWindow": 1
+    },
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+     "candidates": [
+      "bars",
+      "chainedWindow",
+      "window"
+     ]
+    },
+    "context": {
+     "sectionKey": "custom:e330db23-e2ea-8dbe-8f71-18cbeea8115d",
+     "metric": "RSI14",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "M.cci.cw1",
+   "what": "chainedWindow 1, below the outer's served window minimum 2",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:06Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "cci",
+       "chainedWindow": 1
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "message": "[column-grammar] transform 'cci' requires params.chainedWindow >= 2 (got 1)",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "chainedTransformId": "cci",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 14,
+     "chainedWindow": 1
+    },
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+     "candidates": [
+      "bars",
+      "chainedWindow",
+      "window"
+     ]
+    },
+    "context": {
+     "sectionKey": "custom:eeffb9a0-89e6-87b1-882e-c52ed0ffafdb",
+     "metric": "RSI14",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "M.rollingMin.cw1",
+   "what": "chainedWindow 1, below the outer's served window minimum 2",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:08Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "rollingMin",
+       "chainedWindow": 1
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "message": "[column-grammar] transform 'rollingMin' requires params.chainedWindow >= 2 (got 1)",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "chainedTransformId": "rollingMin",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 14,
+     "chainedWindow": 1
+    },
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+     "candidates": [
+      "bars",
+      "chainedWindow",
+      "window"
+     ]
+    },
+    "context": {
+     "sectionKey": "custom:749fc84a-6c04-84e0-8154-e216ab7218ab",
+     "metric": "RSI14",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "M.rollingMax.cw1",
+   "what": "chainedWindow 1, below the outer's served window minimum 2",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:10Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "rollingMax",
+       "chainedWindow": 1
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+    "message": "[column-grammar] transform 'rollingMax' requires params.chainedWindow >= 2 (got 1)",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0
+    ],
+    "receivedValue": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "chainedTransformId": "rollingMax",
+     "timeframe": {
+      "rel": "anchor"
+     },
+     "window": 14,
+     "chainedWindow": 1
+    },
+    "allowedDomain": {
+     "kind": "relation",
+     "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+     "candidates": [
+      "bars",
+      "chainedWindow",
+      "window"
+     ]
+    },
+    "context": {
+     "sectionKey": "custom:ecaeb47b-5c62-898b-88cb-37da5fac96bb",
+     "metric": "RSI14",
+     "transformId": "ema"
+    }
+   }
+  },
+  {
+   "probe": "T.4h.agg2385",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:19Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "4h",
+   "detail": "detailed",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2385
+      }
+     ]
+    }
+   ],
+   "accepted": true,
+   "render": {
+    "headers": [
+     "RSI14_ema14_mean2385"
+    ],
+    "conditionHoldMaxWindow": {
+     "RSI14_ema14_mean2385": 50
+    },
+    "rows": [
+     [
+      "BTC",
+      48.95545926168143
+     ]
+    ]
+   },
+   "refusal": null
+  },
+  {
+   "probe": "T.4h.agg2386",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:22Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "4h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2386
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2386,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2385,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "T.1d.agg2385",
+   "what": "1d is not a main candle: no depth was judged",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:25Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1d",
+   "detail": "detailed",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2385
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_TIMEFRAME_NOT_AUTHORABLE",
+    "message": "Timeframe '1d' is not authorable as a main candle.",
+    "path": [
+     "timeframe"
+    ],
+    "receivedValue": "1d",
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "5m",
+      "15m",
+      "1h",
+      "4h"
+     ]
+    }
+   }
+  },
+  {
+   "probe": "T.1d.agg2386",
+   "what": "1d is not a main candle: no depth was judged",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:28Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "1d",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2386
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_TIMEFRAME_NOT_AUTHORABLE",
+    "message": "Timeframe '1d' is not authorable as a main candle.",
+    "path": [
+     "timeframe"
+    ],
+    "receivedValue": "1d",
+    "allowedDomain": {
+     "kind": "enum",
+     "values": [
+      "5m",
+      "15m",
+      "1h",
+      "4h"
+     ]
+    }
+   }
+  },
+  {
+   "probe": "C.eth.agg2386",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:30Z",
+   "tickers": [
+    "ETH"
+   ],
+   "timeframe": "1h",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2386
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2386,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2385,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "T.15m.agg2385",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:38Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "15m",
+   "detail": "detailed",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2385
+      }
+     ]
+    }
+   ],
+   "accepted": true,
+   "render": {
+    "headers": [
+     "RSI14_ema14_mean2385"
+    ],
+    "conditionHoldMaxWindow": {
+     "RSI14_ema14_mean2385": 50
+    },
+    "rows": [
+     [
+      "BTC",
+      49.07078005364099
+     ]
+    ]
+   },
+   "refusal": null
+  },
+  {
+   "probe": "T.15m.agg2386",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:41Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "15m",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2386
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2386,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2385,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  },
+  {
+   "probe": "T.5m.agg2385",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:44Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "5m",
+   "detail": "detailed",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2385
+      }
+     ]
+    }
+   ],
+   "accepted": true,
+   "render": {
+    "headers": [
+     "RSI14_ema14_mean2385"
+    ],
+    "conditionHoldMaxWindow": {
+     "RSI14_ema14_mean2385": 50
+    },
+    "rows": [
+     [
+      "BTC",
+      48.92167708239438
+     ]
+    ]
+   },
+   "refusal": null
+  },
+  {
+   "probe": "T.5m.agg2386",
+   "what": "",
+   "tool": "preview_strategy_report",
+   "sentAt": "2026-11-12T14:12:46Z",
+   "tickers": [
+    "BTC"
+   ],
+   "timeframe": "5m",
+   "detail": "concise",
+   "sections": [
+    {
+     "benchmarkTicker": null,
+     "marketScope": null,
+     "columns": [
+      {
+       "metric": "RSI14",
+       "transformId": "ema",
+       "timeframe": {
+        "rel": "anchor"
+       },
+       "window": 14,
+       "chainedTransformId": "aggregate",
+       "chainedWindow": 2386
+      }
+     ]
+    }
+   ],
+   "accepted": false,
+   "render": null,
+   "refusal": {
+    "code": "VALIDATION_ERROR",
+    "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+    "message": "Column 'RSI14 × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+    "path": [
+     "sections",
+     0,
+     "columns",
+     0,
+     "chainedWindow"
+    ],
+    "receivedValue": {
+     "chainedWindow": 2386,
+     "need": 2437
+    },
+    "allowedDomain": {
+     "kind": "range",
+     "minimum": 1,
+     "maximum": 2385,
+     "inclusive": true
+    },
+    "context": {
+     "metric": "RSI14",
+     "transformId": "ema",
+     "depth": 2500,
+     "cap": 64
+    }
+   }
+  }
+ ],
+ "stages": [
+  {
+   "probe": "S1.stage.agg2386",
+   "what": "the first refused chainedWindow, staged as a CREATE draft",
+   "stagedAt": "2026-11-12T14:12:57Z",
+   "sent": {
+    "draftVersion": 0,
+    "axes": {
+     "IDENTITY": {
+      "name": "OMEGA limits probe 171 S1",
+      "description": "Read-only limit probe; discarded after read-back.",
+      "tagline": "probe"
+     },
+     "TIMEFRAME_PROFILE": {
+      "timeframe": "1h"
+     },
+     "REPORT": {
+      "sections": [
+       {
+        "kind": "custom",
+        "title": "Limits 171",
+        "benchmarkTicker": null,
+        "marketScope": null,
+        "notes": null,
+        "columns": [
+         {
+          "metric": "RSI14",
+          "transformId": "ema",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 14,
+          "chainedTransformId": "aggregate",
+          "chainedWindow": 2386
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "answer": {
+    "strategyId": "dbcf5652-e444-48be-affb-7f6f1f20baa6",
+    "version": 1,
+    "stagedAxes": [
+     "IDENTITY",
+     "TIMEFRAME_PROFILE",
+     "REPORT"
+    ],
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": null,
+       "message": "Column 'RSI14 × ema' chainedWindow 2386 reads 2437 bars for one value — at most 2436 of the 2500 readable bars, leaving the lookback budget 64; the largest chainedWindow that fits is 2385.",
+       "details": {
+        "authoringCode": "REPORT_COLUMN_DEPTH_EXCEEDED",
+        "path": [
+         "sections",
+         0,
+         "columns",
+         0,
+         "chainedWindow"
+        ],
+        "receivedValue": {
+         "chainedWindow": 2386,
+         "need": 2437
+        },
+        "allowedDomain": {
+         "kind": "range",
+         "minimum": 1,
+         "maximum": 2385,
+         "inclusive": true
+        },
+        "context": {
+         "metric": "RSI14",
+         "transformId": "ema",
+         "depth": 2500,
+         "cap": 64
+        },
+        "entryViolationCode": null,
+        "legalConfirmTimeframes": null
+       }
+      }
+     ],
+     "warnings": []
+    }
+   },
+   "readBack": {
+    "draftVersion": 1,
+    "keptAsSent": true,
+    "sameErrors": true
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  {
+   "probe": "S2.stage.agg2385.z2",
+   "what": "the last accepted chainedWindow and the outer minimum, staged",
+   "stagedAt": "2026-11-12T14:13:36Z",
+   "sent": {
+    "draftVersion": 0,
+    "axes": {
+     "IDENTITY": {
+      "name": "OMEGA limits probe 171 S2",
+      "description": "Read-only limit probe; discarded after read-back.",
+      "tagline": "probe"
+     },
+     "TIMEFRAME_PROFILE": {
+      "timeframe": "1h"
+     },
+     "REPORT": {
+      "sections": [
+       {
+        "kind": "custom",
+        "title": "Limits 171",
+        "benchmarkTicker": null,
+        "marketScope": null,
+        "notes": null,
+        "columns": [
+         {
+          "metric": "RSI14",
+          "transformId": "ema",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 14,
+          "chainedTransformId": "aggregate",
+          "chainedWindow": 2385
+         },
+         {
+          "metric": "RSI14",
+          "transformId": "ema",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 14,
+          "chainedTransformId": "zscore",
+          "chainedWindow": 2
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "answer": {
+    "strategyId": "978c6ae6-00c5-4c7b-a7f7-d23f9556850e",
+    "version": 1,
+    "stagedAxes": [
+     "IDENTITY",
+     "TIMEFRAME_PROFILE",
+     "REPORT"
+    ],
+    "diagnostics": {
+     "errors": [],
+     "warnings": [
+      {
+       "code": "NO_ENTRY_CONDITION",
+       "field": null,
+       "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+       "details": null
+      }
+     ]
+    }
+   },
+   "readBack": {
+    "draftVersion": 1,
+    "keptAsSent": true,
+    "sameErrors": true,
+    "impact": {
+     "operation": "CREATE",
+     "boundAgentCount": 0,
+     "openPositionCount": 0
+    }
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  },
+  {
+   "probe": "S3.stage.z1",
+   "what": "chainedWindow 1 under zscore, staged",
+   "stagedAt": "2026-11-12T14:14:14Z",
+   "sent": {
+    "draftVersion": 0,
+    "axes": {
+     "IDENTITY": {
+      "name": "OMEGA limits probe 171 S3",
+      "description": "Read-only limit probe; discarded after read-back.",
+      "tagline": "probe"
+     },
+     "TIMEFRAME_PROFILE": {
+      "timeframe": "1h"
+     },
+     "REPORT": {
+      "sections": [
+       {
+        "kind": "custom",
+        "title": "Limits 171",
+        "benchmarkTicker": null,
+        "marketScope": null,
+        "notes": null,
+        "columns": [
+         {
+          "metric": "RSI14",
+          "transformId": "ema",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 14,
+          "chainedTransformId": "zscore",
+          "chainedWindow": 1
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "answer": {
+    "strategyId": "cb178b32-525a-468c-adaf-e61cd4f53428",
+    "version": 1,
+    "stagedAxes": [
+     "IDENTITY",
+     "TIMEFRAME_PROFILE",
+     "REPORT"
+    ],
+    "diagnostics": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": null,
+       "message": "[column-grammar] transform 'zscore' requires params.chainedWindow >= 2 (got 1)",
+       "details": {
+        "authoringCode": "REPORT_COLUMN_CONSTRUCTION_FAILED",
+        "path": [
+         "sections",
+         0,
+         "columns",
+         0
+        ],
+        "receivedValue": {
+         "metric": "RSI14",
+         "transformId": "ema",
+         "chainedTransformId": "zscore",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "window": 14,
+         "chainedWindow": 1
+        },
+        "allowedDomain": {
+         "kind": "relation",
+         "rule": "column parameters, operands, and timeframe must satisfy the canonical transform contract",
+         "candidates": [
+          "bars",
+          "chainedWindow",
+          "window"
+         ]
+        },
+        "context": {
+         "sectionKey": "custom:f2af8d41-7a55-89b2-8f00-c640f730f891",
+         "metric": "RSI14",
+         "transformId": "ema"
+        },
+        "entryViolationCode": null,
+        "legalConfirmTimeframes": null
+       }
+      }
+     ],
+     "warnings": []
+    }
+   },
+   "readBack": {
+    "draftVersion": 1,
+    "keptAsSent": true,
+    "sameErrors": true
+   },
+   "discarded": true,
+   "draftAfterDiscard": null
+  }
+ ],
+ "notTouched": {
+  "touchAtrOnAChainedLevelInteraction": "measured 2026-11-11 at 161.0.0 (v0.12.2): 2 renders, 2.1 refused 'requires params.touchAtr from 0.1 to 2 in steps of 0.1'; modelled in omega.validate from Contract.chain_outer_parameters. The 171.0.0 corpus serves the same {minimum 0.1, maximum 2, step 0.1}; not re-probed (task rule).",
+  "spreadOperandPairs": "the 253,352 operand-expanded spread pairs (and v0.13.1's 161,516 chained-spread pairs) stay unrendered by standing decision (tests/test_render_coverage.py, the deliberate stop); not rendered."
+ }
+}

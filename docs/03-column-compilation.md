@@ -321,3 +321,26 @@ Two spreads contract 168 added, rendered and modelled in OMEGA v0.13.1:
 
 Each side's window is bound by the standalone depth (2436 / 704 / 308 / 2436 bars for aggregate / ema / rma / wma); the
 two sides are never added. Record: `docs/plans/2026-11-12-omega-v0-13-1-unmeasured-168.md`.
+
+## 2026-11-12: the chain window of a rolling-inner chain (measured at 161.0.0, re-measured at 171.0.0)
+
+The rolling-inner chains are aggregate, ema, rma, wma, rsi, cci and roc, each followed by a rolling outer. In these
+chains the inner keeps `window` and the outer reads `chainedWindow`. The header carries both, for example
+`RSI14_ema14_mean2385` or `close_mean10_z2427`.
+
+- **The top is one bar count, not two window limits:**
+  `need(inner, window) + need(outer, chainedWindow) - 1 <= 2436`. That is the 2500 readable bars less the 64-bar
+  lookback budget. Past it the column is refused with `REPORT_COLUMN_DEPTH_EXCEEDED`, and the message states the count
+  and the largest value that fits. The served `windowMaximum` / `innerWindowMaximum` are this rule with the other
+  window held at its default.
+  - The bound was measured at 161.0.0 and re-measured at 171.0.0 at every authorable main candle (5m, 15m, 1h, 4h) and
+    on BTC and ETH. Every boundary answered the same.
+  - A stage reports the same refusal as a draft error.
+- **The bottom is the outer's catalogued window minimum.** That minimum is 2 on zscore, stddev, linregSlope, cci,
+  rollingMin and rollingMax. Below it the column is refused with "[column-grammar] transform 'zscore' requires
+  params.chainedWindow >= 2 (got 1)" (`REPORT_COLUMN_CONSTRUCTION_FAILED`). This was measured at 171.0.0, and omega
+  reports it as `CHAINED_WINDOW_BELOW_MINIMUM`.
+- A `chainedWindow` on any other chain is refused (`CHAINED_WINDOW_REFUSED`), because there the outer reads `window`.
+
+Records: `docs/plans/2026-11-05-omega-reextraction-148.md` ("v0.12.2") and
+`docs/plans/2026-11-12-omega-v0-14-1-limits.md`.

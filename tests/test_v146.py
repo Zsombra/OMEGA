@@ -316,5 +316,6 @@ def test_the_version_moved_past_v0_10_2():
     # 0.12.2 on 2026-11-11 (the joint depth bound, the chained touchAtr maximum); 0.13.0 the same day (re-extracted at
     # contract 168.3.0: the trade level menu, 581 metrics, tests/test_v168.py); 0.13.1 on 2026-11-12 (what 168 served and
     # 0.13.0 left unmeasured, measured at 169.4.0 and modelled: tests/test_v169.py); 0.14.0 the same day (contract 170's
-    # exit plans, pinned at 171.0.0: tests/test_exit_plans_170.py)
-    assert 'version = "0.10.2"' not in text and 'version = "0.14.0"' in text
+    # exit plans, pinned at 171.0.0: tests/test_exit_plans_170.py); 0.14.1 the same day (the chain window limits measured
+    # at 171.0.0: tests/test_v0_14_1.py)
+    assert 'version = "0.10.2"' not in text and 'version = "0.14.1"' in text
