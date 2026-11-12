@@ -43,15 +43,16 @@ def _codes(column: Column) -> list[tuple[str, str]]:
 def test_the_manifest_records_the_168_extraction_and_keeps_161_as_history():
     # since 2026-11-12 the 168.3.0 block is the `supersedes` of the 169.4.0 re-read (tests/test_v169.py), as are both
     # write surfaces
-    extraction = MANIFEST["supersedes"]
-    assert (extraction["servedContractVersion"], extraction["extractedOn"]) == ("168.3.0", "2026-11-11")
+    from tests.manifest_chain import extraction as extraction_of, surface as surface_of
+    extraction = extraction_of("168.3.0", MANIFEST)
+    assert extraction["extractedOn"] == "2026-11-11"
     assert BUILD in extraction["contractVersionSource"]
     previous = extraction["supersedes"]
     assert (previous["servedContractVersion"], previous["extractedOn"], previous["counts"]["metrics"]) == (
         "161.0.0", "2026-11-09", 534)
     assert previous["supersedes"]["servedContractVersion"] == "146.0.1"
-    surface = MANIFEST["writeSurface"]["supersedes"]
-    assert (surface["servedContractVersion"], surface["buildSha"]) == ("168.3.0", BUILD)
+    surface = surface_of("168.3.0", MANIFEST)
+    assert surface["buildSha"] == BUILD
     assert surface["schema"] == "data/contract/stage_strategy_draft/schema_20261111T213257Z.json"
     assert surface["supersedes"]["servedContractVersion"] == "161.0.0"
 
@@ -61,7 +62,8 @@ def test_the_manifest_counts_are_the_corpus():
     # spread's 660 shapes, modelled 2026-11-12) - the top block's counts are pinned in tests/test_v169.py
     c = load()
     legal = sum(len(m.transforms) for m in c.metrics.values())
-    counts = MANIFEST["supersedes"]["counts"]
+    from tests.manifest_chain import extraction as extraction_of
+    counts = extraction_of("168.3.0", MANIFEST)["counts"]
     assert (counts["metrics"], counts["families"], counts["authorableTransforms"]) == (
         len(c.metrics), len({m.family for m in c.metrics.values()}), len(c.transforms)) == (581, 14, 30)
     assert (counts["composabilityCells"], counts["composabilityLegal"]) == (581 * 30, legal) == (17430, 4735)
@@ -72,9 +74,12 @@ def test_the_manifest_counts_are_the_corpus():
 def test_the_two_captures_of_the_day_hold_the_same_six_tools():
     # the menu was measured at 168.2.0 (fifteen drafts) and at 168.3.0 (fifteen): one write surface
     first = json.loads((ROOT / "data/contract/stage_strategy_draft/schema_20261111T183243Z.json").read_text(encoding="utf-8"))
-    pinned = json.loads((ROOT / MANIFEST["writeSurface"]["supersedes"]["schema"]).read_text(encoding="utf-8"))
+    from tests.manifest_chain import surface as surface_of
+    pinned = json.loads((ROOT / surface_of("168.3.0", MANIFEST)["schema"]).read_text(encoding="utf-8"))
     assert (first["contractVersion"], pinned["contractVersion"], pinned["buildSha"]) == ("168.2.0", "168.3.0", BUILD)
-    assert all(stage_schema()[tool] == pinned[tool] for tool in MANIFEST["writeSurface"]["tools"])   # the 169.4.0 one
+    # the six draft tools were the same at 169.4.0; 170 moved the trade level menu (tests/test_exit_plans_170.py)
+    nineteen = json.loads((ROOT / surface_of("169.4.0", MANIFEST)["schema"]).read_text(encoding="utf-8"))
+    assert all(nineteen[tool] == pinned[tool] for tool in MANIFEST["writeSurface"]["tools"])
     for tool in MANIFEST["writeSurface"]["tools"]:
         assert first[tool] == pinned[tool], tool
     assert all(all(parts.values()) for parts in pinned["managerRowAgrees"].values())

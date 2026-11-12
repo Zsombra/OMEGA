@@ -69,10 +69,10 @@ def test_the_capture_names_its_contract_build_and_source():
     # down since the 161.0.0 capture of 2026-11-09 (the 149.1.0 one is the first `supersedes`)
     # 2026-11-11, contract 168.3.0: three levels down - the manifest names the 168.3.0 capture, the 161.0.0 one is its
     # `supersedes`, then 149.1.0, then this one
-    # 2026-11-12, contract 169.4.0: four levels down - the 169.4.0 capture on top, then 168.3.0, 161.0.0, 149.1.0
-    surface = _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]
-    assert surface["servedContractVersion"] == "169.4.0"
-    surface = surface["supersedes"]
+    # 2026-11-12: by version (tests/manifest_chain.py) - 171.0.0 on top that morning, then 169.4.0, 168.3.0, 161.0.0
+    from tests.manifest_chain import surface as surface_of
+    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "171.0.0"
+    surface = surface_of("168.3.0")
     assert [surface["servedContractVersion"], surface["supersedes"]["servedContractVersion"],
             surface["supersedes"]["supersedes"]["servedContractVersion"]] == ["168.3.0", "161.0.0", "149.1.0"]
     manifest = surface["supersedes"]["supersedes"]["supersedes"]

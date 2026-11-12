@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261112T070510Z.json",
-  "sha256": "6268ecafc3321f0a6451b2ddc67921c22388da002e86b6d7eb30ce2cb873b00b",
-  "contractVersion": "169.4.0",
-  "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
-  "observedAt": "2026-11-12T06:15:13Z"
+  "schema": "data/contract/stage_strategy_draft/schema_20261112T093211Z.json",
+  "sha256": "0ad845fa8b0a568b6fbd4584f6ecb60bdcaa0d477661c7ec6d01c12d253e2deb",
+  "contractVersion": "171.0.0",
+  "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+  "observedAt": "2026-11-12T09:22:19Z"
  },
  "clauseOperators": [
   "lt",

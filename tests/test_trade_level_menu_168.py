@@ -3,6 +3,10 @@
 data/audit/trade_level_menu_168_2026-11-11.json holds thirty create drafts (fifteen at 168.2.0, fifteen at 168.3.0),
 each staged, read back and discarded. Every probe is replayed here offline: where the stage answered clean, omega finds
 no error; where it answered an error, omega raises one on the SAME field.
+
+Since contract 170 (2026-11-12) the menu's profit side is `exitPlans`, not `targets`: the probes replay against the
+168.3.0 capture they were measured on (SCHEMA_168, `schema=`), and the plans omega generates - which follow the pinned
+write schema - are judged in the 170 form (tests/test_exit_plans_170.py has the exit plan's own probes).
 """
 from __future__ import annotations
 
@@ -17,6 +21,7 @@ from omega import trade_levels as tl
 from omega.generate import AXES, PRESETS, Thesis, plan
 
 ROOT = Path(__file__).resolve().parents[1]
+SCHEMA_168 = json.loads((ROOT / "data/contract/stage_strategy_draft/schema_20261111T213257Z.json").read_text(encoding="utf-8"))
 RECORD = json.loads((ROOT / tl.PROBES).read_text(encoding="utf-8"))
 BASE = RECORD["basePlan"]
 PROBES = RECORD["probes"]
@@ -31,7 +36,8 @@ def _sections(probe: dict) -> list[dict]:
 
 
 def _offline(probe: dict) -> list:
-    found = tl.validate_menu(probe["sent"]["menu"], dials=BASE["dials"], sections=_sections(probe), anchor=BASE["anchor"])
+    found = tl.validate_menu(probe["sent"]["menu"], dials=BASE["dials"], sections=_sections(probe), anchor=BASE["anchor"],
+                             schema=SCHEMA_168)
     entry = probe["sent"]["entry"]["entry"]
     return found + tl.validate_entry_levels(entry, sections=_sections(probe), anchor=BASE["anchor"])
 
@@ -50,7 +56,8 @@ def _stop_on(ref) -> dict:
 
 
 def _codes(menu, sections=None) -> set[str]:
-    found = tl.validate_menu(menu, dials=BASE["dials"], sections=sections or BASE["reportSections"], anchor=BASE["anchor"])
+    found = tl.validate_menu(menu, dials=BASE["dials"], sections=sections or BASE["reportSections"], anchor=BASE["anchor"],
+                             schema=SCHEMA_168)
     return {f.code for f in found}
 
 
@@ -154,7 +161,8 @@ def test_what_was_not_measured_is_refused_not_guessed():
 ])
 def test_a_level_the_write_schema_refuses_is_a_shape_finding_never_a_crash(ref, where):
     """Review 2026-11-12: each of these was accepted, or raised, before the menu was walked against the write schema."""
-    found = tl.validate_menu(_stop_on(ref), dials=BASE["dials"], sections=BASE["reportSections"], anchor=BASE["anchor"])
+    found = tl.validate_menu(_stop_on(ref), dials=BASE["dials"], sections=BASE["reportSections"], anchor=BASE["anchor"],
+                             schema=SCHEMA_168)
     assert found and {f.code for f in found} <= {"TRADE_MENU_SHAPE", "TRADE_MENU_LEVEL_UNKNOWN_METRIC"}
     assert any(where in f.path for f in found), [(f.code, f.path) for f in found]
 
@@ -170,7 +178,8 @@ def test_a_level_the_write_schema_refuses_is_a_shape_finding_never_a_crash(ref, 
      "SHORT": {"stops": [{"kind": "ATR", "atrMultiple": 1}], "targets": [{"kind": "R_MULTIPLE", "multiple": 2}]}},
 ])
 def test_a_malformed_menu_is_a_shape_finding_never_a_crash(menu):
-    found = tl.validate_menu(menu, dials=BASE["dials"], sections=BASE["reportSections"], anchor=BASE["anchor"])
+    found = tl.validate_menu(menu, dials=BASE["dials"], sections=BASE["reportSections"], anchor=BASE["anchor"],
+                             schema=SCHEMA_168)
     assert found and {f.code for f in found} == {"TRADE_MENU_SHAPE"} and all(f.severity == "error" for f in found)
 
 
@@ -181,27 +190,27 @@ def test_an_unserved_or_malformed_level_metric_is_its_own_code():
 
 def test_the_default_menu_is_the_atr_and_r_part_of_the_platforms_migration_default():
     # read 2026-11-11 from three live strategies: ATR 1 / 1.5 / 2 whatever the stop range, R from the minimum up
-    assert tl.default_menu(1.5)["LONG"] == {
+    assert tl.default_menu(1.5, SCHEMA_168)["LONG"] == {
         "stops": [{"kind": "ATR", "atrMultiple": m} for m in (1, 1.5, 2)],
         "targets": [{"kind": "R_MULTIPLE", "multiple": m} for m in (1.5, 2, 3)]}
-    assert [t["multiple"] for t in tl.default_menu(2)["SHORT"]["targets"]] == [2, 3]          # VWAP Reject 4h, TPO LONG
-    assert [t["multiple"] for t in tl.default_menu(2.5)["LONG"]["targets"]] == [3]
-    assert [t["multiple"] for t in tl.default_menu(3)["LONG"]["targets"]] == [3]
-    menu = tl.default_menu(1.5)
+    assert [t["multiple"] for t in tl.default_menu(2, SCHEMA_168)["SHORT"]["targets"]] == [2, 3]   # VWAP Reject 4h, TPO LONG
+    assert [t["multiple"] for t in tl.default_menu(2.5, SCHEMA_168)["LONG"]["targets"]] == [3]
+    assert [t["multiple"] for t in tl.default_menu(3, SCHEMA_168)["LONG"]["targets"]] == [3]
+    menu = tl.default_menu(1.5, SCHEMA_168)
     assert menu["LONG"] == menu["SHORT"] and menu["LONG"] is not menu["SHORT"]
     assert PROBES["tc_atr_r_menu"]["sent"]["menu"] == menu          # exactly the menu the stage accepted clean
     # a dial that is not a number is the axis walk's to refuse: the menu builder does not raise on it
     for bad in ("2", None, True, math.nan):
-        assert [t["multiple"] for t in tl.default_menu(bad)["LONG"]["targets"]] == [1.5, 2, 3]
+        assert [t["multiple"] for t in tl.default_menu(bad, SCHEMA_168)["LONG"]["targets"]] == [1.5, 2, 3]
 
 
 def test_the_schema_bounds_are_read_from_the_pinned_write_surface():
-    assert tl.menu_required() is True
-    assert tl.list_bounds("stops") == (1, 8) and tl.list_bounds("targets") == (1, 8)
-    assert len(tl.level_knobs()) == 26 and {"period", "stdDev", "usedUpOnClose"} <= set(tl.level_knobs())
+    assert tl.menu_required(SCHEMA_168) is True and tl.menu_form(SCHEMA_168) == "targets"
+    assert tl.list_bounds("stops", SCHEMA_168) == (1, 8) and tl.list_bounds("targets", SCHEMA_168) == (1, 8)
+    assert len(tl.level_knobs(SCHEMA_168)) == 26 and {"period", "stdDev", "usedUpOnClose"} <= set(tl.level_knobs(SCHEMA_168))
     side = {"stops": [{"kind": "ATR", "atrMultiple": 6}], "targets": [{"kind": "R_MULTIPLE", "multiple": 11}]}
     found = tl.validate_menu({"LONG": side, "SHORT": copy.deepcopy(side)}, dials=BASE["dials"],
-                             sections=BASE["reportSections"], anchor=BASE["anchor"])
+                             sections=BASE["reportSections"], anchor=BASE["anchor"], schema=SCHEMA_168)
     assert {(f.code, f.path.rsplit(".", 1)[-1]) for f in found if f.severity == "error"} == {
         ("TRADE_MENU_SHAPE", "atrMultiple"), ("TRADE_MENU_SHAPE", "multiple")}
 
@@ -240,7 +249,9 @@ def test_every_preset_stages_the_default_menu_with_no_finding(preset):
 def test_a_thesis_minimum_moves_the_default_targets_and_a_thesis_menu_wins():
     base = PRESETS["trend-continuation"]
     raised = plan(Thesis(**{**base.__dict__, "execution": {"minRiskRewardRatio": 2}}))
-    assert [t["multiple"] for t in raised.axes()["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]["LONG"]["targets"]] == [2, 3]
+    # the plan follows the pinned write schema: since contract 170 each R target is a one-leg exit plan
+    plans = raised.axes()["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]["LONG"]["exitPlans"]
+    assert [p["targets"][0]["method"]["multiple"] for p in plans] == [2, 3]
     own = tl.default_menu(1.5)
     own["LONG"]["stops"].append({"kind": "LEVEL", "level": tl.level_ref("SMA200"), "bufferAtrMultiple": 0.5})
     named = plan(Thesis(**{**base.__dict__, "trade_level_menu": own}))
@@ -248,7 +259,7 @@ def test_a_thesis_minimum_moves_the_default_targets_and_a_thesis_menu_wins():
     assert named.menu_findings() == []                    # the preset's report reads SMA200 (distance): probe V1
     below = tl.default_menu(1.5)
     refused = plan(Thesis(**{**base.__dict__, "execution": {"minRiskRewardRatio": 2}, "trade_level_menu": below}))
-    assert {f.code for f in refused.menu_findings()} == {"TRADE_MENU_TARGET_BELOW_MIN_RR"}
+    assert {f.code for f in refused.menu_findings()} == {"TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR"}     # 170: what a plan pays
     assert any(line.startswith("trade level menu error") for line in refused.critique())
     # a menu that is not a menu: findings and a critique line, never an exception (review 2026-11-12)
     broken = plan(Thesis(**{**base.__dict__, "trade_level_menu": ["not", "a", "menu"]}))
@@ -258,7 +269,8 @@ def test_a_thesis_minimum_moves_the_default_targets_and_a_thesis_menu_wins():
 
 def test_an_update_carries_the_live_menu_and_never_invents_one():
     base = PRESETS["trend-continuation"]
-    live_menu = PROBES["tc_default_menu"]["sent"]["menu"]          # the platform's migration default, bands included
+    # the platform's migration default, bands included, as 170 holds it (each target a one-leg exit plan)
+    live_menu = tl.migrate_menu(PROBES["tc_default_menu"]["sent"]["menu"])
     current = {"TRADE_LEVEL_POLICY": {**BASE["dials"], "tradeLevelMenu": live_menu}}
 
     untouched = plan(base)

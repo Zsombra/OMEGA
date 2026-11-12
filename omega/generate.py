@@ -480,8 +480,9 @@ class StrategyPlan:
         out += [f"trade level menu {f.severity}: {f}" for f in findings]
         menu = self.trade_level_menu()
         sizes = ("" if any(f.severity == "error" for f in findings) or not isinstance(menu, dict) else
-                 " - " + "; ".join(f"{side} {len(menu[side]['stops'])} stop(s), {len(menu[side]['targets'])} target(s)"
-                                   for side in menu))
+                 " - " + "; ".join(f"{side} {len(menu[side]['stops'])} stop(s), " + (
+                                       f"{len(menu[side]['exitPlans'])} exit plan(s)" if "exitPlans" in menu[side]
+                                       else f"{len(menu[side]['targets'])} target(s)") for side in menu))
         out.append("trade level menu: " + ("the thesis's own" if self.thesis.trade_level_menu is not None else
                                            "default (the platform's migration ATR stops and R targets)") + sizes)
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **ov}
@@ -557,9 +558,12 @@ class StrategyPlan:
         """The menu this plan stages (contract 168): the thesis's own, else the default built from the effective
         minRiskRewardRatio. A copy: the caller may rewrite it."""
         from .execution import PLATFORM_EXECUTION_DEFAULTS
-        from .trade_levels import default_menu
+        from .trade_levels import default_menu, menu_form, migrate_menu
         if self.thesis.trade_level_menu is not None:
-            return copy.deepcopy(self.thesis.trade_level_menu)
+            # contract 170: a thesis menu still naming 168's `targets` stages as the platform migrated every stored
+            # one - each target an exit plan of one leg closing 100% (omega.trade_levels.migrate_menu)
+            own = copy.deepcopy(self.thesis.trade_level_menu)
+            return migrate_menu(own) if menu_form() == "exitPlans" else own
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
         return default_menu(eff["minRiskRewardRatio"])
 
@@ -689,9 +693,12 @@ class StrategyPlan:
 
     def update_menu(self, current: dict | None) -> dict:
         """The menu an UPDATE stages: the thesis's own, else the live strategy's (`current` TRADE_LEVEL_POLICY
-        `tradeLevelMenu`), copied. Neither: ValueError."""
+        `tradeLevelMenu`), copied. Neither: ValueError. A thesis menu in 168's `targets` form is migrated as the platform
+        migrated stored menus (contract 170); the live one is copied as the platform holds it."""
+        from .trade_levels import menu_form, migrate_menu
         if self.thesis.trade_level_menu is not None:
-            return copy.deepcopy(self.thesis.trade_level_menu)
+            own = copy.deepcopy(self.thesis.trade_level_menu)
+            return migrate_menu(own) if menu_form() == "exitPlans" else own
         live = ((current or {}).get("TRADE_LEVEL_POLICY") or {}).get("tradeLevelMenu")
         if live is None:
             raise ValueError(

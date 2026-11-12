@@ -40,6 +40,31 @@ spelled {abs: ...} is refused as not yielded (their equivalence is unmeasured; o
 Every probe was a CREATE. Whether a stage that omits TRADE_LEVEL_POLICY re-judges the strategy's live menu against a
 restaged REPORT is unmeasured (StrategyPlan.update_menu_findings warns).
 
+**Contract 170.0.0 (2026-11-12, undocumented): exit plans replace the targets.** Per direction `targets` became
+`exitPlans`: 1 - 8 plans, each {targets: 1 - 4 legs {method: R_MULTIPLE {multiple} | LEVEL {level}, closePct: an
+integer 0 - 100}} - a position can scale out. The platform migrated every stored strategy one to one: each old target
+became a plan of ONE leg closing 100% (read 2026-11-12 08:55Z on all 16 account strategies). The rules, measured on 32
+create stages at 170.0.0 (09:02 - 09:11Z): 26 drafts staged, read back and discarded, none committed, and 6 refused
+at input (EXIT_PLAN_PROBES; the probe names below):
+
+  * Refused at input (no draft): a plan whose legs close more than 100% together ("The close percentages of an exit
+    plan sum to at most 100": X4 60 + 60, X5 50 + 100), a first leg closing 0% ("An exit plan's first target closes a
+    share", X7), more than 4 legs (X13), more than 8 plans (X14), a closePct above 100 (X16).
+  * Accepted: legs closing less than 100% together - the rest of the position runs (X3 50 + 30, X6 one leg of 50%); a
+    later leg closing 0% (Y8); a level leg (X15, Y10); repeated plans (X17); plans of different shapes (X18).
+  * Refused at stage as a draft error: an R leg not farther than the R leg IMMEDIATELY before it ("A LONG exit plan's
+    targets run away from entry: 1.5R follows 3R. List each target farther than the one before it": X8, X9 equal, X11,
+    Z4); a level leg between two R legs breaks the comparison (Z3 accepted 1.5R, level, 1.2R).
+  * The minimum risk-reward is judged on what the PLAN pays: the closePct-weighted mean of its legs' R over the share
+    it closes, at or above minRiskRewardRatio ("The LONG exit plan pays 1.3R, below this strategy's minimum
+    risk-reward of 1.5": Y2 1R 50 + 1.6R 50, Y3, Y7; 1.4R Y4 1R 80 + 3R 20; 1R Y1, and Y6 one leg of 1R closing 50%;
+    accepted X10 1R 50 + 3R 50 = 2R, Y5 = 1.8R, Y8 1.5R exactly). A plan out of order is judged on its order alone
+    (X11 pays 1.35R and only the order was refused). A plan with a level leg is not judged at stage
+    (Z1 1R 50 + a level accepted): its R is known only at a decision, which refuses a pair TARGETS_OUT_OF_ORDER /
+    RISK_REWARD_TOO_LOW (the 170 gate-block reasons) - a warning here.
+  * A level leg follows the target level rules above, and one level cannot be a stop and a leg of the same direction
+    (Y9, as V8).
+
 The default menu (`default_menu`) is the ATR / R part of the platform's migration default, read 2026-11-11 from three
 live strategies (Dunkirk, VWAP Reject 4h, TPO Prior Session Levels LONG): stops ATR 1 / 1.5 / 2 whatever the strategy's
 own stop range is (VWAP Reject 4h: maxStopLossAtrMultiple 1.8, ATR 2 in its menu), targets R 1.5 / 2 / 3 from the
@@ -50,7 +75,6 @@ from __future__ import annotations
 
 import copy
 import json
-from functools import lru_cache
 
 from . import preflight as P
 from .contract import load, stage_schema
@@ -63,32 +87,46 @@ DEFAULT_R_TARGETS = (1.5, 2, 3)
 LEVEL_REF_KEYS = ("metric", "timeframe", "bars", "offset", "knobs", "windowExtreme")
 LEVEL_TRIGGERS = ("STOP_THROUGH_LEVEL", "ON_RETEST")
 PROBES = "data/audit/trade_level_menu_168_2026-11-11.json"
+EXIT_PLAN_PROBES = "data/audit/exit_plans_170_2026-11-12.json"
+EXIT_PLAN_FULL = 100          # a plan's legs close at most 100% of the position together
 
 
-@lru_cache(maxsize=1)
-def _root() -> dict:
-    return stage_schema()[STAGE]["inputSchema"]
+def _doc(schema: dict | None) -> dict:
+    """The stage-schema capture judged against: the pinned one (omega.contract.stage_schema) unless a caller names
+    another - the 168 probes replay against the 168.3.0 capture, which served `targets`."""
+    return stage_schema() if schema is None else schema
 
 
-def _axis(name: str) -> dict:
-    return _root()["properties"]["axes"]["properties"][name]
+def _root(schema: dict | None = None) -> dict:
+    return _doc(schema)[STAGE]["inputSchema"]
 
 
-def menu_required() -> bool:
-    """Does the pinned write schema require a menu on TRADE_LEVEL_POLICY? (True from the 168 capture on; a capture
+def _axis(name: str, schema: dict | None = None) -> dict:
+    return _root(schema)["properties"]["axes"]["properties"][name]
+
+
+def menu_required(schema: dict | None = None) -> bool:
+    """Does the write schema require a menu on TRADE_LEVEL_POLICY? (True from the 168 capture on; a capture
     before it has no such property, and an axis carrying one would be refused as an unrecognized key.)"""
-    return "tradeLevelMenu" in _axis("TRADE_LEVEL_POLICY").get("required", [])
+    return "tradeLevelMenu" in _axis("TRADE_LEVEL_POLICY", schema).get("required", [])
 
 
-def list_bounds(kind: str) -> tuple[int, int]:
-    """`stops` | `targets` -> (minItems, maxItems), read from the write schema."""
-    node = _root()["$defs"]["directionTradeLevelMenu"]["properties"][kind]
+def menu_form(schema: dict | None = None) -> str:
+    """How a direction names its profit side in the write schema: `exitPlans` since contract 170, `targets` at 168."""
+    return "exitPlans" if "exitPlans" in _root(schema)["$defs"]["directionTradeLevelMenu"]["properties"] else "targets"
+
+
+def list_bounds(kind: str, schema: dict | None = None) -> tuple[int, int]:
+    """`stops` | `targets` (168) | `exitPlans` (170) | `legs` (170: the targets of one exit plan) -> (minItems,
+    maxItems), read from the write schema."""
+    node = (_root(schema)["$defs"]["exitPlan"]["properties"]["targets"] if kind == "legs" else
+            _root(schema)["$defs"]["directionTradeLevelMenu"]["properties"][kind])
     return node["minItems"], node["maxItems"]
 
 
-def level_knobs() -> tuple[str, ...]:
+def level_knobs(schema: dict | None = None) -> tuple[str, ...]:
     """The knob names a level reference carries under `knobs` (the write schema's conditionLevelRef)."""
-    return tuple(_root()["$defs"]["conditionLevelRef"]["properties"]["knobs"]["properties"])
+    return tuple(_root(schema)["$defs"]["conditionLevelRef"]["properties"]["knobs"]["properties"])
 
 
 def level_ref(metric: str, timeframe: dict | None = None, *, knobs: dict | None = None, offset: int = 0) -> dict:
@@ -97,30 +135,54 @@ def level_ref(metric: str, timeframe: dict | None = None, *, knobs: dict | None 
             "knobs": dict(knobs or {}), "windowExtreme": None}
 
 
-def default_menu(min_rr) -> dict:
+def default_menu(min_rr, schema: dict | None = None) -> dict:
     """The menu a plan stages when its thesis names none (see the module docstring for where it was read). A
     minRiskRewardRatio that is not a number is not this function's to judge (the axis walk refuses the dial): the
-    three targets are kept."""
+    three targets are kept. Since contract 170 each R target is an exit plan of one leg closing 100% - the shape the
+    platform migrated every stored target to."""
     usable = isinstance(min_rr, (int, float)) and not isinstance(min_rr, bool) and min_rr == min_rr
     targets = ([m for m in DEFAULT_R_TARGETS if m >= min_rr] or [min_rr]) if usable else list(DEFAULT_R_TARGETS)
     side = {"stops": [{"kind": "ATR", "atrMultiple": m} for m in DEFAULT_ATR_STOPS],
             "targets": [{"kind": "R_MULTIPLE", "multiple": m} for m in targets]}
+    if menu_form(schema) == "exitPlans":
+        side = migrate_side(side)
     return {s: copy.deepcopy(side) for s in SIDES}
 
 
+def migrate_side(side: dict) -> dict:
+    """One direction of a 168 menu ({stops, targets}) as contract 170 holds it ({stops, exitPlans}): each target an
+    exit plan of ONE leg closing 100% - the platform's own migration, read on all 16 account strategies at 170.0.0
+    (2026-11-12). Anything else in `side` is kept as it is."""
+    out = {k: copy.deepcopy(v) for k, v in side.items() if k != "targets"}
+    out["exitPlans"] = [{"targets": [{"method": copy.deepcopy(t), "closePct": EXIT_PLAN_FULL}]}
+                        for t in side.get("targets") or []]
+    return out
+
+
+def migrate_menu(menu: dict) -> dict:
+    """A whole 168 menu in the 170 form (migrate_side per direction); a menu already in it, or not a menu, as it is.
+    Only a menu whose every direction names `targets` and no `exitPlans` is migrated: one carrying both, or one side in
+    each form, is left as written, and the write schema's walk refuses it (review 2026-11-12: migrating a side with
+    both silently replaced its exit plans)."""
+    if not isinstance(menu, dict) or not all(isinstance(menu.get(s), dict) and "targets" in menu[s]
+                                             and "exitPlans" not in menu[s] for s in SIDES):
+        return menu
+    return {**menu, **{s: migrate_side(menu[s]) for s in SIDES}}
+
+
 # --- the write schema's shape ------------------------------------------------------------------------------------
-def _shape(value, node: dict, prefix: str, code: str) -> list[Finding]:
+def _shape(value, node: dict, prefix: str, code: str, schema: dict | None = None) -> list[Finding]:
     """Every FAIL of walking `value` against the write schema's `node`, as findings under `prefix`. The walk checks a
     metric key against the served roster too (omega.preflight.read_roster), so a key the platform does not serve is
     refused here."""
     out: list[Finding] = []
-    for f in P.diff_schema(value, node, _root(), roster=P.read_roster(stage_schema())):
+    for f in P.diff_schema(value, node, _root(schema), roster=P.read_roster(_doc(schema))):
         if f.verdict != "FAIL":
             continue
         path = prefix + (f.path if f.path.startswith("[") or not f.path else "." + f.path)
         unknown_metric = f.cls in ("ENUM", "PATTERN") and f.path.endswith(".metric")
         out.append(Finding("error", "TRADE_MENU_LEVEL_UNKNOWN_METRIC" if unknown_metric else code, path,
-                           f"{f.detail} [{f.cls}: the write schema of {stage_schema()['contractVersion']}]"))
+                           f"{f.detail} [{f.cls}: the write schema of {_doc(schema)['contractVersion']}]"))
     return out
 
 
@@ -243,21 +305,26 @@ def _number(value) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
-def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str) -> list[Finding]:
+def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str, schema: dict | None = None) -> list[Finding]:
     """Every finding on a trade level menu staged with `dials` (the TRADE_LEVEL_POLICY dials: minRiskRewardRatio and
-    the stop range) beside the REPORT `sections` (wire form) of a strategy anchored at `anchor`. A menu the write
-    schema refuses gets its shape findings and nothing else: the rules are judged on a well-formed menu only."""
+    the stop range) beside the REPORT `sections` (wire form) of a strategy anchored at `anchor`, judged against the
+    pinned write schema (or `schema`, a stage-schema capture). A menu the write schema refuses gets its shape findings
+    and nothing else: the rules are judged on a well-formed menu only."""
     root = "tradeLevelMenu"
-    shape = _shape(menu, _axis("TRADE_LEVEL_POLICY")["properties"]["tradeLevelMenu"], root, "TRADE_MENU_SHAPE")
+    shape = _shape(menu, _axis("TRADE_LEVEL_POLICY", schema)["properties"]["tradeLevelMenu"], root, "TRADE_MENU_SHAPE",
+                   schema)
     if shape:
         return shape
     out: list[Finding] = []
     readings = report_readings(sections, anchor)
     min_rr = dials.get("minRiskRewardRatio")
     lo, hi = dials.get("minStopLossAtrMultiple"), dials.get("maxStopLossAtrMultiple")
+    exit_plans = menu_form(schema) == "exitPlans"
     for side in SIDES:
         seen: dict[str, dict[tuple, str]] = {"stops": {}, "targets": {}}
-        for kind, role in (("stops", "stop"), ("targets", "target")):
+        if exit_plans:
+            out += _exit_plan_findings(menu[side]["exitPlans"], side, min_rr, readings, anchor, seen["targets"])
+        for kind, role in (("stops", "stop"),) if exit_plans else (("stops", "stop"), ("targets", "target")):
             for i, entry in enumerate(menu[side][kind]):
                 path = f"{root}.{side}.{kind}[{i}]"
                 if entry["kind"] == "R_MULTIPLE" and _number(min_rr) and entry["multiple"] < min_rr:
@@ -278,8 +345,67 @@ def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str) -> li
                         seen[kind].setdefault(identity, path)
         for identity, path in seen["targets"].items():
             if identity in seen["stops"]:
-                out.append(Finding("error", "TRADE_MENU_LEVEL_BOTH_SIDES", f"{path}.level",
+                out.append(Finding("error", "TRADE_MENU_LEVEL_BOTH_SIDES", path if exit_plans else f"{path}.level",
                                    f"the {side} target {identity[0]} is also a {side} stop option "
                                    f"({seen['stops'][identity]}): the stage refuses it (\"one level cannot be both the "
-                                   f"loss side and the profit side of a trade\", probe V8)"))
+                                   f"loss side and the profit side of a trade\", probe V8; Y9 for an exit plan's leg)"))
+    return out
+
+
+def plan_pays(legs: list[dict]) -> float | None:
+    """What an exit plan pays, as the stage judges it against minRiskRewardRatio (contract 170, measured 2026-11-12):
+    the closePct-weighted mean of its legs' R over the share the plan closes. None for a plan with a level leg (its R
+    is known only at a decision) or one that closes nothing."""
+    closed = sum(leg["closePct"] for leg in legs)
+    if closed <= 0 or any(leg["method"]["kind"] != "R_MULTIPLE" for leg in legs):
+        return None
+    return sum(leg["method"]["multiple"] * leg["closePct"] for leg in legs) / closed
+
+
+def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, anchor: str,
+                        seen_targets: dict) -> list[Finding]:
+    """The findings on one direction's WELL-FORMED exit plans (contract 170; the module docstring names the probes)."""
+    out: list[Finding] = []
+    for p, plan in enumerate(plans):
+        ppath = f"tradeLevelMenu.{side}.exitPlans[{p}]"
+        legs = plan["targets"]
+        closed = sum(leg["closePct"] for leg in legs)
+        if closed > EXIT_PLAN_FULL:
+            out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_OVER_100", f"{ppath}.targets",
+                               f"the {side} exit plan's legs close {closed}% together: the stage refuses it at input "
+                               f"(\"The close percentages of an exit plan sum to at most 100\", probes X4, X5)"))
+        if legs[0]["closePct"] == 0:
+            out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_FIRST_LEG_EMPTY", f"{ppath}.targets[0].closePct",
+                               f"the {side} exit plan's first leg closes 0%: the stage refuses it at input (\"An exit "
+                               f"plan's first target closes a share\", probe X7)"))
+        out_of_order = False
+        for i, leg in enumerate(legs):
+            method, lpath = leg["method"], f"{ppath}.targets[{i}]"
+            if method["kind"] == "LEVEL":
+                findings, identity = _level_findings(method["level"], f"{lpath}.method.level", side, "target",
+                                                     readings, anchor)
+                out += findings
+                if identity is not None:
+                    seen_targets.setdefault(identity, f"{lpath}.method.level")
+            before = legs[i - 1]["method"] if i else None
+            if (before is not None and method["kind"] == before["kind"] == "R_MULTIPLE"
+                    and method["multiple"] <= before["multiple"]):
+                out_of_order = True
+                out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_OUT_OF_ORDER", lpath,
+                                   f"the {side} exit plan's targets run away from entry: {method['multiple']}R follows "
+                                   f"{before['multiple']}R; the stage refuses it (\"List each target farther than the "
+                                   f"one before it\", probes X8, X9, X11, Z4)"))
+        # a plan out of order is judged on its order alone: X11 (1.5R then 1.2R) pays 1.35R, below the minimum, and the
+        # stage named only the order
+        pays = None if out_of_order else plan_pays(legs)
+        if pays is not None and _number(min_rr) and pays < min_rr:
+            out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR", ppath,
+                               f"the {side} exit plan pays {round(pays, 4)}R (its legs' R weighted by what each closes), "
+                               f"below this strategy's minimum risk-reward of {min_rr}: the stage refuses it (\"every "
+                               f"pair it makes would be refused\", probes Y1 - Y7)"))
+        if len(legs) > 1 and any(leg["method"]["kind"] == "LEVEL" for leg in legs):
+            out.append(Finding("warning", "TRADE_MENU_EXIT_PLAN_JUDGED_PER_DECISION", ppath,
+                               f"the {side} exit plan mixes a level leg with others: the stage judges neither what it "
+                               f"pays nor the order across the level (probes Z1 - Z3); a decision does, refusing a pair "
+                               f"TARGETS_OUT_OF_ORDER or RISK_REWARD_TOO_LOW"))
     return out

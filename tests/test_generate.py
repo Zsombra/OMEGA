@@ -223,12 +223,13 @@ def test_whole_axes_send_every_dial_at_the_measured_defaults(name):
     axis = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["axes"]["properties"]["TRADE_LEVEL_POLICY"]
     assert list(a["TRADE_LEVEL_POLICY"]) == [*TRADE_LEVEL_DIALS, "tradeLevelMenu"] == axis["required"]
     # no preset names a menu, so each sends the default: ATR 1 / 1.5 / 2 stops and, from its minRiskRewardRatio (1.5)
-    # up, R 1.5 / 2 / 3 targets, the same for both directions (omega.trade_levels.default_menu)
+    # up, R 1.5 / 2 / 3 targets, the same for both directions (omega.trade_levels.default_menu); since contract 170 each
+    # target is an exit plan of one leg closing 100% (the platform's own migration shape)
     assert PRESETS[name].trade_level_menu is None and a["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] == 1.5
     side = {"stops": [{"kind": "ATR", "atrMultiple": 1}, {"kind": "ATR", "atrMultiple": 1.5},
                       {"kind": "ATR", "atrMultiple": 2}],
-            "targets": [{"kind": "R_MULTIPLE", "multiple": 1.5}, {"kind": "R_MULTIPLE", "multiple": 2},
-                        {"kind": "R_MULTIPLE", "multiple": 3}]}
+            "exitPlans": [{"targets": [{"method": {"kind": "R_MULTIPLE", "multiple": m}, "closePct": 100}]}
+                          for m in (1.5, 2, 3)]}
     assert a["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] == default_menu(1.5) == {"LONG": side, "SHORT": side}
     sent = {**a["TRADE_LEVEL_POLICY"], **a["POSITION_MANAGEMENT"]}
     assert all(sent[k] == v for k, v in PLATFORM_EXECUTION_DEFAULTS.items())

@@ -315,18 +315,18 @@ def test_the_manifest_chain_and_the_templates():
     # the 146.0.1 extraction is the one under `supersedes` since the 161.0.0 extraction (2026-11-09; test_v161.py)
     # 2026-11-11, contract 168.3.0 (extraction 20261111): the manifest's own block is the 168.3.0 extraction, the 161.0.0
     # one is its `supersedes` and the 146.0.1 one sits under that - two levels down, it was one
-    # 2026-11-12, contract 169.4.0 (extraction 20261112): three levels down (169.4.0 -> 168.3.0 -> 161.0.0 -> 146.0.1)
-    assert (MANIFEST["servedContractVersion"], MANIFEST["supersedes"]["servedContractVersion"],
-            MANIFEST["supersedes"]["supersedes"]["servedContractVersion"]) == ("169.4.0", "168.3.0", "161.0.0")
-    ext = MANIFEST["supersedes"]["supersedes"]["supersedes"]
+    # 2026-11-12: found by version, not depth (tests/manifest_chain.py); the chain on top of it then was
+    # 171.0.0 -> 169.4.0 -> 168.3.0 -> 161.0.0 -> 146.0.1
+    from tests.manifest_chain import extraction, surface, versions
+    assert versions(MANIFEST)[:5] == ["171.0.0", "169.4.0", "168.3.0", "161.0.0", "146.0.1"]
+    ext = extraction("146.0.1", MANIFEST)
     assert ext["servedContractVersion"] == "146.0.1" and ext["extractedOn"] == "2026-11-02"
     assert ext["supersedes"]["servedContractVersion"] == "144.0.0"
     assert ext["counts"]["metrics"] == 326 and ext["counts"]["families"] == 11
     # the write surface moved to the 148.1.0 capture on 2026-11-05 and to the 149.1.0 one on 2026-11-07; the 146.0.1
     # live check is two levels under `supersedes`; three since the 161.0.0 capture of 2026-11-09 (149.1.0 sits between);
     # four since the 168.3.0 capture of 2026-11-11 (168.3.0 -> 161.0.0 -> 149.1.0 -> 148.1.0 -> the 146.0.0 capture)
-    # five since the 169.4.0 capture of 2026-11-12
-    v146_capture = MANIFEST["writeSurface"]["supersedes"]["supersedes"]["supersedes"]["supersedes"]["supersedes"]
+    v146_capture = surface("146.0.0", MANIFEST)
     assert v146_capture["servedContractVersion"] == "146.0.0"
     assert v146_capture["liveCheckedAt"]["contractVersion"] == "146.0.1"
     assert "derive_strategy_rule_view" not in MANIFEST["toolsUsed"]
@@ -349,5 +349,6 @@ def test_the_manifest_chain_and_the_templates():
 def test_the_version_moved_past_0_11_0():
     # 0.11.0 was this re-extraction's release; 0.12.0 since the cut at contract 161.0.0 (2026-11-10); 0.12.2 since
     # 2026-11-11 (the joint depth bound of a rolling-inner chain, tests/test_v0_12_2.py); 0.13.0 the same day (the
-    # re-extraction at contract 168.3.0, tests/test_v168.py); 0.13.1 on 2026-11-12 (tests/test_v169.py)
-    assert 'version = "0.13.1"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    # re-extraction at contract 168.3.0, tests/test_v168.py); 0.13.1 on 2026-11-12 (tests/test_v169.py); 0.14.0 the same
+    # day (exit plans, tests/test_exit_plans_170.py)
+    assert 'version = "0.14.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
