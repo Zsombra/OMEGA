@@ -39,7 +39,9 @@ spelled {abs: ...} is refused as not yielded (their equivalence is unmeasured; o
 
 Every 168 probe was a CREATE. A stage that omits TRADE_LEVEL_POLICY re-judges the strategy's menu against a restaged
 REPORT: measured 2026-11-12 at 171.0.0 (UPDATE_PROBES A3 - REPORT alone, dropping the Bollinger columns, drew "A LONG stop
-level is not a level this strategy's report yields" on the COMMITTED menu); StrategyPlan.update_menu_findings refuses it.
+level is not a level this strategy's report yields" on the COMMITTED menu); StrategyPlan.update_menu_findings refuses
+it, and refuses the update outright when the `current` it is given carries no menu (TRADE_MENU_LIVE_UNKNOWN, failing
+closed).
 
 **Contract 170.0.0 (2026-11-12, undocumented): exit plans replace the targets.** Per direction `targets` became
 `exitPlans`: 1 - 8 plans, each {targets: 1 - 4 legs {method: R_MULTIPLE {multiple} | LEVEL {level}, closePct: an
@@ -97,8 +99,9 @@ refused at input (RUNNER_PROBES; the probe names below):
   * minRiskRewardRatio is refused off its 0.25 step as a draft error on the dial ("minRiskRewardRatio must be a
     multiple of 0.25", W2 at 2.2; omega.execution.validate_execution) - on an UPDATE too, named (UPDATE_PROBES C1, 1.4)
     or carried as the draft holds it with another dial changed (C2). StrategyPlan.update_menu_findings refuses a carried
-    off-step dial (EXECUTION_CARRIED_OFF_STEP); a COMMITTED off-step value is unmeasured and refused there, failing
-    closed.
+    off-step dial (EXECUTION_CARRIED_OFF_STEP). Both probes SENT the value in a restaged TRADE_LEVEL_POLICY, so two
+    cases are unmeasured and refused there, failing closed: a value carried from the COMMITTED strategy, and a value
+    held - by the draft or committed - in an axis the update does not stage.
   * Raising minRiskRewardRatio above an all-R plan's pay is the plan below the minimum, on a CREATE (W1, O1) and on an
     UPDATE alike: the dial cannot be staged without the menu (UPDATE_PROBES B1: TRADE_LEVEL_POLICY without
     tradeLevelMenu is refused at input, "expected object, received undefined"), and the axis restaged whole with the
@@ -109,9 +112,19 @@ refused at input (RUNNER_PROBES; the probe names below):
 in 4 drafts on the unbound, archived sandbox "OMEGA-TEST: 110.8 stage probe" (each read back, discarded and read null;
 none committed), 2 CREATE stages refused at input, 4 report previews and 5 trade-level previews. Beyond the bullets above:
 
-  * The stage judges the WHOLE draft - the axes it sends over the axes the draft holds over the committed strategy - and
-    names only the first menu error it meets (A2 named exitPlans[0] of three plans leaving a runner; A3 the LONG stop
-    and none of the three other Bollinger entries).
+  * A rule tying two axes is re-judged when an update stages ONE of them, against the other as the strategy holds it -
+    the held draft's axis, else the committed one: A2 staged POSITION_MANAGEMENT alone and drew the runner rule on the
+    menu the draft held; A3 staged REPORT alone and drew the level rule on the COMMITTED menu. No probe left every axis
+    of a rule unsent (C1 and C2 both sent the off-step minimum in a restaged TRADE_LEVEL_POLICY): a rule none of whose
+    axes an update stages - a runner beside a Trailing the update does not stage either, a plan against the minimum
+    beside it, an off-step dial in an unstaged axis - is unmeasured, and StrategyPlan.update_menu_findings refuses it,
+    labelled so, failing closed (RULE_AXIS names the axis each menu rule reads beside TRADE_LEVEL_POLICY).
+  * The stage names only the first menu error it meets (A2 named exitPlans[0] of three plans leaving a runner; A3 the
+    LONG stop and none of the three other Bollinger entries).
+  * get_strategy_draft's draft.content holds only the axes the draft staged (read back: TRADE_LEVEL_POLICY alone after
+    A1, B2, C1, C2; REPORT alone after A3; TRADE_LEVEL_POLICY and POSITION_MANAGEMENT after A2, L1), so the strategy an
+    UPDATE is judged against is the committed one overlaid by the held draft's axes - the `current` that
+    StrategyPlan.axes_update and update_menu_findings take.
   * A runner after a LEVEL leg rides at that level's R: at a decision (preview_strategy_trade_levels on A1's draft) the
     pair's risk-reward is plan_pays with each level leg at the R its price makes from that pair's stop - a band level
     closing 50% read 5.183 / 3.455 / 2.591 (the level's R at stops ATR 1 / 1.5 / 2), 1R 30% + the level 30% read
@@ -145,6 +158,13 @@ PROBES = "data/audit/trade_level_menu_168_2026-11-11.json"
 EXIT_PLAN_PROBES = "data/audit/exit_plans_170_2026-11-12.json"
 RUNNER_PROBES = "data/audit/exit_plan_runner_171_2026-11-12.json"
 UPDATE_PROBES = "data/audit/update_rules_171_2026-11-12.json"
+# The axis beside TRADE_LEVEL_POLICY that a menu rule reads (StrategyPlan.update_menu_findings, on a menu an UPDATE does
+# not stage): a rule tying two axes is re-judged when the update stages one of them - UPDATE_PROBES A2 (the runner
+# rule, POSITION_MANAGEMENT staged) and A3 (the level rule, REPORT staged). A code not named here reads
+# TRADE_LEVEL_POLICY alone, and no probe left a rule's every axis unsent.
+RULE_AXIS = {"TRADE_MENU_LEVEL_UNKNOWN_METRIC": "REPORT", "TRADE_MENU_LEVEL_UNMEASURED": "REPORT",
+             "TRADE_MENU_LEVEL_NOT_PRICE": "REPORT", "TRADE_MENU_LEVEL_NOT_YIELDED": "REPORT",
+             "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING": "POSITION_MANAGEMENT"}
 EXIT_PLAN_FULL = 100          # a plan's legs close at most 100% of the position together
 EXIT_PLAN_SHARE_MIN = 5       # a closing leg closes, and a runner holds, at least 5% (probes S1, S2)
 

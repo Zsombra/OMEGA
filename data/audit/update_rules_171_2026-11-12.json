@@ -129,7 +129,7 @@
    }
   ]
  },
- "how": "The mcporter runtime (OMEGA scripts/mcporter_runtime.mjs, EXTRACTION_TRANSPORT=runtime, one session), sequential, one call per >= 2.1 s (a public-history reader ran at 1 request/s beside it). `sentAt` is the UTC clock read immediately before the call.",
+ "how": "The mcporter runtime (OMEGA scripts/mcporter_runtime.mjs, EXTRACTION_TRANSPORT=runtime): one runtime process, holding one MCP session, per phase (calls.jsonl's `n` restarts at 1 on each phase's first call), sequential, one call per >= 2.1 s (a public-history reader ran at 1 request/s beside it). rt2.Runtime.call stamps each call's `at` in calls.jsonl after its pacing wait, immediately before the request is written. A probe's `sentAt`, a draft's `discardedAt` and listStrategyDraftsAtEnd's `at` are that `at` (`callLine` / `discardCallLine`: the call's line in calls.jsonl, from 0; `calls` tallies the log). The `at` of a read-back, of a preview and of sandboxReadBefore, and readAfterDiscardAt, are the clock read after the answer returned (probe_v0142.py).",
  "sandbox": {
   "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
   "name": "OMEGA-TEST: 110.8 stage probe",
@@ -667,6 +667,81 @@
   "tradeLevelPreviewsRendered": 1,
   "tradeLevelPreviewsRefused": 4
  },
+ "calls": {
+  "log": "C:/Users/rafae/omega-v012-hints/v171/calls.jsonl",
+  "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+  "what": "every call rt2.Runtime made on this track, one line each (tool, args, answer, at): 9 read-only discovery calls (discover.py, read_sandboxes.py; 2026-11-12T21:35:09Z - 2026-11-12T21:38:15Z) and the 47 calls of the probe run (2026-11-12T21:46:44Z - 2026-11-12T21:53:58Z). `byTool` tallies the whole log; `lines` holds \"<at> <tool>\" for each line of it, from 0 - the line a probe's `callLine` and a draft's `discardCallLine` name",
+  "total": 56,
+  "byTool": {
+   "discard_strategy_draft": 4,
+   "get_strategy": 7,
+   "get_strategy_draft": 22,
+   "list_intelligence_agents": 1,
+   "list_strategies": 1,
+   "list_strategy_drafts": 2,
+   "preview_strategy_report": 4,
+   "preview_strategy_trade_levels": 5,
+   "stage_strategy_draft": 10
+  },
+  "lines": [
+   "2026-11-12T21:35:09Z list_strategies",
+   "2026-11-12T21:35:24Z list_intelligence_agents",
+   "2026-11-12T21:35:29Z list_strategy_drafts",
+   "2026-11-12T21:37:45Z get_strategy",
+   "2026-11-12T21:37:52Z get_strategy_draft",
+   "2026-11-12T21:37:58Z get_strategy",
+   "2026-11-12T21:38:04Z get_strategy_draft",
+   "2026-11-12T21:38:10Z get_strategy",
+   "2026-11-12T21:38:15Z get_strategy_draft",
+   "2026-11-12T21:46:44Z preview_strategy_report",
+   "2026-11-12T21:46:53Z preview_strategy_report",
+   "2026-11-12T21:46:56Z preview_strategy_report",
+   "2026-11-12T21:46:59Z preview_strategy_report",
+   "2026-11-12T21:47:57Z stage_strategy_draft",
+   "2026-11-12T21:48:00Z stage_strategy_draft",
+   "2026-11-12T21:48:16Z get_strategy",
+   "2026-11-12T21:48:23Z get_strategy_draft",
+   "2026-11-12T21:48:30Z stage_strategy_draft",
+   "2026-11-12T21:48:38Z get_strategy_draft",
+   "2026-11-12T21:48:46Z preview_strategy_trade_levels",
+   "2026-11-12T21:48:50Z stage_strategy_draft",
+   "2026-11-12T21:48:58Z get_strategy_draft",
+   "2026-11-12T21:49:02Z preview_strategy_trade_levels",
+   "2026-11-12T21:49:09Z get_strategy_draft",
+   "2026-11-12T21:49:13Z discard_strategy_draft",
+   "2026-11-12T21:49:20Z get_strategy_draft",
+   "2026-11-12T21:50:29Z get_strategy",
+   "2026-11-12T21:50:37Z get_strategy_draft",
+   "2026-11-12T21:50:41Z stage_strategy_draft",
+   "2026-11-12T21:50:44Z stage_strategy_draft",
+   "2026-11-12T21:50:49Z get_strategy_draft",
+   "2026-11-12T21:50:53Z preview_strategy_trade_levels",
+   "2026-11-12T21:51:05Z stage_strategy_draft",
+   "2026-11-12T21:51:13Z get_strategy_draft",
+   "2026-11-12T21:51:20Z stage_strategy_draft",
+   "2026-11-12T21:51:28Z get_strategy_draft",
+   "2026-11-12T21:51:32Z get_strategy_draft",
+   "2026-11-12T21:51:38Z discard_strategy_draft",
+   "2026-11-12T21:51:46Z get_strategy_draft",
+   "2026-11-12T21:52:08Z get_strategy",
+   "2026-11-12T21:52:15Z get_strategy_draft",
+   "2026-11-12T21:52:19Z stage_strategy_draft",
+   "2026-11-12T21:52:25Z get_strategy_draft",
+   "2026-11-12T21:52:31Z preview_strategy_trade_levels",
+   "2026-11-12T21:52:38Z get_strategy_draft",
+   "2026-11-12T21:52:42Z discard_strategy_draft",
+   "2026-11-12T21:52:49Z get_strategy_draft",
+   "2026-11-12T21:53:14Z get_strategy",
+   "2026-11-12T21:53:20Z get_strategy_draft",
+   "2026-11-12T21:53:25Z stage_strategy_draft",
+   "2026-11-12T21:53:30Z get_strategy_draft",
+   "2026-11-12T21:53:34Z preview_strategy_trade_levels",
+   "2026-11-12T21:53:38Z get_strategy_draft",
+   "2026-11-12T21:53:42Z discard_strategy_draft",
+   "2026-11-12T21:53:47Z get_strategy_draft",
+   "2026-11-12T21:53:58Z list_strategy_drafts"
+  ]
+ },
  "probes": {
   "P1.last_fit_market_reference_benchmark": {
    "items": [
@@ -675,6 +750,7 @@
    "what": "the per-coin last fits (MKT_NET x ema 14 -> aggregate 2385 on a market section, marketScope all; CLOSE x aggregate 10 -> zscore 2427 and PAR_DEV x ema 14 -> aggregate 2385 on a reference section, benchmarkTicker USDT_USD; RSI14 x ema 14 -> aggregate 2385 and CLOSE x aggregate 10 -> zscore 2427 on a benchmark section, benchmarkTicker ETH) in one preview",
    "tool": "preview_strategy_report",
    "sentAt": "2026-11-12T21:46:44Z",
+   "callLine": 9,
    "sent": {
     "coinSelection": {
      "mode": "explicit",
@@ -853,7 +929,8 @@
    ],
    "what": "MKT_NET x ema 14 -> aggregate 2386 on a market section (marketScope all)",
    "tool": "preview_strategy_report",
-   "sentAt": "2026-11-12T21:46:51Z",
+   "sentAt": "2026-11-12T21:46:53Z",
+   "callLine": 10,
    "sent": {
     "coinSelection": {
      "mode": "explicit",
@@ -921,7 +998,8 @@
    ],
    "what": "CLOSE x aggregate 10 -> zscore 2428 on a reference section (USDT_USD)",
    "tool": "preview_strategy_report",
-   "sentAt": "2026-11-12T21:46:53Z",
+   "sentAt": "2026-11-12T21:46:56Z",
+   "callLine": 11,
    "sent": {
     "coinSelection": {
      "mode": "explicit",
@@ -989,7 +1067,8 @@
    ],
    "what": "RSI14 x ema 14 -> aggregate 2386 on a benchmark section (ETH)",
    "tool": "preview_strategy_report",
-   "sentAt": "2026-11-12T21:46:56Z",
+   "sentAt": "2026-11-12T21:46:59Z",
+   "callLine": 12,
    "sent": {
     "coinSelection": {
      "mode": "explicit",
@@ -1059,6 +1138,7 @@
    "kind": "CREATE",
    "tool": "stage_strategy_draft",
    "sentAt": "2026-11-12T21:47:57Z",
+   "callLine": 13,
    "sent": {
     "draftVersion": 0,
     "menu": {
@@ -1188,7 +1268,8 @@
    "what": "one plan of 2R closing 99%: a 1% runner (S1 sent only a 3% runner)",
    "kind": "CREATE",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:47:58Z",
+   "sentAt": "2026-11-12T21:48:00Z",
+   "callLine": 14,
    "sent": {
     "draftVersion": 0,
     "menu": {
@@ -1302,7 +1383,8 @@
    "kind": "UPDATE",
    "draft": "D1",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:48:28Z",
+   "sentAt": "2026-11-12T21:48:30Z",
+   "callLine": 17,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 0,
@@ -2844,7 +2926,8 @@
    "kind": "UPDATE",
    "draft": "D1",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:48:48Z",
+   "sentAt": "2026-11-12T21:48:50Z",
+   "callLine": 20,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 4,
@@ -3462,7 +3545,8 @@
    "kind": "UPDATE",
    "draft": "D2",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:50:39Z",
+   "sentAt": "2026-11-12T21:50:41Z",
+   "callLine": 28,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 0,
@@ -3501,7 +3585,8 @@
    "kind": "UPDATE",
    "draft": "D2",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:50:42Z",
+   "sentAt": "2026-11-12T21:50:44Z",
+   "callLine": 29,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 0,
@@ -3828,7 +3913,8 @@
    "kind": "UPDATE",
    "draft": "D2",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:51:03Z",
+   "sentAt": "2026-11-12T21:51:05Z",
+   "callLine": 32,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 7,
@@ -4142,7 +4228,8 @@
    "kind": "UPDATE",
    "draft": "D2",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:51:18Z",
+   "sentAt": "2026-11-12T21:51:20Z",
+   "callLine": 34,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 8,
@@ -4712,7 +4799,8 @@
    "kind": "UPDATE",
    "draft": "D3",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:52:17Z",
+   "sentAt": "2026-11-12T21:52:19Z",
+   "callLine": 41,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 0,
@@ -4988,7 +5076,8 @@
    "kind": "UPDATE",
    "draft": "D4",
    "tool": "stage_strategy_draft",
-   "sentAt": "2026-11-12T21:53:22Z",
+   "sentAt": "2026-11-12T21:53:25Z",
+   "callLine": 49,
    "sent": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
     "draftVersion": 0,
@@ -5632,7 +5721,8 @@
     "draftVersion": 0,
     "committedRevision": 2
    },
-   "discardedAt": "2026-11-12T21:49:11Z",
+   "discardedAt": "2026-11-12T21:49:13Z",
+   "discardCallLine": 24,
    "discardedAtVersion": 5,
    "discardAnswer": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
@@ -5661,7 +5751,8 @@
     "draftVersion": 0,
     "committedRevision": 2
    },
-   "discardedAt": "2026-11-12T21:51:36Z",
+   "discardedAt": "2026-11-12T21:51:38Z",
+   "discardCallLine": 37,
    "discardedAtVersion": 9,
    "discardAnswer": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
@@ -5687,7 +5778,8 @@
     "draftVersion": 0,
     "committedRevision": 2
    },
-   "discardedAt": "2026-11-12T21:52:40Z",
+   "discardedAt": "2026-11-12T21:52:42Z",
+   "discardCallLine": 45,
    "discardedAtVersion": 11,
    "discardAnswer": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
@@ -5713,7 +5805,8 @@
     "draftVersion": 0,
     "committedRevision": 2
    },
-   "discardedAt": "2026-11-12T21:53:40Z",
+   "discardedAt": "2026-11-12T21:53:42Z",
+   "discardCallLine": 53,
    "discardedAtVersion": 13,
    "discardAnswer": {
     "strategyId": "87dac9ab-e86d-4304-9845-74a4e14c49de",
@@ -5726,6 +5819,7 @@
  ],
  "listStrategyDraftsAtEnd": {
   "at": "2026-11-12T21:53:58Z",
+  "callLine": 55,
   "answer": {
    "drafts": [
     {

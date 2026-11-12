@@ -763,10 +763,14 @@ def _rolling_chain_depth(column: Column, m: Metric, c: Contract, path: str) -> l
     Whatever the section's subject (measured 2026-11-12 at 171.0.0, data/audit/update_rules_171_2026-11-12.json P1 - P4):
     a market section (MKT_NET x ema 14 -> aggregate, marketScope all), a reference section (CLOSE x aggregate 10 ->
     zscore and PAR_DEV x ema 14 -> aggregate, USDT_USD) and a benchmark section (RSI14 x ema 14 -> aggregate and CLOSE x
-    aggregate 10 -> zscore, ETH) render at the per-coin last fit (2385 / 2427) and refuse one past it with the same
-    count (2437 of 2436 of 2500, lookback 64) and the same largest fit. The bound is the authoring rule only: at that
-    depth the market and PAR_DEV values read null (the store holds less history than the window; PAR_DEV's gloss says a
-    lookback beyond it "reads absent"), which omega does not predict.
+    aggregate 10 -> zscore, ETH) render at the per-coin last fit (2385 / 2427), all five in one preview (P1). One column
+    per subject was sent one past it, each refused with the per-coin count (2437 of 2436 of 2500, lookback 64) and the
+    same largest fit: MKT_NET -> aggregate 2386 on the market section (P2), CLOSE -> zscore 2428 on the reference
+    section (P3), RSI14 -> aggregate 2386 on the benchmark section (P4); PAR_DEV at 2386 and the benchmark's CLOSE ->
+    zscore at 2428 were not sent. The bound is the authoring rule only: at that depth the market-breadth and PAR_DEV
+    values read null. The market-breadth null's cause was not established (MKT_NET's gloss says nothing of stored
+    history); PAR_DEV's gloss gives its own - "a lookback beyond the history the store holds reads absent". omega
+    predicts neither.
 
     An omitted window is the catalogue's default, as the platform fills it (N.no.window / N.no.chainedWindow rendered
     close_ema20_mean5 / close_ema20_mean24 on 2026-11-09).

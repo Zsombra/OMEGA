@@ -282,7 +282,11 @@ def test_an_update_carries_the_live_menu_and_never_invents_one():
     would = untouched.update_menu_findings(current)
     assert would and {(f.severity, f.code) for f in would} == {("error", "TRADE_MENU_LEVEL_NOT_YIELDED")}
     assert all("A3" in f.message for f in would)
-    assert untouched.update_menu_findings({"TRADE_LEVEL_POLICY": dict(BASE["dials"])}) == []          # no live menu read
+    # no live menu read: e52f745 passed it ([]) while the stage judges the menu omega never saw - refused, failing
+    # closed (v0.14.2 review, 2026-11-12; tests/test_update_rules_171.py, a partial `current`)
+    unread = untouched.update_menu_findings({"TRADE_LEVEL_POLICY": dict(BASE["dials"])})
+    assert [(f.severity, f.code, f.path) for f in unread] == [
+        ("error", "TRADE_MENU_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.tradeLevelMenu")]
 
     dial = plan(Thesis(**{**base.__dict__, "execution": {"minAtrPct": 0.4}}))
     staged = dial.axes_update(current)["TRADE_LEVEL_POLICY"]

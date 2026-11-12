@@ -7,23 +7,32 @@ back, discarded and read null; 1 refused at input) and 5 preview_strategy_trade_
 was committed.
 
 (1) A2 - POSITION_MANAGEMENT staged alone with Trailing off draws the runner's draft error on the menu the draft holds;
-    A3 - REPORT staged alone without the Bollinger columns draws the level refusal on the COMMITTED menu. The stage
-    judges the whole draft: StrategyPlan.update_menu_findings now refuses (v0.14.1 warned).
+    A3 - REPORT staged alone without the Bollinger columns draws the level refusal on the COMMITTED menu. A rule tying
+    two axes is re-judged when ONE of them is staged: StrategyPlan.update_menu_findings now refuses (v0.14.1 warned). No
+    probe left every axis of a rule unsent: such a rule is refused as unmeasured, failing closed, and labelled so.
+    get_strategy_draft's draft.content holds only the axes the draft staged, so `current` is the committed strategy
+    overlaid by the held draft; a `current` without the menu is refused (TRADE_MENU_LIVE_UNKNOWN), never read as clean.
 (2) B1 - TRADE_LEVEL_POLICY without its menu is refused at input; B2 - the axis restaged whole with the live menu carried
     and the minimum raised is judged as a create ("pays 1.5R, below ... 2.5").
 (3) C1, C2 - an off-step minimum on an UPDATE is a draft error, named or carried as the draft holds it
-    (EXECUTION_CARRIED_OFF_STEP is now an error; a committed off-step value is unmeasured and refused, failing closed).
+    (EXECUTION_CARRIED_OFF_STEP is now an error; carried from the committed strategy, or held in an axis the update does
+    not stage, it is unmeasured and refused, failing closed).
 (4) S3, S4 - a 3% second leg and a 1% runner are refused at input with the sentences S1 / S2 measured.
-(5) P1 - P4 - market, reference and benchmark sections hold the same joint chain depth bound as a per-coin section.
+(5) P1 - P4 - market, reference and benchmark sections hold the same joint chain depth bound as a per-coin section (one
+    column per subject sent one past the fit: P2 - P4).
 (6) A1's preview - a runner after a LEVEL leg rides at that level's R (plan_pays with level_r reproduces every setup and
     every refused pair); L1 - it is refused while Trailing is off.
 
-Nothing here calls the platform.
+The record's `calls` tallies the probe's call log (calls.jsonl beside the probe script): `committed` is derived from it,
+and every probe's sentAt is the time the log stamped on its call. Nothing here calls the platform.
 """
 from __future__ import annotations
 
 import copy
+import inspect
 import json
+import re
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -51,6 +60,11 @@ RULE = {"A2.trailing_off_alone": "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING",
         "C1.off_step_min_named": "EXECUTION_OFF_STEP",
         "C2.off_step_min_carried": "EXECUTION_OFF_STEP",
         "L1.level_runner_trailing_off": "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING"}
+# what this track may call: reads (the previews read too), and the two draft writes the probe needed - a stage and its
+# discard. Never a commit, a restore, an archive, a bind or a deploy.
+READ_TOOLS = {"get_strategy", "get_strategy_draft", "list_intelligence_agents", "list_strategies",
+              "list_strategy_drafts", "preview_strategy_report", "preview_strategy_trade_levels"}
+DRAFT_WRITES = {"stage_strategy_draft", "discard_strategy_draft"}
 
 
 def _field(path: str) -> str:
@@ -97,6 +111,30 @@ def test_the_record_is_complete_and_nothing_was_committed():
                  "createStages": 2, "updateStages": 8, "staged": 7, "refusedAtInput": 3, "drafts": 4, "discarded": 4,
                  "committed": 0, "tradeLevelPreviews": 5, "tradeLevelPreviewsRendered": 1,
                  "tradeLevelPreviewsRefused": 4}
+    # the call log, tallied by tool: `committed` is its commit count, not a literal - and the log holds nothing but
+    # reads and the probe's own stages and discards (v0.14.2 review: counts.committed was written as 0)
+    calls = RECORD["calls"]
+    lines = [line.split(" ", 1) for line in calls["lines"]]
+    tally = Counter(tool for _, tool in lines)
+    assert calls["total"] == len(lines) == 56 and len(calls["sha256"]) == 64
+    assert calls["byTool"] == dict(tally) == {
+        "discard_strategy_draft": 4, "get_strategy": 7, "get_strategy_draft": 22, "list_intelligence_agents": 1,
+        "list_strategies": 1, "list_strategy_drafts": 2, "preview_strategy_report": 4,
+        "preview_strategy_trade_levels": 5, "stage_strategy_draft": 10}
+    assert set(tally) <= READ_TOOLS | DRAFT_WRITES
+    assert n["committed"] == tally["commit_strategy_draft"] == 0
+    assert (tally["stage_strategy_draft"], tally["discard_strategy_draft"], tally["preview_strategy_report"],
+            tally["preview_strategy_trade_levels"]) == (n["stages"], n["discarded"], n["reportPreviews"],
+                                                         n["tradeLevelPreviews"])
+    assert [at for at, _ in lines] == sorted(at for at, _ in lines)
+    # every time a call was SENT is the log's own stamp, taken after the pacing wait (the run's clock was read before
+    # it: 0 - 3 s early at one-second resolution)
+    for name, probe in PROBES.items():
+        assert lines[probe["callLine"]] == [probe["sentAt"], probe["tool"]], name
+    for draft in RECORD["drafts"]:
+        assert lines[draft["discardCallLine"]] == [draft["discardedAt"], "discard_strategy_draft"], draft["draft"]
+    end = RECORD["listStrategyDraftsAtEnd"]
+    assert lines[end["callLine"]] == [end["at"], "list_strategy_drafts"]
     measured = RECORD["measuredAt"]
     assert (measured["contractVersion"], measured["buildSha"]) == VERSION
     reads = measured["versionReads"]
@@ -104,6 +142,10 @@ def test_the_record_is_complete_and_nothing_was_committed():
     assert [r["readAt"] for r in reads] == sorted(r["readAt"] for r in reads)
     sent = [p["sentAt"] for p in PROBES.values()]
     assert reads[0]["readAt"] <= min(sent) and max(sent) <= reads[-1]["readAt"]
+    # the run's calls lie between its first and last version read; the nine before it are the read-only discovery
+    run = [at for at, _ in lines if reads[0]["readAt"] <= at <= reads[-1]["readAt"]]
+    assert (len(run), len(lines) - len(run)) == (47, 9)
+    assert {tool for at, tool in lines if at < reads[0]["readAt"]} <= READ_TOOLS
     # every UPDATE stage named the sandbox; every CREATE named none and draftVersion 0 (neither reached a draft)
     for name, probe in PROBES.items():
         if probe.get("kind") == "UPDATE":
@@ -240,6 +282,80 @@ def test_omegas_update_path_refuses_what_the_stage_refused():
         ("error", "EXECUTION_CARRIED_OFF_STEP", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
 
 
+def _a1_runner_tlp() -> dict:
+    """The committed dials beside A1's R runner plan (1.5R 50% + 3R 30%, a 20% runner) on A1's ATR stops, per side."""
+    menu = PROBES["A1.runner_menu_staged"]["sent"]["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]
+    runner = {side: {"stops": d["stops"], "exitPlans": d["exitPlans"][:1]} for side, d in menu.items()}
+    return {**{k: v for k, v in COMMITTED["TRADE_LEVEL_POLICY"].items() if k != "tradeLevelMenu"},
+            "tradeLevelMenu": copy.deepcopy(runner)}
+
+
+def _committed_axes() -> dict:
+    return copy.deepcopy({k: COMMITTED[k] for k in ("TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "REPORT")})
+
+
+def test_a_partial_current_is_never_read_as_a_clean_menu():
+    """`current` is the committed strategy overlaid by the held draft's axes - what _composed builds, and what the stage
+    judged. get_strategy_draft's draft.content alone holds only the axes the draft staged: after A3 it held REPORT alone
+    (test_every_staged_update_was_read_back_as_sent). Handed that content as `current`, e52f745 found no menu and said
+    nothing, so A3's refusal passed silently (v0.14.2 review); it is refused now, failing closed."""
+    update = plan(_sandbox_thesis())                  # stages neither TRADE_LEVEL_POLICY nor POSITION_MANAGEMENT
+    a3 = PROBES["A3.report_alone_rejudges_committed_menu"]
+    content = {axis: copy.deepcopy(a3["sent"]["axes"][axis]) for axis in a3["readBack"]["draftAxes"]}
+    assert list(content) == ["REPORT"] and "TRADE_LEVEL_POLICY" not in update.axes_update(content)
+    assert [(f.severity, f.code, f.path) for f in update.update_menu_findings(content)] == [
+        ("error", "TRADE_MENU_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.tradeLevelMenu")]
+    # the same draft over the committed strategy, as the stage judged A3: the committed menu's Donchian and Bollinger
+    # entries, neither of which this preset's report reads - refused as the stage refused A3, and labelled measured
+    found = update.update_menu_findings({**_committed_axes(), **content})
+    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_LEVEL_NOT_YIELDED")}
+    assert {f.path for f in found} == {f"tradeLevelMenu.{s}.{k}[{i}]{tail}" for s in tl.SIDES for i in (3, 4)
+                                       for k, tail in (("stops", ".level"), ("exitPlans", ".targets[0].method.level"))}
+    assert all("probe A3" in f.message and "unmeasured" not in f.message for f in found)
+    # a draft holding A1's runner menu alone (its content: TRADE_LEVEL_POLICY only): the Trailing beside the runner is
+    # the committed one, which that content does not carry - warned, as on a staged menu, not passed silently
+    runner = _a1_runner_tlp()
+    found = update.update_menu_findings({"TRADE_LEVEL_POLICY": runner})
+    assert [(f.severity, f.code, f.path) for f in found] == [
+        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN", f"tradeLevelMenu.{s}.exitPlans[0]")
+        for s in tl.SIDES]
+    # over the committed strategy (Trailing on, as committed) it is clean
+    assert COMMITTED["POSITION_MANAGEMENT"]["trailingEnabled"] is True
+    assert update.update_menu_findings({**_committed_axes(), "TRADE_LEVEL_POLICY": runner}) == []
+
+
+def test_a_rule_none_of_whose_axes_the_update_stages_is_refused_as_unmeasured():
+    """A2 and A3 measured a rule tying two axes re-judged when ONE of them is staged. No probe left every axis of a rule
+    unsent (C1 and C2 both sent the off-step minimum in a restaged TRADE_LEVEL_POLICY): omega refuses such a rule,
+    failing closed, and its message says unmeasured instead of citing A2 / A3 as the stage's answer."""
+    runner, committed = _a1_runner_tlp(), _committed_axes()
+    # Trailing switched off BY the update under the runner the strategy holds: one axis staged - measured, A2
+    off = plan(_sandbox_thesis(execution={"trailingEnabled": False}))
+    found = off.update_menu_findings({**committed, "TRADE_LEVEL_POLICY": runner})
+    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
+    assert all("probe A2" in f.message and "unmeasured" not in f.message for f in found)
+    # the runner and Trailing off both held, neither axis staged: unmeasured, refused, failing closed
+    still = plan(_sandbox_thesis())
+    held_off = {**committed, "TRADE_LEVEL_POLICY": runner,
+                "POSITION_MANAGEMENT": {**COMMITTED["POSITION_MANAGEMENT"], "trailingEnabled": False}}
+    found = still.update_menu_findings(held_off)
+    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
+    assert all(s in f.message for f in found for s in ("neither staged", "unmeasured", "failing closed"))
+    # held plans below the held minimum - a rule on TRADE_LEVEL_POLICY alone, which is not staged: unmeasured, refused
+    r_only = _r_only(COMMITTED["TRADE_LEVEL_POLICY"]["tradeLevelMenu"])
+    below = {**committed["TRADE_LEVEL_POLICY"], "minRiskRewardRatio": 2.5, "tradeLevelMenu": r_only}
+    found = still.update_menu_findings({**committed, "TRADE_LEVEL_POLICY": below})
+    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR")}
+    assert all("TRADE_LEVEL_POLICY alone" in f.message and "unmeasured" in f.message for f in found)
+    # an off-step minimum held in the unstaged axis: unmeasured, refused (C1 and C2 sent the value)
+    (finding,) = still.update_menu_findings({**committed, "TRADE_LEVEL_POLICY": {**below, "minRiskRewardRatio": 1.4}})
+    assert (finding.severity, finding.code) == ("error", "EXECUTION_CARRIED_OFF_STEP")
+    assert "unmeasured, refused, failing closed" in finding.message
+    # RULE_AXIS names only codes the menu rules raise (a misspelt code would leave its rule labelled unmeasured)
+    raised = set(re.findall(r'Finding\("(?:error|warning)", "([A-Z_0-9]+)"', inspect.getsource(tl)))
+    assert set(tl.RULE_AXIS) <= raised and set(tl.RULE_AXIS.values()) == {"REPORT", "POSITION_MANAGEMENT"}
+
+
 # --- (2) the dial alone ---------------------------------------------------------------------------------------------------
 
 def test_the_minimum_cannot_be_staged_without_the_menu():
@@ -334,13 +450,33 @@ def test_the_chain_depth_bound_holds_on_market_reference_and_benchmark_sections(
            f"{refusal['allowedDomain']['maximum']}" in found[0].message
 
 
-def test_the_deep_chain_values_off_the_coin_are_a_matter_of_stored_history():
+def test_one_column_per_subject_was_sent_one_past_the_fit():
+    """P2 - P4 sent one column each one past the per-coin fit; PAR_DEV at 2386 and the benchmark's CLOSE -> zscore at
+    2428 were not sent (omega.validate._rolling_chain_depth names which)."""
+    sent = {}
+    for name in ("P2.market_agg2386", "P3.reference_z2428", "P4.benchmark_agg2386"):
+        ((section,),) = [PROBES[name]["sent"]["sections"]]
+        ((col,),) = [section["columns"]]
+        sent[name] = (section["marketScope"] or section["benchmarkTicker"], col["metric"], col["transformId"],
+                      col["chainedTransformId"], col["chainedWindow"])
+    assert sent == {"P2.market_agg2386": ("all", "MKT_NET", "ema", "aggregate", 2386),
+                    "P3.reference_z2428": ("USDT_USD", "CLOSE", "aggregate", "zscore", 2428),
+                    "P4.benchmark_agg2386": ("ETH", "RSI14", "ema", "aggregate", 2386)}
+
+
+def test_the_deep_chain_values_off_the_coin_read_null_on_market_breadth_and_par_dev():
     render = PROBES["P1.last_fit_market_reference_benchmark"]["render"]
     assert [s["rowIdentity"] for s in render["subjects"]] == ["Whole market", "USDT/USD", "ETH"]
     values = render["values"]
-    # rendered, but null where the store holds less history than the window (market breadth; the pair's PAR_DEV)
+    # rendered, but null on market breadth and on the pair's PAR_DEV. Only PAR_DEV's gloss names a cause - a lookback
+    # beyond the history the store holds reads absent; MKT_NET's says nothing of stored history, so the market-breadth
+    # null's cause is not established (as v0.14.1 recorded of the 161 nulls)
     assert values["Deep chain market/mktBreadth_ema14_mean2385"] is None
     assert values["Deep chain reference/parDev_ema14_mean2385"] is None
+    gloss = {m: json.loads((ROOT / "data" / "contract" / "metrics" / f"{m}.json").read_text(encoding="utf-8"))["gloss"]
+             for m in ("PAR_DEV", "MKT_NET")}
+    assert "a lookback beyond the history the store holds reads absent" in gloss["PAR_DEV"]
+    assert "history" not in gloss["MKT_NET"]
     assert all(isinstance(values[k], float) for k in ("Deep chain reference/close_mean10_z2427",
                                                       "Deep chain benchmark/RSI14_ema14_mean2385",
                                                       "Deep chain benchmark/close_mean10_z2427"))
