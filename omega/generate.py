@@ -312,7 +312,8 @@ class Thesis:
     execution: dict | None = None
     # Contract 168 (2026-11-11): the trade level menu the strategy offers - {LONG, SHORT}, each {stops, targets}
     # (omega/trade_levels.py). None means the ATR / R part of the platform's own migration default, with the R targets
-    # taken from this thesis's minRiskRewardRatio up (trade_levels.default_menu).
+    # taken from this thesis's minRiskRewardRatio up and (v0.14.3) the ATR stops kept inside its stop range
+    # (trade_levels.default_menu).
     trade_level_menu: dict | None = None
     # Condition ROLES (EXIT_ROLES: "UP", "CORE_DOWN", ...) whose entry condition is also an
     # exit: each gains the v88 split, an exit rule CLOSE_ON_<key> closing the side its
@@ -483,9 +484,8 @@ class StrategyPlan:
                  " - " + "; ".join(f"{side} {len(menu[side]['stops'])} stop(s), " + (
                                        f"{len(menu[side]['exitPlans'])} exit plan(s)" if "exitPlans" in menu[side]
                                        else f"{len(menu[side]['targets'])} target(s)") for side in menu))
-        out.append("trade level menu: " + ("the thesis's own" if self.thesis.trade_level_menu is not None else
-                                           "default (the platform's migration ATR stops and R targets)") + sizes)
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **ov}
+        out.append("trade level menu: " + self._menu_source(eff) + sizes)
         out.append(
             f"execution: {'platform defaults' if not ov else f'{len(ov)} override(s)'}"
             f" - R:R {eff['minRiskRewardRatio']}, ATR gate {eff['minAtrPct']}%, stop "
@@ -502,6 +502,26 @@ class StrategyPlan:
                 f"byte-cap refusal (measured for the trend-continuation report shape; "
                 f"wider reports refuse earlier)")
         return out
+
+    def _menu_source(self, eff: dict) -> str:
+        """Where the menu's stops come from, for critique(): the thesis's own menu, the migration's ATR stops inside
+        the stop range, OMEGA's own fallback when none of them is inside (omega.trade_levels.default_stops), or the
+        migration's three as written for a range the default does not follow."""
+        from .trade_levels import DEFAULT_ATR_STOPS, default_stops, default_stops_basis
+        if self.thesis.trade_level_menu is not None:
+            return "the thesis's own"
+        lo, hi = eff["minStopLossAtrMultiple"], eff["maxStopLossAtrMultiple"]
+        migration = " / ".join(str(m) for m in DEFAULT_ATR_STOPS)
+        basis = default_stops_basis((lo, hi))
+        if basis == "fallback":
+            return (f"default (none of the migration's ATR stops {migration} is inside the stop range {lo} - {hi}, so "
+                    f"OMEGA's own fallback instead: ATR {' / '.join(str(m) for m in default_stops((lo, hi)))} - the "
+                    f"range's stageable bounds and, where a 0.1 ATR step fits, a stop strictly between them; R targets "
+                    f"from the minimum up)")
+        if basis == "unjudged":
+            return (f"default (the migration's ATR stops {migration} as written: the stop range {lo} - {hi} is not one "
+                    f"the default menu follows; R targets from the minimum up)")
+        return "default (the platform's migration ATR stops inside the stop range, R targets from the minimum up)"
 
     # -- output -----------------------------------------------------------
     def _assumptions(self) -> list[str]:
@@ -565,7 +585,10 @@ class StrategyPlan:
             own = copy.deepcopy(self.thesis.trade_level_menu)
             return migrate_menu(own) if menu_form() == "exitPlans" else own
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
-        return default_menu(eff["minRiskRewardRatio"])
+        # v0.14.3: only the default ATR stops inside this plan's stop range - every decision drops the rest
+        # (omega.trade_levels.STOP_BAND_PROBES)
+        return default_menu(eff["minRiskRewardRatio"],
+                            stop_range=(eff["minStopLossAtrMultiple"], eff["maxStopLossAtrMultiple"]))
 
     def menu_findings(self) -> list:
         """What the stage would say of this plan's trade level menu, offline (omega.trade_levels.validate_menu): the

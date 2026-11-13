@@ -1,32 +1,54 @@
 """Generate the metric- and transform-layer reference docs directly from the corpus.
 
 Anything derivable is generated, so the tables cannot drift from the extracted data.
-Conceptual docs (00, 03, 04, 05, 06) are hand-written.
+Conceptual docs (00, 03, 04, 05, 06) are hand-written. tests/test_generated_docs.py holds
+docs/01 and docs/02 to exactly this script's output for the pinned corpus.
+
+The family order is the platform's own (categories.json) and every transform of the
+authoring catalogue gets an entry (transform_order), so a family or a transform the
+platform adds is never left out (v0.14.3, the ledger's M23: 4 families and 6 transforms
+were). The few sentences that are not tables are written only while the corpus says them -
+every clause of each, checked (v0.14.3 review: a check on part of a sentence let the rest
+go unread).
 """
 from __future__ import annotations
 
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from omega.contract import CONTRACT_DIR, DERIVED_DIR, ROOT, load
 
 DOCS = ROOT / "docs"
+# The reading order of the transforms this doc has always listed; every other transform in the authoring catalogue
+# follows, in the catalogue's own order (transform_order).
 TRANSFORM_ORDER = [
     "value", "trajectory", "distance", "spread", "relativeTo", "efficiency", "aggregate",
     "zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax", "maxShare", "rank", "classifyZone", "crossDetect", "levelInteraction", "bandTouch",
     "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist", "nearestZoneAge",
 ]
-FAMILY_ORDER = ["price", "momentum", "trend", "volatility", "volumeFlow",
-                "derivatives", "structure", "regime", "crowd", "derived"]
+
+
+def transform_order(c) -> list[str]:
+    """Every transform of the authoring catalogue (retired ones kept as history): TRANSFORM_ORDER first, then the
+    catalogue's others in its own order."""
+    return [t for t in TRANSFORM_ORDER if t in c.transforms] + [t for t in c.transforms if t not in TRANSFORM_ORDER]
+
+
+def _categories() -> list[dict]:
+    """The platform's categories in its own order (list_strategy_categories, data/contract/categories.json)."""
+    return json.loads((CONTRACT_DIR / "categories.json").read_text(encoding="utf-8"))["categories"]
 
 
 def metric_layer(c) -> str:
-    cats = {x["category"]: x for x in
-            json.loads((CONTRACT_DIR / "categories.json").read_text(encoding="utf-8"))["categories"]}
+    cats = {x["category"]: x for x in _categories()}
     by_family: dict[str, list] = defaultdict(list)
     for m in c.metrics.values():
         by_family[m.family].append(m)
+    unlisted = sorted(set(by_family) - set(cats))
+    if unlisted:
+        raise SystemExit(f"families with no category in categories.json: {unlisted} - re-read the categories")
+    order = transform_order(c)
 
     out = [
         "# 01 · The Metric Layer",
@@ -46,7 +68,7 @@ def metric_layer(c) -> str:
         "| `transforms[]` | the *only* transforms the engine can execute for it |",
         "",
     ]
-    for fam in FAMILY_ORDER:
+    for fam in (x["category"] for x in _categories() if x["category"] in by_family):
         cat = cats[fam]
         metrics = sorted(by_family[fam], key=lambda m: m.metric)
         out += [
@@ -73,10 +95,37 @@ def metric_layer(c) -> str:
             vocab = m.vocab
             if vocab:
                 unit = "·".join(vocab[:3]) + ("…" if len(vocab) > 3 else "")
-            tfs = ", ".join(t for t in TRANSFORM_ORDER if m.offers(t))
+            tfs = ", ".join(t for t in order if m.offers(t))
             out.append(f"| `{m.metric}` | `{m.code}` | {kind} / {unit} | {m.timeframe_mode} | {tfs} |")
         out.append("")
     return "\n".join(out)
+
+
+def cci20_zone_note_holds(c, pairs: set) -> bool:
+    """Whether the corpus says every clause of the `CCI20 × classifyZone` note: the platform reserves the pair (it is
+    in `pairs`, the platform-privileged pairs); `classifyZone` classifies a bounded oscillator (every metric offering
+    it is an `oscillator` whose `nativeOutput` carries a `range`, and one does - why the pair is the subtle one); and
+    `CCI20`'s `nativeOutput` carries no `range` and CCI20 is not offered `classifyZone` (no canonical bounds, no zone
+    policy exposed to authors). All held at the first extraction (2026-08-24); at 108.4.0 and at 171.0.0 the pair is
+    not privileged and CCI20 is offered `classifyZone`."""
+    cci = c.metrics.get("CCI20")
+    zoned = [m for m in c.metrics.values() if m.offers("classifyZone")]
+    return (("CCI20", "classifyZone") in pairs and cci is not None and not cci.native_output.get("range")
+            and not cci.offers("classifyZone") and bool(zoned)
+            and all(m.native_output.get("unit") == "oscillator" and m.native_output.get("range") for m in zoned))
+
+
+def band_touch_note_holds(c, pairs: set) -> bool:
+    """Whether the corpus says every clause of the `bandTouch` note: it is the mirror of the CCI20 note, so that note
+    holds; `bandTouch` is fully authorable (in the catalogue, neither retired nor unmeasured, offered on a metric, in
+    no privileged pair); and no platform template uses it (no template column reads it, as its transform or as its
+    chained one). All held at the first extraction (2026-08-24); v100 retired `bandTouch`."""
+    used = any("bandTouch" in (column.get("transformId"), column.get("chainedTransformId"))
+               for template in c.platform_templates.values() for column in template.get("columns") or [])
+    return (cci20_zone_note_holds(c, pairs) and "bandTouch" in c.transforms
+            and "bandTouch" not in c.retired_transforms and "bandTouch" not in c.unmeasured_transforms
+            and any(m.offers("bandTouch") for m in c.metrics.values())
+            and all(transform != "bandTouch" for _, transform in pairs) and not used)
 
 
 def _extracted_offers(tid: str):
@@ -98,7 +147,8 @@ def transform_layer(c) -> str:
         for tid in m.transforms:
             support[tid].append(m.metric)
 
-    live = [tid for tid in TRANSFORM_ORDER if tid not in c.retired_transforms]
+    order = transform_order(c)
+    live = [tid for tid in order if tid not in c.retired_transforms]
     cells = sum(len(v) for v in support.values())
     out = [
         "# 02 · The Transform Layer",
@@ -130,7 +180,7 @@ def transform_layer(c) -> str:
         "## Reference",
         "",
     ]
-    for tid in TRANSFORM_ORDER:
+    for tid in order:
         t = c.transforms[tid]
         retired = tid in c.retired_transforms
         out += [
@@ -145,7 +195,9 @@ def transform_layer(c) -> str:
             (f"- **Retired** at contract {c.retired_transforms[tid]['servedAt']}: not in the served enum; the "
              f"61.2.0 extraction offered it on {sum(1 for r in _extracted_offers(tid))} metric(s)"
              if retired else f"- **Supported on:** {len(support[tid])} metric(s)"),
-            f"- **Emits:** {t['emits']}" + (f" — {t['emitsNote']}" if "emitsNote" in t else ""),
+            (f"- **Emits:** {t['emits']}" + (f" — {t['emitsNote']}" if "emitsNote" in t else "")
+             if "emits" in t else
+             "- **Emits:** not served by `get_metric_construction_hints` for this transform (measured per render)"),
             f"- **Null behaviour:** {t['nullBehavior']}",
         ]
         params = t.get("parameters") or {}
@@ -176,13 +228,24 @@ def transform_layer(c) -> str:
     ]
     for unit, members in graph["unitPools"].items():
         out.append(f"| `{unit}` | {len(members)} | {', '.join(f'`{m}`' for m in members)} |")
+    out.append("")
+    without = graph["metricsWithoutSpread"]
+    ratio = [m.metric for m in c.metrics.values() if m.unit == "ratio"]
+    if "RVOL" in without and ratio == ["RVOL"] and c.metric("RVOL").native_output["kind"] == "numeric":
+        # written while every clause is true: RVOL is numeric, offers no spread, and is the only `ratio` metric, so its
+        # pool would have one member ("lone" is its unit's: other numeric metrics offered no spread even then) - so at
+        # the first extraction (2026-08-24); at 108.4.0 it spread in a `ratio` pool of three
+        out += [
+            "`RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —",
+            "its pool would have exactly one member.",
+            "",
+        ]
+    kinds = Counter(c.metric(m).native_output["kind"] for m in without)
+    numeric = sorted(m for m in without if c.metric(m).native_output["kind"] == "numeric")
     out += [
-        "",
-        f"`RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —",
-        "its pool would have exactly one member.",
-        "",
-        f"{len(graph['metricsWithoutSpread'])} metrics offer no `spread`: mostly classifications,",
-        "booleans, events and the entity set.",
+        f"{len(without)} metrics offer no `spread`; by kind, "
+        + ", ".join(f"{kind} {n}" for kind, n in sorted(kinds.items(), key=lambda kv: (-kv[1], kv[0]))) + ".",
+        f"{len(numeric)} of them are numeric: {', '.join(f'`{m}`' for m in numeric)}.",
         "",
         "## Platform-privileged pairs",
         "",
@@ -200,15 +263,21 @@ def transform_layer(c) -> str:
         seen.add(key)
         sub = "`classifyZone`" if "classifyZone" in p["authorableAlternatives"] else "—"
         out.append(f"| `{p['metric']}` | `{p['transform']}` | `{p['usedBySection']}` | {sub} |")
-    out += [
-        "",
-        "`CCI20 × classifyZone` is the subtle one: `classifyZone` classifies a *bounded*",
-        "oscillator, and `CCI20`'s `nativeOutput` carries no `range`. No canonical bounds,",
-        "no zone policy exposed to authors — though the platform reserves one for itself.",
-        "",
-        "`bandTouch` is the mirror case: fully authorable, used by **zero** platform templates.",
-        "",
-    ]
+    out.append("")
+    # two notes, each written only while the corpus says its every clause (cci20_zone_note_holds,
+    # band_touch_note_holds): both held at the first extraction; neither does at 108.4.0 or 171.0.0
+    if cci20_zone_note_holds(c, seen):
+        out += [
+            "`CCI20 × classifyZone` is the subtle one: `classifyZone` classifies a *bounded*",
+            "oscillator, and `CCI20`'s `nativeOutput` carries no `range`. No canonical bounds,",
+            "no zone policy exposed to authors — though the platform reserves one for itself.",
+            "",
+        ]
+    if band_touch_note_holds(c, seen):
+        out += [
+            "`bandTouch` is the mirror case: fully authorable, used by **zero** platform templates.",
+            "",
+        ]
     return "\n".join(out)
 
 

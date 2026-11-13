@@ -1,0 +1,3829 @@
+{
+ "_what": "What the platform does with a trade level menu ATR stop outside the strategy's own stop range (TRADE_LEVEL_POLICY minStopLossAtrMultiple - maxStopLossAtrMultiple): OMEGA v0.14.3's item 'OMEGA's default menu clipped to the thesis's stop range' (battlegrid-manager docs/status/2026-11-11-contract-168.md). Three sources. (1) storedAt168_4: preview_strategy_trade_levels read on BTC at 168.4.0 on 2026-11-12 00:56Z on three committed strategies (the session scratch the 168 status note cites; each file's sha256 below): an ATR stop above maxStopLossAtrMultiple reads ABOVE_CEILING / MAX_STOP_LOSS_ATR_MULTIPLE and makes no pair. (2) stage168_2: probe V9 of data/audit/trade_level_menu_168_2026-11-11.json - ATR 5 and ATR 0.5 against the range 1 - 2 staged clean. (3) probe B1, one CREATE draft at 171.0.0 (2026-11-12 23:55Z), because no stored answer held a stop below the floor, a bound that is not a whole number, or either answer at 171: staged clean, read back, previewed on its DRAFT (BTC), discarded, read null; nothing committed.",
+ "measuredAt": {
+  "contractVersion": "171.0.0",
+  "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+  "startedAt": "2026-11-12T23:55:06Z",
+  "endedAt": "2026-11-12T23:56:05Z",
+  "versionReads": [
+   {
+    "tag": "before",
+    "readAt": "2026-11-12T23:55:06Z",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951"
+   },
+   {
+    "tag": "after",
+    "readAt": "2026-11-12T23:56:05Z",
+    "contractVersion": "171.0.0",
+    "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951"
+   }
+  ]
+ },
+ "how": "The mcporter runtime (OMEGA scripts/mcporter_runtime.mjs, EXTRACTION_TRANSPORT=runtime): one runtime process holding one MCP session, sequential, one call per >= 2.1 s (rt3.py). GET /mcp/version before the first call and after the last. A call's `at` in calls.jsonl is stamped after the pacing wait, immediately before the request is written; a probe's sentAt is that `at`. Probe script: C:/Users/rafae/omega-v012-hints/v0143/probe_v0143.py (with rt3.py; the raw run in run_v0143.json); this record is written by build_records.py there.",
+ "calls": {
+  "log": "C:/Users/rafae/omega-v012-hints/v0143/calls.jsonl",
+  "sha256": "a49642b7bf203d6d2d6fc9d3619397ec94579335600732b8396dcbdfcab78d3d",
+  "total": 7,
+  "byTool": {
+   "discard_strategy_draft": 1,
+   "get_strategy_draft": 3,
+   "list_strategy_drafts": 1,
+   "preview_strategy_trade_levels": 1,
+   "stage_strategy_draft": 1
+  },
+  "lines": [
+   {
+    "line": 0,
+    "at": "2026-11-12T23:55:12Z",
+    "tool": "stage_strategy_draft"
+   },
+   {
+    "line": 1,
+    "at": "2026-11-12T23:55:30Z",
+    "tool": "get_strategy_draft"
+   },
+   {
+    "line": 2,
+    "at": "2026-11-12T23:55:36Z",
+    "tool": "preview_strategy_trade_levels"
+   },
+   {
+    "line": 3,
+    "at": "2026-11-12T23:55:42Z",
+    "tool": "get_strategy_draft"
+   },
+   {
+    "line": 4,
+    "at": "2026-11-12T23:55:48Z",
+    "tool": "discard_strategy_draft"
+   },
+   {
+    "line": 5,
+    "at": "2026-11-12T23:55:54Z",
+    "tool": "get_strategy_draft"
+   },
+   {
+    "line": 6,
+    "at": "2026-11-12T23:56:00Z",
+    "tool": "list_strategy_drafts"
+   }
+  ]
+ },
+ "counts": {
+  "stages": 1,
+  "staged": 1,
+  "discarded": 1,
+  "committed": 0,
+  "tradeLevelPreviews": 1
+ },
+ "basePlan": {
+  "what": "battlegrid-manager plan 72's request (C:/Users/rafae/omega-v012-hints/v168/plan72_request.json), the base of every earlier trade-level CREATE probe, with the stop range and the menu below; trailingEnabled true, minRiskRewardRatio 1.5",
+  "file": "C:/Users/rafae/omega-v012-hints/v168/plan72_request.json",
+  "sha256": "7e26389be910f81333c484a7e37fb380f3f0ae741bf14eb8c840d16354c4d990"
+ },
+ "probes": {
+  "B1.range_0_8_1_8": {
+   "what": "the stop range 0.8 - 1.8 (TPO Prior Session Levels LONG's) and per side ATR stops 0.5 / 0.8 / 1 / 1.5 / 1.8 / 2 beside the default exit plans R 1.5 / 2 / 3, each closing 100%: a stop below the floor, one on each bound, two inside, one above the ceiling",
+   "kind": "CREATE",
+   "tool": "stage_strategy_draft",
+   "sentAt": "2026-11-12T23:55:12Z",
+   "callLine": 0,
+   "sent": {
+    "draftVersion": 0,
+    "axes": {
+     "IDENTITY": {
+      "name": "Trend Continuation",
+      "description": "Full MA alignment with trend strength, entered on momentum resumption.",
+      "tagline": "Never fight an aligned stack"
+     },
+     "TIMEFRAME_PROFILE": {
+      "timeframe": "1h"
+     },
+     "REPORT": {
+      "sections": [
+       {
+        "kind": "custom",
+        "title": "Trend Continuation Signals",
+        "columns": [
+         {
+          "metric": "MA_ALIGN",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         },
+         {
+          "metric": "EMA5",
+          "transformId": "spread",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "chainedTransformId": "trajectory",
+          "window": 4,
+          "inputs": [
+           {
+            "metric": "EMA13"
+           }
+          ]
+         },
+         {
+          "metric": "SMA200",
+          "transformId": "distance",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         },
+         {
+          "metric": "ADX",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         },
+         {
+          "metric": "MACD_HIST",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         },
+         {
+          "metric": "MACD_HIST",
+          "transformId": "crossDetect",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         },
+         {
+          "metric": "RVOL",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         },
+         {
+          "metric": "OBV",
+          "transformId": "trajectory",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "window": 4,
+          "bars": "closed"
+         }
+        ],
+        "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+        "benchmarkTicker": null,
+        "marketScope": null
+       },
+       {
+        "kind": "custom",
+        "title": "Market Tape",
+        "marketScope": "all",
+        "columns": [
+         {
+          "metric": "MKT_NET",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         }
+        ],
+        "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+        "benchmarkTicker": null
+       },
+       {
+        "kind": "custom",
+        "title": "Stablecoin Par",
+        "benchmarkTicker": "USDT_USD",
+        "columns": [
+         {
+          "metric": "PAR_DEV",
+          "transformId": "value",
+          "timeframe": {
+           "rel": "anchor"
+          }
+         }
+        ],
+        "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+        "marketScope": null
+       }
+      ]
+     },
+     "MARKET_READ": {
+      "marketReadText": "Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.\n\n- {TC_UP} (UP) - Setup confirmed - up.\n- {TC_DOWN} (DOWN) - Setup confirmed - down.\n\nRead these verdicts rather than re-deriving them from the columns."
+     },
+     "CONDITIONS": {
+      "conditions": [
+       {
+        "conditionKey": "TC_RISK_ON",
+        "name": "USDT at par",
+        "definition": {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "parDev"
+         },
+         "op": "between",
+         "low": -0.5,
+         "high": 0.5,
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        "verdict": null,
+        "required": false,
+        "exitSide": null
+       },
+       {
+        "conditionKey": "TC_CTX_UP",
+        "name": "Broad tape up",
+        "definition": {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "mktBreadth"
+         },
+         "op": "gt",
+         "value": 10.0,
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        "verdict": null,
+        "required": false,
+        "exitSide": null
+       },
+       {
+        "conditionKey": "TC_CTX_DOWN",
+        "name": "Broad tape down",
+        "definition": {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "mktBreadth"
+         },
+         "op": "lt",
+         "value": -10.0,
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        },
+        "verdict": null,
+        "required": false,
+        "exitSide": null
+       },
+       {
+        "conditionKey": "TC_CORE_UP",
+        "name": "2 of 3 filters agree - up",
+        "definition": {
+         "kind": "group",
+         "op": "ALL",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         },
+         "members": [
+          {
+           "kind": "group",
+           "op": "N_OF",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           },
+           "members": [
+            {
+             "kind": "clause",
+             "column": {
+              "sectionKey": null,
+              "header": "MAalign"
+             },
+             "op": "is",
+             "label": "bullish",
+             "hold": {
+              "atLeast": 1,
+              "of": 1
+             }
+            },
+            {
+             "kind": "clause",
+             "column": {
+              "sectionKey": null,
+              "header": "MACDhist_trend"
+             },
+             "op": "is",
+             "label": "rising",
+             "hold": {
+              "atLeast": 1,
+              "of": 1
+             }
+            },
+            {
+             "kind": "clause",
+             "column": {
+              "sectionKey": null,
+              "header": "OBV_trend"
+             },
+             "op": "is",
+             "label": "rising",
+             "hold": {
+              "atLeast": 1,
+              "of": 1
+             }
+            }
+           ],
+           "n": 2
+          },
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "ADX14_now"
+           },
+           "op": "gte",
+           "value": 25,
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          }
+         ]
+        },
+        "verdict": null,
+        "required": false,
+        "exitSide": null
+       },
+       {
+        "conditionKey": "TC_CORE_DOWN",
+        "name": "2 of 3 filters agree - down",
+        "definition": {
+         "kind": "group",
+         "op": "ALL",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         },
+         "members": [
+          {
+           "kind": "group",
+           "op": "N_OF",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           },
+           "members": [
+            {
+             "kind": "clause",
+             "column": {
+              "sectionKey": null,
+              "header": "MAalign"
+             },
+             "op": "is",
+             "label": "bearish",
+             "hold": {
+              "atLeast": 1,
+              "of": 1
+             }
+            },
+            {
+             "kind": "clause",
+             "column": {
+              "sectionKey": null,
+              "header": "MACDhist_trend"
+             },
+             "op": "is",
+             "label": "falling",
+             "hold": {
+              "atLeast": 1,
+              "of": 1
+             }
+            },
+            {
+             "kind": "clause",
+             "column": {
+              "sectionKey": null,
+              "header": "OBV_trend"
+             },
+             "op": "is",
+             "label": "falling",
+             "hold": {
+              "atLeast": 1,
+              "of": 1
+             }
+            }
+           ],
+           "n": 2
+          },
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "ADX14_now"
+           },
+           "op": "gte",
+           "value": 25,
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          }
+         ]
+        },
+        "verdict": null,
+        "required": false,
+        "exitSide": null
+       },
+       {
+        "conditionKey": "TC_UP",
+        "name": "Setup confirmed - up",
+        "definition": {
+         "kind": "group",
+         "op": "ALL",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         },
+         "members": [
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CORE_UP"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CTX_UP"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_RISK_ON"
+          }
+         ]
+        },
+        "verdict": "UP",
+        "required": false,
+        "exitSide": null
+       },
+       {
+        "conditionKey": "TC_DOWN",
+        "name": "Setup confirmed - down",
+        "definition": {
+         "kind": "group",
+         "op": "ALL",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         },
+         "members": [
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CORE_DOWN"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CTX_DOWN"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_RISK_ON"
+          }
+         ]
+        },
+        "verdict": "DOWN",
+        "required": false,
+        "exitSide": null
+       }
+      ]
+     },
+     "ENTRY": {
+      "entry": {
+       "trigger": "ON_CANDLE_CLOSE"
+      }
+     },
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 1.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     },
+     "POSITION_MANAGEMENT": {
+      "breakEvenEnabled": true,
+      "breakEvenTriggerR": 1.08,
+      "trailingEnabled": true,
+      "trailingTriggerR": 1,
+      "trailingGivebackPct": 45,
+      "trailingBufferPct": 0.25,
+      "timeDecayEnabled": true,
+      "timeDecayGracePeriodMinutes": 60,
+      "timeDecayIntervalMinutes": 15,
+      "timeDecayTightenPct": 5,
+      "timeDecayMaxTightenPct": 50,
+      "timeDecayStaleThresholdTpProgressPct": 25,
+      "decisionInvalidationExitEnabled": true
+     }
+    }
+   },
+   "answer": {
+    "staged": true,
+    "strategyId": "4969abb4-6948-4dcb-9dda-8798132e5969",
+    "version": 1,
+    "stagedAxes": [
+     "IDENTITY",
+     "TIMEFRAME_PROFILE",
+     "REPORT",
+     "MARKET_READ",
+     "CONDITIONS",
+     "ENTRY",
+     "TRADE_LEVEL_POLICY",
+     "POSITION_MANAGEMENT"
+    ],
+    "errors": [],
+    "warnings": []
+   },
+   "readBack": {
+    "at": "2026-11-12T23:55:34Z",
+    "draftVersion": 1,
+    "committedRevision": null,
+    "diagnostics": {
+     "errors": [],
+     "warnings": []
+    },
+    "impact": {
+     "boundAgentCount": 0,
+     "openPositionCount": 0,
+     "timeframeChanged": false,
+     "operation": "CREATE",
+     "admission": {
+      "quota": {
+       "used": 4,
+       "limit": 25,
+       "remaining": 21
+      },
+      "nameAvailable": true
+     },
+     "capital": []
+    },
+    "lastSource": "mcp",
+    "content": {
+     "IDENTITY": {
+      "name": "Trend Continuation",
+      "tagline": "Never fight an aligned stack",
+      "description": "Full MA alignment with trend strength, entered on momentum resumption."
+     },
+     "TIMEFRAME_PROFILE": {
+      "timeframe": "1h"
+     },
+     "REPORT": {
+      "sections": [
+       {
+        "kind": "custom",
+        "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+        "title": "Trend Continuation Signals",
+        "columns": [
+         {
+          "metric": "MA_ALIGN",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "value"
+         },
+         {
+          "inputs": [
+           {
+            "metric": "EMA13"
+           }
+          ],
+          "metric": "EMA5",
+          "window": 4,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "spread",
+          "chainedTransformId": "trajectory"
+         },
+         {
+          "metric": "SMA200",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "distance"
+         },
+         {
+          "bars": "closed",
+          "metric": "ADX",
+          "window": 4,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "trajectory"
+         },
+         {
+          "bars": "closed",
+          "metric": "MACD_HIST",
+          "window": 4,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "trajectory"
+         },
+         {
+          "metric": "MACD_HIST",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "crossDetect"
+         },
+         {
+          "bars": "closed",
+          "metric": "RVOL",
+          "window": 4,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "trajectory"
+         },
+         {
+          "bars": "closed",
+          "metric": "OBV",
+          "window": 4,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "trajectory"
+         }
+        ],
+        "marketScope": null,
+        "benchmarkTicker": null
+       },
+       {
+        "kind": "custom",
+        "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+        "title": "Market Tape",
+        "columns": [
+         {
+          "metric": "MKT_NET",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "value"
+         }
+        ],
+        "marketScope": "all",
+        "benchmarkTicker": null
+       },
+       {
+        "kind": "custom",
+        "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+        "title": "Stablecoin Par",
+        "columns": [
+         {
+          "metric": "PAR_DEV",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "transformId": "value"
+         }
+        ],
+        "marketScope": null,
+        "benchmarkTicker": "USDT_USD"
+       }
+      ]
+     },
+     "MARKET_READ": {
+      "marketReadText": "Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.\n\n- {TC_UP} (UP) - Setup confirmed - up.\n- {TC_DOWN} (DOWN) - Setup confirmed - down.\n\nRead these verdicts rather than re-deriving them from the columns."
+     },
+     "CONDITIONS": {
+      "conditions": [
+       {
+        "name": "USDT at par",
+        "verdict": null,
+        "exitSide": null,
+        "required": false,
+        "definition": {
+         "op": "between",
+         "low": -0.5,
+         "high": 0.5,
+         "hold": {
+          "of": 1,
+          "atLeast": 1
+         },
+         "kind": "clause",
+         "column": {
+          "header": "parDev",
+          "sectionKey": null
+         }
+        },
+        "conditionKey": "TC_RISK_ON"
+       },
+       {
+        "name": "Broad tape up",
+        "verdict": null,
+        "exitSide": null,
+        "required": false,
+        "definition": {
+         "op": "gt",
+         "hold": {
+          "of": 1,
+          "atLeast": 1
+         },
+         "kind": "clause",
+         "value": 10,
+         "column": {
+          "header": "mktBreadth",
+          "sectionKey": null
+         }
+        },
+        "conditionKey": "TC_CTX_UP"
+       },
+       {
+        "name": "Broad tape down",
+        "verdict": null,
+        "exitSide": null,
+        "required": false,
+        "definition": {
+         "op": "lt",
+         "hold": {
+          "of": 1,
+          "atLeast": 1
+         },
+         "kind": "clause",
+         "value": -10,
+         "column": {
+          "header": "mktBreadth",
+          "sectionKey": null
+         }
+        },
+        "conditionKey": "TC_CTX_DOWN"
+       },
+       {
+        "name": "2 of 3 filters agree - up",
+        "verdict": null,
+        "exitSide": null,
+        "required": false,
+        "definition": {
+         "op": "ALL",
+         "hold": {
+          "of": 1,
+          "atLeast": 1
+         },
+         "kind": "group",
+         "members": [
+          {
+           "n": 2,
+           "op": "N_OF",
+           "hold": {
+            "of": 1,
+            "atLeast": 1
+           },
+           "kind": "group",
+           "members": [
+            {
+             "op": "is",
+             "hold": {
+              "of": 1,
+              "atLeast": 1
+             },
+             "kind": "clause",
+             "label": "bullish",
+             "column": {
+              "header": "MAalign",
+              "sectionKey": null
+             }
+            },
+            {
+             "op": "is",
+             "hold": {
+              "of": 1,
+              "atLeast": 1
+             },
+             "kind": "clause",
+             "label": "rising",
+             "column": {
+              "header": "MACDhist_trend",
+              "sectionKey": null
+             }
+            },
+            {
+             "op": "is",
+             "hold": {
+              "of": 1,
+              "atLeast": 1
+             },
+             "kind": "clause",
+             "label": "rising",
+             "column": {
+              "header": "OBV_trend",
+              "sectionKey": null
+             }
+            }
+           ]
+          },
+          {
+           "op": "gte",
+           "hold": {
+            "of": 1,
+            "atLeast": 1
+           },
+           "kind": "clause",
+           "value": 25,
+           "column": {
+            "header": "ADX14_now",
+            "sectionKey": null
+           }
+          }
+         ]
+        },
+        "conditionKey": "TC_CORE_UP"
+       },
+       {
+        "name": "2 of 3 filters agree - down",
+        "verdict": null,
+        "exitSide": null,
+        "required": false,
+        "definition": {
+         "op": "ALL",
+         "hold": {
+          "of": 1,
+          "atLeast": 1
+         },
+         "kind": "group",
+         "members": [
+          {
+           "n": 2,
+           "op": "N_OF",
+           "hold": {
+            "of": 1,
+            "atLeast": 1
+           },
+           "kind": "group",
+           "members": [
+            {
+             "op": "is",
+             "hold": {
+              "of": 1,
+              "atLeast": 1
+             },
+             "kind": "clause",
+             "label": "bearish",
+             "column": {
+              "header": "MAalign",
+              "sectionKey": null
+             }
+            },
+            {
+             "op": "is",
+             "hold": {
+              "of": 1,
+              "atLeast": 1
+             },
+             "kind": "clause",
+             "label": "falling",
+             "column": {
+              "header": "MACDhist_trend",
+              "sectionKey": null
+             }
+            },
+            {
+             "op": "is",
+             "hold": {
+              "of": 1,
+              "atLeast": 1
+             },
+             "kind": "clause",
+             "label": "falling",
+             "column": {
+              "header": "OBV_trend",
+              "sectionKey": null
+             }
+            }
+           ]
+          },
+          {
+           "op": "gte",
+           "hold": {
+            "of": 1,
+            "atLeast": 1
+           },
+           "kind": "clause",
+           "value": 25,
+           "column": {
+            "header": "ADX14_now",
+            "sectionKey": null
+           }
+          }
+         ]
+        },
+        "conditionKey": "TC_CORE_DOWN"
+       },
+       {
+        "name": "Setup confirmed - up",
+        "verdict": "UP",
+        "exitSide": null,
+        "required": false,
+        "definition": {
+         "op": "ALL",
+         "hold": {
+          "of": 1,
+          "atLeast": 1
+         },
+         "kind": "group",
+         "members": [
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CORE_UP"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CTX_UP"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_RISK_ON"
+          }
+         ]
+        },
+        "conditionKey": "TC_UP"
+       },
+       {
+        "name": "Setup confirmed - down",
+        "verdict": "DOWN",
+        "exitSide": null,
+        "required": false,
+        "definition": {
+         "op": "ALL",
+         "hold": {
+          "of": 1,
+          "atLeast": 1
+         },
+         "kind": "group",
+         "members": [
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CORE_DOWN"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_CTX_DOWN"
+          },
+          {
+           "kind": "conditionRef",
+           "conditionKey": "TC_RISK_ON"
+          }
+         ]
+        },
+        "conditionKey": "TC_DOWN"
+       }
+      ]
+     },
+     "ENTRY": {
+      "entry": {
+       "trigger": "ON_CANDLE_CLOSE"
+      }
+     },
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 2
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      },
+      "minRiskRewardRatio": 1.5,
+      "maxStopLossAtrMultiple": 1.8,
+      "minStopLossAtrMultiple": 0.8
+     },
+     "POSITION_MANAGEMENT": {
+      "trailingEnabled": true,
+      "breakEvenEnabled": true,
+      "timeDecayEnabled": true,
+      "trailingTriggerR": 1,
+      "breakEvenTriggerR": 1.08,
+      "trailingBufferPct": 0.25,
+      "timeDecayTightenPct": 5,
+      "trailingGivebackPct": 45,
+      "timeDecayMaxTightenPct": 50,
+      "timeDecayIntervalMinutes": 15,
+      "timeDecayGracePeriodMinutes": 60,
+      "decisionInvalidationExitEnabled": true,
+      "timeDecayStaleThresholdTpProgressPct": 25
+     }
+    },
+    "comparedWithSent": {
+     "keysAdded": [],
+     "keysDropped": [],
+     "valuesChanged": [],
+     "numberSpelling": [
+      {
+       "path": "CONDITIONS.conditions[1].definition.value",
+       "sent": 10.0,
+       "read": 10
+      },
+      {
+       "path": "CONDITIONS.conditions[2].definition.value",
+       "sent": -10.0,
+       "read": -10
+      }
+     ],
+     "canonicalEqual": true
+    }
+   },
+   "preview": {
+    "at": "2026-11-12T23:55:36Z",
+    "callLine": 2,
+    "args": {
+     "coinTicker": "BTC",
+     "source": {
+      "kind": "DRAFT",
+      "strategyId": "4969abb4-6948-4dcb-9dda-8798132e5969",
+      "draftVersion": 1
+     }
+    },
+    "coinTicker": "BTC",
+    "directions": {
+     "LONG": {
+      "band": {
+       "minStopLossAtrMultiple": 0.8,
+       "maxStopLossAtrMultiple": 1.8
+      },
+      "minRiskRewardRatio": 1.5,
+      "timeframe": "1h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 71463,
+       "direction": "LONG",
+       "atr": 449.0296187,
+       "atrPct": 0.6283386069714397
+      },
+      "hardStopDistancePct": 1.1310094925485916,
+      "stopCandidates": [
+       {
+        "price": 71238.48519065,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 0.5
+        },
+        "atrMultiple": 0.5,
+        "distancePct": 0.31416930348571986,
+        "distanceAtrMultiple": 0.5,
+        "verdict": "BELOW_FLOOR",
+        "responsibleBound": "MIN_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 0.5026708855771518
+       },
+       {
+        "price": 71103.77630504,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 0.8
+        },
+        "atrMultiple": 0.8,
+        "distancePct": 0.5026708855771519,
+        "distanceAtrMultiple": 0.8000000000000002,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 71013.9703813,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 0.6283386069714397,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 70789.45557195,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 0.9425079104571598,
+        "distanceAtrMultiple": 1.5000000000000002,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 70654.74668634,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.8
+        },
+        "atrMultiple": 1.8,
+        "distancePct": 1.1310094925485914,
+        "distanceAtrMultiple": 1.7999999999999998,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 70564.9407626,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 1.2566772139428795,
+        "distanceAtrMultiple": 2,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 1.1310094925485916
+       }
+      ],
+      "counters": {
+       "survivingSetups": 12,
+       "stopsRemovedByFloor": 1,
+       "stopsRemovedByCeiling": 1,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 0,
+       "pairsRemovedByTargetOrder": 0,
+       "pairsRemovedByOrderFloor": 0,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 0.6283386069714397,
+       "reachableMinPct": 0.6283386069714397,
+       "reachableMaxPct": 3.1416930348571985,
+       "requestedMinAtrMultiple": 0.8,
+       "requestedMinPct": 0.5026708855771518,
+       "requestedMaxAtrMultiple": 1.8,
+       "requestedMaxPct": 1.1310094925485916,
+       "intersects": true,
+       "survivingRungPcts": [
+        0.6283386069714397,
+        0.9425079104571596
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 12,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 0.8,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.8,
+         "kind": "ATR"
+        }
+       ]
+      ],
+      "rejectedPairStops": [],
+      "rejectedPairCount": 0,
+      "rejectedTakeProfits": [],
+      "setups": [
+       {
+        "setupIndex": 0,
+        "stopLossPrice": 71103.77630504,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 72001.83554244,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72001.83554244,
+        "stopLossDistancePct": 0.5026708855771583,
+        "takeProfitDistancePct": 0.7540063283657374,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 0.667,
+        "stopLossDistanceAtrMultiple": 0.8000000000000104,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 1,
+        "stopLossPrice": 71103.77630504,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 72181.44738992001,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72181.44738992001,
+        "stopLossDistancePct": 0.5026708855771583,
+        "takeProfitDistancePct": 1.0053417711543167,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 0.889,
+        "stopLossDistanceAtrMultiple": 0.8000000000000104,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 2,
+        "stopLossPrice": 71103.77630504,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 72540.67108488001,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72540.67108488001,
+        "stopLossDistancePct": 0.5026708855771583,
+        "takeProfitDistancePct": 1.5080126567314749,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 1.333,
+        "stopLossDistanceAtrMultiple": 0.8000000000000104,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 3,
+        "stopLossPrice": 71013.9703813,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "targets": [
+         {
+          "price": 72136.54442805001,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72136.54442805001,
+        "stopLossDistancePct": 0.6283386069714479,
+        "takeProfitDistancePct": 0.9425079104571719,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 0.833,
+        "stopLossDistanceAtrMultiple": 1.000000000000013,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 4,
+        "stopLossPrice": 71013.9703813,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "targets": [
+         {
+          "price": 72361.05923740001,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72361.05923740001,
+        "stopLossDistancePct": 0.6283386069714479,
+        "takeProfitDistancePct": 1.2566772139428959,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 1.111,
+        "stopLossDistanceAtrMultiple": 1.000000000000013,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 5,
+        "stopLossPrice": 71013.9703813,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "targets": [
+         {
+          "price": 72810.08885610002,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72810.08885610002,
+        "stopLossDistancePct": 0.6283386069714479,
+        "takeProfitDistancePct": 1.8850158209143437,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 1.667,
+        "stopLossDistanceAtrMultiple": 1.000000000000013,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 6,
+        "stopLossPrice": 70789.45557195,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "targets": [
+         {
+          "price": 72473.31664207499,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72473.31664207499,
+        "stopLossDistancePct": 0.9425079104571514,
+        "takeProfitDistancePct": 1.4137618656857274,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 1.25,
+        "stopLossDistanceAtrMultiple": 1.4999999999999871,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 7,
+        "stopLossPrice": 70789.45557195,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "targets": [
+         {
+          "price": 72810.08885609999,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72810.08885609999,
+        "stopLossDistancePct": 0.9425079104571514,
+        "takeProfitDistancePct": 1.8850158209143029,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 1.667,
+        "stopLossDistanceAtrMultiple": 1.4999999999999871,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 8,
+        "stopLossPrice": 70789.45557195,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "targets": [
+         {
+          "price": 73483.63328414998,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 73483.63328414998,
+        "stopLossDistancePct": 0.9425079104571514,
+        "takeProfitDistancePct": 2.8275237313714547,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 2.5,
+        "stopLossDistanceAtrMultiple": 1.4999999999999871,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 9,
+        "stopLossPrice": 70654.74668634,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 72675.37997049,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 72675.37997049,
+        "stopLossDistancePct": 1.1310094925485858,
+        "takeProfitDistancePct": 1.6965142388228889,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 1.5,
+        "stopLossDistanceAtrMultiple": 1.799999999999991,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 10,
+        "stopLossPrice": 70654.74668634,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 73079.50662731999,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 73079.50662731999,
+        "stopLossDistancePct": 1.1310094925485858,
+        "takeProfitDistancePct": 2.2620189850971717,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 2,
+        "stopLossDistanceAtrMultiple": 1.799999999999991,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 11,
+        "stopLossPrice": 70654.74668634,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 73887.75994097999,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 73887.75994097999,
+        "stopLossDistancePct": 1.1310094925485858,
+        "takeProfitDistancePct": 3.3930284776457578,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 3,
+        "stopLossDistanceAtrMultiple": 1.799999999999991,
+        "runnerTrail": null
+       }
+      ],
+      "rejectedPairs": []
+     },
+     "SHORT": {
+      "band": {
+       "minStopLossAtrMultiple": 0.8,
+       "maxStopLossAtrMultiple": 1.8
+      },
+      "minRiskRewardRatio": 1.5,
+      "timeframe": "1h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 71463,
+       "direction": "SHORT",
+       "atr": 449.0296187,
+       "atrPct": 0.6283386069714397
+      },
+      "hardStopDistancePct": 1.1310094925485916,
+      "stopCandidates": [
+       {
+        "price": 71687.51480935,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 0.5
+        },
+        "atrMultiple": 0.5,
+        "distancePct": 0.31416930348571986,
+        "distanceAtrMultiple": 0.5,
+        "verdict": "BELOW_FLOOR",
+        "responsibleBound": "MIN_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 0.5026708855771518
+       },
+       {
+        "price": 71822.22369496,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 0.8
+        },
+        "atrMultiple": 0.8,
+        "distancePct": 0.5026708855771519,
+        "distanceAtrMultiple": 0.8000000000000002,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 71912.0296187,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 0.6283386069714397,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72136.54442805,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 0.9425079104571598,
+        "distanceAtrMultiple": 1.5000000000000002,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72271.25331366,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.8
+        },
+        "atrMultiple": 1.8,
+        "distancePct": 1.1310094925485914,
+        "distanceAtrMultiple": 1.7999999999999998,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72361.0592374,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 1.2566772139428795,
+        "distanceAtrMultiple": 2,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 1.1310094925485916
+       }
+      ],
+      "counters": {
+       "survivingSetups": 12,
+       "stopsRemovedByFloor": 1,
+       "stopsRemovedByCeiling": 1,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 0,
+       "pairsRemovedByTargetOrder": 0,
+       "pairsRemovedByOrderFloor": 0,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 0.6283386069714397,
+       "reachableMinPct": 0.6283386069714397,
+       "reachableMaxPct": 3.1416930348571985,
+       "requestedMinAtrMultiple": 0.8,
+       "requestedMinPct": 0.5026708855771518,
+       "requestedMaxAtrMultiple": 1.8,
+       "requestedMaxPct": 1.1310094925485916,
+       "intersects": true,
+       "survivingRungPcts": [
+        0.6283386069714397,
+        0.9425079104571596
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 12,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 0.8,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.8,
+         "kind": "ATR"
+        }
+       ]
+      ],
+      "rejectedPairStops": [],
+      "rejectedPairCount": 0,
+      "rejectedTakeProfits": [],
+      "setups": [
+       {
+        "setupIndex": 0,
+        "stopLossPrice": 71822.22369496,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 70924.16445756,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70924.16445756,
+        "stopLossDistancePct": 0.5026708855771583,
+        "takeProfitDistancePct": 0.7540063283657374,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 0.667,
+        "stopLossDistanceAtrMultiple": 0.8000000000000104,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 1,
+        "stopLossPrice": 71822.22369496,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 70744.55261007999,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70744.55261007999,
+        "stopLossDistancePct": 0.5026708855771583,
+        "takeProfitDistancePct": 1.0053417711543167,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 0.889,
+        "stopLossDistanceAtrMultiple": 0.8000000000000104,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 2,
+        "stopLossPrice": 71822.22369496,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 0.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 70385.32891511999,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70385.32891511999,
+        "stopLossDistancePct": 0.5026708855771583,
+        "takeProfitDistancePct": 1.5080126567314749,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 1.333,
+        "stopLossDistanceAtrMultiple": 0.8000000000000104,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 3,
+        "stopLossPrice": 71912.0296187,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "targets": [
+         {
+          "price": 70789.45557194999,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70789.45557194999,
+        "stopLossDistancePct": 0.6283386069714479,
+        "takeProfitDistancePct": 0.9425079104571719,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 0.833,
+        "stopLossDistanceAtrMultiple": 1.000000000000013,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 4,
+        "stopLossPrice": 71912.0296187,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "targets": [
+         {
+          "price": 70564.94076259999,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70564.94076259999,
+        "stopLossDistancePct": 0.6283386069714479,
+        "takeProfitDistancePct": 1.2566772139428959,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 1.111,
+        "stopLossDistanceAtrMultiple": 1.000000000000013,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 5,
+        "stopLossPrice": 71912.0296187,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         }
+        ],
+        "targets": [
+         {
+          "price": 70115.91114389998,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70115.91114389998,
+        "stopLossDistancePct": 0.6283386069714479,
+        "takeProfitDistancePct": 1.8850158209143437,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 1.667,
+        "stopLossDistanceAtrMultiple": 1.000000000000013,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 6,
+        "stopLossPrice": 72136.54442805,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "targets": [
+         {
+          "price": 70452.68335792501,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70452.68335792501,
+        "stopLossDistancePct": 0.9425079104571514,
+        "takeProfitDistancePct": 1.4137618656857274,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 1.25,
+        "stopLossDistanceAtrMultiple": 1.4999999999999871,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 7,
+        "stopLossPrice": 72136.54442805,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "targets": [
+         {
+          "price": 70115.91114390001,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70115.91114390001,
+        "stopLossDistancePct": 0.9425079104571514,
+        "takeProfitDistancePct": 1.8850158209143029,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 1.667,
+        "stopLossDistanceAtrMultiple": 1.4999999999999871,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 8,
+        "stopLossPrice": 72136.54442805,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "targets": [
+         {
+          "price": 69442.36671585002,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 69442.36671585002,
+        "stopLossDistancePct": 0.9425079104571514,
+        "takeProfitDistancePct": 2.8275237313714547,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 2.5,
+        "stopLossDistanceAtrMultiple": 1.4999999999999871,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 9,
+        "stopLossPrice": 72271.25331366,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 70250.62002951,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 70250.62002951,
+        "stopLossDistancePct": 1.1310094925485858,
+        "takeProfitDistancePct": 1.6965142388228889,
+        "riskRewardRatio": 1.5,
+        "rewardToHardStopRatio": 1.5,
+        "stopLossDistanceAtrMultiple": 1.799999999999991,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 10,
+        "stopLossPrice": 72271.25331366,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 69846.49337268001,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 69846.49337268001,
+        "stopLossDistancePct": 1.1310094925485858,
+        "takeProfitDistancePct": 2.2620189850971717,
+        "riskRewardRatio": 2,
+        "rewardToHardStopRatio": 2,
+        "stopLossDistanceAtrMultiple": 1.799999999999991,
+        "runnerTrail": null
+       },
+       {
+        "setupIndex": 11,
+        "stopLossPrice": 72271.25331366,
+        "stopLossMethods": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.8
+         }
+        ],
+        "targets": [
+         {
+          "price": 69038.24005902001,
+          "closePct": 100
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ],
+        "takeProfitPrice": 69038.24005902001,
+        "stopLossDistancePct": 1.1310094925485858,
+        "takeProfitDistancePct": 3.3930284776457578,
+        "riskRewardRatio": 3,
+        "rewardToHardStopRatio": 3,
+        "stopLossDistanceAtrMultiple": 1.799999999999991,
+        "runnerTrail": null
+       }
+      ],
+      "rejectedPairs": []
+     }
+    }
+   },
+   "discard": {
+    "at": "2026-11-12T23:55:48Z",
+    "callLine": 4,
+    "draftVersion": 1,
+    "answer": {
+     "strategyId": "4969abb4-6948-4dcb-9dda-8798132e5969",
+     "discarded": true
+    }
+   },
+   "draftAfterDiscard": null,
+   "draftVersionAfterDiscard": 0,
+   "readAfterDiscardAt": "2026-11-12T23:55:58Z"
+  }
+ },
+ "listStrategyDraftsAtEnd": {
+  "at": "2026-11-12T23:55:58Z",
+  "answer": {
+   "drafts": [
+    {
+     "strategyId": "c1fd5d4c-0a86-4b3f-9ab4-16ad57c46898",
+     "strategyExists": true,
+     "strategyName": "VWAP Reject 15m",
+     "baseRevision": 2,
+     "updatedAt": "2026-10-23T07:58:21.142Z",
+     "version": 9,
+     "lastSource": "commander",
+     "baseMoved": false,
+     "axes": [
+      "TRADE_LEVEL_POLICY"
+     ]
+    }
+   ],
+   "nextCursor": null
+  },
+  "note": "the one draft listed is not this probe's: VWAP Reject 15m, last written 2026-10-23 by the commander - the same draft the v0.14.2 run listed"
+ },
+ "stage168_2": {
+  "probe": "V9.atr5.atr0_5.outside_stop_range",
+  "record": "data/audit/trade_level_menu_168_2026-11-11.json",
+  "what": "ATR 5 and ATR 0.5 stops (the strategy's stop range is 1 - 2), valid targets",
+  "stagedAt": "2026-11-11T19:26:05.372Z",
+  "contractVersion": "168.2.0",
+  "sent": {
+   "LONG": {
+    "stops": [
+     {
+      "kind": "ATR",
+      "atrMultiple": 5
+     },
+     {
+      "kind": "ATR",
+      "atrMultiple": 0.5
+     }
+    ],
+    "targets": [
+     {
+      "kind": "R_MULTIPLE",
+      "multiple": 1.5
+     },
+     {
+      "kind": "R_MULTIPLE",
+      "multiple": 2
+     },
+     {
+      "kind": "R_MULTIPLE",
+      "multiple": 3
+     }
+    ]
+   },
+   "SHORT": {
+    "stops": [
+     {
+      "kind": "ATR",
+      "atrMultiple": 5
+     },
+     {
+      "kind": "ATR",
+      "atrMultiple": 0.5
+     }
+    ],
+    "targets": [
+     {
+      "kind": "R_MULTIPLE",
+      "multiple": 1.5
+     },
+     {
+      "kind": "R_MULTIPLE",
+      "multiple": 2
+     },
+     {
+      "kind": "R_MULTIPLE",
+      "multiple": 3
+     }
+    ]
+   }
+  },
+  "answer": {
+   "staged": true,
+   "errors": [],
+   "warnings": []
+  }
+ },
+ "storedAt168_4": {
+  "_what": "preview_strategy_trade_levels {coinTicker BTC, source COMMITTED} on the three strategies whose migrated menus were read on 2026-11-11, at 168.4.0 / ec7fb906, 2026-11-12 00:56Z (battlegrid-manager docs/status/2026-11-11-contract-168.md, 'Read on BTC at 00:56Z'); the answers in the session scratch it names, digested here per direction: the range, every stop candidate's verdict, the counters, the stop band, and which stops make a setup or a refused pair",
+  "previews": {
+   "Dunkirk": {
+    "strategyId": "3c17584c-ede7-4aca-ba02-045489868a25",
+    "source": {
+     "kind": "COMMITTED",
+     "strategyId": "3c17584c-ede7-4aca-ba02-045489868a25"
+    },
+    "coinTicker": "BTC",
+    "file": "C:/Users/rafae/omega-v012-hints/v168/trade_levels_preview_3c17584c.json",
+    "sha256": "8f930dcbc4816c5e49c93b3821a999f8ff447ea58f078cbf9c289d7d38cc5c34",
+    "directions": {
+     "LONG": {
+      "band": {
+       "minStopLossAtrMultiple": 1,
+       "maxStopLossAtrMultiple": 2
+      },
+      "minRiskRewardRatio": 1.5,
+      "timeframe": "1h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 74013,
+       "direction": "LONG",
+       "atr": 495.01912169,
+       "atrPct": 0.6688272623593153
+      },
+      "hardStopDistancePct": 1.3376545247186307,
+      "stopCandidates": [
+       {
+        "price": 73517.98087831,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 0.6688272623593153,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 73402.29855785,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "BB_LOWER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 0.82512726433195,
+        "distanceAtrMultiple": 1.233692630024201,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 73360,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "DONCHIAN_LOWER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 0.8822774377474227,
+        "distanceAtrMultiple": 1.3191409612029767,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 73270.471317465,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 1.003240893538973,
+        "distanceAtrMultiple": 1.5,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 73022.96175662,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 1.3376545247186307,
+        "distanceAtrMultiple": 2,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       }
+      ],
+      "counters": {
+       "survivingSetups": 16,
+       "stopsRemovedByFloor": 0,
+       "stopsRemovedByCeiling": 0,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 9,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 0.6688272623593153,
+       "reachableMinPct": 0.6688272623593153,
+       "reachableMaxPct": 3.3441363117965768,
+       "requestedMinAtrMultiple": 1,
+       "requestedMinPct": 0.6688272623593153,
+       "requestedMaxAtrMultiple": 2,
+       "requestedMaxPct": 1.3376545247186307,
+       "intersects": true,
+       "survivingRungPcts": [
+        0.6688272623593153,
+        1.003240893538973,
+        1.3376545247186307
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 16,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 2,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "BB_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "DONCHIAN_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ]
+      ],
+      "rejectedPairStops": [
+       {
+        "atrMultiple": 1,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 1.5,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 2,
+        "kind": "ATR"
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "BB_LOWER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "DONCHIAN_LOWER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       }
+      ],
+      "rejectedPairCount": 9,
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "band": {
+       "minStopLossAtrMultiple": 1,
+       "maxStopLossAtrMultiple": 2
+      },
+      "minRiskRewardRatio": 1.5,
+      "timeframe": "1h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 74013,
+       "direction": "SHORT",
+       "atr": 495.01912169,
+       "atrPct": 0.6688272623593153
+      },
+      "hardStopDistancePct": 1.3376545247186307,
+      "stopCandidates": [
+       {
+        "price": 74508.01912169,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 0.6688272623593153,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 74622.70144215,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "BB_UPPER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 0.8237761503384624,
+        "distanceAtrMultiple": 1.2316725060407354,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 74755.528682535,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 1.003240893538973,
+        "distanceAtrMultiple": 1.5,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 74778,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "DONCHIAN_UPPER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 1.0336022050180373,
+        "distanceAtrMultiple": 1.5453948473511137,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 75003.03824338,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 1.3376545247186307,
+        "distanceAtrMultiple": 2,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       }
+      ],
+      "counters": {
+       "survivingSetups": 15,
+       "stopsRemovedByFloor": 0,
+       "stopsRemovedByCeiling": 0,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 10,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 0.6688272623593153,
+       "reachableMinPct": 0.6688272623593153,
+       "reachableMaxPct": 3.3441363117965768,
+       "requestedMinAtrMultiple": 1,
+       "requestedMinPct": 0.6688272623593153,
+       "requestedMaxAtrMultiple": 2,
+       "requestedMaxPct": 1.3376545247186307,
+       "intersects": true,
+       "survivingRungPcts": [
+        0.6688272623593153,
+        1.003240893538973,
+        1.3376545247186307
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 15,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 2,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "BB_UPPER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "DONCHIAN_UPPER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ]
+      ],
+      "rejectedPairStops": [
+       {
+        "atrMultiple": 1,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 1.5,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 2,
+        "kind": "ATR"
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "BB_UPPER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "DONCHIAN_UPPER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       }
+      ],
+      "rejectedPairCount": 10,
+      "rejectedTakeProfits": []
+     }
+    }
+   },
+   "VWAP Reject 4h": {
+    "strategyId": "5b2406f7-db99-48b4-a6b2-a64f9fea93d4",
+    "source": {
+     "kind": "COMMITTED",
+     "strategyId": "5b2406f7-db99-48b4-a6b2-a64f9fea93d4"
+    },
+    "coinTicker": "BTC",
+    "file": "C:/Users/rafae/omega-v012-hints/v168/trade_levels_preview_5b2406f7.json",
+    "sha256": "f6566b8ed89006f443fddffded67521d029efff11772d4c36e41a7005a1b2c76",
+    "directions": {
+     "LONG": {
+      "band": {
+       "minStopLossAtrMultiple": 1,
+       "maxStopLossAtrMultiple": 1.8
+      },
+      "minRiskRewardRatio": 2,
+      "timeframe": "4h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 74025,
+       "direction": "LONG",
+       "atr": 933.83870525,
+       "atrPct": 1.261518007767646
+      },
+      "hardStopDistancePct": 2.270732413981763,
+      "stopCandidates": [
+       {
+        "price": 73091.16129475,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 1.261518007767646,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 73016.10422164,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "BB_LOWER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 1.362912230138474,
+        "distanceAtrMultiple": 1.0803747720971917,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72668,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "DONCHIAN_LOWER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 1.8331644714623438,
+        "distanceAtrMultiple": 1.4531417389009536,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72624.241942125,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 1.8922770116514689,
+        "distanceAtrMultiple": 1.5,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72157.3225895,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 2.523036015535292,
+        "distanceAtrMultiple": 2,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270732413981763
+       }
+      ],
+      "counters": {
+       "survivingSetups": 10,
+       "stopsRemovedByFloor": 0,
+       "stopsRemovedByCeiling": 1,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 6,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 1.261518007767646,
+       "reachableMinPct": 1.261518007767646,
+       "reachableMaxPct": 6.30759003883823,
+       "requestedMinAtrMultiple": 1,
+       "requestedMinPct": 1.261518007767646,
+       "requestedMaxAtrMultiple": 1.8,
+       "requestedMaxPct": 2.270732413981763,
+       "intersects": true,
+       "survivingRungPcts": [
+        1.261518007767646,
+        1.892277011651469
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 10,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "BB_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "DONCHIAN_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ]
+      ],
+      "rejectedPairStops": [
+       {
+        "atrMultiple": 1,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 1.5,
+        "kind": "ATR"
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "BB_LOWER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "DONCHIAN_LOWER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       }
+      ],
+      "rejectedPairCount": 6,
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "band": {
+       "minStopLossAtrMultiple": 1,
+       "maxStopLossAtrMultiple": 1.8
+      },
+      "minRiskRewardRatio": 2,
+      "timeframe": "4h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 74025,
+       "direction": "SHORT",
+       "atr": 933.83870525,
+       "atrPct": 1.261518007767646
+      },
+      "hardStopDistancePct": 2.270732413981763,
+      "stopCandidates": [
+       {
+        "price": 74958.83870525,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 1.261518007767646,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 75425.758057875,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 1.8922770116514689,
+        "distanceAtrMultiple": 1.5,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 75752.59577836,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "BB_UPPER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 2.333800443579875,
+        "distanceAtrMultiple": 1.849993760857775,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270732413981763
+       },
+       {
+        "price": 75892.6774105,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 2.523036015535292,
+        "distanceAtrMultiple": 2,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270732413981763
+       },
+       {
+        "price": 76081,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "DONCHIAN_UPPER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 2.777440054035799,
+        "distanceAtrMultiple": 2.201665007502108,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270732413981763
+       }
+      ],
+      "counters": {
+       "survivingSetups": 4,
+       "stopsRemovedByFloor": 0,
+       "stopsRemovedByCeiling": 3,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 4,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 1.261518007767646,
+       "reachableMinPct": 1.261518007767646,
+       "reachableMaxPct": 6.30759003883823,
+       "requestedMinAtrMultiple": 1,
+       "requestedMinPct": 1.261518007767646,
+       "requestedMaxAtrMultiple": 1.8,
+       "requestedMaxPct": 2.270732413981763,
+       "intersects": true,
+       "survivingRungPcts": [
+        1.261518007767646,
+        1.892277011651469
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 4,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ]
+      ],
+      "rejectedPairStops": [
+       {
+        "atrMultiple": 1,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 1.5,
+        "kind": "ATR"
+       }
+      ],
+      "rejectedPairCount": 4,
+      "rejectedTakeProfits": []
+     }
+    }
+   },
+   "TPO Prior Session Levels LONG": {
+    "strategyId": "c86546a0-5179-49bd-9dfb-16d81853889a",
+    "source": {
+     "kind": "COMMITTED",
+     "strategyId": "c86546a0-5179-49bd-9dfb-16d81853889a"
+    },
+    "coinTicker": "BTC",
+    "file": "C:/Users/rafae/omega-v012-hints/v168/trade_levels_preview_c86546a0.json",
+    "sha256": "3e266e2e2317206c24bf16eee5eac9a850cbebc8cbe674d358d5126820af1c66",
+    "directions": {
+     "LONG": {
+      "band": {
+       "minStopLossAtrMultiple": 0.8,
+       "maxStopLossAtrMultiple": 1.8
+      },
+      "minRiskRewardRatio": 2,
+      "timeframe": "4h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 74026.6,
+       "direction": "LONG",
+       "atr": 933.83870525,
+       "atrPct": 1.2614907415037295
+      },
+      "hardStopDistancePct": 2.270683334706713,
+      "stopCandidates": [
+       {
+        "price": 73092.76129475,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 1.2614907415037295,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 73016.10422164,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "BB_LOWER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 1.3650441575866124,
+        "distanceAtrMultiple": 1.08208813007969,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72668,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "DONCHIAN_LOWER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 1.835286234947986,
+        "distanceAtrMultiple": 1.454855096883452,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72625.841942125,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 1.8922361122555944,
+        "distanceAtrMultiple": 1.5,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 72158.92258950001,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 2.522981483007459,
+        "distanceAtrMultiple": 2,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270683334706713
+       }
+      ],
+      "counters": {
+       "survivingSetups": 10,
+       "stopsRemovedByFloor": 0,
+       "stopsRemovedByCeiling": 1,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 6,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 1.2614907415037295,
+       "reachableMinPct": 1.2614907415037295,
+       "reachableMaxPct": 6.307453707518648,
+       "requestedMinAtrMultiple": 0.8,
+       "requestedMinPct": 1.0091925932029837,
+       "requestedMaxAtrMultiple": 1.8,
+       "requestedMaxPct": 2.270683334706713,
+       "intersects": true,
+       "survivingRungPcts": [
+        1.2614907415037295,
+        1.8922361122555942
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 10,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "BB_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ],
+       [
+        {
+         "bufferAtrMultiple": 0,
+         "kind": "LEVEL",
+         "level": {
+          "bars": null,
+          "knobs": {},
+          "metric": "DONCHIAN_LOWER",
+          "offset": 0,
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "windowExtreme": null
+         }
+        }
+       ]
+      ],
+      "rejectedPairStops": [
+       {
+        "atrMultiple": 1,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 1.5,
+        "kind": "ATR"
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "BB_LOWER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       },
+       {
+        "bufferAtrMultiple": 0,
+        "kind": "LEVEL",
+        "level": {
+         "bars": null,
+         "knobs": {},
+         "metric": "DONCHIAN_LOWER",
+         "offset": 0,
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "windowExtreme": null
+        }
+       }
+      ],
+      "rejectedPairCount": 6,
+      "rejectedTakeProfits": []
+     },
+     "SHORT": {
+      "band": {
+       "minStopLossAtrMultiple": 0.8,
+       "maxStopLossAtrMultiple": 1.8
+      },
+      "minRiskRewardRatio": 2,
+      "timeframe": "4h",
+      "stage": "OK",
+      "snapshot": {
+       "entryPrice": 74026.6,
+       "direction": "SHORT",
+       "atr": 933.83870525,
+       "atrPct": 1.2614907415037295
+      },
+      "hardStopDistancePct": 2.270683334706713,
+      "stopCandidates": [
+       {
+        "price": 74960.43870525001,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1
+        },
+        "atrMultiple": 1,
+        "distancePct": 1.2614907415037295,
+        "distanceAtrMultiple": 1,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 75427.35805787501,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 1.5
+        },
+        "atrMultiple": 1.5,
+        "distancePct": 1.8922361122555944,
+        "distanceAtrMultiple": 1.5,
+        "verdict": "SURVIVED",
+        "responsibleBound": null,
+        "rejectedByThresholdPct": null
+       },
+       {
+        "price": 75752.59577836,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "BB_UPPER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 2.331588615929945,
+        "distanceAtrMultiple": 1.8482804028752768,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270683334706713
+       },
+       {
+        "price": 75894.2774105,
+        "method": {
+         "kind": "ATR",
+         "atrMultiple": 2
+        },
+        "atrMultiple": 2,
+        "distancePct": 2.522981483007459,
+        "distanceAtrMultiple": 2,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270683334706713
+       },
+       {
+        "price": 76081,
+        "method": {
+         "kind": "LEVEL",
+         "level": {
+          "metric": "DONCHIAN_UPPER",
+          "timeframe": {
+           "rel": "anchor"
+          },
+          "bars": null,
+          "offset": 0,
+          "knobs": {},
+          "windowExtreme": null
+         },
+         "bufferAtrMultiple": 0
+        },
+        "atrMultiple": null,
+        "distancePct": 2.7752186376248456,
+        "distanceAtrMultiple": 2.19995164951961,
+        "verdict": "ABOVE_CEILING",
+        "responsibleBound": "MAX_STOP_LOSS_ATR_MULTIPLE",
+        "rejectedByThresholdPct": 2.270683334706713
+       }
+      ],
+      "counters": {
+       "survivingSetups": 4,
+       "stopsRemovedByFloor": 0,
+       "stopsRemovedByCeiling": 3,
+       "stopsRemovedByStructuralCeiling": 0,
+       "stopsUnread": 0,
+       "stopsWrongSide": 0,
+       "pairsRemovedByRiskReward": 4,
+       "targetsRefused": 0
+      },
+      "stopBand": {
+       "atrPct": 1.2614907415037295,
+       "reachableMinPct": 1.2614907415037295,
+       "reachableMaxPct": 6.307453707518648,
+       "requestedMinAtrMultiple": 0.8,
+       "requestedMinPct": 1.0091925932029837,
+       "requestedMaxAtrMultiple": 1.8,
+       "requestedMaxPct": 2.270683334706713,
+       "intersects": true,
+       "survivingRungPcts": [
+        1.2614907415037295,
+        1.8922361122555942
+       ],
+       "verdict": "FEASIBLE",
+       "responsibleBound": null,
+       "shortfallPct": null
+      },
+      "setupCount": 4,
+      "setupStops": [
+       [
+        {
+         "atrMultiple": 1,
+         "kind": "ATR"
+        }
+       ],
+       [
+        {
+         "atrMultiple": 1.5,
+         "kind": "ATR"
+        }
+       ]
+      ],
+      "rejectedPairStops": [
+       {
+        "atrMultiple": 1,
+        "kind": "ATR"
+       },
+       {
+        "atrMultiple": 1.5,
+        "kind": "ATR"
+       }
+      ],
+      "rejectedPairCount": 4,
+      "rejectedTakeProfits": []
+     }
+    }
+   }
+  }
+ }
+}

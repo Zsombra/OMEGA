@@ -8,10 +8,11 @@ PINNED references only. Record: data/audit/metric_anchor_rule_2026-09-09.json.
 CONTRACT 61.2.0: those same nine metrics went timeframeMode candle -> timeless, and the
 `anchor` field disappeared from all nine metric records along with it - re-derived from
 the corpus: zero metrics in data/contract/metrics/*.json now carry an `anchor` key.
-`omega/validate.py`'s metric-anchor rule is gated on `m.anchor and not m.is_timeless`,
+`omega/validate.py`'s metric-anchor rule was gated on `m.anchor and not m.is_timeless`,
 which is therefore false for every metric in the current corpus - the
-METRIC_ANCHOR_MISMATCH / METRIC_ANCHOR_RELATIVE_UNVERIFIED code paths are unreachable
-dead code now (reported, not silently removed - see the task report). The nine metrics
+METRIC_ANCHOR_MISMATCH / METRIC_ANCHOR_RELATIVE_UNVERIFIED code paths were unreachable
+dead code, reported on 09-20 and removed in v0.14.3 (tests/test_metric_anchor_rule.py
+proves the removal changed no answer and guards against an anchor coming back). The nine metrics
 are governed instead by the general timeless-column-timeframe rule (see
 tests/test_timeless_timeframe.py): only {"rel": "anchor"} passes; every absolute
 timeframe (including the former anchor "1d") and every other relative reference is
@@ -63,7 +64,7 @@ def test_the_anchored_metrics_are_exactly_the_ones_declaring_an_anchor(contract)
 @pytest.mark.parametrize("metric", FORMER_ANCHOR_METRICS)
 def test_a_mismatched_absolute_timeframe_is_an_error(metric, contract):
     """At 54.1.0 {abs: "4h"} against an anchor of "1d" failed METRIC_ANCHOR_MISMATCH.
-    That code is unreachable now (m.anchor is None). The column still errors, but under
+    That code is gone (removed in v0.14.3; m.anchor is None). The column still errors, but under
     the general timeless-column-timeframe rule instead, because these nine are timeless
     at 61.2.0: an absolute timeframe is not the literal {"rel": "anchor"} reference."""
     codes = _codes(metric, {"abs": "4h"}, contract)
@@ -88,7 +89,7 @@ def test_a_relative_reference_warns_but_does_not_error(contract):
     """At 54.1.0 PIVOT_P (candle, anchor "1d") accepted {"rel": "lower"|"regime"} with a
     METRIC_ANCHOR_RELATIVE_UNVERIFIED warning and no error. At 61.2.0 PIVOT_P is
     timeless and anchor-less: the general timeless rule now REFUSES both outright, and
-    the warning code is unreachable for this metric (m.anchor is None). Only
+    the warning code is gone (removed in v0.14.3; m.anchor is None). Only
     {"rel": "anchor"} is accepted, matching every other timeless metric."""
     for tf in ({"rel": "lower"}, {"rel": "regime"}):
         codes = _codes("PIVOT_P", tf, contract)

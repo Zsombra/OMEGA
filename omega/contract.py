@@ -66,6 +66,10 @@ class Metric:
     (rel anchor/lower/regime) are accepted, {abs: "1d"} is accepted, and {abs: "4h"} is
     refused with "metric 'pivotP' is anchored to '1d' - it accepts only that absolute
     timeframe reference". See data/audit/metric_anchor_rule_2026-09-09.json.
+
+    No metric has declared one since 61.2.0, and omega.validate's rule for it was removed
+    in v0.14.3; the field is still read so tests/test_metric_anchor_rule.py can fail loudly
+    if one comes back.
     """
     # Served since v136 / v138 and recorded by the 2026-10-30 refresh: the ranked set a `rank` column reads
     # (`exchangeWide` where the platform ranks the metric; a `scope` is accepted only there) and whether TradingView

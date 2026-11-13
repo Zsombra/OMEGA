@@ -352,5 +352,6 @@ def test_the_version_moved_past_0_11_0():
     # re-extraction at contract 168.3.0, tests/test_v168.py); 0.13.1 on 2026-11-12 (tests/test_v169.py); 0.14.0 the same
     # day (exit plans, tests/test_exit_plans_170.py); 0.14.1 the same day (the chain window limits, tests/test_v0_14_1.py;
     # the exit plan's runner, tests/test_exit_plan_runner_171.py); 0.14.2 the same day (the update rules,
-    # tests/test_update_rules_171.py)
-    assert 'version = "0.14.2"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    # tests/test_update_rules_171.py); 0.14.3 on 2026-11-13 (the default menu inside the stop range,
+    # tests/test_stop_band_171.py)
+    assert 'version = "0.14.3"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
