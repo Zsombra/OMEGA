@@ -73,6 +73,10 @@ says so offline.
 
 Measuring these is the next release's authoring probe.
 
+**Later, in v0.14.3** (`docs/plans/2026-11-13-omega-v0-14-3-menu-band.md`): a decision drops an ATR stop outside the
+stop range (`BELOW_FLOOR` / `ABOVE_CEILING`; it is not clamped), and the default menu now offers only the stops inside
+the thesis's range.
+
 **After the last measurement** (00:24Z on 2026-11-12, still 168.3.0) the platform deployed 168.4.0 (build `ec7fb906`, observed by the battlegrid-manager watch at 00:32Z): one read tool added, `preview_strategy_trade_levels`; no tool changed or removed, so the six draft tools this release mirrors are as captured. The new tool is not extracted here.
 
 ## The independent review (2026-11-12)

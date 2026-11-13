@@ -312,7 +312,8 @@ class Thesis:
     execution: dict | None = None
     # Contract 168 (2026-11-11): the trade level menu the strategy offers - {LONG, SHORT}, each {stops, targets}
     # (omega/trade_levels.py). None means the ATR / R part of the platform's own migration default, with the R targets
-    # taken from this thesis's minRiskRewardRatio up (trade_levels.default_menu).
+    # taken from this thesis's minRiskRewardRatio up and (v0.14.3) the ATR stops kept inside its stop range
+    # (trade_levels.default_menu).
     trade_level_menu: dict | None = None
     # Condition ROLES (EXIT_ROLES: "UP", "CORE_DOWN", ...) whose entry condition is also an
     # exit: each gains the v88 split, an exit rule CLOSE_ON_<key> closing the side its
@@ -484,7 +485,8 @@ class StrategyPlan:
                                        f"{len(menu[side]['exitPlans'])} exit plan(s)" if "exitPlans" in menu[side]
                                        else f"{len(menu[side]['targets'])} target(s)") for side in menu))
         out.append("trade level menu: " + ("the thesis's own" if self.thesis.trade_level_menu is not None else
-                                           "default (the platform's migration ATR stops and R targets)") + sizes)
+                                           "default (the platform's migration ATR stops inside the stop range, R "
+                                           "targets from the minimum up)") + sizes)
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **ov}
         out.append(
             f"execution: {'platform defaults' if not ov else f'{len(ov)} override(s)'}"
@@ -565,7 +567,10 @@ class StrategyPlan:
             own = copy.deepcopy(self.thesis.trade_level_menu)
             return migrate_menu(own) if menu_form() == "exitPlans" else own
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
-        return default_menu(eff["minRiskRewardRatio"])
+        # v0.14.3: only the default ATR stops inside this plan's stop range - every decision drops the rest
+        # (omega.trade_levels.STOP_BAND_PROBES)
+        return default_menu(eff["minRiskRewardRatio"],
+                            stop_range=(eff["minStopLossAtrMultiple"], eff["maxStopLossAtrMultiple"]))
 
     def menu_findings(self) -> list:
         """What the stage would say of this plan's trade level menu, offline (omega.trade_levels.validate_menu): the

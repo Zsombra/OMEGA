@@ -235,7 +235,9 @@ expects `TRADE_MENU_LIVE_UNKNOWN`.
   measurement on the level rule. omega applies the two together.
 - **How the runner's trail is sized.** It was read at `trailingGivebackPct` 45 only, so it is not modelled. The 2.33 ATR
   on the level plans and 1.35 R on the 3R plan fit the farthest target x 0.45 again.
-- **The step on any dial other than minRiskRewardRatio.**
+- **The step on any dial other than minRiskRewardRatio.** Later, in v0.14.3: minStopLossAtrMultiple 0.8 and
+  maxStopLossAtrMultiple 1.8 staged with no draft error, so neither range dial takes the 0.25 step
+  (`docs/plans/2026-11-13-omega-v0-14-3-menu-band.md`).
 - **The bottom of the chain window off the per-coin subject.** P1 - P4 measured the top (the joint bound) only.
 - **One past the fit for PAR_DEV and for the benchmark's CLOSE x aggregate 10 -> zscore.** P2 - P4 sent one column
   per subject.

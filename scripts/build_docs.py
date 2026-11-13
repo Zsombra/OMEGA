@@ -1,32 +1,52 @@
 """Generate the metric- and transform-layer reference docs directly from the corpus.
 
 Anything derivable is generated, so the tables cannot drift from the extracted data.
-Conceptual docs (00, 03, 04, 05, 06) are hand-written.
+Conceptual docs (00, 03, 04, 05, 06) are hand-written. tests/test_generated_docs.py holds
+docs/01 and docs/02 to exactly this script's output for the pinned corpus.
+
+The family order is the platform's own (categories.json) and every transform of the
+authoring catalogue gets an entry (transform_order), so a family or a transform the
+platform adds is never left out (v0.14.3, the ledger's M23: 4 families and 6 transforms
+were). The few sentences that are not tables are written only while the corpus says them.
 """
 from __future__ import annotations
 
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from omega.contract import CONTRACT_DIR, DERIVED_DIR, ROOT, load
 
 DOCS = ROOT / "docs"
+# The reading order of the transforms this doc has always listed; every other transform in the authoring catalogue
+# follows, in the catalogue's own order (transform_order).
 TRANSFORM_ORDER = [
     "value", "trajectory", "distance", "spread", "relativeTo", "efficiency", "aggregate",
     "zscore", "stddev", "linregSlope", "pctl", "rollingMin", "rollingMax", "maxShare", "rank", "classifyZone", "crossDetect", "levelInteraction", "bandTouch",
     "count", "nearestZoneType", "nearestZoneRange", "nearestZoneDist", "nearestZoneAge",
 ]
-FAMILY_ORDER = ["price", "momentum", "trend", "volatility", "volumeFlow",
-                "derivatives", "structure", "regime", "crowd", "derived"]
+
+
+def transform_order(c) -> list[str]:
+    """Every transform of the authoring catalogue (retired ones kept as history): TRANSFORM_ORDER first, then the
+    catalogue's others in its own order."""
+    return [t for t in TRANSFORM_ORDER if t in c.transforms] + [t for t in c.transforms if t not in TRANSFORM_ORDER]
+
+
+def _categories() -> list[dict]:
+    """The platform's categories in its own order (list_strategy_categories, data/contract/categories.json)."""
+    return json.loads((CONTRACT_DIR / "categories.json").read_text(encoding="utf-8"))["categories"]
 
 
 def metric_layer(c) -> str:
-    cats = {x["category"]: x for x in
-            json.loads((CONTRACT_DIR / "categories.json").read_text(encoding="utf-8"))["categories"]}
+    cats = {x["category"]: x for x in _categories()}
     by_family: dict[str, list] = defaultdict(list)
     for m in c.metrics.values():
         by_family[m.family].append(m)
+    unlisted = sorted(set(by_family) - set(cats))
+    if unlisted:
+        raise SystemExit(f"families with no category in categories.json: {unlisted} - re-read the categories")
+    order = transform_order(c)
 
     out = [
         "# 01 · The Metric Layer",
@@ -46,7 +66,7 @@ def metric_layer(c) -> str:
         "| `transforms[]` | the *only* transforms the engine can execute for it |",
         "",
     ]
-    for fam in FAMILY_ORDER:
+    for fam in (x["category"] for x in _categories() if x["category"] in by_family):
         cat = cats[fam]
         metrics = sorted(by_family[fam], key=lambda m: m.metric)
         out += [
@@ -73,7 +93,7 @@ def metric_layer(c) -> str:
             vocab = m.vocab
             if vocab:
                 unit = "·".join(vocab[:3]) + ("…" if len(vocab) > 3 else "")
-            tfs = ", ".join(t for t in TRANSFORM_ORDER if m.offers(t))
+            tfs = ", ".join(t for t in order if m.offers(t))
             out.append(f"| `{m.metric}` | `{m.code}` | {kind} / {unit} | {m.timeframe_mode} | {tfs} |")
         out.append("")
     return "\n".join(out)
@@ -98,7 +118,8 @@ def transform_layer(c) -> str:
         for tid in m.transforms:
             support[tid].append(m.metric)
 
-    live = [tid for tid in TRANSFORM_ORDER if tid not in c.retired_transforms]
+    order = transform_order(c)
+    live = [tid for tid in order if tid not in c.retired_transforms]
     cells = sum(len(v) for v in support.values())
     out = [
         "# 02 · The Transform Layer",
@@ -130,7 +151,7 @@ def transform_layer(c) -> str:
         "## Reference",
         "",
     ]
-    for tid in TRANSFORM_ORDER:
+    for tid in order:
         t = c.transforms[tid]
         retired = tid in c.retired_transforms
         out += [
@@ -145,7 +166,9 @@ def transform_layer(c) -> str:
             (f"- **Retired** at contract {c.retired_transforms[tid]['servedAt']}: not in the served enum; the "
              f"61.2.0 extraction offered it on {sum(1 for r in _extracted_offers(tid))} metric(s)"
              if retired else f"- **Supported on:** {len(support[tid])} metric(s)"),
-            f"- **Emits:** {t['emits']}" + (f" — {t['emitsNote']}" if "emitsNote" in t else ""),
+            (f"- **Emits:** {t['emits']}" + (f" — {t['emitsNote']}" if "emitsNote" in t else "")
+             if "emits" in t else
+             "- **Emits:** not served by `get_metric_construction_hints` for this transform (measured per render)"),
             f"- **Null behaviour:** {t['nullBehavior']}",
         ]
         params = t.get("parameters") or {}
@@ -176,13 +199,22 @@ def transform_layer(c) -> str:
     ]
     for unit, members in graph["unitPools"].items():
         out.append(f"| `{unit}` | {len(members)} | {', '.join(f'`{m}`' for m in members)} |")
+    out.append("")
+    without = graph["metricsWithoutSpread"]
+    ratio = [m.metric for m in c.metrics.values() if m.unit == "ratio"]
+    if "RVOL" in without and ratio == ["RVOL"]:
+        # written while it is true: at 108.4.0 RVOL was the only `ratio` metric, and offered no spread
+        out += [
+            "`RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —",
+            "its pool would have exactly one member.",
+            "",
+        ]
+    kinds = Counter(c.metric(m).native_output["kind"] for m in without)
+    numeric = sorted(m for m in without if c.metric(m).native_output["kind"] == "numeric")
     out += [
-        "",
-        f"`RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —",
-        "its pool would have exactly one member.",
-        "",
-        f"{len(graph['metricsWithoutSpread'])} metrics offer no `spread`: mostly classifications,",
-        "booleans, events and the entity set.",
+        f"{len(without)} metrics offer no `spread`; by kind, "
+        + ", ".join(f"{kind} {n}" for kind, n in sorted(kinds.items(), key=lambda kv: (-kv[1], kv[0]))) + ".",
+        f"{len(numeric)} of them are numeric: {', '.join(f'`{m}`' for m in numeric)}.",
         "",
         "## Platform-privileged pairs",
         "",
@@ -200,15 +232,20 @@ def transform_layer(c) -> str:
         seen.add(key)
         sub = "`classifyZone`" if "classifyZone" in p["authorableAlternatives"] else "—"
         out.append(f"| `{p['metric']}` | `{p['transform']}` | `{p['usedBySection']}` | {sub} |")
-    out += [
-        "",
-        "`CCI20 × classifyZone` is the subtle one: `classifyZone` classifies a *bounded*",
-        "oscillator, and `CCI20`'s `nativeOutput` carries no `range`. No canonical bounds,",
-        "no zone policy exposed to authors — though the platform reserves one for itself.",
-        "",
-        "`bandTouch` is the mirror case: fully authorable, used by **zero** platform templates.",
-        "",
-    ]
+    out.append("")
+    # two notes written while the corpus says them (both held at 108.4.0; neither does at 171.0.0)
+    if ("CCI20", "classifyZone") in seen:
+        out += [
+            "`CCI20 × classifyZone` is the subtle one: `classifyZone` classifies a *bounded*",
+            "oscillator, and `CCI20`'s `nativeOutput` carries no `range`. No canonical bounds,",
+            "no zone policy exposed to authors — though the platform reserves one for itself.",
+            "",
+        ]
+    if "bandTouch" in c.transforms and "bandTouch" not in c.retired_transforms:
+        out += [
+            "`bandTouch` is the mirror case: fully authorable, used by **zero** platform templates.",
+            "",
+        ]
     return "\n".join(out)
 
 

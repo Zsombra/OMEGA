@@ -26,9 +26,10 @@ data/audit/trade_level_menu_168_2026-11-11.json. The probe that measured a rule 
     neither (tc_default_menu).
   * One level cannot be a stop and a target of the same direction (V8); across directions it can (V6).
   * More than eight entries in a list is refused at input (V5: the schema's maxItems).
-  * NOT judged at stage: an ATR stop outside minStopLossAtrMultiple - maxStopLossAtrMultiple (V9), a repeated entry
-    (V7). A PERCENT stop is accepted (V4), a LEVEL stop's bufferAtrMultiple too (V11). What a decision does with an
-    ATR stop outside the stop range is unmeasured: a warning here, not an error.
+  * NOT judged at stage: an ATR stop outside minStopLossAtrMultiple - maxStopLossAtrMultiple (V9; again at 171.0.0,
+    STOP_BAND_PROBES B1), a repeated entry (V7). A PERCENT stop is accepted (V4), a LEVEL stop's bufferAtrMultiple too
+    (V11). A DECISION drops an ATR stop outside the stop range (measured 2026-11-12, "The stop range" below): a
+    warning here, not an error.
   * A level-triggered entry's `levels` follow the same rule (E1 accepted, E2 refused).
 
 Not measured, and refused here rather than guessed (TRADE_MENU_LEVEL_UNMEASURED): a `windowExtreme`; a level asking
@@ -131,11 +132,33 @@ none committed), 2 CREATE stages refused at input, 4 report previews and 5 trade
     0.3 + 0.7 x the level's R (3.928 / 2.719 / 2.114), and the refused pairs' computedRR follow the same sum. The stage
     still does not judge it (A1 staged clean while the SHORT level paid 0.73R at the preview).
 
+**The stop range (OMEGA v0.14.3): what a decision does with an ATR stop outside it.** STOP_BAND_PROBES holds
+preview_strategy_trade_levels read on BTC at 168.4.0 on three committed strategies (2026-11-12 00:56Z) and one CREATE
+draft at 171.0.0 (B1, 2026-11-12 23:55Z: the range 0.8 - 1.8 with ATR stops 0.5 / 0.8 / 1 / 1.5 / 1.8 / 2; staged, read
+back, previewed on its DRAFT, discarded and read null, none committed):
+
+  * The stage accepts it, with no error and no warning (V9 at 168.2.0, B1 at 171.0.0).
+  * Every decision DROPS it from the menu - not an error, and not clamped to the bound. The stop option reads verdict
+    BELOW_FLOOR, responsibleBound MIN_STOP_LOSS_ATR_MULTIPLE (B1's 0.5), or ABOVE_CEILING, MAX_STOP_LOSS_ATR_MULTIPLE
+    (B1's 2; ATR 2 under a maximum of 1.8 on VWAP Reject 4h and TPO Prior Session Levels LONG at 168.4.0), refused at
+    the bound x the coin's ATR%, and it makes no setup and no refused pair. An ATR stop's distance in ATR is its
+    multiple, so it is dropped on every coin at every decision: a dead option.
+  * Both bounds are inclusive: B1's 0.8 and 1.8 survive, and so did ATR 1 at a minimum of 1 and ATR 2 at a maximum of
+    2. There is no one-ATR floor of the stop's own: 0.8 survives a minimum of 0.8.
+  * A LEVEL stop is dropped the same way on its distance at that bar (BB_UPPER at 1.85 ATR and DONCHIAN_UPPER at 2.2
+    ATR under 1.8, 168.4.0); that distance is per coin and per bar, so omega judges ATR stops only.
+
+validate_menu warns TRADE_MENU_STOP_OUTSIDE_RANGE on an ATR stop outside the range (outside_stop_range names the
+verdict): a warning, because the stage accepts it. B1 also staged the two range dials at 0.8 and 1.8 with no draft
+error, so the 0.25 step minRiskRewardRatio takes (W2) is not enforced on them.
+
 The default menu (`default_menu`) is the ATR / R part of the platform's migration default, read 2026-11-11 from three
-live strategies (Dunkirk, VWAP Reject 4h, TPO Prior Session Levels LONG): stops ATR 1 / 1.5 / 2 whatever the strategy's
-own stop range is (VWAP Reject 4h: maxStopLossAtrMultiple 1.8, ATR 2 in its menu), targets R 1.5 / 2 / 3 from the
-strategy's minRiskRewardRatio up (2 -> R 2 / 3). Its band LEVEL entries are left out: they stage only on a report
-that reads the bands.
+live strategies (Dunkirk, VWAP Reject 4h, TPO Prior Session Levels LONG): stops ATR 1 / 1.5 / 2, targets R 1.5 / 2 / 3
+from the strategy's minRiskRewardRatio up (2 -> R 2 / 3). Its band LEVEL entries are left out: they stage only on a
+report that reads the bands. The migration gave every strategy ATR 2 whatever its own stop range (VWAP Reject 4h:
+maxStopLossAtrMultiple 1.8, ATR 2 in its menu), and every decision drops it there; since v0.14.3 the default offers only
+the ATR stops inside the thesis's range (`stop_range`; default_stops), and the range's own bounds when none of the
+three is inside.
 """
 from __future__ import annotations
 
@@ -158,6 +181,10 @@ PROBES = "data/audit/trade_level_menu_168_2026-11-11.json"
 EXIT_PLAN_PROBES = "data/audit/exit_plans_170_2026-11-12.json"
 RUNNER_PROBES = "data/audit/exit_plan_runner_171_2026-11-12.json"
 UPDATE_PROBES = "data/audit/update_rules_171_2026-11-12.json"
+STOP_BAND_PROBES = "data/audit/stop_band_171_2026-11-12.json"
+# the verdict a decision reads for a stop outside the stop range, and the bound it names (preview_strategy_trade_levels
+# stopCandidates[].verdict / responsibleBound; STOP_BAND_PROBES)
+STOP_RANGE_VERDICTS = {"BELOW_FLOOR": "MIN_STOP_LOSS_ATR_MULTIPLE", "ABOVE_CEILING": "MAX_STOP_LOSS_ATR_MULTIPLE"}
 # The axis beside TRADE_LEVEL_POLICY that a menu rule reads (StrategyPlan.update_menu_findings, on a menu an UPDATE does
 # not stage): a rule tying two axes is re-judged when the update stages one of them - UPDATE_PROBES A2 (the runner
 # rule, POSITION_MANAGEMENT staged) and A3 (the level rule, REPORT staged). A code not named here reads
@@ -213,14 +240,64 @@ def level_ref(metric: str, timeframe: dict | None = None, *, knobs: dict | None 
             "knobs": dict(knobs or {}), "windowExtreme": None}
 
 
-def default_menu(min_rr, schema: dict | None = None) -> dict:
+def atr_stop_bounds(schema: dict | None = None) -> tuple:
+    """(exclusiveMinimum, maximum) of an ATR stop's `atrMultiple`, read from the write schema's ATR stop arm: (0, 5)
+    from contract 168 to 171."""
+    for arm in _root(schema)["$defs"]["directionTradeLevelMenu"]["properties"]["stops"]["items"]["oneOf"]:
+        if ((arm.get("properties") or {}).get("kind") or {}).get("const") == "ATR":
+            node = arm["properties"]["atrMultiple"]
+            return node["exclusiveMinimum"], node["maximum"]
+    raise KeyError(f"the write schema of {_doc(schema)['contractVersion']} serves no ATR stop")
+
+
+def outside_stop_range(multiple, min_stop, max_stop) -> str | None:
+    """The verdict a decision reads for an ATR stop of `multiple` outside the strategy's stop range min_stop -
+    max_stop (TRADE_LEVEL_POLICY minStopLossAtrMultiple / maxStopLossAtrMultiple): "BELOW_FLOOR" under the minimum,
+    "ABOVE_CEILING" over the maximum - the stop is then dropped at every decision (STOP_BAND_PROBES; the bound it is
+    refused by is STOP_RANGE_VERDICTS[verdict]). None when it is inside - both bounds inclusive, as B1 measured on 0.8
+    and 1.8 - or when the multiple or a bound is not a finite number (the dial is the axis walk's to judge). Each
+    number is read as the decimal it was written as."""
+    if not (_finite_number(multiple) and _finite_number(min_stop) and _finite_number(max_stop)):
+        return None
+    if _exact(multiple) < _exact(min_stop):
+        return "BELOW_FLOOR"
+    if _exact(multiple) > _exact(max_stop):
+        return "ABOVE_CEILING"
+    return None
+
+
+def default_stops(stop_range=None, schema: dict | None = None) -> list:
+    """The ATR stop multiples the default menu offers: DEFAULT_ATR_STOPS inside the stop range `stop_range` =
+    (minStopLossAtrMultiple, maxStopLossAtrMultiple), in their order - what a decision keeps of them; it drops the rest
+    (STOP_BAND_PROBES: dropped, not clamped, so they are left out rather than moved onto the bound). When none of the
+    three is inside, the range's own bounds, each that the write schema stages as an ATR stop (atr_stop_bounds): a
+    stop on a bound survives (B1). A range that is not two finite numbers, or whose minimum is above its maximum, is
+    not this function's to judge, and the three defaults are kept; so are they when no bound is stageable (a range
+    wholly above 5 ATR). validate_menu warns on each of them that a finite range drops, an inverted one included."""
+    try:
+        lo, hi = stop_range
+    except (TypeError, ValueError):
+        return list(DEFAULT_ATR_STOPS)
+    if not (_finite_number(lo) and _finite_number(hi)) or _exact(lo) > _exact(hi):
+        return list(DEFAULT_ATR_STOPS)
+    inside = [m for m in DEFAULT_ATR_STOPS if outside_stop_range(m, lo, hi) is None]
+    if inside:
+        return inside
+    floor, ceiling = atr_stop_bounds(schema)
+    bounds = [b for b in dict.fromkeys((lo, hi)) if floor < b <= ceiling]
+    return bounds or list(DEFAULT_ATR_STOPS)
+
+
+def default_menu(min_rr, schema: dict | None = None, *, stop_range=None) -> dict:
     """The menu a plan stages when its thesis names none (see the module docstring for where it was read). A
     minRiskRewardRatio that is not a number is not this function's to judge (the axis walk refuses the dial): the
     three targets are kept. Since contract 170 each R target is an exit plan of one leg closing 100% - the shape the
-    platform migrated every stored target to."""
+    platform migrated every stored target to. `stop_range` is the thesis's (minStopLossAtrMultiple,
+    maxStopLossAtrMultiple): only the default ATR stops a decision keeps inside it are offered (default_stops; v0.14.3).
+    Without it, the three stops as the migration wrote them."""
     usable = isinstance(min_rr, (int, float)) and not isinstance(min_rr, bool) and min_rr == min_rr
     targets = ([m for m in DEFAULT_R_TARGETS if m >= min_rr] or [min_rr]) if usable else list(DEFAULT_R_TARGETS)
-    side = {"stops": [{"kind": "ATR", "atrMultiple": m} for m in DEFAULT_ATR_STOPS],
+    side = {"stops": [{"kind": "ATR", "atrMultiple": m} for m in default_stops(stop_range, schema)],
             "targets": [{"kind": "R_MULTIPLE", "multiple": m} for m in targets]}
     if menu_form(schema) == "exitPlans":
         side = migrate_side(side)
@@ -383,6 +460,10 @@ def _number(value) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
+def _finite_number(value) -> bool:
+    return _number(value) and math.isfinite(value)
+
+
 def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str, schema: dict | None = None,
                   trailing_enabled: bool | None = None) -> list[Finding]:
     """Every finding on a trade level menu staged with `dials` (the TRADE_LEVEL_POLICY dials: minRiskRewardRatio and
@@ -415,12 +496,15 @@ def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str, schem
                                        f"the {side} {entry['multiple']}R target is below this strategy's minimum "
                                        f"risk-reward of {min_rr}: the stage refuses it (\"every pair it makes would be "
                                        f"refused. Remove it or lower the minimum\", probe V3)"))
-                if entry["kind"] == "ATR" and _number(lo) and _number(hi) and not lo <= entry["atrMultiple"] <= hi:
+                verdict = outside_stop_range(entry["atrMultiple"], lo, hi) if entry["kind"] == "ATR" else None
+                if verdict is not None:
                     out.append(Finding("warning", "TRADE_MENU_STOP_OUTSIDE_RANGE", f"{path}.atrMultiple",
                                        f"the {side} ATR {entry['atrMultiple']} stop is outside this strategy's stop "
-                                       f"range {lo} - {hi}xATR. The stage accepts it (probe V9; the platform's own "
-                                       f"migration default does the same); what a decision does with it is not "
-                                       f"measured"))
+                                       f"range {lo} - {hi}xATR. The stage accepts it (probes V9, B1), and every "
+                                       f"decision drops it: verdict {verdict}, responsibleBound "
+                                       f"{STOP_RANGE_VERDICTS[verdict]} ({STOP_BAND_PROBES}) - an ATR stop's distance "
+                                       f"in ATR is its multiple, so it makes no pair on any coin. Keep the menu's ATR "
+                                       f"stops inside the range"))
                 if entry["kind"] == "LEVEL":
                     findings, identity = _level_findings(entry["level"], f"{path}.level", side, role, readings, anchor)
                     out += findings

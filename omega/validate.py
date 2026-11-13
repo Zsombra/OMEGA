@@ -253,32 +253,11 @@ def validate_column(
                         f"REPORT_COLUMN_SUBJECT_METRIC_UNSUPPORTED, measured 2026-11-02 at 146.0.1); no column over "
                         f"it renders")]
 
-
-    # --- metric-declared absolute anchor -------------------------------------
-    # PDH, PDL and the seven pivots declare anchor "1d". Measured live 2026-09-09 on
-    # PIVOT_P via get_strategy_column_contract: {"rel": "anchor"|"lower"|"regime"} and
-    # {"abs": "1d"} are all ACCEPTED; {"abs": "4h"} is REFUSED with "metric 'pivotP' is
-    # anchored to '1d' - it accepts only that absolute timeframe reference, not '4h'".
-    # So the constraint binds PINNED references only. Record:
-    # data/audit/metric_anchor_rule_2026-09-09.json.
-    if m.anchor and not m.is_timeless:
-        got_abs = getattr(column.timeframe, "abs", None)
-        if got_abs is not None and got_abs != m.anchor:
-            out.append(Finding(
-                "error", "METRIC_ANCHOR_MISMATCH", f"{path}.timeframe",
-                f"{m.metric} is anchored to {m.anchor!r} - it accepts only that absolute "
-                f"timeframe reference, not {got_abs!r}. Use "
-                f'timeframe={{"abs": "{m.anchor}"}} or a relative reference.'))
-        elif got_abs is None:
-            # The vendor's authoring skill states the SAVE path accepts only {abs: <anchor>}
-            # on these metrics. That is a stricter claim than the column contract, and the
-            # save path was NOT probed here, so this is a warning rather than an error.
-            out.append(Finding(
-                "warning", "METRIC_ANCHOR_RELATIVE_UNVERIFIED", f"{path}.timeframe",
-                f"{m.metric} declares anchor {m.anchor!r}. A relative reference is accepted "
-                f"by the column contract (measured), but the vendor's authoring skill says "
-                f'the save path accepts only {{"abs": "{m.anchor}"}}. That path is unmeasured; '
-                f"pin it if the column must survive a save."))
+    # The metric-declared absolute anchor (PDH, PDL and the seven pivots, "1d", measured 2026-09-09 at 54.1.0:
+    # data/audit/metric_anchor_rule_2026-09-09.json) left the corpus at 61.2.0 - no metric has declared one since - and
+    # its rule (METRIC_ANCHOR_MISMATCH / METRIC_ANCHOR_RELATIVE_UNVERIFIED) was removed in v0.14.3 as dead code.
+    # tests/test_metric_anchor_rule.py asserts no catalogued metric declares one: if one does again, re-measure the
+    # rule and re-add it here.
 
     # --- transforms the served enum no longer has, or has and omega never extracted ------------
     tid = column.transformId

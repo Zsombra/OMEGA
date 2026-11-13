@@ -1,0 +1,989 @@
+{
+ "_what": "Item '149 Open 6' (battlegrid-manager docs/status/2026-11-05-contract-149.md, Open 6): does a staged draft echo default knobs - or any value the sender left out - back into its content? The manager's lost-answer recovery (manager/actions/strategy_verify.py, _verify_stage) settles a stage whose answer was lost by matching the re-read draft's content_sha against content_sha(the axes sent): an echoed default would make the two differ and the row wait for the user. Checked offline on every stored stage whose whole sent body and whole read-back are on disk. No platform call was made for this record; B1's read-back is the v0.14.3 probe's (data/audit/stop_band_171_2026-11-12.json).",
+ "canonicalForm": "battlegrid-manager manager.risk.radar.canonical / content_sha (manager main d64308d): json.dumps(normalised, sort_keys=True, separators=(',', ':')), every number format(Decimal(str(x)).normalize(), 'f'), null / true / false / strings kept - a key holding null is not dropped",
+ "answer": "No echo. 26 read-backs (15 CREATE, 11 UPDATE; contracts 168.2.0, 171.0.0): 0 key(s) added, 0 dropped and 0 value(s) changed against the body sent, and content_sha(read) == content_sha(sent) in 26 of 26. The only raw differences are number spellings (-10.0 sent, -10 read back; 10.0 sent, 10 read back), which the canonical form normalises. The bodies sent 177 REPORT columns (counted per read-back) carrying 0 knob keys - OMEGA's Column.wire() drops a knob left None - and keys holding null (bars, benchmarkTicker, exitSide, marketScope, notes, sectionKey, verdict, windowExtreme); every one came back exactly as sent: no default was filled in and no null was dropped.",
+ "notCovered": "No stored read-back holds a column sent WITH a knob key (knobKeysSent is 0 in every row): L3a / L3b (a BB_LOWER column carrying a knob, 168.3.0) were staged but their read-backs were not kept, and the knob-spelling probes were previews. The read-backs on disk are CREATE drafts at 168.2.0 and 171.0.0 and UPDATE drafts at 171.0.0; an echo a later contract introduced would show here as a canonical difference on the next stored read-back.",
+ "counts": {
+  "readBacks": 26,
+  "create": 15,
+  "update": 11,
+  "canonicalEqual": 26,
+  "keysAdded": 0,
+  "keysDropped": 0,
+  "valuesChanged": 0,
+  "numberSpelling": 30
+ },
+ "sources": {
+  "v168": "C:/Users/rafae/omega-v012-hints/v168 (the 168 stage scripts' raw answers)",
+  "v168/plan72_request.json": "7e26389be910f81333c484a7e37fb380f3f0ae741bf14eb8c840d16354c4d990",
+  "v171": "C:/Users/rafae/omega-v012-hints/v171/calls.jsonl (the v0.14.2 call log)",
+  "v171/calls.jsonl": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+  "v0143": "C:/Users/rafae/omega-v012-hints/v0143/calls.jsonl (the v0.14.3 call log)",
+  "v0143/calls.jsonl": "a49642b7bf203d6d2d6fc9d3619397ec94579335600732b8396dcbdfcab78d3d"
+ },
+ "readBacks": [
+  {
+   "source": "v168/tc_default_menu.read.json",
+   "sha256": "5b9e09af31d0e762af48c453432a8b0d2011d920793ae0ae94b6d5c6679d33dc",
+   "probe": "tc_default_menu",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "tc_default_menu.args.json (the args sent)",
+   "sentSha256": "bedaa93ca5477cc1a1ebbceb10dea46b9906adced1e6114f884ca6d0833c1c40",
+   "readSha256": "bedaa93ca5477cc1a1ebbceb10dea46b9906adced1e6114f884ca6d0833c1c40",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 8,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 8
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/tc_atr_r_menu.read.json",
+   "sha256": "eb7005c63d39778b9d207056f99766b47a48ceac6a3eb4c7fd3f43122ba318c3",
+   "probe": "tc_atr_r_menu",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "tc_atr_r_menu.args.json (the args sent)",
+   "sentSha256": "96f5cb36eec4637df79edd3d09bb70e031be8f23500af4b689a01ac46e434e24",
+   "readSha256": "96f5cb36eec4637df79edd3d09bb70e031be8f23500af4b689a01ac46e434e24",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V1.level.sma200.distance_column.read.json",
+   "sha256": "f76f0ad0ba0ce4bbae1a24467081d5bc6e5d4ffa0a5f11b3bc9156346f599eab",
+   "probe": "V1.level.sma200.distance_column",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "c5b5418fc142a95d0bb670860c0ea4b410fbc8d4e8bcbdea45f4ab2fd7bef1d3",
+   "readSha256": "c5b5418fc142a95d0bb670860c0ea4b410fbc8d4e8bcbdea45f4ab2fd7bef1d3",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V2.level.ema13.operand_only.read.json",
+   "sha256": "4730bbaedb841135e7a68c054392193dd1d25111f8e2734668b26fd683f69134",
+   "probe": "V2.level.ema13.operand_only",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "56bb36b1fc531c7fe5967ca0c881a13305154e8e09f5927c9076c5fbb4d0d761",
+   "readSha256": "56bb36b1fc531c7fe5967ca0c881a13305154e8e09f5927c9076c5fbb4d0d761",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V3.atr5.r1.outside_dials.read.json",
+   "sha256": "224912dca2ab5c66512be37cbfb586410c4b9b9f2e8514c7b892cf843118821f",
+   "probe": "V3.atr5.r1.outside_dials",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "5d01125929cf66e9f9a5f2b7fed91936431ced0bb6290b98c850b7776e0e03b4",
+   "readSha256": "5d01125929cf66e9f9a5f2b7fed91936431ced0bb6290b98c850b7776e0e03b4",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V4.percent.stop.read.json",
+   "sha256": "cced1f9ef5e884430ed3b03507466654c97b92b9a1839e8599f1756edd081369",
+   "probe": "V4.percent.stop",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "9b57b2f3d25fe11d602ddab094f123070aa6a2ccbcaadbc1449d2f5c3fef46bf",
+   "readSha256": "9b57b2f3d25fe11d602ddab094f123070aa6a2ccbcaadbc1449d2f5c3fef46bf",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V6.level.donchian.value_column.read.json",
+   "sha256": "c5923c58ab7b1c1808442eeb4707a2dbdeefc070ae8ae46e46158761aed70f31",
+   "probe": "V6.level.donchian.value_column",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "34b3bc87c6efe5bcdfbe3d65476122ceaa0b11809462383db99117df485e451d",
+   "readSha256": "34b3bc87c6efe5bcdfbe3d65476122ceaa0b11809462383db99117df485e451d",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 11,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V7.duplicate_stops.read.json",
+   "sha256": "0c25dc86de69452996604468b38838ea2f1a553e0f6c8e1377f862373061d130",
+   "probe": "V7.duplicate_stops",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "1f0b6e47e7117b44c65b406c59be04bbb63934414b8d0004bb73a016ab7f9d74",
+   "readSha256": "1f0b6e47e7117b44c65b406c59be04bbb63934414b8d0004bb73a016ab7f9d74",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V8.level.buffer.read.json",
+   "sha256": "6799bcfb0d6374601247d1783631badc4a200471be5a0204cb6c272b7256a84f",
+   "probe": "V8.level.buffer",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "72efcf786279fb01f3c08bafebd5a767331c266427ae7b05dfdccf46db5d66d6",
+   "readSha256": "72efcf786279fb01f3c08bafebd5a767331c266427ae7b05dfdccf46db5d66d6",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 4,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 4
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V9.atr5.atr0_5.outside_stop_range.read.json",
+   "sha256": "0e1f420f5900166628612bf496cd5311e7c9f50ffc9e4589245c8efb15325458",
+   "probe": "V9.atr5.atr0_5.outside_stop_range",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "34420b8fd73271fec184e94596abf01d1677feb88526028e4b38c35083173dfc",
+   "readSha256": "34420b8fd73271fec184e94596abf01d1677feb88526028e4b38c35083173dfc",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V10.level.sma200.other_timeframe.read.json",
+   "sha256": "bcf4ecf3724ad7ff0436f54aec45d11942ffac101da962311852c6d0d969ec5b",
+   "probe": "V10.level.sma200.other_timeframe",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "e6528eb7da5e3478cbfae395178661a5b53b752bdd94f4359bb8f6d4e734b23e",
+   "readSha256": "e6528eb7da5e3478cbfae395178661a5b53b752bdd94f4359bb8f6d4e734b23e",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/V11.level.buffer_only.read.json",
+   "sha256": "29188977bca2a2171fdcf0725a06fb222d4c42d64d3719572da0278a9680084d",
+   "probe": "V11.level.buffer_only",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "cad12a96377e99f215f34a791bd688c2cdb1659ec857d03ac3581f565d8b30de",
+   "readSha256": "cad12a96377e99f215f34a791bd688c2cdb1659ec857d03ac3581f565d8b30de",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/E1.stop_through_level.sma200.read.json",
+   "sha256": "d7e05586a1ff9e947d06f2850e9b2974ec5e61d473e0ed4e54b9d2da3fe78079",
+   "probe": "E1.stop_through_level.sma200",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "1be716313bdb202807f038890b332aa93263a3a19d95a824d914a60cb5ec980b",
+   "readSha256": "1be716313bdb202807f038890b332aa93263a3a19d95a824d914a60cb5ec980b",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v168/E2.on_retest.unyielded_level.read.json",
+   "sha256": "105eaf35300ee2859494ba0347851afa1872a1803bc9c09813b8908637f48e50",
+   "probe": "E2.on_retest.unyielded_level",
+   "contractVersion": "168.2.0",
+   "kind": "CREATE",
+   "sentFrom": "plan72_request.json + the record's menu / addedColumn / entry, as stage_menu_variants.py composed it",
+   "sentSha256": "f5f51ccd460ec664775e90651d9b40cd118aa3b986748fe9c4783fefa453a5c5",
+   "readSha256": "f5f51ccd460ec664775e90651d9b40cd118aa3b986748fe9c4783fefa453a5c5",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 18",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "32325d51a301411d85c400f4b9f185ec11f24f3a09ea3cc159bb6f49a7d2f243",
+   "readSha256": "32325d51a301411d85c400f4b9f185ec11f24f3a09ea3cc159bb6f49a7d2f243",
+   "axes": [
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 4,
+    "windowExtreme": 4
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 21",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "9c4cd0d616f381ce2934345673775c053edc51b8459f977a9d28d4b1c47cce8a",
+   "readSha256": "9c4cd0d616f381ce2934345673775c053edc51b8459f977a9d28d4b1c47cce8a",
+   "axes": [
+    "POSITION_MANAGEMENT",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 4,
+    "windowExtreme": 4
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 23",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "9c4cd0d616f381ce2934345673775c053edc51b8459f977a9d28d4b1c47cce8a",
+   "readSha256": "9c4cd0d616f381ce2934345673775c053edc51b8459f977a9d28d4b1c47cce8a",
+   "axes": [
+    "POSITION_MANAGEMENT",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 4,
+    "windowExtreme": 4
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 30",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "64af5504972e9f874920381bdae80cd4fa50dfa344d5e916be06d0527c69f58b",
+   "readSha256": "64af5504972e9f874920381bdae80cd4fa50dfa344d5e916be06d0527c69f58b",
+   "axes": [
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 8,
+    "windowExtreme": 8
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 33",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "a98ded7c2bff2e3fb4b48d1e29a301199ba66dbb5e3ec2b2fea41d46beb62fde",
+   "readSha256": "a98ded7c2bff2e3fb4b48d1e29a301199ba66dbb5e3ec2b2fea41d46beb62fde",
+   "axes": [
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 8,
+    "windowExtreme": 8
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 35",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "23946a5bc3263909c7a5808db2beb6ca7a92168c7531096523bc254210732130",
+   "readSha256": "23946a5bc3263909c7a5808db2beb6ca7a92168c7531096523bc254210732130",
+   "axes": [
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 8,
+    "windowExtreme": 8
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 36",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "23946a5bc3263909c7a5808db2beb6ca7a92168c7531096523bc254210732130",
+   "readSha256": "23946a5bc3263909c7a5808db2beb6ca7a92168c7531096523bc254210732130",
+   "axes": [
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 8,
+    "windowExtreme": 8
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 42",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "55fee28439ad7c7cf8e484cba44362f202c51849dda4ce227ca8d4a49e1002bb",
+   "readSha256": "55fee28439ad7c7cf8e484cba44362f202c51849dda4ce227ca8d4a49e1002bb",
+   "axes": [
+    "REPORT"
+   ],
+   "columnsSent": 13,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 3,
+    "marketScope": 4,
+    "notes": 4
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 44",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "55fee28439ad7c7cf8e484cba44362f202c51849dda4ce227ca8d4a49e1002bb",
+   "readSha256": "55fee28439ad7c7cf8e484cba44362f202c51849dda4ce227ca8d4a49e1002bb",
+   "axes": [
+    "REPORT"
+   ],
+   "columnsSent": 13,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 3,
+    "marketScope": 4,
+    "notes": 4
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 50",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "73be606374fcf7e1f2568aa9a49ffbab3f7e76067ee17943847a32a4a69d56f3",
+   "readSha256": "73be606374fcf7e1f2568aa9a49ffbab3f7e76067ee17943847a32a4a69d56f3",
+   "axes": [
+    "POSITION_MANAGEMENT",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "v171/calls.jsonl line 52",
+   "sha256": "54d431d740cf155e613418787492d0465fdcabffe416eb7b8289f67cbb03d666",
+   "probe": null,
+   "contractVersion": "171.0.0",
+   "kind": "UPDATE",
+   "sentFrom": "the axes this draft's stages sent (calls.jsonl), each later stage's axis whole",
+   "sentSha256": "73be606374fcf7e1f2568aa9a49ffbab3f7e76067ee17943847a32a4a69d56f3",
+   "readSha256": "73be606374fcf7e1f2568aa9a49ffbab3f7e76067ee17943847a32a4a69d56f3",
+   "axes": [
+    "POSITION_MANAGEMENT",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 0,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "bars": 2,
+    "windowExtreme": 2
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [],
+   "canonicalEqual": true
+  },
+  {
+   "source": "data/audit/stop_band_171_2026-11-12.json probes.B1.range_0_8_1_8",
+   "sha256": "a49642b7bf203d6d2d6fc9d3619397ec94579335600732b8396dcbdfcab78d3d",
+   "probe": "B1.range_0_8_1_8",
+   "contractVersion": "171.0.0",
+   "kind": "CREATE",
+   "sentFrom": "the args sent (calls.jsonl; the record carries sent and content whole)",
+   "sentSha256": "9503d18d1900879b72540597bfb606e58c397b749510432f3a85797ac4d94bc4",
+   "readSha256": "9503d18d1900879b72540597bfb606e58c397b749510432f3a85797ac4d94bc4",
+   "axes": [
+    "CONDITIONS",
+    "ENTRY",
+    "IDENTITY",
+    "MARKET_READ",
+    "POSITION_MANAGEMENT",
+    "REPORT",
+    "TIMEFRAME_PROFILE",
+    "TRADE_LEVEL_POLICY"
+   ],
+   "columnsSent": 10,
+   "knobKeysSent": 0,
+   "nullKeysSent": {
+    "benchmarkTicker": 2,
+    "exitSide": 7,
+    "marketScope": 2,
+    "sectionKey": 11,
+    "verdict": 5
+   },
+   "keysAdded": [],
+   "keysDropped": [],
+   "valuesChanged": [],
+   "numberSpelling": [
+    {
+     "path": "CONDITIONS.conditions[1].definition.value",
+     "sent": 10.0,
+     "read": 10
+    },
+    {
+     "path": "CONDITIONS.conditions[2].definition.value",
+     "sent": -10.0,
+     "read": -10
+    }
+   ],
+   "canonicalEqual": true
+  }
+ ]
+}
