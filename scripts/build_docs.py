@@ -7,7 +7,9 @@ docs/01 and docs/02 to exactly this script's output for the pinned corpus.
 The family order is the platform's own (categories.json) and every transform of the
 authoring catalogue gets an entry (transform_order), so a family or a transform the
 platform adds is never left out (v0.14.3, the ledger's M23: 4 families and 6 transforms
-were). The few sentences that are not tables are written only while the corpus says them.
+were). The few sentences that are not tables are written only while the corpus says them -
+every clause of each, checked (v0.14.3 review: a check on part of a sentence let the rest
+go unread).
 """
 from __future__ import annotations
 
@@ -97,6 +99,33 @@ def metric_layer(c) -> str:
             out.append(f"| `{m.metric}` | `{m.code}` | {kind} / {unit} | {m.timeframe_mode} | {tfs} |")
         out.append("")
     return "\n".join(out)
+
+
+def cci20_zone_note_holds(c, pairs: set) -> bool:
+    """Whether the corpus says every clause of the `CCI20 × classifyZone` note: the platform reserves the pair (it is
+    in `pairs`, the platform-privileged pairs); `classifyZone` classifies a bounded oscillator (every metric offering
+    it is an `oscillator` whose `nativeOutput` carries a `range`, and one does - why the pair is the subtle one); and
+    `CCI20`'s `nativeOutput` carries no `range` and CCI20 is not offered `classifyZone` (no canonical bounds, no zone
+    policy exposed to authors). All held at the first extraction (2026-08-24); at 108.4.0 and at 171.0.0 the pair is
+    not privileged and CCI20 is offered `classifyZone`."""
+    cci = c.metrics.get("CCI20")
+    zoned = [m for m in c.metrics.values() if m.offers("classifyZone")]
+    return (("CCI20", "classifyZone") in pairs and cci is not None and not cci.native_output.get("range")
+            and not cci.offers("classifyZone") and bool(zoned)
+            and all(m.native_output.get("unit") == "oscillator" and m.native_output.get("range") for m in zoned))
+
+
+def band_touch_note_holds(c, pairs: set) -> bool:
+    """Whether the corpus says every clause of the `bandTouch` note: it is the mirror of the CCI20 note, so that note
+    holds; `bandTouch` is fully authorable (in the catalogue, neither retired nor unmeasured, offered on a metric, in
+    no privileged pair); and no platform template uses it (no template column reads it, as its transform or as its
+    chained one). All held at the first extraction (2026-08-24); v100 retired `bandTouch`."""
+    used = any("bandTouch" in (column.get("transformId"), column.get("chainedTransformId"))
+               for template in c.platform_templates.values() for column in template.get("columns") or [])
+    return (cci20_zone_note_holds(c, pairs) and "bandTouch" in c.transforms
+            and "bandTouch" not in c.retired_transforms and "bandTouch" not in c.unmeasured_transforms
+            and any(m.offers("bandTouch") for m in c.metrics.values())
+            and all(transform != "bandTouch" for _, transform in pairs) and not used)
 
 
 def _extracted_offers(tid: str):
@@ -202,8 +231,10 @@ def transform_layer(c) -> str:
     out.append("")
     without = graph["metricsWithoutSpread"]
     ratio = [m.metric for m in c.metrics.values() if m.unit == "ratio"]
-    if "RVOL" in without and ratio == ["RVOL"]:
-        # written while it is true: at 108.4.0 RVOL was the only `ratio` metric, and offered no spread
+    if "RVOL" in without and ratio == ["RVOL"] and c.metric("RVOL").native_output["kind"] == "numeric":
+        # written while every clause is true: RVOL is numeric, offers no spread, and is the only `ratio` metric, so its
+        # pool would have one member ("lone" is its unit's: other numeric metrics offered no spread even then) - so at
+        # the first extraction (2026-08-24); at 108.4.0 it spread in a `ratio` pool of three
         out += [
             "`RVOL` (unit `ratio`) is the lone numeric metric with **no** spread transform at all —",
             "its pool would have exactly one member.",
@@ -233,15 +264,16 @@ def transform_layer(c) -> str:
         sub = "`classifyZone`" if "classifyZone" in p["authorableAlternatives"] else "—"
         out.append(f"| `{p['metric']}` | `{p['transform']}` | `{p['usedBySection']}` | {sub} |")
     out.append("")
-    # two notes written while the corpus says them (both held at 108.4.0; neither does at 171.0.0)
-    if ("CCI20", "classifyZone") in seen:
+    # two notes, each written only while the corpus says its every clause (cci20_zone_note_holds,
+    # band_touch_note_holds): both held at the first extraction; neither does at 108.4.0 or 171.0.0
+    if cci20_zone_note_holds(c, seen):
         out += [
             "`CCI20 × classifyZone` is the subtle one: `classifyZone` classifies a *bounded*",
             "oscillator, and `CCI20`'s `nativeOutput` carries no `range`. No canonical bounds,",
             "no zone policy exposed to authors — though the platform reserves one for itself.",
             "",
         ]
-    if "bandTouch" in c.transforms and "bandTouch" not in c.retired_transforms:
+    if band_touch_note_holds(c, seen):
         out += [
             "`bandTouch` is the mirror case: fully authorable, used by **zero** platform templates.",
             "",

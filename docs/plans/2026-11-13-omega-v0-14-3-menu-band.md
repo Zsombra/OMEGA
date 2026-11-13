@@ -1,12 +1,13 @@
 # OMEGA v0.14.3 at contract 171.0.0: the default menu inside the stop range, the draft echo, the generated docs and the dead anchor block
 
-**Record, 2026-11-13 (written 00:17Z).** Contract 171.0.0, build `588e449a`. Previous pin: v0.14.2 at the same contract.
+**Record, 2026-11-13 (written 00:17 - 00:34Z; revised 01:35Z after the review).** Contract 171.0.0, build `588e449a`.
+Previous pin: v0.14.2 at the same contract.
 Four items of the program's pending ledger:
 
 | Item | Ledger entry | Answer |
 | --- | --- | --- |
-| 1 | 168.4.0, "OMEGA's default menu clipped to the thesis's stop range" (battlegrid-manager `docs/status/2026-11-11-contract-168.md`) | A decision **drops** an ATR stop outside the range: it is not a stage error, and it is not clamped. `default_menu` offers only the default stops inside the thesis's range; `validate_menu` warns, naming the measured verdict |
-| 2 | 149 Open 6 (`docs/status/2026-11-05-contract-149.md`): does a staged draft echo default knobs back? | **No.** 26 stored read-backs hold exactly the keys sent. No helper is needed |
+| 1 | 168.4.0, "OMEGA's default menu clipped to the thesis's stop range" (battlegrid-manager `docs/status/2026-11-11-contract-168.md`) | A decision **drops** an ATR stop outside the range: it is not a stage error, and it is not clamped. `default_menu` offers only the default stops inside the thesis's range, and OMEGA's own fallback when none is; `validate_menu` warns, naming the measured verdict |
+| 2 | 149 Open 6 (`docs/status/2026-11-05-contract-149.md`): does a staged draft echo default knobs back? | **No.** 26 stored read-backs hold exactly the keys sent. No helper is needed. The manager's lost-answer match still fails on a stage over a held draft (2 of the 26): the manager's to fix |
 | 3 | M23: regenerate docs/01 and docs/02 | The generator no longer ran, and it skipped 4 families and 6 transforms. Fixed, both docs regenerated, and a test holds them to the generator's output |
 | 4 | M28: remove the dead anchor block | `validate_column`'s metric-anchor block is removed; every answer it gave over the catalogue is unchanged |
 
@@ -92,9 +93,13 @@ Each side built 12 setups: the four surviving stops times the three plans. No pa
   `BELOW_FLOOR` or `ABOVE_CEILING`, at the bound times the coin's ATR%, and the stop is in no setup and no refused pair.
   It is not moved onto the bound: B1's 0.5 and 2 build nothing, while 0.8 and 1.8 build their own setups. An ATR stop's
   distance in ATR is its multiple, so the same stop is dropped on every coin at every decision. It is a dead option.
-- **Both bounds are inclusive.** 0.8 and 1.8 survive, and at 168.4.0 so did ATR 1 on a minimum of 1 and ATR 2 on a
-  maximum of 2. The preview measured those two at 0.8000000000000002 and 1.7999999999999998 ATR; omega compares the
-  numbers as they were written.
+- **Both bounds are inclusive, as far as measured.** At 168.4.0 ATR 1 on a minimum of 1 and ATR 2 on a maximum of 2
+  survived with the stop's distance equal to the threshold in every bit (Dunkirk on both sides, VWAP Reject 4h's
+  minimum on both sides). A bound that is not a whole number was measured once, on one BTC bar: B1's 0.8 and 1.8
+  survived, but neither sat at equality. The floating-point rounding fell inside both bounds, each by one unit in the
+  last place: the 0.8 stop's distancePct 0.5026708855771519 against a floor of 0.5026708855771518, and the 1.8 stop's
+  1.1310094925485914 against a ceiling of 1.1310094925485916 (0.8000000000000002 and 1.7999999999999998 ATR). A bar
+  whose rounding falls outside such a bound is not measured. omega compares the numbers as they were written.
 - **There is no one-ATR floor of the stop's own.** ATR 0.8 survives a minimum of 0.8.
 - **A LEVEL stop is judged the same way, on its distance at that bar** (168.4.0's band stops). That distance is per coin
   and per bar, so omega does not judge it offline.
@@ -104,13 +109,14 @@ Recorded, not modelled: `stopBand.reachableMinPct` read 1 x ATR% (0.6283%) altho
 `survivingRungPcts` listed only 1 and 1.5 ATR. Neither bears on a menu stop's verdict, and omega models no rung ladder.
 
 So the default menu **drops** a stop outside the range, as the platform does. Snapping it onto the bound would offer a
-stop the migration never wrote, and clamping is not what the decision does.
+stop the migration never wrote, and clamping is not what the decision does. Only when none of the three is inside does
+the default offer stops of OMEGA's own (the fallback below).
 
 ## Where OMEGA holds it
 
 | | v0.14.2 | v0.14.3 |
 | --- | --- | --- |
-| `default_menu(min_rr, schema=None, *, stop_range=None)` | ATR 1 / 1.5 / 2 whatever the range | only the defaults inside `stop_range` = (minStopLossAtrMultiple, maxStopLossAtrMultiple) (`default_stops`). See the table below |
+| `default_menu(min_rr, schema=None, *, stop_range=None)` | ATR 1 / 1.5 / 2 whatever the range | only the defaults inside `stop_range` = (minStopLossAtrMultiple, maxStopLossAtrMultiple) (`default_stops`), and OMEGA's own fallback when none is. See the table below |
 | `StrategyPlan.trade_level_menu()`, for a thesis naming no menu | `default_menu(minRiskRewardRatio)` | passes the plan's effective range. Every preset runs at the platform default 1 - 2, so every preset's menu is unchanged |
 | `validate_menu`, on an ATR stop outside the range | warning `TRADE_MENU_STOP_OUTSIDE_RANGE`: "what a decision does with it is not measured" | the same code and severity, because the stage accepts it. The message names the verdict and bound a decision drops it with (`outside_stop_range`, `STOP_RANGE_VERDICTS`) |
 | an UPDATE naming a range dial | the live menu carried verbatim; its stops outside the new range warned | unchanged: omega never rewrites a live strategy's menu |
@@ -122,10 +128,20 @@ What `default_stops` offers:
 | --- | --- |
 | 1 - 2 (the platform default), and no `stop_range` at all | 1, 1.5, 2: as before |
 | 0.8 - 1.8, or 1 - 1.8 | 1, 1.5 |
-| 2.5 - 4 (none of the three inside) | 2.5, 4: the range's own bounds, which survive |
-| 1.2 - 1.2 | 1.2 |
-| 2.5 - 6 | 2.5: the write schema stages an ATR stop only in (0, 5] (`atr_stop_bounds`) |
+| 2.5 - 4 (none of the three inside) | 2.5, 3.2, 4: OMEGA's own fallback (below) |
+| 1.6 - 1.9 | 1.6, 1.7, 1.9 |
+| 2.5 - 2.6, or 1.2 - 1.2 | the bounds alone: no 0.1 step lies strictly between them |
+| 2.5 - 6 | 2.5, 4.2: the write schema stages an ATR stop only in (0, 5] (`atr_stop_bounds`), so 6 is not offered |
 | 6 - 8, an inverted range, or a bound that is not a finite number | 1, 1.5, 2: not this builder's to judge. Under 6 - 8 or an inverted range, `validate_menu` warns on each of them |
+
+The fallback is OMEGA's own choice, not a platform or a migration default. When none of ATR 1 / 1.5 / 2 is inside the
+range, `default_stops` offers the range's bounds that the write schema stages and, where a 0.1 ATR step fits strictly
+between them, the step nearest the midpoint (the lower of two on a tie; `fallback_inner_stop`). So not every option
+sits on a bound, where survival rests on how a bar rounds (above). Whether a stop on a bound survives outside 0.8 - 2
+ATR is not measured. `default_stops_basis` names the rule that applied, and the plan's summary line says when the
+fallback replaced the migration stops: `trade level menu: default (none of the migration's ATR stops 1 / 1.5 / 2 is
+inside the stop range 2.5 - 4, so OMEGA's own fallback instead: ATR 2.5 / 3.2 / 4 - ...)`. A range the builder does
+not follow reads `default (the migration's ATR stops 1 / 1.5 / 2 as written: ...)`.
 
 Two more changes in `validate_menu`. It compares each number as the decimal it was written as. A bound that is not a
 finite number is no longer judged: v0.14.2 warned on every ATR stop under a NaN bound.
@@ -146,12 +162,14 @@ finite number is no longer judged: v0.14.2 warned on every ATR stop under a NaN 
   was sent.
 - A step on the range dials finer than 0.25. 0.8 and 1.8 pass; a 0.1 step is not excluded.
 - What `reachableMinPct` and `survivingRungPcts` describe.
+- Whether a stop on a bound survives outside 0.8 - 2 ATR, which the fallback's bounds can be. And on a bound that is
+  not a whole number, a bar whose rounding falls outside it: B1 read one bar, where it fell inside.
 
 # Item 2: does a staged draft echo default knobs back? (149 Open 6)
 
 The manager settles a stage whose answer was lost (`manager/actions/strategy_verify.py`, `_verify_stage`) by matching
-the re-read draft's content against what it sent: `content_sha(read) == content_sha(sent)`. If the platform filled a
-knob the body left out with its default, the two would differ and the row would wait for the user.
+the re-read draft's content against what that stage sent: `content_sha(read) == content_sha(sent)`. If the platform
+filled a knob the body left out with its default, the two would differ and the row would wait for the user.
 
 `data/audit/draft_echo_2026-11-13.json` answers it offline, with no platform call. It compares every stored stage whose
 whole sent body and whole read-back are on disk, in the manager's canonical form (`manager.risk.radar.canonical`, read
@@ -160,7 +178,7 @@ at manager main d64308d: sorted keys, every number a normalised decimal string, 
 | Read-backs | The body sent | Contract |
 | --- | --- | --- |
 | 14 CREATE drafts of the 168 menu probes (`v168/*.read.json`: the tc, V and E probes) | plan 72's request with the probe's menu, added column and entry, as `stage_menu_variants.py` composed it; the two tc probes' own `args.json` | 168.2.0 |
-| 11 reads of the 4 UPDATE drafts of the v0.14.2 probe (`v171/calls.jsonl`) | the axes the draft's stages sent | 171.0.0 |
+| 11 reads of the 4 UPDATE drafts of the v0.14.2 probe (`v171/calls.jsonl`) | the union of the axes every stage into the draft sent, a later stage's axis whole | 171.0.0 |
 | B1's read-back | the args sent | 171.0.0 |
 
 **There is no echo.** In all 26:
@@ -177,9 +195,23 @@ The bodies gave an echo every chance:
 - They sent keys holding null: `bars`, `benchmarkTicker`, `exitSide`, `marketScope`, `notes`, `sectionKey`, `verdict`
   and `windowExtreme`.
 
-Each came back exactly as sent: no default was filled in and no null was dropped. So the recovery's sha match holds, and
-the manager needs no normalising helper. None is added. `tests/test_draft_echo.py` replays the record and B1's whole
-pair.
+Each came back exactly as sent: no default was filled in and no null was dropped. So no echo breaks the recovery's sha
+match, and the manager needs no normalising helper. None is added. `tests/test_draft_echo.py` replays the record and
+B1's whole pair.
+
+The match itself holds only for a stage that is its draft's only stage, or one that restages every axis the draft
+holds (review, 2026-11-13). `_verify_stage` (lines 160 - 161 at manager main d64308d) compares the content_sha of the
+WHOLE re-read draft with the content_sha of the axes the one stage it settles sent (`params.axes`). An UPDATE row's
+`sent` above is the union of every stage into its draft, so its canonical equality does not say the manager matches.
+Compared the manager's way, 24 of the 26 match. The 2 that do not: `v171/calls.jsonl` line 20 (counted from 0, as
+every line here) staged POSITION_MANAGEMENT over a held TRADE_LEVEL_POLICY draft (draftVersion 4), and the reads at
+lines 21 and 23 hold both axes. The record now carries, per row, the latest stage into the draft, the draftVersion it
+was sent over and read at, and `managerMatch`; its `answer` says the same, and `managerRecovery` holds the note below.
+
+**For whoever pins v0.14.3 in battlegrid-manager:** a stage over a held draft reads back the union of its axes, so the
+lost-answer match fails there: the row waits for the user although the stage landed. The fix belongs to the manager:
+compare against the composed draft (the draft the stage was sent over, overlaid by the axes it sent). OMEGA changes
+nothing for it.
 
 Not covered:
 
@@ -211,8 +243,24 @@ The generator now:
 - takes the family order from the platform's own `categories.json`, and stops when a family has no category;
 - lists every transform of the authoring catalogue (`transform_order`: the old order first, then the rest);
 - says so when a transform is served without `emits`;
-- writes the three sentences only while the corpus says them;
+- writes the three sentences only while the corpus says every clause of each (below);
 - counts the line on metrics without spread from the graph.
+
+The first conditions read only part of two sentences (review, 2026-11-13): the bandTouch note's "the mirror case" and
+"used by zero platform templates", and the CCI20 note's "`nativeOutput` carries no `range`", went unread. Each clause
+is now checked against the corpus:
+
+- The CCI20 x classifyZone note (`cci20_zone_note_holds`): the pair is platform-privileged; CCI20's `nativeOutput`
+  carries no `range` and CCI20 is not offered classifyZone; classifyZone is offered, and only on oscillators that carry
+  a `range`.
+- The bandTouch note (`band_touch_note_holds`): the CCI20 note holds, since it is that note's mirror; bandTouch is in
+  the catalogue, neither retired nor unmeasured, offered on a metric and in no privileged pair; and no platform template
+  column reads it, as its transform or as its chained one.
+- The RVOL line also checks that RVOL is numeric ("lone" is its unit's: other numeric metrics offered no spread even
+  then).
+
+All three held at the first extraction (2026-08-24, dd55d13); none holds at 108.4.0 or 171.0.0. Regenerated, both docs
+are unchanged. `tests/test_generated_docs.py` makes each clause false in turn on a corpus where all hold.
 
 Regenerated with `PYTHONPATH=. python scripts/build_docs.py`: docs/01 +577 / -117 lines and docs/02 +267 / -77, every
 line the generator's. `tests/test_generated_docs.py` holds both docs to the generator's output for the pinned corpus, so
@@ -250,22 +298,29 @@ Tests changed: `tests/test_metric_anchor_rule.py` is rewritten, from 6 tests to 
 
 # Suite
 
-2522 passed, 1 skipped. The last run took 308 s (00:28:24 - 00:33:42Z on 2026-11-13), after the last change to code,
-tests and records. That is v0.14.2's 2491 plus 31:
+After the review: 2527 passed, 1 skipped. The run took 261 s (01:30:34 - 01:35:09Z on 2026-11-13), after the last
+change to code, tests and records. That is v0.14.2's 2491 plus 36:
 
 | File | Tests |
 | --- | --- |
-| `tests/test_stop_band_171.py` (new) | 18 |
-| `tests/test_draft_echo.py` (new) | 4 |
-| `tests/test_generated_docs.py` (new) | 5 |
+| `tests/test_stop_band_171.py` (new) | 21: 18, and 3 from the review |
+| `tests/test_draft_echo.py` (new) | 5: 4, and 1 from the review |
+| `tests/test_generated_docs.py` (new) | 6: 5, and 1 from the review |
 | `tests/test_metric_anchor_rule.py` (rewritten) | 10, was 6 |
+
+The review's five tests: the bounds inclusive as far as measured; every fallback range of a 0.1 grid holding a stop
+strictly inside when a step fits; the summary line naming OMEGA's fallback; the manager's lost-answer match, row by
+row; and each clause of the two docs notes made false in turn. Two tests changed: the preset test asserts literals,
+and the fallback test (renamed) expects the stop between the bounds.
+
+Before the review: 2522 passed, 1 skipped, in 308 s (00:28:24 - 00:33:42Z).
 
 The version assertions in `tests/test_v146.py` and `tests/test_v146_1.py` read 0.14.3. No other test's assertion
 changed.
 
-Run against v0.14.2's `omega/` and `scripts/` (origin/main 7c0954e, in a scratch copy, with only the record's two
-constants added so the new files import), 12 of the new tests fail and the 5 docs tests error. The 20 that pass there
-replay the platform's answers and the v0.14.2 behaviour this release keeps:
+Before the review, run against v0.14.2's `omega/` and `scripts/` (origin/main 7c0954e, in a scratch copy, with only
+the record's two constants added so the new files import), 12 of the new tests failed and the 5 docs tests errored.
+The 20 that passed there replay the platform's answers and the v0.14.2 behaviour this release keeps:
 
 - the records replay: the stage's and the decision's answers, the thresholds, and the draft echo;
 - an UPDATE's carried stops outside a new range are warned;

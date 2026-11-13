@@ -10,13 +10,15 @@ data/audit/stop_band_171_2026-11-12.json holds three sources:
   B1             one CREATE draft at 171.0.0 (2026-11-12 23:55Z): the range 0.8 - 1.8 and ATR stops 0.5 / 0.8 / 1 /
                  1.5 / 1.8 / 2 staged clean; at the decision 0.5 read BELOW_FLOOR / MIN_STOP_LOSS_ATR_MULTIPLE and 2
                  ABOVE_CEILING / MAX_STOP_LOSS_ATR_MULTIPLE, both in no setup and no refused pair, and the stops on the
-                 two bounds survived. Discarded and read null; nothing committed.
+                 two bounds survived - on that one bar each sat one unit in the last place inside its bound, so a
+                 bound that is not a whole number was measured once, by rounding, never at equality. Discarded and
+                 read null; nothing committed.
 
 So the stage never judges the range, and a decision DROPS an ATR stop outside it - not an error, not clamped to the
 bound. An ATR stop's distance in ATR is its multiple, so it is dropped on every coin at every decision.
-omega.trade_levels.default_menu offers only the default ATR stops inside the thesis's range (the range's own bounds
-when none of them is), and validate_menu warns on a menu stop outside it, as the stage accepts it. Nothing here calls
-the platform.
+omega.trade_levels.default_menu offers only the default ATR stops inside the thesis's range (and, when none of them is,
+OMEGA's own fallback: the range's bounds and a stop strictly between them), and validate_menu warns on a menu stop
+outside it, as the stage accepts it. Nothing here calls the platform.
 """
 from __future__ import annotations
 
@@ -128,8 +130,37 @@ def test_a_decision_drops_every_atr_stop_outside_the_range_and_keeps_both_bounds
     assert seen == {"BELOW_FLOOR": 2, "ABOVE_CEILING": 6, "SURVIVED": 22}
     b1 = B1["preview"]["directions"]["LONG"]
     on_bounds = {c["method"]["atrMultiple"]: c["verdict"] for c in b1["stopCandidates"]}
-    assert on_bounds[0.8] == on_bounds[1.8] == "SURVIVED"       # inclusive: neither bound is a whole number
+    assert on_bounds[0.8] == on_bounds[1.8] == "SURVIVED"       # neither bound is a whole number: see the next test
     assert b1["counters"]["stopsRemovedByFloor"] == b1["counters"]["stopsRemovedByCeiling"] == 1
+
+
+def test_the_bounds_are_inclusive_as_far_as_measured():
+    """168.4.0: ATR 1 on a minimum of 1 and ATR 2 on a maximum of 2 survived at a distance equal to the threshold in
+    every bit. A bound that is not a whole number was measured once, on one BTC bar (B1), and never at equality: the
+    floating-point rounding put the stop on the floor one unit in the last place above it and the stop on the ceiling
+    one below it - both inside. A bar rounding the other way is not measured."""
+    exact = []
+    for name, stored in RECORD["storedAt168_4"]["previews"].items():
+        for direction, d in stored["directions"].items():
+            lo, hi = d["band"]["minStopLossAtrMultiple"], d["band"]["maxStopLossAtrMultiple"]
+            for c in d["stopCandidates"]:
+                m = c["method"].get("atrMultiple")
+                if c["method"]["kind"] == "ATR" and m in (lo, hi):
+                    threshold = d["stopBand"]["requestedMinPct" if m == lo else "requestedMaxPct"]
+                    assert c["distancePct"] == threshold and c["verdict"] == "SURVIVED", (name, direction, m)
+                    exact.append((name, direction, m))
+    assert sorted(exact) == [("Dunkirk", "LONG", 1), ("Dunkirk", "LONG", 2), ("Dunkirk", "SHORT", 1),
+                             ("Dunkirk", "SHORT", 2), ("VWAP Reject 4h", "LONG", 1), ("VWAP Reject 4h", "SHORT", 1)]
+    for direction, d in B1["preview"]["directions"].items():
+        by_multiple = {c["method"]["atrMultiple"]: c for c in d["stopCandidates"]}
+        floor_pct, ceiling_pct = d["stopBand"]["requestedMinPct"], d["stopBand"]["requestedMaxPct"]
+        on_floor, on_ceiling = by_multiple[0.8], by_multiple[1.8]
+        assert (on_floor["distancePct"], floor_pct) == (0.5026708855771519, 0.5026708855771518), direction
+        assert (on_ceiling["distancePct"], ceiling_pct) == (1.1310094925485914, 1.1310094925485916), direction
+        assert on_floor["distancePct"] == math.nextafter(floor_pct, math.inf)          # one ulp above the floor
+        assert on_ceiling["distancePct"] == math.nextafter(ceiling_pct, -math.inf)     # one ulp below the ceiling
+        assert on_floor["verdict"] == on_ceiling["verdict"] == "SURVIVED"
+    assert B1["preview"]["coinTicker"] == "BTC" and len(B1["preview"]["directions"]) == 2      # one bar, both sides
 
 
 def test_the_threshold_a_stop_is_refused_by_is_the_range_times_the_atr():
@@ -204,18 +235,62 @@ def test_the_default_menu_offers_only_stops_the_decision_keeps():
     assert menu["LONG"]["exitPlans"] == tl.default_menu(1.5)["LONG"]["exitPlans"]
 
 
-def test_the_default_menu_falls_back_to_the_ranges_own_bounds_when_no_default_stop_is_inside():
-    """A bound survives the decision (B1: 0.8 and 1.8). A bound above the write schema's ATR maximum is not
-    stageable, so it is not offered; with no stageable bound the three defaults stay (and validate_menu warns)."""
+def test_the_default_menu_falls_back_to_omegas_own_stops_when_no_default_stop_is_inside():
+    """OMEGA's own fallback, not a platform or a migration default: the range's bounds the write schema stages (an ATR
+    stop in (0, 5]) and, where a 0.1 ATR step fits strictly between them, the step nearest the midpoint (the lower on
+    a tie) - so not every option sits on a bound, where survival rests on how a bar rounds
+    (test_the_bounds_are_inclusive_as_far_as_measured). With no stageable stop the three defaults stay (and
+    validate_menu warns)."""
     assert tl.atr_stop_bounds() == (0, 5)
-    for stop_range, stops in (((2.5, 4), [2.5, 4]), ((1.2, 1.2), [1.2]), ((1.6, 1.9), [1.6, 1.9]),
-                              ((0.3, 0.6), [0.3, 0.6]), ((2.5, 6), [2.5]), ((2, 3), [2]), ((1, 1.5), [1, 1.5]),
-                              ((6, 8), [1, 1.5, 2]), ((-1, 0), [1, 1.5, 2])):
+    for stop_range, stops, basis in (((2.5, 4), [2.5, 3.2, 4], "fallback"), ((1.2, 1.2), [1.2], "fallback"),
+                                     ((1.6, 1.9), [1.6, 1.7, 1.9], "fallback"), ((0.3, 0.6), [0.3, 0.4, 0.6], "fallback"),
+                                     ((2.5, 3.5), [2.5, 3, 3.5], "fallback"), ((2.45, 2.55), [2.45, 2.5, 2.55], "fallback"),
+                                     ((2.5, 2.6), [2.5, 2.6], "fallback"),        # no 0.1 step strictly between
+                                     ((2.5, 6), [2.5, 4.2], "fallback"),          # 6 is above the schema's 5
+                                     ((4, 9), [4, 5], "fallback"),                # the midpoint 6.5 is not stageable
+                                     ((2, 3), [2], "migration"), ((1, 1.5), [1, 1.5], "migration"),
+                                     ((6, 8), [1, 1.5, 2], "unjudged"), ((-1, 0), [1, 1.5, 2], "unjudged")):
         menu = tl.default_menu(1.5, stop_range=stop_range)
         assert _atr_stops(menu["LONG"]) == _atr_stops(menu["SHORT"]) == stops, stop_range
+        assert tl.default_stops(stop_range) == stops and tl.default_stops_basis(stop_range) == basis, stop_range
+    assert type(tl.default_stops((2.5, 3.5))[1]) is int                     # a whole step is written as a whole number
     found = _findings(tl.default_menu(1.5, stop_range=(6, 8)),
                       dials={**DIALS, "minStopLossAtrMultiple": 6, "maxStopLossAtrMultiple": 8})
     assert {f.code for f in found} == {"TRADE_MENU_STOP_OUTSIDE_RANGE"} and len(found) == 6
+
+
+def test_every_fallback_menu_holds_a_stop_strictly_inside_its_range_when_a_step_fits():
+    """Every range on a 0.1 grid from 0 to 6 ATR whose default menu is the fallback: each stop is inside the range and
+    stageable; one stop sits strictly between the bounds exactly when a 0.1 step fits there and the write schema stages
+    it - the step nearest the midpoint, the lower on a tie - so a fallback menu sits wholly on its bounds only when the
+    range leaves no room."""
+    floor, ceiling = tl.atr_stop_bounds()
+    fallbacks, on_bounds_only = 0, []
+    for lo10 in range(0, 61):
+        for hi10 in range(lo10, 61):
+            lo, hi = lo10 / 10, hi10 / 10
+            if tl.default_stops_basis((lo, hi)) != "fallback":
+                continue
+            fallbacks += 1
+            stops = tl.default_stops((lo, hi))
+            assert all(tl.outside_stop_range(m, lo, hi) is None and floor < m <= ceiling for m in stops), (lo, hi)
+            steps = [k for k in range(lo10 + 1, hi10) if floor < k / 10 <= ceiling]
+            inner = [m for m in stops if lo < m < hi]
+            assert len(inner) == (1 if steps else 0), (lo, hi)
+            if steps:
+                midpoint = (lo10 + hi10) / 2
+                best = min(steps, key=lambda k: (abs(k - midpoint), k))
+                assert inner == [best / 10] == [tl.fallback_inner_stop(lo, hi)], (lo, hi)
+            else:
+                on_bounds_only.append((lo, hi))
+    assert fallbacks > 500
+    # no room for a step: a single-point range, or bounds one step apart, or a range reaching past the schema's 5
+    assert all(hi - lo < 0.15 or lo >= 5 for lo, hi in on_bounds_only), on_bounds_only
+    # validate_menu, end to end, on a few of them: nothing outside the range
+    for lo, hi in ((2.5, 4), (0.3, 0.6), (1.6, 1.9), (2.5, 6), (4, 9), (1.2, 1.2)):
+        dials = {**DIALS, "minStopLossAtrMultiple": lo, "maxStopLossAtrMultiple": hi}
+        assert not [f for f in _findings(tl.default_menu(1.5, stop_range=(lo, hi)), dials=dials)
+                    if f.code == "TRADE_MENU_STOP_OUTSIDE_RANGE"], (lo, hi)
 
 
 def test_a_range_the_builder_cannot_read_keeps_the_three_defaults():
@@ -276,10 +351,37 @@ def test_the_range_dials_take_no_quarter_step():
                 if f.code == "EXECUTION_OFF_STEP"]
 
 
+def test_the_summary_says_when_omegas_own_fallback_replaced_the_migration_stops():
+    base = PRESETS["trend-continuation"]
+
+    def summary(execution):
+        p = plan(Thesis(**{**base.__dict__, "execution": execution}))
+        return next(line for line in p.critique() if line.startswith("trade level menu: "))
+
+    assert summary(None).startswith("trade level menu: default (the platform's migration ATR stops inside the stop "
+                                    "range")
+    assert summary({"minStopLossAtrMultiple": 0.8, "maxStopLossAtrMultiple": 1.8}).startswith(
+        "trade level menu: default (the platform's migration ATR stops inside the stop range")
+    fallback = summary({"minStopLossAtrMultiple": 2.5, "maxStopLossAtrMultiple": 4})
+    assert fallback.startswith("trade level menu: default (none of the migration's ATR stops 1 / 1.5 / 2 is inside "
+                               "the stop range 2.5 - 4, so OMEGA's own fallback instead: ATR 2.5 / 3.2 / 4 - ")
+    assert "platform's migration ATR stops" not in fallback
+    unjudged = summary({"minStopLossAtrMultiple": 6, "maxStopLossAtrMultiple": 8})
+    assert unjudged.startswith("trade level menu: default (the migration's ATR stops 1 / 1.5 / 2 as written: the stop "
+                               "range 6 - 8 is not one the default menu follows")
+    own = plan(Thesis(**{**base.__dict__, "trade_level_menu": tl.default_menu(1.5)}))
+    assert next(line for line in own.critique() if line.startswith("trade level menu: ")).startswith(
+        "trade level menu: the thesis's own")
+
+
 @pytest.mark.parametrize("preset", sorted(PRESETS))
 def test_every_preset_keeps_its_default_menu(preset):
+    """Every preset runs the platform's default stop range 1 - 2, which keeps all three migration stops."""
     p = plan(PRESETS[preset])
     policy = p.axes()["TRADE_LEVEL_POLICY"]
-    rng = (policy["minStopLossAtrMultiple"], policy["maxStopLossAtrMultiple"])
-    assert policy["tradeLevelMenu"] == tl.default_menu(policy["minRiskRewardRatio"], stop_range=rng)
+    assert (policy["minStopLossAtrMultiple"], policy["maxStopLossAtrMultiple"]) == (1, 2)
+    for side in tl.SIDES:
+        assert policy["tradeLevelMenu"][side]["stops"] == [{"kind": "ATR", "atrMultiple": 1},
+                                                           {"kind": "ATR", "atrMultiple": 1.5},
+                                                           {"kind": "ATR", "atrMultiple": 2}]
     assert not [f for f in p.menu_findings() if f.code == "TRADE_MENU_STOP_OUTSIDE_RANGE"]

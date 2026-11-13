@@ -143,8 +143,13 @@ back, previewed on its DRAFT, discarded and read null, none committed):
     (B1's 2; ATR 2 under a maximum of 1.8 on VWAP Reject 4h and TPO Prior Session Levels LONG at 168.4.0), refused at
     the bound x the coin's ATR%, and it makes no setup and no refused pair. An ATR stop's distance in ATR is its
     multiple, so it is dropped on every coin at every decision: a dead option.
-  * Both bounds are inclusive: B1's 0.8 and 1.8 survive, and so did ATR 1 at a minimum of 1 and ATR 2 at a maximum of
-    2. There is no one-ATR floor of the stop's own: 0.8 survives a minimum of 0.8.
+  * Both bounds are inclusive, as far as measured. At 168.4.0 ATR 1 at a minimum of 1 and ATR 2 at a maximum of 2
+    survived with the stop's distance equal to the threshold in every bit (Dunkirk, VWAP Reject 4h). A bound that is
+    not a whole number was measured once, on one BTC bar (B1), and there the floating-point rounding fell inside both
+    bounds, each by one unit in the last place: 0.8's distancePct 0.5026708855771519 against a floor of
+    0.5026708855771518, and 1.8's 1.1310094925485914 against a ceiling of 1.1310094925485916. A bar whose rounding falls
+    outside a bound, and any bound outside 0.8 - 2 ATR, are not measured. There is no one-ATR floor of the stop's own:
+    0.8 survives a minimum of 0.8.
   * A LEVEL stop is dropped the same way on its distance at that bar (BB_UPPER at 1.85 ATR and DONCHIAN_UPPER at 2.2
     ATR under 1.8, 168.4.0); that distance is per coin and per bar, so omega judges ATR stops only.
 
@@ -157,8 +162,8 @@ live strategies (Dunkirk, VWAP Reject 4h, TPO Prior Session Levels LONG): stops 
 from the strategy's minRiskRewardRatio up (2 -> R 2 / 3). Its band LEVEL entries are left out: they stage only on a
 report that reads the bands. The migration gave every strategy ATR 2 whatever its own stop range (VWAP Reject 4h:
 maxStopLossAtrMultiple 1.8, ATR 2 in its menu), and every decision drops it there; since v0.14.3 the default offers only
-the ATR stops inside the thesis's range (`stop_range`; default_stops), and the range's own bounds when none of the
-three is inside.
+the ATR stops inside the thesis's range (`stop_range`; default_stops). When none of the three is inside, it offers
+OMEGA's own fallback - not a platform or a migration default: the range's bounds and one stop strictly between them.
 """
 from __future__ import annotations
 
@@ -175,6 +180,7 @@ SIDES = ("LONG", "SHORT")
 STAGE = "stage_strategy_draft"
 DEFAULT_ATR_STOPS = (1, 1.5, 2)
 DEFAULT_R_TARGETS = (1.5, 2, 3)
+FALLBACK_STEP = Fraction(1, 10)   # the ATR step of the default menu's fallback stop between the range's bounds (OMEGA's)
 LEVEL_REF_KEYS = ("metric", "timeframe", "bars", "offset", "knobs", "windowExtreme")
 LEVEL_TRIGGERS = ("STOP_THROUGH_LEVEL", "ON_RETEST")
 PROBES = "data/audit/trade_level_menu_168_2026-11-11.json"
@@ -254,9 +260,10 @@ def outside_stop_range(multiple, min_stop, max_stop) -> str | None:
     """The verdict a decision reads for an ATR stop of `multiple` outside the strategy's stop range min_stop -
     max_stop (TRADE_LEVEL_POLICY minStopLossAtrMultiple / maxStopLossAtrMultiple): "BELOW_FLOOR" under the minimum,
     "ABOVE_CEILING" over the maximum - the stop is then dropped at every decision (STOP_BAND_PROBES; the bound it is
-    refused by is STOP_RANGE_VERDICTS[verdict]). None when it is inside - both bounds inclusive, as B1 measured on 0.8
-    and 1.8 - or when the multiple or a bound is not a finite number (the dial is the axis walk's to judge). Each
-    number is read as the decimal it was written as."""
+    refused by is STOP_RANGE_VERDICTS[verdict]). None when it is inside - both bounds inclusive, as far as measured
+    (1 and 2 at 168.4.0; 0.8 and 1.8 once, on one bar, B1: "The stop range" in the module docstring) - or when the
+    multiple or a bound is not a finite number (the dial is the axis walk's to judge). Each number is read as the
+    decimal it was written as."""
     if not (_finite_number(multiple) and _finite_number(min_stop) and _finite_number(max_stop)):
         return None
     if _exact(multiple) < _exact(min_stop):
@@ -267,25 +274,62 @@ def outside_stop_range(multiple, min_stop, max_stop) -> str | None:
 
 
 def default_stops(stop_range=None, schema: dict | None = None) -> list:
-    """The ATR stop multiples the default menu offers: DEFAULT_ATR_STOPS inside the stop range `stop_range` =
-    (minStopLossAtrMultiple, maxStopLossAtrMultiple), in their order - what a decision keeps of them; it drops the rest
-    (STOP_BAND_PROBES: dropped, not clamped, so they are left out rather than moved onto the bound). When none of the
-    three is inside, the range's own bounds, each that the write schema stages as an ATR stop (atr_stop_bounds): a
-    stop on a bound survives (B1). A range that is not two finite numbers, or whose minimum is above its maximum, is
-    not this function's to judge, and the three defaults are kept; so are they when no bound is stageable (a range
-    wholly above 5 ATR). validate_menu warns on each of them that a finite range drops, an inverted one included."""
+    """The ATR stop multiples the default menu offers for the stop range `stop_range` = (minStopLossAtrMultiple,
+    maxStopLossAtrMultiple):
+
+      * DEFAULT_ATR_STOPS inside the range, in their order - what a decision keeps of the migration's stops; it drops
+        the rest (STOP_BAND_PROBES: dropped, not clamped, so they are left out rather than moved onto a bound);
+      * when none of the three is inside, OMEGA's own fallback - not a platform or a migration default: the range's
+        bounds, each that the write schema stages as an ATR stop (atr_stop_bounds), and between them one stop strictly
+        inside both bounds when a 0.1 ATR step fits there (fallback_inner_stop), so not every option sits on a bound.
+        A stop on a bound survived at 168.4.0 (1 and 2) and once, on one bar, at 0.8 and 1.8 (B1, where the rounding
+        fell inside both bounds); whether one survives on a bound outside 0.8 - 2 ATR is not measured;
+      * the three as the migration wrote them for a range that is not two finite numbers or whose minimum is above its
+        maximum (not this function's to judge), and for one holding no stop the write schema stages (wholly above
+        5 ATR). validate_menu warns on each of them that a finite range drops, an inverted one included.
+
+    default_stops_basis names which of the three applies."""
+    return _default_stops(stop_range, schema)[0]
+
+
+def default_stops_basis(stop_range=None, schema: dict | None = None) -> str:
+    """Which rule default_stops applied to `stop_range`, for a plan's summary: "migration" (the migration's ATR stops
+    inside the range), "fallback" (none of them is inside: OMEGA's own fallback, the range's bounds and a stop between
+    them) or "unjudged" (no range, or one default_stops does not judge: the three stops as the migration wrote them)."""
+    return _default_stops(stop_range, schema)[1]
+
+
+def fallback_inner_stop(lo, hi, schema: dict | None = None):
+    """The fallback's stop strictly inside the range lo - hi: the 0.1 ATR step nearest the range's midpoint (the lower
+    of two on a tie), among the steps strictly between the bounds that the write schema stages as an ATR stop
+    (atr_stop_bounds: above 0, at most 5). None when no such step exists - a range narrower than a step, or one with no
+    stageable step inside. Computed on the decimals as written (_exact); an int when the step is a whole number."""
+    floor, ceiling = atr_stop_bounds(schema)
+    lo_x, hi_x = _exact(lo), _exact(hi)
+    first = max(math.floor(lo_x / FALLBACK_STEP) + 1, math.floor(_exact(floor) / FALLBACK_STEP) + 1)
+    last = min(math.ceil(hi_x / FALLBACK_STEP) - 1, math.floor(_exact(ceiling) / FALLBACK_STEP))
+    if first > last:
+        return None
+    nearest = math.ceil((lo_x + hi_x) / 2 / FALLBACK_STEP - Fraction(1, 2))
+    step = min(max(nearest, first), last) * FALLBACK_STEP
+    return int(step) if step.denominator == 1 else float(step)
+
+
+def _default_stops(stop_range, schema: dict | None) -> tuple[list, str]:
+    """(the stops, the rule that chose them): default_stops and default_stops_basis."""
     try:
         lo, hi = stop_range
     except (TypeError, ValueError):
-        return list(DEFAULT_ATR_STOPS)
+        return list(DEFAULT_ATR_STOPS), "unjudged"
     if not (_finite_number(lo) and _finite_number(hi)) or _exact(lo) > _exact(hi):
-        return list(DEFAULT_ATR_STOPS)
+        return list(DEFAULT_ATR_STOPS), "unjudged"
     inside = [m for m in DEFAULT_ATR_STOPS if outside_stop_range(m, lo, hi) is None]
     if inside:
-        return inside
+        return inside, "migration"
     floor, ceiling = atr_stop_bounds(schema)
-    bounds = [b for b in dict.fromkeys((lo, hi)) if floor < b <= ceiling]
-    return bounds or list(DEFAULT_ATR_STOPS)
+    inner = fallback_inner_stop(lo, hi, schema)
+    stops = [m for m in dict.fromkeys((lo, inner, hi)) if m is not None and floor < m <= ceiling]
+    return (stops, "fallback") if stops else (list(DEFAULT_ATR_STOPS), "unjudged")
 
 
 def default_menu(min_rr, schema: dict | None = None, *, stop_range=None) -> dict:
@@ -293,8 +337,8 @@ def default_menu(min_rr, schema: dict | None = None, *, stop_range=None) -> dict
     minRiskRewardRatio that is not a number is not this function's to judge (the axis walk refuses the dial): the
     three targets are kept. Since contract 170 each R target is an exit plan of one leg closing 100% - the shape the
     platform migrated every stored target to. `stop_range` is the thesis's (minStopLossAtrMultiple,
-    maxStopLossAtrMultiple): only the default ATR stops a decision keeps inside it are offered (default_stops; v0.14.3).
-    Without it, the three stops as the migration wrote them."""
+    maxStopLossAtrMultiple): only the default ATR stops a decision keeps inside it are offered, and OMEGA's own fallback
+    when none is (default_stops; v0.14.3). Without it, the three stops as the migration wrote them."""
     usable = isinstance(min_rr, (int, float)) and not isinstance(min_rr, bool) and min_rr == min_rr
     targets = ([m for m in DEFAULT_R_TARGETS if m >= min_rr] or [min_rr]) if usable else list(DEFAULT_R_TARGETS)
     side = {"stops": [{"kind": "ATR", "atrMultiple": m} for m in default_stops(stop_range, schema)],
