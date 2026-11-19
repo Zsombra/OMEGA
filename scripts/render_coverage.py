@@ -141,6 +141,10 @@ SEEN_FILES = [
     # predicted-but-not-rendered (data/audit/coverage_sweep_2026-11-12.json, -market.json)
     "_coverage_sweep_2026-11-12.json",
     "_coverage_sweep_2026-11-12-market.json",
+    # 2026-11-19, contract 180.4.0 (OMEGA v0.15.0): the 160 structural shapes the five added keys opened (ATH x every
+    # transform and chain, the four day / week levels), 172 headers, 0 refusals, 0 predicted-but-not-rendered
+    # (data/audit/coverage_sweep_2026-11-19.json)
+    "_coverage_sweep_2026-11-19.json",
 ]
 
 

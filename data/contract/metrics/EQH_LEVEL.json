@@ -177,7 +177,8 @@
             "ICHI_BASE",
             "ICHI_SPAN_A",
             "ICHI_SPAN_B",
-            "ICHI_LAG"
+            "ICHI_LAG",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -286,7 +287,8 @@
             "ICHI_BASE",
             "ICHI_SPAN_A",
             "ICHI_SPAN_B",
-            "ICHI_LAG"
+            "ICHI_LAG",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": true
@@ -402,7 +404,8 @@
             "ICHI_BASE",
             "ICHI_SPAN_A",
             "ICHI_SPAN_B",
-            "ICHI_LAG"
+            "ICHI_LAG",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -511,7 +514,8 @@
             "ICHI_BASE",
             "ICHI_SPAN_A",
             "ICHI_SPAN_B",
-            "ICHI_LAG"
+            "ICHI_LAG",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": true
@@ -543,9 +547,8 @@
     }
   ],
   "study": "marketStructure",
-  "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "the price of the latest recorded pivot high of length 3 while it read equal — within 0.1 × ATR(200) of the previous recorded one, the newer end of LuxAlgo's EQH line — held until the next recorded pivot high of that length; no close retires it — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; false on a bar that records no such pivot, absent until the bars read hold the ATR’s 800-bar window and a proven previous pivot",
+  "gloss": "the price of the latest recorded pivot high of length 3 while it read equal — within 0.1 × ATR(200) of the previous recorded one, the newer end of the EQH line — held until the next recorded pivot high of that length; no close retires it — computed by the server over this timeframe’s bars, in Smart Money Concepts legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; false on a bar that records no such pivot, absent until the bars read hold the ATR’s 800-bar window and a proven previous pivot",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"
@@ -553,7 +556,7 @@
   "parameters": {
     "equalBars": {
       "required": false,
-      "description": "The equal highs and lows’ pivot length, each side (LuxAlgo’s Bars Confirmation).",
+      "description": "The equal highs and lows’ pivot length, each side.",
       "defaultValue": 3,
       "minimum": 1,
       "bound": "depth",
@@ -761,6 +764,8 @@
     "PDH",
     "PDL",
     "PDO",
+    "DAY_HIGH",
+    "DAY_LOW",
     "PRIOR_DAY_SUPPLY_EDGE",
     "PRIOR_DAY_SUPPLY_AVG",
     "PRIOR_DAY_SUPPLY_WAVG",
@@ -775,6 +780,8 @@
     "PRIOR_WEEK_TPO_VAL",
     "PWH",
     "PWL",
+    "WEEK_HIGH",
+    "WEEK_LOW",
     "MONTH_TPO_POC",
     "MONTH_TPO_VAH",
     "MONTH_TPO_VAL",
@@ -783,6 +790,7 @@
     "PRIOR_MONTH_TPO_VAL",
     "PMH",
     "PML",
+    "ATH",
     "PIVOT_S3",
     "PIVOT_R4",
     "PIVOT_R5",
@@ -1093,7 +1101,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperands": [
     "OPEN",
@@ -1191,7 +1200,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperandsOffAnchor": [
     "OPEN",
@@ -1289,6 +1299,7 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ]
 }

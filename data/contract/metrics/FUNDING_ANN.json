@@ -27,7 +27,6 @@
     }
   ],
   "study": "funding",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the funding rate annualized (%), a point-in-time read at its own sample time",
   "subjectKinds": [

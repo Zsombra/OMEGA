@@ -29,7 +29,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .contract import REFERENCE_PAIRS, Contract, Metric, load
+from .contract import REFERENCE_PAIRS, Contract, Metric, load, price_operand_refused
 from .fanout import outputs_for
 from .types import Column, Operand, RelTimeframe
 from .validate import SERIES_CHAINS as _SERIES_CHAINS, chained_operands
@@ -82,7 +82,8 @@ def _variants(m: Metric, transform: str, expand: bool) -> list[tuple[str | None,
             return [(None, "hi" if "hi" in orderings else orderings[0])]
         return [(None, None)]
     if transform == "spread" and m.spread_operands:
-        return [(o, None) for o in m.spread_operands]
+        # v181 (announced): a reference price is never the plain operand of a spread whose base is not one
+        return [(o, None) for o in m.spread_operands if not price_operand_refused(m.metric, o)]
     if transform == "rank" and m.rank_orderings:
         return [(None, o) for o in m.rank_orderings]
     return [(None, None)]
@@ -125,7 +126,9 @@ def enumerate_shapes(expand_operands: bool = False,
                         # shape carries the first served operand so its column is authorable as written. An operand
                         # under an average (`inputs[]` {metric, transformId, window}) is a parameter of the shape, like
                         # a window, and is not enumerated.
-                        served = tuple(chained_operands(flags, "spread") or ())
+                        # v181 (announced): the averaged base is never a reference price, so CLOSE / LAST are left out
+                        served = tuple(o for o in (chained_operands(flags, "spread") or ())
+                                       if not price_operand_refused(name, o, chained=True))
                         for o in (served if expand_operands else served[:1]):
                             out.append(ColumnShape(name, transform, succ, o, None, instrument))
                         continue

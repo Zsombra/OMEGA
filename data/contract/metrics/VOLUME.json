@@ -1506,7 +1506,6 @@
     }
   ],
   "study": "barVolume",
-  "provenance": "tradingView",
   "rankScope": null,
   "gloss": "the bar's traded volume, in base-asset units",
   "subjectKinds": [

@@ -2194,7 +2194,6 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "20-period commodity channel index (±100 reference)",
   "subjectKinds": [

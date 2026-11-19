@@ -1621,7 +1621,6 @@
     }
   ],
   "study": "spotFlow",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "order-flow composite centralized-exchange spot cumulative volume delta at each bar, the listed venues that publish their trade history (Binance, Coinbase) summed through the bar's last minute since the daily 00:00-UTC anchor, in this coin's own unit (crypto coins the spot lane lists); it reads no value for the rest of the UTC day after a minute any listed venue left uncovered, never a partial sum",
   "subjectKinds": [

@@ -1632,7 +1632,6 @@
     }
   ],
   "study": "atr",
-  "provenance": "tradingView",
   "rankScope": null,
   "gloss": "14-period average true range, in price units",
   "subjectKinds": [

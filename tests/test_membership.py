@@ -111,7 +111,9 @@ def test_mapped_plus_dead_covers_the_whole_corpus():
                      # `added`: EMA55, EQH_LEVEL / EQL_LEVEL, the LIQUIDITY_POOL_*, the PRIOR_<session>_DEMAND_* /
                      # _SUPPLY_*, the *_PENDING_* and the ZONE_*) joined after membership left discovery too: no signal
                      # module exists for them to feed, so the map (84 mapped + 72 dead, the 156 probed) names none of them
-                     | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))["added"]))
+                     | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))["added"])
+                     # 2026-11-19, contract 180.4.0: ATH and the four day / week levels (_moves_180_4.json)
+                     | set(json.loads((CONTRACT_DIR / "metrics" / "_moves_180_4.json").read_text(encoding="utf-8"))["added"]))
     measured_then = (mapped | dead) - set(CONTRACT.retired_metrics)
     assert measured_then == set(CONTRACT.metrics) - never_probed, (
         f"unaccounted metrics: {sorted(set(CONTRACT.metrics) - never_probed - measured_then)}")

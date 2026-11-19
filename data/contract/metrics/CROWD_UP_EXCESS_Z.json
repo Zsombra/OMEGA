@@ -27,7 +27,6 @@
     }
   ],
   "study": "crowdSettled",
-  "provenance": "battleGridDerived",
   "rankScope": "report",
   "gloss": "how far this coin’s up share sits from the rest of the field’s over the same window, in standard errors — a binomial z by normal approximation, each cell an independent trial; last 4 settled sessions; significant at ±1.96, compared unrounded; null with no cells, or when the rest of the field is empty or unanimous",
   "subjectKinds": [

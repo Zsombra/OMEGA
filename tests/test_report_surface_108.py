@@ -98,7 +98,7 @@ def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30, the 146.0.0 one since 2026-11-01, the
     # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07, the 161.0.0 one since 2026-11-09, the 168.3.0 one
     # since 2026-11-11: data/derived/condition_vocabulary_108.json source.contractVersion, the schema the enum is read from)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == stage_schema()["contractVersion"] == "171.0.0"   # 2026-11-12: was 169.4.0 that morning, 168.3.0 (2026-11-11), 161.0.0 (2026-11-09), 149.1.0 before
+    assert C.retired_transforms["bandTouch"]["servedAt"] == stage_schema()["contractVersion"] == "180.4.0"   # 2026-11-19: was 171.0.0; 2026-11-12: was 169.4.0 that morning, 168.3.0 (2026-11-11), 161.0.0 (2026-11-09), 149.1.0 before
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 
@@ -122,7 +122,8 @@ def test_no_served_transform_is_unmeasured_since_the_108_4_extraction():
     # EQH_LEVEL / EQL_LEVEL, the four *_PENDING_* levels, LIQUIDITY_POOL_ABOVE / _BELOW and their _RETIRED, the 24
     # PRIOR_<session>_DEMAND_* / _SUPPLY_* and the six ZONE_*; not the four pool flags (_INTACT / _RECLAIMED) nor the two
     # _TOUCHES counts. No existing metric gained or lost it.
-    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 393   # 352 at 161.0.0; 118 at 144.0.0; 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
+    # 2026-11-19, contract 180.4.0: 398 - all five added keys (ATH and the four day / week levels) offer it
+    assert sum("levelInteraction" in m.transforms for m in C.metrics.values()) == 398   # 393 at 168.3.0 - 171.0.0; 352 at 161.0.0; 118 at 144.0.0; 58 at 135.2.0 (46 at 110.8.0); 118 at 144.0.0: the v137.2 VWAP lines, bands and profile levels
 
 
 def test_a_retired_transform_is_refused_naming_its_replacement():
@@ -167,7 +168,7 @@ def test_the_space_never_enumerates_a_retired_transform_and_does_enumerate_level
     shapes = enumerate_shapes(expand_operands=True)
     assert not [s for s in shapes if "bandTouch" in (s.transform, s.chained)]
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 393, one atom per metric that offers it (the count above)
-    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 393      # 352 at 161.0.0 (2026-11-09: 318 at 149.1.0); 118 at 146.0.1; 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
+    assert len([s for s in shapes if s.transform == "levelInteraction"]) == 398      # 393 at 168.3.0 - 171.0.0; 352 at 161.0.0 (2026-11-09: 318 at 149.1.0); 118 at 146.0.1; 58 at 135.2.0; 43 at 108.4.0, 44 at 110.2.0, 46 at 110.8.0
 
 
 # --- buffer ----------------------------------------------------------------------------------------

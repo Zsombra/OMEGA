@@ -116,5 +116,8 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     # 168 serves after an average is a different chain (spread as the OUTER), recorded unmeasured and in neither count.
     # 27244 / 508207 since 2026-11-12 at 169.4.0 (OMEGA v0.13.1): the chained `spread` (spread as the OUTER, after an
     # average) measured and modelled - 660 structural and 161516 operand-expanded shapes; this rule is untouched by them
-    assert len(enumerate_shapes(contract=contract)) == 27244   # 26584 at 168.3.0; 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 508207  # 346691 at 168.3.0   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0
+    # 27424 / 515961 since the re-extraction at 180.4.0, 2026-11-19 (OMEGA v0.15.0, _moves_180_4.json: five keys in, ATH
+    # in every price operand list); the announced v181 rule leaves out every reference price as the plain operand of a
+    # spread whose base is not one (519029 without it)
+    assert len(enumerate_shapes(contract=contract)) == 27424   # 27244 at 169.4.0 - 171.0.0; 26584 at 168.3.0; 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 515961  # 508207 at 169.4.0 - 171.0.0;  # 346691 at 168.3.0   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0

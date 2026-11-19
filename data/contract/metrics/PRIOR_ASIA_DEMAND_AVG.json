@@ -43,9 +43,8 @@
     }
   ],
   "study": "priorTradingSessions",
-  "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "the zone's midpoint — halfway between its inner edge and the window low, on the demand zone of the previous completed Asia 00–08 UTC trading session (00:00–08:00 UTC): its range cut into 50 equal bins counted from the window low, each holding the volume of the 1m bars whose low lies in it, and the zone runs from the low to the first bin whose running share of the window's volume exceeds 10% — a BattleGrid variant of LuxAlgo “Supply and Demand Daily” (Intrabar TF 1m) over this session in place of the day; fixed once the window closes and absent until then; absent where the window has no range or no volume or no bin exceeds the threshold, and for a window that closed before these levels were first stored",
+  "gloss": "the zone's midpoint — halfway between its inner edge and the window low, on the demand zone of the previous completed Asia 00–08 UTC trading session (00:00–08:00 UTC): its range cut into 50 equal bins counted from the window low, each holding the volume of the 1m bars whose low lies in it, and the zone runs from the low to the first bin whose running share of the window's volume exceeds 10% — the daily volume profile, over this session in place of the day; fixed once the window closes and absent until then; absent where the window has no range or no volume or no bin exceeds the threshold, and for a window that closed before these levels were first stored",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"
@@ -53,7 +52,7 @@
   "parameters": {
     "supplyDemandThreshold": {
       "required": false,
-      "description": "LuxAlgo’s Threshold %: the share of the window’s volume, counted in bins from its high (supply) or low (demand), a zone must exceed to end.",
+      "description": "The volume threshold: the share of the window’s volume, counted in bins from its high (supply) or low (demand), a zone must exceed to end.",
       "defaultValue": 10,
       "minimum": 0,
       "maximum": 100,
@@ -62,7 +61,7 @@
     },
     "supplyDemandResolution": {
       "required": false,
-      "description": "LuxAlgo’s Resolution: the equal bins the window’s range is cut into. Off its default the server rebuilds the window from its 1m bars, which reach only the last two UTC days.",
+      "description": "The resolution: the equal bins the window’s range is cut into. Off its default the server rebuilds the window from its 1m bars, which reach only the last two UTC days.",
       "defaultValue": 50,
       "minimum": 2,
       "maximum": 500,
@@ -262,6 +261,8 @@
     "PDH",
     "PDL",
     "PDO",
+    "DAY_HIGH",
+    "DAY_LOW",
     "PRIOR_DAY_SUPPLY_EDGE",
     "PRIOR_DAY_SUPPLY_AVG",
     "PRIOR_DAY_SUPPLY_WAVG",
@@ -276,6 +277,8 @@
     "PRIOR_WEEK_TPO_VAL",
     "PWH",
     "PWL",
+    "WEEK_HIGH",
+    "WEEK_LOW",
     "MONTH_TPO_POC",
     "MONTH_TPO_VAH",
     "MONTH_TPO_VAL",
@@ -284,6 +287,7 @@
     "PRIOR_MONTH_TPO_VAL",
     "PMH",
     "PML",
+    "ATH",
     "PIVOT_S3",
     "PIVOT_R4",
     "PIVOT_R5",
@@ -595,7 +599,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperands": [
     "OPEN",
@@ -693,7 +698,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperandsOffAnchor": [
     "OPEN",
@@ -791,6 +797,7 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ]
 }

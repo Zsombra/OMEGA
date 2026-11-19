@@ -26,9 +26,8 @@
     }
   ],
   "study": "gaps",
-  "provenance": "tradingView",
   "rankScope": null,
-  "gloss": "whether the bar's whole range cleared the prior bar's, TradingView's Gap Detector rule: up when its low is above the prior high, down when its high is below the prior low",
+  "gloss": "whether the bar's whole range cleared the prior bar's: up when its low is above the prior high, down when its high is below the prior low",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

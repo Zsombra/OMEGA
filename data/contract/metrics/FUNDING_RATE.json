@@ -175,7 +175,6 @@
     }
   ],
   "study": "funding",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the perpetual funding rate (%), a point-in-time read at its own sample time",
   "subjectKinds": [

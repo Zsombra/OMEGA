@@ -20,6 +20,58 @@ def _load(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# --- price is the base of every spread over another reading (contract v181, announced) ------------------------------
+# README "Contract history - v181" (battlegrid-mcp PR 284, merged 2026-11-19; NOT served at 180.4.0): "A reference
+# price is never the plain operand of a spread whose base is not one. `EMA20 x spread(CLOSE)`, `PRIOR_TPO_VAH x
+# spread(CLOSE)`, `EMA20 x spread(LAST)` and `HL2 x ema(34) x spread(CLOSE)` are refused with VALIDATION_ERROR /
+# REPORT_COLUMN_OPERAND_UNSUPPORTED ... Still accepted: `CLOSE x spread(LAST)` and `LAST x spread(CLOSE)` (two
+# reference prices keep both orders), and an average of price as an operand." At 180.4.0 the hints still serve CLOSE
+# and LAST in every price base's operand lists and the old form still renders (measured 2026-11-19, P1), while the
+# form v181 writes - `CLOSE x spread(<base>)` - renders already (P1). omega never EMITS the old form (omega.space
+# enumerates none, no generated plan holds one), and omega.validate WARNS on it while the extracted contract is below
+# 181 (the platform still accepts it) and refuses it from 181 on (omega.validate.v181_served). Once v181 is served the
+# hints drop CLOSE / LAST from the operand lists, and a re-extraction refuses the form from extracted data
+# (OPERAND_NOT_ALLOWED) before this rule is reached.
+# The set {CLOSE, LAST} is the README's ("a reference price (CLOSE, LAST)"), not measured: no served field names the
+# reference prices.
+REFERENCE_PRICES = ("CLOSE", "LAST")
+V181_SOURCE = ("contract v181, announced (README 'Contract history - v181', battlegrid-mcp PR 284), not served at "
+               "180.4.0")
+
+
+def price_operand_refused(base: str, operand: str, *, chained: bool = False) -> bool:
+    """True when `operand`, a PLAIN spread operand (no average), is a reference price and the spread's base is not one:
+    the form v181 refuses. `chained`: the spread is a chain outer after an average (`<base> x ema|... -> spread`),
+    whose base is the average and never a reference price."""
+    return operand in REFERENCE_PRICES and (chained or base not in REFERENCE_PRICES)
+
+
+# v181 "Moved stored columns": "The conditions that read them flipped their operator and mapped their threshold, so
+# they pass on the same bars." For a price (asset-relative) unit the spread is a percentage gap divided by the operand
+# (transforms/_authoring.json spread.formula), so with old = (L - P) / P x 100 and new = (P - L) / L x 100 (L the level,
+# P the price, both positive): old > t  <=>  L / P > 1 + t/100  <=>  new < 100 x (100 / (100 + t) - 1). The map is
+# strictly decreasing, so each comparison flips and `between` swaps its bounds. Not a negation: old 1.2063 is new
+# -1.1920 (P1, BTC 4h, 2026-11-19).
+_FLIPPED_OP = {"lt": "gt", "lte": "gte", "gt": "lt", "gte": "lte", "crossesAbove": "crossesBelow",
+               "crossesBelow": "crossesAbove"}
+
+
+def flipped_price_spread_threshold(value: float) -> float:
+    """The threshold on `P x spread(L)` that passes on the bars where `L x spread(P)` passes at `value` (percent; the
+    old threshold must be above -100)."""
+    if not value > -100:
+        raise ValueError(f"a percentage gap of {value} is at or below -100: no positive price and level give it")
+    return 100.0 * (100.0 / (100.0 + value) - 1.0)
+
+
+def flipped_price_spread_clause(op: str, value: float) -> tuple[str, float]:
+    """(op, value) of a numeric clause on `L x spread(P)` rewritten for `P x spread(L)` (v181's moved columns)."""
+    if op not in _FLIPPED_OP:
+        raise ValueError(f"{op!r} has no flipped form (increased / decreased are not mapped: a percentage gap's change "
+                         f"does not map through a fixed threshold)")
+    return _FLIPPED_OP[op], flipped_price_spread_threshold(value)
+
+
 @lru_cache(maxsize=1)
 def stage_schema() -> dict:
     """The input schemas of the six strategy-draft tools at the contract the manifest's

@@ -1707,7 +1707,6 @@
     }
   ],
   "study": "barVolume",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "buy share of traded volume (0–1)",
   "subjectKinds": [

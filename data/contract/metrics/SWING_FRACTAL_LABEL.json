@@ -28,7 +28,6 @@
     }
   ],
   "study": "swingFractal",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the most recent decided swing pivot (2 bars each side) against the previous pivot on its own side: HH or LH for a swing high (an equal high is LH), HL or LL for a swing low (an equal low is HL), none when no comparable pair is in reach — a state held between pivots, not an event",
   "subjectKinds": [

@@ -27,7 +27,6 @@
     }
   ],
   "study": "barClock",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the trading session the bar opened in, fixed in UTC with no daylight-saving rule: asia (Asia 00–08 UTC), london (London 08–13 UTC), newYork (New York 13–21 UTC), late (Late 21–24 UTC) — a fact of the bar's open time",
   "subjectKinds": [

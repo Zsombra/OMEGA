@@ -64,10 +64,17 @@ def test_the_manifest_counts_are_the_corpus():
     legal = sum(len(m.transforms) for m in c.metrics.values())
     from tests.manifest_chain import extraction as extraction_of
     counts = extraction_of("168.3.0", MANIFEST)["counts"]
-    assert (counts["metrics"], counts["families"], counts["authorableTransforms"]) == (
-        len(c.metrics), len({m.family for m in c.metrics.values()}), len(c.transforms)) == (581, 14, 30)
-    assert (counts["composabilityCells"], counts["composabilityLegal"]) == (581 * 30, legal) == (17430, 4735)
-    assert counts["structuralShapes"] == len(enumerate_shapes()) - 660 == 26584
+    # 2026-11-19: the corpus moved to 180.4.0 (586 metrics); the 168.3.0 block keeps its own counts and the corpus is
+    # held to the top block's
+    assert (counts["metrics"], counts["families"], counts["authorableTransforms"]) == (581, 14, 30)
+    assert (counts["composabilityCells"], counts["composabilityLegal"], counts["structuralShapes"]) == (
+        17430, 4735, 26584)
+    now = extraction_of("180.4.0", MANIFEST)["counts"]
+    assert (now["metrics"], now["families"], now["authorableTransforms"]) == (
+        len(c.metrics), len({m.family for m in c.metrics.values()}), len(c.transforms)) == (586, 14, 30)
+    assert (now["composabilityCells"], now["composabilityLegal"]) == (586 * 30, legal) == (17580, 4771)
+    assert now["structuralShapes"] == len(enumerate_shapes()) == 27424
+    assert now["operandExpandedShapes"] == len(enumerate_shapes(expand_operands=True)) == 515961
     assert counts["platformSectionTemplates"] == len(c.platform_templates) == 22
 
 
@@ -94,7 +101,7 @@ def test_the_write_schema_names_a_metric_by_pattern_and_the_roster_is_the_read_s
     served = cv.vocabulary()["reportColumn"]["metric"]
     assert served["enumPointer"] == "/get_strategy/outputSchema/$defs/metricKey"
     assert served["enum"] == doc["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"]
-    assert served["count"] == 581 and set(served["enum"]) == set(load().metrics)
+    assert served["count"] == 586 and set(served["enum"]) == set(load().metrics)      # 581 until 180.4.0
     assert all(__import__("re").fullmatch(key["pattern"], name) for name in served["enum"])
     assert UNMEASURED["metrics"] == {} and UNMEASURED["servedAt"] == "169.4.0"      # 168.3.0 until 2026-11-12
 
@@ -205,7 +212,8 @@ def test_the_chained_spread_was_unmeasured_at_168_and_is_modelled_since_169():
     assert cv.vocabulary()["reportColumn"]["chainedTransformId"]["count"] == 20
     inners = Counter(t for m in c.metrics.values() for t, flags in m.transforms.items()
                      if "spread" in (flags.get("chainSuccessors") or ()))
-    assert inners == Counter({"aggregate": 165, "ema": 165, "rma": 165, "wma": 165})
+    # 166 since 180.4.0 (2026-11-19): ATH serves the four averages and spread after them
+    assert inners == Counter({"aggregate": 166, "ema": 166, "rma": 166, "wma": 166})
     assert MOVES["chainOutersGained"]["aggregate->spread"] == 162          # 165 less the three added keys that serve it
     # ADX x aggregate -> spread is offered, and RSI14 is not one of its served operands (another unit)
     column = Column(metric="ADX", transformId="aggregate", timeframe=ANCHOR, window=20, chainedTransformId="spread",
@@ -213,7 +221,7 @@ def test_the_chained_spread_was_unmeasured_at_168_and_is_modelled_since_169():
     assert _codes(column) == []                                  # RSI14 is one of its served operands (the 0-100 unit)
     column = column.model_copy(update={"inputs": [Operand(metric="CLOSE")]})
     assert _codes(column) == [("REPORT_COLUMN_OPERAND_UNSUPPORTED", "column.inputs[0]")]
-    assert sum(shape.chained == "spread" for shape in enumerate_shapes()) == 660
+    assert sum(shape.chained == "spread" for shape in enumerate_shapes()) == 664   # 660 until 180.4.0 (ATH)
 
 
 def test_a_spread_operand_under_an_average_was_unbuildable_at_168_and_is_modelled_since_169():
@@ -222,7 +230,7 @@ def test_a_spread_operand_under_an_average_was_unbuildable_at_168_and_is_modelle
     c = load()
     assert sum(1 for name in c.metrics
                if json.loads((ROOT / f"data/contract/metrics/{name}.json").read_text(encoding="utf-8"))
-               .get("spreadAverageOperands")) == 501
+               .get("spreadAverageOperands")) == 506      # 501 until 180.4.0 (2026-11-19)
     assert Operand(metric="EMA20", transformId="ema", window=5).averaged
     assert not Operand(metric="EMA20").averaged
     with pytest.raises(ValidationError):
@@ -270,7 +278,7 @@ def test_the_schema_walk_refuses_an_unserved_metric_key_through_the_read_schemas
     doc = stage_schema()
     root = doc["stage_strategy_draft"]["inputSchema"]
     roster = P.read_roster(doc)
-    assert len(roster) == 581 and "PATTERN" in P.CLASSES
+    assert len(roster) == 586 and "PATTERN" in P.CLASSES      # 581 until 180.4.0
 
     def fails(body, **kw):
         return [(f.cls, f.path) for f in P.diff_schema(body, root, root, **kw) if f.verdict == "FAIL"]

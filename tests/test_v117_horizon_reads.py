@@ -5,6 +5,9 @@ timeframe is refused. That is `chg4h` and `chg24h` on a `1h` strategy, and `oiRe
 Such a change is a developing read whatever its selector." Refused `CONDITION_VERDICT_READ_ILLEGAL` or
 `CONDITION_HOLD_ILLEGAL`. Until v0.8.3 OMEGA marked a column Developing only for `bars: "all"` above the anchor, so a
 carrier on chg24h at a 1h anchor passed offline and was refused at stage.
+
+Contract v175 lifted the carrier half: a verdict carrier over a Developing read is accepted (measured at 180.4.0,
+OMEGA v0.15.0). The hold half stands.
 """
 from __future__ import annotations
 
@@ -49,40 +52,42 @@ def test_the_horizons_are_the_metrics_own():
                               "CHG_24H": "1d", "OI_PX_REGIME": "1h"}
 
 
-@pytest.mark.parametrize("metric,anchor,refused", [
+@pytest.mark.parametrize("metric,anchor,above", [
     ("CHG_4H", "1h", True), ("CHG_24H", "1h", True),               # the README's own examples
     ("CHG_1H", "1h", False), ("CHG_15M", "1h", False), ("CHG_5M", "1h", False),
     ("OI_PX_REGIME", "15m", True), ("OI_PX_REGIME", "5m", True),   # "oiRegime (the 1h change) below 1h"
     ("OI_PX_REGIME", "1h", False), ("OI_PX_REGIME", "4h", False),
     ("CHG_24H", "4h", True), ("CHG_4H", "4h", False), ("CHG_15M", "5m", True), ("CHG_5M", "5m", False),
 ])
-def test_a_verdict_carrier_reading_a_horizon_above_the_anchor_is_refused(metric, anchor, refused):
+def test_since_v175_a_verdict_carrier_reading_a_horizon_above_the_anchor_is_accepted(metric, anchor, above):
+    """v175: "stage_strategy_draft and commit_strategy_draft accept a verdict-carrying condition ... over a Developing
+    read ... CONDITION_VERDICT_READ_ILLEGAL is no longer raised". Measured at 180.4.0: HZN_CARRIER on chg4h at a 1h
+    anchor staged clean (data/audit/reextraction_180_4_2026-11-19.json D4 / D7). The read is still Developing (the hold
+    rule below reads it)."""
     report = _report(anchor)
     conds = [condition("C_UP", "carrier", _clause(metric), verdict="UP")]
-    errors = _errors(report, conds, "CONDITION_VERDICT_READ_ILLEGAL")
-    assert bool(errors) is refused
-    assert bool(report_headers(report)[H(metric)]["horizon_above"]) is refused
-    if refused:
-        msg = errors[0].message
-        assert "v117" in msg and H(metric) in msg and "'C_UP'" in msg
-        assert "at or below the strategy timeframe" in msg          # the remedy the platform names
+    assert not _errors(report, conds, "CONDITION_VERDICT_READ_ILLEGAL")
+    assert not [f for f in validate_conditions(report, conds) if f.severity == "error"]
+    assert bool(report_headers(report)[H(metric)]["horizon_above"]) is above
 
 
-def test_the_selector_does_not_rescue_it():
-    """"whatever its selector": a Confirmed (closed) column is refused the same."""
-    report = Report(anchor="1h", sections=[CustomSection(kind="custom", title="c", benchmarkTicker=None, columns=[
-        Column(metric="CHG_4H", transformId="value", timeframe=RelTimeframe(rel="anchor"), bars="closed")])])
-    conds = [condition("C_UP", "carrier", num(H("CHG_4H"), "gt", 0), verdict="UP")]
-    assert _errors(report, conds, "CONDITION_VERDICT_READ_ILLEGAL")
+def test_the_v175_record_staged_the_horizon_carrier_clean():
+    import json
+    from pathlib import Path
+    record = json.loads((Path(__file__).resolve().parents[1] / "data" / "audit" /
+                         "reextraction_180_4_2026-11-19.json").read_text(encoding="utf-8"))
+    stages = {s["id"]: s for s in record["draft"]["stages"]}
+    assert any(c["conditionKey"] == "HZN_CARRIER" and "chg4h" in c["clause"]
+               for c in stages["D1"]["sent"]["CONDITIONS"])
+    assert stages["D7"]["answer"] == {"errors": [], "warnings": []}
 
 
-def test_a_building_block_does_not_launder_it():
-    """The carrier rule is over the closure: a conditionRef to a block that reads chg24h is still refused."""
+def test_a_building_block_carries_nothing_either():
+    """The closure rule left no carrier error to launder: a conditionRef to a block that reads chg24h is accepted."""
     report = _report("1h")
     conds = [condition("BLOCK", "block", _clause("CHG_24H"), verdict=None),
              condition("C_UP", "carrier", all_of(ref("BLOCK"), _clause("CHG_1H")), verdict="UP")]
-    errors = _errors(report, conds, "CONDITION_VERDICT_READ_ILLEGAL")
-    assert len(errors) == 1 and errors[0].condition_key == "C_UP" and "(in BLOCK)" in errors[0].path
+    assert not _errors(report, conds, "CONDITION_VERDICT_READ_ILLEGAL")
 
 
 def test_a_non_carrier_read_at_one_bar_is_legal():

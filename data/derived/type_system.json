@@ -262,6 +262,8 @@
         "PDH",
         "PDL",
         "PDO",
+        "DAY_HIGH",
+        "DAY_LOW",
         "PRIOR_DAY_SUPPLY_EDGE",
         "PRIOR_DAY_SUPPLY_AVG",
         "PRIOR_DAY_SUPPLY_WAVG",
@@ -276,6 +278,8 @@
         "PRIOR_WEEK_TPO_VAL",
         "PWH",
         "PWL",
+        "WEEK_HIGH",
+        "WEEK_LOW",
         "MONTH_TPO_POC",
         "MONTH_TPO_VAH",
         "MONTH_TPO_VAL",
@@ -284,6 +288,7 @@
         "PRIOR_MONTH_TPO_VAL",
         "PMH",
         "PML",
+        "ATH",
         "PIVOT_S3",
         "PIVOT_R4",
         "PIVOT_R5",
@@ -551,7 +556,7 @@
         "MKT_UNIVERSE"
       ],
       "vocabularies": {},
-      "metricCount": 527
+      "metricCount": 532
     },
     "classification": {
       "conditionOperators": [

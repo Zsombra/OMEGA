@@ -67,8 +67,9 @@ def test_a_non_finite_number_fails_the_walk():
 def test_the_command_line_takes_the_roster_through_either_definition_shape_and_warns_without_one():
     import scripts.preflight as cli
     pinned = stage_schema()["stage_strategy_draft"]
-    assert len(cli._roster_for({"inputSchema": pinned["inputSchema"]})) == 581
-    assert len(cli._roster_for({"parameters": pinned["inputSchema"]})) == 581        # the ToolSearch shape
+    # 586 since the 180.4.0 capture (2026-11-19)
+    assert len(cli._roster_for({"inputSchema": pinned["inputSchema"]})) == 586
+    assert len(cli._roster_for({"parameters": pinned["inputSchema"]})) == 586        # the ToolSearch shape
     other = json.loads((ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json")
                        .read_text(encoding="utf-8"))["stage_strategy_draft"]
     assert cli._roster_for({"inputSchema": other["inputSchema"]}) is None            # the 161 surface: its own enum

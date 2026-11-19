@@ -2198,7 +2198,6 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "20-period Chaikin money flow — each bar's volume weighted by where it closed in its range (−1 at the low, +1 at the high, 0 on a flat bar), summed over the 20 bars ending at this bar and divided by their volume; no value when that volume is zero",
   "subjectKinds": [

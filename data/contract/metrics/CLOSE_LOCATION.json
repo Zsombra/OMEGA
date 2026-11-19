@@ -1717,7 +1717,6 @@
     }
   ],
   "study": "candlePatterns",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "where the bar closed within its own range, (close − low) / (high − low) — 0 at the low, 1 at the high; no value on a bar whose high equals its low",
   "subjectKinds": [

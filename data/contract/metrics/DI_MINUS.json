@@ -2205,7 +2205,6 @@
     }
   ],
   "study": "directionalMovement",
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "the negative directional indicator (14) — the down-move share of directional movement",
   "subjectKinds": [

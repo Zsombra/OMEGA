@@ -55,7 +55,8 @@ from scripts.render_coverage import (
 # HIGH_DEV / LOW_DEV, whose spread gained the fifteen outers when they went timeless -> candle, + 3397 where an added
 # metric is the operand of an existing chain, + 270 where HIGH_DEV / LOW_DEV is - a per-bar operand now, so a series chain
 # takes it). The chained `spread` 168 serves after an average (spread as the OUTER) is unmeasured and not among them.
-EXPANDED_SPREAD_SHAPES = 322892
+# 2026-11-19, contract 180.4.0 (OMEGA v0.15.0, _moves_180_4.json): five keys in (ATH in every price operand list, the four day / week levels as anchor-rung operands), and the announced v181 rule leaves out every reference price (CLOSE, LAST) as the plain operand of a spread whose base is not one: 327674.
+EXPANDED_SPREAD_SHAPES = 327674   # 322892 at 169.4.0 - 171.0.0
 
 
 @pytest.fixture(scope="module")
@@ -95,7 +96,7 @@ def test_rendered_headers_spans_every_cache():
     # non-spread pass (-nonspread) and the three knob-spelling probe caches (_probe_168_knobs_2026-11-11-{a,b,c}.json)
     # 44 since 2026-11-12: + the 169.4.0 authoring probe headers (_probe_169_2026-11-12.json, -c.json) and the chained
     # spread's structural sweep, coin and market (_coverage_sweep_2026-11-12.json, -market.json)
-    assert len(SEEN_FILES) == 44   # 40 since 2026-11-11; 36 with the structural sweep alone; 35 since 2026-11-10; 30 from the second knob probe of 2026-11-08; 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
+    assert len(SEEN_FILES) == 45   # 45 since 2026-11-19 (the 180.4.0 structural sweep); 44 since 2026-11-12; 40 since 2026-11-11; 36 with the structural sweep alone; 35 since 2026-11-10; 30 from the second knob probe of 2026-11-08; 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -213,7 +214,9 @@ def test_structural_coverage_is_complete(contract):
     # 24239 at 169.4.0 (2026-11-12, OMEGA v0.13.1): the chained `spread` is modelled and its 660 structural shapes are in
     # the space; the sweep of that day rendered every one (620 on coin sections, 40 MKT_* on a market section, 0 refusals,
     # 0 mispredicted: data/audit/coverage_sweep_2026-11-12.json, -market.json).
-    assert (cov, len(unc)) == (24239, 0), (
+    # 24399 at 180.4.0 (2026-11-19): the 160 structural shapes the five added keys opened, every one rendered by that
+    # day's sweep (data/audit/coverage_sweep_2026-11-19.json: 172 headers, 0 refusals, 0 mispredicted)
+    assert (cov, len(unc)) == (24399, 0), (
         "a structural shape is enumerated that has never been rendered")
 
 
@@ -270,7 +273,11 @@ def test_live_coverage_is_complete(contract):
     # structural ones of that day's sweep and 3 more operand pairs the 169 authoring probe rendered. The deliberate stop
     # extends to the chained spread's other operands, 160,853 pairs that re-mint `<inner>_<operandCode>_spread` with
     # another operand code; they count under their inner transform (aggregate / ema / rma / wma) here.
-    assert (cov, len(unc)) == (54208, 293126 + 160853), (
+    # 180.4.0 (2026-11-19, OMEGA v0.15.0): 515,941 expanded shapes less placeholders. 53,806 rendered: the 54,208 above
+    # less 562 rendered shapes the v181 rule took out of the space (X x spread(CLOSE | LAST) pairs the earlier sweeps
+    # rendered; omega refuses the form now), plus the 160 structural shapes of that day's sweep. The deliberate stop is
+    # 298,470 unchained spread pairs and 163,665 chained-spread ones (ATH and the four day / week levels as operands).
+    assert (cov, len(unc)) == (53806, 298470 + 163665), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
-    assert byt["spread"] == 293126 and sum(byt.values()) == 293126 + 160853
+    assert byt["spread"] == 298470 and sum(byt.values()) == 298470 + 163665
     assert all(s.transform == "spread" or s.chained == "spread" for s in unc)

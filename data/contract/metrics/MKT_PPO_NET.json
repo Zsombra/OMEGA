@@ -1697,7 +1697,6 @@
     }
   ],
   "study": "marketBreadth",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "net momentum breadth — the positive-histogram share minus the negative (%), signed; negative is a field losing momentum",
   "subjectKinds": [

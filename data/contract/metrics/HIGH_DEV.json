@@ -1947,7 +1947,6 @@
     }
   ],
   "study": "barDeviation",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "how far the bar's high has run above its own open, ((high − open) / open) × 100 — never negative",
   "subjectKinds": [

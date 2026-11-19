@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from omega.contract import CONTRACT_DIR, REFERENCE_PAIRS, load, section_subject
+from omega.contract import CONTRACT_DIR, REFERENCE_PAIRS, load, price_operand_refused, section_subject
 from omega.fanout import knob_token, outputs_for
 from omega.types import Column, CustomSection
 from omega.validate import validate_column, validate_section
@@ -152,6 +152,30 @@ def test_omega_agrees_with_every_probe_answer(contract):
     assert (agree, duplicates) == (201, 5)
 
 
+def _v181_form(p: dict) -> bool:
+    """A probe that sent a reference price as the plain operand of a spread whose base is not one."""
+    return any(price_operand_refused(c.get("metric"), (i or {}).get("metric"),
+                                     chained=c.get("chainedTransformId") == "spread" and c.get("transformId") != "spread")
+               for s in p["sections"] for c in s["columns"]
+               if "spread" in (c.get("transformId"), c.get("chainedTransformId"))
+               for i in (c.get("inputs") or []) if not (i or {}).get("transformId"))
+
+
+def test_the_probes_that_sent_the_v181_form_keep_their_answer_and_warn(contract):
+    """OMEGA v0.15.0 (2026-11-19): the announced v181 rule (a reference price is never the plain operand of a spread
+    whose base is not one) is a WARNING while the pinned surface is below 181 - the platform accepted these at 149.1.0
+    and accepts the form at 180.4.0 (data/audit/reextraction_180_4_2026-11-19.json P1) - so their measured answers
+    stand above and each carries the warning."""
+    sent = [p for p in PROBE["probes"] if _v181_form(p)]
+    # seven accepted at 149.1.0, and F.PIVOT_CAM_R1.served, which hit the preview deadline (SERVICE_UNAVAILABLE) and was
+    # re-sent as #2 (accepted)
+    assert len(sent) == 8
+    for p in sent:
+        warned = [f.code for s in p["sections"] for f in validate_section(_section(s), contract=contract)
+                  if f.severity == "warning"]
+        assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in warned, p["probe"]
+
+
 # The platform's refusal class (authoringCode; None = a schema-level VALIDATION_ERROR) -> the omega codes that state it.
 # Not one to one: depth is the transform window's (DEPTH_EXCEEDED) or a knob's (PARAMETER_OUT_OF_RANGE), and
 # construction covers every grammar refusal. Cross-tabbed over the 121 refusals at 149.1.0 on 2026-11-08.
@@ -273,7 +297,10 @@ def test_the_moves_record(contract):
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 - the 47 keys of _moves_168.json in, none out
     moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
     assert (len(moves_168["added"]), moves_168["retired"]) == (47, [])
-    assert set(MOVES["added"]) <= set(contract.metrics) and len(contract.metrics) == 534 + len(moves_168["added"]) == 581
+    # 2026-11-19, contract 180.4.0 (extraction 20261119b): 586 - the five keys of _moves_180_4.json in, none out
+    moves_180 = _j(CONTRACT_DIR / "metrics" / "_moves_180_4.json")
+    assert set(MOVES["added"]) <= set(contract.metrics)
+    assert len(contract.metrics) == 534 + len(moves_168["added"]) + len(moves_180["added"]) == 586
     for key, knobs in MOVES["parametersServed"].items():
         assert list(contract.metric(key).parameters) == knobs, key
 
@@ -284,10 +311,13 @@ def test_the_vocabulary_read_at_149_1_0(contract):
     # read is its `previous` and its own snapshot (20261107T1736Z) keeps the 28 as read
     # 2026-11-11, contract 168: re-read twice that day (18:23Z at 168.2.0: conditionGrammar moved; 22:32Z at 168.3.0:
     # nothing), so the 161.0.0 read is two `previous` down and the 149.1.0 read three; the transforms are still 29
-    assert shared["_refreshed"]["contractVersion"] == "168.3.0" and shared["_refreshed"]["at"] == "2026-11-11T22:32Z"
-    assert shared["_refreshed"]["previous"]["contractVersion"] == "168.2.0"
-    assert shared["_refreshed"]["previous"]["moved"] == ["conditionGrammar"]
-    read_161 = shared["_refreshed"]["previous"]["previous"]
+    # 2026-11-19, contract 180.4.0: re-read 20:58Z on top; the 168.3.0 read is its `previous`
+    assert shared["_refreshed"]["contractVersion"] == "180.4.0"
+    read_168 = shared["_refreshed"]["previous"]
+    assert read_168["contractVersion"] == "168.3.0" and read_168["at"] == "2026-11-11T22:32Z"
+    assert read_168["previous"]["contractVersion"] == "168.2.0"
+    assert read_168["previous"]["moved"] == ["conditionGrammar"]
+    read_161 = read_168["previous"]["previous"]
     assert read_161["contractVersion"] == "161.0.0" and read_161["at"] == "2026-11-09T16:22Z"
     prev = read_161["previous"]
     assert prev["contractVersion"] == "149.1.0" and prev["at"] == "2026-11-07T17:36Z"

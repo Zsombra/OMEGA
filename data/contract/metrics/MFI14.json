@@ -2209,7 +2209,6 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "14-period money flow index (volume-weighted RSI, 0–100)",
   "subjectKinds": [

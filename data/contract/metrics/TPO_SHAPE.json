@@ -26,7 +26,6 @@
     }
   ],
   "study": "sessionProfile",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "where the point of control sits inside the current UTC day's value area, p-shape at or above 0.67 of its span and b-shape at or below the mirror — a point-in-time read at its own fold",
   "subjectKinds": [

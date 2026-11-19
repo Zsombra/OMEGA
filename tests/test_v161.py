@@ -123,6 +123,20 @@ def _rendered_names(render) -> set:
     return out
 
 
+def _v181(p) -> bool:
+    """A probe that sent a reference price as the plain operand of a spread whose base is not one (v181)."""
+    from omega.contract import price_operand_refused
+    return any(price_operand_refused(c.get("metric"), i.get("metric"),
+                                     chained=c.get("chainedTransformId") == "spread" and c.get("transformId") != "spread")
+               for s in p["sections"] for c in s["columns"]
+               if "spread" in (c.get("transformId"), c.get("chainedTransformId"))
+               for i in (c.get("inputs") or []) if not i.get("transformId"))
+
+
+# the three `R.<key>.served` probes spread each added key against CLOSE: accepted, and warned since 2026-11-19
+V181_MOVED = ['R.VWMA20.served', 'R.DONCHIAN_BROKEN_HI_PRIOR.served', 'R.DONCHIAN_BROKEN_LO_PRIOR.served']
+
+
 def test_omega_agrees_with_every_answer_of_the_161_probe():
     """63 previews at 161.0.0: every accepted one validates with no error (bar the duplicate header the platform itself
     flags in `duplicateHeaders`) and renders every header omega.fanout predicts; every refused one is refused by omega
@@ -138,7 +152,7 @@ def test_omega_agrees_with_every_answer_of_the_161_probe():
     root = Path(__file__).resolve().parents[1]
     probes = json.loads((root / "data/audit/authoring_probe_161_2026-11-09.json").read_text(encoding="utf-8"))["probes"]
     assert len(probes) == 63
-    refused_seen, warned = set(), {}
+    refused_seen, warned, moved_v181 = set(), {}, []
     for p in probes:
         expect = REFUSED_161.get(p["probe"])
         if expect == "TYPE":
@@ -162,6 +176,11 @@ def test_omega_agrees_with_every_answer_of_the_161_probe():
                 for col in section.columns:
                     predicted |= {o.header for o in outputs_for(col, contract)}
         if p["accepted"]:
+            if _v181(p):
+                # OMEGA v0.15.0 (2026-11-19): the announced v181 form warns while the pinned surface is below 181
+                # (accepted here and at 180.4.0); the measured answer stands
+                assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in warned.get(p["probe"], []), p["probe"]
+                moved_v181.append(p["probe"])
             flagged = bool((p["render"] or {}).get("duplicateHeaders"))
             assert errors == (["DUPLICATE_HEADER"] if flagged else []), p["probe"]
             assert predicted <= _rendered_names(p["render"]), (p["probe"], sorted(predicted - _rendered_names(p["render"])))
@@ -169,6 +188,7 @@ def test_omega_agrees_with_every_answer_of_the_161_probe():
             assert errors == expect, (p["probe"], errors)
             refused_seen.add(p["probe"])
     assert refused_seen == set(REFUSED_161), "every refused probe is listed, and every listed one was refused"
+    assert moved_v181 == V181_MOVED, moved_v181
     # Re-pinned at v0.12.2 (2026-11-11): these two were asserted to WARN, on the reading that one past a served maximum
     # is past a limit whose real place was unmeasured. Measured since (data/audit/authoring_limits_161_2026-11-11.json):
     # the limit is one joint bar count, need(inner, window) + need(outer, chainedWindow) - 1 <= 2436, and both cases sit
@@ -193,7 +213,7 @@ def test_the_manifest_records_the_161_extraction():
     # did not move), 168.3.0 its `supersedes`, the 161.0.0 block below that; tests/test_v169.py pins the top block
     # (171.0.0 on top later that morning: by version from here on, tests/manifest_chain.py)
     from tests.manifest_chain import extraction
-    assert current["servedContractVersion"] == "171.0.0"
+    assert current["servedContractVersion"] == "180.4.0"      # since 2026-11-19 (171.0.0 before)
     current = extraction("168.3.0", current)
     assert current["extractedOn"] == "2026-11-11"
     m = current["supersedes"]
@@ -214,14 +234,18 @@ def test_the_manifest_records_the_161_extraction():
     c = load()
     assert "af8b2c9632fa71620e9dcc1802904ee963d305a4" in current["contractVersionSource"]
     moves = json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))
-    assert set(c.metrics) - {r["metric"] for r in archived} == set(moves["added"]) and len(moves["added"]) == 47
+    # 2026-11-19, contract 180.4.0: the live corpus also holds the five keys of _moves_180_4.json
+    moves_180 = json.loads((CONTRACT_DIR / "metrics" / "_moves_180_4.json").read_text(encoding="utf-8"))
+    assert set(c.metrics) - {r["metric"] for r in archived} == set(moves["added"]) | set(moves_180["added"])
+    assert len(moves["added"]) == 47
     assert {r["metric"] for r in archived} <= set(c.metrics) and moves["retired"] == []
-    legal = sum(len(x.transforms) for x in c.metrics.values())
     n = current["counts"]
-    assert (n["metrics"], n["families"], n["authorableTransforms"]) == (
-        len(c.metrics), len({x.family for x in c.metrics.values()}), len(c.transforms)) == (581, 14, 30)
-    assert (n["composabilityCells"], n["composabilityLegal"]) == (len(c.metrics) * len(c.transforms), legal) == (17430, 4735)
+    # since 2026-11-19 the live corpus is the 180.4.0 one (586): the 168.3.0 block keeps the counts it measured, and
+    # tests/test_v168.py holds the top block to the live corpus
+    assert (n["metrics"], n["families"], n["authorableTransforms"]) == (581, 14, 30)
+    assert (n["composabilityCells"], n["composabilityLegal"]) == (17430, 4735)
     # the 168.3.0 block's structuralShapes stays as recorded: the space has held the chained spread's 660 shapes since
     # 2026-11-12 (OMEGA v0.13.1), when nothing was unmeasured any more
-    assert n["structuralShapes"] == 26584 == sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) - 660
+    assert n["structuralShapes"] == 26584
+    assert sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 27424     # at 180.4.0
     assert c.unmeasured_chain_outers == {}

@@ -31,7 +31,6 @@
     }
   ],
   "study": "perpSpotFlow",
-  "provenance": "battleGridDerived",
   "rankScope": "report",
   "gloss": "gap between the bounded self-normalized spot and perp CVD rates, |spot rate − perp rate| (0–2), compared unrounded; no value on the bar after the UTC-day reset or where the composite spot tape is unavailable (crypto coins the spot lane lists)",
   "subjectKinds": [

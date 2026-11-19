@@ -28,7 +28,6 @@
     }
   ],
   "study": "donchianChannels",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "price location against the channel of the 20 bars before this one, near an edge in its outer 20%",
   "subjectKinds": [

@@ -28,7 +28,8 @@ def test_directional_split_matches_the_clause_map():
 def test_the_measured_constants_flow_through():
     v = vocabulary()
     assert set(v["anchors"]) == {"5m", "15m", "1h", "4h"}
-    assert v["anchors"]["4h"] == {"cadence": "SWING", "regimeTimeframe": "1d"}
+    # the regime rung of a 4h strategy is 12h since the platform moved it (re-measured 2026-11-19 at 180.4.0; 1d before)
+    assert v["anchors"]["4h"] == {"cadence": "SWING", "regimeTimeframe": "12h"}
     assert v["universe"]["rankedMaxLimit"] == RANKED_LIMIT_MEASURED_MAX == 4
     assert v["universe"]["explicitMaxTickers"] == 50
     assert v["execution"]["defaults"] == PLATFORM_EXECUTION_DEFAULTS

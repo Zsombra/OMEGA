@@ -1961,7 +1961,6 @@
     }
   ],
   "study": "macd",
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "PPO line — the 12-period EMA of close minus the 26-period EMA, as a % of the 26-period EMA",
   "subjectKinds": [

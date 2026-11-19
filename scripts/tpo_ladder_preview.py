@@ -34,6 +34,9 @@ Read-only. This script previews only; it performs NO compile and NO apply.
 import json, os, subprocess, sys
 from collections import Counter
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from omega.contract import flipped_price_spread_clause  # noqa: E402
+
 ALLOWED = {"preview_strategy_report", "get_coin_metadata", "get_strategy"}
 STRAT = "56c08ef6-480b-4293-8136-81beed2161cf"
 BATCH = 9
@@ -72,9 +75,11 @@ def S(metric, operand):
 
 COLUMNS = [
     # prior-session location, available around the clock
-    S("PRIOR_TPO_VAH", "CLOSE"),
-    S("PRIOR_TPO_VAL", "CLOSE"),
-    S("PRIOR_TPO_POC", "CLOSE"),
+    # v181 (announced, OMEGA v0.15.0): price is the base of a spread over another reading - CLOSE x spread(PRIOR_TPO_*),
+    # not PRIOR_TPO_* x spread(CLOSE); each clause on them is flipped and its threshold mapped (fallback tier below)
+    S("CLOSE", "PRIOR_TPO_VAH"),
+    S("CLOSE", "PRIOR_TPO_VAL"),
+    S("CLOSE", "PRIOR_TPO_POC"),
     S("PRIOR_TPO_VAH", "PRIOR_TPO_VAL"),        # prior value WIDTH, the normaliser
     S("PRIOR_TPO_VAL", "OPEN"),                 # the only lawful origin read
     # developing-vs-prior value migration, the core of this revision
@@ -104,8 +109,13 @@ def cond(key, name, definition, verdict):
             "clock": "LIVE", "closes": 1}
 
 # header spellings, read off the probe output rather than guessed
-h_pVAH_close = "pTpoVAH_close_spread"
-h_pVAL_close = "pTpoVAL_close_spread"
+h_close_pVAH = "close_pTpoVAH_spread"   # was pTpoVAH_close_spread (before v181)
+h_close_pVAL = "close_pTpoVAL_spread"   # was pTpoVAL_close_spread (before v181)
+
+def flipped(header, old_op, old_value):
+    """A clause written on the pre-v181 `<level>_close_spread`, on `close_<level>_spread`: the same bars pass."""
+    op, value = flipped_price_spread_clause(old_op, old_value)
+    return clause(header, op, value=value)
 h_POC_pVAH   = "tpoPOC_pTpoVAH_spread"
 h_POC_pVAL   = "tpoPOC_pTpoVAL_spread"
 h_POC_pPOC   = "tpoPOC_pTpoPOC_spread"
@@ -140,14 +150,14 @@ CONDITIONS = [
     # --- tier 3: fallback for the first UTC hour, prior-session columns only ---
     cond("PRE_PROFILE_BELOW_VALUE",
          "No developing profile yet, close below prior value low",
-         clause(h_pVAL_close, "gte", value=0.05), "DOWN"),
+         flipped(h_close_pVAL, "gte", 0.05), "DOWN"),
     cond("PRE_PROFILE_ABOVE_VALUE",
          "No developing profile yet, close above prior value high",
-         clause(h_pVAH_close, "lte", value=-0.05), "UP"),
+         flipped(h_close_pVAH, "lte", -0.05), "UP"),
     cond("PRE_PROFILE_INSIDE_VALUE",
          "No developing profile yet, close inside prior value",
-         allof(clause(h_pVAL_close, "lt", value=0.05),
-               clause(h_pVAH_close, "gt", value=-0.05)), "NEITHER"),
+         allof(flipped(h_close_pVAL, "lt", 0.05),
+               flipped(h_close_pVAH, "gt", -0.05)), "NEITHER"),
 ]
 
 SECTION = {"kind": "custom", "sectionKey": SK,

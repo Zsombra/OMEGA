@@ -1976,7 +1976,6 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "rate of change vs 15 bars ago (%)",
   "subjectKinds": [

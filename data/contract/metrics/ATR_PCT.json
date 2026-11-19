@@ -1957,7 +1957,6 @@
     }
   ],
   "study": "atr",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "average true range as a % of price, (ATR / close) × 100 — the cross-coin comparable form of ATR",
   "subjectKinds": [

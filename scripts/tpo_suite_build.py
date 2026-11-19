@@ -71,6 +71,7 @@ from omega.conditions import (  # noqa: E402
     all_of, between, condition, entry_gates, held, in_, is_, market_read_text, num, ref, report_headers,
     validate_conditions, validate_entry_gate, validate_market_read,
 )
+from omega.contract import flipped_price_spread_clause, flipped_price_spread_threshold  # noqa: E402
 from omega.generate import ENTRY_MIRROR, StrategyPlan, Thesis  # noqa: E402
 from omega.types import Column, CustomSection, Report  # noqa: E402
 from omega.validate import validate_report  # noqa: E402
@@ -143,53 +144,73 @@ def c(metric, transform, operand=None, **kw):
 # Each pairs a PRIOR_TPO base (refreshes 00:00 UTC, never null) with a candle
 # operand (never null), or two prior legs. Nothing here goes dark at any hour.
 SPINE = [
-    c("PRIOR_TPO_VAH", "spread", "CLOSE"),        # pTpoVAH_close_spread
-    c("PRIOR_TPO_VAL", "spread", "CLOSE"),        # pTpoVAL_close_spread
+    c("CLOSE", "spread", "PRIOR_TPO_VAH"),        # close_pTpoVAH_spread
+    c("CLOSE", "spread", "PRIOR_TPO_VAL"),        # close_pTpoVAL_spread
     c("PRIOR_TPO_VAH", "spread", "OPEN"),         # pTpoVAH_open_spread   <- origin
     c("PRIOR_TPO_VAL", "spread", "OPEN"),         # pTpoVAL_open_spread   <- origin
-    c("PRIOR_TPO_POC", "spread", "CLOSE"),        # pTpoPOC_close_spread  <- target
+    c("CLOSE", "spread", "PRIOR_TPO_POC"),        # close_pTpoPOC_spread  <- target
     c("PRIOR_TPO_VAH", "spread", "PRIOR_TPO_VAL"),  # pTpoVAH_pTpoVAL_spread <- room
 ]
 
 # Sign convention, stated once so every clause below can be checked against it:
 #   spread = (base - operand) / operand * 100
-#   POSITIVE  =>  the BASE LEVEL sits ABOVE the operand.
-# So pTpoVAL_close_spread > 0 means the close is BELOW prior VAL.
+#   POSITIVE  =>  the BASE sits ABOVE the operand.
+# So close_pTpoVAL_spread > 0 means the close is ABOVE prior VAL.
+#
+# Contract v181 (announced; README "Contract history - v181"): a reference price (CLOSE, LAST) is never the plain
+# operand of a spread whose base is not one, so the three `PRIOR_TPO_* x spread(CLOSE)` columns of the 2026-09-11 body
+# are `CLOSE x spread(PRIOR_TPO_*)` here (OMEGA v0.15.0, 2026-11-19). Each clause on them is the old clause with its
+# operator flipped and its threshold mapped (omega.contract.flipped_price_spread_clause), as the platform migrated the
+# stored ones, so it passes on the same bars: the old `pTpoVAL_close_spread >= 0.05` is `close_pTpoVAL_spread <=
+# -0.04997...` (a percentage gap divides by its operand, so the map is not a negation). OPEN / LOW / HIGH operands are
+# not reference prices and keep their form.
 #
 # Every clause and group below reads one bar, hold {atLeast 1, of 1} - the builders' default,
 # and what the 2026-09-11 body's `closes: 1` meant (v84). Only HELD holds more.
 
+
+def close_vs(level_code: str, old_op: str, old_value: float):
+    """The clause the 2026-09-11 body wrote as `<level>_close_spread <old_op> <old_value>`, on `close_<level>_spread`."""
+    op, value = flipped_price_spread_clause(old_op, old_value)
+    return num(f"close_{level_code}_spread", op, value, section_key=SK)
+
+
+def close_between(level_code: str, old_low: float, old_high: float):
+    """`between` on the old header, on the new one: the map is decreasing, so the bounds swap."""
+    return between(f"close_{level_code}_spread", flipped_price_spread_threshold(old_high),
+                   flipped_price_spread_threshold(old_low), section_key=SK)
+
 LOC = [
     condition("ABOVE_PRIOR_VALUE", "Close above the prior value area",
-              num("pTpoVAH_close_spread", "lte", -BIN, section_key=SK),
+              close_vs("pTpoVAH", "lte", -BIN),
               verdict="NEITHER"),
     condition("INSIDE_PRIOR_VALUE", "Close inside the prior value area",
-              all_of(num("pTpoVAH_close_spread", "gte", BIN, section_key=SK),
-                     num("pTpoVAL_close_spread", "lte", -BIN, section_key=SK)),
+              all_of(close_vs("pTpoVAH", "gte", BIN),
+                     close_vs("pTpoVAL", "lte", -BIN)),
               verdict="NEITHER"),
     condition("BELOW_PRIOR_VALUE", "Close below the prior value area",
-              num("pTpoVAL_close_spread", "gte", BIN, section_key=SK),
+              close_vs("pTpoVAL", "gte", BIN),
               verdict="NEITHER"),
 ]
 
 REENTRY = [
     condition("VALUE_REENTRY_UP", "Opened below prior value, closed back inside",
               all_of(num("pTpoVAL_open_spread", "gte", BIN, section_key=SK),
-                     num("pTpoVAL_close_spread", "lte", -BIN, section_key=SK)),
+                     close_vs("pTpoVAL", "lte", -BIN)),
               verdict="UP"),
     condition("VALUE_REENTRY_DOWN", "Opened above prior value, closed back inside",
               all_of(num("pTpoVAH_open_spread", "lte", -BIN, section_key=SK),
-                     num("pTpoVAH_close_spread", "gte", BIN, section_key=SK)),
+                     close_vs("pTpoVAH", "gte", BIN)),
               verdict="DOWN"),
 ]
 
 TARGET = [
     condition("POC_AHEAD_UP", "Prior POC still above the close - rotation has room",
-              num("pTpoPOC_close_spread", "gte", BIN, section_key=SK), verdict=None),
+              close_vs("pTpoPOC", "gte", BIN), verdict=None),
     condition("POC_AHEAD_DOWN", "Prior POC still below the close - rotation has room",
-              num("pTpoPOC_close_spread", "lte", -BIN, section_key=SK), verdict=None),
+              close_vs("pTpoPOC", "lte", -BIN), verdict=None),
     condition("POC_REACHED", "Close is at the prior point of control",
-              between("pTpoPOC_close_spread", -BIN, BIN, section_key=SK),
+              close_between("pTpoPOC", -BIN, BIN),
               verdict="NEITHER"),
 ]
 
@@ -232,12 +253,12 @@ POC_DEFENCE = [
     condition("POC_CROSSED_RECROSSED_UP", "One bar: opened above the POC, traded below it, closed back above",
               all_of(num("pTpoPOC_open_spread", "lte", -BIN, section_key=SK),
                      num("pTpoPOC_low_spread", "gte", BIN, section_key=SK),
-                     num("pTpoPOC_close_spread", "lte", -BIN, section_key=SK)),
+                     close_vs("pTpoPOC", "lte", -BIN)),
               verdict="UP"),
     condition("POC_CROSSED_RECROSSED_DOWN", "One bar: opened below the POC, traded above it, closed back below",
               all_of(num("pTpoPOC_open_spread", "gte", BIN, section_key=SK),
                      num("pTpoPOC_high_spread", "lte", -BIN, section_key=SK),
-                     num("pTpoPOC_close_spread", "gte", BIN, section_key=SK)),
+                     close_vs("pTpoPOC", "gte", BIN)),
               verdict="DOWN"),
 ]
 

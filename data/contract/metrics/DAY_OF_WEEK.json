@@ -1799,7 +1799,6 @@
     }
   ],
   "study": "barClock",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the UTC weekday the bar opened on, as the index 0 = Sunday, 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday — a fact of the bar's open time; a weekend is DAY_OF_WEEK outside 1 to 5",
   "subjectKinds": [

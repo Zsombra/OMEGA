@@ -27,7 +27,6 @@
     }
   ],
   "study": "regimeMomentumVotes",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "how many of the four momentum inputs voted bullish (0–4)",
   "subjectKinds": [

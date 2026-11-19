@@ -1,5 +1,5 @@
 {
- "_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's parameters, served identically on every metric of extraction 20261112c",
+ "_what": "get_metric_construction_hints chainOuterParameters (contract v135+): each chain outer's parameters, served identically on every metric of extraction 20261119b",
  "chainOuterParameters": {
   "aggregate": {
    "bars": {
@@ -9,7 +9,7 @@
    "window": {
     "bound": "depth",
     "defaultValue": 24,
-    "description": "How many of this column's newest bars are averaged into one value — the length of the simple moving average, as TradingView's ta.sma. Null when the series holds fewer bars than the length.",
+    "description": "How many of this column's newest bars are averaged into one value — the length of the simple moving average. Null when the series holds fewer bars than the length.",
     "minimum": 1,
     "required": false,
     "unit": "seriesElements"
@@ -23,7 +23,7 @@
    "window": {
     "bound": "depth",
     "defaultValue": 20,
-    "description": "The length of the commodity channel index, as TradingView's ta.cci(source, length). One value reads exactly the length in bars, and is null when the series holds fewer, any of them has no value, or all of them are equal. A stored CCI metric is the exact source at its own length.",
+    "description": "The length of the commodity channel index. One value reads exactly the length in bars, and is null when the series holds fewer, any of them has no value, or all of them are equal. A stored CCI metric is the exact source at its own length.",
     "minimum": 2,
     "required": false,
     "unit": "seriesElements"
@@ -57,7 +57,7 @@
    "window": {
     "bound": "depth",
     "defaultValue": 20,
-    "description": "The length of the exponential moving average, as TradingView's ta.ema(source, length). One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the bars after which the average's seed weighs at most 0.1 % — 73 bars at length 20 — so it is null when the newest bars hold fewer present values in a row. A stored EMA metric is the exact source at its own length.",
+    "description": "The length of the exponential moving average. One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the bars after which the average's seed weighs at most 0.1 % — 73 bars at length 20 — so it is null when the newest bars hold fewer present values in a row. A stored EMA metric is the exact source at its own length.",
     "minimum": 1,
     "required": false,
     "unit": "smoothingLength"
@@ -148,7 +148,7 @@
    "window": {
     "bound": "depth",
     "defaultValue": 14,
-    "description": "The length of Wilder's moving average, as TradingView's ta.rma(source, length). One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the length's seed bars plus the bars after which that seed weighs at most 0.1 % — 108 bars at length 14 — so it is null when the newest bars hold fewer present values in a row.",
+    "description": "The length of Wilder's moving average. One value folds the newest unbroken run of bars, up to the readable depth, and needs at least the length's seed bars plus the bars after which that seed weighs at most 0.1 % — 108 bars at length 14 — so it is null when the newest bars hold fewer present values in a row.",
     "minimum": 1,
     "required": false,
     "unit": "wilderLength"
@@ -162,7 +162,7 @@
    "window": {
     "bound": "depth",
     "defaultValue": 9,
-    "description": "The length of the rate of change, as TradingView's ta.roc(source, length): the percent change from the value length bars back. It reads the newest bar and the one length bars before it, and is null when either has no value or the older one is 0. A stored ROC metric is the exact close at its own length.",
+    "description": "The length of the rate of change: the percent change from the value length bars back. It reads the newest bar and the one length bars before it, and is null when either has no value or the older one is 0. A stored ROC metric is the exact close at its own length.",
     "minimum": 1,
     "required": false,
     "unit": "priorElements"
@@ -204,7 +204,7 @@
    "window": {
     "bound": "depth",
     "defaultValue": 14,
-    "description": "The length of the relative strength index, as TradingView's ta.rsi(source, length). One value folds the newest unbroken run of bars, up to the readable depth plus one, and needs at least the changes its two Wilder averages need to converge plus the bar the oldest change starts from — 109 bars at length 14 — so it is null when the newest bars hold fewer present values in a row, or all of them are equal. A stored RSI metric is the exact source at its own length.",
+    "description": "The length of the relative strength index. One value folds the newest unbroken run of bars, up to the readable depth plus one, and needs at least the changes its two Wilder averages need to converge plus the bar the oldest change starts from — 109 bars at length 14 — so it is null when the newest bars hold fewer present values in a row, or all of them are equal. A stored RSI metric is the exact source at its own length.",
     "minimum": 1,
     "required": false,
     "unit": "wilderChanges"
@@ -256,7 +256,7 @@
    "window": {
     "bound": "depth",
     "defaultValue": 20,
-    "description": "The length of the linearly weighted moving average, as TradingView's ta.wma(source, length): the newest bar weighs the length, the oldest weighs 1. One value reads exactly the length in bars, and is null when the series holds fewer or any of them has no value.",
+    "description": "The length of the linearly weighted moving average: the newest bar weighs the length, the oldest weighs 1. One value reads exactly the length in bars, and is null when the series holds fewer or any of them has no value.",
     "minimum": 1,
     "required": false,
     "unit": "seriesElements"

@@ -1277,7 +1277,6 @@
     }
   ],
   "study": null,
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "a stablecoin pair's deviation from its declared par, ((close − par) / par) × 100, signed, on a section bound to a declared reference pair, read off the pair's own spot tape; its history is seeded at boot from the pair's venue candles, so a lookback beyond the history the store holds reads absent",
   "subjectKinds": [

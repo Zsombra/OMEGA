@@ -56,7 +56,11 @@ def test_the_roster_moved_as_recorded(contract):
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 (_moves_168.json: 47 in, none out)
     moves_168 = json.loads((CONTRACT_DIR / "metrics" / "_moves_168.json").read_text(encoding="utf-8"))
     assert (len(moves_168["added"]), moves_168["retired"]) == (47, [])
-    assert len(contract.metrics) == 534 + len(moves_168["added"]) == 581
+    # 2026-11-19, contract 180.4.0 (extraction 20261119b): 586 (_moves_180_4.json: ATH, DAY_HIGH, DAY_LOW, WEEK_HIGH,
+    # WEEK_LOW in, none out)
+    moves_180 = json.loads((CONTRACT_DIR / "metrics" / "_moves_180_4.json").read_text(encoding="utf-8"))
+    assert (len(moves_180["added"]), moves_180["retired"]) == (5, [])
+    assert len(contract.metrics) == 534 + len(moves_168["added"]) + len(moves_180["added"]) == 586
     assert MOVES["contractVersion"] == "144.0.0" and len(MOVES["added"]) == 78
     assert set(MOVES["added"]) <= set(contract.metrics)
     assert set(MOVES["retired"]) == {"STOCH_RSI14", "BB_WIDTH"}
@@ -93,12 +97,22 @@ def test_a_key_retired_between_the_two_extractions_was_never_in_a_corpus(contrac
 
 
 def test_the_served_scalars_are_recorded(contract):
-    """v138 `provenance` and v136 `rankScope` on every record; the report-scoped CROWD_UPBIAS is not exchangeWide."""
-    assert all(m.provenance in ("tradingView", "battleGridDerived") for m in contract.metrics.values())
+    """v136 `rankScope` on every record; the report-scoped CROWD_UPBIAS is not exchangeWide. v138 `provenance` was
+    served on every hint through 171.0.0 and on none at 180.4.0 (the 586 hints read 2026-11-19; undocumented - the
+    same contract stripped TradingView / TA-Lib / LuxAlgo from 63 glosses), so no record carries it now; the archived
+    batches (data/contract/metrics/archive_20261112c_extraction) keep the 171 values."""
+    assert all(m.provenance is None for m in contract.metrics.values())
     assert contract.metric("RSI14").rank_scope == "exchangeWide"
     assert contract.metric("CROWD_UPBIAS").rank_scope not in (None, "exchangeWide")
-    assert contract.metric("STOCH_RSI_K").provenance == "tradingView"
-    assert contract.metric("CUM_VOLUME_DELTA").provenance == "tradingView"      # README v138: TradingView's CVD
+    archived = [r for p in sorted((contract_dir() / "metrics" / "archive_20261112c_extraction").glob("_batch*.json"))
+                for r in json.loads(p.read_text(encoding="utf-8"))]
+    by_name = {r["metric"]: r for r in archived}
+    assert by_name["STOCH_RSI_K"]["provenance"] == by_name["CUM_VOLUME_DELTA"]["provenance"] == "tradingView"
+
+
+def contract_dir():
+    from omega.contract import CONTRACT_DIR
+    return CONTRACT_DIR
 
 
 # --- v142.3 relativeTo ------------------------------------------------------------------------------------------
@@ -266,7 +280,8 @@ def test_the_condition_vocabulary_carries_the_new_knobs():
     # 2026-11-11, contract 168.3.0: 581. The stage schema names a metric by PATTERN since 168 ($defs/metricKey has no
     # enum), so the count is the roster the same capture's read schema keeps (get_strategy outputSchema $defs/metricKey),
     # which is the corpus: 534 + the 47 of _moves_168.json
-    assert col["metric"]["count"] == len(col["metric"]["enum"]) == 581
+    # 2026-11-19, contract 180.4.0: 586 (the 180.4.0 capture's read roster; _moves_180_4.json)
+    assert col["metric"]["count"] == len(col["metric"]["enum"]) == 586
     assert col["metric"]["pattern"] == "^[A-Z][A-Z0-9_]*$"
     assert col["metric"]["enumPointer"] == "/get_strategy/outputSchema/$defs/metricKey"
     assert set(col["metric"]["enum"]) == set(load().metrics)

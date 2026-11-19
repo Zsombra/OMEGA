@@ -387,6 +387,8 @@ SEQUENCE_RULE = ("a SEQUENCE is a condition's whole definition, holds Once, carr
                  "and orders at least 2 steps - each a clause, a group of clauses, or a reference to a condition that "
                  "reads one bar - every step and row held Once")
 SEQUENCE_SOURCE = "measured 2026-11-12 at 169.4.0 (data/audit/sequence_probe_169_2026-11-12*.json)"
+# The v175 Developing-read rules and the level entry probes, measured 2026-11-19 at 180.4.0 on one CREATE draft.
+DEVELOPING_PROBES = "data/audit/reextraction_180_4_2026-11-19.json"
 # "a sequence's window is a whole number of at least 2, because two steps never match the same bar"
 # (CONDITION_SEQUENCE_WINDOW_INVALID). Its upper edge is the history stored behind each step's column - 2449 closes on a
 # 1h trajectory header - which the builder judges per column, as it judges a hold's `of` (conditionHold.maxWindow); the
@@ -1060,6 +1062,14 @@ def _walk(defn: dict, key: str, path: str, headers: dict, known_keys: set[str],
             f"{key!r} holds {header!r} over {window} bars, a change over a {spec['horizon_above']} horizon above "
             f"the strategy timeframe: since contract v117 that is a Developing read whatever its selector, and the "
             f"platform refuses the hold (CONDITION_HOLD_ILLEGAL). Remedy: {HORIZON_REMEDY}"))
+    elif window > 1 and spec.get("developing"):
+        # v175: "Still refused: a hold over more than one bar ... over a Developing read". Measured at 180.4.0
+        # (DEVELOPING_PROBES, D1: DEV_HOLD over RSI14_4h_dev held 2 of 2 -> CONDITION_HOLD_ILLEGAL, maxWindow 1).
+        out.append(ConditionFinding(
+            "error", key, path,
+            f"{key!r} holds {header!r} over {window} bars, but {header!r} reads a higher-timeframe bar still "
+            f"forming: a hold may count at most 1 close there (CONDITION_HOLD_ILLEGAL, {DEVELOPING_PROBES} D1). Read "
+            f"it Confirmed to count closed bars"))
     elif window > 1 and not _holdable(spec):
         out.append(ConditionFinding(
             "warning", key, path,
@@ -1357,37 +1367,27 @@ def validate_conditions(report: Report, conditions: list[dict]) -> list[Conditio
         # contributes what IT reads, so moving the clause into a building block does not
         # launder it." (vendor pack 31.2.28 § Conditions). Since v88 the exit role is the
         # exit rule's: a CLOSE_ON_<key> rule reads its source's whole closure.
-        carrier = cond.get("verdict") in CARRIER_VERDICTS
-        exits = is_exit
-        if carrier or exits:
+        #
+        # Contract v175 (README "Contract history - v175 (a Developing read decides at the decided close)"): "stage_
+        # strategy_draft and commit_strategy_draft accept a verdict-carrying condition and an exit rule over a
+        # Developing read ... CONDITION_VERDICT_READ_ILLEGAL is no longer raised, and CONDITION_EXIT_READ_ILLEGAL now
+        # names only a closure no completed bar moves." Measured at 180.4.0 (DEVELOPING_PROBES, D1 / D4): a verdict
+        # carrier over RSI14_4h_dev and over chg4h on a 1h strategy, and an exit rule over RSI14_4h_dev, staged with
+        # no error. So the closure rule left is the exit rule's `moved` test; a carrier reads anything.
+        if is_exit:
             for owner, cpath, header in _closure_clauses(key, defn_by_key):
                 spec = headers.get(header)
                 if spec is None:
                     continue            # unknown header: already reported at its clause
                 where = cpath if owner == key else f"{cpath} (in {owner})"
-                if carrier and spec.get("horizon_above"):
+                # `moved`, not `candle`: the exit sentence rules out "a frame-inert operand" and never mentions
+                # offset, so an offset column - which a completed bar still moves, one bar later - is legal here
+                # while the hold rule ("at offset 0") refuses it. Since v175 a Developing read is legal here.
+                if not spec.get("moved"):
                     out.append(ConditionFinding(
                         "error", key, where,
-                        f"verdict carrier {key!r} reads {header!r}, a change over a {spec['horizon_above']} "
-                        f"horizon above the strategy timeframe: since contract v117 that is a Developing read "
-                        f"whatever its selector, and the platform refuses it (CONDITION_VERDICT_READ_ILLEGAL). "
-                        f"Remedy: {HORIZON_REMEDY}"))
-                elif carrier and spec.get("developing"):
-                    out.append(ConditionFinding(
-                        "error", key, where,
-                        f"{header!r} reads a Developing higher-timeframe bar; a verdict "
-                        f"carrier may not read one, at any depth "
-                        f"(CONDITION_VERDICT_READ_ILLEGAL)"))
-                # `moved`, not `candle`: the exit sentence rules out "a developing read"
-                # and "a frame-inert operand" and never mentions offset, so an offset
-                # column - which a completed bar still moves, one bar later - is legal
-                # here while the hold rule ("at offset 0") refuses it.
-                if exits and (not spec.get("moved") or spec.get("developing")):
-                    out.append(ConditionFinding(
-                        "error", key, where,
-                        f"{header!r} is not moved by a completed bar (or is a developing "
-                        f"read); an exit rule needs a closure every operand of which a "
-                        f"completed bar moves (CONDITION_EXIT_READ_ILLEGAL)"))
+                        f"{header!r} is not moved by a completed bar; an exit rule needs a closure every operand "
+                        f"of which a completed bar moves (CONDITION_EXIT_READ_ILLEGAL)"))
 
     cap = c.budgets.get("conditionFrameReads")
     reads = frame_reads(conditions)

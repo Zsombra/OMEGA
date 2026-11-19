@@ -2189,7 +2189,6 @@
     }
   ],
   "study": "qqe",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the QQE trailing stop, on the same 0–100 scale as the smoothed RSI it brackets",
   "subjectKinds": [

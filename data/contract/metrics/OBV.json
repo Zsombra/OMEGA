@@ -73,9 +73,8 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": null,
-  "gloss": "on-balance volume — the running sum of sign(Δclose) × volume from the first bar this column reads, in base-asset units; its level is arbitrary, so read its change, slope or trend, which agree with TradingView’s OBV",
+  "gloss": "on-balance volume — the running sum of sign(Δclose) × volume from the first bar this column reads, in base-asset units; its level is arbitrary, so read its change, slope or trend, which agree with any OBV chart’s",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

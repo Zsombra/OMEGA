@@ -32,7 +32,6 @@
     }
   ],
   "study": null,
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the ACTIVE structure-zone set (fair-value gaps and order blocks), each used up by a wick past its far edge",
   "subjectKinds": [
@@ -42,7 +41,7 @@
   "parameters": {
     "usedUpOnClose": {
       "required": false,
-      "description": "Whether a structure zone is used up only by a close past its far edge; off, by a wick past it (LuxAlgo’s High/Low mitigation).",
+      "description": "Whether a structure zone is used up only by a close past its far edge; off, by a wick past it.",
       "defaultValue": false,
       "bound": "flag"
     }

@@ -23,7 +23,6 @@
     }
   ],
   "study": "gaps",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the gap from the prior bar's close to this bar's open, ((open − prior close) / prior close) × 100",
   "subjectKinds": [

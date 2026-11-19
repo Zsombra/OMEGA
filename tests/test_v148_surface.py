@@ -71,7 +71,8 @@ def test_the_capture_names_its_contract_build_and_source():
     # `supersedes`, then 149.1.0, then this one
     # 2026-11-12: by version (tests/manifest_chain.py) - 171.0.0 on top that morning, then 169.4.0, 168.3.0, 161.0.0
     from tests.manifest_chain import surface as surface_of
-    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "171.0.0"
+    # 180.4.0 on top since 2026-11-19
+    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "180.4.0"
     surface = surface_of("168.3.0")
     assert [surface["servedContractVersion"], surface["supersedes"]["servedContractVersion"],
             surface["supersedes"]["supersedes"]["servedContractVersion"]] == ["168.3.0", "161.0.0", "149.1.0"]
@@ -283,14 +284,18 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     # 148.1.0 read is two `previous` down since 161.0.0 (it was one)
     # 2026-11-11, contract 168: the shared blocks were read twice that day (18:23Z at 168.2.0, 22:32Z at 168.3.0), so
     # the 161.0.0 read is two `previous` down, the 149.1.0 one three and the 148.1.0 one four
-    refreshed = shared["_refreshed"]
+    # 2026-11-19, contract 180.4.0: re-read 20:58Z on top (transforms labels, timeframes, timeframeRefs and
+    # rankedTimeframes moved); every earlier read one `previous` deeper
+    assert shared["_refreshed"]["contractVersion"] == "180.4.0"
+    refreshed = shared["_refreshed"]["previous"]
     assert [refreshed["contractVersion"], refreshed["previous"]["contractVersion"],
             refreshed["previous"]["previous"]["contractVersion"]] == ["168.3.0", "168.2.0", "161.0.0"]
     at_161 = refreshed["previous"]["previous"]
     assert at_161["previous"]["contractVersion"] == "149.1.0"
     assert at_161["previous"]["previous"]["contractVersion"] == "148.1.0"
     assert "budgets.conditionFrameReads 256 -> 2048 (v146.4)" in at_161["previous"]["previous"]["moved"]
-    assert {"id": "ema", "label": "Exponential average (EMA)"} in shared["transforms"]
+    # "Exponential average (EMA)" until 180.4.0 (2026-11-19 relabelled every average)
+    assert {"id": "ema", "label": "Exponential moving average (EMA)"} in shared["transforms"]
     categories = _j(CONTRACT_DIR / "categories.json")
     counts = {c["category"]: c["metricCount"] for c in categories["categories"]}
     # 161.0.0 (2026-11-09): structure 363 and trend 23, sum 534 (the re-read moved `structure 362 -> 363`, `trend 22 -> 23`);
@@ -305,10 +310,13 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
                        "structure -> vwapProfile": 81} and added == {"levels": 24, "structure": 22, "trend": 1}
     assert counts["structure"] == 363 - sum(rehomed.values()) + added["structure"] == 38
     assert counts["trend"] == 23 + rehomed["structure -> trend"] + added["trend"] == 26
-    assert sum(counts.values()) == 534 + sum(added.values()) == 581 and len(counts) == 14
-    assert categories["_refreshed"]["previous"]["moved"] == [
+    # 2026-11-19, contract 180.4.0 (_moves_180_4.json): levels 274 -> 279 (ATH and the four day / week levels)
+    assert categories["_refreshed"]["contractVersion"] == "180.4.0"
+    assert categories["_refreshed"]["moved"] == ["levels 274 -> 279"] and counts["levels"] == 279
+    assert sum(counts.values()) == 534 + sum(added.values()) + 5 == 586 and len(counts) == 14
+    assert categories["_refreshed"]["previous"]["previous"]["moved"] == [
         "channels None -> 14", "levels None -> 274", "structure 363 -> 38", "trend 23 -> 26", "vwapProfile None -> 81"]
-    categories_161 = categories["_refreshed"]["previous"]["previous"]
+    categories_161 = categories["_refreshed"]["previous"]["previous"]["previous"]
     assert categories_161["contractVersion"] == "161.0.0"
     assert categories_161["moved"][:2] == ["structure 362 -> 363", "trend 22 -> 23"]
     assert categories_161["previous"]["previous"]["moved"][0] == "structure 156 -> 362"

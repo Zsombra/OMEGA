@@ -26,7 +26,6 @@
     }
   ],
   "study": "candlePatterns",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the bar's range against the prior bar's: inside when its high is lower and its low higher, outside when its high is higher and its low lower",
   "subjectKinds": [
