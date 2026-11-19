@@ -2209,7 +2209,6 @@
     }
   ],
   "study": "directionalMovement",
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "14-period average directional index (trend strength, 0–100)",
   "subjectKinds": [

@@ -25,7 +25,6 @@
     }
   ],
   "study": "regimeVerdict",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "whether the reading carries the crash warning: raised by a crash reading below the gate (-3) and held by the crash latch until the reading recovers to the exit gate",
   "subjectKinds": [

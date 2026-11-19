@@ -1621,7 +1621,6 @@
     }
   ],
   "study": null,
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "order-flow cumulative volume delta — taker buy minus taker sell volume from the trade tape, accumulated since the daily 00:00-UTC anchor; it reads no value for the rest of the UTC day after a bar whose taker flow is unknown, never a partial sum",
   "subjectKinds": [

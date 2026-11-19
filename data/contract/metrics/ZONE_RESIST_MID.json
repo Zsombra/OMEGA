@@ -43,7 +43,6 @@
     }
   ],
   "study": null,
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the midpoint, (high + low) / 2, of the nearest resistance zone (fair-value gap or order block) price has not traded above — the zone this side's edges read (SMC's fair-value-gap split, ICT's 50% / consequent encroachment), never the rule that picks it; at a completed bar, the zone in force when the bar opened, picked against its open, and read live on the forming bar, where the price decides which zone is nearest",
   "subjectKinds": [
@@ -53,7 +52,7 @@
   "parameters": {
     "usedUpOnClose": {
       "required": false,
-      "description": "Whether a structure zone is used up only by a close past its far edge; off, by a wick past it (LuxAlgo’s High/Low mitigation).",
+      "description": "Whether a structure zone is used up only by a close past its far edge; off, by a wick past it.",
       "defaultValue": false,
       "bound": "flag"
     }
@@ -250,6 +249,8 @@
     "PDH",
     "PDL",
     "PDO",
+    "DAY_HIGH",
+    "DAY_LOW",
     "PRIOR_DAY_SUPPLY_EDGE",
     "PRIOR_DAY_SUPPLY_AVG",
     "PRIOR_DAY_SUPPLY_WAVG",
@@ -264,6 +265,8 @@
     "PRIOR_WEEK_TPO_VAL",
     "PWH",
     "PWL",
+    "WEEK_HIGH",
+    "WEEK_LOW",
     "MONTH_TPO_POC",
     "MONTH_TPO_VAH",
     "MONTH_TPO_VAL",
@@ -272,6 +275,7 @@
     "PRIOR_MONTH_TPO_VAL",
     "PMH",
     "PML",
+    "ATH",
     "PIVOT_S3",
     "PIVOT_R4",
     "PIVOT_R5",
@@ -583,7 +587,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperands": [
     "OPEN",
@@ -681,7 +686,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperandsOffAnchor": [
     "OPEN",
@@ -779,6 +785,7 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ]
 }

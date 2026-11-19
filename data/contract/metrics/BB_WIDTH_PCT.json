@@ -1957,9 +1957,8 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
-  "gloss": "Bollinger BandWidth, TradingView’s ta.bbw: the band spread as a % of its own middle band, ((upper − lower) / middle) × 100, comparable across coins",
+  "gloss": "Bollinger BandWidth: the band spread as a % of its own middle band, ((upper − lower) / middle) × 100, comparable across coins",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

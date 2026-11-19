@@ -31,7 +31,6 @@
     }
   ],
   "study": "nakedPoc",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the nearest point of control above the price that no later UTC day has traded through, over the 60 retained UTC days back to the newest gap — read live, because the live range and the price decide which level qualifies — and its dist_nPocAbove composition carries the platform's shared distance sign, (price - level) / level x 100, so this one reads negative",
   "subjectKinds": [
@@ -231,6 +230,8 @@
     "PDH",
     "PDL",
     "PDO",
+    "DAY_HIGH",
+    "DAY_LOW",
     "PRIOR_DAY_SUPPLY_EDGE",
     "PRIOR_DAY_SUPPLY_AVG",
     "PRIOR_DAY_SUPPLY_WAVG",
@@ -245,6 +246,8 @@
     "PRIOR_WEEK_TPO_VAL",
     "PWH",
     "PWL",
+    "WEEK_HIGH",
+    "WEEK_LOW",
     "MONTH_TPO_POC",
     "MONTH_TPO_VAH",
     "MONTH_TPO_VAL",
@@ -253,6 +256,7 @@
     "PRIOR_MONTH_TPO_VAL",
     "PMH",
     "PML",
+    "ATH",
     "PIVOT_S3",
     "PIVOT_R4",
     "PIVOT_R5",
@@ -564,7 +568,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperands": [
     "OPEN",
@@ -662,7 +667,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperandsOffAnchor": [
     "OPEN",
@@ -760,6 +766,7 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ]
 }

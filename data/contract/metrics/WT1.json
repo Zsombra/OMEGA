@@ -2175,7 +2175,6 @@
     }
   ],
   "study": "waveTrend",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the WaveTrend oscillator (10, 21) — the typical price’s distance from its own channel, in mean-deviation units",
   "subjectKinds": [

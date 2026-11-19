@@ -1718,7 +1718,6 @@
     }
   ],
   "study": "bollingerBands",
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "where the close sits in the Bollinger envelope, (close − lower) / (upper − lower) — 0 at the lower band, 1 at the upper, outside [0,1] when price trades beyond them",
   "subjectKinds": [

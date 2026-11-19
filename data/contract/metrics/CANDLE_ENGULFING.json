@@ -26,9 +26,8 @@
     }
   ],
   "study": "candlePatterns",
-  "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "whether the bar's body engulfs the prior bar's opposite-colour body, one equal edge allowed (TA-Lib CDLENGULFING): bullish for a white bar over a black one, bearish for the mirror, with no trend context",
+  "gloss": "whether the bar's body engulfs the prior bar's opposite-colour body, one equal edge allowed: bullish for a white bar over a black one, bearish for the mirror, with no trend context",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

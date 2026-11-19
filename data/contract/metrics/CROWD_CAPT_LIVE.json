@@ -31,7 +31,6 @@
     }
   ],
   "study": "crowdLive",
-  "provenance": "battleGridDerived",
   "rankScope": "report",
   "gloss": "share of grids picking this coin that captain it (%), live concurrent sessions excluding the current one; null when none are running",
   "subjectKinds": [

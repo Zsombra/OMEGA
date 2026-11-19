@@ -1518,7 +1518,6 @@
     }
   ],
   "study": "relativeVolume",
-  "provenance": "tradingView",
   "rankScope": null,
   "gloss": "20-period average traded volume as published by the market data service, in base-asset units",
   "subjectKinds": [

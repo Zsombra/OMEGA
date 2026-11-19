@@ -1683,7 +1683,6 @@
     }
   ],
   "study": "marketBreadth",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "spread of close-change across the scope (%, standard deviation) — how much the field disagrees; low means the coins moved together and a cohort-wide read describes them, high means the mean hides a wide range and the field is moving further per bar",
   "subjectKinds": [

@@ -27,9 +27,8 @@
     }
   ],
   "study": "marketStructure",
-  "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "the internal structure's break on this bar — BOS when the close crosses its latest uncrossed level with the bias, CHoCH against it — over pivots of length 5, unless the level is also the swing level of length 50; absent on a bar with no break — computed by the server over this timeframe’s bars, LuxAlgo Smart Money Concepts v7.0’s legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
+  "gloss": "the internal structure's break on this bar — BOS when the close crosses its latest uncrossed level with the bias, CHoCH against it — over pivots of length 5, unless the level is also the swing level of length 50; absent on a bar with no break — computed by the server over this timeframe’s bars, in Smart Money Concepts legs: a pivot high of length n is a high above every high of the n bars after it, a pivot low a low below every low of the n bars after it, recorded alternately as the leg turns; absent until the bars read prove it (both sides decided and a break seen), so a long swing length reads absent on most bars",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"
@@ -45,7 +44,7 @@
     },
     "confluenceFilter": {
       "required": false,
-      "description": "Whether an internal structure break also needs LuxAlgo’s confluence bar test.",
+      "description": "Whether an internal structure break also needs the confluence bar test on the breaking bar.",
       "defaultValue": false,
       "bound": "flag"
     }

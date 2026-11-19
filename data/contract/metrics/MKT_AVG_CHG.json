@@ -1683,7 +1683,6 @@
     }
   ],
   "study": "marketBreadth",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "mean close-change across the scope (%), signed",
   "subjectKinds": [

@@ -1506,7 +1506,6 @@
     }
   ],
   "study": "barVolume",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the bar's buy-side traded volume, in base-asset units",
   "subjectKinds": [

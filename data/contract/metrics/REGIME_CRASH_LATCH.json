@@ -25,7 +25,6 @@
     }
   ],
   "study": "regimeCrashEvidence",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the crash latch is armed: set by a crash reading below the gate, cleared when the reading recovers to the exit gate — while armed the reading carries the crash warning",
   "subjectKinds": [

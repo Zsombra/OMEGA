@@ -1693,7 +1693,6 @@
     }
   ],
   "study": "marketBreadth",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "mean PPO histogram across the scope, signed",
   "subjectKinds": [

@@ -1707,7 +1707,6 @@
     }
   ],
   "study": "marketBreadth",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "share of the scope's coins carrying a positive PPO histogram (%), over the coins that have one",
   "subjectKinds": [

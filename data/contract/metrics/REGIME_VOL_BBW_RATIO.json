@@ -27,7 +27,6 @@
     }
   ],
   "study": "regimeVolatilityEvidence",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the classifier’s Bollinger-width reading against its own trailing-window mean; the volatility label needs THIS and the ATR ratio to agree, so either alone can hold it back",
   "subjectKinds": [

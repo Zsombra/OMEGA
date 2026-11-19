@@ -31,7 +31,6 @@
     }
   ],
   "study": "crowdSettled",
-  "provenance": "battleGridDerived",
   "rankScope": "report",
   "gloss": "share of grids picking this coin that captain it (%), last 4 settled sessions",
   "subjectKinds": [

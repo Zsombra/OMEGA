@@ -31,7 +31,6 @@
     }
   ],
   "study": "crowdLive",
-  "provenance": "battleGridDerived",
   "rankScope": "report",
   "gloss": "share of the field picking this coin (%), live concurrent sessions excluding the current one; null when none are running",
   "subjectKinds": [

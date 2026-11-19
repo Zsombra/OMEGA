@@ -21,9 +21,8 @@
     }
   ],
   "study": "candlePatterns",
-  "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "whether the bar is a doji: its body is at most 0.1× the mean range of the 10 bars before it (TA-Lib CDLDOJI)",
+  "gloss": "whether the bar is a doji: its body is at most 0.1× the mean range of the 10 bars before it",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

@@ -2209,7 +2209,6 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "7-period relative strength index (0–100)",
   "subjectKinds": [

@@ -1349,7 +1349,6 @@
     }
   ],
   "study": "relativeVolume",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "relative volume — the bar’s volume divided by its 20-period average, as a multiple (1.0 = at baseline, 2.0 = twice baseline)",
   "subjectKinds": [

@@ -1621,9 +1621,8 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": null,
-  "gloss": "TradingView's cumulative volume delta — each intrabar's volume signed by its close against its open, then against the previous intrabar's close, summed since the daily 00:00-UTC anchor; intrabars are 1m on minute and hour rungs and 5m on 1d",
+  "gloss": "cumulative volume delta — each intrabar's volume signed by its close against its open, then against the previous intrabar's close, summed since the daily 00:00-UTC anchor; intrabars are 1m on minute and hour rungs and 5m on 1d",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

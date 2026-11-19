@@ -1621,7 +1621,6 @@
     }
   ],
   "study": "macd",
-  "provenance": "tradingView",
   "rankScope": null,
   "gloss": "MACD signal — the 9-period EMA of the 12/26 MACD line",
   "subjectKinds": [

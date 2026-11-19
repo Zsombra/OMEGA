@@ -26,9 +26,8 @@
     }
   ],
   "study": "candlePatterns",
-  "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "a pin bar by shape alone, with no trend context: lower_wick when the body is under the mean body of the 10 bars before it, the lower wick is longer than the body and than the upper wick, and the upper wick is under 0.1× their mean range (TA-Lib's hammer shape); upper_wick mirrors it (the shooting-star shape)",
+  "gloss": "a pin bar by shape alone, with no trend context: lower_wick when the body is under the mean body of the 10 bars before it, the lower wick is longer than the body and than the upper wick, and the upper wick is under 0.1× their mean range (the hammer shape); upper_wick mirrors it (the shooting-star shape)",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

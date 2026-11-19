@@ -43,7 +43,6 @@
     }
   ],
   "study": "monthProfile",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the price bin holding the most time of the current UTC month, summed from its UTC days' profiles on one 5-bps grid anchored at the period's opening price — a point-in-time read at its own fold, absent for the period's first 60 minutes and while any earlier day of the period has no stored profile; the level is the midpoint of a 5-bps price bin, so it is precise to that bin",
   "subjectKinds": [
@@ -244,6 +243,8 @@
     "PDH",
     "PDL",
     "PDO",
+    "DAY_HIGH",
+    "DAY_LOW",
     "PRIOR_DAY_SUPPLY_EDGE",
     "PRIOR_DAY_SUPPLY_AVG",
     "PRIOR_DAY_SUPPLY_WAVG",
@@ -258,6 +259,8 @@
     "PRIOR_WEEK_TPO_VAL",
     "PWH",
     "PWL",
+    "WEEK_HIGH",
+    "WEEK_LOW",
     "MONTH_TPO_VAH",
     "MONTH_TPO_VAL",
     "PRIOR_MONTH_TPO_POC",
@@ -265,6 +268,7 @@
     "PRIOR_MONTH_TPO_VAL",
     "PMH",
     "PML",
+    "ATH",
     "PIVOT_S3",
     "PIVOT_R4",
     "PIVOT_R5",
@@ -576,7 +580,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperands": [
     "OPEN",
@@ -674,7 +679,8 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ],
   "spreadAverageOperandsOffAnchor": [
     "OPEN",
@@ -772,6 +778,7 @@
     "ICHI_BASE",
     "ICHI_SPAN_A",
     "ICHI_SPAN_B",
-    "ICHI_LAG"
+    "ICHI_LAG",
+    "ATH"
   ]
 }

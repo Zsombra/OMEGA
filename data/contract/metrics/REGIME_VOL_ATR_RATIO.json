@@ -27,7 +27,6 @@
     }
   ],
   "study": "regimeVolatilityEvidence",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the classifier’s ATR reading against its own trailing-window mean; expands above 1.05, contracts below 0.9",
   "subjectKinds": [

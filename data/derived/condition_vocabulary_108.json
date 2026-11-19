@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261112T093211Z.json",
-  "sha256": "0ad845fa8b0a568b6fbd4584f6ecb60bdcaa0d477661c7ec6d01c12d253e2deb",
-  "contractVersion": "171.0.0",
-  "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
-  "observedAt": "2026-11-12T09:22:19Z"
+  "schema": "data/contract/stage_strategy_draft/schema_20261119T202415Z.json",
+  "sha256": "988902b2d775a00fa313b8ac9fac338523fe91ae17d00a084af24511ba31c2d9",
+  "contractVersion": "180.4.0",
+  "buildSha": "d66d4f98372f22e870efaebd9b4ccd572a568faf",
+  "observedAt": null
  },
  "clauseOperators": [
   "lt",
@@ -604,7 +604,7 @@
    },
    "enumPointer": "/get_strategy/outputSchema/$defs/metricKey",
    "enumSource": "get_strategy outputSchema $defs/metricKey: since contract 168 the write schema names a metric by pattern, and the read schema keeps the roster",
-   "count": 581,
+   "count": 586,
    "enum": [
     "OPEN",
     "HIGH",
@@ -879,6 +879,8 @@
     "PDH",
     "PDL",
     "PDO",
+    "DAY_HIGH",
+    "DAY_LOW",
     "PRIOR_DAY_SUPPLY_EDGE",
     "PRIOR_DAY_SUPPLY_AVG",
     "PRIOR_DAY_SUPPLY_WAVG",
@@ -893,6 +895,8 @@
     "PRIOR_WEEK_TPO_VAL",
     "PWH",
     "PWL",
+    "WEEK_HIGH",
+    "WEEK_LOW",
     "MONTH_TPO_POC",
     "MONTH_TPO_VAH",
     "MONTH_TPO_VAL",
@@ -901,6 +905,7 @@
     "PRIOR_MONTH_TPO_VAL",
     "PMH",
     "PML",
+    "ATH",
     "PIVOT_S3",
     "PIVOT_R4",
     "PIVOT_R5",

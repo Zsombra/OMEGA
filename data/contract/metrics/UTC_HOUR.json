@@ -1799,7 +1799,6 @@
     }
   ],
   "study": "barClock",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the hour of the UTC day the bar opened in, 0 to 23 — a fact of the bar's open time, never of when it is read",
   "subjectKinds": [

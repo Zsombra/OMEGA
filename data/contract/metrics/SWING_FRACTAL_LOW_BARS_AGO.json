@@ -1785,7 +1785,6 @@
     }
   ],
   "study": "swingFractal",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the bars from the most recent swing low's own bar to this bar — 2 on the bar that completes its right side, one more per bar after it",
   "subjectKinds": [

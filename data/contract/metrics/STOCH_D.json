@@ -2193,7 +2193,6 @@
     }
   ],
   "study": "stochastic",
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "stochastic %D — the %K signal line",
   "subjectKinds": [

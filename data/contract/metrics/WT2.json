@@ -2175,7 +2175,6 @@
     }
   ],
   "study": "waveTrend",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the WaveTrend signal line, a 4-period mean of the oscillator",
   "subjectKinds": [

@@ -1711,7 +1711,6 @@
     }
   ],
   "study": "marketBreadth",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "share of the scope's coins closing above their own EMA(50) (%), over the coins whose EMA has warmed — the persistent breadth state: it holds its reading for runs of bars where net breadth flips almost every bar, and its zone reads risk-off at 20 or below and risk-on at 80 or above",
   "subjectKinds": [

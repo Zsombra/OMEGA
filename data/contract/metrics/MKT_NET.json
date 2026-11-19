@@ -1697,7 +1697,6 @@
     }
   ],
   "study": "marketBreadth",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "net breadth — the up share minus the down share (%), signed; negative is a broadly red field",
   "subjectKinds": [

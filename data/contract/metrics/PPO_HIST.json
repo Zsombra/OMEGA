@@ -1961,7 +1961,6 @@
     }
   ],
   "study": "macd",
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "PPO histogram — the 12/26 PPO line minus its 9-period signal, in percent",
   "subjectKinds": [

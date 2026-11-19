@@ -1727,7 +1727,6 @@
     }
   ],
   "study": "spotFlow",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "buy share of Coinbase's spot volume in the bar's period (0–1), from the venue's taker sides",
   "subjectKinds": [

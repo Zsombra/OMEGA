@@ -31,7 +31,6 @@
     }
   ],
   "study": "crowdSettled",
-  "provenance": "battleGridDerived",
   "rankScope": "report",
   "gloss": "share of this coin’s picks that are directional up (%), last 4 settled sessions",
   "subjectKinds": [

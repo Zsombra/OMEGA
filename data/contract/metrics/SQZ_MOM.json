@@ -1636,9 +1636,8 @@
     }
   ],
   "study": null,
-  "provenance": "battleGridDerived",
   "rankScope": null,
-  "gloss": "LazyBear's squeeze momentum — the 20-bar linear regression end point of the close's distance from the average of the 20-bar Donchian midline and simple mean, in price units: the direction a TTM squeeze releases",
+  "gloss": "squeeze momentum — the 20-bar linear regression end point of the close's distance from the average of the 20-bar Donchian midline and simple mean, in price units: the direction a TTM squeeze releases",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

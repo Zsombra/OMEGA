@@ -31,7 +31,6 @@
     }
   ],
   "study": "crowdSettled",
-  "provenance": "battleGridDerived",
   "rankScope": "report",
   "gloss": "share of the field picking this coin (%), last 4 settled sessions",
   "subjectKinds": [

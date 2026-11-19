@@ -2194,7 +2194,6 @@
     }
   ],
   "study": null,
-  "provenance": "tradingView",
   "rankScope": "exchangeWide",
   "gloss": "14-period Williams %R — where the close sits in the 14-bar window ending at this bar, 0 at the high and −100 at the low",
   "subjectKinds": [

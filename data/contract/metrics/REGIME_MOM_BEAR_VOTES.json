@@ -27,7 +27,6 @@
     }
   ],
   "study": "regimeMomentumVotes",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "how many of the four momentum inputs voted bearish (0–4) — read against the bullish tally, a 3–1 is not a 2–1",
   "subjectKinds": [

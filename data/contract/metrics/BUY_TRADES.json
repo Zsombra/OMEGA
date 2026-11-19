@@ -1792,7 +1792,6 @@
     }
   ],
   "study": "barTrades",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the bar's buy trade count",
   "subjectKinds": [

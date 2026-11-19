@@ -21,7 +21,6 @@
     }
   ],
   "study": "crowdSettled",
-  "provenance": "battleGridDerived",
   "rankScope": null,
   "gloss": "the settlement timestamp of the reference game",
   "subjectKinds": [

@@ -1608,7 +1608,6 @@
     }
   ],
   "study": "barVolume",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the bar's buy-side traded notional, in USD: the sum of each taker buy's price × size from the live tape; absent for a bar holding a minute the live tape did not cover, never zero",
   "subjectKinds": [

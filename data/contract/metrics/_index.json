@@ -1,5 +1,8 @@
 {
-  "metricCount": 581,
+  "contractVersion": "180.4.0",
+  "buildSha": "d66d4f98372f22e870efaebd9b4ccd572a568faf",
+  "contractKnownBy": "read: GET /mcp/version at 2026-11-19T20:36:16Z before the first fetch of extraction 20261119b (hints_20261119b/_version.json)",
+  "metricCount": 586,
   "byFamily": {
     "channels": [
       "BB_LOWER",
@@ -59,6 +62,9 @@
       "ASIA_HIGH",
       "ASIA_LOW",
       "ASIA_OPEN",
+      "ATH",
+      "DAY_HIGH",
+      "DAY_LOW",
       "IB_EXT_DOWN_150",
       "IB_EXT_DOWN_200",
       "IB_EXT_UP_150",
@@ -329,7 +335,9 @@
       "PRIOR_WEEK_TPO_VAH",
       "PRIOR_WEEK_TPO_VAL",
       "PWH",
-      "PWL"
+      "PWL",
+      "WEEK_HIGH",
+      "WEEK_LOW"
     ],
     "market": [
       "MKT_ABOVE_EMA",
@@ -610,8 +618,5 @@
       "WEEK_TPO_VAH",
       "WEEK_TPO_VAL"
     ]
-  },
-  "contractVersion": "171.0.0",
-  "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
-  "contractKnownBy": "read: GET /mcp/version at 2026-11-12T09:18:24Z before the first fetch of extraction 20261112c (hints_20261112c/_version.json)"
+  }
 }

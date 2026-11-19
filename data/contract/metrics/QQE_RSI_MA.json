@@ -2189,7 +2189,6 @@
     }
   ],
   "study": "qqe",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the QQE smoothed RSI — a 5-period EMA of RSI(14), on the 0–100 RSI scale",
   "subjectKinds": [

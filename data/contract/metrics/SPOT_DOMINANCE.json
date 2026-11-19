@@ -1707,7 +1707,6 @@
     }
   ],
   "study": "spotFlow",
-  "provenance": "battleGridDerived",
   "rankScope": "exchangeWide",
   "gloss": "the composite spot volume, over the listed venues that publish their trade history (Binance, Coinbase), as a share of composite spot plus the bar's perp volume, both in this coin's own unit (0–1); absent where one of those venues did not cover the period",
   "subjectKinds": [

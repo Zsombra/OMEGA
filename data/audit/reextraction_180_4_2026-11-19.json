@@ -1,0 +1,1219 @@
+{
+ "_what": "The live measurements of OMEGA v0.15.0's re-extraction at contract 180.4.0 (build d66d4f98372f22e870efaebd9b4ccd572a568faf, GET /mcp/version read 2026-11-19T20:19:16Z, 20:24Z before and after the surface list, and at the first and every 40th hint of the corpus read): four preview_strategy_report reads and seven stages into ONE new CREATE draft (cdd309e5-03d8-48aa-add7-538c16cbb1d2), read back, discarded at draftVersion 7 and read null. Nothing committed; no existing strategy or draft touched (list_strategy_drafts at 20:34Z held one draft, VWAP Reject 15m c1fd5d4c, untouched). Each entry quotes what was sent and what the platform answered; the answers' long arrays are cut to what the entry's finding reads. Replayed by tests/test_reextraction_180_4.py.",
+ "contractVersion": "180.4.0",
+ "buildSha": "d66d4f98372f22e870efaebd9b4ccd572a568faf",
+ "account": "the session's own BattleGrid connector",
+ "previews": {
+  "P1": {
+   "what": "v181's forms at 180.4.0: the old `X x spread(CLOSE)` beside the new `CLOSE x spread(X)`, two reference prices both ways, an averaged price operand, the four 180.4.0 metric keys, and a {rel: regime} column on a 4h strategy",
+   "at": "2026-11-19T20:34Z (date -u 20:34:00Z just before the call)",
+   "tool": "preview_strategy_report",
+   "sent": {
+    "coinSelection": {
+     "mode": "explicit",
+     "tickers": [
+      "BTC"
+     ]
+    },
+    "detail": "detailed",
+    "source": {
+     "kind": "FIELDS",
+     "timeframe": "4h",
+     "sections": [
+      {
+       "kind": "custom",
+       "title": "v181 forms",
+       "benchmarkTicker": null,
+       "marketScope": null,
+       "notes": null,
+       "columns": [
+        {
+         "metric": "CLOSE",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "PRIOR_TPO_VAL"
+          }
+         ]
+        },
+        {
+         "metric": "CLOSE",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "PRIOR_TPO_VAH"
+          }
+         ]
+        },
+        {
+         "metric": "CLOSE",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "PRIOR_TPO_POC"
+          }
+         ]
+        },
+        {
+         "metric": "PRIOR_TPO_VAL",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "CLOSE"
+          }
+         ]
+        },
+        {
+         "metric": "EMA20",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "CLOSE"
+          }
+         ]
+        },
+        {
+         "metric": "CLOSE",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "EMA20"
+          }
+         ]
+        },
+        {
+         "metric": "LAST",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "CLOSE"
+          }
+         ]
+        },
+        {
+         "metric": "CLOSE",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "LAST"
+          }
+         ]
+        },
+        {
+         "metric": "CLOSE",
+         "transformId": "spread",
+         "timeframe": {
+          "rel": "anchor"
+         },
+         "inputs": [
+          {
+           "metric": "HL2",
+           "transformId": "ema",
+           "window": 34
+          }
+         ]
+        },
+        {
+         "metric": "DAY_HIGH",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "anchor"
+         }
+        },
+        {
+         "metric": "DAY_LOW",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "anchor"
+         }
+        },
+        {
+         "metric": "WEEK_HIGH",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "anchor"
+         }
+        },
+        {
+         "metric": "WEEK_LOW",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "anchor"
+         }
+        },
+        {
+         "metric": "RSI14",
+         "transformId": "value",
+         "timeframe": {
+          "rel": "regime"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   },
+   "answer": {
+    "refusal": null,
+    "columns": [
+     {
+      "key": "close_pTpoVAL_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": -1.1919761084464926,
+      "family": "price"
+     },
+     {
+      "key": "close_pTpoVAH_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": -4.007300958143346,
+      "family": "price"
+     },
+     {
+      "key": "close_pTpoPOC_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": -3.621884851576291,
+      "family": "price"
+     },
+     {
+      "key": "pTpoVAL_close_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": 1.20635557872784,
+      "family": "vwapProfile"
+     },
+     {
+      "key": "EMA20_close_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": 2.729535794160582,
+      "family": "trend"
+     },
+     {
+      "key": "close_EMA20_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": -2.6570117085214515,
+      "family": "price"
+     },
+     {
+      "key": "last_close_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": -0.6320686612657416,
+      "family": "price"
+     },
+     {
+      "key": "close_last_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": 0.6360891816405935,
+      "family": "price"
+     },
+     {
+      "key": "close_hl2_ema34_spread",
+      "timeframe": "4h",
+      "bars": "Confirmed",
+      "unit": "percent",
+      "value": -4.387210065237109,
+      "family": "price"
+     },
+     {
+      "key": "dayHi",
+      "timeframe": "4h",
+      "unit": "price",
+      "value": 64050,
+      "family": "levels"
+     },
+     {
+      "key": "dayLo",
+      "timeframe": "4h",
+      "unit": "price",
+      "value": 61706,
+      "family": "levels"
+     },
+     {
+      "key": "weekHi",
+      "timeframe": "4h",
+      "unit": "price",
+      "value": 65679,
+      "family": "levels"
+     },
+     {
+      "key": "weekLo",
+      "timeframe": "4h",
+      "unit": "price",
+      "value": 61706,
+      "family": "levels"
+     },
+     {
+      "key": "RSI14_htf",
+      "timeframe": "12h",
+      "bars": "Confirmed",
+      "unit": "oscillator",
+      "value": 25.37577671,
+      "family": "momentum"
+     }
+    ],
+    "distinctTimeframes": {
+     "used": 2,
+     "cap": 8
+    },
+    "every output's developingRead": false
+   },
+   "finding": "Every column rendered: at 180.4.0 the form v181 refuses (pTpoVAL_close_spread, EMA20_close_spread) still renders, and the form it writes (close_pTpo{VAL,VAH,POC}_spread, close_EMA20_spread, close_hl2_ema34_spread) renders already. Headers as omega.fanout predicts them. The two pairs are not negations: pTpoVAL_close_spread 1.20636 and close_pTpoVAL_spread -1.19198 satisfy 100 x (100 / (100 + 1.20636) - 1) = -1.19198 (omega.contract.flipped_price_spread_threshold). The four 180.4.0 keys render as dayHi, dayLo, weekHi, weekLo (unit price, family levels). A {rel: regime} column on a 4h strategy reads 12h."
+  },
+  "R1": {
+   "at": "2026-11-19T20:34Z",
+   "tool": "preview_strategy_report",
+   "sent": {
+    "timeframe": "1h",
+    "columns": [
+     "RSI14 value {rel: regime}",
+     "RSI14 value {rel: lower}"
+    ],
+    "tickers": [
+     "BTC"
+    ]
+   },
+   "answer": {
+    "RSI14_htf": "4h",
+    "RSI14_ltf": "30m"
+   }
+  },
+  "R2": {
+   "at": "2026-11-19T20:34Z",
+   "tool": "preview_strategy_report",
+   "sent": {
+    "timeframe": "15m",
+    "columns": [
+     "RSI14 value {rel: regime}",
+     "RSI14 value {rel: lower}"
+    ],
+    "tickers": [
+     "BTC"
+    ]
+   },
+   "answer": {
+    "RSI14_htf": "1h",
+    "RSI14_ltf": "5m"
+   }
+  },
+  "R3": {
+   "at": "2026-11-19T20:35Z",
+   "tool": "preview_strategy_report",
+   "sent": {
+    "timeframe": "5m",
+    "columns": [
+     "RSI14 value {rel: regime}",
+     "RSI14 value {rel: lower}"
+    ],
+    "tickers": [
+     "BTC"
+    ]
+   },
+   "answer": {
+    "RSI14_htf": "15m",
+    "RSI14_ltf": "1m"
+   }
+  },
+  "R4": {
+   "see": "P1",
+   "answer": {
+    "RSI14_htf": "12h"
+   },
+   "finding": "the regime rung: 5m -> 15m, 15m -> 1h, 1h -> 4h, 4h -> 12h (1d before; the vendor pack 32.0.104's 'shortest enabled timeframe at least three times the anchor')"
+  }
+ },
+ "draft": {
+  "strategyId": "cdd309e5-03d8-48aa-add7-538c16cbb1d2",
+  "kind": "a NEW create draft (stage with no strategyId, draftVersion 0); never committed",
+  "base": "IDENTITY 'OMEGA-PROBE 180.4 D1'; TIMEFRAME_PROFILE 1h; REPORT one custom section: RSI14 value {abs: 4h} bars all (RSI14_4h_dev), CHG_4H value (chg4h), PRIOR_TPO_VAL value (pTpoVAL), CLOSE x spread(PRIOR_TPO_VAH) (close_pTpoVAH_spread); TRADE_LEVEL_POLICY minAtrPct 0.5, stops 1 - 2 ATR, minRR 1.5, menu ATR 1 / 1.5 / 2 and R 1.5 / 2 each side; POSITION_MANAGEMENT the mean-reversion preset's (trailing on)",
+  "stages": [
+   {
+    "id": "D1",
+    "draftVersionAfter": 1,
+    "updatedAt": "2026-11-19T20:35:40.879Z",
+    "sent": {
+     "CONDITIONS": [
+      {
+       "conditionKey": "DEV_CARRIER",
+       "verdict": "UP",
+       "clause": "RSI14_4h_dev gte 50, hold 1 of 1"
+      },
+      {
+       "conditionKey": "HZN_CARRIER",
+       "verdict": "DOWN",
+       "clause": "chg4h lte -1, hold 1 of 1 (a 4h change on a 1h strategy)"
+      },
+      {
+       "conditionKey": "DEV_EXIT",
+       "verdict": null,
+       "exitSide": "LONG",
+       "clause": "RSI14_4h_dev lt 30, hold 1 of 1"
+      },
+      {
+       "conditionKey": "DEV_HOLD",
+       "verdict": null,
+       "clause": "RSI14_4h_dev gte 50, hold 2 of 2"
+      }
+     ],
+     "ENTRY": {
+      "trigger": "EITHER_SIDE_OF_LEVEL",
+      "levelOffsetAtrMultiple": 0.2,
+      "validForBars": 4,
+      "levels": {
+       "LONG": "PRIOR_TPO_VAL {rel: anchor} (read)",
+       "SHORT": "PRIOR_TPO_POC {rel: anchor} (not read)"
+      }
+     }
+    },
+    "answer": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "authoringCode": "CONDITION_HOLD_ILLEGAL",
+       "path": [
+        "conditions",
+        "DEV_HOLD",
+        "definition",
+        "hold"
+       ],
+       "receivedValue": {
+        "atLeast": 2,
+        "of": 2
+       },
+       "allowedDomain": {
+        "kind": "relation",
+        "rule": "a hold may count at most 1 closes and require at most 1 of them"
+       },
+       "context": {
+        "maxWindow": 1,
+        "maxAtLeast": 1
+       },
+       "message": "[condition] ... condition 'DEV_HOLD' holds 2 closes in a row on '<section>.RSI14_4h_dev', but This reads a bar still forming, which changes until it closes. Set Confirmed to count closed bars; a change over a horizon above the strategy timeframe has no Confirmed bar, so read a horizon at or below it."
+      }
+     ],
+     "warnings": []
+    },
+    "readBack": "get_strategy_draft at draftVersion 1: every axis as sent (keys and values), the same single error, impact null"
+   },
+   {
+    "id": "D2",
+    "draftVersionAfter": 2,
+    "updatedAt": "2026-11-19T20:36:59.336Z",
+    "sent": {
+     "ENTRY": {
+      "trigger": "ON_RETEST",
+      "levelOffsetAtrMultiple": 0.2,
+      "validForBars": 4,
+      "levels": {
+       "LONG": "DONCHIAN_UPPER (not read)",
+       "SHORT": "DONCHIAN_LOWER (not read)"
+      }
+     }
+    },
+    "answer": {
+     "errors": [
+      "the D1 CONDITION_HOLD_ILLEGAL error, alone"
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D3",
+    "draftVersionAfter": 3,
+    "updatedAt": "2026-11-19T20:37:15.370Z",
+    "sent": {
+     "TRADE_LEVEL_POLICY": "LONG stops ATR 1 + LEVEL DONCHIAN_LOWER buffer 0.1 (not read); LONG exit plans R 1.5 and LEVEL DONCHIAN_UPPER (not read); SHORT ATR / R"
+    },
+    "answer": {
+     "errors": [
+      "the D1 CONDITION_HOLD_ILLEGAL error, alone"
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D4",
+    "draftVersionAfter": 4,
+    "updatedAt": "2026-11-19T20:37:30.177Z",
+    "sent": {
+     "CONDITIONS": "D1's without DEV_HOLD: DEV_CARRIER, HZN_CARRIER, DEV_EXIT"
+    },
+    "answer": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "entry.levels.LONG",
+       "message": "The LONG entry level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+       "details": null
+      }
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D5",
+    "draftVersionAfter": 5,
+    "updatedAt": "2026-11-19T20:37:46.432Z",
+    "sent": {
+     "ENTRY": {
+      "trigger": "EITHER_SIDE_OF_LEVEL",
+      "levelOffsetAtrMultiple": 0.2,
+      "validForBars": 4,
+      "levels": {
+       "LONG": "PRIOR_TPO_VAL (read)",
+       "SHORT": "PRIOR_TPO_POC (not read)"
+      }
+     }
+    },
+    "answer": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "entry.levels.SHORT",
+       "message": "The SHORT entry level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+       "details": null
+      }
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D6",
+    "draftVersionAfter": 6,
+    "updatedAt": "2026-11-19T20:38:00.901Z",
+    "sent": {
+     "ENTRY": {
+      "trigger": "EITHER_SIDE_OF_LEVEL",
+      "levelOffsetAtrMultiple": 0.2,
+      "validForBars": 4,
+      "levels": {
+       "LONG": "PRIOR_TPO_VAL (read as a value column)",
+       "SHORT": "PRIOR_TPO_VAH (read only as the plain operand of CLOSE x spread(PRIOR_TPO_VAH))"
+      }
+     }
+    },
+    "answer": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "field": "tradeLevelMenu.LONG.stops[1].level",
+       "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+       "details": null
+      }
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D7",
+    "draftVersionAfter": 7,
+    "updatedAt": "2026-11-19T20:38:16.882Z",
+    "sent": {
+     "TRADE_LEVEL_POLICY": "LONG stops ATR 1 + LEVEL PRIOR_TPO_VAL buffer 0.1; LONG exit plans R 1.5 and LEVEL PRIOR_TPO_VAH (read as the plain operand of CLOSE x spread(PRIOR_TPO_VAH)); SHORT ATR 1 / 1.5 / 2, R 1.5 / 2"
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   }
+  ],
+  "discard": {
+   "tool": "discard_strategy_draft",
+   "draftVersion": 7,
+   "answer": {
+    "discarded": true
+   },
+   "readAfter": {
+    "draft": null,
+    "draftVersion": 0,
+    "committedRevision": null
+   },
+   "at": "2026-11-19T20:38Z (date -u 20:38:40Z right after)"
+  },
+  "findings": [
+   "v175 (D1, D4, D7): a verdict carrier over a Developing read (RSI14_4h_dev), a verdict carrier over a change above the strategy timeframe (chg4h on 1h) and an exit rule over a Developing read stage with no error - CONDITION_VERDICT_READ_ILLEGAL is gone and CONDITION_EXIT_READ_ILLEGAL no longer names a Developing read.",
+   "v175 (D1): a hold over 2 bars on a Developing read is refused CONDITION_HOLD_ILLEGAL (maxWindow 1, maxAtLeast 1).",
+   "The stage's diagnostics are staged: while a [condition] error stands, no entry-level or menu-level error is reported (D1 - D3 reported only DEV_HOLD; the level errors appeared once it was gone, D4). A probe of one rule must leave every earlier rule clean.",
+   "EITHER_SIDE_OF_LEVEL (D5): its levels are judged by the 168 level rule - an unread SHORT level is refused on entry.levels.SHORT; ON_RETEST still refuses an unread level (D4, as E2 at 168.2.0). One level error is reported at a time (D4 named LONG only although both were unread; D6 named the menu once the entry was clean).",
+   "A spread's plain operand still yields its level under the v181 form (D6, D7): PRIOR_TPO_VAH read only as the operand of CLOSE x spread(PRIOR_TPO_VAH) stages as an entry level and as a menu LEVEL target.",
+   "No warning was served on any stage (ENTRY_LEVEL_USUALLY_SKIPPED, new in the warning enum, was not drawn and its condition is unmeasured)."
+  ]
+ },
+ "proof": {
+  "what": "a body OMEGA v0.15.0 generates for an existing preset (omega.generate.plan(PRESETS['trend-continuation']).axes(), all eight axes) staged as a NEW create draft at 180.4.0, read back, then two TIMEFRAME_PROFILE restages (the anchor set), discarded and read null. OMEGA's own findings on all five presets: 0 errors (validation, condition_findings, menu_findings).",
+  "strategyId": "2e7014ec-b351-466e-bf60-ccfd9546341a",
+  "sentAxes": {
+   "IDENTITY": {
+    "name": "Trend Continuation",
+    "description": "Full MA alignment with trend strength, entered on momentum resumption.",
+    "tagline": "Never fight an aligned stack"
+   },
+   "TIMEFRAME_PROFILE": {
+    "timeframe": "1h"
+   },
+   "REPORT": {
+    "sections": [
+     {
+      "kind": "custom",
+      "title": "Trend Continuation Signals",
+      "columns": [
+       {
+        "metric": "MA_ALIGN",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "EMA5",
+        "transformId": "spread",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "chainedTransformId": "trajectory",
+        "window": 4,
+        "inputs": [
+         {
+          "metric": "EMA13"
+         }
+        ]
+       },
+       {
+        "metric": "SMA200",
+        "transformId": "distance",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "ADX",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       },
+       {
+        "metric": "MACD_HIST",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       },
+       {
+        "metric": "MACD_HIST",
+        "transformId": "crossDetect",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       },
+       {
+        "metric": "RVOL",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       },
+       {
+        "metric": "OBV",
+        "transformId": "trajectory",
+        "timeframe": {
+         "rel": "anchor"
+        },
+        "window": 4,
+        "bars": "closed"
+       }
+      ],
+      "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+      "benchmarkTicker": null,
+      "marketScope": null
+     },
+     {
+      "kind": "custom",
+      "title": "Market Tape",
+      "marketScope": "all",
+      "columns": [
+       {
+        "metric": "MKT_NET",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       }
+      ],
+      "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+      "benchmarkTicker": null
+     },
+     {
+      "kind": "custom",
+      "title": "Stablecoin Par",
+      "benchmarkTicker": "USDT_USD",
+      "columns": [
+       {
+        "metric": "PAR_DEV",
+        "transformId": "value",
+        "timeframe": {
+         "rel": "anchor"
+        }
+       }
+      ],
+      "notes": "Generated by omega.generate from the 'Trend Continuation' thesis (stance ALIGN, anchor 1h).",
+      "marketScope": null
+     }
+    ]
+   },
+   "MARKET_READ": {
+    "marketReadText": "Trend Continuation. Full MA alignment with trend strength, entered on momentum resumption.\n\n- {TC_UP} (UP) - Setup confirmed - up.\n- {TC_DOWN} (DOWN) - Setup confirmed - down.\n\nRead these verdicts rather than re-deriving them from the columns."
+   },
+   "CONDITIONS": {
+    "conditions": [
+     {
+      "conditionKey": "TC_RISK_ON",
+      "name": "USDT at par",
+      "definition": {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "parDev"
+       },
+       "op": "between",
+       "low": -0.5,
+       "high": 0.5,
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      "verdict": null,
+      "required": false,
+      "exitSide": null
+     },
+     {
+      "conditionKey": "TC_CTX_UP",
+      "name": "Broad tape up",
+      "definition": {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "mktBreadth"
+       },
+       "op": "gt",
+       "value": 10.0,
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      "verdict": null,
+      "required": false,
+      "exitSide": null
+     },
+     {
+      "conditionKey": "TC_CTX_DOWN",
+      "name": "Broad tape down",
+      "definition": {
+       "kind": "clause",
+       "column": {
+        "sectionKey": null,
+        "header": "mktBreadth"
+       },
+       "op": "lt",
+       "value": -10.0,
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       }
+      },
+      "verdict": null,
+      "required": false,
+      "exitSide": null
+     },
+     {
+      "conditionKey": "TC_CORE_UP",
+      "name": "2 of 3 filters agree - up",
+      "definition": {
+       "kind": "group",
+       "op": "ALL",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "group",
+         "op": "N_OF",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         },
+         "members": [
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "MAalign"
+           },
+           "op": "is",
+           "label": "bullish",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          },
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "MACDhist_trend"
+           },
+           "op": "is",
+           "label": "rising",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          },
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "OBV_trend"
+           },
+           "op": "is",
+           "label": "rising",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          }
+         ],
+         "n": 2
+        },
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "ADX14_now"
+         },
+         "op": "gte",
+         "value": 25,
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ]
+      },
+      "verdict": null,
+      "required": false,
+      "exitSide": null
+     },
+     {
+      "conditionKey": "TC_CORE_DOWN",
+      "name": "2 of 3 filters agree - down",
+      "definition": {
+       "kind": "group",
+       "op": "ALL",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "group",
+         "op": "N_OF",
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         },
+         "members": [
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "MAalign"
+           },
+           "op": "is",
+           "label": "bearish",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          },
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "MACDhist_trend"
+           },
+           "op": "is",
+           "label": "falling",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          },
+          {
+           "kind": "clause",
+           "column": {
+            "sectionKey": null,
+            "header": "OBV_trend"
+           },
+           "op": "is",
+           "label": "falling",
+           "hold": {
+            "atLeast": 1,
+            "of": 1
+           }
+          }
+         ],
+         "n": 2
+        },
+        {
+         "kind": "clause",
+         "column": {
+          "sectionKey": null,
+          "header": "ADX14_now"
+         },
+         "op": "gte",
+         "value": 25,
+         "hold": {
+          "atLeast": 1,
+          "of": 1
+         }
+        }
+       ]
+      },
+      "verdict": null,
+      "required": false,
+      "exitSide": null
+     },
+     {
+      "conditionKey": "TC_UP",
+      "name": "Setup confirmed - up",
+      "definition": {
+       "kind": "group",
+       "op": "ALL",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "TC_CORE_UP"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "TC_CTX_UP"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "TC_RISK_ON"
+        }
+       ]
+      },
+      "verdict": "UP",
+      "required": false,
+      "exitSide": null
+     },
+     {
+      "conditionKey": "TC_DOWN",
+      "name": "Setup confirmed - down",
+      "definition": {
+       "kind": "group",
+       "op": "ALL",
+       "hold": {
+        "atLeast": 1,
+        "of": 1
+       },
+       "members": [
+        {
+         "kind": "conditionRef",
+         "conditionKey": "TC_CORE_DOWN"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "TC_CTX_DOWN"
+        },
+        {
+         "kind": "conditionRef",
+         "conditionKey": "TC_RISK_ON"
+        }
+       ]
+      },
+      "verdict": "DOWN",
+      "required": false,
+      "exitSide": null
+     }
+    ]
+   },
+   "ENTRY": {
+    "entry": {
+     "trigger": "ON_CANDLE_CLOSE"
+    }
+   },
+   "TRADE_LEVEL_POLICY": {
+    "minAtrPct": 0.5,
+    "minStopLossAtrMultiple": 1,
+    "maxStopLossAtrMultiple": 2,
+    "minRiskRewardRatio": 1.5,
+    "tradeLevelMenu": {
+     "LONG": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 100
+         }
+        ]
+       }
+      ]
+     },
+     "SHORT": {
+      "stops": [
+       {
+        "kind": "ATR",
+        "atrMultiple": 1
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 1.5
+       },
+       {
+        "kind": "ATR",
+        "atrMultiple": 2
+       }
+      ],
+      "exitPlans": [
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 1.5
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 2
+          },
+          "closePct": 100
+         }
+        ]
+       },
+       {
+        "targets": [
+         {
+          "method": {
+           "kind": "R_MULTIPLE",
+           "multiple": 3
+          },
+          "closePct": 100
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "POSITION_MANAGEMENT": {
+    "breakEvenEnabled": true,
+    "breakEvenTriggerR": 1.08,
+    "trailingEnabled": true,
+    "trailingTriggerR": 1,
+    "trailingGivebackPct": 45,
+    "trailingBufferPct": 0.25,
+    "timeDecayEnabled": true,
+    "timeDecayGracePeriodMinutes": 60,
+    "timeDecayIntervalMinutes": 15,
+    "timeDecayTightenPct": 5,
+    "timeDecayMaxTightenPct": 50,
+    "timeDecayStaleThresholdTpProgressPct": 25,
+    "decisionInvalidationExitEnabled": true
+   }
+  },
+  "bodySha256Sent": "0d0160c14e1b4fb345783f9149ea3c09b446c81493880a24809015febb9a3c28",
+  "stages": [
+   {
+    "id": "S1",
+    "updatedAt": "2026-11-19T21:10:18.422Z",
+    "draftVersionAfter": 1,
+    "sent": "the preset's eight axes (sentAxes)",
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "S2",
+    "updatedAt": "2026-11-19T21:11:20.633Z",
+    "draftVersionAfter": 2,
+    "sent": {
+     "TIMEFRAME_PROFILE": {
+      "timeframe": "12h"
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "S3",
+    "updatedAt": "2026-11-19T21:11:27.215Z",
+    "draftVersionAfter": 3,
+    "sent": {
+     "TIMEFRAME_PROFILE": {
+      "timeframe": "3d"
+     }
+    },
+    "answer": {
+     "errors": [
+      {
+       "code": "VALIDATION_ERROR",
+       "message": "Timeframe '3d' is not authorable as a main candle.",
+       "authoringCode": "REPORT_TIMEFRAME_NOT_AUTHORABLE",
+       "path": [
+        "timeframe"
+       ],
+       "receivedValue": "3d",
+       "allowedDomain": {
+        "kind": "enum",
+        "values": [
+         "5m",
+         "15m",
+         "30m",
+         "1h",
+         "2h",
+         "4h",
+         "8h",
+         "12h",
+         "1d"
+        ]
+       }
+      }
+     ],
+     "warnings": []
+    }
+   }
+  ],
+  "readBack": {
+   "tool": "get_strategy_draft (through scripts/mcporter_runtime.mjs, 2026-11-19T21:10:34Z, after S1)",
+   "draftVersion": 1,
+   "committedRevision": null,
+   "diagnostics": {
+    "errors": [],
+    "warnings": []
+   },
+   "contentEqualsSentAsValues": true,
+   "bodySha256Read": "93d0f8c6ff7aaf245ec52f0bf316877ce0b202e88c32cb1d6edc3f1fd5f649ab",
+   "shaNote": "differs from the sent sha only by number spelling: 10.0 is read back 10 (the sent body with integral floats written as integers hashes to 93d0f8c6...), as data/audit/draft_echo_2026-11-13.json recorded"
+  },
+  "discard": {
+   "draftVersion": 3,
+   "answer": {
+    "discarded": true
+   },
+   "readAfter": {
+    "draft": null,
+    "draftVersion": 0,
+    "committedRevision": null
+   },
+   "listStrategyDraftsAfter": "one draft, VWAP Reject 15m c1fd5d4c (version 9, 2026-10-23), as before; untouched",
+   "versionAfter": "GET /mcp/version 2026-11-19T21:12:01Z: 180.4.0 / d66d4f98"
+  },
+  "findings": [
+   "The preset body stages clean at 180.4.0: errors [], warnings [] as served, read back equal as values.",
+   "The authorable main candle set is now nine: 5m, 15m, 30m, 1h, 2h, 4h, 8h, 12h, 1d (REPORT_TIMEFRAME_NOT_AUTHORABLE's allowedDomain; list_strategy_vocabulary's timeframes block serves the same nine at 20:58Z). OMEGA measured four on 2026-08-28; the 12h restage of the preset staged clean. omega.types.ANCHOR_TIMEFRAMES stays the four whose cadence and regime rung are measured: the other five are recorded, not modelled."
+  ]
+ }
+}

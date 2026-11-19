@@ -320,7 +320,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -429,7 +430,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": true
@@ -533,7 +535,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -630,7 +633,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -734,7 +738,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -831,7 +836,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -935,7 +941,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -1032,7 +1039,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -1136,7 +1144,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -1233,7 +1242,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -1337,7 +1347,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -1434,7 +1445,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -1538,7 +1550,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -1635,7 +1648,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -1739,7 +1753,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -1836,7 +1851,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -1952,7 +1968,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -2061,7 +2078,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": true
@@ -2165,7 +2183,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -2262,7 +2281,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -2366,7 +2386,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -2463,7 +2484,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -2567,7 +2589,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -2664,7 +2687,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -2768,7 +2792,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -2865,7 +2890,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -2969,7 +2995,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -3066,7 +3093,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -3170,7 +3198,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "operandsOffAnchor": [
             "OPEN",
@@ -3267,7 +3296,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -3648,6 +3678,8 @@
             "PDH",
             "PDL",
             "PDO",
+            "DAY_HIGH",
+            "DAY_LOW",
             "PRIOR_DAY_SUPPLY_EDGE",
             "PRIOR_DAY_SUPPLY_AVG",
             "PRIOR_DAY_SUPPLY_WAVG",
@@ -3662,6 +3694,8 @@
             "PRIOR_WEEK_TPO_VAL",
             "PWH",
             "PWL",
+            "WEEK_HIGH",
+            "WEEK_LOW",
             "MONTH_TPO_POC",
             "MONTH_TPO_VAH",
             "MONTH_TPO_VAL",
@@ -3670,6 +3704,7 @@
             "PRIOR_MONTH_TPO_VAL",
             "PMH",
             "PML",
+            "ATH",
             "PIVOT_S3",
             "PIVOT_R4",
             "PIVOT_R5",
@@ -3980,7 +4015,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -4326,6 +4362,8 @@
             "PDH",
             "PDL",
             "PDO",
+            "DAY_HIGH",
+            "DAY_LOW",
             "PRIOR_DAY_SUPPLY_EDGE",
             "PRIOR_DAY_SUPPLY_AVG",
             "PRIOR_DAY_SUPPLY_WAVG",
@@ -4340,6 +4378,8 @@
             "PRIOR_WEEK_TPO_VAL",
             "PWH",
             "PWL",
+            "WEEK_HIGH",
+            "WEEK_LOW",
             "MONTH_TPO_POC",
             "MONTH_TPO_VAH",
             "MONTH_TPO_VAL",
@@ -4348,6 +4388,7 @@
             "PRIOR_MONTH_TPO_VAL",
             "PMH",
             "PML",
+            "ATH",
             "PIVOT_S3",
             "PIVOT_R4",
             "PIVOT_R5",
@@ -4658,7 +4699,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -5004,6 +5046,8 @@
             "PDH",
             "PDL",
             "PDO",
+            "DAY_HIGH",
+            "DAY_LOW",
             "PRIOR_DAY_SUPPLY_EDGE",
             "PRIOR_DAY_SUPPLY_AVG",
             "PRIOR_DAY_SUPPLY_WAVG",
@@ -5018,6 +5062,8 @@
             "PRIOR_WEEK_TPO_VAL",
             "PWH",
             "PWL",
+            "WEEK_HIGH",
+            "WEEK_LOW",
             "MONTH_TPO_POC",
             "MONTH_TPO_VAH",
             "MONTH_TPO_VAL",
@@ -5026,6 +5072,7 @@
             "PRIOR_MONTH_TPO_VAL",
             "PMH",
             "PML",
+            "ATH",
             "PIVOT_S3",
             "PIVOT_R4",
             "PIVOT_R5",
@@ -5336,7 +5383,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -5682,6 +5730,8 @@
             "PDH",
             "PDL",
             "PDO",
+            "DAY_HIGH",
+            "DAY_LOW",
             "PRIOR_DAY_SUPPLY_EDGE",
             "PRIOR_DAY_SUPPLY_AVG",
             "PRIOR_DAY_SUPPLY_WAVG",
@@ -5696,6 +5746,8 @@
             "PRIOR_WEEK_TPO_VAL",
             "PWH",
             "PWL",
+            "WEEK_HIGH",
+            "WEEK_LOW",
             "MONTH_TPO_POC",
             "MONTH_TPO_VAH",
             "MONTH_TPO_VAL",
@@ -5704,6 +5756,7 @@
             "PRIOR_MONTH_TPO_VAL",
             "PMH",
             "PML",
+            "ATH",
             "PIVOT_S3",
             "PIVOT_R4",
             "PIVOT_R5",
@@ -6014,7 +6067,8 @@
             "ICHI_CONV",
             "ICHI_BASE",
             "ICHI_SPAN_A",
-            "ICHI_SPAN_B"
+            "ICHI_SPAN_B",
+            "ATH"
           ],
           "offsetMinimum": null,
           "metricParametersAccepted": false
@@ -6713,7 +6767,6 @@
     }
   ],
   "study": "ichimoku",
-  "provenance": "tradingView",
   "rankScope": null,
   "gloss": "the close from 25 bars ago — the level the lagging span compares the current price against",
   "subjectKinds": [
@@ -6747,7 +6800,7 @@
     },
     "displacement": {
       "required": false,
-      "description": "TradingView’s “Lagging Span”: the spans apply, and the lagging close is read, one bar fewer than this back.",
+      "description": "The lagging span: the spans apply, and the lagging close is read, one bar fewer than this back.",
       "defaultValue": 26,
       "minimum": 2,
       "bound": "depth",
@@ -6946,6 +6999,8 @@
     "PDH",
     "PDL",
     "PDO",
+    "DAY_HIGH",
+    "DAY_LOW",
     "PRIOR_DAY_SUPPLY_EDGE",
     "PRIOR_DAY_SUPPLY_AVG",
     "PRIOR_DAY_SUPPLY_WAVG",
@@ -6960,6 +7015,8 @@
     "PRIOR_WEEK_TPO_VAL",
     "PWH",
     "PWL",
+    "WEEK_HIGH",
+    "WEEK_LOW",
     "MONTH_TPO_POC",
     "MONTH_TPO_VAH",
     "MONTH_TPO_VAL",
@@ -6968,6 +7025,7 @@
     "PRIOR_MONTH_TPO_VAL",
     "PMH",
     "PML",
+    "ATH",
     "PIVOT_S3",
     "PIVOT_R4",
     "PIVOT_R5",
@@ -7278,7 +7336,8 @@
     "ICHI_CONV",
     "ICHI_BASE",
     "ICHI_SPAN_A",
-    "ICHI_SPAN_B"
+    "ICHI_SPAN_B",
+    "ATH"
   ],
   "spreadAverageOperands": [
     "ICHI_LAG",
@@ -7376,7 +7435,8 @@
     "ICHI_CONV",
     "ICHI_BASE",
     "ICHI_SPAN_A",
-    "ICHI_SPAN_B"
+    "ICHI_SPAN_B",
+    "ATH"
   ],
   "spreadAverageOperandsOffAnchor": [
     "ICHI_LAG",
@@ -7474,6 +7534,7 @@
     "ICHI_CONV",
     "ICHI_BASE",
     "ICHI_SPAN_A",
-    "ICHI_SPAN_B"
+    "ICHI_SPAN_B",
+    "ATH"
   ]
 }
