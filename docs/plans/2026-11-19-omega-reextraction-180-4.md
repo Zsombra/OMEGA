@@ -37,8 +37,9 @@ VWAP Reject 15m draft of 2026-10-23, untouched). No agent, Radar, Arena, deploym
    warning). The v117 hold error on a horizon above the anchor stands.
 2. **v176, private or published.** `visibility` lost `PROTECTED` on `get_strategy` / `commit_strategy_draft` output.
    OMEGA stages no visibility (the stage input has none) and reads none: nothing to change.
-3. **v177, level entries** (`stage_strategy_draft` input). The only input change in the six draft tools between 171
-   and 180.4.0: the level ENTRY arm's trigger enum gains `EITHER_SIDE_OF_LEVEL`; the draft warning enum gains
+3. **Level entries** (`stage_strategy_draft` input; battlegrid-manager's 177 drift record names them then, but OMEGA
+   observed only the 171 -> 180.4.0 difference, not the contract that added them). The only input change in the six
+   draft tools between 171 and 180.4.0: the level ENTRY arm's trigger enum gains `EITHER_SIDE_OF_LEVEL`; the draft warning enum gains
    `ENTRY_LEVEL_USUALLY_SKIPPED`. Measured (D5 - D7): `EITHER_SIDE_OF_LEVEL` judges its levels by the 168 level rule
    (an unread SHORT level refused on `entry.levels.SHORT`; read levels stage clean), and `ON_RETEST` still refuses an
    unread level (D4, as E2 at 168.2.0). OMEGA: `omega.trade_levels.level_triggers()` reads the arm's trigger enum
@@ -46,20 +47,25 @@ VWAP Reject 15m draft of 2026-10-23, untouched). No agent, Radar, Arena, deploym
 4. **v179, Radar names a coin by `coinTicker`.** OMEGA calls no Radar tool (`omega/` imports no transport; the
    scripts' allowlists hold no Radar tool). `omega/registry.py`'s hand checklist still names `upsert_radar_deployment`
    as text for a person (left as it was; it is not a call).
-5. **180.4.0: `DAY_HIGH`, `DAY_LOW`, `WEEK_HIGH`, `WEEK_LOW`** (and `ATH`, undocumented, by 177) are extracted: 586
+5. **180.4.0: `DAY_HIGH`, `DAY_LOW`, `WEEK_HIGH`, `WEEK_LOW`** (and `ATH`, undocumented: absent at 171.0.0, served at 180.4.0; which contract between them added it is not
+   observed) are extracted: 586
    metrics. Headers `dayHi`, `dayLo`, `weekHi`, `weekLo` (P1: unit price, family levels). ATH joined every price
    operand list (plain, averaged, chained, on and off the anchor); the four day / week levels are plain spread operands
    on the anchor rung only. **The regime rung:** `REGIME_TF_FOR_ANCHOR["4h"]` is `12h` (P1; 1d before), the other three
    re-measured unchanged (R1 - R3).
 6. **v181 (announced, not served): price is the base of every spread over another reading.** At 180.4.0 the old form
    still renders and the hints still list CLOSE / LAST (P1, the refreshed corpus); the new form renders already (P1:
-   `close_pTpo{VAL,VAH,POC}_spread`, `close_EMA20_spread`, `close_hl2_ema34_spread`). OMEGA refuses the old form now:
-   `omega.contract.price_operand_refused` (a reference price - CLOSE, LAST - as the plain operand of a spread whose base
-   is not one, and of every spread chained after an average) is a `REPORT_COLUMN_OPERAND_UNSUPPORTED` error in
-   `omega.validate` that names the form to write where the corpus admits it; `omega.space` enumerates none of them
-   (3,068 operand-expanded shapes fewer, 562 of which earlier sweeps had rendered; structural unchanged). Replays of
-   older probes that sent the form (seven previews of the 149.1.0 authoring probe, three of the 161.0.0 one) now read
-   that refusal, and the tests say so. Two reference prices keep both orders and an averaged
+   `close_pTpo{VAL,VAH,POC}_spread`, `close_EMA20_spread`, `close_hl2_ema34_spread`). OMEGA never emits the old form and
+   judges it by the extracted contract: `omega.contract.price_operand_refused` (a reference price - the README's set
+   {CLOSE, LAST}, which no served field states and nothing measured - as the plain operand of a spread whose base is
+   not one, and of every spread chained after an average) is a `REPORT_COLUMN_OPERAND_UNSUPPORTED` WARNING while the
+   pinned write surface is below 181 (the platform accepts the form: P1) and an ERROR from 181 on
+   (`omega.validate.v181_served`); it is judged only on an operand the corpus serves, so `RSI14 x spread(CLOSE)` keeps
+   its OPERAND_NOT_ALLOWED. When v181 is served its hints drop CLOSE / LAST from the operand lists, and a
+   re-extraction refuses the form from extracted data through that same OPERAND_NOT_ALLOWED path. `omega.space`
+   enumerates none of the old form (3,068 operand-expanded shapes fewer, 562 of which earlier sweeps had rendered;
+   structural unchanged). Replays of older probes that sent it (seven previews of the 149.1.0 authoring probe, three
+   of the 161.0.0 one) keep their measured answers (accepted), with the warning. Two reference prices keep both orders and an averaged
    price operand stays legal. `omega.contract.flipped_price_spread_clause` maps a clause on the old column onto the new
    one (operator flipped, threshold `100 x (100 / (100 + t) - 1)`): P1's pair reproduces it exactly (1.20636 ->
    -1.19198), so the flip is not a negation. The hand-run `scripts/tpo_suite_build.py`, `tpo_ladder_preview.py` and
@@ -94,8 +100,8 @@ No signature or output shape it imports moved: `Thesis`, `validate_thesis`, `bri
 `axes_update()` / `preview_request()`, `body_sha256`, `outputs_for`, `Column`, `load().platform_templates`,
 `header_since_123`, `PRESETS`, `plan_pays`, `vocabulary`, `wilson_interval`, `MIN_SAMPLE`; the manifest keeps
 `servedContractVersion`, `extractedOn`, `counts` and `writeSurface.{servedContractVersion, buildSha, schema}` (now
-180.4.0 / d66d4f98 / `schema_20261119T202415Z.json`). Behaviour that moves under them: a plan or column with
-`X x spread(CLOSE|LAST)` is now an error; a verdict carrier or exit rule over a Developing read is no longer one; a
+180.4.0 / d66d4f98 / `schema_20261119T202415Z.json`). Behaviour that moves under them: a column with
+`X x spread(CLOSE|LAST)` now warns (an error once the pinned surface is 181); a verdict carrier or exit rule over a Developing read is no longer an error; a
 Developing hold above 1 is; the 4h brief and vocabulary name a 12h regime rung; `compare_vocabulary`'s stored metric
 enum is 586.
 

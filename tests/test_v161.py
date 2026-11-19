@@ -133,7 +133,7 @@ def _v181(p) -> bool:
                for i in (c.get("inputs") or []) if not i.get("transformId"))
 
 
-# the three `R.<key>.served` probes spread each added key against CLOSE (2026-11-19)
+# the three `R.<key>.served` probes spread each added key against CLOSE: accepted, and warned since 2026-11-19
 V181_MOVED = ['R.VWMA20.served', 'R.DONCHIAN_BROKEN_HI_PRIOR.served', 'R.DONCHIAN_BROKEN_LO_PRIOR.served']
 
 
@@ -175,12 +175,12 @@ def test_omega_agrees_with_every_answer_of_the_161_probe():
             if p["accepted"]:      # a refused column has no header to predict (BB_TOUCH is not in the corpus)
                 for col in section.columns:
                     predicted |= {o.header for o in outputs_for(col, contract)}
-        if p["accepted"] and _v181(p):
-            # OMEGA v0.15.0 (2026-11-19): the announced v181 rule refuses `X x spread(CLOSE | LAST)` offline before
-            # it is served, so a probe 161.0.0 accepted with that form reads REPORT_COLUMN_OPERAND_UNSUPPORTED now
-            assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in errors, (p["probe"], errors)
-            moved_v181.append(p["probe"])
-        elif p["accepted"]:
+        if p["accepted"]:
+            if _v181(p):
+                # OMEGA v0.15.0 (2026-11-19): the announced v181 form warns while the pinned surface is below 181
+                # (accepted here and at 180.4.0); the measured answer stands
+                assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in warned.get(p["probe"], []), p["probe"]
+                moved_v181.append(p["probe"])
             flagged = bool((p["render"] or {}).get("duplicateHeaders"))
             assert errors == (["DUPLICATE_HEADER"] if flagged else []), p["probe"]
             assert predicted <= _rendered_names(p["render"]), (p["probe"], sorted(predicted - _rendered_names(p["render"])))

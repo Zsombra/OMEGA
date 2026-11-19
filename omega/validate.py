@@ -426,8 +426,6 @@ def validate_column(
                 out.append(Finding(
                     "error", "OPERAND_SELF", f"{path}.inputs[0]",
                     f"a metric cannot spread against itself"))
-            elif price_operand_refused(m.metric, operand):
-                out.append(_price_operand_finding(column, m.metric, operand, c, f"{path}.inputs[0]"))
             elif operand not in m.spread_operands:
                 out.append(Finding(
                     "error", "OPERAND_NOT_ALLOWED", f"{path}.inputs[0]",
@@ -441,6 +439,9 @@ def validate_column(
                     f"spread operand {operand!r} is a per-bar session-profile level: a relation meets it only at the "
                     f"strategy's anchor rung ({{rel: 'anchor'}}), and this column reads off it (served "
                     f"spreadOperandsOffAnchor)"))
+            elif price_operand_refused(m.metric, operand):
+                # judged only on an operand the corpus serves: an unserved one keeps its own refusal above
+                out.append(_price_operand_finding(column, m.metric, operand, c, f"{path}.inputs[0]"))
     elif column.inputs and tid in INSTRUMENT_TRANSFORMS:
         # v142.3: the other coin is named by `instrument`, never by an operand metric - measured 2026-10-30:
         # "[column-grammar] transform 'relativeTo' does not accept params.inputs" (REPORT_COLUMN_CONSTRUCTION_FAILED)
@@ -1007,10 +1008,33 @@ def _price_operand_finding(column: Column, base: str, operand: str, c: Contract,
         refused = f"{base} x spread({operand})"
     remedy = (f"write {written}: price is the base, so 'price above the level' reads positive" if admitted else
               "no form with price as the base is admitted at this column's rung")
-    return Finding("error", "REPORT_COLUMN_OPERAND_UNSUPPORTED", path,
+    served = v181_served()
+    status = ("the extracted contract serves v181, so it is refused" if served else
+              f"the extracted contract ({extracted_contract_version()}) still accepts it - measured at 180.4.0 - so "
+              f"this warns; it is refused from contract 181 on, and omega never emits it")
+    return Finding("error" if served else "warning", "REPORT_COLUMN_OPERAND_UNSUPPORTED", path,
                    f"{refused}: a reference price ({operand}) is never the plain operand of a spread whose base is not "
-                   f"one ({V181_SOURCE}; omega refuses it now). {remedy}. A flipped column's values are not the "
-                   f"negation of the old one's: a percentage gap divides by its operand")
+                   f"one ({V181_SOURCE}); {status}. {remedy}. A flipped column's values are not the negation of the "
+                   f"old one's: a percentage gap divides by its operand")
+
+
+def extracted_contract_version() -> str:
+    """The contract of the pinned write surface (the manifest's `writeSurface`)."""
+    from .contract import stage_schema
+    return str(stage_schema().get("contractVersion") or "0")
+
+
+def v181_served() -> bool:
+    """True once the extracted write surface is contract 181 or later: the announced v181 rule is then the platform's,
+    and a `X x spread(CLOSE | LAST)` column is an error. Below 181 the platform accepts the form (measured at 180.4.0:
+    data/audit/reextraction_180_4_2026-11-19.json P1 rendered pTpoVAL_close_spread and EMA20_close_spread), so it is a
+    warning. Once v181 is served its hints drop CLOSE / LAST from those operand lists (README v181 "Narrowed output"),
+    and a re-extraction then refuses the form from extracted data through OPERAND_NOT_ALLOWED / the chained operand
+    check, before this rule is reached."""
+    try:
+        return int(extracted_contract_version().split(".")[0]) >= 181
+    except ValueError:
+        return False
 
 
 def _chained_spread_operand(column: Column, m: Metric, spec: dict, c: Contract, path: str) -> list[Finding]:
@@ -1041,8 +1065,6 @@ def _chained_spread_operand(column: Column, m: Metric, spec: dict, c: Contract, 
                                f"spread operand {op.metric!r} under {tid} {window} is the chain's own average - a "
                                f"spread against itself is identically zero"))
         return out
-    if price_operand_refused(m.metric, op.metric, chained=True):
-        return [_price_operand_finding(column, m.metric, op.metric, c, f"{path}.inputs[0]", average=tid)]
     outer = (spec.get("chainedOuters") or {}).get("spread") or {}
     off = _off_anchor(column)
     served = outer.get("operandsOffAnchor") if off else outer.get("operands")
@@ -1060,6 +1082,9 @@ def _chained_spread_operand(column: Column, m: Metric, spec: dict, c: Contract, 
                         f"spread operand {op.metric!r} is not a legal relational operand for ({m.metric} x {tid} -> "
                         f"spread) (served chainedOuters.spread.{'operandsOffAnchor' if off else 'operands'}: "
                         f"{list(served)})")]
+    if price_operand_refused(m.metric, op.metric, chained=True):
+        # judged only on an operand the corpus serves (above): an unserved one keeps its own refusal
+        return [_price_operand_finding(column, m.metric, op.metric, c, f"{path}.inputs[0]", average=tid)]
     return []
 
 

@@ -27,8 +27,13 @@ def _load(path: Path) -> Any:
 # REPORT_COLUMN_OPERAND_UNSUPPORTED ... Still accepted: `CLOSE x spread(LAST)` and `LAST x spread(CLOSE)` (two
 # reference prices keep both orders), and an average of price as an operand." At 180.4.0 the hints still serve CLOSE
 # and LAST in every price base's operand lists and the old form still renders (measured 2026-11-19, P1), while the
-# form v181 writes - `CLOSE x spread(<base>)` - renders already (P1). omega refuses the old form now, so nothing it
-# writes or validates breaks the day v181 is served.
+# form v181 writes - `CLOSE x spread(<base>)` - renders already (P1). omega never EMITS the old form (omega.space
+# enumerates none, no generated plan holds one), and omega.validate WARNS on it while the extracted contract is below
+# 181 (the platform still accepts it) and refuses it from 181 on (omega.validate.v181_served). Once v181 is served the
+# hints drop CLOSE / LAST from the operand lists, and a re-extraction refuses the form from extracted data
+# (OPERAND_NOT_ALLOWED) before this rule is reached.
+# The set {CLOSE, LAST} is the README's ("a reference price (CLOSE, LAST)"), not measured: no served field names the
+# reference prices.
 REFERENCE_PRICES = ("CLOSE", "LAST")
 V181_SOURCE = ("contract v181, announced (README 'Contract history - v181', battlegrid-mcp PR 284), not served at "
                "180.4.0")

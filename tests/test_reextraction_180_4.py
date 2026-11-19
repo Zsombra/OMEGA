@@ -55,14 +55,47 @@ def test_the_five_metric_keys_added_since_171_are_extracted():
 
 
 # --- v181: price is the base of every spread over another reading (announced) ---------------------------------------
-@pytest.mark.parametrize("column", [
+OLD_FORMS = [
     _col("PRIOR_TPO_VAL", "CLOSE"), _col("PRIOR_TPO_VAH", "CLOSE"), _col("PRIOR_TPO_POC", "CLOSE"),
     _col("EMA20", "CLOSE"), _col("EMA20", "LAST"),
     _col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"),
-], ids=lambda c: f"{c.metric}-{c.transformId}-{c.inputs[0].metric}")
-def test_the_forms_v181_refuses_are_refused_now(column):
-    errs = _errors(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
-    assert len(errs) == 1 and "v181" in errs[0].message and "not served at 180.4.0" in errs[0].message
+]
+
+
+def _warnings(column: Column, code: str):
+    return [f for f in validate_column(column) if f.severity == "warning" and f.code == code]
+
+
+@pytest.mark.parametrize("column", OLD_FORMS, ids=lambda c: f"{c.metric}-{c.transformId}-{c.inputs[0].metric}")
+def test_below_181_the_form_v181_refuses_warns_and_is_not_an_error(column):
+    """At 180.4.0 the platform accepts the old form (P1 rendered pTpoVAL_close_spread and EMA20_close_spread), so it is
+    a warning while the pinned write surface is below 181."""
+    from omega.validate import v181_served
+    assert not v181_served()
+    assert not _errors(column)
+    [warn] = _warnings(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+    assert "v181" in warn.message and "180.4.0" in warn.message and "refused from contract 181 on" in warn.message
+    assert P1["pTpoVAL_close_spread"]["value"] is not None and P1["EMA20_close_spread"]["value"] is not None
+
+
+@pytest.mark.parametrize("column", OLD_FORMS, ids=lambda c: f"{c.metric}-{c.transformId}-{c.inputs[0].metric}")
+def test_from_181_on_the_form_is_an_error(column, monkeypatch):
+    import omega.validate as V
+    monkeypatch.setattr(V, "extracted_contract_version", lambda: "181.0.0")
+    assert V.v181_served()
+    [err] = _errors(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+    assert "serves v181, so it is refused" in err.message
+
+
+def test_the_v181_rule_is_judged_only_on_a_served_operand():
+    """RSI14 x spread(CLOSE) (another unit) and ADX x aggregate(20) -> spread(CLOSE) were never valid: they keep the
+    served-list refusal, never the v181 sentence. That served-list path is also what refuses the form once v181 is
+    served: its hints drop CLOSE / LAST from these lists (README v181 'Narrowed output')."""
+    [err] = _errors(_col("RSI14", "CLOSE"))
+    assert err.code == "OPERAND_NOT_ALLOWED" and "v181" not in err.message
+    [err] = _errors(_col("ADX", "CLOSE", tid="aggregate", window=20, chainedTransformId="spread"))
+    assert err.code == "REPORT_COLUMN_OPERAND_UNSUPPORTED" and "v181" not in err.message
+    assert not [f for f in validate_column(_col("RSI14", "CLOSE")) if "v181" in f.message]
 
 
 @pytest.mark.parametrize("column", [
@@ -72,17 +105,20 @@ def test_the_forms_v181_refuses_are_refused_now(column):
     _col("EMA20", {"metric": "CLOSE", "transformId": "ema", "window": 34}),
 ], ids=lambda c: f"{c.metric}-{c.inputs[0].metric}")
 def test_the_forms_v181_keeps_are_accepted(column):
+    assert not [f for f in validate_column(column) if f.severity in ("error", "warning")
+                and f.code == "REPORT_COLUMN_OPERAND_UNSUPPORTED"]
     assert not _errors(column)
 
 
-def test_the_refusal_names_the_form_to_write_where_the_corpus_admits_it():
-    [err] = _errors(_col("PRIOR_TPO_VAH", "CLOSE"))
-    assert "write CLOSE x spread(PRIOR_TPO_VAH)" in err.message
-    [err] = _errors(_col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"))
-    assert "CLOSE x spread({metric: HL2, transformId: ema, window: 34})" in err.message
-    # "or LAST off the anchor, it names none"
-    [err] = _errors(_col("EMA20", "LAST", tf={"abs": "4h"}), "REPORT_COLUMN_OPERAND_UNSUPPORTED")
-    assert "no form with price as the base" in err.message
+def test_the_finding_names_the_form_to_write_where_the_corpus_admits_it():
+    [w] = _warnings(_col("PRIOR_TPO_VAH", "CLOSE"), "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+    assert "write CLOSE x spread(PRIOR_TPO_VAH)" in w.message
+    [w] = _warnings(_col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"),
+                    "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+    assert "CLOSE x spread({metric: HL2, transformId: ema, window: 34})" in w.message
+    # "or LAST off the anchor, it names none" (EMA20 serves LAST on and off the anchor at 180.4.0)
+    [w] = _warnings(_col("EMA20", "LAST", tf={"abs": "4h"}), "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+    assert "no form with price as the base" in w.message
 
 
 def test_the_headers_omega_predicts_are_the_ones_p1_rendered():
@@ -160,6 +196,24 @@ def test_the_record_holds_the_v175_answers():
 def test_the_level_triggers_are_read_off_the_write_schema():
     from omega.trade_levels import LEVEL_TRIGGERS, level_triggers
     assert level_triggers() == LEVEL_TRIGGERS == ("STOP_THROUGH_LEVEL", "ON_RETEST", "EITHER_SIDE_OF_LEVEL")
+
+
+@pytest.mark.parametrize("schema", [
+    {},                                                                            # no tool at all
+    {"stage_strategy_draft": {"inputSchema": {"properties": {"request": {}}}}},   # the pre-v111 envelope
+    {"stage_strategy_draft": {"inputSchema": {"properties": {"axes": {"properties": {"ENTRY": {
+        "properties": {"entry": {"oneOf": [{"properties": {"trigger": {"enum": ["ON_CANDLE_CLOSE"]}},
+                                            "required": ["trigger"]}]}}}}}}}}},  # no level arm
+    {"stage_strategy_draft": {"inputSchema": {"properties": {"axes": {"properties": {"ENTRY": {
+        "properties": {"entry": {"anyOf": "reshaped"}}}}}}}}},                    # an arm shape it cannot read
+], ids=["empty", "envelope", "no-level-arm", "reshaped"])
+def test_the_level_triggers_fail_closed_on_a_schema_they_cannot_read(schema):
+    """A read that yields nothing falls back to LEVEL_TRIGGERS, so validate_entry_levels never skips a level check."""
+    from omega.trade_levels import LEVEL_TRIGGERS, level_triggers
+    assert level_triggers(schema) == LEVEL_TRIGGERS
+    old = json.loads((ROOT / "data/contract/stage_strategy_draft/schema_20261005T194629Z.json").read_text(
+        encoding="utf-8"))                                                         # the 91.0.0 capture
+    assert set(level_triggers(old)) >= {"STOP_THROUGH_LEVEL", "ON_RETEST"}
 
 
 def _level(metric):

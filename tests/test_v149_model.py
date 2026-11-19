@@ -112,15 +112,6 @@ def _moved_at_161(p: dict) -> str | None:
     "of the 1000 readable bars" fits now (the served maxima: ema 269 -> 704, aggregate 936 -> 2436 ...)."""
     if any(c.get("metric") == "CLOSE" and c.get("transformId") == "distance" for s in p["sections"] for c in s["columns"]):
         return "pair"
-    # OMEGA v0.15.0 (2026-11-19): the announced v181 rule - a reference price is never the plain operand of a spread whose
-    # base is not one - is refused offline before it is served, so a probe that sent `X x spread(CLOSE | LAST)` reads
-    # REPORT_COLUMN_OPERAND_UNSUPPORTED now whatever 149.1.0 answered
-    if any(price_operand_refused(c.get("metric"), (i or {}).get("metric"),
-                                 chained=c.get("chainedTransformId") == "spread" and c.get("transformId") != "spread")
-           for s in p["sections"] for c in s["columns"]
-           if "spread" in (c.get("transformId"), c.get("chainedTransformId"))
-           for i in (c.get("inputs") or []) if not (i or {}).get("transformId")):
-        return "v181"
     if "of the 1000 readable bars" in ((p.get("refusal") or {}).get("message") or ""):
         return "depth"
     return None
@@ -131,7 +122,7 @@ def test_omega_agrees_with_every_probe_answer(contract):
     refuses are the ones the probe built with a duplicate header on purpose: the platform renders them and flags
     `duplicateHeaders` (the section then leaves conditionColumns), which is exactly omega's DUPLICATE_HEADER."""
     agree = duplicates = 0
-    moved = {"pair": [], "depth": [], "v181": []}
+    moved = {"pair": [], "depth": []}
     for p in PROBE["probes"]:
         if (p.get("refusal") or {}).get("code") == "SERVICE_UNAVAILABLE":
             continue
@@ -141,8 +132,6 @@ def test_omega_agrees_with_every_probe_answer(contract):
             moved[_moved_at_161(p)].append(p["probe"])
             if _moved_at_161(p) == "pair":
                 assert "REPORT_COLUMN_PAIR_UNSUPPORTED" in errors, p["probe"]
-            elif _moved_at_161(p) == "v181":
-                assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in errors, (p["probe"], errors)
             else:
                 assert not {"DEPTH_EXCEEDED", "PARAMETER_OUT_OF_RANGE"} & set(errors), (p["probe"], errors)
             continue
@@ -159,10 +148,32 @@ def test_omega_agrees_with_every_probe_answer(contract):
     # 161.0.0 (2026-11-09): (201, 5) agree on the 149.1.0 answers that still hold; 22 moved (223 - 22): six touch
     # CLOSE x distance (the four J.<smoother>.chainOuter sections accepted at 149 and the two J.CLOSE.distance.chain
     # depth refusals) and sixteen were depth refusals at the 1000-bar depth (the served maxima moved with the 2500-bar depth)
-    # 2026-11-19 (OMEGA v0.15.0): seven more - the 149.1.0 sections that sent a level x spread(CLOSE) (the four D/F
-    # `served` probes, C.SWING_FRACTAL_HIGH's operand probe, ...) - follow the announced v181 rule; (194, 5) agree
-    assert (len(moved["pair"]), len(moved["depth"]), len(moved["v181"])) == (6, 16, 7)
-    assert (agree, duplicates) == (194, 5)
+    assert (len(moved["pair"]), len(moved["depth"])) == (6, 16)
+    assert (agree, duplicates) == (201, 5)
+
+
+def _v181_form(p: dict) -> bool:
+    """A probe that sent a reference price as the plain operand of a spread whose base is not one."""
+    return any(price_operand_refused(c.get("metric"), (i or {}).get("metric"),
+                                     chained=c.get("chainedTransformId") == "spread" and c.get("transformId") != "spread")
+               for s in p["sections"] for c in s["columns"]
+               if "spread" in (c.get("transformId"), c.get("chainedTransformId"))
+               for i in (c.get("inputs") or []) if not (i or {}).get("transformId"))
+
+
+def test_the_probes_that_sent_the_v181_form_keep_their_answer_and_warn(contract):
+    """OMEGA v0.15.0 (2026-11-19): the announced v181 rule (a reference price is never the plain operand of a spread
+    whose base is not one) is a WARNING while the pinned surface is below 181 - the platform accepted these at 149.1.0
+    and accepts the form at 180.4.0 (data/audit/reextraction_180_4_2026-11-19.json P1) - so their measured answers
+    stand above and each carries the warning."""
+    sent = [p for p in PROBE["probes"] if _v181_form(p)]
+    # seven accepted at 149.1.0, and F.PIVOT_CAM_R1.served, which hit the preview deadline (SERVICE_UNAVAILABLE) and was
+    # re-sent as #2 (accepted)
+    assert len(sent) == 8
+    for p in sent:
+        warned = [f.code for s in p["sections"] for f in validate_section(_section(s), contract=contract)
+                  if f.severity == "warning"]
+        assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in warned, p["probe"]
 
 
 # The platform's refusal class (authoringCode; None = a schema-level VALIDATION_ERROR) -> the omega codes that state it.
