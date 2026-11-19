@@ -338,7 +338,11 @@ read TRUE, bounded `1..5` with `multipleOf: 1` in the capture. The vendor:
 > same answer to every frame, so a hold that moves with the bar only through a reference
 > would count reads that never happened.
 
-**The verdict read rule.** A carrier may not read a bar that is still in progress:
+**The verdict read rule (RETIRED at contract v175).** Since v175 a verdict carrier and an exit rule may read a
+Developing bar ("CONDITION_VERDICT_READ_ILLEGAL is no longer raised, and CONDITION_EXIT_READ_ILLEGAL now names only a
+closure no completed bar moves"); a hold above one bar over a Developing read is still refused
+(`CONDITION_HOLD_ILLEGAL`). Measured at 180.4.0 and modelled in OMEGA v0.15.0
+(`data/audit/reextraction_180_4_2026-11-19.json`). The rule as it stood before, kept as history:
 
 > A verdict carrier must read no DEVELOPING bar. A verdict is refused over any closure that
 > reads a column selecting Developing above the strategy timeframe

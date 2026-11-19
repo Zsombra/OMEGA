@@ -11,7 +11,8 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import Iterable, get_args
 
-from .contract import REFERENCE_PAIRS, Contract, Metric, load, section_subject
+from .contract import (REFERENCE_PAIRS, V181_SOURCE, Contract, Metric, load, price_operand_refused,
+                       section_subject)
 from .fanout import (KNOB_SPELLED, KNOB_SPELLING_RENDERED, ROLLING_INNERS, SMOOTHERS,
                      takes_offset)
 from .types import KNOBS, MARKET_SCOPE, Column, CustomSection, PlatformSection, Report, Section
@@ -425,6 +426,8 @@ def validate_column(
                 out.append(Finding(
                     "error", "OPERAND_SELF", f"{path}.inputs[0]",
                     f"a metric cannot spread against itself"))
+            elif price_operand_refused(m.metric, operand):
+                out.append(_price_operand_finding(column, m.metric, operand, c, f"{path}.inputs[0]"))
             elif operand not in m.spread_operands:
                 out.append(Finding(
                     "error", "OPERAND_NOT_ALLOWED", f"{path}.inputs[0]",
@@ -982,6 +985,34 @@ def _averaged_operand(op, m: Metric, column: Column, c: Contract, path: str) -> 
     return out
 
 
+def _price_operand_finding(column: Column, base: str, operand: str, c: Contract, path: str, *,
+                           average: str | None = None) -> Finding:
+    """The v181 refusal of `<base> x spread(<operand>)` (or `<base> x <average> -> spread(<operand>)`) where the operand
+    is a reference price and the base is not, naming the form to write where the corpus admits it at the column's rung
+    (the README: "The refusal names the form to write, where the server admits it at the column's rung ... Where no
+    such form is admitted (a session-profile level off the anchor rung, or `LAST` off the anchor), it names none")."""
+    off = _off_anchor(column)
+    price = c.metrics.get(operand)
+    window = column.window if column.window is not None else (default_window(average, c) if average else None)
+    if average is not None:
+        admitted = price is not None and base in (price.spread_average_operands_off_anchor if off
+                                                   else price.spread_average_operands)
+        written = f"{operand} x spread({{metric: {base}, transformId: {average}, window: {window}}})"
+        refused = f"{base} x {average}({window}) x spread({operand})"
+    else:
+        listed = price is not None and base in price.spread_operands
+        off_ok = price is not None and (not price.spread_operands_off_anchor or base in price.spread_operands_off_anchor)
+        admitted = listed and (not off or (operand != "LAST" and off_ok))
+        written = f"{operand} x spread({base})"
+        refused = f"{base} x spread({operand})"
+    remedy = (f"write {written}: price is the base, so 'price above the level' reads positive" if admitted else
+              "no form with price as the base is admitted at this column's rung")
+    return Finding("error", "REPORT_COLUMN_OPERAND_UNSUPPORTED", path,
+                   f"{refused}: a reference price ({operand}) is never the plain operand of a spread whose base is not "
+                   f"one ({V181_SOURCE}; omega refuses it now). {remedy}. A flipped column's values are not the "
+                   f"negation of the old one's: a percentage gap divides by its operand")
+
+
 def _chained_spread_operand(column: Column, m: Metric, spec: dict, c: Contract, path: str) -> list[Finding]:
     """The operand of `spread` as a chain outer after an average (`<metric> x aggregate|ema|rma|wma -> spread`): the
     averaged series spread against one operand at the column's own timeframe.
@@ -1010,6 +1041,8 @@ def _chained_spread_operand(column: Column, m: Metric, spec: dict, c: Contract, 
                                f"spread operand {op.metric!r} under {tid} {window} is the chain's own average - a "
                                f"spread against itself is identically zero"))
         return out
+    if price_operand_refused(m.metric, op.metric, chained=True):
+        return [_price_operand_finding(column, m.metric, op.metric, c, f"{path}.inputs[0]", average=tid)]
     outer = (spec.get("chainedOuters") or {}).get("spread") or {}
     off = _off_anchor(column)
     served = outer.get("operandsOffAnchor") if off else outer.get("operands")

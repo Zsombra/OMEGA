@@ -182,7 +182,11 @@ DEFAULT_ATR_STOPS = (1, 1.5, 2)
 DEFAULT_R_TARGETS = (1.5, 2, 3)
 FALLBACK_STEP = Fraction(1, 10)   # the ATR step of the default menu's fallback stop between the range's bounds (OMEGA's)
 LEVEL_REF_KEYS = ("metric", "timeframe", "bars", "offset", "knobs", "windowExtreme")
-LEVEL_TRIGGERS = ("STOP_THROUGH_LEVEL", "ON_RETEST")
+# The triggers of the ENTRY arm that takes `levels`. 180.4.0's capture adds EITHER_SIDE_OF_LEVEL (undocumented, served
+# by 177); measured 2026-11-19 (data/audit/reextraction_180_4_2026-11-19.json, D5 / D6 / D7) to judge its levels by
+# the same rule as the other two: an unread level is refused on `entry.levels.<side>`, a read one stages clean.
+# `level_triggers(schema)` reads the arm from the write schema itself; this tuple is the 180.4.0 capture's.
+LEVEL_TRIGGERS = ("STOP_THROUGH_LEVEL", "ON_RETEST", "EITHER_SIDE_OF_LEVEL")
 PROBES = "data/audit/trade_level_menu_168_2026-11-11.json"
 EXIT_PLAN_PROBES = "data/audit/exit_plans_170_2026-11-12.json"
 RUNNER_PROBES = "data/audit/exit_plan_runner_171_2026-11-12.json"
@@ -483,6 +487,16 @@ def _level_findings(ref: dict, path: str, side: str, role: str, readings: tuple,
                     f"timeframe, knobs and offset (probes tc_default_menu, V10, L3a, L4)")], identity
 
 
+def level_triggers(schema: dict | None = None) -> tuple[str, ...]:
+    """The `trigger` enum of the ENTRY arm that requires `levels`, read off the write schema (the pinned capture unless
+    `schema` names another): ("STOP_THROUGH_LEVEL", "ON_RETEST", "EITHER_SIDE_OF_LEVEL") at 180.4.0."""
+    out: list[str] = []
+    for arm in _axis("ENTRY", schema)["properties"]["entry"].get("oneOf") or ():
+        if "levels" in (arm.get("required") or ()):
+            out += ((arm.get("properties") or {}).get("trigger") or {}).get("enum") or ()
+    return tuple(out)
+
+
 def validate_entry_levels(entry: dict, *, sections: list[dict], anchor: str) -> list[Finding]:
     """An ENTRY axis's `entry`, judged as the stage judges it: its shape by the write schema (a level trigger requires
     `levels`, a close trigger takes none), and each level by the menu's level rule - a level the report reads stages
@@ -490,7 +504,7 @@ def validate_entry_levels(entry: dict, *, sections: list[dict], anchor: str) -> 
     ON_CANDLE_CLOSE only (generate.ENTRY_MIRROR); this judges an entry a caller brings."""
     node = _axis("ENTRY")["properties"]["entry"]
     shape = _shape(entry, node, "entry", "ENTRY_LEVELS_SHAPE")
-    if shape or not isinstance(entry, dict) or entry.get("trigger") not in LEVEL_TRIGGERS:
+    if shape or not isinstance(entry, dict) or entry.get("trigger") not in level_triggers():
         return shape
     readings = report_readings(sections, anchor)
     out: list[Finding] = []

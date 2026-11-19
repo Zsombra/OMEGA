@@ -66,7 +66,8 @@ Examples of the shape (not an exhaustive list): news, tweets, on-chain flows and
 order-book depth appear in no module — name the miss, offer the closest measured
 proxy (e.g. `VOLUME`/`CVD` for participation) and say in what way it is not the thing
 asked for. A 1d anchor is not authorable — offer `4h` (SWING, regime read at 1d) and
-label the difference. A 30-coin ranked universe cannot compile — offer ranked limit 4
+label the difference. *(2026-11-19, contract 180.4.0: the platform now authors nine main candles - 5m, 15m, 30m, 1h,
+2h, 4h, 8h, 12h, 1d - and a 4h strategy's regime rung is 12h; OMEGA plans the four it has measured and names 12h.)* A 30-coin ranked universe cannot compile — offer ranked limit 4
 or an explicit list, and say which coins fell away.
 
 ## 4 · Build and iterate

@@ -2,7 +2,7 @@
 
 *Generated from `data/contract/metrics/` — do not hand-edit.*
 
-581 metrics across 14 families. A metric is a **named quantity the platform already
+586 metrics across 14 families. A metric is a **named quantity the platform already
 computes**; you never define the maths, you select the quantity and then choose how
 to read it. Four fields govern everything you can do with one:
 
@@ -326,7 +326,7 @@ to read it. Four fields govern everything you can do with one:
 | `WEEK_TPO_VAH` | `wTpoVAH` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `WEEK_TPO_VAL` | `wTpoVAL` | numeric / price | timeless | value, distance, spread, levelInteraction |
 
-## Sessions & Levels — `levels` (274)
+## Sessions & Levels — `levels` (279)
 
 > Describe the fixed prices a period or a session left behind — the trading sessions’ highs, lows and opens, the opening ranges, the initial-balance extensions, the prior day’s, week’s and month’s highs and lows, and the floor pivots.
 
@@ -340,6 +340,9 @@ to read it. Four fields govern everything you can do with one:
 | `ASIA_HIGH` | `asiaHi` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `ASIA_LOW` | `asiaLo` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `ASIA_OPEN` | `asiaOpen` | numeric / price | timeless | value, distance, spread, levelInteraction |
+| `ATH` | `ath` | numeric / price | candle | value, trajectory, distance, spread, relativeTo, efficiency, aggregate, zscore, stddev, linregSlope, pctl, rollingMin, rollingMax, levelInteraction, cci, ema, rma, rsi, wma, roc |
+| `DAY_HIGH` | `dayHi` | numeric / price | timeless | value, distance, spread, levelInteraction |
+| `DAY_LOW` | `dayLo` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `IB_EXT_DOWN_150` | `ibExtDown150` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `IB_EXT_DOWN_200` | `ibExtDown200` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `IB_EXT_UP_150` | `ibExtUp150` | numeric / price | timeless | value, distance, spread, levelInteraction |
@@ -611,6 +614,8 @@ to read it. Four fields govern everything you can do with one:
 | `PRIOR_WEEK_TPO_VAL` | `pwTpoVAL` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `PWH` | `pwh` | numeric / price | timeless | value, distance, spread, levelInteraction |
 | `PWL` | `pwl` | numeric / price | timeless | value, distance, spread, levelInteraction |
+| `WEEK_HIGH` | `weekHi` | numeric / price | timeless | value, distance, spread, levelInteraction |
+| `WEEK_LOW` | `weekLo` | numeric / price | timeless | value, distance, spread, levelInteraction |
 
 ## Market Structure — `structure` (38)
 

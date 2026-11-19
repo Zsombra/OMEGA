@@ -82,7 +82,8 @@ def test_corpus_is_complete():
     # 532 since the refresh at 149.1.0, 2026-11-07 (_moves_149.json: 206 added)
     # 161.0.0 (2026-11-09): 534 (_moves_161.json: BB_TOUCH retired, VWMA20 + DONCHIAN_BROKEN_HI_PRIOR + DONCHIAN_BROKEN_LO_PRIOR added).
     # 168.3.0 (2026-11-11): 581 (_moves_168.json: 47 added, none retired).
-    assert len(CONTRACT.metrics) == 581
+    # 180.4.0 (2026-11-19): 586 (_moves_180_4.json: ATH, DAY_HIGH, DAY_LOW, WEEK_HIGH, WEEK_LOW added, none retired).
+    assert len(CONTRACT.metrics) == 586
 
 
 def test_every_privileged_pair_is_rejected():

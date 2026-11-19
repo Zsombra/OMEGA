@@ -45,7 +45,7 @@
  ],
  "rule": "A metric with timeframeMode == 'timeless' accepts exactly one column timeframe: {\"rel\": \"anchor\"}. Every other rel, and every abs - including an abs equal to the anchor - is refused with REPORT_COLUMN_CONSTRUCTION_FAILED. The error's allowedDomain lists 'offset' as the only remaining free column parameter.",
  "affectedMetrics": {
-  "count": 369,
+  "count": 373,
   "metrics": [
    "ASIA_HIGH",
    "ASIA_LOW",
@@ -73,6 +73,8 @@
    "CROWD_UP_EXCESS_Z_LIVE",
    "CROWD_UP_LEAN_Z",
    "CROWD_UP_LEAN_Z_LIVE",
+   "DAY_HIGH",
+   "DAY_LOW",
    "FLOW_ALIGN",
    "FUNDING_ANN",
    "FUNDING_LABEL",
@@ -407,6 +409,8 @@
    "TPO_VPOC",
    "TPO_VVAH",
    "TPO_VVAL",
+   "WEEK_HIGH",
+   "WEEK_LOW",
    "WEEK_TPO_POC",
    "WEEK_TPO_VAH",
    "WEEK_TPO_VAL",
@@ -473,7 +477,7 @@
     },
     "result": "REJECTED",
     "code": "VALIDATION_ERROR",
-    "message": "[column-grammar] metric 'pAsiaDemAvg' is timeframe-inert (a bundle read) \u2014 it accepts only the anchor timeframe reference, not '1h'"
+    "message": "[column-grammar] metric 'pAsiaDemAvg' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not '1h'"
    },
    {
     "name": "zone.rel_lower",
@@ -486,7 +490,7 @@
     },
     "result": "REJECTED",
     "code": "VALIDATION_ERROR",
-    "message": "[column-grammar] metric 'pAsiaDemAvg' is timeframe-inert (a bundle read) \u2014 it accepts only the anchor timeframe reference, not 'lower'"
+    "message": "[column-grammar] metric 'pAsiaDemAvg' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not 'lower'"
    },
    {
     "name": "structZone.rel_regime",
@@ -499,7 +503,7 @@
     },
     "result": "REJECTED",
     "code": "VALIDATION_ERROR",
-    "message": "[column-grammar] metric 'zoneSupLo' is timeframe-inert (a bundle read) \u2014 it accepts only the anchor timeframe reference, not 'regime'"
+    "message": "[column-grammar] metric 'zoneSupLo' is timeframe-inert (a bundle read) — it accepts only the anchor timeframe reference, not 'regime'"
    },
    {
     "name": "zone.rel_anchor",

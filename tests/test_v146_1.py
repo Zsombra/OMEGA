@@ -92,7 +92,10 @@ def test_the_24_are_in_the_corpus_and_nothing_is_unmeasured(contract):
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 - the 47 keys of _moves_168.json in, none out
     moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
     assert (len(moves_168["added"]), moves_168["retired"], moves_168["metrics"]) == (47, [], {"at161": 534, "at168": 581})
-    assert ADDED <= set(contract.metrics) and len(contract.metrics) == 534 + len(moves_168["added"]) == 581
+    # 2026-11-19, contract 180.4.0: 586 - the five keys of _moves_180_4.json in, none out
+    moves_180 = _j(CONTRACT_DIR / "metrics" / "_moves_180_4.json")
+    assert ADDED <= set(contract.metrics)
+    assert len(contract.metrics) == 534 + len(moves_168["added"]) + len(moves_180["added"]) == 586
     for key in sorted(ADDED):
         assert (CONTRACT_DIR / "metrics" / f"{key}.json").is_file(), key
     # since 2026-11-05 the record lists the 206 keys of the 148.1.0 capture by name (none of these 24)
@@ -116,7 +119,9 @@ def test_the_market_family_is_the_13_mkt_metrics(contract):
     # re-read 2026-11-05 at 148.1.0 (structure 156 -> 362, market unchanged) and 2026-11-07 at 149.1.0 (nothing moved);
     # the 146.0.1 read three `previous` down since the 161.0.0 re-read of 2026-11-09 (it was two before it); five down
     # since 2026-11-11, which read the categories twice (18:23Z at 168.2.0, 22:32Z at 168.3.0)
-    assert categories["_refreshed"]["previous"]["previous"]["previous"]["previous"]["previous"]["contractVersion"] == "146.0.1"
+    # six down since 2026-11-19 (the 180.4.0 read on top)
+    assert categories["_refreshed"]["previous"]["previous"]["previous"]["previous"]["previous"]["previous"][
+        "contractVersion"] == "146.0.1"
     # a market metric spreads over market metrics only (the served spreadOperands of each of the ten that offer spread)
     for key in sorted(MKT):
         m = contract.metric(key)
@@ -156,8 +161,11 @@ def test_the_subject_domains_partition_the_served_enum(contract):
     # outside that measurement too
     moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
     assert len(moves_168["added"]) == 47 and moves_168["retired"] == []
+    # 2026-11-19, contract 180.4.0: and the five 180.4.0 added (_moves_180_4.json)
+    moves_180 = _j(CONTRACT_DIR / "metrics" / "_moves_180_4.json")
     assert set(coin["metrics"]) | set(market["metrics"]) | set(SUBJECTS["noSubject"]) == (
-        (set(contract.metrics) - added_148 - set(moves_161["added"]) - set(moves_168["added"]))
+        (set(contract.metrics) - added_148 - set(moves_161["added"]) - set(moves_168["added"])
+         - set(moves_180["added"]))
         | set(moves_161["retired"]))
     assert SUBJECTS["servedEnumCount"] == 326 and list(SUBJECTS["noSubject"]) == ["PAR_DEV"]
     assert "is not read on a evaluated-coin section's bars" in coin["refusal"]
@@ -318,7 +326,8 @@ def test_the_manifest_chain_and_the_templates():
     # 2026-11-12: found by version, not depth (tests/manifest_chain.py); the chain on top of it then was
     # 171.0.0 -> 169.4.0 -> 168.3.0 -> 161.0.0 -> 146.0.1
     from tests.manifest_chain import extraction, surface, versions
-    assert versions(MANIFEST)[:5] == ["171.0.0", "169.4.0", "168.3.0", "161.0.0", "146.0.1"]
+    # 180.4.0 on top since 2026-11-19
+    assert versions(MANIFEST)[:6] == ["180.4.0", "171.0.0", "169.4.0", "168.3.0", "161.0.0", "146.0.1"]
     ext = extraction("146.0.1", MANIFEST)
     assert ext["servedContractVersion"] == "146.0.1" and ext["extractedOn"] == "2026-11-02"
     assert ext["supersedes"]["servedContractVersion"] == "144.0.0"
@@ -341,7 +350,10 @@ def test_the_manifest_chain_and_the_templates():
     # 161.0.0 (2026-11-09): three down, was two
     # 2026-11-11, contract 168: five down - the shared blocks were read twice that day (18:23Z at 168.2.0, 22:32Z at
     # 168.3.0), each read pushing the earlier ones one `previous` deeper
+    # 2026-11-19: the 180.4.0 read on top, every earlier one a `previous` deeper
     shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]
+    assert shared["contractVersion"] == "180.4.0"
+    shared = shared["previous"]
     assert (shared["contractVersion"], shared["previous"]["contractVersion"]) == ("168.3.0", "168.2.0")
     assert shared["previous"]["previous"]["previous"]["previous"]["previous"]["contractVersion"] == "146.0.1"
 
@@ -353,5 +365,5 @@ def test_the_version_moved_past_0_11_0():
     # day (exit plans, tests/test_exit_plans_170.py); 0.14.1 the same day (the chain window limits, tests/test_v0_14_1.py;
     # the exit plan's runner, tests/test_exit_plan_runner_171.py); 0.14.2 the same day (the update rules,
     # tests/test_update_rules_171.py); 0.14.3 on 2026-11-13 (the default menu inside the stop range,
-    # tests/test_stop_band_171.py)
-    assert 'version = "0.14.3"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    # tests/test_stop_band_171.py); 0.15.0 on 2026-11-19 (the re-extraction at 180.4.0, tests/test_reextraction_180_4.py)
+    assert 'version = "0.15.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")

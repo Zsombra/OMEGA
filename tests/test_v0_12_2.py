@@ -238,7 +238,8 @@ def test_the_depth_budget_is_the_metrics_served_aggregate_maximum(contract, prob
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 169 (166 at 161.0.0): EMA55 (added) and HIGH_DEV / LOW_DEV (which
     # gained the series transforms: _moves_168.json transformsGainedByExistingMetrics) serve the rolling chains too. The
     # served aggregate maximum is 2436 on each of the three as on the 166 (the loop below): the budget did not move.
-    assert len(rolling) == 169
+    # 2026-11-19, contract 180.4.0: 170 - ATH serves the rolling chains too (served aggregate maximum 2436, the loop)
+    assert len(rolling) == 170
     for m in rolling:
         served = m.transforms["aggregate"]
         assert served["bounds"]["window"] == "depth", m.metric
@@ -292,7 +293,8 @@ def test_the_joint_rule_reproduces_every_served_rolling_chain_cell_and_depth_max
     # serves after aggregate / ema / rma / wma carry windowParameter `window` and windowMaximum null, not `chainedWindow`:
     # they are not rolling-chain cells (their innerWindowMaximum is the inner's standalone maximum, 2436 / 704 / 308 /
     # 2436, on all 660), and the chain is refused TRANSFORM_UNMEASURED before any depth is judged.
-    assert (cells, standalone) == (15379, 2223)
+    # 2026-11-19, contract 180.4.0: 15,470 = 170 x 91 and 2,236 = 172 x 13 (ATH joined both rosters; `wrong` is empty)
+    assert (cells, standalone) == (15470, 2236)
     assert no_budget == [("OBV", tid) for tid in ("zscore", "stddev", "linregSlope", "pctl")]
 
 

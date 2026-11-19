@@ -4,6 +4,10 @@
 # Any change to PVM goes through its draft (omega.generate.StrategyPlan.axes_update), and the
 # TPO suite proper is scripts/tpo_suite_build.py on the v91 axes. ROOT points at a worktree
 # that no longer exists; do not run this.
+# 2026-11-19 (OMEGA v0.15.0): its three `PRIOR_TPO_* x spread(CLOSE)` columns are a form contract v181 refuses (a
+# reference price is never the plain operand of a spread whose base is not one; omega.validate refuses it now). Left
+# as sent, because this file is the record; the v181 form is CLOSE x spread(PRIOR_TPO_*), each clause flipped with
+# omega.contract.flipped_price_spread_clause (scripts/tpo_suite_build.py).
 import json, os, sys
 ROOT = r"C:\Users\rafae\Documents\GitHub\OMEGA\.claude\worktrees\authoring-assistant-plan-0eaf0a"
 

@@ -251,7 +251,11 @@ CORRELATED_OSCILLATORS = {"RSI", "STOCHASTIC", "MFI", "BOLLINGER"}
 # guessed values died to measurement here: 4h cadence (guessed INTRADAY, measured
 # SWING) and 5m regime (guessed 1h, measured 15m).
 CADENCE_FOR_ANCHOR = {"5m": "SCALPER", "15m": "SCALPER", "1h": "INTRADAY", "4h": "SWING"}
-REGIME_TF_FOR_ANCHOR = {"5m": "15m", "15m": "1h", "1h": "4h", "4h": "1d"}
+# The regime rung moved for the 4h anchor (platform, first seen 2026-11-18 13:25Z; vendor pack 32.0.104: "`regime` is
+# the anchor's regime rung, the shortest enabled timeframe at least three times the anchor (12h for a 4h anchor)").
+# Re-measured 2026-11-19 at 180.4.0 with preview_strategy_report (data/audit/reextraction_180_4_2026-11-19.json,
+# R1 - R4): a {rel: regime} column renders at 15m / 1h / 4h / 12h on a 5m / 15m / 1h / 4h strategy (1d before).
+REGIME_TF_FOR_ANCHOR = {"5m": "15m", "15m": "1h", "1h": "4h", "4h": "12h"}
 
 # Modules whose columns are null outside crypto. FLOW_DIVERGENCE measured directly
 # (doc 12: "Perp/spot flow data unavailable" on GOOGL/GOLD); CVD via trap 21 (its

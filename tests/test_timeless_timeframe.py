@@ -96,7 +96,9 @@ def test_every_timeless_metric_is_covered(contract):
     # _SUPPLY_* levels and the six ZONE_SUPPORT_* / ZONE_RESIST_*; - 2: HIGH_DEV and LOW_DEV are served timeframeMode
     # `candle` at 168 (timeless at 161; they gained the series transforms). The rule was NOT probed live on the 30: it
     # follows from the served timeframeMode and is checked offline by the loop below, as for every addition but PIVOT_WEEK_P.
-    assert len(timeless) == 338
+    # 2026-11-19, contract 180.4.0: 342 - DAY_HIGH, DAY_LOW, WEEK_HIGH and WEEK_LOW are served timeless (ATH is not);
+    # checked offline by the loop below, not probed live
+    assert len(timeless) == 342
     for name in timeless:
         codes = [f.code for f in _findings(name, {"rel": "regime"}, contract)]
         assert "REPORT_COLUMN_CONSTRUCTION_FAILED" in codes, name

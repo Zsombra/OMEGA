@@ -70,9 +70,10 @@ def test_the_manifest_is_the_169_re_read_and_its_counts_are_the_corpus():
     assert surface("169.4.0", MANIFEST)["buildSha"] == BUILD
     c = load()
     counts = block["counts"]
-    assert counts["metrics"] == len(c.metrics) == 581
-    assert counts["structuralShapes"] == len(enumerate_shapes(contract=c)) == 27244
-    assert counts["operandExpandedShapes"] == len(enumerate_shapes(expand_operands=True, contract=c)) == 508207
+    # the 169.4.0 block keeps its own counts; the corpus moved to 180.4.0 on 2026-11-19 (tests/test_v168.py pins the
+    # top block against it)
+    assert (counts["metrics"], counts["structuralShapes"], counts["operandExpandedShapes"]) == (581, 27244, 508207)
+    assert len(c.metrics) == 586
     assert c.unmeasured_chain_outers == {} and c.unmeasured_transforms == {} and c.unmeasured_metrics == {}
 
 
@@ -173,7 +174,9 @@ def test_each_refusal_is_the_platforms(column, code):
 def test_the_chained_spread_shapes_are_in_the_space_and_were_all_rendered():
     c = load()
     shapes = [s for s in enumerate_shapes(contract=c) if s.chained == "spread"]
-    assert len(shapes) == 660 and {s.transform for s in shapes} == {"aggregate", "ema", "rma", "wma"}
+    # 664 since 180.4.0 (2026-11-19): ATH x aggregate / ema / rma / wma -> spread, rendered by the 2026-11-19 structural
+    # sweep (data/audit/coverage_sweep_2026-11-19.json)
+    assert len(shapes) == 664 and {s.transform for s in shapes} == {"aggregate", "ema", "rma", "wma"}
     assert all(s.operand is not None and _errors(s.to_column()) == [] for s in shapes)
     coin, market = _j(AUDIT / "coverage_sweep_2026-11-12.json"), _j(AUDIT / "coverage_sweep_2026-11-12-market.json")
     for rec, n in ((coin, 620), (market, 40)):

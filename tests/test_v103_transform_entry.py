@@ -46,7 +46,8 @@ def test_the_108_4_corpus_is_the_v103_shape_and_the_catalogue_carries_the_requir
     # 4735 at 168.3.0 (2026-11-11, extraction 20261111): + 242 = 212 cells on the 47 added metrics + 30 on HIGH_DEV / LOW_DEV
     # (fifteen series transforms each: _moves_168.json transformsGainedByExistingMetrics); none lost. It is the matrix's
     # legal count (data/derived/composability_matrix.csv, 4735 of 16849) and the manifest's composabilityLegal.
-    assert cells == 4735   # 4493 at 161.0.0; 4242 at 149.1.0; 2607 at 146.0.1; 2429 at 144.0.0 (2026-10-30): + 980 (78 metrics added, 2 retired, relativeTo on every metric with a series home); 670 at 108.4.0; 705 at 110.2.0 (2026-10-14): - 18 retired + 53 added; 731 at 110.8.0 (2026-10-15): + 26 added
+    # 4771 at 180.4.0 (2026-11-19): + 36, the cells of the five added keys (ATH 20, each of the four day / week levels 4)
+    assert cells == 4771   # 4735 at 168.3.0 - 171.0.0; 4493 at 161.0.0; 4242 at 149.1.0; 2607 at 146.0.1; 2429 at 144.0.0 (2026-10-30): + 980 (78 metrics added, 2 retired, relativeTo on every metric with a series home); 670 at 108.4.0; 705 at 110.2.0 (2026-10-14): - 18 retired + 53 added; 731 at 110.8.0 (2026-10-15): + 26 added
 
 
 def test_the_catalogue_names_exactly_spread_and_the_four_zone_transforms():

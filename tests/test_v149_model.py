@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from omega.contract import CONTRACT_DIR, REFERENCE_PAIRS, load, section_subject
+from omega.contract import CONTRACT_DIR, REFERENCE_PAIRS, load, price_operand_refused, section_subject
 from omega.fanout import knob_token, outputs_for
 from omega.types import Column, CustomSection
 from omega.validate import validate_column, validate_section
@@ -112,6 +112,15 @@ def _moved_at_161(p: dict) -> str | None:
     "of the 1000 readable bars" fits now (the served maxima: ema 269 -> 704, aggregate 936 -> 2436 ...)."""
     if any(c.get("metric") == "CLOSE" and c.get("transformId") == "distance" for s in p["sections"] for c in s["columns"]):
         return "pair"
+    # OMEGA v0.15.0 (2026-11-19): the announced v181 rule - a reference price is never the plain operand of a spread whose
+    # base is not one - is refused offline before it is served, so a probe that sent `X x spread(CLOSE | LAST)` reads
+    # REPORT_COLUMN_OPERAND_UNSUPPORTED now whatever 149.1.0 answered
+    if any(price_operand_refused(c.get("metric"), (i or {}).get("metric"),
+                                 chained=c.get("chainedTransformId") == "spread" and c.get("transformId") != "spread")
+           for s in p["sections"] for c in s["columns"]
+           if "spread" in (c.get("transformId"), c.get("chainedTransformId"))
+           for i in (c.get("inputs") or []) if not (i or {}).get("transformId")):
+        return "v181"
     if "of the 1000 readable bars" in ((p.get("refusal") or {}).get("message") or ""):
         return "depth"
     return None
@@ -122,7 +131,7 @@ def test_omega_agrees_with_every_probe_answer(contract):
     refuses are the ones the probe built with a duplicate header on purpose: the platform renders them and flags
     `duplicateHeaders` (the section then leaves conditionColumns), which is exactly omega's DUPLICATE_HEADER."""
     agree = duplicates = 0
-    moved = {"pair": [], "depth": []}
+    moved = {"pair": [], "depth": [], "v181": []}
     for p in PROBE["probes"]:
         if (p.get("refusal") or {}).get("code") == "SERVICE_UNAVAILABLE":
             continue
@@ -132,6 +141,8 @@ def test_omega_agrees_with_every_probe_answer(contract):
             moved[_moved_at_161(p)].append(p["probe"])
             if _moved_at_161(p) == "pair":
                 assert "REPORT_COLUMN_PAIR_UNSUPPORTED" in errors, p["probe"]
+            elif _moved_at_161(p) == "v181":
+                assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in errors, (p["probe"], errors)
             else:
                 assert not {"DEPTH_EXCEEDED", "PARAMETER_OUT_OF_RANGE"} & set(errors), (p["probe"], errors)
             continue
@@ -148,8 +159,10 @@ def test_omega_agrees_with_every_probe_answer(contract):
     # 161.0.0 (2026-11-09): (201, 5) agree on the 149.1.0 answers that still hold; 22 moved (223 - 22): six touch
     # CLOSE x distance (the four J.<smoother>.chainOuter sections accepted at 149 and the two J.CLOSE.distance.chain
     # depth refusals) and sixteen were depth refusals at the 1000-bar depth (the served maxima moved with the 2500-bar depth)
-    assert (len(moved["pair"]), len(moved["depth"])) == (6, 16)
-    assert (agree, duplicates) == (201, 5)
+    # 2026-11-19 (OMEGA v0.15.0): seven more - the 149.1.0 sections that sent a level x spread(CLOSE) (the four D/F
+    # `served` probes, C.SWING_FRACTAL_HIGH's operand probe, ...) - follow the announced v181 rule; (194, 5) agree
+    assert (len(moved["pair"]), len(moved["depth"]), len(moved["v181"])) == (6, 16, 7)
+    assert (agree, duplicates) == (194, 5)
 
 
 # The platform's refusal class (authoringCode; None = a schema-level VALIDATION_ERROR) -> the omega codes that state it.
@@ -273,7 +286,10 @@ def test_the_moves_record(contract):
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 581 - the 47 keys of _moves_168.json in, none out
     moves_168 = _j(CONTRACT_DIR / "metrics" / "_moves_168.json")
     assert (len(moves_168["added"]), moves_168["retired"]) == (47, [])
-    assert set(MOVES["added"]) <= set(contract.metrics) and len(contract.metrics) == 534 + len(moves_168["added"]) == 581
+    # 2026-11-19, contract 180.4.0 (extraction 20261119b): 586 - the five keys of _moves_180_4.json in, none out
+    moves_180 = _j(CONTRACT_DIR / "metrics" / "_moves_180_4.json")
+    assert set(MOVES["added"]) <= set(contract.metrics)
+    assert len(contract.metrics) == 534 + len(moves_168["added"]) + len(moves_180["added"]) == 586
     for key, knobs in MOVES["parametersServed"].items():
         assert list(contract.metric(key).parameters) == knobs, key
 
@@ -284,10 +300,13 @@ def test_the_vocabulary_read_at_149_1_0(contract):
     # read is its `previous` and its own snapshot (20261107T1736Z) keeps the 28 as read
     # 2026-11-11, contract 168: re-read twice that day (18:23Z at 168.2.0: conditionGrammar moved; 22:32Z at 168.3.0:
     # nothing), so the 161.0.0 read is two `previous` down and the 149.1.0 read three; the transforms are still 29
-    assert shared["_refreshed"]["contractVersion"] == "168.3.0" and shared["_refreshed"]["at"] == "2026-11-11T22:32Z"
-    assert shared["_refreshed"]["previous"]["contractVersion"] == "168.2.0"
-    assert shared["_refreshed"]["previous"]["moved"] == ["conditionGrammar"]
-    read_161 = shared["_refreshed"]["previous"]["previous"]
+    # 2026-11-19, contract 180.4.0: re-read 20:58Z on top; the 168.3.0 read is its `previous`
+    assert shared["_refreshed"]["contractVersion"] == "180.4.0"
+    read_168 = shared["_refreshed"]["previous"]
+    assert read_168["contractVersion"] == "168.3.0" and read_168["at"] == "2026-11-11T22:32Z"
+    assert read_168["previous"]["contractVersion"] == "168.2.0"
+    assert read_168["previous"]["moved"] == ["conditionGrammar"]
+    read_161 = read_168["previous"]["previous"]
     assert read_161["contractVersion"] == "161.0.0" and read_161["at"] == "2026-11-09T16:22Z"
     prev = read_161["previous"]
     assert prev["contractVersion"] == "149.1.0" and prev["at"] == "2026-11-07T17:36Z"

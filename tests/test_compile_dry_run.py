@@ -202,4 +202,12 @@ def test_the_cadence_prediction_outcome_is_pinned():
     ps = TF4H["responseVerbatim"]["approvedPlan"]["postState"]
     assert TF4H["predictionStatedBeforeMeasuring"]["cadence"].startswith("INTRADAY")
     assert ps["cadence"] == CADENCE_FOR_ANCHOR["4h"] == "SWING"
-    assert ps["regimeTimeframe"] == REGIME_TF_FOR_ANCHOR["4h"] == "1d"
+    assert ps["regimeTimeframe"] == "1d"
+    # The rung moved on the platform (first seen 2026-11-18): re-measured 2026-11-19 at 180.4.0, a {rel: regime} column
+    # on a 4h strategy reads 12h (data/audit/reextraction_180_4_2026-11-19.json P1 / R4).
+    import json
+    from pathlib import Path
+    record = json.loads((Path(__file__).resolve().parents[1] / "data" / "audit" /
+                         "reextraction_180_4_2026-11-19.json").read_text(encoding="utf-8"))
+    assert REGIME_TF_FOR_ANCHOR["4h"] == "12h" == {c["key"]: c["timeframe"] for c in
+                                                    record["previews"]["P1"]["answer"]["columns"]}["RSI14_htf"]

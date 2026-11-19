@@ -738,14 +738,30 @@ def test_an_exit_rule_admits_an_offset_column():
     assert not [f for f in validate_conditions(rep, [exiting]) if f.severity == "error"]
 
 
-def test_a_verdict_carrier_may_not_read_a_developing_higher_timeframe_bar_even_through_a_reference():
+def test_since_v175_a_verdict_carrier_and_an_exit_rule_may_read_a_developing_higher_timeframe_bar():
+    """v175: CONDITION_VERDICT_READ_ILLEGAL is no longer raised, and CONDITION_EXIT_READ_ILLEGAL names only a closure no
+    completed bar moves. Measured at 180.4.0 (data/audit/reextraction_180_4_2026-11-19.json D1 / D7: DEV_CARRIER and
+    DEV_EXIT over RSI14_4h_dev staged clean)."""
     rep = _report({"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "regime"}, "bars": "all"})
     [header] = [h for h in report_headers(rep) if h.startswith("RSI14")]
-    block = condition("BLOCK", "n", num(header, "gt", 50))                       # verdict None: legal
+    assert report_headers(rep)[header]["developing"]
+    block = condition("BLOCK", "n", num(header, "gt", 50))
     carrier = condition("TOP", "n", ref("BLOCK"), verdict="UP")
-    findings = validate_conditions(rep, [block, carrier])
-    assert not [f for f in findings if f.condition_key == "BLOCK" and f.severity == "error"]
-    assert any("CONDITION_VERDICT_READ_ILLEGAL" in f.message and f.condition_key == "TOP" for f in findings)
+    direct = condition("TOP2", "n", num(header, "gt", 50), verdict="DOWN")
+    leaving = exit_rule("XD", "n", num(header, "lt", 30), "LONG")
+    assert not [f for f in validate_conditions(rep, [block, carrier, direct, leaving]) if f.severity == "error"]
+
+
+def test_a_hold_over_a_developing_read_is_refused():
+    """v175: "Still refused: a hold over more than one bar ... over a Developing read" - measured at 180.4.0 (D1:
+    CONDITION_HOLD_ILLEGAL, maxWindow 1). Before v0.15.0 OMEGA only warned."""
+    rep = _report({"metric": "RSI14", "transformId": "value", "timeframe": {"rel": "regime"}, "bars": "all"})
+    [header] = [h for h in report_headers(rep) if h.startswith("RSI14")]
+    errs = [f for f in validate_conditions(rep, [condition("DH", "n", num(header, "gte", 50, hold=(2, 2)))])
+            if f.severity == "error"]
+    assert len(errs) == 1 and "CONDITION_HOLD_ILLEGAL" in errs[0].message and "at most 1 close" in errs[0].message
+    assert not [f for f in validate_conditions(rep, [condition("DH", "n", num(header, "gte", 50))])
+                if f.severity == "error"]
 
 
 def test_a_confirmed_higher_timeframe_read_admits_a_verdict():
