@@ -78,7 +78,7 @@
      "required": false
     },
     "inputs": {
-     "description": "Exactly one operand at the base column timeframe: a same-unit metric `{ metric }`, or a metric under one average at a length `{ metric, transformId, window }` — transformId one of aggregate, ema, rma, wma (aggregate is the simple average), window at least 2, the metric the base itself or any of its operands with a per-bar candle value.",
+     "description": "Exactly one operand at the base column timeframe: a same-unit metric `{ metric }` — never a reference price (CLOSE, LAST) unless the base is one, because price compared with another reading is the base (write CLOSE × spread(<metric>)) — or a metric under one average at a length `{ metric, transformId, window }` — transformId one of aggregate, ema, rma, wma (aggregate is the simple average), window at least 2, the metric the base itself or any of its operands with a per-bar candle value.",
      "required": true
     }
    },

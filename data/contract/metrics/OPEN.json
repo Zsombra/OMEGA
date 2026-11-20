@@ -216,7 +216,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -326,7 +325,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -443,7 +441,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -541,7 +538,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -646,7 +642,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -744,7 +739,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -849,7 +843,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -947,7 +940,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1052,7 +1044,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1150,7 +1141,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1255,7 +1245,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1353,7 +1342,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1458,7 +1446,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1556,7 +1543,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1661,7 +1647,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1759,7 +1744,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1864,7 +1848,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -1974,7 +1957,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2091,7 +2073,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2189,7 +2170,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2294,7 +2274,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2392,7 +2371,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2497,7 +2475,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2595,7 +2572,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2700,7 +2676,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2798,7 +2773,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -2903,7 +2877,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -3001,7 +2974,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -3106,7 +3078,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -3204,7 +3175,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
             "SPOT_CLOSE_CB",
             "SPOT_CLOSE_BN",
             "HL2",
@@ -3489,8 +3459,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -3908,8 +3876,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -4173,8 +4139,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -4592,8 +4556,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -4857,8 +4819,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -5276,8 +5236,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -5541,8 +5499,6 @@
           "operands": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -5960,8 +5916,6 @@
           "operandsOffAnchor": [
             "HIGH",
             "LOW",
-            "CLOSE",
-            "LAST",
             "MARK",
             "ORACLE",
             "SPOT_CLOSE_CB",
@@ -6766,8 +6720,6 @@
   "spreadOperands": [
     "HIGH",
     "LOW",
-    "CLOSE",
-    "LAST",
     "MARK",
     "ORACLE",
     "SPOT_CLOSE_CB",
@@ -7185,8 +7137,6 @@
   "spreadOperandsOffAnchor": [
     "HIGH",
     "LOW",
-    "CLOSE",
-    "LAST",
     "MARK",
     "ORACLE",
     "SPOT_CLOSE_CB",
