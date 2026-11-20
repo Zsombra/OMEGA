@@ -75,7 +75,7 @@ def S(metric, operand):
 
 COLUMNS = [
     # prior-session location, available around the clock
-    # v181 (announced, OMEGA v0.15.0): price is the base of a spread over another reading - CLOSE x spread(PRIOR_TPO_*),
+    # v181 (announced at OMEGA v0.15.0, served since 182.3.2 - measured 2026-11-20): price is the base of a spread over another reading - CLOSE x spread(PRIOR_TPO_*),
     # not PRIOR_TPO_* x spread(CLOSE); each clause on them is flipped and its threshold mapped (fallback tier below)
     S("CLOSE", "PRIOR_TPO_VAH"),
     S("CLOSE", "PRIOR_TPO_VAL"),

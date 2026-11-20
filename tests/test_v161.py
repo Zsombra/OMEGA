@@ -133,7 +133,8 @@ def _v181(p) -> bool:
                for i in (c.get("inputs") or []) if not i.get("transformId"))
 
 
-# the three `R.<key>.served` probes spread each added key against CLOSE: accepted, and warned since 2026-11-19
+# the three `R.<key>.served` probes spread each added key against CLOSE: accepted at 161.0.0, warned since 2026-11-19,
+# refused from extracted data since 2026-11-20 (v181 served at 182.3.2)
 V181_MOVED = ['R.VWMA20.served', 'R.DONCHIAN_BROKEN_HI_PRIOR.served', 'R.DONCHIAN_BROKEN_LO_PRIOR.served']
 
 
@@ -177,10 +178,13 @@ def test_omega_agrees_with_every_answer_of_the_161_probe():
                     predicted |= {o.header for o in outputs_for(col, contract)}
         if p["accepted"]:
             if _v181(p):
-                # OMEGA v0.15.0 (2026-11-19): the announced v181 form warns while the pinned surface is below 181
-                # (accepted here and at 180.4.0); the measured answer stands
-                assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in warned.get(p["probe"], []), p["probe"]
+                # OMEGA v0.15.0 (2026-11-19) warned on the announced v181 form (accepted here and at 180.4.0). v181 is
+                # served since: the 182.3.2 hints list no reference price for these bases, so omega refuses from
+                # extracted data (2026-11-20) what the platform accepted at 161.0.0 and refuses today
+                # (data/audit/reextraction_182_2026-11-20.json A1 - A7). The 161.0.0 answer stands as measured then.
+                assert errors == ["OPERAND_NOT_ALLOWED"], (p["probe"], errors)
                 moved_v181.append(p["probe"])
+                continue
             flagged = bool((p["render"] or {}).get("duplicateHeaders"))
             assert errors == (["DUPLICATE_HEADER"] if flagged else []), p["probe"]
             assert predicted <= _rendered_names(p["render"]), (p["probe"], sorted(predicted - _rendered_names(p["render"])))
@@ -213,7 +217,7 @@ def test_the_manifest_records_the_161_extraction():
     # did not move), 168.3.0 its `supersedes`, the 161.0.0 block below that; tests/test_v169.py pins the top block
     # (171.0.0 on top later that morning: by version from here on, tests/manifest_chain.py)
     from tests.manifest_chain import extraction
-    assert current["servedContractVersion"] == "180.4.0"      # since 2026-11-19 (171.0.0 before)
+    assert current["servedContractVersion"] == "182.3.2"      # since 2026-11-20 (180.4.0 since 2026-11-19, 171.0.0 before)
     current = extraction("168.3.0", current)
     assert current["extractedOn"] == "2026-11-11"
     m = current["supersedes"]
@@ -247,5 +251,5 @@ def test_the_manifest_records_the_161_extraction():
     # the 168.3.0 block's structuralShapes stays as recorded: the space has held the chained spread's 660 shapes since
     # 2026-11-12 (OMEGA v0.13.1), when nothing was unmeasured any more
     assert n["structuralShapes"] == 26584
-    assert sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 27424     # at 180.4.0
+    assert sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 27424     # at 180.4.0 and 182.3.2
     assert c.unmeasured_chain_outers == {}

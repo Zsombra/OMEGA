@@ -16,6 +16,17 @@ It writes the six draft tools (description / inputSchema / outputSchema / annota
   _absent                     a tool of the six the live list does not hold.
 A manager row for another contract or build is refused: the comparison would mean nothing.
 
+Since 2026-11-20 (contract 182.3.2) the same list also writes authoring_tools_<UTC stamp>.json: the OTHER tools an
+authoring pass calls (AUTHORING_TOOLS: the trade level preview, the discard, the hints, the vocabulary, the column
+contract, the section templates, the strategy list, the saved sections), with the same contractVersion / buildSha /
+liveListSha256. The captures through 180.4.0 held the six draft tools only, so the 180.4.0 -> 182.3.2 pass had nothing
+of OMEGA's to diff these against (preview_strategy_trade_levels' description moved at 182.3.x and was read from
+battlegrid-manager's audit event). A tool of AUTHORING_TOOLS the list lacks is named in `_absent`, not fatal.
+
+    python -m scripts.capture_write_surface --authoring-only <schema_....json>
+writes the sidecar alone, beside a capture already taken: the list must be of that capture's contract and build and
+its six draft tools must equal the capture's (description / inputSchema / outputSchema), else nothing is written.
+
     PATH=<npx shim>:$PATH MANAGER_ROW=<path> python -m scripts.capture_write_surface
 """
 from __future__ import annotations
@@ -34,6 +45,10 @@ OUT_DIR = ROOT / "data" / "contract" / "stage_strategy_draft"
 TOOLS = ("stage_strategy_draft", "get_strategy_draft", "commit_strategy_draft", "list_strategy_drafts",
          "preview_strategy_report", "get_strategy")
 PARTS = ("description", "inputSchema", "outputSchema")
+AUTHORING_TOOLS = ("preview_strategy_trade_levels", "discard_strategy_draft", "get_metric_construction_hints",
+                   "list_strategy_vocabulary", "list_strategy_categories", "get_strategy_column_contract",
+                   "get_strategy_section_template", "list_strategies", "save_report_section",
+                   "remove_saved_report_section")
 VERSION_URL = os.environ.get("EXTRACTION_VERSION_URL") or "https://mcp.battlegrid.trade/mcp/version"
 AUTH_MARKERS = ("/authorize", "If the browser did not open", "OAuth", "Unauthorized", "401")
 
@@ -102,6 +117,36 @@ def capture(*, version: dict, raw: bytes, tools: list, manager_row: dict | None,
     return doc
 
 
+def authoring_tools(*, version: dict, raw: bytes, tools: list, listed_at: datetime, beside: dict | None = None,
+                    beside_name: str | None = None) -> dict:
+    """The sidecar: AUTHORING_TOOLS as listed (description / inputSchema / outputSchema / annotations), keyed under
+    `tools`. From the capture's own list (the same liveListSha256), or - `beside`, a capture already on disk - from a
+    later list of the same contract and build whose six draft tools equal that capture's; any difference exits with
+    nothing written, because the sidecar would then describe another surface than the capture it sits beside."""
+    by_name = {t.get("name"): t for t in tools if isinstance(t, dict)}
+    read_from = (f"the live surface listed {listed_at.strftime('%Y-%m-%dT%H:%MZ')} (mcporter list battlegrid-anbu "
+                 f"--schema --output json, {len(tools)} tools, GET /mcp/version {version['contractVersion']} / "
+                 f"{version['buildSha'][:8]} before and after)")
+    if beside is None:
+        read_from += f", the list of the schema_{listed_at.strftime('%Y%m%dT%H%M%SZ')}.json capture beside it"
+    else:
+        if (beside.get("contractVersion"), beside.get("buildSha")) != (version["contractVersion"], version["buildSha"]):
+            sys.exit(f"{beside_name} is {beside.get('contractVersion')} / {str(beside.get('buildSha'))[:8]}, the live "
+                     f"surface {version['contractVersion']} / {version['buildSha'][:8]}: not the same surface")
+        moved = [f"{t}.{part}" for t in TOOLS for part in PARTS
+                 if (by_name.get(t) or {}).get(part) != (beside.get(t) or {}).get(part)]
+        if moved:
+            sys.exit(f"the six draft tools of this list differ from {beside_name}: {moved}; nothing written")
+        read_from += (f"; a later list than {beside_name}'s, of the same contract and build, whose six draft tools "
+                      f"equal that capture's on description / inputSchema / outputSchema")
+    return {"contractVersion": version["contractVersion"], "buildSha": version["buildSha"],
+            "liveListSha256": hashlib.sha256(raw).hexdigest(),
+            "beside": beside_name or f"schema_{listed_at.strftime('%Y%m%dT%H%M%SZ')}.json", "readFrom": read_from,
+            "_absent": [t for t in AUTHORING_TOOLS if t not in by_name],
+            "tools": {t: {k: by_name[t].get(k) for k in ("description", "inputSchema", "outputSchema", "annotations")}
+                      for t in AUTHORING_TOOLS if t in by_name}}
+
+
 def main() -> int:
     before = read_version()
     listed_at = datetime.now(UTC)
@@ -109,6 +154,16 @@ def main() -> int:
     after = read_version()
     if before != after:
         sys.exit(f"the contract moved during the list ({before} -> {after}): nothing written, run again")
+    if "--authoring-only" in sys.argv[1:]:
+        name = sys.argv[sys.argv.index("--authoring-only") + 1]
+        beside = json.loads((OUT_DIR / name).read_text(encoding="utf-8"))
+        side = authoring_tools(version=before, raw=raw, tools=tools, listed_at=listed_at, beside=beside,
+                               beside_name=name)
+        side_out = OUT_DIR / f"authoring_tools_{listed_at.strftime('%Y%m%dT%H%M%SZ')}.json"
+        side_out.write_text(json.dumps(side, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+        print(f"wrote {side_out.relative_to(ROOT).as_posix()} beside {name}: {len(side['tools'])} of "
+              f"{len(AUTHORING_TOOLS)} authoring tools{' (absent: ' + ', '.join(side['_absent']) + ')' if side['_absent'] else ''}")
+        return 0
     row_path = os.environ.get("MANAGER_ROW")
     row = json.loads(Path(row_path).read_text(encoding="utf-8")) if row_path else None
     doc = capture(version=before, raw=raw, tools=tools, manager_row=row,
@@ -122,6 +177,8 @@ def main() -> int:
     print(f"wrote {out.relative_to(ROOT).as_posix()}: {doc['contractVersion']} / {doc['buildSha'][:8]}, "
           f"{len(tools)} tools listed, sha256 {doc['liveListSha256'][:8]}; "
           f"manager row {'not given' if row is None else ('agrees on all six' if not disagree else f'DISAGREES: {disagree}')}")
+    print(f"wrote {side_out.relative_to(ROOT).as_posix()}: {len(side['tools'])} of {len(AUTHORING_TOOLS)} authoring "
+          f"tools{' (absent: ' + ', '.join(side['_absent']) + ')' if side['_absent'] else ''}")
     return 0
 
 

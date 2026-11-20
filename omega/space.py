@@ -82,7 +82,8 @@ def _variants(m: Metric, transform: str, expand: bool) -> list[tuple[str | None,
             return [(None, "hi" if "hi" in orderings else orderings[0])]
         return [(None, None)]
     if transform == "spread" and m.spread_operands:
-        # v181 (announced): a reference price is never the plain operand of a spread whose base is not one
+        # v181 (served since 182.3.2): a reference price is never the plain operand of a spread whose base is not
+        # one. The hints list none, so this filter drops nothing on today's corpus; it stays for one that still does
         return [(o, None) for o in m.spread_operands if not price_operand_refused(m.metric, o)]
     if transform == "rank" and m.rank_orderings:
         return [(None, o) for o in m.rank_orderings]
@@ -126,9 +127,11 @@ def enumerate_shapes(expand_operands: bool = False,
                         # shape carries the first served operand so its column is authorable as written. An operand
                         # under an average (`inputs[]` {metric, transformId, window}) is a parameter of the shape, like
                         # a window, and is not enumerated.
-                        # v181 (announced): the averaged base is never a reference price, so CLOSE / LAST are left out
+                        # v181 (served since 182.3.2): the base decides, averaged or not - CLOSE's own averages
+                        # serve LAST and keep it (close_ema34_last_spread rendered 2026-11-20, H1 - H3); every other
+                        # base's list holds no reference price, so the filter drops nothing on today's corpus
                         served = tuple(o for o in (chained_operands(flags, "spread") or ())
-                                       if not price_operand_refused(name, o, chained=True))
+                                       if not price_operand_refused(name, o))
                         for o in (served if expand_operands else served[:1]):
                             out.append(ColumnShape(name, transform, succ, o, None, instrument))
                         continue

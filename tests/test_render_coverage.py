@@ -96,7 +96,7 @@ def test_rendered_headers_spans_every_cache():
     # non-spread pass (-nonspread) and the three knob-spelling probe caches (_probe_168_knobs_2026-11-11-{a,b,c}.json)
     # 44 since 2026-11-12: + the 169.4.0 authoring probe headers (_probe_169_2026-11-12.json, -c.json) and the chained
     # spread's structural sweep, coin and market (_coverage_sweep_2026-11-12.json, -market.json)
-    assert len(SEEN_FILES) == 45   # 45 since 2026-11-19 (the 180.4.0 structural sweep); 44 since 2026-11-12; 40 since 2026-11-11; 36 with the structural sweep alone; 35 since 2026-11-10; 30 from the second knob probe of 2026-11-08; 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
+    assert len(SEEN_FILES) == 46   # 46 since 2026-11-20 (the 182.3.2 probes); 45 since 2026-11-19 (the 180.4.0 structural sweep); 44 since 2026-11-12; 40 since 2026-11-11; 36 with the structural sweep alone; 35 since 2026-11-10; 30 from the second knob probe of 2026-11-08; 29 until the second knob probe of 2026-11-08; 20 at 144.0.0: 17 at 135.2.0 + the two 2026-10-30 sweeps and the 144 probe headers
     seen = rendered_headers()
     assert len(seen) > 900
     # The point of this test is bug 2 itself: NO single cache is the record. Assert that
@@ -277,7 +277,10 @@ def test_live_coverage_is_complete(contract):
     # less 562 rendered shapes the v181 rule took out of the space (X x spread(CLOSE | LAST) pairs the earlier sweeps
     # rendered; omega refuses the form now), plus the 160 structural shapes of that day's sweep. The deliberate stop is
     # 298,470 unchained spread pairs and 163,665 chained-spread ones (ATH and the four day / week levels as operands).
-    assert (cov, len(unc)) == (53806, 298470 + 163665), (
+    # 182.3.2 (2026-11-20, OMEGA v0.16.0): 515,945 expanded shapes less placeholders - four more than at 180.4.0, CLOSE's
+    # own averages spread against LAST (v181, served: the base decides), each rendered that day (COV): 53,810 rendered.
+    # The unrendered are the same spread operand pairs as at 180.4.0.
+    assert (cov, len(unc)) == (53810, 298470 + 163665), (
         "live coverage regressed - a shape is enumerated that has never been rendered")
     assert byt["spread"] == 298470 and sum(byt.values()) == 298470 + 163665
     assert all(s.transform == "spread" or s.chained == "spread" for s in unc)

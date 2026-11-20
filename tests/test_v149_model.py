@@ -122,7 +122,7 @@ def test_omega_agrees_with_every_probe_answer(contract):
     refuses are the ones the probe built with a duplicate header on purpose: the platform renders them and flags
     `duplicateHeaders` (the section then leaves conditionColumns), which is exactly omega's DUPLICATE_HEADER."""
     agree = duplicates = 0
-    moved = {"pair": [], "depth": []}
+    moved = {"pair": [], "depth": [], "v181": []}
     for p in PROBE["probes"]:
         if (p.get("refusal") or {}).get("code") == "SERVICE_UNAVAILABLE":
             continue
@@ -134,6 +134,12 @@ def test_omega_agrees_with_every_probe_answer(contract):
                 assert "REPORT_COLUMN_PAIR_UNSUPPORTED" in errors, p["probe"]
             else:
                 assert not {"DEPTH_EXCEEDED", "PARAMETER_OUT_OF_RANGE"} & set(errors), (p["probe"], errors)
+            continue
+        if p["accepted"] and _v181_form(p):
+            # accepted at 149.1.0; v181 is served since 182.3.2 and the hints list no reference price for these bases,
+            # so omega refuses the column from extracted data (2026-11-20). The 149.1.0 answer is history.
+            assert "OPERAND_NOT_ALLOWED" in errors, (p["probe"], errors)
+            moved["v181"].append(p["probe"])
             continue
         if p["accepted"]:
             if errors:
@@ -149,7 +155,10 @@ def test_omega_agrees_with_every_probe_answer(contract):
     # CLOSE x distance (the four J.<smoother>.chainOuter sections accepted at 149 and the two J.CLOSE.distance.chain
     # depth refusals) and sixteen were depth refusals at the 1000-bar depth (the served maxima moved with the 2500-bar depth)
     assert (len(moved["pair"]), len(moved["depth"])) == (6, 16)
-    assert (agree, duplicates) == (201, 5)
+    # 182.3.2 (2026-11-20): seven more moved - the accepted probes that sent a reference price as the plain operand of
+    # a spread whose base is not one (v181, served): (194, 5) agree, 201 until then
+    assert len(moved["v181"]) == 7
+    assert (agree, duplicates) == (194, 5)
 
 
 def _v181_form(p: dict) -> bool:
@@ -161,19 +170,19 @@ def _v181_form(p: dict) -> bool:
                for i in (c.get("inputs") or []) if not (i or {}).get("transformId"))
 
 
-def test_the_probes_that_sent_the_v181_form_keep_their_answer_and_warn(contract):
-    """OMEGA v0.15.0 (2026-11-19): the announced v181 rule (a reference price is never the plain operand of a spread
-    whose base is not one) is a WARNING while the pinned surface is below 181 - the platform accepted these at 149.1.0
-    and accepts the form at 180.4.0 (data/audit/reextraction_180_4_2026-11-19.json P1) - so their measured answers
-    stand above and each carries the warning."""
+def test_the_probes_that_sent_the_v181_form_are_refused_from_extracted_data_since_182(contract):
+    """OMEGA v0.15.0 (2026-11-19) warned on the announced v181 form (a reference price is never the plain operand of a
+    spread whose base is not one): the platform accepted these at 149.1.0 and at 180.4.0. v181 is served since
+    (measured 2026-11-20 at 182.3.2, data/audit/reextraction_182_2026-11-20.json A1 - A7) and the hints list no
+    reference price for these bases, so each is an error from extracted data, naming v181."""
     sent = [p for p in PROBE["probes"] if _v181_form(p)]
     # seven accepted at 149.1.0, and F.PIVOT_CAM_R1.served, which hit the preview deadline (SERVICE_UNAVAILABLE) and was
     # re-sent as #2 (accepted)
     assert len(sent) == 8
     for p in sent:
-        warned = [f.code for s in p["sections"] for f in validate_section(_section(s), contract=contract)
-                  if f.severity == "warning"]
-        assert "REPORT_COLUMN_OPERAND_UNSUPPORTED" in warned, p["probe"]
+        refused = [f for s in p["sections"] for f in validate_section(_section(s), contract=contract)
+                   if f.severity == "error" and f.code == "OPERAND_NOT_ALLOWED"]
+        assert refused and all("v181" in f.message for f in refused), p["probe"]
 
 
 # The platform's refusal class (authoringCode; None = a schema-level VALIDATION_ERROR) -> the omega codes that state it.
@@ -312,8 +321,10 @@ def test_the_vocabulary_read_at_149_1_0(contract):
     # 2026-11-11, contract 168: re-read twice that day (18:23Z at 168.2.0: conditionGrammar moved; 22:32Z at 168.3.0:
     # nothing), so the 161.0.0 read is two `previous` down and the 149.1.0 read three; the transforms are still 29
     # 2026-11-19, contract 180.4.0: re-read 20:58Z on top; the 168.3.0 read is its `previous`
-    assert shared["_refreshed"]["contractVersion"] == "180.4.0"
-    read_168 = shared["_refreshed"]["previous"]
+    # 2026-11-20, contract 182.3.2: re-read 14:35Z on top (nothing moved); the 180.4.0 read is its `previous`
+    assert shared["_refreshed"]["contractVersion"] == "182.3.2"
+    assert shared["_refreshed"]["previous"]["contractVersion"] == "180.4.0"
+    read_168 = shared["_refreshed"]["previous"]["previous"]
     assert read_168["contractVersion"] == "168.3.0" and read_168["at"] == "2026-11-11T22:32Z"
     assert read_168["previous"]["contractVersion"] == "168.2.0"
     assert read_168["previous"]["moved"] == ["conditionGrammar"]

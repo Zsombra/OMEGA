@@ -7,7 +7,7 @@ Crucially the metric×transform matrix is a **sparse partial function**, not a g
 only **4771 of 586×29 = 16994** cells are legal
 (**28.1%** density).
 
-Against the column `transformId` enum the contract 180.4.0 write schema serves (`data/contract/stage_strategy_draft/schema_20261119T202415Z.json`):
+Against the column `transformId` enum the contract 182.3.2 write schema serves (`data/contract/stage_strategy_draft/schema_20261120T142253Z.json`):
 
 - **`bandTouch` is retired** — extracted, no longer served; it is dropped from every metric's transforms in doc 01 and here, and `omega.validate` refuses it (`TRANSFORM_RETIRED`). Its reference entry is kept as history.
 
@@ -71,7 +71,7 @@ output = comparable(unit) ? {base} − {inputs[0]} : (({base} − {inputs[0]}) /
 - **Null behaviour:** Returns null when either operand is null, or, for an asset-relative unit, when the operand is zero. An averaged side (an operand `{ metric, transformId, window }`, or the base of `metric × average × spread`) is the average with each bar as its newest, null where that average is. A session-profile level is read at each completed bar as it stood when the bar opened: a level formed before the bar from that bar's own snapshot, a level formed from its own bar (a developing value area, a session's running high) from the prior bar's snapshot in the same period instance, so a value stamped inside a completed bar is never part of that bar's read; null on the instance's first bar and where the snapshot is not held. A live read's forming bar reads the level bound at the read instant, the value a display shows.
 - **Parameters:**
   - `bars` (optional, default `None`) — Which bars the read may include: 'closed' (Confirmed) uses completed bars only; 'all' (Developing) admits the bar still in progress at the frame instant. Left unset, a column reads Confirmed at every timeframe; Developing applies only where it is chosen.
-  - `inputs` (required) — Exactly one operand at the base column timeframe: a same-unit metric `{ metric }`, or a metric under one average at a length `{ metric, transformId, window }` — transformId one of aggregate, ema, rma, wma (aggregate is the simple average), window at least 2, the metric the base itself or any of its operands with a per-bar candle value.
+  - `inputs` (required) — Exactly one operand at the base column timeframe: a same-unit metric `{ metric }` — never a reference price (CLOSE, LAST) unless the base is one, because price compared with another reading is the base (write CLOSE × spread(<metric>)) — or a metric under one average at a length `{ metric, transformId, window }` — transformId one of aggregate, ema, rma, wma (aggregate is the simple average), window at least 2, the metric the base itself or any of its operands with a per-bar candle value.
 - **Chains into:** ['trajectory', 'aggregate', 'efficiency'] (candle-backed metrics only)
 
 ### `relativeTo` — Relative to coin
@@ -297,7 +297,7 @@ Classify current price proximity to the canonical upper and lower bands.
 output = bandTouch(base, current price)
 ```
 
-- **Retired** at contract 180.4.0: not in the served enum; the 61.2.0 extraction offered it on 0 metric(s)
+- **Retired** at contract 182.3.2: not in the served enum; the 61.2.0 extraction offered it on 0 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the price or band values required by the classifier are unavailable.
 - **Parameters:** none
@@ -465,8 +465,7 @@ output = 100 · ({base}[t] − {base}[t − {window}]) / {base}[t − {window}]
 ## Spread operand pools
 
 `spread` is unit-typed. A metric may only spread against operands sharing its
-`nativeOutput.unit`, and never against itself. Every pool is fully symmetric
-(0 asymmetric edges across the whole graph).
+`nativeOutput.unit`, and never against itself. Pools are symmetric except toward the reference prices (CLOSE, LAST): since contract v181 price is the base of every spread over another reading, so a reference price lists every price reading as an operand and none of them lists it back (832 one-way edges, every one from CLOSE or LAST; `CLOSE` and `LAST` list each other).
 
 | Unit | Size | Members |
 |---|---|---|

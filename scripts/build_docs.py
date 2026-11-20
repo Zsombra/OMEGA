@@ -138,6 +138,24 @@ def _extracted_offers(tid: str):
             yield rec["metric"]
 
 
+def _pool_symmetry(asymmetric: list[dict]) -> str:
+    """The sentence on whether the spread pools are symmetric, from the graph's one-way edges. Through 180.4.0 there
+    were none. Since contract v181 (served; the 182.3.2 hints) CLOSE and LAST list every price reading as an operand
+    and no reading that is not a reference price lists them back, so every one-way edge starts at a reference price;
+    one that starts anywhere else is stated as such rather than folded into that sentence."""
+    from omega.contract import REFERENCE_PRICES
+    if not asymmetric:
+        return "Every pool is fully symmetric (0 asymmetric edges across the whole graph)."
+    sources = sorted({e["from"] for e in asymmetric})
+    if set(sources) <= set(REFERENCE_PRICES):
+        return (f"Pools are symmetric except toward the reference prices ({', '.join(REFERENCE_PRICES)}): since "
+                f"contract v181 price is the base of every spread over another reading, so a reference price lists "
+                f"every price reading as an operand and none of them lists it back ({len(asymmetric)} one-way edges, "
+                f"every one from {' or '.join(sources)}; `CLOSE` and `LAST` list each other).")
+    return (f"The pools are NOT symmetric: {len(asymmetric)} one-way edges, from {', '.join(sources[:8])}"
+            f"{' ...' if len(sources) > 8 else ''}.")
+
+
 def transform_layer(c) -> str:
     graph = json.loads((DERIVED_DIR / "spread_operand_graph.json").read_text(encoding="utf-8"))
     priv = json.loads((DERIVED_DIR / "platform_privileged.json").read_text(encoding="utf-8"))
@@ -220,8 +238,7 @@ def transform_layer(c) -> str:
         "## Spread operand pools",
         "",
         "`spread` is unit-typed. A metric may only spread against operands sharing its",
-        "`nativeOutput.unit`, and never against itself. Every pool is fully symmetric",
-        f"({len(graph['asymmetricEdges'])} asymmetric edges across the whole graph).",
+        "`nativeOutput.unit`, and never against itself. " + _pool_symmetry(graph["asymmetricEdges"]),
         "",
         "| Unit | Size | Members |",
         "|---|---|---|",

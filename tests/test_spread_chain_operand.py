@@ -120,4 +120,7 @@ def test_the_rule_still_holds_on_the_current_corpus(contract):
     # in every price operand list); the announced v181 rule leaves out every reference price as the plain operand of a
     # spread whose base is not one (519029 without it)
     assert len(enumerate_shapes(contract=contract)) == 27424   # 27244 at 169.4.0 - 171.0.0; 26584 at 168.3.0; 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0
-    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 515961  # 508207 at 169.4.0 - 171.0.0;  # 346691 at 168.3.0   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0
+    # 27424 / 515965 since the re-extraction at 182.3.2, 2026-11-20 (OMEGA v0.16.0, _moves_182.json): v181 is served,
+    # the hints themselves list no reference price for a base that is not one, and CLOSE's own averages keep LAST
+    # (CLOSE x aggregate | ema | rma | wma -> spread(LAST): four shapes v0.15.0 left out)
+    assert len(enumerate_shapes(expand_operands=True, contract=contract)) == 515965  # 515961 at 180.4.0; 508207 at 169.4.0 - 171.0.0;  # 346691 at 168.3.0   # 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0

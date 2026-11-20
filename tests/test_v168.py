@@ -69,12 +69,17 @@ def test_the_manifest_counts_are_the_corpus():
     assert (counts["metrics"], counts["families"], counts["authorableTransforms"]) == (581, 14, 30)
     assert (counts["composabilityCells"], counts["composabilityLegal"], counts["structuralShapes"]) == (
         17430, 4735, 26584)
-    now = extraction_of("180.4.0", MANIFEST)["counts"]
+    # 2026-11-20: the corpus moved to 182.3.2 (no metric and no transform moved; v181, now served, narrowed the
+    # operand lists). The 180.4.0 block keeps the counts it measured; the top block is held to the live corpus. The
+    # expanded count grew by four: CLOSE's own averages keep LAST as a chained spread operand (v0.15.0 left them out)
+    at_180 = extraction_of("180.4.0", MANIFEST)["counts"]
+    assert (at_180["metrics"], at_180["structuralShapes"], at_180["operandExpandedShapes"]) == (586, 27424, 515961)
+    now = extraction_of("182.3.2", MANIFEST)["counts"]
     assert (now["metrics"], now["families"], now["authorableTransforms"]) == (
         len(c.metrics), len({m.family for m in c.metrics.values()}), len(c.transforms)) == (586, 14, 30)
     assert (now["composabilityCells"], now["composabilityLegal"]) == (586 * 30, legal) == (17580, 4771)
     assert now["structuralShapes"] == len(enumerate_shapes()) == 27424
-    assert now["operandExpandedShapes"] == len(enumerate_shapes(expand_operands=True)) == 515961
+    assert now["operandExpandedShapes"] == len(enumerate_shapes(expand_operands=True)) == 515965
     assert counts["platformSectionTemplates"] == len(c.platform_templates) == 22
 
 

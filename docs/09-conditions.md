@@ -342,7 +342,26 @@ read TRUE, bounded `1..5` with `multipleOf: 1` in the capture. The vendor:
 Developing bar ("CONDITION_VERDICT_READ_ILLEGAL is no longer raised, and CONDITION_EXIT_READ_ILLEGAL now names only a
 closure no completed bar moves"); a hold above one bar over a Developing read is still refused
 (`CONDITION_HOLD_ILLEGAL`). Measured at 180.4.0 and modelled in OMEGA v0.15.0
-(`data/audit/reextraction_180_4_2026-11-19.json`). The rule as it stood before, kept as history:
+(`data/audit/reextraction_180_4_2026-11-19.json`).
+
+**What an outcome states about a Developing read (contract v182).** OMEGA reads no condition outcome; this is the
+shape a caller of `preview_strategy_report` (detailed) reads, measured 2026-11-20 at 182.3.2
+(`data/audit/reextraction_182_2026-11-20.json`, `V182`):
+
+- A condition outcome (`authoring.conditionOutcomes[].outcomes[]`: `conditionKey`, `name`, `outcome`, `counts`,
+  `evidence`, `provisional`, `developingAsOf`) no longer carries `developingRead`. It carries **`developingAsOf`**: an
+  ISO instant, the cut-off of its Developing reads (the close of the newest source minute folded into the bar in
+  progress), or `null` where it read no bar in progress. Over `RSI14_4h_dev` on a 1h strategy it read
+  `2026-11-20T14:37:00.000Z`; over the closed `RSI14_4h`, the anchor `RSI14` and the fixed-horizon `chg4h` it read
+  `null`. It is narrower than the flag it replaced: `chg4h`'s inventory entry still says `developingRead: true` and
+  its outcome is `provisional: true`, with `developingAsOf: null`.
+- The authoring inventory keeps `developingRead` (`authoring.conditionColumns[].outputs[]`): it states which bar a
+  header reads before anything is read. `scripts/probe_authoring_148.py` and `probe_market_section_146.py` copy it
+  from there.
+- A rendered section column carries an optional **`asOf`**, present only where a row read a bar in progress
+  (`RSI14_4h_dev`, `quoteVol_4h_dev`: the same instant) and absent on every other column.
+
+The rule as it stood before v175, kept as history:
 
 > A verdict carrier must read no DEVELOPING bar. A verdict is refused over any closure that
 > reads a column selecting Developing above the strategy timeframe

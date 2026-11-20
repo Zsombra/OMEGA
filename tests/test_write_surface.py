@@ -237,6 +237,7 @@ SCHEMA_169 = "data/contract/stage_strategy_draft/schema_20261112T070510Z.json"  
 SCHEMA_170 = "data/contract/stage_strategy_draft/schema_20261112T090106Z.json"   # 170.0.0 (2026-11-12), a record
 SCHEMA_171 = "data/contract/stage_strategy_draft/schema_20261112T093211Z.json"   # 171.0.0 (2026-11-12)
 SCHEMA_180_4 = "data/contract/stage_strategy_draft/schema_20261119T202415Z.json"  # 180.4.0 (2026-11-19)
+SCHEMA_182 = "data/contract/stage_strategy_draft/schema_20261120T142253Z.json"    # 182.3.2 (2026-11-20)
 
 
 def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history():
@@ -254,11 +255,23 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     # level menu's profit side against 169.4.0 - now the `supersedes`
     # 2026-11-19, contract 180.4.0 (OMEGA v0.15.0): the 180.4.0 capture (listing 20:24Z, build d66d4f98); the 171.0.0
     # block is its `supersedes` and every older block sits one level deeper
+    # 2026-11-20, contract 182.3.2 (OMEGA v0.16.0): the 182.3.2 capture (listing 14:22Z, build b3969d0b), whose six
+    # draft tools differ from the 180.4.0 capture's in preview_strategy_report's output schema alone (v182); the
+    # 180.4.0 block is its `supersedes`
+    assert ws["servedContractVersion"] == "182.3.2"
+    assert ws["buildSha"].startswith("b3969d0b") and ws["notedAt"] == "2026-11-20"
+    assert ws["schema"] == SCHEMA_182 and (ROOT / ws["schema"]).is_file()
+    newest = json.loads((ROOT / SCHEMA_182).read_text(encoding="utf-8"))
+    assert (newest["contractVersion"], newest["buildSha"]) == (ws["servedContractVersion"], ws["buildSha"])
+    ws = ws["supersedes"]
     assert ws["servedContractVersion"] == "180.4.0"
     assert ws["buildSha"].startswith("d66d4f98") and ws["notedAt"] == "2026-11-19"
     assert ws["schema"] == SCHEMA_180_4 and (ROOT / ws["schema"]).is_file()
     top = json.loads((ROOT / SCHEMA_180_4).read_text(encoding="utf-8"))
     assert (top["contractVersion"], top["buildSha"]) == (ws["servedContractVersion"], ws["buildSha"])
+    moved = {(t, part) for t in V108_TOOLS for part in ("description", "inputSchema", "outputSchema")
+             if top[t][part] != newest[t][part]}
+    assert moved == {("preview_strategy_report", "outputSchema")}
     ws = ws["supersedes"]
     assert ws["servedContractVersion"] == "171.0.0"
     assert ws["buildSha"].startswith("588e449a") and ws["notedAt"] == "2026-11-12"
@@ -284,7 +297,8 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     while node:
         named.append(node["schema"])
         node = node.get("supersedes")
-    assert SCHEMA_180_4 not in named    # walked from the 171.0.0 block; 15 schemas with the 180.4.0 one
+    assert SCHEMA_180_4 not in named and SCHEMA_182 not in named    # walked from the 171.0.0 block; 16 schemas with
+    # the 180.4.0 and the 182.3.2 ones
     assert len(named) == 14 and SCHEMA_168_2 not in named and SCHEMA_170 not in named     # 11 until 2026-11-11, 12 / 13 that morning
     v161 = v168["supersedes"]
     assert v161["servedContractVersion"] == "161.0.0" and v161["buildSha"].startswith("ab5b6252")
@@ -333,10 +347,13 @@ def test_manifest_names_the_v108_draft_schema_and_keeps_the_v91_one_as_history()
     # 2026-11-12, contract 171.0.0 (extraction 20261112c): 171.0.0 on top, 169.4.0 its `supersedes`, then 168.3.0
     # 2026-11-19, contract 180.4.0 (extraction 20261119b): 180.4.0 on top, its hints and its write surface of one build;
     # 171.0.0 its `supersedes`, then 169.4.0
-    assert manifest["servedContractVersion"] == "180.4.0" and manifest["extractedOn"] == "2026-11-19"
+    # 2026-11-20, contract 182.3.2 (extraction 20261120): 182.3.2 on top, 180.4.0 its `supersedes`
+    assert manifest["servedContractVersion"] == "182.3.2" and manifest["extractedOn"] == "2026-11-20"
     index = json.loads((ROOT / "data/contract/metrics/_index.json").read_text(encoding="utf-8"))
     assert (index["contractVersion"], index["buildSha"]) == (manifest["writeSurface"]["servedContractVersion"],
                                                              manifest["writeSurface"]["buildSha"])
+    manifest = manifest["supersedes"]
+    assert manifest["servedContractVersion"] == "180.4.0" and manifest["extractedOn"] == "2026-11-19"
     manifest = manifest["supersedes"]
     assert manifest["servedContractVersion"] == "171.0.0" and manifest["extractedOn"] == "2026-11-12"
     assert manifest["supersedes"]["servedContractVersion"] == "169.4.0"
@@ -370,7 +387,8 @@ def test_the_named_v108_schema_holds_the_draft_tools_and_the_eight_axes():
     # holds - TRADE_LEVEL_POLICY.tradeLevelMenu, entry.levels - not which axes there are); 2026-11-12: the 169.4.0 one,
     # the same six tools byte for byte; later that morning the 171.0.0 one (170 moved the menu, not the axes)
     # 2026-11-19: the 180.4.0 capture - the same eight axes (the level ENTRY arm gained a trigger)
-    assert doc["contractVersion"] == "180.4.0"
+    # 2026-11-20: the 182.3.2 capture - every input schema byte-identical to 180.4.0's
+    assert doc["contractVersion"] == "182.3.2"
     assert V108_TOOLS <= set(doc)
     # v111: no `request` envelope - axes is a top-level argument of stage_strategy_draft
     assert "request" not in doc["stage_strategy_draft"]["inputSchema"]["properties"]
@@ -442,8 +460,8 @@ def test_the_emitted_body_is_the_flat_v111_stage_and_walks_clean(tmp_path, prese
     current = C.stage_schema()["stage_strategy_draft"]["inputSchema"]
     # (the current capture is the 171.0.0 one since 2026-11-12: the menu's profit side is exit plans, which the body
     # carries - omega.trade_levels follows the pinned schema)
-    # 180.4.0 since 2026-11-19
-    assert C.stage_schema()["contractVersion"] == "180.4.0" and _fails(P.diff_schema(body, current, current)) == []
+    # 180.4.0 since 2026-11-19; 182.3.2 since 2026-11-20
+    assert C.stage_schema()["contractVersion"] == "182.3.2" and _fails(P.diff_schema(body, current, current)) == []
     pre_168 = _without_trade_level_menu(body)
     assert _fails(P.diff_schema(pre_168, current, current)) == [("MISSING_REQUIRED", MENU_PATH)]
     root = json.loads((ROOT / SCHEMA_146).read_text(encoding="utf-8"))["stage_strategy_draft"]["inputSchema"]
