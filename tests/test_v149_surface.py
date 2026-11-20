@@ -69,9 +69,9 @@ def test_the_capture_names_its_contract_build_and_source():
     # the 149.1.0 block sits under that - two levels down, it was one
     # 2026-11-12: by version (tests/manifest_chain.py) - the 171.0.0 capture on top that morning
     from tests.manifest_chain import surface as surface_of
-    # 2026-11-19: the 180.4.0 capture on top
-    assert C.stage_schema()["contractVersion"] == "180.4.0"
-    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "180.4.0"
+    # 2026-11-19: the 180.4.0 capture on top; 2026-11-20: the 182.3.2 one
+    assert C.stage_schema()["contractVersion"] == "182.3.2"
+    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "182.3.2"
     current = surface_of("168.3.0")
     assert current["servedContractVersion"] == "168.3.0"
     assert current["supersedes"]["servedContractVersion"] == "161.0.0"

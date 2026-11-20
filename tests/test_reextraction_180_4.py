@@ -37,11 +37,14 @@ def _errors(column: Column, code: str | None = None):
 
 # --- the extraction -------------------------------------------------------------------------------------------------
 def test_the_extraction_and_the_write_surface_are_180_4():
-    assert MANIFEST["servedContractVersion"] == "180.4.0"
-    assert MANIFEST["writeSurface"]["servedContractVersion"] == "180.4.0"
-    assert MANIFEST["writeSurface"]["buildSha"] == RECORD["buildSha"]
-    assert MANIFEST["writeSurface"]["supersedes"]["servedContractVersion"] == "171.0.0"
-    assert stage_schema()["contractVersion"] == "180.4.0"
+    """The 180.4.0 blocks, by version (tests/manifest_chain.py): 182.3.2 sits on top since 2026-11-20
+    (tests/test_reextraction_182.py)."""
+    from tests.manifest_chain import extraction, surface
+    assert extraction("180.4.0", MANIFEST)["extractedOn"] == "2026-11-19"
+    block = surface("180.4.0", MANIFEST)
+    assert block["buildSha"] == RECORD["buildSha"]
+    assert block["supersedes"]["servedContractVersion"] == "171.0.0"
+    assert json.loads((ROOT / block["schema"]).read_text(encoding="utf-8"))["contractVersion"] == "180.4.0"
 
 
 def test_the_five_metric_keys_added_since_171_are_extracted():
@@ -54,7 +57,7 @@ def test_the_five_metric_keys_added_since_171_are_extracted():
         assert out.header == code and P1[code]["unit"] == "price" and P1[code]["family"] == "levels"
 
 
-# --- v181: price is the base of every spread over another reading (announced) ---------------------------------------
+# --- v181: price is the base of every spread over another reading (announced at 180.4.0, served since 182.3.2) ------
 OLD_FORMS = [
     _col("PRIOR_TPO_VAL", "CLOSE"), _col("PRIOR_TPO_VAH", "CLOSE"), _col("PRIOR_TPO_POC", "CLOSE"),
     _col("EMA20", "CLOSE"), _col("EMA20", "LAST"),
@@ -62,29 +65,29 @@ OLD_FORMS = [
 ]
 
 
-def _warnings(column: Column, code: str):
-    return [f for f in validate_column(column) if f.severity == "warning" and f.code == code]
-
-
 @pytest.mark.parametrize("column", OLD_FORMS, ids=lambda c: f"{c.metric}-{c.transformId}-{c.inputs[0].metric}")
-def test_below_181_the_form_v181_refuses_warns_and_is_not_an_error(column):
-    """At 180.4.0 the platform accepts the old form (P1 rendered pTpoVAL_close_spread and EMA20_close_spread), so it is
-    a warning while the pinned write surface is below 181."""
+def test_the_form_the_180_4_record_rendered_is_refused_from_extracted_data_since_182(column):
+    """At 180.4.0 the platform accepted the old form (P1 rendered pTpoVAL_close_spread and EMA20_close_spread) and
+    v0.15.0 warned on it. v181 is served since: the 182.3.2 hints list no reference price for a base that is not one, so
+    the column is refused from extracted data (tests/test_reextraction_182.py replays the live refusals)."""
     from omega.validate import v181_served
-    assert not v181_served()
-    assert not _errors(column)
-    [warn] = _warnings(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
-    assert "v181" in warn.message and "180.4.0" in warn.message and "refused from contract 181 on" in warn.message
+    assert v181_served()
+    [err] = _errors(column)
+    assert err.code == "OPERAND_NOT_ALLOWED" and "v181" in err.message and "is not a served spread operand" in err.message
     assert P1["pTpoVAL_close_spread"]["value"] is not None and P1["EMA20_close_spread"]["value"] is not None
 
 
-@pytest.mark.parametrize("column", OLD_FORMS, ids=lambda c: f"{c.metric}-{c.transformId}-{c.inputs[0].metric}")
-def test_from_181_on_the_form_is_an_error(column, monkeypatch):
+@pytest.mark.parametrize("contract, severity, phrase", [
+    ("180.4.0", "warning", "refused from contract 181 on"), ("181.0.0", "error", "serves v181, so it is refused"),
+    ("182.3.2", "error", "serves v181, so it is refused")])
+def test_the_rule_on_a_corpus_that_still_serves_the_operand(contract, severity, phrase, monkeypatch):
+    """The rule's own finding, for a corpus whose hints still list the reference price (every one below 181): a warning
+    below contract 181, where the platform accepted the form, and an error from 181 on."""
     import omega.validate as V
-    monkeypatch.setattr(V, "extracted_contract_version", lambda: "181.0.0")
-    assert V.v181_served()
-    [err] = _errors(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
-    assert "serves v181, so it is refused" in err.message
+    monkeypatch.setattr(V, "extracted_contract_version", lambda: contract)
+    finding = V._price_operand_finding(_col("EMA20", "CLOSE"), "EMA20", "CLOSE", load(), "columns[0].inputs[0]")
+    assert (finding.severity, finding.code) == (severity, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+    assert phrase in finding.message and "write CLOSE x spread(EMA20)" in finding.message
 
 
 def test_the_v181_rule_is_judged_only_on_a_served_operand():
@@ -111,14 +114,13 @@ def test_the_forms_v181_keeps_are_accepted(column):
 
 
 def test_the_finding_names_the_form_to_write_where_the_corpus_admits_it():
-    [w] = _warnings(_col("PRIOR_TPO_VAH", "CLOSE"), "REPORT_COLUMN_OPERAND_UNSUPPORTED")
-    assert "write CLOSE x spread(PRIOR_TPO_VAH)" in w.message
-    [w] = _warnings(_col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"),
-                    "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+    [w] = _errors(_col("PRIOR_TPO_VAH", "CLOSE"), "OPERAND_NOT_ALLOWED")
+    assert "Write CLOSE x spread(PRIOR_TPO_VAH)" in w.message
+    [w] = _errors(_col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"), "OPERAND_NOT_ALLOWED")
     assert "CLOSE x spread({metric: HL2, transformId: ema, window: 34})" in w.message
-    # "or LAST off the anchor, it names none" (EMA20 serves LAST on and off the anchor at 180.4.0)
-    [w] = _warnings(_col("EMA20", "LAST", tf={"abs": "4h"}), "REPORT_COLUMN_OPERAND_UNSUPPORTED")
-    assert "no form with price as the base" in w.message
+    # "or LAST off the anchor, it names none" (measured 2026-11-20, A7)
+    [w] = _errors(_col("EMA20", "LAST", tf={"abs": "4h"}), "OPERAND_NOT_ALLOWED")
+    assert "No form with price as the base" in w.message
 
 
 def test_the_headers_omega_predicts_are_the_ones_p1_rendered():
@@ -154,7 +156,10 @@ def test_the_reference_prices_and_the_rule():
     assert price_operand_refused("EMA20", "CLOSE") and price_operand_refused("PRIOR_TPO_VAL", "LAST")
     assert not price_operand_refused("CLOSE", "LAST") and not price_operand_refused("LAST", "CLOSE")
     assert not price_operand_refused("CLOSE", "EMA20")
-    assert price_operand_refused("CLOSE", "LAST", chained=True)      # the average is the base
+    # the base decides, averaged or not: CLOSE x ema(34) -> spread(LAST) is served and rendered at 182.3.2 (H1), where
+    # v0.15.0 read the README's one example as "an averaged base is never a reference price"
+    assert not price_operand_refused("CLOSE", "LAST", chained=True)
+    assert price_operand_refused("HL2", "CLOSE", chained=True)
 
 
 def test_no_enumerated_shape_carries_a_refused_operand():
@@ -166,12 +171,23 @@ def test_no_enumerated_shape_carries_a_refused_operand():
         assert not bad, bad[:5]
 
 
+def _refused_operands(column: Column) -> list[str]:
+    """The plain operands of `column` that v181 refuses under its base (the rule itself, whatever the corpus serves)."""
+    return [o.metric for o in column.inputs or () if not o.averaged and price_operand_refused(column.metric, o.metric)]
+
+
 def test_no_preset_and_no_tpo_suite_column_uses_a_refused_form():
+    """Judged on the rule (price_operand_refused on every plain operand) and on the column drawing no error at all -
+    not on one finding code: on the 182.3.2 corpus the refused form draws OPERAND_NOT_ALLOWED, so a filter on
+    REPORT_COLUMN_OPERAND_UNSUPPORTED (this test through v0.16.0's first pass) asserted nothing."""
     from omega.generate import PRESETS, plan
+    seen = 0
     for name, thesis in PRESETS.items():
         for section in plan(thesis).report.sections:
             for column in getattr(section, "columns", None) or ():
-                assert not _errors(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED"), (name, column)
+                assert not _refused_operands(column) and not _errors(column), (name, column)
+                seen += 1
+    assert seen > 20
     import importlib.util
     import sys
     spec = importlib.util.spec_from_file_location("tpo_suite_build_v181", ROOT / "scripts" / "tpo_suite_build.py")
@@ -180,7 +196,67 @@ def test_no_preset_and_no_tpo_suite_column_uses_a_refused_form():
     spec.loader.exec_module(builder)
     assert [c.metric for c in builder.SPINE].count("CLOSE") == 3
     for column in builder.SPINE:
-        assert not _errors(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+        assert not _refused_operands(column) and not _errors(column), column
+
+
+@pytest.mark.parametrize("planted", [
+    _col("PRIOR_TPO_VAL", "CLOSE"), _col("PRIOR_TPO_VAH", "LAST"), _col("EMA20", "CLOSE", tf={"abs": "1d"}),
+    _col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"),
+], ids=lambda c: f"{c.metric}-{c.transformId}-{c.inputs[0].metric}")
+def test_the_check_above_fails_on_a_planted_refused_form(planted):
+    """The test above can fail: the form the TPO suite read before v181 (PRIOR_TPO_VAL x spread(CLOSE)), planted, is
+    caught by both of its assertions - and not by the code it used to filter on."""
+    assert _refused_operands(planted) == [planted.inputs[0].metric]
+    assert [f.code for f in _errors(planted)] == ["OPERAND_NOT_ALLOWED"]
+    assert not _errors(planted, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+
+
+# --- the rule's own finding, end to end on a corpus that still serves the operand ------------------------------------
+def _corpus_serving_reference_prices():
+    """The 182.3.2 corpus with CLOSE and LAST put back where the hints listed them through 180.4.0: EMA20's plain
+    operands (on and off the anchor rung) and the operands of HL2's averages chained into a spread."""
+    import copy
+    import dataclasses
+    c = load()
+    ema, hl2 = c.metrics["EMA20"], c.metrics["HL2"]
+    transforms = copy.deepcopy(hl2.transforms)
+    for spec in transforms.values():
+        outer = (spec.get("chainedOuters") or {}).get("spread")
+        if outer is not None:
+            for key in ("operands", "operandsOffAnchor"):
+                if outer.get(key) is not None:
+                    outer[key] = [*outer[key], *REFERENCE_PRICES]
+    metrics = {**c.metrics,
+               "EMA20": dataclasses.replace(
+                   ema, spread_operands=(*ema.spread_operands, *REFERENCE_PRICES),
+                   spread_operands_off_anchor=(*ema.spread_operands_off_anchor, *REFERENCE_PRICES)),
+               "HL2": dataclasses.replace(hl2, transforms=transforms)}
+    return dataclasses.replace(c, metrics=metrics)
+
+
+@pytest.mark.parametrize("contract, severity", [("180.4.0", "warning"), ("181.0.0", "error"), ("182.3.2", "error")])
+@pytest.mark.parametrize("column, written", [
+    (_col("EMA20", "CLOSE"), "write CLOSE x spread(EMA20)"),
+    (_col("EMA20", "LAST"), "write LAST x spread(EMA20)"),
+    (_col("EMA20", "CLOSE", tf={"abs": "1d"}), "write CLOSE x spread(EMA20)"),
+    (_col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"),
+     "write CLOSE x spread({metric: HL2, transformId: ema, window: 34})"),
+], ids=["plain", "plain-last", "abs-1d", "chained"])
+def test_validate_column_grades_the_rule_on_a_corpus_that_still_serves_the_operand(column, written, contract, severity,
+                                                                                   monkeypatch):
+    """validate_column, end to end, on a corpus whose hints still list the reference price (every corpus below 181):
+    exactly one finding, the rule's own REPORT_COLUMN_OPERAND_UNSUPPORTED - a warning below contract 181, where the
+    platform accepted the form, and an error from 181 on. On the real 182.3.2 corpus the same columns are refused
+    from extracted data instead (OPERAND_NOT_ALLOWED), so this branch is reached only here."""
+    import omega.validate as V
+    corpus = _corpus_serving_reference_prices()
+    monkeypatch.setattr(V, "extracted_contract_version", lambda: contract)
+    found = [f for f in validate_column(column, contract=corpus) if f.severity in ("error", "warning")]
+    assert [(f.severity, f.code) for f in found] == [(severity, "REPORT_COLUMN_OPERAND_UNSUPPORTED")], found
+    assert written in found[0].message and found[0].path == "column.inputs[0]"
+    # the real corpus does not serve the operand: the unserved refusal, whatever the contract
+    real = [f for f in validate_column(column) if f.severity in ("error", "warning")]
+    assert [(f.severity, f.code) for f in real] == [("error", "OPERAND_NOT_ALLOWED")]
 
 
 # --- v175: a Developing read decides at the decided close (measured D1 / D4 / D7) ---------------------------------

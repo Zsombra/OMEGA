@@ -119,9 +119,9 @@ def test_the_market_family_is_the_13_mkt_metrics(contract):
     # re-read 2026-11-05 at 148.1.0 (structure 156 -> 362, market unchanged) and 2026-11-07 at 149.1.0 (nothing moved);
     # the 146.0.1 read three `previous` down since the 161.0.0 re-read of 2026-11-09 (it was two before it); five down
     # since 2026-11-11, which read the categories twice (18:23Z at 168.2.0, 22:32Z at 168.3.0)
-    # six down since 2026-11-19 (the 180.4.0 read on top)
+    # six down since 2026-11-19 (the 180.4.0 read on top); seven since 2026-11-20 (the 182.3.2 read)
     assert categories["_refreshed"]["previous"]["previous"]["previous"]["previous"]["previous"]["previous"][
-        "contractVersion"] == "146.0.1"
+        "previous"]["contractVersion"] == "146.0.1"
     # a market metric spreads over market metrics only (the served spreadOperands of each of the ten that offer spread)
     for key in sorted(MKT):
         m = contract.metric(key)
@@ -326,8 +326,8 @@ def test_the_manifest_chain_and_the_templates():
     # 2026-11-12: found by version, not depth (tests/manifest_chain.py); the chain on top of it then was
     # 171.0.0 -> 169.4.0 -> 168.3.0 -> 161.0.0 -> 146.0.1
     from tests.manifest_chain import extraction, surface, versions
-    # 180.4.0 on top since 2026-11-19
-    assert versions(MANIFEST)[:6] == ["180.4.0", "171.0.0", "169.4.0", "168.3.0", "161.0.0", "146.0.1"]
+    # 180.4.0 on top since 2026-11-19; 182.3.2 since 2026-11-20
+    assert versions(MANIFEST)[:7] == ["182.3.2", "180.4.0", "171.0.0", "169.4.0", "168.3.0", "161.0.0", "146.0.1"]
     ext = extraction("146.0.1", MANIFEST)
     assert ext["servedContractVersion"] == "146.0.1" and ext["extractedOn"] == "2026-11-02"
     assert ext["supersedes"]["servedContractVersion"] == "144.0.0"
@@ -351,7 +351,11 @@ def test_the_manifest_chain_and_the_templates():
     # 2026-11-11, contract 168: five down - the shared blocks were read twice that day (18:23Z at 168.2.0, 22:32Z at
     # 168.3.0), each read pushing the earlier ones one `previous` deeper
     # 2026-11-19: the 180.4.0 read on top, every earlier one a `previous` deeper
+    # 2026-11-20: the 182.3.2 read on top (nothing moved), the 180.4.0 one its `previous`
     shared = _j(CONTRACT_DIR / "vocabulary" / "_shared.json")["_refreshed"]
+    assert shared["contractVersion"] == "182.3.2" and shared["moved"] == [
+        "nothing: every category-invariant block is as stored"]
+    shared = shared["previous"]
     assert shared["contractVersion"] == "180.4.0"
     shared = shared["previous"]
     assert (shared["contractVersion"], shared["previous"]["contractVersion"]) == ("168.3.0", "168.2.0")
@@ -365,5 +369,6 @@ def test_the_version_moved_past_0_11_0():
     # day (exit plans, tests/test_exit_plans_170.py); 0.14.1 the same day (the chain window limits, tests/test_v0_14_1.py;
     # the exit plan's runner, tests/test_exit_plan_runner_171.py); 0.14.2 the same day (the update rules,
     # tests/test_update_rules_171.py); 0.14.3 on 2026-11-13 (the default menu inside the stop range,
-    # tests/test_stop_band_171.py); 0.15.0 on 2026-11-19 (the re-extraction at 180.4.0, tests/test_reextraction_180_4.py)
-    assert 'version = "0.15.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    # tests/test_stop_band_171.py); 0.15.0 on 2026-11-19 (the re-extraction at 180.4.0, tests/test_reextraction_180_4.py);
+    # 0.16.0 on 2026-11-20 (the re-extraction at 182.3.2, tests/test_reextraction_182.py)
+    assert 'version = "0.16.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")

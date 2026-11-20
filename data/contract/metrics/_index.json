@@ -1,7 +1,7 @@
 {
-  "contractVersion": "180.4.0",
-  "buildSha": "d66d4f98372f22e870efaebd9b4ccd572a568faf",
-  "contractKnownBy": "read: GET /mcp/version at 2026-11-19T20:36:16Z before the first fetch of extraction 20261119b (hints_20261119b/_version.json)",
+  "contractVersion": "182.3.2",
+  "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f",
+  "contractKnownBy": "read: GET /mcp/version at 2026-11-20T14:24:11Z before the first fetch of extraction 20261120 (hints_20261120/_version.json)",
   "metricCount": 586,
   "byFamily": {
     "channels": [

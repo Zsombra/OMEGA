@@ -20,30 +20,38 @@ def _load(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-# --- price is the base of every spread over another reading (contract v181, announced) ------------------------------
-# README "Contract history - v181" (battlegrid-mcp PR 284, merged 2026-11-19; NOT served at 180.4.0): "A reference
-# price is never the plain operand of a spread whose base is not one. `EMA20 x spread(CLOSE)`, `PRIOR_TPO_VAH x
-# spread(CLOSE)`, `EMA20 x spread(LAST)` and `HL2 x ema(34) x spread(CLOSE)` are refused with VALIDATION_ERROR /
-# REPORT_COLUMN_OPERAND_UNSUPPORTED ... Still accepted: `CLOSE x spread(LAST)` and `LAST x spread(CLOSE)` (two
-# reference prices keep both orders), and an average of price as an operand." At 180.4.0 the hints still serve CLOSE
-# and LAST in every price base's operand lists and the old form still renders (measured 2026-11-19, P1), while the
-# form v181 writes - `CLOSE x spread(<base>)` - renders already (P1). omega never EMITS the old form (omega.space
-# enumerates none, no generated plan holds one), and omega.validate WARNS on it while the extracted contract is below
-# 181 (the platform still accepts it) and refuses it from 181 on (omega.validate.v181_served). Once v181 is served the
-# hints drop CLOSE / LAST from the operand lists, and a re-extraction refuses the form from extracted data
-# (OPERAND_NOT_ALLOWED) before this rule is reached.
-# The set {CLOSE, LAST} is the README's ("a reference price (CLOSE, LAST)"), not measured: no served field names the
-# reference prices.
+# --- price is the base of every spread over another reading (contract v181, served) ----------------------------------
+# README "Contract history - v181": "A reference price is never the plain operand of a spread whose base is not one.
+# `EMA20 x spread(CLOSE)`, `PRIOR_TPO_VAH x spread(CLOSE)`, `EMA20 x spread(LAST)` and `HL2 x ema(34) x spread(CLOSE)`
+# are refused with VALIDATION_ERROR / REPORT_COLUMN_OPERAND_UNSUPPORTED ... Still accepted: `CLOSE x spread(LAST)` and
+# `LAST x spread(CLOSE)` (two reference prices keep both orders), and an average of price as an operand."
+#
+# Announced at 180.4.0 (OMEGA v0.15.0 warned on the form), SERVED and measured 2026-11-20 at 182.3.2
+# (data/audit/reextraction_182_2026-11-20.json):
+#   * each of the four forms above is refused REPORT_COLUMN_OPERAND_UNSUPPORTED, "'close' is a reference price, and a
+#     spread comparing it with 'EMA20' takes it as the base, so price above the reading reads positive; write CLOSE x
+#     spread(EMA20)" (A1 - A4); off the anchor rung the sentence names the form only where the server admits it (A5
+#     names it; A6, a session-profile level, and A7, LAST, name none);
+#   * the reference prices are CLOSE and LAST and no other price: MARK, ORACLE, OPEN, HIGH, LOW, HL2, HLC3, OHLC4,
+#     SPOT_CLOSE_CB and SPOT_CLOSE_BN each render as EMA20's plain operand (B), and each of MARK, ORACLE, OPEN, HIGH,
+#     LOW, HL2 is refused as the BASE of a spread over CLOSE (D) - a price that is not a reference price is "another
+#     reading". The served text names the set too: spread's `inputs` description, "never a reference price (CLOSE,
+#     LAST) unless the base is one" (transforms/_authoring.json);
+#   * the hints dropped CLOSE and LAST from the plain operand lists of all 416 other price bases (spreadOperands,
+#     spreadOperandsOffAnchor, each chained spread outer's operands; _moves_182.json), so omega.validate refuses the
+#     form from extracted data (OPERAND_NOT_ALLOWED) and omega.space enumerates none. CLOSE and LAST keep each other,
+#     and CLOSE's own averages keep LAST (`CLOSE x ema(34) -> spread(LAST)`): the rule reads the BASE, averaged or not.
 REFERENCE_PRICES = ("CLOSE", "LAST")
-V181_SOURCE = ("contract v181, announced (README 'Contract history - v181', battlegrid-mcp PR 284), not served at "
-               "180.4.0")
+V181_SOURCE = ("contract v181 (README 'Contract history - v181'), served: measured 2026-11-20 at 182.3.2, "
+               "REPORT_COLUMN_OPERAND_UNSUPPORTED")
 
 
 def price_operand_refused(base: str, operand: str, *, chained: bool = False) -> bool:
     """True when `operand`, a PLAIN spread operand (no average), is a reference price and the spread's base is not one:
-    the form v181 refuses. `chained`: the spread is a chain outer after an average (`<base> x ema|... -> spread`),
-    whose base is the average and never a reference price."""
-    return operand in REFERENCE_PRICES and (chained or base not in REFERENCE_PRICES)
+    the form v181 refuses. `chained` (the spread is a chain outer after an average, `<base> x ema|... -> spread`) no
+    longer changes the answer: v0.15.0 read the README's one example (`HL2 x ema(34) x spread(CLOSE)`) as "an averaged
+    base is never a reference price", and the 182.3.2 hints serve LAST under CLOSE's own averages - the base decides."""
+    return operand in REFERENCE_PRICES and base not in REFERENCE_PRICES
 
 
 # v181 "Moved stored columns": "The conditions that read them flipped their operator and mapped their threshold, so

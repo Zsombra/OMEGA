@@ -145,6 +145,11 @@ SEEN_FILES = [
     # transform and chain, the four day / week levels), 172 headers, 0 refusals, 0 predicted-but-not-rendered
     # (data/audit/coverage_sweep_2026-11-19.json)
     "_coverage_sweep_2026-11-19.json",
+    # 2026-11-20, contract 182.3.2 (OMEGA v0.16.0): the headers the re-extraction probes minted
+    # (data/audit/reextraction_182_2026-11-20.json) - among them the four operand-expanded shapes v181's narrowed hints
+    # opened, CLOSE x aggregate | ema | rma | wma -> spread(LAST) (close_mean24_last_spread, close_ema20_last_spread,
+    # close_rma14_last_spread, close_wma20_last_spread; COV). No structural shape moved, so no sweep was owed.
+    "_probe_182_2026-11-20.json",
 ]
 
 

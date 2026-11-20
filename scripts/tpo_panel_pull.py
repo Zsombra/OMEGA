@@ -57,7 +57,7 @@ COLUMNS = [
     # --- ORIGIN: where the bar opened. The only lawful "came from" read on TPO. ---
     ("PRIOR_TPO_VAL", "spread", "OPEN"),
     ("PRIOR_TPO_VAH", "spread", "OPEN"),
-    # --- ENDPOINT: where the bar currently closes. v181 (announced; OMEGA v0.15.0): price is the base of a spread over
+    # --- ENDPOINT: where the bar currently closes. v181 (announced at OMEGA v0.15.0; served since 182.3.2, measured 2026-11-20): price is the base of a spread over
     #     another reading, so these are CLOSE x spread(PRIOR_TPO_*) - close_pTpo{VAL,VAH,POC}_spread, positive = the
     #     close ABOVE the level. Rows written before 2026-11-19 carry pTpo*_close_spread (the level against the close,
     #     divided by the close): not the negation of the new values. ---

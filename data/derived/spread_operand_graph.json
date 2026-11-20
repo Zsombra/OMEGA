@@ -530,8 +530,6 @@
     "OPEN": [
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -949,8 +947,6 @@
     "HIGH": [
       "OPEN",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -1368,8 +1364,6 @@
     "LOW": [
       "OPEN",
       "HIGH",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -2626,8 +2620,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "ORACLE",
       "SPOT_CLOSE_CB",
       "SPOT_CLOSE_BN",
@@ -3045,8 +3037,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "SPOT_CLOSE_CB",
       "SPOT_CLOSE_BN",
@@ -3464,8 +3454,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_BN",
@@ -3883,8 +3871,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -4335,8 +4321,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -4754,8 +4738,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -5173,8 +5155,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -6036,8 +6016,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -6455,8 +6433,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -6874,8 +6850,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -7293,8 +7267,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -7712,8 +7684,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -8131,8 +8101,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -8550,8 +8518,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -8969,8 +8935,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -9388,8 +9352,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -9807,8 +9769,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -10226,8 +10186,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -10645,8 +10603,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -11160,8 +11116,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -11579,8 +11533,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -11998,8 +11950,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -12417,8 +12367,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -12836,8 +12784,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -13255,8 +13201,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -13674,8 +13618,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -14093,8 +14035,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -14512,8 +14452,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -14931,8 +14869,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -15350,8 +15286,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -15769,8 +15703,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -16188,8 +16120,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -16607,8 +16537,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -17026,8 +16954,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -17445,8 +17371,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -17864,8 +17788,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -18283,8 +18205,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -18702,8 +18622,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -19121,8 +19039,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -19540,8 +19456,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -19959,8 +19873,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -20378,8 +20290,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -20797,8 +20707,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -21216,8 +21124,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -21635,8 +21541,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -22054,8 +21958,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -22473,8 +22375,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -22892,8 +22792,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -23311,8 +23209,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -23730,8 +23626,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -24149,8 +24043,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -24568,8 +24460,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -24987,8 +24877,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -25406,8 +25294,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -25825,8 +25711,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -26244,8 +26128,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -26663,8 +26545,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -27082,8 +26962,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -27501,8 +27379,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -27920,8 +27796,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -28339,8 +28213,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -28758,8 +28630,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -29177,8 +29047,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -29596,8 +29464,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -30015,8 +29881,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -30434,8 +30298,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -30853,8 +30715,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -31272,8 +31132,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -31691,8 +31549,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -32110,8 +31966,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -32529,8 +32383,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -32948,8 +32800,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -33367,8 +33217,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -33786,8 +33634,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -34205,8 +34051,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -34624,8 +34468,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -35043,8 +34885,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -35462,8 +35302,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -35881,8 +35719,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -36300,8 +36136,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -36719,8 +36553,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -37138,8 +36970,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -37557,8 +37387,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -37976,8 +37804,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -38395,8 +38221,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -38814,8 +38638,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -39233,8 +39055,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -39652,8 +39472,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -40071,8 +39889,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -40490,8 +40306,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -40909,8 +40723,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -41328,8 +41140,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -41747,8 +41557,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -42166,8 +41974,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -42585,8 +42391,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -43004,8 +42808,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -43423,8 +43225,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -43842,8 +43642,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -44261,8 +44059,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -44680,8 +44476,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -45099,8 +44893,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -45518,8 +45310,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -45937,8 +45727,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -46356,8 +46144,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -46775,8 +46561,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -47194,8 +46978,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -47613,8 +47395,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -48032,8 +47812,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -48451,8 +48229,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -48870,8 +48646,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -49289,8 +49063,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -49708,8 +49480,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -50127,8 +49897,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -50546,8 +50314,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -50965,8 +50731,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -51384,8 +51148,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -51803,8 +51565,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -52222,8 +51982,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -52641,8 +52399,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -53060,8 +52816,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -53479,8 +53233,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -53898,8 +53650,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -54317,8 +54067,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -54736,8 +54484,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -55155,8 +54901,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -55574,8 +55318,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -55993,8 +55735,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -56412,8 +56152,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -56831,8 +56569,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -57250,8 +56986,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -57669,8 +57403,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -58088,8 +57820,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -58507,8 +58237,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -58926,8 +58654,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -59345,8 +59071,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -59764,8 +59488,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -60183,8 +59905,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -60602,8 +60322,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -61021,8 +60739,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -61440,8 +61156,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -61859,8 +61573,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -62278,8 +61990,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -62697,8 +62407,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -63116,8 +62824,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -63535,8 +63241,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -63954,8 +63658,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -64373,8 +64075,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -64792,8 +64492,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -65211,8 +64909,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -65630,8 +65326,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -66049,8 +65743,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -66468,8 +66160,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -66887,8 +66577,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -67306,8 +66994,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -67725,8 +67411,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -68144,8 +67828,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -68563,8 +68245,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -68982,8 +68662,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -69401,8 +69079,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -69846,8 +69522,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -70265,8 +69939,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -70684,8 +70356,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -71103,8 +70773,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -71522,8 +71190,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -71941,8 +71607,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -72360,8 +72024,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -72779,8 +72441,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -73198,8 +72858,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -73630,8 +73288,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -74062,8 +73718,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -74481,8 +74135,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -74900,8 +74552,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -75403,8 +75053,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -75822,8 +75470,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -76241,8 +75887,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -76660,8 +76304,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -77079,8 +76721,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -77498,8 +77138,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -77980,8 +77618,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -78399,8 +78035,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -78818,8 +78452,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -79237,8 +78869,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -79656,8 +79286,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -80075,8 +79703,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -80494,8 +80120,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -80913,8 +80537,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -81332,8 +80954,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -81751,8 +81371,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -82170,8 +81788,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -82589,8 +82205,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -83008,8 +82622,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -83427,8 +83039,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -83846,8 +83456,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -84265,8 +83873,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -84684,8 +84290,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -85103,8 +84707,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -85522,8 +85124,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -85941,8 +85541,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -86360,8 +85958,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -86779,8 +86375,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -87198,8 +86792,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -87617,8 +87209,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -88036,8 +87626,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -88455,8 +88043,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -88874,8 +88460,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -89293,8 +88877,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -89712,8 +89294,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -90131,8 +89711,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -90550,8 +90128,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -90969,8 +90545,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -91388,8 +90962,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -91807,8 +91379,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -92226,8 +91796,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -92645,8 +92213,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -93064,8 +92630,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -93483,8 +93047,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -93902,8 +93464,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -94321,8 +93881,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -94740,8 +94298,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -95159,8 +94715,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -95578,8 +95132,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -95997,8 +95549,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -96416,8 +95966,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -96835,8 +96383,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -97254,8 +96800,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -97673,8 +97217,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -98092,8 +97634,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -98511,8 +98051,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -98930,8 +98468,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -99349,8 +98885,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -99768,8 +99302,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -100187,8 +99719,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -100606,8 +100136,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -101025,8 +100553,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -101444,8 +100970,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -101863,8 +101387,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -102282,8 +101804,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -102701,8 +102221,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -103120,8 +102638,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -103539,8 +103055,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -103958,8 +103472,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -104377,8 +103889,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -104796,8 +104306,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -105215,8 +104723,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -105634,8 +105140,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -106053,8 +105557,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -106472,8 +105974,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -106891,8 +106391,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -107310,8 +106808,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -107729,8 +107225,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -108148,8 +107642,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -108567,8 +108059,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -108986,8 +108476,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -109405,8 +108893,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -109824,8 +109310,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -110243,8 +109727,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -110662,8 +110144,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -111081,8 +110561,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -111500,8 +110978,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -111919,8 +111395,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -112338,8 +111812,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -112757,8 +112229,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -113176,8 +112646,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -113595,8 +113063,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -114014,8 +113480,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -114433,8 +113897,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -114852,8 +114314,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -115271,8 +114731,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -115690,8 +115148,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -116109,8 +115565,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -116528,8 +115982,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -116947,8 +116399,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -117366,8 +116816,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -117785,8 +117233,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -118204,8 +117650,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -118623,8 +118067,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -119042,8 +118484,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -119461,8 +118901,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -119880,8 +119318,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -120299,8 +119735,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -120718,8 +120152,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -121137,8 +120569,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -121556,8 +120986,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -121975,8 +121403,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -122394,8 +121820,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -122813,8 +122237,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -123232,8 +122654,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -123651,8 +123071,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -124070,8 +123488,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -124489,8 +123905,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -124908,8 +124322,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -125327,8 +124739,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -125746,8 +125156,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -126165,8 +125573,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -126584,8 +125990,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -127003,8 +126407,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -127422,8 +126824,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -127841,8 +127241,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -128260,8 +127658,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -128679,8 +128075,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -129098,8 +128492,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -129517,8 +128909,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -129936,8 +129326,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -130355,8 +129743,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -130774,8 +130160,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -131193,8 +130577,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -131612,8 +130994,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -132031,8 +131411,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -132450,8 +131828,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -132869,8 +132245,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -133288,8 +132662,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -133707,8 +133079,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -134126,8 +133496,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -134545,8 +133913,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -134964,8 +134330,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -135383,8 +134747,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -135802,8 +135164,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -136221,8 +135581,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -136640,8 +135998,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -137059,8 +136415,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -137478,8 +136832,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -137897,8 +137249,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -138316,8 +137666,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -138735,8 +138083,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -139154,8 +138500,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -139573,8 +138917,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -139992,8 +139334,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -140411,8 +139751,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -140830,8 +140168,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -141249,8 +140585,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -141668,8 +141002,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -142087,8 +141419,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -142506,8 +141836,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -142925,8 +142253,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -143344,8 +142670,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -143763,8 +143087,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -144182,8 +143504,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -144601,8 +143921,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -145020,8 +144338,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -145439,8 +144755,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -145858,8 +145172,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -146277,8 +145589,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -146696,8 +146006,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -147115,8 +146423,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -147534,8 +146840,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -147953,8 +147257,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -148372,8 +147674,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -148791,8 +148091,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -149210,8 +148508,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -149629,8 +148925,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -150048,8 +149342,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -150467,8 +149759,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -150886,8 +150176,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -151305,8 +150593,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -151724,8 +151010,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -152143,8 +151427,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -152562,8 +151844,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -152981,8 +152261,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -153400,8 +152678,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -153819,8 +153095,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -154238,8 +153512,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -154657,8 +153929,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -155076,8 +154346,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -155495,8 +154763,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -155914,8 +155180,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -156333,8 +155597,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -156752,8 +156014,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -157171,8 +156431,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -157590,8 +156848,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -158009,8 +157265,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -158428,8 +157682,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -158847,8 +158099,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -159266,8 +158516,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -159685,8 +158933,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -160104,8 +159350,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -160523,8 +159767,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -160942,8 +160184,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -161361,8 +160601,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -161780,8 +161018,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -162199,8 +161435,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -162618,8 +161852,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -163037,8 +162269,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -163456,8 +162686,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -163875,8 +163103,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -164294,8 +163520,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -164713,8 +163937,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -165132,8 +164354,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -165551,8 +164771,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -165970,8 +165188,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -166389,8 +165605,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -166808,8 +166022,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -167227,8 +166439,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -167646,8 +166856,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -168065,8 +167273,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -168484,8 +167690,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -168903,8 +168107,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -169322,8 +168524,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -169741,8 +168941,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -170160,8 +169358,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -170579,8 +169775,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -170998,8 +170192,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -171417,8 +170609,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -171836,8 +171026,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -172255,8 +171443,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -172674,8 +171860,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -173093,8 +172277,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -173512,8 +172694,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -173931,8 +173111,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -174350,8 +173528,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -174769,8 +173945,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -175188,8 +174362,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -175607,8 +174779,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -176026,8 +175196,6 @@
       "OPEN",
       "HIGH",
       "LOW",
-      "CLOSE",
-      "LAST",
       "MARK",
       "ORACLE",
       "SPOT_CLOSE_CB",
@@ -176922,7 +176090,4168 @@
       "MKT_AVG_PPO"
     ]
   },
-  "asymmetricEdges": [],
+  "asymmetricEdges": [
+    {
+      "from": "CLOSE",
+      "to": "OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "MARK",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ORACLE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SPOT_CLOSE_CB",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SPOT_CLOSE_BN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "HL2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "HLC3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "OHLC4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SMA50",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SMA200",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA13",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA8",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA9",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA21",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA50",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EMA55",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_UPPER",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_LOWER",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_UPPER_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_LOWER_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_BROKEN_HI",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_BROKEN_LO",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_BROKEN_HI_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DONCHIAN_BROKEN_LO_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_WEEK",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_WEEK_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_WEEK_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_WEEK_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_WEEK_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_WEEK_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_WEEK_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_MONTH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_MONTH_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_MONTH_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_MONTH_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_MONTH_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_MONTH_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_MONTH_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_TRADING_SESSION",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_TRADING_SESSION_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_TRADING_SESSION_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_TRADING_SESSION_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_TRADING_SESSION_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_TRADING_SESSION_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_TRADING_SESSION_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_1H",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_1H_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_1H_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_1H_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_1H_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_1H_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_1H_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_4H",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_4H_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_4H_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_4H_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_4H_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_4H_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_4H_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_24H",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_24H_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_24H_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_24H_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_24H_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_24H_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_ROLLING_24H_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_SWING_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "VWAP_SWING_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ZONE_SUPPORT_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ZONE_SUPPORT_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ZONE_RESIST_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ZONE_RESIST_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ZONE_SUPPORT_MID",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ZONE_RESIST_MID",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_IB_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_IB_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_IB_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_IB_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_VPOC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_VVAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_VVAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_VPOC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_VVAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_TPO_VVAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "NAKED_POC_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "NAKED_POC_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_SINGLE_PRINT_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "TPO_SINGLE_PRINT_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "NAKED_SINGLE_PRINT_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "NAKED_SINGLE_PRINT_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ASIA_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ASIA_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ASIA_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LONDON_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LONDON_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LONDON_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "NEW_YORK_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "NEW_YORK_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "NEW_YORK_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_ASIA_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_LONDON_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_NEW_YORK_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "OR15_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "OR15_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "OR30_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "OR30_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "IB_EXT_UP_150",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "IB_EXT_DOWN_150",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "IB_EXT_UP_200",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "IB_EXT_DOWN_200",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "BB_UPPER",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "BB_LOWER",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "KC_UPPER",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "KC_LOWER",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ST_LINE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SWING_FRACTAL_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SWING_FRACTAL_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_SWING_FRACTAL_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_SWING_FRACTAL_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "INTERNAL_STRUCTURE_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "INTERNAL_PENDING_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "INTERNAL_PENDING_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SWING_STRUCTURE_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SWING_PENDING_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "SWING_PENDING_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EQH_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "EQL_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LIQUIDITY_POOL_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LIQUIDITY_POOL_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LIQUIDITY_POOL_ABOVE_RETIRED",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "LIQUIDITY_POOL_BELOW_RETIRED",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "HMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PSAR",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ICHI_CONV",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ICHI_BASE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ICHI_SPAN_A",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ICHI_SPAN_B",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ICHI_LAG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PDH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PDL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PDO",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DAY_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "DAY_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_DAY_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_DAY_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_DAY_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_DAY_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_DAY_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_DAY_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "WEEK_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "WEEK_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "WEEK_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_WEEK_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_WEEK_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_WEEK_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PWH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PWL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "WEEK_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "WEEK_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "MONTH_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "MONTH_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "MONTH_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_MONTH_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_MONTH_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PRIOR_MONTH_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PMH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PML",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "ATH",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_WEEK_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_MONTH_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_QUARTER_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "CLOSE",
+      "to": "PIVOT_YEAR_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "MARK",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ORACLE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SPOT_CLOSE_CB",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SPOT_CLOSE_BN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "HL2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "HLC3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "OHLC4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SMA50",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SMA200",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA13",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA8",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA9",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA21",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA50",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EMA55",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_UPPER",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_LOWER",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_UPPER_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_LOWER_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_BROKEN_HI",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_BROKEN_LO",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_BROKEN_HI_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DONCHIAN_BROKEN_LO_PRIOR",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_WEEK",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_WEEK_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_WEEK_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_WEEK_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_WEEK_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_WEEK_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_WEEK_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_MONTH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_MONTH_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_MONTH_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_MONTH_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_MONTH_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_MONTH_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_MONTH_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_TRADING_SESSION",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_TRADING_SESSION_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_TRADING_SESSION_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_TRADING_SESSION_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_TRADING_SESSION_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_TRADING_SESSION_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_TRADING_SESSION_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_1H",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_1H_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_1H_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_1H_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_1H_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_1H_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_1H_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_4H",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_4H_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_4H_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_4H_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_4H_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_4H_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_4H_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_24H",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_24H_UB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_24H_UB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_24H_UB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_24H_LB1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_24H_LB2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_ROLLING_24H_LB3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_SWING_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "VWAP_SWING_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ZONE_SUPPORT_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ZONE_SUPPORT_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ZONE_RESIST_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ZONE_RESIST_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ZONE_SUPPORT_MID",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ZONE_RESIST_MID",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_IB_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_IB_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_IB_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_IB_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_VPOC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_VVAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_VVAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_VPOC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_VVAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_TPO_VVAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "NAKED_POC_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "NAKED_POC_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_SINGLE_PRINT_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "TPO_SINGLE_PRINT_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "NAKED_SINGLE_PRINT_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "NAKED_SINGLE_PRINT_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ASIA_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ASIA_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ASIA_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LONDON_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LONDON_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LONDON_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "NEW_YORK_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "NEW_YORK_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "NEW_YORK_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_OPEN",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_ASIA_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_LONDON_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_NEW_YORK_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "OR15_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "OR15_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "OR30_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "OR30_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "IB_EXT_UP_150",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "IB_EXT_DOWN_150",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "IB_EXT_UP_200",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "IB_EXT_DOWN_200",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "BB_UPPER",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "BB_LOWER",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "KC_UPPER",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "KC_LOWER",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ST_LINE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SWING_FRACTAL_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SWING_FRACTAL_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_SWING_FRACTAL_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_SWING_FRACTAL_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "INTERNAL_STRUCTURE_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "INTERNAL_PENDING_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "INTERNAL_PENDING_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SWING_STRUCTURE_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SWING_PENDING_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "SWING_PENDING_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EQH_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "EQL_LEVEL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LIQUIDITY_POOL_ABOVE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LIQUIDITY_POOL_BELOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LIQUIDITY_POOL_ABOVE_RETIRED",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "LIQUIDITY_POOL_BELOW_RETIRED",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "HMA20",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PSAR",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ICHI_CONV",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ICHI_BASE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ICHI_SPAN_A",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ICHI_SPAN_B",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ICHI_LAG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PDH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PDL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PDO",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DAY_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "DAY_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_DAY_SUPPLY_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_DAY_SUPPLY_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_DAY_SUPPLY_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_DAY_DEMAND_EDGE",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_DAY_DEMAND_AVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_DAY_DEMAND_WAVG",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "WEEK_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "WEEK_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "WEEK_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_WEEK_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_WEEK_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_WEEK_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PWH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PWL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "WEEK_HIGH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "WEEK_LOW",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "MONTH_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "MONTH_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "MONTH_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_MONTH_TPO_POC",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_MONTH_TPO_VAH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PRIOR_MONTH_TPO_VAL",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PMH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PML",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "ATH",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_WEEK_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_MONTH_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_QUARTER_DM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_FIB_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_FIB_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_FIB_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_FIB_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CLASSIC_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CLASSIC_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CLASSIC_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CLASSIC_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_R5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_CAM_S5",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_R2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_R3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_R4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_S1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_S2",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_S3",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_WOODIE_S4",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_DM_P",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_DM_R1",
+      "reciprocal": false
+    },
+    {
+      "from": "LAST",
+      "to": "PIVOT_YEAR_DM_S1",
+      "reciprocal": false
+    }
+  ],
   "metricsWithoutSpread": [
     "BAR_CONTAINMENT",
     "BAR_FORMING",

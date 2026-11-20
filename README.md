@@ -206,7 +206,8 @@ python -m pytest tests/ -q     # 1373 passed (2026-10-12)
   corrected **nine** header mispredictions across six captures, and surfaced a silent
   platform failure where colliding headers drop a section from `conditionColumns`
 - aggregation matches `simulate_aggregate_score` to the last digit
-- spread pools verified symmetric and self-excluding
+- spread pools verified self-excluding, and symmetric but for the reference prices: since contract v181 `CLOSE` and
+  `LAST` are the base of every spread over another reading, so no other reading lists them as an operand
 - all 21 metric-bearing membership probes replay against the offline predictor,
   module-for-module (the two platform-section probes carry no metric list)
 - the generated `squeeze-breakout` strategy's predicted membership matches the live

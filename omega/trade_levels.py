@@ -164,6 +164,54 @@ report that reads the bands. The migration gave every strategy ATR 2 whatever it
 maxStopLossAtrMultiple 1.8, ATR 2 in its menu), and every decision drops it there; since v0.14.3 the default offers only
 the ATR stops inside the thesis's range (`stop_range`; default_stops). When none of the three is inside, it offers
 OMEGA's own fallback - not a platform or a migration default: the range's bounds and one stop strictly between them.
+
+**Contract 182.3.2 (2026-11-20; OMEGA v0.16.0).** preview_strategy_trade_levels' description moved at 182.3.x (no
+schema of OMEGA's capture did): a stop's verdict is "the ATR multiple it was judged at (an ATR option's own multiple;
+bounds are inclusive)", a pair's R:R is "stated to three decimals", and a level entry is stated "with how far it sits
+from the mark (distancePct, distanceAtr) and how long it stays valid (validForMinutes)". Each was measured on two
+create drafts, staged, read back, previewed on the DRAFT and discarded, none committed (RR_PROBES: drafts E and L):
+
+  * The stop range's bounds ARE inclusive, and an ATR stop is judged on its own multiple - not on its distance in
+    percent. Range 0.8 - 1.8 with ATR stops 0.5 / 0.79 / 0.8 / 1 / 1.5 / 1.8 / 1.81 / 2, on BTC, ETH and SOL, both
+    directions (G1): 0.5 and 0.79 BELOW_FLOOR, 0.8 through 1.8 SURVIVED, 1.81 and 2 ABOVE_CEILING. On SOL the 0.8 stop's
+    distancePct (0.9823584712115825) lies BELOW the floor's requestedMinPct (0.982358471211586) and the 1.8 stop's
+    (2.2103065602260705) ABOVE the ceiling's (2.2103065602260688), each by floating-point rounding, and both survive:
+    the case v0.14.3 left unmeasured. outside_stop_range compares the decimals as written and needed no change; its
+    "as far as measured" is now the platform's own statement, measured.
+  * A risk-reward is judged against minRiskRewardRatio as it is STATED, to three decimals, at the stage and at a
+    decision alike (stated_rr): 1.4996R and 1.4995R pass a minimum of 1.5 and their pairs survive with riskRewardRatio
+    1.5; 1.49949R and 1.4994R are refused "pays 1.499R" (G2 - G8, T2 - T4). v0.15.0 compared the exact pay and would
+    have refused a plan the platform stages. The pay that is rounded is a FLOATING-POINT sum - each leg's R times
+    closePct / 100, added in order (plan_pays_double) - times 1000, rounded to the nearest whole number. Measured at
+    the tie itself on one more create draft (`ties`, df02fef7, 2026-11-20 18:40 - 18:43Z, 14 plans; staged, previewed,
+    read back, discarded and read null): a single leg at the tie passes under 0.5, 1.5, 2.25, 2.5, 2.75 and 3 whichever
+    side of the tie its double lies on (K3, A, B, D6 - D8); of six two-leg plans paying 1.4995 / 2.2495 / 0.9995 /
+    2.7495 exactly as written, four pass (C, D2, D3, D4) and two are refused "pays 1.499R" / "pays 2.749R" (D1: 0.8R
+    50% + 2.199R 50%; D5: 2.55R 70% + 3.215R 30%) - the two whose floating-point sum falls a unit in the last place
+    under the tie. A runner's share and more than two closing legs were not staged at a tie: validate_menu warns
+    TRADE_MENU_EXIT_PLAN_RR_TIE_UNMEASURED on such a plan that pays a tie exactly (rr_tie_unmeasured).
+  * A level entry at a decision (`previews[].entry`; null for an at-market entry): outcome RESTS states the level read
+    (levelPrice), the mark, the ATR, offsetAtrMultiple, placedPrice, placedSide, orderType (TRIGGER under
+    STOP_THROUGH_LEVEL, LIMIT under ON_RETEST; EITHER_SIDE_OF_LEVEL read TRIGGER for a long above the mark and LIMIT
+    for a short above it), distancePct and distanceAtr (the placed price from the mark) and validForMinutes
+    (validForBars x the strategy bar: 4 x 60 = 240, 6 x 60 = 360, 24 x 60 = 1440). Outcome WRONG_SIDE states
+    placedSide and requiredSide instead, and that direction's result is stage ENTRY_LEVEL_UNAVAILABLE with no setups
+    (F2 LONG: a Bollinger lower band under the mark whose 0.2 ATR offset placed the buy limit above it; F4 both).
+  * ENTRY_LEVEL_USUALLY_SKIPPED, the draft warning 180.4.0's enum added, fires at the stage on a level that sits on
+    one side of price BY DEFINITION when the trigger's order must rest on the other: STOP_THROUGH_LEVEL needs a buy
+    stop above price (LONG) and a sell stop below (SHORT); ON_RETEST a buy limit below (LONG) and a sell limit above
+    (SHORT); EITHER_SIDE_OF_LEVEL never warns (F4 - F7: DONCHIAN_LOWER / DONCHIAN_UPPER, "The LONG entry level sits
+    below price by definition, but a buy stop must rest above price, so this entry will be skipped on most bars").
+    A level that is merely usually on one side does not warn: the Bollinger bands, EMA20, VWAP, PDH / PDL, the prior
+    TPO value area (E1 - E14). Which metrics have a side by definition is no served field: it was SWEPT - every
+    price-unit metric with a legal value column, one stage each with the metric as both levels of a
+    STOP_THROUGH_LEVEL entry (drafts.S; the 418 answers are data/audit/reextraction_182_side_sweep_2026-11-20.json) -
+    and is data/derived/entry_level_sides.json (entry_level_sides). Every level entry staged was one form: plain
+    references ({rel: anchor}, bars null, offset 0, no knobs, no windowExtreme) under levelOffsetAtrMultiple 0.2.
+    validate_entry_levels warns on that form and says nothing of another (entry_side_findings).
+  * Also seen: a stage that names draftVersion 0 against a draft the player's hand has not changed is accepted (draft E
+    staged 21 times that way); a draft whose report reads 418 extra value columns stages clean and get_strategy_draft
+    then answers RESULT_TOO_LARGE (300,334 characters against a 150,000 cap) - list_strategy_drafts states its version.
 """
 from __future__ import annotations
 
@@ -171,9 +219,10 @@ import copy
 import json
 import math
 from fractions import Fraction
+from functools import lru_cache
 
 from . import preflight as P
-from .contract import load, stage_schema
+from .contract import ROOT, load, stage_schema
 from .validate import Finding
 
 SIDES = ("LONG", "SHORT")
@@ -192,6 +241,17 @@ EXIT_PLAN_PROBES = "data/audit/exit_plans_170_2026-11-12.json"
 RUNNER_PROBES = "data/audit/exit_plan_runner_171_2026-11-12.json"
 UPDATE_PROBES = "data/audit/update_rules_171_2026-11-12.json"
 STOP_BAND_PROBES = "data/audit/stop_band_171_2026-11-12.json"
+RR_PROBES = "data/audit/reextraction_182_2026-11-20.json"      # 182.3.2: stop bounds, R:R at three decimals, entries
+RR_DECIMALS = 3                # a risk-reward is stated, and judged against the minimum, to three decimals (stated_rr)
+# The side of price each level trigger's resting order needs, per direction (182.3.2, RR_PROBES F4 / F5 and the
+# previews of F1 / F2): a buy stop rests above price and a sell stop below, a buy limit below and a sell limit above.
+# EITHER_SIDE_OF_LEVEL rests on either side and never warns (F7).
+ENTRY_ORDER_SIDE = {"STOP_THROUGH_LEVEL": {"LONG": ("above", "buy stop"), "SHORT": ("below", "sell stop")},
+                    "ON_RETEST": {"LONG": ("below", "buy limit"), "SHORT": ("above", "sell limit")}}
+ENTRY_LEVEL_SIDES = "data/derived/entry_level_sides.json"     # which level metrics sit on one side of price by definition
+# The entry's levelOffsetAtrMultiple under which ENTRY_LEVEL_USUALLY_SKIPPED was measured: every level entry staged at
+# 182.3.2 carried 0.2 (drafts E and L, the side sweep). entry_side_findings warns at these and says nothing at another.
+ENTRY_SIDE_OFFSETS = (0.2,)
 # the verdict a decision reads for a stop outside the stop range, and the bound it names (preview_strategy_trade_levels
 # stopCandidates[].verdict / responsibleBound; STOP_BAND_PROBES)
 STOP_RANGE_VERDICTS = {"BELOW_FLOOR": "MIN_STOP_LOSS_ATR_MULTIPLE", "ABOVE_CEILING": "MAX_STOP_LOSS_ATR_MULTIPLE"}
@@ -264,10 +324,13 @@ def outside_stop_range(multiple, min_stop, max_stop) -> str | None:
     """The verdict a decision reads for an ATR stop of `multiple` outside the strategy's stop range min_stop -
     max_stop (TRADE_LEVEL_POLICY minStopLossAtrMultiple / maxStopLossAtrMultiple): "BELOW_FLOOR" under the minimum,
     "ABOVE_CEILING" over the maximum - the stop is then dropped at every decision (STOP_BAND_PROBES; the bound it is
-    refused by is STOP_RANGE_VERDICTS[verdict]). None when it is inside - both bounds inclusive, as far as measured
-    (1 and 2 at 168.4.0; 0.8 and 1.8 once, on one bar, B1: "The stop range" in the module docstring) - or when the
-    multiple or a bound is not a finite number (the dial is the axis walk's to judge). Each number is read as the
-    decimal it was written as."""
+    refused by is STOP_RANGE_VERDICTS[verdict]). None when it is inside - both bounds inclusive (1 and 2 at 168.4.0;
+    0.8 and 1.8 once, on one bar, B1; since 182.3.2 the platform's own statement, "an ATR option's own multiple;
+    bounds are inclusive", measured on BTC, ETH and SOL with 0.79 / 0.8 / 1.8 / 1.81 around a range of 0.8 - 1.8,
+    RR_PROBES G1) - or when the multiple or a bound is not a finite number (the dial is the axis walk's to judge).
+    Each number is read as the decimal it was written as, which is how the platform judges an ATR stop: on its own
+    multiple, not on its distance in percent (on SOL that distance fell outside both bounds by rounding and the stop
+    survived)."""
     if not (_finite_number(multiple) and _finite_number(min_stop) and _finite_number(max_stop)):
         return None
     if _exact(multiple) < _exact(min_stop):
@@ -517,6 +580,64 @@ def validate_entry_levels(entry: dict, *, sections: list[dict], anchor: str) -> 
     out: list[Finding] = []
     for side in SIDES:
         out += _level_findings(entry["levels"][side], f"entry.levels.{side}", side, "entry", readings, anchor)[0]
+    # 182.3.2: the side warning is a fact of the trigger and the level, whatever the report reads. Whether the STAGE
+    # still reports it beside an entry level error is not measured (every warned stage was otherwise clean)
+    return out + entry_side_findings(entry)
+
+
+@lru_cache(maxsize=1)
+def entry_level_sides() -> dict[str, str]:
+    """{metric: "above" | "below"}: the level metrics that sit on one side of price BY DEFINITION, as the stage's
+    ENTRY_LEVEL_USUALLY_SKIPPED warning names them. No hint serves this; it was swept at 182.3.2 (2026-11-20, RR_PROBES
+    drafts.S: every price-unit metric with a legal value column staged as both levels of a STOP_THROUGH_LEVEL entry) and
+    is stored in ENTRY_LEVEL_SIDES. A metric the sweep measured with no side is absent; `measured` in the file names
+    every metric it covered, so absent-and-measured (no side) is told from never measured."""
+    doc = json.loads((ROOT / ENTRY_LEVEL_SIDES).read_text(encoding="utf-8"))
+    return {**{m: "above" for m in doc["above"]}, **{m: "below" for m in doc["below"]}}
+
+
+def entry_side_findings(entry) -> list[Finding]:
+    """The ENTRY_LEVEL_USUALLY_SKIPPED warnings of a level entry, as the stage draws them (182.3.2, RR_PROBES F4 - F7,
+    E9 and the 418 stages of the side sweep): a level that sits on one side of price by definition (entry_level_sides)
+    under a trigger whose order must rest on the other side (ENTRY_ORDER_SIDE). A warning, as on the platform: the
+    draft saves. Judged on the form every one of those stages carried and on no other:
+
+      * the level a plain reference - {rel: anchor}, bars unset (null), offset 0, no knobs, no windowExtreme; another
+        form of the same metric (DONCHIAN_UPPER one bar back is the measured DONCHIAN_UPPER_PRIOR, which has no side;
+        a Developing read) is not measured and draws nothing here;
+      * the entry's levelOffsetAtrMultiple one of ENTRY_SIDE_OFFSETS (0.2, the only offset staged): whether the
+        warning holds at another offset - a larger one moves the resting order further from the level - is not
+        measured, and such an entry draws nothing here.
+
+    Anything that is not such an entry - not a mapping, no `levels`, a level that is not a mapping, a metric or a
+    trigger that is not a string - draws nothing as well: the shape is validate_entry_levels' to refuse (the write
+    schema's walk), and this never raises on it."""
+    if not isinstance(entry, dict):
+        return []
+    trigger, levels, offset = entry.get("trigger"), entry.get("levels"), entry.get("levelOffsetAtrMultiple")
+    needs = ENTRY_ORDER_SIDE.get(trigger) if isinstance(trigger, str) else None
+    if not needs or not isinstance(levels, dict):
+        return []
+    if not (_finite_number(offset) and any(_exact(offset) == _exact(o) for o in ENTRY_SIDE_OFFSETS)):
+        return []
+    out: list[Finding] = []
+    for side in SIDES:
+        ref = levels.get(side)
+        if not isinstance(ref, dict) or not isinstance(ref.get("metric"), str):
+            continue
+        sits = entry_level_sides().get(ref["metric"])
+        plain = (ref.get("bars") is None and ref.get("offset") == 0 and not isinstance(ref.get("offset"), bool)
+                 and ref.get("windowExtreme") is None and ref.get("knobs") == {}
+                 and ref.get("timeframe") == {"rel": "anchor"})
+        if sits is None or not plain:
+            continue
+        needed, order = needs[side]
+        if sits != needed:
+            out.append(Finding(
+                "warning", "ENTRY_LEVEL_USUALLY_SKIPPED", f"entry.levels.{side}",
+                f"The {side} entry level sits {sits} price by definition, but a {order} must rest {needed} price, so "
+                f"this entry will be skipped on most bars. Choose a level on the other side, another order type, or "
+                f"Either side, which rests on either side of price."))
     return out
 
 
@@ -592,7 +713,9 @@ def _exact(value) -> Fraction:
 def plan_pays_exact(legs: list[dict], level_r: dict | None = None) -> Fraction | None:
     """plan_pays, computed exactly: each multiple and closePct read as the decimal it was written as, so a plan paying
     exactly the minimum compares equal to it. In binary floats 0.6R 50% + 1.4R 28% pays 0.9999999999999999 and
-    0.6R 50% + 1.9R 9% pays 1.2499999999999998; exactly they pay 1 and 1.25 (review 2026-11-12, finding 1).
+    0.6R 50% + 1.9R 9% pays 1.2499999999999998; exactly they pay 1 and 1.25 (review 2026-11-12, finding 1). Since
+    182.3.2 the minimum is judged on the floating-point sum stated to three decimals (plan_pays_double, stated_rr),
+    which absorbs both; this is the pay as written, for display and for telling a tie (rr_tie_unmeasured).
 
     `level_r` maps the index of each LEVEL leg to the R its price makes from one pair's stop at a decision
     (|level price - entry| / |entry - stop|, as preview_strategy_trade_levels reads it): the same share-weighted sum,
@@ -600,6 +723,15 @@ def plan_pays_exact(legs: list[dict], level_r: dict | None = None) -> Fraction |
     2026-11-12 at 171.0.0 on the preview of UPDATE_PROBES A1: every setup and every refused pair's computedRR). A LEVEL
     leg it does not name leaves the pay unknown - None, the stage's own reading: it never judges a plan with a level leg
     (EXIT_PLAN_PROBES Z1 - Z3, UPDATE_PROBES A1)."""
+    shares = _plan_shares(legs, level_r)
+    if shares is None:
+        return None
+    return sum(_exact(r) * _exact(pct) for r, pct in shares) / EXIT_PLAN_FULL
+
+
+def _plan_shares(legs: list[dict], level_r: dict | None = None) -> list[tuple] | None:
+    """[(R, percent of the position)] in the order a plan pays: each leg that closes a share at its R, then the runner
+    (what the plan does not close) at the R of the last leg that closes one. None where plan_pays is None."""
     level_r = level_r or {}
     closing = [(i, leg) for i, leg in enumerate(legs) if leg["closePct"] > 0]
     closed = sum(leg["closePct"] for _, leg in closing)
@@ -609,13 +741,75 @@ def plan_pays_exact(legs: list[dict], level_r: dict | None = None) -> Fraction |
     for i, leg in enumerate(legs):
         method = leg["method"]
         if method["kind"] == "R_MULTIPLE":
-            r.append(_exact(method["multiple"]))
+            r.append(method["multiple"])
         elif method["kind"] == "LEVEL" and _number(level_r.get(i)) and math.isfinite(level_r[i]):
-            r.append(_exact(level_r[i]))
+            r.append(level_r[i])
         else:
             return None
-    runner = EXIT_PLAN_FULL - _exact(closed)
-    return (sum(r[i] * _exact(leg["closePct"]) for i, leg in closing) + runner * r[closing[-1][0]]) / EXIT_PLAN_FULL
+    shares = [(r[i], leg["closePct"]) for i, leg in closing]
+    if closed < EXIT_PLAN_FULL:
+        shares.append((r[closing[-1][0]], EXIT_PLAN_FULL - closed))
+    return shares
+
+
+def plan_pays_double(legs: list[dict], level_r: dict | None = None) -> float | None:
+    """What an exit plan pays in the arithmetic the stage's verdicts fit (182.3.2, RR_PROBES `ties`): binary floating
+    point, each leg's R times its share of the position (closePct / 100), summed in the legs' order - where
+    plan_pays_exact reads every number as the decimal it was written as. The two part by a unit in the last place,
+    which decides a plan that pays exactly a tie: 0.8R 50% + 2.199R 50% is 1.4995 exactly and 1.4994999999999998 here,
+    and the stage refuses it "pays 1.499R" under a minimum of 1.5 (D1); 1R 50% + 1.999R 50% is 1.4995 both ways and
+    stages clean (C). Dividing after the sum (sum(R x closePct) / 100) would refuse C and 0.1R 50% + 2.899R 50% (D2),
+    dividing each product (R x closePct / 100) would refuse D2: both stage clean. The runner's share is added last, at
+    the R of the last leg that closes a share - its place in the sum, and the order of more than two legs, were not
+    measured at a tie (TRADE_MENU_EXIT_PLAN_RR_TIE_UNMEASURED). None where plan_pays is None."""
+    shares = _plan_shares(legs, level_r)
+    if shares is None:
+        return None
+    pay = 0.0
+    for r, pct in shares:
+        pay += float(r) * (pct / EXIT_PLAN_FULL)
+    return pay
+
+
+def stated_rr(pays) -> Fraction:
+    """A risk-reward as the platform states it and judges it against minRiskRewardRatio: to RR_DECIMALS (three)
+    decimals. `pays` is the pay as a binary double (plan_pays_double; any other number is read as the double nearest
+    it); the answer is that double times 1000 - one floating-point multiplication - rounded to the nearest whole
+    number, a half going up, over 1000. Every stage verdict measured at 182.3.2 fits this and no other reading tried
+    (RR_PROBES: drafts L and E on 2026-11-20 14:42 - 14:48Z, `ties` on draft df02fef7 18:40 - 18:43Z):
+
+      * away from a tie: 1.4996R passes a minimum of 1.5, 1.49949R and 1.4994R are refused "The LONG exit plan pays
+        1.499R, below this strategy's minimum risk-reward of 1.5" (G2, G4, T3); two legs as one (G5, G6); 2.2496R
+        passes 2.25 and 2.2494R is refused "pays 2.249R" (G7, G8; again K1, K2);
+      * a single leg AT the tie passes, whichever side of the tie its double lies on: 1.4995 under 1.5 (above; G3, K3),
+        2.2495 under 2.25, 2.4995 under 2.5, 2.7495 under 2.75, 2.9995 under 3 and 0.4995 under 0.5 (each below: A, B,
+        D6, D7, D8) - the multiplication by 1000 lands on the half exactly and rounds up. Rounding the double's own
+        value to three decimals would refuse those five;
+      * two legs at the tie follow the floating-point sum (plan_pays_double): 1R 50% + 1.999R 50% (C), 0.1R 50% +
+        2.899R 50% (D2), 1R 30% + 2.785R 70% under 2.25 (D3) and 0.9R 80% + 1.3975R 20% under 1 (D4) pass; 0.8R 50% +
+        2.199R 50% (D1, "pays 1.499R") and 2.55R 70% + 3.215R 30% under 2.75 (D5, "pays 2.749R") are refused, though
+        each pays the tie exactly as written. v0.16.0's first pass rounded the exact pay and accepted both.
+
+    A pair that survives a decision reads riskRewardRatio at the minimum (the previews of K1, K3, A, B, C, D2 - D4,
+    D6 - D8: every setup, both directions, on BTC). Not told apart by any case: a half going up or to the even
+    thousandth (a tie under a minimum on the 0.25 step rounds to the minimum either way)."""
+    scale = 10 ** RR_DECIMALS
+    return Fraction(math.floor(Fraction(float(pays) * scale) + Fraction(1, 2)), scale)
+
+
+def rr_tie_unmeasured(legs: list[dict], min_rr) -> bool:
+    """True when a plan pays the tie under `min_rr` exactly as written (the minimum less half a thousandth) through a
+    sum whose floating-point order was not measured at a tie: a runner's share (the plan closes less than 100%) or
+    more than two legs that close one. At a tie the last bit of the sum decides (stated_rr: D1 and D5 are refused at
+    the tie, C and D2 - D4 pass), and RR_PROBES `ties` staged one closing leg and two closing legs of a plan closing
+    100% only."""
+    exact = plan_pays_exact(legs)
+    if exact is None or not _finite_number(min_rr):
+        return False
+    closing = [leg for leg in legs if leg["closePct"] > 0]
+    measured_shape = len(closing) <= 2 and sum(leg["closePct"] for leg in closing) == EXIT_PLAN_FULL
+    tie = _exact(min_rr) - Fraction(1, 2 * 10 ** RR_DECIMALS)
+    return not measured_shape and abs(exact - tie) <= Fraction(1, 10 ** 12)
 
 
 def plan_pays(legs: list[dict], level_r: dict | None = None) -> float | None:
@@ -625,7 +819,9 @@ def plan_pays(legs: list[dict], level_r: dict | None = None) -> float | None:
     "pays 2.4R", O1 "pays 1.5R", the previews of T4 / W2b / W3 / O4); on a plan closing 100% it is v0.14.0's
     closePct-weighted mean (EXIT_PLAN_PROBES Y1 - Y8). None for a plan with a level leg (its R is known only at a
     decision; pass `level_r` to compute what a decision reads, plan_pays_exact), one that closes nothing, or one
-    closing more than 100% (refused at input, X4, X5). A float, for display: the rule compares plan_pays_exact."""
+    closing more than 100% (refused at input, X4, X5). A float of the exact pay, for display: the rule compares the
+    pay as the platform's own floating-point sum makes it, stated to three decimals (plan_pays_double, stated_rr;
+    182.3.2)."""
     exact = plan_pays_exact(legs, level_r)
     return None if exact is None else float(exact)
 
@@ -712,13 +908,25 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
                                    f"one before it\", probes X8, X9, X11, Z4)"))
         # a plan out of order is judged on its order alone: X11 (1.5R then 1.2R) pays 1.35R, below the minimum, and the
         # stage named only the order
-        pays = None if out_of_order else plan_pays_exact(legs)
-        if pays is not None and _number(min_rr) and math.isfinite(min_rr) and pays < _exact(min_rr):
-            out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR", ppath,
-                               f"the {side} exit plan pays {round(float(pays), 4)}R (each share at its leg's R, a "
-                               f"runner at the last leg that closes a share), below this strategy's minimum "
-                               f"risk-reward of {min_rr}: the stage refuses it (\"every pair it makes would be "
-                               f"refused\", probes Y1 - Y7, W1, O1)"))
+        # 182.3.2: the pay is judged as it is stated, to three decimals, from the floating-point sum (stated_rr):
+        # 1.4996R passes a minimum of 1.5, and 0.8R 50% + 2.199R 50% - 1.4995 as written - is refused "pays 1.499R"
+        pays = None if out_of_order else plan_pays_double(legs)
+        if pays is not None and _finite_number(min_rr):
+            if stated_rr(pays) < _exact(min_rr):
+                out.append(Finding("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR", ppath,
+                                   f"the {side} exit plan pays {float(stated_rr(pays)):g}R (each share at its leg's R, "
+                                   f"a runner at the last leg that closes a share; summed in floating point and "
+                                   f"stated to three decimals), below this strategy's minimum risk-reward of {min_rr}: "
+                                   f"the stage refuses it (\"every pair it makes would be refused\", probes Y1 - Y7, "
+                                   f"W1, O1; at three decimals G4, G6, G8; at the tie D1, D5)"))
+            if rr_tie_unmeasured(legs, min_rr):
+                out.append(Finding("warning", "TRADE_MENU_EXIT_PLAN_RR_TIE_UNMEASURED", ppath,
+                                   f"the {side} exit plan pays {float(plan_pays_exact(legs)):g}R as written, exactly "
+                                   f"half a thousandth under this strategy's minimum risk-reward of {min_rr}. At that "
+                                   f"tie the last bit of the platform's floating-point sum decides, and the sum was "
+                                   f"measured for one or two legs closing 100% only ({RR_PROBES} `ties`): with a "
+                                   f"runner's share or more than two closing legs the stage's verdict is not measured "
+                                   f"(omega's reading above is its own order of the sum). Move a target off the tie"))
         if len(legs) > 1 and any(leg["method"]["kind"] == "LEVEL" for leg in legs):
             out.append(Finding("warning", "TRADE_MENU_EXIT_PLAN_JUDGED_PER_DECISION", ppath,
                                f"the {side} exit plan mixes a level leg with others: the stage judges neither what it "

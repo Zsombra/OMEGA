@@ -1,0 +1,182 @@
+{
+ "_what": "What the re-extraction at contract 182.3.2 moved in the metric corpus: the hints of all 586 served metrics read 2026-11-20 14:24 - 14:35Z over one mcporter runtime (scripts/refresh_metric_contracts.py, EXTRACTION_STAMP=20261120, EXTRACTION_TRANSPORT=runtime, 0 failed; the 180.4.0 batches archived as archive_20261119b_extraction), against the committed 180.4.0 records (v0.15.0, 10535e5). Every move is contract v181's 'Narrowed output' (README 'Contract history - v181'): a reference price left the plain operand lists of every base that is not one. Counted from the records, not typed.",
+ "contractVersion": "182.3.2",
+ "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f",
+ "hintsReadOn": "2026-11-20",
+ "foldedOn": "2026-11-20",
+ "metrics": {
+  "at180_4": 586,
+  "at182_3_2": 586
+ },
+ "added": [],
+ "retired": [],
+ "recordsMoved": 416,
+ "recordsEqual": 170,
+ "priceBases": 418,
+ "movedAreThePriceBasesThatAreNotReferencePrices": true,
+ "operandLists": {
+  "plainListsOfTheBase": {
+   "_what": "<base>.spreadOperands / spreadOperandsOffAnchor / spreadAverageOperands(OffAnchor): metrics whose list lost the operand",
+   "removed": {
+    "spreadOperands": {
+     "CLOSE": 416,
+     "LAST": 416
+    },
+    "spreadOperandsOffAnchor": {
+     "CLOSE": 416,
+     "LAST": 416
+    }
+   }
+  },
+  "spreadAfterAnAverage": {
+   "_what": "<base> x aggregate|ema|rma|wma -> spread: transforms[inner].chainedOuters.spread.operands (operandsOffAnchor), keyed inner.list",
+   "removed": {
+    "aggregate.operands": {
+     "CLOSE": 96,
+     "LAST": 96
+    },
+    "aggregate.operandsOffAnchor": {
+     "CLOSE": 96,
+     "LAST": 96
+    },
+    "ema.operands": {
+     "CLOSE": 96,
+     "LAST": 96
+    },
+    "ema.operandsOffAnchor": {
+     "CLOSE": 96,
+     "LAST": 96
+    },
+    "rma.operands": {
+     "CLOSE": 96,
+     "LAST": 96
+    },
+    "rma.operandsOffAnchor": {
+     "CLOSE": 96,
+     "LAST": 96
+    },
+    "wma.operands": {
+     "CLOSE": 96,
+     "LAST": 96
+    },
+    "wma.operandsOffAnchor": {
+     "CLOSE": 96,
+     "LAST": 96
+    }
+   }
+  },
+  "aChainAfterASpread": {
+   "_what": "<base> x spread(<operand>) -> outer: transforms[spread].chainedOuters[outer].operands (operandsOffAnchor), keyed outer.list. LAST was never in these lists (it has no per-bar value)",
+   "removed": {
+    "aggregate.operands": {
+     "CLOSE": 96
+    },
+    "aggregate.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "cci.operands": {
+     "CLOSE": 96
+    },
+    "cci.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "efficiency.operands": {
+     "CLOSE": 108
+    },
+    "efficiency.operandsOffAnchor": {
+     "CLOSE": 108
+    },
+    "ema.operands": {
+     "CLOSE": 96
+    },
+    "ema.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "linregSlope.operands": {
+     "CLOSE": 96
+    },
+    "linregSlope.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "pctl.operands": {
+     "CLOSE": 96
+    },
+    "pctl.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "rma.operands": {
+     "CLOSE": 96
+    },
+    "rma.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "roc.operands": {
+     "CLOSE": 96
+    },
+    "roc.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "rollingMax.operands": {
+     "CLOSE": 96
+    },
+    "rollingMax.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "rollingMin.operands": {
+     "CLOSE": 96
+    },
+    "rollingMin.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "rsi.operands": {
+     "CLOSE": 96
+    },
+    "rsi.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "stddev.operands": {
+     "CLOSE": 96
+    },
+    "stddev.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "trajectory.operands": {
+     "CLOSE": 108
+    },
+    "trajectory.operandsOffAnchor": {
+     "CLOSE": 108
+    },
+    "wma.operands": {
+     "CLOSE": 96
+    },
+    "wma.operandsOffAnchor": {
+     "CLOSE": 96
+    },
+    "zscore.operands": {
+     "CLOSE": 96
+    },
+    "zscore.operandsOffAnchor": {
+     "CLOSE": 96
+    }
+   }
+  },
+  "kept": {
+   "CLOSE.spreadOperands holds LAST": true,
+   "CLOSE.spreadOperandsOffAnchor holds LAST": true,
+   "LAST.spreadOperands holds CLOSE": true,
+   "LAST.spreadOperandsOffAnchor holds CLOSE": true,
+   "bases whose spreadAverageOperands holds CLOSE (unchanged: an average of price stays an operand)": 418,
+   "CLOSE's own averages keep LAST (CLOSE x inner -> spread(LAST)), inners": [
+    "aggregate",
+    "ema",
+    "rma",
+    "wma"
+   ]
+  }
+ },
+ "anythingElseMoved": [],
+ "servedFieldsMoved": {
+  "transforms/_authoring.json": "spread.parameters.inputs.description (and the same sentence in _chain_outer_parameters.json) now states the rule: 'a same-unit metric `{ metric }` - never a reference price (CLOSE, LAST) unless the base is one, because price compared with another reading is the base (write CLOSE x spread(<metric>))'. Invariant across all 586 metrics; no other authoring block moved."
+ },
+ "vocabulary": "data/contract/vocabulary/20261120T1435Z against 20261119T2058Z: twelve categories answer byte-identically, `levels` is refused RESULT_TOO_LARGE as before, and `momentum` rewords one study (the fixed-horizon change: brief 'Live price ...' -> 'Frame price ...', its gloss now says what the frame price is at a decision and at the latest values). _shared.json and categories.json: nothing moved."
+}

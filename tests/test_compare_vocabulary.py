@@ -91,8 +91,8 @@ def test_main_exits_0_when_identical_and_1_when_an_enum_moved(tmp_path, capsys):
     # 171.0.0 (2026-11-12, schema_20261112T093211Z); 169.4.0 was schema_20261112T070510Z, 168.3.0 schema_20261111T213257Z,
     # 161.0.0 schema_20261109T162100Z,
     # 149.1.0 schema_20261105T181932Z
-    # 180.4.0 since 2026-11-19 (schema_20261119T202415Z)
-    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261119T202415Z.json"
+    # 180.4.0 since 2026-11-19 (schema_20261119T202415Z); 182.3.2 since 2026-11-20
+    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261120T142253Z.json"
 
 
 def test_the_stored_enums_are_read_off_the_saved_108_stage_schema():

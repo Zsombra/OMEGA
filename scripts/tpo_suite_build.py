@@ -157,7 +157,7 @@ SPINE = [
 #   POSITIVE  =>  the BASE sits ABOVE the operand.
 # So close_pTpoVAL_spread > 0 means the close is ABOVE prior VAL.
 #
-# Contract v181 (announced; README "Contract history - v181"): a reference price (CLOSE, LAST) is never the plain
+# Contract v181 (README "Contract history - v181"; announced at 180.4.0, served since 182.3.2): a reference price (CLOSE, LAST) is never the plain
 # operand of a spread whose base is not one, so the three `PRIOR_TPO_* x spread(CLOSE)` columns of the 2026-09-11 body
 # are `CLOSE x spread(PRIOR_TPO_*)` here (OMEGA v0.15.0, 2026-11-19). Each clause on them is the old clause with its
 # operator flipped and its threshold mapped (omega.contract.flipped_price_spread_clause), as the platform migrated the

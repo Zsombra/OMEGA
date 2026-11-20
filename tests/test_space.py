@@ -221,7 +221,10 @@ def test_expanding_operands_and_orderings_gives_8999():
     # 2026-11-12, contract 169.4.0 (OMEGA v0.13.1): 508207 = 346691 + 161516 chained-spread shapes (aggregate / ema / rma
     # / wma -> spread over every operand the inner serves in chainedOuters.spread.operands); the corpus did not move.
     # 2026-11-19, contract 180.4.0 (OMEGA v0.15.0, _moves_180_4.json): five keys in (ATH in every price operand list, the four day / week levels as anchor-rung operands), and the announced v181 rule leaves out every reference price (CLOSE, LAST) as the plain operand of a spread whose base is not one: 515961 (519029 without the v181 rule)
-    assert len(enumerate_shapes(expand_operands=True)) == 515961   # 508207 at 169.4.0 - 171.0.0; 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0: the 206 keys, the smoothers over each spread (then the 13 chained-window outers, roc, VWMA20)
+    # 2026-11-20, contract 182.3.2 (OMEGA v0.16.0, _moves_182.json): v181 is served - the hints themselves list no
+    # reference price for a base that is not one (the same pairs v0.15.0 left out by rule), and CLOSE's own averages
+    # keep LAST as a chained spread operand, four shapes v0.15.0 left out (CLOSE x aggregate | ema | rma | wma)
+    assert len(enumerate_shapes(expand_operands=True)) == 515965   # 515961 at 180.4.0; 508207 at 169.4.0 - 171.0.0; 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0: the 206 keys, the smoothers over each spread (then the 13 chained-window outers, roc, VWMA20)
 
 
 def test_chained_rank_expands_over_its_own_ordering_axis():
@@ -329,5 +332,6 @@ def test_query_with_no_filters_is_the_whole_space():
     # 2026-11-11, contract 168.3.0 (extraction 20261111): 26584 structural / 346691 expanded, the two counts derived above
     # 2026-11-12, contract 169.4.0: 27244 / 508207 (the chained spread modelled)
     # 2026-11-19, contract 180.4.0: 27424 / 515961
+    # 2026-11-20, contract 182.3.2: 27424 / 515965
     assert len(query()) == 27424                      # 27244 at 169.4.0 - 171.0.0; 25915 at 161.0.0 (2026-11-09); 9884 at 149.1.0; 6122 at 146.0.1; 5845 at 144.0.0; 2604 at 135.2.0, 899 at 108.4.0, 947 at 110.2.0, 981 at 110.8.0
-    assert len(query(expand_operands=True)) == 515961  # 508207 at 169.4.0 - 171.0.0; 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0; 115035 at 146.0.1; 113934 at 144.0.0; 30761 at 135.2.0; 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0
+    assert len(query(expand_operands=True)) == 515965  # 515961 at 180.4.0; 508207 at 169.4.0 - 171.0.0; 306357 at 161.0.0 (2026-11-09); 270913 at 149.1.0; 115035 at 146.0.1; 113934 at 144.0.0; 30761 at 135.2.0; 8575 at 108.4.0, 9103 at 110.2.0, 10257 at 110.8.0

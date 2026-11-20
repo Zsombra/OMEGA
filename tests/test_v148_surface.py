@@ -71,8 +71,8 @@ def test_the_capture_names_its_contract_build_and_source():
     # `supersedes`, then 149.1.0, then this one
     # 2026-11-12: by version (tests/manifest_chain.py) - 171.0.0 on top that morning, then 169.4.0, 168.3.0, 161.0.0
     from tests.manifest_chain import surface as surface_of
-    # 180.4.0 on top since 2026-11-19
-    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "180.4.0"
+    # 180.4.0 on top since 2026-11-19; 182.3.2 since 2026-11-20
+    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "182.3.2"
     surface = surface_of("168.3.0")
     assert [surface["servedContractVersion"], surface["supersedes"]["servedContractVersion"],
             surface["supersedes"]["supersedes"]["servedContractVersion"]] == ["168.3.0", "161.0.0", "149.1.0"]
@@ -286,8 +286,10 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     # the 161.0.0 read is two `previous` down, the 149.1.0 one three and the 148.1.0 one four
     # 2026-11-19, contract 180.4.0: re-read 20:58Z on top (transforms labels, timeframes, timeframeRefs and
     # rankedTimeframes moved); every earlier read one `previous` deeper
-    assert shared["_refreshed"]["contractVersion"] == "180.4.0"
-    refreshed = shared["_refreshed"]["previous"]
+    # 2026-11-20, contract 182.3.2: re-read 14:35Z on top, nothing moved
+    assert shared["_refreshed"]["contractVersion"] == "182.3.2"
+    assert shared["_refreshed"]["previous"]["contractVersion"] == "180.4.0"
+    refreshed = shared["_refreshed"]["previous"]["previous"]
     assert [refreshed["contractVersion"], refreshed["previous"]["contractVersion"],
             refreshed["previous"]["previous"]["contractVersion"]] == ["168.3.0", "168.2.0", "161.0.0"]
     at_161 = refreshed["previous"]["previous"]
@@ -311,12 +313,15 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     assert counts["structure"] == 363 - sum(rehomed.values()) + added["structure"] == 38
     assert counts["trend"] == 23 + rehomed["structure -> trend"] + added["trend"] == 26
     # 2026-11-19, contract 180.4.0 (_moves_180_4.json): levels 274 -> 279 (ATH and the four day / week levels)
-    assert categories["_refreshed"]["contractVersion"] == "180.4.0"
-    assert categories["_refreshed"]["moved"] == ["levels 274 -> 279"] and counts["levels"] == 279
+    # 2026-11-20, contract 182.3.2: re-read on top, nothing moved; the 180.4.0 read is its `previous`
+    assert categories["_refreshed"]["contractVersion"] == "182.3.2" and categories["_refreshed"]["moved"] == ["nothing"]
+    at_180 = categories["_refreshed"]["previous"]
+    assert at_180["contractVersion"] == "180.4.0"
+    assert at_180["moved"] == ["levels 274 -> 279"] and counts["levels"] == 279
     assert sum(counts.values()) == 534 + sum(added.values()) + 5 == 586 and len(counts) == 14
-    assert categories["_refreshed"]["previous"]["previous"]["moved"] == [
+    assert at_180["previous"]["previous"]["moved"] == [
         "channels None -> 14", "levels None -> 274", "structure 363 -> 38", "trend 23 -> 26", "vwapProfile None -> 81"]
-    categories_161 = categories["_refreshed"]["previous"]["previous"]["previous"]
+    categories_161 = at_180["previous"]["previous"]["previous"]
     assert categories_161["contractVersion"] == "161.0.0"
     assert categories_161["moved"][:2] == ["structure 362 -> 363", "trend 22 -> 23"]
     assert categories_161["previous"]["previous"]["moved"][0] == "structure 156 -> 362"

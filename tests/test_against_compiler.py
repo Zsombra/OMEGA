@@ -96,11 +96,21 @@ def test_every_privileged_pair_is_rejected():
 
 
 def test_spread_pools_are_symmetric_and_exclude_self():
+    """Symmetric but for the reference prices since contract v181 (served; the 182.3.2 hints, 2026-11-20): CLOSE and
+    LAST list every price reading as an operand and no reading that is not a reference price lists them back - price is
+    the base of every spread over another reading. Every other pair is still reciprocal, CLOSE <-> LAST included."""
+    from omega.contract import REFERENCE_PRICES
     graph = json.loads((DERIVED_DIR / "spread_operand_graph.json").read_text(encoding="utf-8"))
+    one_way = 0
     for metric, operands in graph["edges"].items():
         assert metric not in operands, f"{metric} lists itself as a spread operand"
         for other in operands:
+            if metric in REFERENCE_PRICES and other not in REFERENCE_PRICES:
+                assert metric not in graph["edges"][other], f"{other} lists the reference price {metric}"
+                one_way += 1
+                continue
             assert metric in graph["edges"][other], f"{metric}->{other} is not reciprocal"
+    assert one_way == 2 * 416          # each reference price over each of the 416 other price readings
 
 
 # --- colliding headers: silent on the platform, an error here ---------------
