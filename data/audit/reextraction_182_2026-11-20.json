@@ -1,24 +1,26 @@
 {
- "_what": "The live measurements of OMEGA v0.16.0's re-extraction at contract 182.3.2 (build b3969d0b6eac81ac44087a4367e8e53beef1480f; GET /mcp/version read before and after every group below, 182.3.2 / b3969d0b each time). Every call went through one long-lived mcporter runtime (scripts/mcporter_runtime.mjs, mcporter 0.17.1, server battlegrid-anbu), serially, at most one request in flight; `at` is the UTC instant read just before the call. Reads: preview_strategy_report, preview_strategy_trade_levels, get_strategy_draft, list_strategy_drafts. Writes: stage_strategy_draft into NEW create drafts only and discard_strategy_draft of those same drafts, each read back null. Nothing was committed; no existing strategy or draft was touched (list_strategy_drafts before and after every draft: the one VWAP Reject 15m draft c1fd5d4c, version 9, 2026-10-23, untouched); no agent, Radar, Arena, deployment, funding or visibility tool was called. Replayed by tests/test_reextraction_182.py. Plan: docs/plans/2026-11-20-omega-reextraction-182.md.",
+ "_what": "The live measurements of OMEGA v0.16.0's re-extraction at contract 182.3.2 (build b3969d0b6eac81ac44087a4367e8e53beef1480f; GET /mcp/version read before and after every group below, 182.3.2 / b3969d0b each time). Every call went through one long-lived mcporter runtime (scripts/mcporter_runtime.mjs, mcporter 0.17.1, server battlegrid-anbu), serially, at most one request in flight; `at` is the UTC instant read just before the call. Reads: preview_strategy_report, preview_strategy_trade_levels, get_strategy_draft, list_strategy_drafts. Writes: stage_strategy_draft into NEW create drafts only and discard_strategy_draft of those same drafts, each read back null. Nothing was committed; no existing strategy or draft was touched (list_strategy_drafts before and after every draft: the one VWAP Reject 15m draft c1fd5d4c, version 9, 2026-10-23, untouched); no agent, Radar, Arena, deployment, funding or visibility tool was called. `ties` (the R:R minimum at an exact tie) was measured the same way at 18:40 - 18:43Z, after an independent review. The side sweep's stage answers are in data/audit/reextraction_182_side_sweep_2026-11-20.json. Replayed by tests/test_reextraction_182.py. Plan: docs/plans/2026-11-20-omega-reextraction-182.md.",
  "contractVersion": "182.3.2",
  "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f",
  "account": "the mcporter credential of battlegrid-anbu (account ANBUJEFF)",
  "alsoSent": "One preview_strategy_report went through the session's own BattleGrid connector before the runtime was used (2026-11-20T13:54Z, BTC 4h, PRIOR_TPO_VAL x spread(CLOSE)): the same refusal as A1, REPORT_COLUMN_OPERAND_UNSUPPORTED with the same sentence. At 14:59Z a group of previews was not sent (the local runtime did not start); it ran 15:32Z as H1 - H8.",
  "calls": {
   "preview_strategy_report": 50,
-  "preview_strategy_trade_levels": 19,
-  "stage_strategy_draft": 459,
-  "get_strategy_draft": 13,
-  "list_strategy_drafts": 10,
-  "discard_strategy_draft": 5,
+  "preview_strategy_trade_levels": 30,
+  "stage_strategy_draft": 475,
+  "get_strategy_draft": 15,
+  "list_strategy_drafts": 13,
+  "discard_strategy_draft": 6,
   "createDrafts": {
    "e2e843b9-1f18-4fbd-b1c4-562fd04ad833": 21,
    "6848fb50-a49a-495f-901e-4807e5b94ddb": 18,
-   "8c48af82-08e2-45f1-8f74-b4949077f15d": 25,
+   "8c48af82-08e2-45f1-8f74-b4949077f15d": 26,
    "6f2e32ee-06f2-49ed-bcf1-e9ab04a85a05": 394,
-   "68dc2339-6eb0-48b7-9af3-c2ff5be9dbcc": 1
+   "68dc2339-6eb0-48b7-9af3-c2ff5be9dbcc": 1,
+   "df02fef7-8b13-4acd-a855-2849e814139a": 15
   },
-  "_what": "every platform call of this pass, by tool; `createDrafts` is stages per NEW create draft, each discarded and read back null (draft null, draftVersion 0)"
+  "_what": "every platform call of this pass, by tool, the review-fix `ties` draft (18:40 - 18:43Z) included; `createDrafts` is stages per NEW create draft, each discarded and read back null (draft null, draftVersion 0). One stage of 8c48af82 (its 26th) was sent as the first sweep run was stopped and its answer was not read: 475 stages reached the platform, 474 answers were read (`stageAnswersRead`)",
+  "stageAnswersRead": 474
  },
  "previews": {
   "A1": {
@@ -8105,12 +8107,25 @@
    }
   },
   "S": {
-   "what": "the side sweep: for every price-unit metric with a legal `value` column (418), one ENTRY restage STOP_THROUGH_LEVEL with the metric as BOTH levels (levelOffsetAtrMultiple 0.2, validForBars 4) on a draft whose report reads it as a value column at the anchor. A warning on entry.levels.LONG (\"sits below price by definition, but a buy stop must rest above price\") marks the metric BELOW; one on entry.levels.SHORT (\"sits above price by definition, but a sell stop must rest below price\") marks it ABOVE; no warning, neither",
+   "what": "the side sweep: for every price-unit metric with a legal `value` column (418), one ENTRY restage STOP_THROUGH_LEVEL with the metric as BOTH levels (levelOffsetAtrMultiple 0.2, validForBars 4) on a draft whose report reads it as a value column at the anchor. A warning on entry.levels.LONG (\"sits below price by definition, but a buy stop must rest above price\") marks the metric BELOW; one on entry.levels.SHORT (\"sits above price by definition, but a sell stop must rest below price\") marks it ABOVE; no warning, neither. Every stage's answer is kept in data/audit/reextraction_182_side_sweep_2026-11-20.json (`stages`); the lists below are derived from them",
    "firstRun": {
     "strategyId": "8c48af82-08e2-45f1-8f74-b4949077f15d",
-    "what": "ONE report reading all 418 levels (14 sections of 30 beside the preset's): it staged clean (errors [], warnings []), each ENTRY restage then took about 6 s, and the run was stopped after 24 metrics. get_strategy_draft on that draft answered RESULT_TOO_LARGE (\"The result is 300334 characters, over the 150000-character cap; ask for less.\"), so it was discarded at the version list_strategy_drafts stated (26) and read back null (draft null, draftVersion 0)",
+    "what": "ONE report reading all 418 levels (14 sections of 30 beside the preset's): it staged clean (errors [], warnings []), each ENTRY restage then took about 6 s, and the run was stopped after 24 metrics (ASIA_HIGH .. EMA8, the answers kept). The last answer read stated version 25; list_strategy_drafts then stated version 26 (updatedAt 2026-11-20T14:55:32.031Z), so one more stage reached the platform as the run was stopped - by the script's order the next metric, EMA9 - and its answer was never read: 26 stages, 25 answers. (That updatedAt is the platform's clock; the host's read at least 2.45 s ahead of it - over the sweep's 419 answered stages a stage's own updatedAt is up to 2.451 s EARLIER than the host instant read before the stage was sent - so the update falls after the EMA8 answer, read on the host at 14:55:33.046Z.) EMA9 was staged again as the first stage of the second run. get_strategy_draft on that draft answered RESULT_TOO_LARGE (\"The result is 300334 characters, over the 150000-character cap; ask for less.\"), so it was discarded at the version list_strategy_drafts stated (26) and read back null (draft null, draftVersion 0)",
     "startedAt": "2026-11-20T14:52:16.340Z",
-    "discardedAt": "2026-11-20T14:57:16.061Z"
+    "discardedAt": "2026-11-20T14:57:16.061Z",
+    "stagesSent": 26,
+    "answersRead": 25,
+    "metricsMeasured": 24,
+    "lastAnswerRead": {
+     "metric": "EMA8",
+     "at": "2026-11-20T14:55:24.966Z",
+     "versionAfter": 25
+    },
+    "listedAfter": {
+     "at": "2026-11-20T14:56:29.535Z",
+     "version": 26,
+     "updatedAt": "2026-11-20T14:55:32.031Z"
+    }
    },
    "secondRun": {
     "startedAt": "2026-11-20T15:33:14.513Z",
@@ -8157,7 +8172,10 @@
      }
     },
     "stopped": null,
-    "stoppedBefore": null
+    "stoppedBefore": null,
+    "stagesSent": 394,
+    "answersRead": 394,
+    "metricsMeasured": 394
    },
    "measured": 418,
    "below": [
@@ -8585,7 +8603,8 @@
     "WEEK_TPO_VAH",
     "WEEK_TPO_VAL"
    ],
-   "other": {}
+   "other": {},
+   "stages": "data/audit/reextraction_182_side_sweep_2026-11-20.json"
   }
  },
  "proof": {
@@ -9368,5 +9387,2490 @@
    "contractVersion": "182.3.2",
    "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f"
   }
- }
+ },
+ "ties": {
+  "what": "the minimum risk-reward AT an exact tie (the minimum less half a thousandth), which drafts E and L staged once (1.4995 under 1.5, a tie whose binary double lies above it). ONE new create draft: the preset body (T0), then one TRADE_LEVEL_POLICY restage per case, shaped as draft L's G2 - G8 - plan 0 pays the minimum exactly, plan 1 is the case, both directions the same; every case that staged clean was previewed on the DRAFT (preview_strategy_trade_levels, BTC). K1 - K3 repeat G7, G8 and G3; A, B, D6 - D8 are a single leg at the tie under 2.25, 2.5, 2.75, 3 and 0.5 (the double of each lies BELOW the tie); C and D1 - D5 are two legs paying a tie exactly as written, chosen so that the readings of the sum (exact decimals; binary doubles as sum(R x pct) / 100, sum(R x (pct / 100)) or sum(R x pct / 100); rounded as round(x x 1000) / 1000 or on the double's own value) disagree on them. Read back, discarded and read null; never committed; no existing draft or strategy named",
+  "kind": "a NEW create draft (stage with no strategyId); never committed",
+  "runtime": "scripts/mcporter_runtime.mjs (mcporter 0.17.1 from the npx cache, started by node; npx was not run)",
+  "runtimeCheck": {
+   "what": "before the draft: GET /mcp/version and one list_strategy_drafts through a fresh runtime, to see it start; nothing staged",
+   "version": {
+    "at": "2026-11-20T18:40:17.132Z",
+    "name": "battlegrid",
+    "contractVersion": "182.3.2",
+    "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f"
+   },
+   "listStrategyDraftsAt": "2026-11-20T18:40:17.733Z",
+   "listStrategyDrafts": {
+    "drafts": [
+     {
+      "strategyId": "c1fd5d4c-0a86-4b3f-9ab4-16ad57c46898",
+      "strategyExists": true,
+      "strategyName": "VWAP Reject 15m",
+      "baseRevision": 2,
+      "updatedAt": "2026-10-23T07:58:21.142Z",
+      "version": 9,
+      "lastSource": "commander",
+      "baseMoved": false,
+      "axes": [
+       "TRADE_LEVEL_POLICY"
+      ]
+     }
+    ],
+    "nextCursor": null
+   }
+  },
+  "versionBefore": {
+   "at": "2026-11-20T18:40:43.396Z",
+   "name": "battlegrid",
+   "contractVersion": "182.3.2",
+   "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f"
+  },
+  "listStrategyDraftsBefore": {
+   "drafts": [
+    {
+     "strategyId": "c1fd5d4c-0a86-4b3f-9ab4-16ad57c46898",
+     "strategyExists": true,
+     "strategyName": "VWAP Reject 15m",
+     "baseRevision": 2,
+     "updatedAt": "2026-10-23T07:58:21.142Z",
+     "version": 9,
+     "lastSource": "commander",
+     "baseMoved": false,
+     "axes": [
+      "TRADE_LEVEL_POLICY"
+     ]
+    }
+   ],
+   "nextCursor": null
+  },
+  "strategyId": "df02fef7-8b13-4acd-a855-2849e814139a",
+  "stages": [
+   {
+    "id": "T0",
+    "what": "base, the preset's body",
+    "at": "2026-11-20T18:40:56.155Z",
+    "namedDraftVersion": 0,
+    "versionAfter": 1,
+    "sent": "the trend-continuation preset's eight axes (omega.generate.plan(PRESETS['trend-continuation']).axes()) with IDENTITY.name 'OMEGA-PROBE 182 T'",
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "K1",
+    "what": "control: one leg 2.2496R under 2.25 (accepted as G7)",
+    "at": "2026-11-20T18:41:02.412Z",
+    "namedDraftVersion": 1,
+    "versionAfter": 2,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 2.25,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2496
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2496
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "K2",
+    "what": "control: one leg 2.2494R under 2.25 (refused as G8)",
+    "at": "2026-11-20T18:41:13.237Z",
+    "namedDraftVersion": 2,
+    "versionAfter": 3,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 2.25,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2494
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2494
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1]",
+       "message": "The LONG exit plan pays 2.249R, below this strategy's minimum risk-reward of 2.25: every pair it makes would be refused. Change the plan or lower the minimum."
+      }
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "K3",
+    "what": "control: one leg 1.4995R under 1.5 (accepted as G3)",
+    "at": "2026-11-20T18:41:17.872Z",
+    "namedDraftVersion": 3,
+    "versionAfter": 4,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 1.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.4995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.4995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "A",
+    "what": "one leg 2.2495R under 2.25: the tie, its double below it",
+    "at": "2026-11-20T18:41:27.563Z",
+    "namedDraftVersion": 4,
+    "versionAfter": 5,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 2.25,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2495
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.2495
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "B",
+    "what": "one leg 2.4995R under 2.5: the tie, its double below it",
+    "at": "2026-11-20T18:41:36.218Z",
+    "namedDraftVersion": 5,
+    "versionAfter": 6,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 2.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.4995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.4995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "C",
+    "what": "1R 50% + 1.999R 50% under 1.5: exactly 1.4995",
+    "at": "2026-11-20T18:41:45.491Z",
+    "namedDraftVersion": 6,
+    "versionAfter": 7,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 1.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.999
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.999
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D1",
+    "what": "0.8R 50% + 2.199R 50% under 1.5: exactly 1.4995",
+    "at": "2026-11-20T18:41:54.746Z",
+    "namedDraftVersion": 7,
+    "versionAfter": 8,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 1.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.8
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.199
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.8
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.199
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1]",
+       "message": "The LONG exit plan pays 1.499R, below this strategy's minimum risk-reward of 1.5: every pair it makes would be refused. Change the plan or lower the minimum."
+      }
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D2",
+    "what": "0.1R 50% + 2.899R 50% under 1.5: exactly 1.4995",
+    "at": "2026-11-20T18:41:59.156Z",
+    "namedDraftVersion": 8,
+    "versionAfter": 9,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 1.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.899
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.1
+            },
+            "closePct": 50
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.899
+            },
+            "closePct": 50
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D3",
+    "what": "1R 30% + 2.785R 70% under 2.25: exactly 2.2495",
+    "at": "2026-11-20T18:42:08.635Z",
+    "namedDraftVersion": 9,
+    "versionAfter": 10,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 2.25,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.785
+            },
+            "closePct": 70
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.25
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 30
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.785
+            },
+            "closePct": 70
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D4",
+    "what": "0.9R 80% + 1.3975R 20% under 1: exactly 0.9995",
+    "at": "2026-11-20T18:42:17.149Z",
+    "namedDraftVersion": 10,
+    "versionAfter": 11,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 1,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.9
+            },
+            "closePct": 80
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.3975
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.9
+            },
+            "closePct": 80
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 1.3975
+            },
+            "closePct": 20
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D5",
+    "what": "2.55R 70% + 3.215R 30% under 2.75: exactly 2.7495",
+    "at": "2026-11-20T18:42:25.988Z",
+    "namedDraftVersion": 11,
+    "versionAfter": 12,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 2.75,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.75
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.55
+            },
+            "closePct": 70
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3.215
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.75
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.55
+            },
+            "closePct": 70
+           },
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3.215
+            },
+            "closePct": 30
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [
+      {
+       "field": "tradeLevelMenu.LONG.exitPlans[1]",
+       "message": "The LONG exit plan pays 2.749R, below this strategy's minimum risk-reward of 2.75: every pair it makes would be refused. Change the plan or lower the minimum."
+      }
+     ],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D6",
+    "what": "one leg 2.7495R under 2.75: the tie, its double below it",
+    "at": "2026-11-20T18:42:30.173Z",
+    "namedDraftVersion": 12,
+    "versionAfter": 13,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 2.75,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.75
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.7495
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.75
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.7495
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D7",
+    "what": "one leg 2.9995R under 3: the tie, its double below it",
+    "at": "2026-11-20T18:42:39.841Z",
+    "namedDraftVersion": 13,
+    "versionAfter": 14,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 3,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.9995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 3
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 2.9995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   },
+   {
+    "id": "D8",
+    "what": "one leg 0.4995R under 0.5: the tie, its double below it",
+    "at": "2026-11-20T18:42:50.085Z",
+    "namedDraftVersion": 14,
+    "versionAfter": 15,
+    "sent": {
+     "TRADE_LEVEL_POLICY": {
+      "minAtrPct": 0.5,
+      "minStopLossAtrMultiple": 0.8,
+      "maxStopLossAtrMultiple": 1.8,
+      "minRiskRewardRatio": 0.5,
+      "tradeLevelMenu": {
+       "LONG": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.4995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       },
+       "SHORT": {
+        "stops": [
+         {
+          "kind": "ATR",
+          "atrMultiple": 1
+         },
+         {
+          "kind": "ATR",
+          "atrMultiple": 1.5
+         }
+        ],
+        "exitPlans": [
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.5
+            },
+            "closePct": 100
+           }
+          ]
+         },
+         {
+          "targets": [
+           {
+            "method": {
+             "kind": "R_MULTIPLE",
+             "multiple": 0.4995
+            },
+            "closePct": 100
+           }
+          ]
+         }
+        ]
+       }
+      }
+     }
+    },
+    "answer": {
+     "errors": [],
+     "warnings": []
+    }
+   }
+  ],
+  "tradeLevels": [
+   {
+    "id": "LK1",
+    "what": "trade levels after K1 (BTC)",
+    "at": "2026-11-20T18:41:08.801Z",
+    "coinTicker": "BTC",
+    "draftVersion": 2,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.2496R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.2496R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.2496R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.2496R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LK3",
+    "what": "trade levels after K3 (BTC)",
+    "at": "2026-11-20T18:41:23.363Z",
+    "coinTicker": "BTC",
+    "draftVersion": 4,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.4995R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.4995R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.4995R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.4995R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LA",
+    "what": "trade levels after A (BTC)",
+    "at": "2026-11-20T18:41:32.629Z",
+    "coinTicker": "BTC",
+    "draftVersion": 5,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.2495R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.2495R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.2495R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.2495R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LB",
+    "what": "trade levels after B (BTC)",
+    "at": "2026-11-20T18:41:41.704Z",
+    "coinTicker": "BTC",
+    "draftVersion": 6,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.4995R 100%",
+        "riskRewardRatio": 2.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.5R 100%",
+        "riskRewardRatio": 2.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.4995R 100%",
+        "riskRewardRatio": 2.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.5R 100%",
+        "riskRewardRatio": 2.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.4995R 100%",
+        "riskRewardRatio": 2.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.5R 100%",
+        "riskRewardRatio": 2.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.4995R 100%",
+        "riskRewardRatio": 2.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.5R 100%",
+        "riskRewardRatio": 2.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LC",
+    "what": "trade levels after C (BTC)",
+    "at": "2026-11-20T18:41:50.543Z",
+    "coinTicker": "BTC",
+    "draftVersion": 7,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1R 50% + 1.999R 50%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1R 50% + 1.999R 50%",
+        "riskRewardRatio": 1.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1R 50% + 1.999R 50%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1R 50% + 1.999R 50%",
+        "riskRewardRatio": 1.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LD2",
+    "what": "trade levels after D2 (BTC)",
+    "at": "2026-11-20T18:42:05.077Z",
+    "coinTicker": "BTC",
+    "draftVersion": 9,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.1R 50% + 2.899R 50%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.1R 50% + 2.899R 50%",
+        "riskRewardRatio": 1.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.1R 50% + 2.899R 50%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1.5R 100%",
+        "riskRewardRatio": 1.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.1R 50% + 2.899R 50%",
+        "riskRewardRatio": 1.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LD3",
+    "what": "trade levels after D3 (BTC)",
+    "at": "2026-11-20T18:42:13.467Z",
+    "coinTicker": "BTC",
+    "draftVersion": 10,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1R 30% + 2.785R 70%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1R 30% + 2.785R 70%",
+        "riskRewardRatio": 2.25
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.25,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1R 30% + 2.785R 70%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.25R 100%",
+        "riskRewardRatio": 2.25
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1R 30% + 2.785R 70%",
+        "riskRewardRatio": 2.25
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LD4",
+    "what": "trade levels after D4 (BTC)",
+    "at": "2026-11-20T18:42:22.197Z",
+    "coinTicker": "BTC",
+    "draftVersion": 11,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1R 100%",
+        "riskRewardRatio": 1
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.9R 80% + 1.3975R 20%",
+        "riskRewardRatio": 1
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1R 100%",
+        "riskRewardRatio": 1
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.9R 80% + 1.3975R 20%",
+        "riskRewardRatio": 1
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 1,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "1R 100%",
+        "riskRewardRatio": 1
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.9R 80% + 1.3975R 20%",
+        "riskRewardRatio": 1
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "1R 100%",
+        "riskRewardRatio": 1
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.9R 80% + 1.3975R 20%",
+        "riskRewardRatio": 1
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LD6",
+    "what": "trade levels after D6 (BTC)",
+    "at": "2026-11-20T18:42:35.225Z",
+    "coinTicker": "BTC",
+    "draftVersion": 13,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.75,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.7495R 100%",
+        "riskRewardRatio": 2.75
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.75R 100%",
+        "riskRewardRatio": 2.75
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.7495R 100%",
+        "riskRewardRatio": 2.75
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.75R 100%",
+        "riskRewardRatio": 2.75
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 2.75,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.7495R 100%",
+        "riskRewardRatio": 2.75
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.75R 100%",
+        "riskRewardRatio": 2.75
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.7495R 100%",
+        "riskRewardRatio": 2.75
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.75R 100%",
+        "riskRewardRatio": 2.75
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LD7",
+    "what": "trade levels after D7 (BTC)",
+    "at": "2026-11-20T18:42:46.080Z",
+    "coinTicker": "BTC",
+    "draftVersion": 14,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 3,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.9995R 100%",
+        "riskRewardRatio": 3
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "3R 100%",
+        "riskRewardRatio": 3
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.9995R 100%",
+        "riskRewardRatio": 3
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "3R 100%",
+        "riskRewardRatio": 3
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 3,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "2.9995R 100%",
+        "riskRewardRatio": 3
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "3R 100%",
+        "riskRewardRatio": 3
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "2.9995R 100%",
+        "riskRewardRatio": 3
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "3R 100%",
+        "riskRewardRatio": 3
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   },
+   {
+    "id": "LD8",
+    "what": "trade levels after D8 (BTC)",
+    "at": "2026-11-20T18:42:55.927Z",
+    "coinTicker": "BTC",
+    "draftVersion": 15,
+    "answer": {
+     "LONG": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 0.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.4995R 100%",
+        "riskRewardRatio": 0.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.5R 100%",
+        "riskRewardRatio": 0.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.4995R 100%",
+        "riskRewardRatio": 0.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.5R 100%",
+        "riskRewardRatio": 0.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     },
+     "SHORT": {
+      "entry": null,
+      "stage": "OK",
+      "minRiskRewardRatio": 0.5,
+      "stops": [
+       [
+        1,
+        "SURVIVED"
+       ],
+       [
+        1.5,
+        "SURVIVED"
+       ]
+      ],
+      "setups": [
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.4995R 100%",
+        "riskRewardRatio": 0.5
+       },
+       {
+        "stopAtrMultiple": 1,
+        "exitPlan": "0.5R 100%",
+        "riskRewardRatio": 0.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.4995R 100%",
+        "riskRewardRatio": 0.5
+       },
+       {
+        "stopAtrMultiple": 1.5,
+        "exitPlan": "0.5R 100%",
+        "riskRewardRatio": 0.5
+       }
+      ],
+      "rejectedPairs": [],
+      "pairsRemovedByRiskReward": 0
+     }
+    }
+   }
+  ],
+  "readBack": {
+   "at": "2026-11-20T18:42:59.907Z",
+   "draftVersion": 15,
+   "committedRevision": null,
+   "diagnostics": {
+    "errors": [],
+    "warnings": []
+   },
+   "refusal": null
+  },
+  "discard": {
+   "tool": "discard_strategy_draft",
+   "at": "2026-11-20T18:43:04.785Z",
+   "draftVersion": 15,
+   "answer": {
+    "strategyId": "df02fef7-8b13-4acd-a855-2849e814139a",
+    "discarded": true
+   },
+   "readAfter": {
+    "draft": null,
+    "draftVersion": 0,
+    "committedRevision": null
+   },
+   "readAfterAt": "2026-11-20T18:43:08.931Z"
+  },
+  "listStrategyDraftsAfter": {
+   "drafts": [
+    {
+     "strategyId": "c1fd5d4c-0a86-4b3f-9ab4-16ad57c46898",
+     "strategyExists": true,
+     "strategyName": "VWAP Reject 15m",
+     "baseRevision": 2,
+     "updatedAt": "2026-10-23T07:58:21.142Z",
+     "version": 9,
+     "lastSource": "commander",
+     "baseMoved": false,
+     "axes": [
+      "TRADE_LEVEL_POLICY"
+     ]
+    }
+   ],
+   "nextCursor": null
+  },
+  "versionAfter": {
+   "at": "2026-11-20T18:43:15.137Z",
+   "name": "battlegrid",
+   "contractVersion": "182.3.2",
+   "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f"
+  },
+  "reading": "Every answer here and every R:R answer of drafts E and L (T2 - T4, G2 - G8), 24 stage verdicts, is reproduced by: the pay as a binary floating-point sum of R x (closePct / 100) over the legs, times 1000, rounded to the nearest whole number, over 1000, compared with the minimum (omega.trade_levels.plan_pays_double, stated_rr). Each other reading tried is refused by a case: rounding the exact decimal pay half up, by D1 and D5; sum(R x closePct) / 100, by C, D2 and D5; sum(R x closePct / 100), by D2 and D5; rounding the double's own value to three decimals, by A, B, D3, D6, D7 and D8. Not told apart: the order of a sum of two terms, and a half going up or to the even thousandth. Not staged at a tie: a runner's share, more than two closing legs",
+  "listStrategyDraftsBeforeAt": "2026-11-20T18:40:43.997Z",
+  "listStrategyDraftsAfterAt": "2026-11-20T18:43:12.214Z"
+ },
+ "hostClock": "every `at` in this record is the HOST's clock, read just before the call. The sweep's logs show it at least 2.45 s ahead of the platform's (max over 419 stages of the host instant before a stage minus the updatedAt the platform gave that stage: 2.451 s); the platform's own instants here are the updatedAt / asOf / developingAsOf fields of its answers"
 }

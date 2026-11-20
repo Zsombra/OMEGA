@@ -171,12 +171,23 @@ def test_no_enumerated_shape_carries_a_refused_operand():
         assert not bad, bad[:5]
 
 
+def _refused_operands(column: Column) -> list[str]:
+    """The plain operands of `column` that v181 refuses under its base (the rule itself, whatever the corpus serves)."""
+    return [o.metric for o in column.inputs or () if not o.averaged and price_operand_refused(column.metric, o.metric)]
+
+
 def test_no_preset_and_no_tpo_suite_column_uses_a_refused_form():
+    """Judged on the rule (price_operand_refused on every plain operand) and on the column drawing no error at all -
+    not on one finding code: on the 182.3.2 corpus the refused form draws OPERAND_NOT_ALLOWED, so a filter on
+    REPORT_COLUMN_OPERAND_UNSUPPORTED (this test through v0.16.0's first pass) asserted nothing."""
     from omega.generate import PRESETS, plan
+    seen = 0
     for name, thesis in PRESETS.items():
         for section in plan(thesis).report.sections:
             for column in getattr(section, "columns", None) or ():
-                assert not _errors(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED"), (name, column)
+                assert not _refused_operands(column) and not _errors(column), (name, column)
+                seen += 1
+    assert seen > 20
     import importlib.util
     import sys
     spec = importlib.util.spec_from_file_location("tpo_suite_build_v181", ROOT / "scripts" / "tpo_suite_build.py")
@@ -185,7 +196,67 @@ def test_no_preset_and_no_tpo_suite_column_uses_a_refused_form():
     spec.loader.exec_module(builder)
     assert [c.metric for c in builder.SPINE].count("CLOSE") == 3
     for column in builder.SPINE:
-        assert not _errors(column, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+        assert not _refused_operands(column) and not _errors(column), column
+
+
+@pytest.mark.parametrize("planted", [
+    _col("PRIOR_TPO_VAL", "CLOSE"), _col("PRIOR_TPO_VAH", "LAST"), _col("EMA20", "CLOSE", tf={"abs": "1d"}),
+    _col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"),
+], ids=lambda c: f"{c.metric}-{c.transformId}-{c.inputs[0].metric}")
+def test_the_check_above_fails_on_a_planted_refused_form(planted):
+    """The test above can fail: the form the TPO suite read before v181 (PRIOR_TPO_VAL x spread(CLOSE)), planted, is
+    caught by both of its assertions - and not by the code it used to filter on."""
+    assert _refused_operands(planted) == [planted.inputs[0].metric]
+    assert [f.code for f in _errors(planted)] == ["OPERAND_NOT_ALLOWED"]
+    assert not _errors(planted, "REPORT_COLUMN_OPERAND_UNSUPPORTED")
+
+
+# --- the rule's own finding, end to end on a corpus that still serves the operand ------------------------------------
+def _corpus_serving_reference_prices():
+    """The 182.3.2 corpus with CLOSE and LAST put back where the hints listed them through 180.4.0: EMA20's plain
+    operands (on and off the anchor rung) and the operands of HL2's averages chained into a spread."""
+    import copy
+    import dataclasses
+    c = load()
+    ema, hl2 = c.metrics["EMA20"], c.metrics["HL2"]
+    transforms = copy.deepcopy(hl2.transforms)
+    for spec in transforms.values():
+        outer = (spec.get("chainedOuters") or {}).get("spread")
+        if outer is not None:
+            for key in ("operands", "operandsOffAnchor"):
+                if outer.get(key) is not None:
+                    outer[key] = [*outer[key], *REFERENCE_PRICES]
+    metrics = {**c.metrics,
+               "EMA20": dataclasses.replace(
+                   ema, spread_operands=(*ema.spread_operands, *REFERENCE_PRICES),
+                   spread_operands_off_anchor=(*ema.spread_operands_off_anchor, *REFERENCE_PRICES)),
+               "HL2": dataclasses.replace(hl2, transforms=transforms)}
+    return dataclasses.replace(c, metrics=metrics)
+
+
+@pytest.mark.parametrize("contract, severity", [("180.4.0", "warning"), ("181.0.0", "error"), ("182.3.2", "error")])
+@pytest.mark.parametrize("column, written", [
+    (_col("EMA20", "CLOSE"), "write CLOSE x spread(EMA20)"),
+    (_col("EMA20", "LAST"), "write LAST x spread(EMA20)"),
+    (_col("EMA20", "CLOSE", tf={"abs": "1d"}), "write CLOSE x spread(EMA20)"),
+    (_col("HL2", "CLOSE", tid="ema", window=34, chainedTransformId="spread"),
+     "write CLOSE x spread({metric: HL2, transformId: ema, window: 34})"),
+], ids=["plain", "plain-last", "abs-1d", "chained"])
+def test_validate_column_grades_the_rule_on_a_corpus_that_still_serves_the_operand(column, written, contract, severity,
+                                                                                   monkeypatch):
+    """validate_column, end to end, on a corpus whose hints still list the reference price (every corpus below 181):
+    exactly one finding, the rule's own REPORT_COLUMN_OPERAND_UNSUPPORTED - a warning below contract 181, where the
+    platform accepted the form, and an error from 181 on. On the real 182.3.2 corpus the same columns are refused
+    from extracted data instead (OPERAND_NOT_ALLOWED), so this branch is reached only here."""
+    import omega.validate as V
+    corpus = _corpus_serving_reference_prices()
+    monkeypatch.setattr(V, "extracted_contract_version", lambda: contract)
+    found = [f for f in validate_column(column, contract=corpus) if f.severity in ("error", "warning")]
+    assert [(f.severity, f.code) for f in found] == [(severity, "REPORT_COLUMN_OPERAND_UNSUPPORTED")], found
+    assert written in found[0].message and found[0].path == "column.inputs[0]"
+    # the real corpus does not serve the operand: the unserved refusal, whatever the contract
+    real = [f for f in validate_column(column) if f.severity in ("error", "warning")]
+    assert [(f.severity, f.code) for f in real] == [("error", "OPERAND_NOT_ALLOWED")]
 
 
 # --- v175: a Developing read decides at the decided close (measured D1 / D4 / D7) ---------------------------------

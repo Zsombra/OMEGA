@@ -116,6 +116,90 @@ def test_the_sidecar_refuses_a_list_that_is_not_the_capture_it_sits_beside():
     assert own["beside"] == "schema_20261120T163000Z.json"
 
 
+def _stubbed_capture(monkeypatch, tmp_path, versions=None):
+    """scripts.capture_write_surface with the network stubbed out: read_version and list_surface answer from memory
+    and OUT_DIR is a temporary directory. -> (the module, the listed bytes, the calls made)."""
+    import scripts.capture_write_surface as cws
+    version = {"contractVersion": "182.3.2", "buildSha": "b" * 40}
+    tools = [{"name": n, "description": f"d-{n}", "inputSchema": {"type": "object"}, "outputSchema": {},
+              "annotations": {"readOnlyHint": True}} for n in cws.TOOLS + cws.AUTHORING_TOOLS]
+    raw = json.dumps({"tools": tools}).encode("utf-8")
+    answers = iter(versions) if versions is not None else None
+    calls: list[str] = []
+
+    def read_version():
+        calls.append("version")
+        return dict(next(answers)) if answers is not None else dict(version)
+
+    def list_surface():
+        calls.append("list")
+        return raw, tools
+    monkeypatch.setattr(cws, "read_version", read_version)
+    monkeypatch.setattr(cws, "list_surface", list_surface)
+    monkeypatch.setattr(cws, "OUT_DIR", tmp_path)
+    monkeypatch.delenv("MANAGER_ROW", raising=False)
+    return cws, raw, calls
+
+
+def test_the_default_run_writes_the_capture_and_its_sidecar(monkeypatch, tmp_path, capsys):
+    """main() with no argument: one list -> schema_<stamp>.json AND authoring_tools_<stamp>.json. Through v0.16.0's
+    first pass the sidecar was built in the --authoring-only branch alone, so this run wrote the schema and died on
+    an unbound name (review 2026-11-20, finding 1)."""
+    import hashlib
+    cws, raw, calls = _stubbed_capture(monkeypatch, tmp_path)
+    assert cws.main([]) == 0
+    assert calls == ["version", "list", "version"]
+    [schema] = sorted(tmp_path.glob("schema_*.json"))
+    [side] = sorted(tmp_path.glob("authoring_tools_*.json"))
+    assert sorted(p.name for p in tmp_path.iterdir()) == sorted([schema.name, side.name])
+    assert schema.name.removeprefix("schema_") == side.name.removeprefix("authoring_tools_")
+    doc, sidecar = (json.loads(p.read_text(encoding="utf-8")) for p in (schema, side))
+    digest = hashlib.sha256(raw).hexdigest()
+    assert doc["liveListSha256"] == sidecar["liveListSha256"] == digest
+    assert (sidecar["contractVersion"], sidecar["buildSha"]) == (doc["contractVersion"], doc["buildSha"])
+    assert sidecar["beside"] == schema.name and schema.name in sidecar["readFrom"]
+    assert sidecar["_absent"] == [] and set(sidecar["tools"]) == set(cws.AUTHORING_TOOLS)
+    assert doc["_absent"] == [] and all(t in doc for t in cws.TOOLS) and doc["managerRowAgrees"] is None
+    assert sidecar["tools"]["discard_strategy_draft"] == {
+        "description": "d-discard_strategy_draft", "inputSchema": {"type": "object"}, "outputSchema": {},
+        "annotations": {"readOnlyHint": True}}
+    out = capsys.readouterr().out
+    assert schema.name in out and side.name in out and "10 of 10 authoring tools" in out
+
+
+def test_the_authoring_only_run_writes_the_sidecar_alone_beside_a_capture(monkeypatch, tmp_path, capsys):
+    cws, raw, calls = _stubbed_capture(monkeypatch, tmp_path)
+    assert cws.main([]) == 0
+    [schema] = sorted(tmp_path.glob("schema_*.json"))
+    captured = schema.read_bytes()
+    for old in tmp_path.glob("authoring_tools_*.json"):
+        old.unlink()
+    capsys.readouterr()
+    assert cws.main(["--authoring-only", schema.name]) == 0
+    assert calls == ["version", "list", "version"] * 2
+    assert [p.name for p in tmp_path.glob("schema_*.json")] == [schema.name] and schema.read_bytes() == captured
+    [side] = sorted(tmp_path.glob("authoring_tools_*.json"))
+    sidecar = json.loads(side.read_text(encoding="utf-8"))
+    assert sidecar["beside"] == schema.name and "a later list than" in sidecar["readFrom"]
+    assert set(sidecar["tools"]) == set(cws.AUTHORING_TOOLS) and sidecar["_absent"] == []
+    assert f"beside {schema.name}" in capsys.readouterr().out
+    # a capture of another build is refused and nothing more is written
+    other = tmp_path / "schema_other.json"
+    other.write_text(json.dumps({**json.loads(captured), "buildSha": "c" * 40}), encoding="utf-8")
+    before = sorted(p.name for p in tmp_path.iterdir())
+    with pytest.raises(SystemExit, match="not the same surface"):
+        cws.main(["--authoring-only", other.name])
+    assert sorted(p.name for p in tmp_path.iterdir()) == before
+
+
+def test_a_contract_that_moves_during_the_list_writes_nothing(monkeypatch, tmp_path):
+    moved = [{"contractVersion": "182.3.2", "buildSha": "b" * 40}, {"contractVersion": "182.4.0", "buildSha": "d" * 40}]
+    cws, _, calls = _stubbed_capture(monkeypatch, tmp_path, versions=moved)
+    with pytest.raises(SystemExit, match="the contract moved during the list"):
+        cws.main([])
+    assert calls == ["version", "list", "version"] and list(tmp_path.iterdir()) == []
+
+
 # --- v181, served: the hints carry the rule -------------------------------------------------------------------------
 def test_the_hints_list_no_reference_price_for_a_base_that_is_not_one():
     c = load()
@@ -335,19 +419,171 @@ def _menu_errors(stage: dict):
 @pytest.mark.parametrize("stage, pays", [("G2", "1.4996"), ("G3", "1.4995"), ("G4", "1.49949"), ("G5", "1.4996"),
                                          ("G6", "1.4994"), ("G7", "2.2496"), ("G8", "2.2494")])
 def test_the_minimum_risk_reward_is_judged_at_three_decimals(stage, pays):
-    from omega.trade_levels import plan_pays_exact, stated_rr
-    sent = L_STAGES[stage]["sent"]["TRADE_LEVEL_POLICY"]
+    _replay_rr(L_STAGES[stage], pays)
+
+
+def _replay_rr(stage: dict, pays: str) -> bool:
+    """One staged R:R case against omega: the plan pays `pays` exactly as written; the platform's verdict, the field
+    it names and its "pays ...R" text are omega's. -> whether the stage accepted the plan."""
+    from omega.trade_levels import plan_pays_double, plan_pays_exact, stated_rr
+    sent = stage["sent"]["TRADE_LEVEL_POLICY"]
     plan = sent["tradeLevelMenu"]["LONG"]["exitPlans"][1]["targets"]
     assert plan_pays_exact(plan) == Fraction(pays)
-    platform = [e for e in L_STAGES[stage]["answer"]["errors"]]
-    ours = _menu_errors(L_STAGES[stage])
-    below = stated_rr(Fraction(pays)) < Fraction(str(sent["minRiskRewardRatio"]))
-    assert bool(platform) == bool(ours) == below, (stage, platform, ours)
+    platform = list(stage["answer"]["errors"])
+    ours = _menu_errors(stage)
+    stated = stated_rr(plan_pays_double(plan))
+    below = stated < Fraction(str(sent["minRiskRewardRatio"]))
+    assert bool(platform) == bool(ours) == below, (stage["id"], platform, ours)
     if platform:
         assert platform[0]["field"] == "tradeLevelMenu.LONG.exitPlans[1]" == ours[0].path
-        assert f"pays {float(stated_rr(Fraction(pays))):g}R" in platform[0]["message"]
-        assert f"pays {float(stated_rr(Fraction(pays))):g}R" in ours[0].message
+        assert f"pays {float(stated):g}R" in platform[0]["message"]
+        assert f"pays {float(stated):g}R" in ours[0].message
         assert ours[0].code == "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR"
+    return not platform
+
+
+# --- the minimum risk-reward AT the tie (the review-fix draft, 18:40 - 18:43Z) --------------------------------------
+TIES = RECORD["ties"]
+TIE_STAGES = {s["id"]: s for s in TIES["stages"]}
+TIE_LEVELS = {t["id"]: t["answer"] for t in TIES["tradeLevels"]}
+TIE_CASES = [  # (stage, the pay exactly as written, accepted by the stage)
+    ("K1", "2.2496", True), ("K2", "2.2494", False), ("K3", "1.4995", True),
+    ("A", "2.2495", True), ("B", "2.4995", True), ("D6", "2.7495", True), ("D7", "2.9995", True), ("D8", "0.4995", True),
+    ("C", "1.4995", True), ("D1", "1.4995", False), ("D2", "1.4995", True), ("D3", "2.2495", True),
+    ("D4", "0.9995", True), ("D5", "2.7495", False)]
+
+
+@pytest.mark.parametrize("stage, pays, accepted", TIE_CASES)
+def test_the_minimum_risk_reward_at_an_exact_tie(stage, pays, accepted):
+    """Each case as the platform answered it: a single leg at the tie passes whichever side of the tie its double
+    lies on; two legs follow the floating-point sum of R x (closePct / 100) - D1 and D5 pay the tie exactly as
+    written and are refused. A case that staged clean was previewed: every pair survives, stated at the minimum."""
+    from omega.trade_levels import rr_tie_unmeasured, validate_menu
+    record = TIE_STAGES[stage]
+    assert _replay_rr(record, pays) is accepted
+    policy = record["sent"]["TRADE_LEVEL_POLICY"]
+    minimum = policy["minRiskRewardRatio"]
+    assert record["answer"]["warnings"] == []
+    # one or two legs closing 100% is the shape measured at a tie: no "not measured" warning beside the verdict
+    assert not rr_tie_unmeasured(policy["tradeLevelMenu"]["LONG"]["exitPlans"][1]["targets"], minimum)
+    assert not [f for f in validate_menu(policy["tradeLevelMenu"], dials={"minRiskRewardRatio": minimum}, sections=[],
+                                         anchor="1h", trailing_enabled=True) if f.severity == "warning"]
+    assert (f"L{stage}" in TIE_LEVELS) is accepted
+    if accepted:
+        for side in ("LONG", "SHORT"):
+            answer = TIE_LEVELS[f"L{stage}"][side]
+            assert answer["stage"] == "OK" and answer["entry"] is None and answer["minRiskRewardRatio"] == minimum
+            assert answer["rejectedPairs"] == [] and answer["pairsRemovedByRiskReward"] == 0
+            assert len(answer["setups"]) == 4 and {s["riskRewardRatio"] for s in answer["setups"]} == {minimum}
+    else:
+        tie = f"{float(Fraction(str(minimum)) - Fraction(1, 1000)):g}"
+        assert f"The LONG exit plan pays {tie}R, below this strategy's minimum risk-reward of {minimum:g}" in (
+            record["answer"]["errors"][0]["message"])
+
+
+def test_what_the_tie_cases_rule_out():
+    """The readings of the pay that the measured ties refuse, each on the cases that refuse it."""
+    import math
+    from omega.trade_levels import plan_pays_double, plan_pays_exact, stated_rr
+
+    def case(stage):
+        policy = TIE_STAGES[stage]["sent"]["TRADE_LEVEL_POLICY"]
+        legs = [(t["method"]["multiple"], t["closePct"])
+                for t in policy["tradeLevelMenu"]["LONG"]["exitPlans"][1]["targets"]]
+        return legs, Fraction(str(policy["minRiskRewardRatio"])), not TIE_STAGES[stage]["answer"]["errors"]
+
+    def half_up(value: Fraction) -> Fraction:
+        return Fraction(math.floor(value * 1000 + Fraction(1, 2)), 1000)
+
+    def verdicts(reading):
+        return {stage: reading(case(stage)[0]) >= case(stage)[1] for stage, _, _ in TIE_CASES}
+    measured = {stage: accepted for stage, _, accepted in TIE_CASES}
+    assert measured == {stage: case(stage)[2] for stage in measured}
+
+    def wrong(reading):
+        return sorted(s for s, v in verdicts(reading).items() if v != measured[s])
+    # v0.16.0's first pass: the exact decimal pay, a half up
+    assert wrong(lambda legs: half_up(sum(Fraction(str(r)) * p for r, p in legs) / 100)) == ["D1", "D5"]
+    # binary doubles, the sum divided once
+    assert wrong(lambda legs: stated_rr(sum(r * p for r, p in legs) / 100)) == ["C", "D2", "D5"]
+    # binary doubles, each product divided
+    assert wrong(lambda legs: stated_rr(sum(r * p / 100 for r, p in legs))) == ["D2", "D5"]
+    # the double's own value rounded to three decimals (not its product with 1000)
+    assert wrong(lambda legs: half_up(Fraction(sum(r * (p / 100) for r, p in legs)))) == [
+        "A", "B", "D3", "D6", "D7", "D8"]
+    # the reading omega holds: every case
+    assert wrong(lambda legs: stated_rr(sum(r * (p / 100) for r, p in legs))) == []
+    for stage in measured:
+        legs = TIE_STAGES[stage]["sent"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]["LONG"]["exitPlans"][1]["targets"]
+        assert plan_pays_double(legs) == sum(r * (p / 100) for r, p in case(stage)[0])
+    # D1: 1.4995 as written, a unit in the last place under it as summed
+    d1 = TIE_STAGES["D1"]["sent"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]["LONG"]["exitPlans"][1]["targets"]
+    assert plan_pays_exact(d1) == Fraction("1.4995") and plan_pays_double(d1) == 1.4994999999999998
+    # the single legs under 2.25 .. 3 and 0.5: the double lies below the tie, and its product with 1000 is the half
+    for stage in ("A", "B", "D6", "D7", "D8"):
+        [(r, _)] = case(stage)[0]
+        assert Fraction(r) < Fraction(str(r)) and Fraction(r * 1000) == Fraction(str(r)) * 1000
+    [(r, _)] = case("K3")[0]
+    assert Fraction(r) > Fraction(str(r))                    # 1.4995, the one tie drafts E and L staged
+
+
+def test_a_tie_through_an_unmeasured_sum_warns():
+    """A runner's share, or more than two closing legs, at the exact tie: the stage's verdict is not measured, and
+    omega says so beside its own reading."""
+    from omega.trade_levels import rr_tie_unmeasured, validate_menu
+
+    def menu(*legs):
+        side = {"stops": [{"kind": "ATR", "atrMultiple": 1}],
+                "exitPlans": [{"targets": [{"method": {"kind": "R_MULTIPLE", "multiple": r}, "closePct": pct}
+                                           for r, pct in legs]}]}
+        return {"LONG": side, "SHORT": json.loads(json.dumps(side))}
+
+    def found(minimum, *legs):
+        return [(f.severity, f.code, f.path) for f in validate_menu(
+            menu(*legs), dials={"minRiskRewardRatio": minimum}, sections=[], anchor="1h", trailing_enabled=True)
+            if f.path.startswith("tradeLevelMenu.LONG")]
+    warning = ("warning", "TRADE_MENU_EXIT_PLAN_RR_TIE_UNMEASURED", "tradeLevelMenu.LONG.exitPlans[0]")
+    assert found(2.25, (2.2495, 50)) == [warning]                              # a 50% runner riding at 2.2495R
+    assert found(1.5, (1, 30), (1.5, 30), (1.87375, 40)) == [warning]          # three legs paying 1.4995
+    # two legs and a 20% runner at 1.999R: omega's own order of the sum falls under the tie, so it refuses the plan
+    # (as v0.15.0 did on the exact pay) and says beside it that the stage's verdict there is not measured
+    error = ("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR", "tradeLevelMenu.LONG.exitPlans[0]")
+    assert found(1.5, (1, 50), (1.999, 30)) == [error, warning]
+    assert found(1.5, (1, 50), (1.999, 30), (6, 0)) == [error, warning]        # the same under a trail objective
+    # the shapes measured at a tie, and anything off the tie: no warning
+    assert found(1.5, (1, 50), (1.999, 50)) == [] and found(2.25, (2.2495, 100)) == []
+    assert found(2.25, (2.25, 50)) == [] and found(1.5, (1, 30), (1.5, 30), (1.9, 40)) == []
+    # below the minimum AND at no tie: the error alone
+    assert found(1.5, (1, 30), (1.5, 30), (1.8, 40)) == [
+        ("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR", "tradeLevelMenu.LONG.exitPlans[0]")]
+    legs = menu((2.2495, 50))["LONG"]["exitPlans"][0]["targets"]
+    assert rr_tie_unmeasured(legs, 2.25) and not rr_tie_unmeasured(legs, 2.5)
+    assert not rr_tie_unmeasured(legs, None) and not rr_tie_unmeasured(legs, float("nan"))
+    assert not rr_tie_unmeasured([{"method": {"kind": "LEVEL", "level": {}}, "closePct": 100}], 2.25)
+    [message] = [f.message for f in validate_menu(menu((2.2495, 50)), dials={"minRiskRewardRatio": 2.25}, sections=[],
+                                                  anchor="1h", trailing_enabled=True)
+                 if f.path.startswith("tradeLevelMenu.LONG")]
+    assert "pays 2.2495R as written" in message and "not measured" in message
+
+
+def test_the_tie_draft_was_staged_and_discarded_as_the_others():
+    assert TIES["versionBefore"]["contractVersion"] == TIES["versionAfter"]["contractVersion"] == "182.3.2"
+    assert TIES["versionBefore"]["buildSha"] == TIES["versionAfter"]["buildSha"] == RECORD["buildSha"]
+    assert TIES["versionBefore"]["at"] < TIES["stages"][0]["at"] < TIES["discard"]["at"] < TIES["versionAfter"]["at"]
+    for listed in (TIES["runtimeCheck"]["listStrategyDrafts"], TIES["listStrategyDraftsBefore"],
+                   TIES["listStrategyDraftsAfter"]):
+        [only] = listed["drafts"]
+        assert (only["strategyName"], only["version"], only["updatedAt"][:10]) == ("VWAP Reject 15m", 9, "2026-10-23")
+        assert only["strategyId"] != TIES["strategyId"]
+    assert [s["id"] for s in TIES["stages"]] == ["T0", "K1", "K2", "K3", "A", "B", "C", "D1", "D2", "D3", "D4", "D5",
+                                                 "D6", "D7", "D8"]
+    assert sorted(TIE_STAGES) == sorted(["T0"] + [stage for stage, _, _ in TIE_CASES])
+    assert [(s["namedDraftVersion"], s["versionAfter"]) for s in TIES["stages"]] == [(i, i + 1) for i in range(15)]
+    assert TIE_STAGES["T0"]["answer"] == {"errors": [], "warnings": []}
+    assert TIES["readBack"]["draftVersion"] == TIES["discard"]["draftVersion"] == 15
+    assert TIES["readBack"]["committedRevision"] is None
+    assert TIES["discard"]["answer"] == {"strategyId": TIES["strategyId"], "discarded": True}
+    assert TIES["discard"]["readAfter"] == {"draft": None, "draftVersion": 0, "committedRevision": None}
 
 
 def test_a_pair_just_under_the_minimum_survives_a_decision_stated_at_the_minimum():
@@ -407,12 +643,95 @@ def test_the_warning_fires_on_a_level_with_a_side_by_definition_under_the_wrong_
         L_STAGES["F5"]["answer"]["warnings"][0]["message"])
 
 
+SWEEP = json.loads((ROOT / "data/audit/reextraction_182_side_sweep_2026-11-20.json").read_text(encoding="utf-8"))
+
+
+def _swept_entry(metric: str) -> dict:
+    """The ENTRY every sweep stage sent, with `metric` as both levels (the record's `sent`)."""
+    return json.loads(json.dumps(SWEEP["sent"]["ENTRY"]["entry"]).replace("<metric>", metric))
+
+
+def test_every_sweep_stage_answers_as_omega_warns():
+    """The side sweep replayed stage by stage: the 418 answers are kept (data/audit/reextraction_182_side_sweep_...,
+    from the probe's raw call logs), so the side table is checked against what the platform said of each metric, not
+    against the sweep's own summary. Through v0.16.0's first pass the record held the three lists only."""
+    from omega.trade_levels import ENTRY_SIDE_OFFSETS, entry_side_findings
+    stages = SWEEP["stages"]
+    assert len(stages) == SWEEP["stageCount"] == 418 == len({s["metric"] for s in stages})
+    assert DRAFTS["S"]["stages"] == "data/audit/reextraction_182_side_sweep_2026-11-20.json"
+    sent = SWEEP["sent"]["ENTRY"]["entry"]
+    assert (sent["trigger"], sent["validForBars"]) == ("STOP_THROUGH_LEVEL", 4)
+    assert (sent["levelOffsetAtrMultiple"],) == ENTRY_SIDE_OFFSETS
+    assert sent["levels"]["LONG"] == sent["levels"]["SHORT"] == {
+        "metric": "<metric>", "timeframe": {"rel": "anchor"}, "bars": None, "offset": 0, "knobs": {},
+        "windowExtreme": None}
+    sides = {"below": [], "above": [], "neither": []}
+    for stage in stages:
+        assert stage["errors"] == [], stage["metric"]
+        assert {w["code"] for w in stage["warnings"]} <= {"ENTRY_LEVEL_USUALLY_SKIPPED"}
+        platform = sorted((w["field"], w["message"]) for w in stage["warnings"])
+        ours = sorted((f.path, f.message) for f in entry_side_findings(_swept_entry(stage["metric"])))
+        assert ours == platform, stage["metric"]
+        fields = [field for field, _ in platform]
+        assert fields in ([], ["entry.levels.LONG"], ["entry.levels.SHORT"]), stage["metric"]
+        if fields == ["entry.levels.LONG"]:
+            assert "sits below price by definition, but a buy stop must rest above price" in platform[0][1]
+        if fields == ["entry.levels.SHORT"]:
+            assert "sits above price by definition, but a sell stop must rest below price" in platform[0][1]
+        sides[{"entry.levels.LONG": "below", "entry.levels.SHORT": "above"}.get((fields or [None])[0], "neither")
+              ].append(stage["metric"])
+    sweep = DRAFTS["S"]
+    assert {k: sorted(v) for k, v in sides.items()} == {k: sweep[k] for k in sides}
+    assert (len(sides["below"]), len(sides["above"]), len(sides["neither"])) == (9, 9, 400)
+    # two drafts: 24 metrics answered on the first before it was stopped, the other 394 on the second, each stage
+    # naming the version the one before it made
+    first = [s for s in stages if s["run"] == "first"]
+    second = [s for s in stages if s["run"] == "second"]
+    assert (len(first), len(second)) == (24, 394) and first + second == stages
+    assert [(s["namedDraftVersion"], s["versionAfter"]) for s in first] == [(i, i + 1) for i in range(1, 25)]
+    assert [(s["namedDraftVersion"], s["versionAfter"]) for s in second] == [(i, i + 1) for i in range(394)]
+    assert all(a["at"] < b["at"] for a, b in zip(stages, stages[1:]))
+    assert SWEEP["drafts"] == {"first": sweep["firstRun"]["strategyId"],
+                               "second": sweep["secondRun"]["draft"]["strategyId"]}
+    assert second[0]["metric"] == "EMA9" and len(second[0]["stagedAxes"]) == 8      # the whole body, EMA9 again
+    assert all(s["stagedAxes"] == ["ENTRY"] for s in first)
+    assert sum(1 for s in second if "REPORT" in s["stagedAxes"]) == 14               # one report per batch of 30
+
+
+def test_the_stage_counts_are_what_the_logs_show():
+    """The first sweep draft took 26 stages and gave 25 answers (one report stage, 24 metrics; the 26th was sent as
+    the run was stopped and its answer was never read - the list stated version 26), the second 394 and 394."""
+    calls, sweep = RECORD["calls"], DRAFTS["S"]
+    first, second = sweep["firstRun"], sweep["secondRun"]
+    assert (first["stagesSent"], first["answersRead"], first["metricsMeasured"]) == (26, 25, 24)
+    assert first["lastAnswerRead"] == {"metric": "EMA8", "at": "2026-11-20T14:55:24.966Z", "versionAfter": 25}
+    assert first["listedAfter"]["version"] == 26 == calls["createDrafts"][first["strategyId"]]
+    assert (second["stagesSent"], second["answersRead"], second["metricsMeasured"]) == (394, 394, 394)
+    assert second["draft"]["discardedAtDraftVersion"] == 394 == calls["createDrafts"][second["draft"]["strategyId"]]
+    assert first["metricsMeasured"] + second["metricsMeasured"] == sweep["measured"] == 418
+    assert calls["createDrafts"] == {
+        DRAFTS["E"]["strategyId"]: len(DRAFTS["E"]["stages"]), DRAFTS["L"]["strategyId"]: len(DRAFTS["L"]["stages"]),
+        first["strategyId"]: 26, second["draft"]["strategyId"]: 394, RECORD["proof"]["strategyId"]: 1,
+        TIES["strategyId"]: len(TIES["stages"])}
+    assert sum(calls["createDrafts"].values()) == calls["stage_strategy_draft"] == 475
+    assert calls["stageAnswersRead"] == 474 == (len(DRAFTS["E"]["stages"]) + len(DRAFTS["L"]["stages"])
+                                                + first["answersRead"] + second["answersRead"] + 1
+                                                + len(TIES["stages"]))
+    assert calls["discard_strategy_draft"] == len(calls["createDrafts"]) == 6
+    assert calls["preview_strategy_trade_levels"] == (len(DRAFTS["E"]["tradeLevels"]) + len(DRAFTS["L"]["tradeLevels"])
+                                                      + 1 + len(TIES["tradeLevels"])) == 30
+
+
 def test_the_sides_by_definition_are_the_swept_ones():
+    """data/derived/entry_level_sides.json against the sweep's record. The record's lists are themselves derived from
+    the 418 stage answers, which test_every_sweep_stage_answers_as_omega_warns replays one by one."""
     from omega.trade_levels import ENTRY_LEVEL_SIDES, entry_level_sides
     sweep = DRAFTS["S"]
     derived = json.loads((ROOT / ENTRY_LEVEL_SIDES).read_text(encoding="utf-8"))
     assert derived["below"] == sweep["below"] and derived["above"] == sweep["above"]
     assert sorted(derived["measured"]) == sorted(sweep["below"] + sweep["above"] + sweep["neither"])
+    assert sorted(derived["measured"]) == sorted(s["metric"] for s in SWEEP["stages"])
+    assert "reextraction_182_side_sweep_2026-11-20.json" in derived["source"]
     assert sweep["other"] == {} and sweep["measured"] == len(derived["measured"])
     c = load()
     legal = {name for name, m in c.metrics.items() if m.unit == "price"
@@ -459,6 +778,84 @@ def test_validate_entry_levels_warns_only_on_the_form_the_sweep_staged():
     assert not [f for f in back if f.code == "ENTRY_LEVEL_USUALLY_SKIPPED"]
 
 
+def _wrong_side_entry(**changes) -> dict:
+    """STOP_THROUGH_LEVEL over DONCHIAN_LOWER / DONCHIAN_UPPER as F4 staged it (two warnings), with `changes` to the
+    entry; `LONG` / `SHORT` change that level's reference."""
+    entry = _swept_entry("DONCHIAN_LOWER")
+    entry["levels"]["SHORT"]["metric"] = "DONCHIAN_UPPER"
+    for side in ("LONG", "SHORT"):
+        entry["levels"][side].update(changes.pop(side, {}))
+    return {**entry, **changes}
+
+
+def test_the_side_warning_is_drawn_on_the_staged_form_only():
+    """Every stage that measured the warning carried bars null on the level and levelOffsetAtrMultiple 0.2 on the
+    entry (drafts E and L, the sweep): a Developing or explicitly closed level, and any other offset, are not
+    measured and draw nothing."""
+    from omega.trade_levels import ENTRY_SIDE_OFFSETS, entry_side_findings
+    assert ENTRY_SIDE_OFFSETS == (0.2,)
+    staged = [s["sent"]["ENTRY"]["entry"] for s in list(E_STAGES.values()) + list(L_STAGES.values())
+              if isinstance((s["sent"].get("ENTRY") or {}).get("entry"), dict) and "levels" in s["sent"]["ENTRY"]["entry"]]
+    assert {e["levelOffsetAtrMultiple"] for e in staged} == {0.2}
+    assert {ref["bars"] for e in staged for ref in e["levels"].values()} == {None}
+    assert _wrong_side_entry() == L_STAGES["F4"]["sent"]["ENTRY"]["entry"]
+    assert [f.path for f in entry_side_findings(_wrong_side_entry())] == ["entry.levels.LONG", "entry.levels.SHORT"]
+    # the level's bars
+    for bars in ("all", "closed"):
+        assert entry_side_findings(_wrong_side_entry(LONG={"bars": bars}, SHORT={"bars": bars})) == []
+    assert [f.path for f in entry_side_findings(_wrong_side_entry(LONG={"bars": "all"}))] == ["entry.levels.SHORT"]
+    # the entry's offset in ATR: the schema takes 0 - 2 on a 0.1 step; only 0.2 was staged
+    for offset in (0, 0.1, 0.3, 1, 2):
+        assert entry_side_findings(_wrong_side_entry(levelOffsetAtrMultiple=offset)) == [], offset
+    assert len(entry_side_findings(_wrong_side_entry(levelOffsetAtrMultiple=0.2))) == 2
+    # validForBars was 4 on every warned stage; the warning is not gated on it (see the record's "Not measured")
+    assert len(entry_side_findings(_wrong_side_entry(validForBars=24))) == 2
+    # through validate_entry_levels: the same entries, the level rule's own findings aside
+    from omega.trade_levels import validate_entry_levels
+    sections = [{"kind": "custom", "title": "Levels", "benchmarkTicker": None, "marketScope": None, "notes": None,
+                 "columns": [{"metric": m, "transformId": "value", "timeframe": {"rel": "anchor"}}
+                             for m in ("DONCHIAN_LOWER", "DONCHIAN_UPPER")]}]
+    assert [f.code for f in validate_entry_levels(_wrong_side_entry(), sections=sections, anchor="1h")] == [
+        "ENTRY_LEVEL_USUALLY_SKIPPED"] * 2
+    assert validate_entry_levels(_wrong_side_entry(levelOffsetAtrMultiple=0.5), sections=sections, anchor="1h") == []
+    assert validate_entry_levels(_wrong_side_entry(LONG={"bars": "closed"}, SHORT={"bars": "closed"}),
+                                 sections=sections, anchor="1h") == []
+
+
+@pytest.mark.parametrize("entry", [
+    None, "STOP_THROUGH_LEVEL", 3, [], {}, {"trigger": "STOP_THROUGH_LEVEL"},
+    {"trigger": "STOP_THROUGH_LEVEL", "levelOffsetAtrMultiple": 0.2},
+    {"trigger": "STOP_THROUGH_LEVEL", "levelOffsetAtrMultiple": 0.2, "levels": None},
+    {"trigger": "STOP_THROUGH_LEVEL", "levelOffsetAtrMultiple": 0.2, "levels": ["DONCHIAN_LOWER"]},
+    {"trigger": "STOP_THROUGH_LEVEL", "levelOffsetAtrMultiple": 0.2, "levels": {}},
+    {"trigger": "STOP_THROUGH_LEVEL", "levelOffsetAtrMultiple": 0.2, "levels": {"LONG": None, "SHORT": "PDH"}},
+    {"trigger": "STOP_THROUGH_LEVEL", "levelOffsetAtrMultiple": 0.2, "levels": {"LONG": {}, "SHORT": {"metric": None}}},
+    {"trigger": "STOP_THROUGH_LEVEL", "levelOffsetAtrMultiple": 0.2,
+     "levels": {"LONG": {"metric": ["DONCHIAN_LOWER"]}, "SHORT": {"metric": {"DONCHIAN_UPPER": 1}}}},
+    {"trigger": ["STOP_THROUGH_LEVEL"], "levelOffsetAtrMultiple": 0.2, "levels": {"LONG": {}, "SHORT": {}}},
+    {"trigger": {"kind": "STOP_THROUGH_LEVEL"}, "levelOffsetAtrMultiple": 0.2, "levels": {}},
+    {"trigger": "ON_CANDLE_CLOSE"},
+], ids=lambda e: json.dumps(e)[:60])
+def test_the_side_warning_never_raises_on_a_malformed_entry(entry):
+    """entry_side_findings is a public name: called on its own with something that is not a well-formed level entry
+    it answers [] (the shape is the write schema's walk to refuse), where v0.16.0's first pass raised KeyError,
+    AttributeError or TypeError."""
+    from omega.trade_levels import entry_side_findings
+    assert entry_side_findings(entry) == []
+
+
+@pytest.mark.parametrize("changes", [
+    {"levelOffsetAtrMultiple": None}, {"levelOffsetAtrMultiple": "0.2"}, {"levelOffsetAtrMultiple": True},
+    {"levelOffsetAtrMultiple": float("nan")}, {"levelOffsetAtrMultiple": [0.2]},
+    {"LONG": {"offset": False}, "SHORT": {"offset": None}}, {"LONG": {"knobs": None}, "SHORT": {"knobs": []}},
+    {"LONG": {"timeframe": None}, "SHORT": {"timeframe": "anchor"}},
+    {"LONG": {"windowExtreme": {}}, "SHORT": {"windowExtreme": "max"}},
+], ids=lambda c: json.dumps(c, default=str)[:60])
+def test_a_part_that_is_not_the_staged_form_draws_no_side_warning(changes):
+    from omega.trade_levels import entry_side_findings
+    assert entry_side_findings(_wrong_side_entry(**changes)) == []
+
+
 # --- the drafts and the proof -------------------------------------------------------------------------------------------
 def test_every_draft_was_discarded_and_read_back_null():
     for key in ("E", "L"):
@@ -472,6 +869,7 @@ def test_every_draft_was_discarded_and_read_back_null():
     assert second["discard"]["discarded"] is True and second["readAfter"]["draft"] is None
     assert [d["strategyName"] for d in second["draftsAfter"]["drafts"]] == ["VWAP Reject 15m"]
     assert RECORD["proof"]["discard"]["readAfter"] == {"draft": None, "draftVersion": 0, "committedRevision": None}
+    assert TIES["discard"]["readAfter"] == {"draft": None, "draftVersion": 0, "committedRevision": None}
 
 
 def test_the_proof_body_is_what_omega_generates_and_it_staged_clean():

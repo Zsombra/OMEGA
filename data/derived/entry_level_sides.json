@@ -1,9 +1,9 @@
 {
- "_what": "Which level metrics sit on one side of price BY DEFINITION, as the stage's ENTRY_LEVEL_USUALLY_SKIPPED warning names them (\"The LONG entry level sits below price by definition, but a buy stop must rest above price, so this entry will be skipped on most bars\"). No hint, vocabulary entry or schema serves this, so it was swept: every price-unit metric with a legal `value` column was staged as BOTH levels of a STOP_THROUGH_LEVEL entry (levelOffsetAtrMultiple 0.2, validForBars 4; the level a plain reference - {rel: anchor}, offset 0, no knobs, no windowExtreme) on a create draft whose report reads it; a warning on entry.levels.LONG marks the metric `below`, one on entry.levels.SHORT `above`, none neither. Read by omega.trade_levels.entry_level_sides. Re-sweep when a re-extraction adds a price metric: a metric in neither `measured` nor `unmeasured` here is one this table has never seen.",
+ "_what": "Which level metrics sit on one side of price BY DEFINITION, as the stage's ENTRY_LEVEL_USUALLY_SKIPPED warning names them (\"The LONG entry level sits below price by definition, but a buy stop must rest above price, so this entry will be skipped on most bars\"). No hint, vocabulary entry or schema serves this, so it was swept: every price-unit metric with a legal `value` column was staged as BOTH levels of a STOP_THROUGH_LEVEL entry (levelOffsetAtrMultiple 0.2, validForBars 4; the level a plain reference - {rel: anchor}, bars null, offset 0, no knobs, no windowExtreme) on a create draft whose report reads it; a warning on entry.levels.LONG marks the metric `below`, one on entry.levels.SHORT `above`, none neither. Read by omega.trade_levels.entry_level_sides. Re-sweep when a re-extraction adds a price metric: a metric in neither `measured` nor `unmeasured` here is one this table has never seen.",
  "contractVersion": "182.3.2",
  "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f",
  "measuredOn": "2026-11-20",
- "source": "data/audit/reextraction_182_2026-11-20.json (drafts.S)",
+ "source": "data/audit/reextraction_182_side_sweep_2026-11-20.json (`stages`: the 418 stage answers); the drafts are in data/audit/reextraction_182_2026-11-20.json (drafts.S)",
  "below": [
   "DONCHIAN_BROKEN_HI",
   "DONCHIAN_LOWER",

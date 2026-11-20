@@ -147,22 +147,43 @@ def authoring_tools(*, version: dict, raw: bytes, tools: list, listed_at: dateti
                       for t in AUTHORING_TOOLS if t in by_name}}
 
 
-def main() -> int:
+def _shown(path: Path) -> str:
+    """A written file as the console names it: relative to the repository when it is inside it."""
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def _write(path: Path, doc: dict) -> None:
+    path.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+
+
+def main(argv: list[str] | None = None) -> int:
+    """One list of the live surface -> the capture AND its sidecar (the default), or the sidecar alone beside a
+    capture already on disk (`--authoring-only <schema_....json>`). Both documents are built before either is
+    written, so a list one of them refuses writes nothing."""
+    argv = sys.argv[1:] if argv is None else argv
     before = read_version()
     listed_at = datetime.now(UTC)
     raw, tools = list_surface()
     after = read_version()
     if before != after:
         sys.exit(f"the contract moved during the list ({before} -> {after}): nothing written, run again")
-    if "--authoring-only" in sys.argv[1:]:
-        name = sys.argv[sys.argv.index("--authoring-only") + 1]
+    stamp = listed_at.strftime("%Y%m%dT%H%M%SZ")
+    side_out = OUT_DIR / f"authoring_tools_{stamp}.json"
+
+    def absent(side: dict) -> str:
+        return f" (absent: {', '.join(side['_absent'])})" if side["_absent"] else ""
+
+    if "--authoring-only" in argv:
+        name = argv[argv.index("--authoring-only") + 1]
         beside = json.loads((OUT_DIR / name).read_text(encoding="utf-8"))
         side = authoring_tools(version=before, raw=raw, tools=tools, listed_at=listed_at, beside=beside,
                                beside_name=name)
-        side_out = OUT_DIR / f"authoring_tools_{listed_at.strftime('%Y%m%dT%H%M%SZ')}.json"
-        side_out.write_text(json.dumps(side, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
-        print(f"wrote {side_out.relative_to(ROOT).as_posix()} beside {name}: {len(side['tools'])} of "
-              f"{len(AUTHORING_TOOLS)} authoring tools{' (absent: ' + ', '.join(side['_absent']) + ')' if side['_absent'] else ''}")
+        _write(side_out, side)
+        print(f"wrote {_shown(side_out)} beside {name}: {len(side['tools'])} of {len(AUTHORING_TOOLS)} authoring "
+              f"tools{absent(side)}")
         return 0
     row_path = os.environ.get("MANAGER_ROW")
     row = json.loads(Path(row_path).read_text(encoding="utf-8")) if row_path else None
@@ -170,15 +191,17 @@ def main() -> int:
                   row_name=Path(row_path).name if row_path else None, listed_at=listed_at)
     if doc["_absent"]:
         sys.exit(f"the live surface lacks {doc['_absent']}: nothing written")
-    out = OUT_DIR / f"schema_{listed_at.strftime('%Y%m%dT%H%M%SZ')}.json"
-    out.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
+    # the sidecar of THIS list: the same tools, the same liveListSha256, beside the capture it names
+    side = authoring_tools(version=before, raw=raw, tools=tools, listed_at=listed_at)
+    out = OUT_DIR / f"schema_{stamp}.json"
+    _write(out, doc)
+    _write(side_out, side)
     disagree = {t: [p for p, ok in parts.items() if not ok] for t, parts in (doc["managerRowAgrees"] or {}).items()
                 if not all(parts.values())}
-    print(f"wrote {out.relative_to(ROOT).as_posix()}: {doc['contractVersion']} / {doc['buildSha'][:8]}, "
+    print(f"wrote {_shown(out)}: {doc['contractVersion']} / {doc['buildSha'][:8]}, "
           f"{len(tools)} tools listed, sha256 {doc['liveListSha256'][:8]}; "
           f"manager row {'not given' if row is None else ('agrees on all six' if not disagree else f'DISAGREES: {disagree}')}")
-    print(f"wrote {side_out.relative_to(ROOT).as_posix()}: {len(side['tools'])} of {len(AUTHORING_TOOLS)} authoring "
-          f"tools{' (absent: ' + ', '.join(side['_absent']) + ')' if side['_absent'] else ''}")
+    print(f"wrote {_shown(side_out)}: {len(side['tools'])} of {len(AUTHORING_TOOLS)} authoring tools{absent(side)}")
     return 0
 
 
