@@ -1507,7 +1507,7 @@
   ],
   "study": "spotFlow",
   "rankScope": null,
-  "gloss": "the composite spot volume per trade in the bar's period, over the listed venues that publish their trade history (Binance, Coinbase), in this coin's own unit; absent where one of those venues did not cover the period or nothing traded",
+  "gloss": "the composite spot volume per trade in the bar's period, over the listed venues that publish their trade history (Binance, Coinbase), in the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE); absent where one of those venues did not cover the period or nothing traded",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"

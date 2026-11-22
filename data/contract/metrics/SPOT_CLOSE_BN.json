@@ -6710,7 +6710,7 @@
   ],
   "study": "spotCloses",
   "rankScope": null,
-  "gloss": "Binance spot close of the bar's period, USDT-quoted, expressed in this coin's own unit (a k-prefixed ticker such as kPEPE denotes 1000 base tokens, and the venue price is scaled to match so it compares with the mark): Binance's last trade in the period, or the price it carried through every minute of a period with no trade; absent where any minute of the period went unseen (missed by Binance's feed and not recovered from its trade history), or where the coin did not trade on Binance in the period and its price was not carried through every minute of it (its last trade older than the coin's spot-tape freshness target, at least 15 minutes, or the minute before the period unpriced); a forming bar's close older than that target is absent",
+  "gloss": "Binance spot close of the bar's period, USDT-quoted, expressed in the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE), so it compares with the mark: Binance's last trade in the period, or the price it carried through every minute of a period with no trade; absent where any minute of the period went unseen (missed by Binance's feed and not recovered from its trade history), or where the coin did not trade on Binance in the period and its price was not carried through every minute of it (its last trade older than the coin's spot-tape freshness target, at least 15 minutes, or the minute before the period unpriced); a forming bar's close older than that target is absent",
   "subjectKinds": [
     "evaluated-coin",
     "benchmark"
