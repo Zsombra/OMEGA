@@ -74,7 +74,10 @@ def test_the_manifest_counts_are_the_corpus():
     # expanded count grew by four: CLOSE's own averages keep LAST as a chained spread operand (v0.15.0 left them out)
     at_180 = extraction_of("180.4.0", MANIFEST)["counts"]
     assert (at_180["metrics"], at_180["structuralShapes"], at_180["operandExpandedShapes"]) == (586, 27424, 515961)
-    now = extraction_of("182.3.2", MANIFEST)["counts"]
+    # 2026-11-22: the corpus moved to 184.3.2 (five glosses and nothing else, _moves_184.json): the same counts
+    at_182 = extraction_of("182.3.2", MANIFEST)["counts"]
+    now = extraction_of("184.3.2", MANIFEST)["counts"]
+    assert {k: v for k, v in now.items() if k != "_note"} == {k: v for k, v in at_182.items() if k != "_note"}
     assert (now["metrics"], now["families"], now["authorableTransforms"]) == (
         len(c.metrics), len({m.family for m in c.metrics.values()}), len(c.transforms)) == (586, 14, 30)
     assert (now["composabilityCells"], now["composabilityLegal"]) == (586 * 30, legal) == (17580, 4771)

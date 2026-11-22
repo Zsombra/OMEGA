@@ -322,9 +322,11 @@ def test_the_vocabulary_read_at_149_1_0(contract):
     # nothing), so the 161.0.0 read is two `previous` down and the 149.1.0 read three; the transforms are still 29
     # 2026-11-19, contract 180.4.0: re-read 20:58Z on top; the 168.3.0 read is its `previous`
     # 2026-11-20, contract 182.3.2: re-read 14:35Z on top (nothing moved); the 180.4.0 read is its `previous`
-    assert shared["_refreshed"]["contractVersion"] == "182.3.2"
-    assert shared["_refreshed"]["previous"]["contractVersion"] == "180.4.0"
-    read_168 = shared["_refreshed"]["previous"]["previous"]
+    # 2026-11-22, contract 184.3.2: re-read 05:07Z on top (nothing moved); the 182.3.2 read is its `previous`
+    assert shared["_refreshed"]["contractVersion"] == "184.3.2"
+    assert shared["_refreshed"]["previous"]["contractVersion"] == "182.3.2"
+    assert shared["_refreshed"]["previous"]["previous"]["contractVersion"] == "180.4.0"
+    read_168 = shared["_refreshed"]["previous"]["previous"]["previous"]
     assert read_168["contractVersion"] == "168.3.0" and read_168["at"] == "2026-11-11T22:32Z"
     assert read_168["previous"]["contractVersion"] == "168.2.0"
     assert read_168["previous"]["moved"] == ["conditionGrammar"]

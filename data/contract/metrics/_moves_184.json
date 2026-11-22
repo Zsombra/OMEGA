@@ -1,0 +1,62 @@
+{
+ "_what": "What the re-extraction at contract 184.3.2 moved in the metric corpus: the hints of all 586 served metrics read 2026-11-22 04:55 - 05:04Z over one mcporter runtime (scripts/refresh_metric_contracts.py, EXTRACTION_STAMP=20261122, EXTRACTION_TRANSPORT=runtime, 0 failed; the 182.3.2 batches archived as archive_20261120_extraction), against the committed 182.3.2 records (v0.16.0, d62b0b3). Five glosses were reworded - a spot metric's unit, 'this coin's own unit' until then, is 'the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE)' - and nothing else moved: no metric, transform, flag, operand list, parameter, maximum or rank ordering. Counted from the records, not typed.",
+ "contractVersion": "184.3.2",
+ "buildSha": "8a695c4f09ae0d0d774caa79e0882c81305acc1c",
+ "hintsReadOn": "2026-11-22",
+ "foldedOn": "2026-11-22",
+ "metrics": {
+  "at182_3_2": 586,
+  "at184_3_2": 586
+ },
+ "added": [],
+ "retired": [],
+ "recordsMoved": 5,
+ "recordsEqual": 581,
+ "movedKeys": [
+  "gloss"
+ ],
+ "glosses": {
+  "SPOT_AVG_TRADE": {
+   "at182_3_2": "the composite spot volume per trade in the bar's period, over the listed venues that publish their trade history (Binance, Coinbase), in this coin's own unit; absent where one of those venues did not cover the period or nothing traded",
+   "at184_3_2": "the composite spot volume per trade in the bar's period, over the listed venues that publish their trade history (Binance, Coinbase), in the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE); absent where one of those venues did not cover the period or nothing traded"
+  },
+  "SPOT_CLOSE_BN": {
+   "at182_3_2": "Binance spot close of the bar's period, USDT-quoted, expressed in this coin's own unit (a k-prefixed ticker such as kPEPE denotes 1000 base tokens, and the venue price is scaled to match so it compares with the mark): Binance's last trade in the period, or the price it carried through every minute of a period with no trade; absent where any minute of the period went unseen (missed by Binance's feed and not recovered from its trade history), or where the coin did not trade on Binance in the period and its price was not carried through every minute of it (its last trade older than the coin's spot-tape freshness target, at least 15 minutes, or the minute before the period unpriced); a forming bar's close older than that target is absent",
+   "at184_3_2": "Binance spot close of the bar's period, USDT-quoted, expressed in the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE), so it compares with the mark: Binance's last trade in the period, or the price it carried through every minute of a period with no trade; absent where any minute of the period went unseen (missed by Binance's feed and not recovered from its trade history), or where the coin did not trade on Binance in the period and its price was not carried through every minute of it (its last trade older than the coin's spot-tape freshness target, at least 15 minutes, or the minute before the period unpriced); a forming bar's close older than that target is absent"
+  },
+  "SPOT_CLOSE_CB": {
+   "at182_3_2": "Coinbase spot close of the bar's period, quoted in USD (USDC where no USD product exists), expressed in this coin's own unit (a k-prefixed ticker such as kPEPE denotes 1000 base tokens, and the venue price is scaled to match so it compares with the mark): Coinbase's last trade in the period, or the price it carried through every minute of a period with no trade; absent where any minute of the period went unseen (missed by Coinbase's feed and not recovered from its trade history), or where the coin did not trade on Coinbase in the period and its price was not carried through every minute of it (its last trade older than the coin's spot-tape freshness target, at least 15 minutes, or the minute before the period unpriced); a forming bar's close older than that target is absent",
+   "at184_3_2": "Coinbase spot close of the bar's period, quoted in USD (USDC where no USD product exists), expressed in the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE), so it compares with the mark: Coinbase's last trade in the period, or the price it carried through every minute of a period with no trade; absent where any minute of the period went unseen (missed by Coinbase's feed and not recovered from its trade history), or where the coin did not trade on Coinbase in the period and its price was not carried through every minute of it (its last trade older than the coin's spot-tape freshness target, at least 15 minutes, or the minute before the period unpriced); a forming bar's close older than that target is absent"
+  },
+  "SPOT_CVD": {
+   "at182_3_2": "order-flow composite centralized-exchange spot cumulative volume delta at each bar, the listed venues that publish their trade history (Binance, Coinbase) summed through the bar's last minute since the daily 00:00-UTC anchor, in this coin's own unit (crypto coins the spot lane lists); it reads no value for the rest of the UTC day after a minute any listed venue left uncovered, never a partial sum",
+   "at184_3_2": "order-flow composite centralized-exchange spot cumulative volume delta at each bar, the listed venues that publish their trade history (Binance, Coinbase) summed through the bar's last minute since the daily 00:00-UTC anchor (crypto coins the spot lane lists), in the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE); it reads no value for the rest of the UTC day after a minute any listed venue left uncovered, never a partial sum"
+  },
+  "SPOT_DOMINANCE": {
+   "at182_3_2": "the composite spot volume, over the listed venues that publish their trade history (Binance, Coinbase), as a share of composite spot plus the bar's perp volume, both in this coin's own unit (0–1); absent where one of those venues did not cover the period",
+   "at184_3_2": "the composite spot volume, over the listed venues that publish their trade history (Binance, Coinbase), as a share of composite spot plus the bar's perp volume (0–1), both in the unit the coin's perp is quoted in (Hyperliquid's kPEPE is 1,000 PEPE); absent where one of those venues did not cover the period"
+  }
+ },
+ "anythingElseMoved": [],
+ "derived": {
+  "_what": "regenerated by scripts/build_corpus.py from these records: byte-identical to the 182.3.2 ones",
+  "unchanged": [
+   "data/derived/composability_matrix.csv",
+   "data/derived/spread_operand_graph.json",
+   "data/derived/platform_privileged.json",
+   "data/derived/type_system.json"
+  ]
+ },
+ "vocabulary": {
+  "_what": "list_strategy_vocabulary per category against the 182.3.2 snapshot (20261120T1435Z): the same five glosses, where the category answered; `levels` is RESULT_TOO_LARGE both times",
+  "price": [
+   "SPOT_CLOSE_CB",
+   "SPOT_CLOSE_BN"
+  ],
+  "volumeFlow": [
+   "SPOT_CVD",
+   "SPOT_AVG_TRADE",
+   "SPOT_DOMINANCE"
+  ]
+ }
+}

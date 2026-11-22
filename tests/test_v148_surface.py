@@ -71,8 +71,8 @@ def test_the_capture_names_its_contract_build_and_source():
     # `supersedes`, then 149.1.0, then this one
     # 2026-11-12: by version (tests/manifest_chain.py) - 171.0.0 on top that morning, then 169.4.0, 168.3.0, 161.0.0
     from tests.manifest_chain import surface as surface_of
-    # 180.4.0 on top since 2026-11-19; 182.3.2 since 2026-11-20
-    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "182.3.2"
+    # 180.4.0 on top since 2026-11-19; 182.3.2 since 2026-11-20; 184.3.2 since 2026-11-22
+    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "184.3.2"
     surface = surface_of("168.3.0")
     assert [surface["servedContractVersion"], surface["supersedes"]["servedContractVersion"],
             surface["supersedes"]["supersedes"]["servedContractVersion"]] == ["168.3.0", "161.0.0", "149.1.0"]
@@ -287,9 +287,11 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     # 2026-11-19, contract 180.4.0: re-read 20:58Z on top (transforms labels, timeframes, timeframeRefs and
     # rankedTimeframes moved); every earlier read one `previous` deeper
     # 2026-11-20, contract 182.3.2: re-read 14:35Z on top, nothing moved
-    assert shared["_refreshed"]["contractVersion"] == "182.3.2"
-    assert shared["_refreshed"]["previous"]["contractVersion"] == "180.4.0"
-    refreshed = shared["_refreshed"]["previous"]["previous"]
+    # 2026-11-22, contract 184.3.2: re-read 05:07Z on top, nothing moved
+    assert shared["_refreshed"]["contractVersion"] == "184.3.2"
+    assert shared["_refreshed"]["previous"]["contractVersion"] == "182.3.2"
+    assert shared["_refreshed"]["previous"]["previous"]["contractVersion"] == "180.4.0"
+    refreshed = shared["_refreshed"]["previous"]["previous"]["previous"]
     assert [refreshed["contractVersion"], refreshed["previous"]["contractVersion"],
             refreshed["previous"]["previous"]["contractVersion"]] == ["168.3.0", "168.2.0", "161.0.0"]
     at_161 = refreshed["previous"]["previous"]
@@ -314,8 +316,11 @@ def test_the_shared_blocks_and_the_categories_moved_as_recorded():
     assert counts["trend"] == 23 + rehomed["structure -> trend"] + added["trend"] == 26
     # 2026-11-19, contract 180.4.0 (_moves_180_4.json): levels 274 -> 279 (ATH and the four day / week levels)
     # 2026-11-20, contract 182.3.2: re-read on top, nothing moved; the 180.4.0 read is its `previous`
-    assert categories["_refreshed"]["contractVersion"] == "182.3.2" and categories["_refreshed"]["moved"] == ["nothing"]
-    at_180 = categories["_refreshed"]["previous"]
+    # 2026-11-22, contract 184.3.2: the same, one `previous` deeper
+    assert categories["_refreshed"]["contractVersion"] == "184.3.2" and categories["_refreshed"]["moved"] == ["nothing"]
+    at_182 = categories["_refreshed"]["previous"]
+    assert at_182["contractVersion"] == "182.3.2" and at_182["moved"] == ["nothing"]
+    at_180 = at_182["previous"]
     assert at_180["contractVersion"] == "180.4.0"
     assert at_180["moved"] == ["levels 274 -> 279"] and counts["levels"] == 279
     assert sum(counts.values()) == 534 + sum(added.values()) + 5 == 586 and len(counts) == 14
