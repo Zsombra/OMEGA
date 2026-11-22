@@ -212,6 +212,36 @@ create drafts, staged, read back, previewed on the DRAFT and discarded, none com
   * Also seen: a stage that names draftVersion 0 against a draft the player's hand has not changed is accepted (draft E
     staged 21 times that way); a draft whose report reads 418 extra value columns stages clean and get_strategy_draft
     then answers RESULT_TOO_LARGE (300,334 characters against a 150,000 cap) - list_strategy_drafts states its version.
+
+**Contract 184.3.2 (2026-11-22; OMEGA v0.17.0): no rule here moved.** preview_strategy_trade_levels lost two output
+fields (README v183) and, since 184.3.x (undocumented), states its prices on the venue's price grid. Measured on two
+create drafts (68e9d692: 26 stages, 29 previews on seven coins; f7325af3: 7 and 8; each read back, discarded and read
+null; never committed): GRID_PROBES, replayed by tests/test_reextraction_184.py. OMEGA parses no preview:
+
+  * At the STAGE every replayed R:R case answers as at 182.3.2 (the fourteen ties and controls, L's G4 - G6, E's T4):
+    the stage knows no price. One wording moved: the refusal states the minimum to two decimals ("minimum risk-reward
+    of 1.50", "of 1.5" at 182.3.2; "of 1.00", "of 2.00", X5, X6).
+  * At a decision a stop's price is rounded toward entry, a target's away from it, a resting entry's away from the mark
+    (235 stops, 380 R legs, 8 entries; each within one tick); a target at R is R times the distance to the ROUNDED stop,
+    then rounded. An at-market entry is the mark as it stands, on no grid (BTC 59073.8 beside whole-dollar stops).
+  * A pair's R:R is the plan's own arithmetic all the same: an R leg pays its own multiple, not the ratio of the rounded
+    prices (PUMP at ATR 1: 1.5R stated 1.5, the prices make 1.512), a LEVEL leg pays the R between the grid prices (BTC
+    3.157; the unrounded stop makes 3.154), a runner rides at that R of the last leg that closes a share (X3, X4). All
+    301 plans of the 273 setups, and all eleven refused pairs' computedRR, are stated_rr(plan_pays_double(legs,
+    level_r)) with that level_r.
+  * What the grid makes equal becomes one: two plans at one set of prices are one setup listing both under `exitPlans`
+    (2.25R and 2.2496R on BTC: 28 rows; at 182.3.2 each plan made its own), two surviving stops at one price one setup
+    listing both under `stopLossMethods` (0.8 and 0.801 ATR on PUMP, X2). And two R legs of one plan at one price are
+    refused TARGETS_OUT_OF_ORDER at that decision though the stage accepts them (1.5R 50% + 1.5001R 50% on kPEPE; on
+    BTC, where the tick tells them apart, the pair survives: X1). The tick is the coin's: nothing is judged here.
+  * A stop's verdict is its option's own multiple, now visibly apart from its price: on kPEPE and PUMP the 0.79 and the
+    0.8 ATR stop are one price and one distancePct and read BELOW_FLOOR and SURVIVED under a floor of 0.8; 1.81 reads
+    ABOVE_CEILING at the price 1.8 survives at (outside_stop_range, 214 of 214). A stop row's distanceAtrMultiple is an
+    ATR option's own multiple exactly; its distancePct is the grid price's distance, unrounded (at 182.3.2 the multiple
+    x ATR%); a LEVEL stop's two distances are its grid price's.
+  * A level entry's distancePct is stated to four decimals and its distanceAtr in full; placedPrice is on the grid.
+  * ENTRY_LEVEL_USUALLY_SKIPPED fires as before (F4; a nearest level too, N1: NAKED_POC_BELOW / ABOVE), and not under
+    the order that rests there (F1, F2, N2).
 """
 from __future__ import annotations
 
@@ -242,6 +272,7 @@ RUNNER_PROBES = "data/audit/exit_plan_runner_171_2026-11-12.json"
 UPDATE_PROBES = "data/audit/update_rules_171_2026-11-12.json"
 STOP_BAND_PROBES = "data/audit/stop_band_171_2026-11-12.json"
 RR_PROBES = "data/audit/reextraction_182_2026-11-20.json"      # 182.3.2: stop bounds, R:R at three decimals, entries
+GRID_PROBES = "data/audit/reextraction_184_2026-11-22.json"   # 184.3.2: the same rules, prices on the venue's grid
 RR_DECIMALS = 3                # a risk-reward is stated, and judged against the minimum, to three decimals (stated_rr)
 # The side of price each level trigger's resting order needs, per direction (182.3.2, RR_PROBES F4 / F5 and the
 # previews of F1 / F2): a buy stop rests above price and a sell stop below, a buy limit below and a sell limit above.
@@ -330,7 +361,8 @@ def outside_stop_range(multiple, min_stop, max_stop) -> str | None:
     RR_PROBES G1) - or when the multiple or a bound is not a finite number (the dial is the axis walk's to judge).
     Each number is read as the decimal it was written as, which is how the platform judges an ATR stop: on its own
     multiple, not on its distance in percent (on SOL that distance fell outside both bounds by rounding and the stop
-    survived)."""
+    survived; since 184.3.x prices are on the venue's grid, and on kPEPE 0.79 and 0.8 ATR are one price and one
+    distance, one BELOW_FLOOR and the other SURVIVED: GRID_PROBES G1, seven coins)."""
     if not (_finite_number(multiple) and _finite_number(min_stop) and _finite_number(max_stop)):
         return None
     if _exact(multiple) < _exact(min_stop):
@@ -720,7 +752,8 @@ def plan_pays_exact(legs: list[dict], level_r: dict | None = None) -> Fraction |
     `level_r` maps the index of each LEVEL leg to the R its price makes from one pair's stop at a decision
     (|level price - entry| / |entry - stop|, as preview_strategy_trade_levels reads it): the same share-weighted sum,
     a runner after a level leg riding at that level's R, is the risk-reward the decision reads for that pair (measured
-    2026-11-12 at 171.0.0 on the preview of UPDATE_PROBES A1: every setup and every refused pair's computedRR). A LEVEL
+    2026-11-12 at 171.0.0 on the preview of UPDATE_PROBES A1: every setup and every refused pair's computedRR; since
+    184.3.x both prices are the served grid prices, GRID_PROBES LV, F1, F2, X4). A LEVEL
     leg it does not name leaves the pay unknown - None, the stage's own reading: it never judges a plan with a level leg
     (EXIT_PLAN_PROBES Z1 - Z3, UPDATE_PROBES A1)."""
     shares = _plan_shares(legs, level_r)

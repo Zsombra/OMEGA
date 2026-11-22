@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # 108.0.0 one are kept below as history).
 # 161.0.0 (2026-11-09): the manifest names the 161.0.0 capture (build ab5b6252); the 149.1.0 one it supersedes stays below.
 # 2026-11-11: the pinned capture is 168.3.0 (schema_20261111T213257Z.json); 161.0.0 was schema_20261109T162100Z.json
-SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261120T142253Z.json"   # 182.3.2 since 2026-11-20; 180.4.0 (schema_20261119T202415Z) since 2026-11-19; 171.0.0 since 2026-11-12 (169.4.0 that morning)
+SCHEMA = ROOT / "data/contract/stage_strategy_draft/schema_20261122T045517Z.json"   # 184.3.2 since 2026-11-22; 182.3.2 (schema_20261120T142253Z) since 2026-11-20; 180.4.0 (schema_20261119T202415Z) since 2026-11-19; 171.0.0 since 2026-11-12 (169.4.0 that morning)
 SCHEMA_161 = ROOT / "data/contract/stage_strategy_draft/schema_20261109T162100Z.json"
 SCHEMA_149 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T181932Z.json"
 SCHEMA_148 = ROOT / "data/contract/stage_strategy_draft/schema_20261105T093843Z.json"
@@ -79,7 +79,7 @@ def test_the_stored_inventory_is_the_schemas_derivation():
 
 def test_the_inventory_names_its_source_by_path_and_hash():
     assert CV.schema_path() == SCHEMA
-    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261120T142253Z.json",
+    assert V["source"] == {"schema": "data/contract/stage_strategy_draft/schema_20261122T045517Z.json",
                            # 161.0.0 (2026-11-09): was 149.1.0 / build aa4ab640 (schema_20261105T181932Z.json)
                            # 168.3.0 (2026-11-11): was 161.0.0 / build ab5b6252 (schema_20261109T162100Z.json)
                            # 169.4.0 (2026-11-12): was 168.3.0 / build af8b2c96 (schema_20261111T213257Z.json); the
@@ -90,8 +90,10 @@ def test_the_inventory_names_its_source_by_path_and_hash():
                            # level ENTRY arm gained EITHER_SIDE_OF_LEVEL, the read roster five keys
                            # 182.3.2 (2026-11-20): was 180.4.0 / build d66d4f98 (schema_20261119T202415Z.json); no
                            # input schema moved, so the derived grammar is unchanged
-                           "sha256": CV.sha256(SCHEMA), "contractVersion": "182.3.2",
-                           "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f",
+                           # 184.3.2 (2026-11-22): was 182.3.2 / build b3969d0b (schema_20261120T142253Z.json); the six
+                           # draft tools are byte-identical
+                           "sha256": CV.sha256(SCHEMA), "contractVersion": "184.3.2",
+                           "buildSha": "8a695c4f09ae0d0d774caa79e0882c81305acc1c",
                            "observedAt": DOC["observedAt"]}
 
 

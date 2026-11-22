@@ -43,21 +43,25 @@ def _sent(preview: dict) -> list[Column]:
 
 # --- the extraction -------------------------------------------------------------------------------------------------
 def test_the_extraction_and_the_write_surface_are_182_3_2():
-    from tests.manifest_chain import versions
-    assert versions(MANIFEST)[:2] == ["182.3.2", "180.4.0"]
-    assert versions(MANIFEST["writeSurface"])[:2] == ["182.3.2", "180.4.0"]
-    assert MANIFEST["writeSurface"]["buildSha"] == RECORD["buildSha"]
-    assert stage_schema()["contractVersion"] == RECORD["contractVersion"] == "182.3.2"
-    index = json.loads((ROOT / "data/contract/metrics/_index.json").read_text(encoding="utf-8"))
-    assert (index["contractVersion"], index["buildSha"], index["metricCount"]) == ("182.3.2", RECORD["buildSha"], 586)
-    assert 'version = "0.16.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    """The 182.3.2 blocks, by version (tests/manifest_chain.py): 184.3.2 sits on top since 2026-11-22
+    (tests/test_reextraction_184.py)."""
+    from tests.manifest_chain import extraction, surface
+    block = extraction("182.3.2", MANIFEST)
+    assert block["extractedOn"] == "2026-11-20" and block["counts"]["metrics"] == 586
+    assert block["supersedes"]["servedContractVersion"] == "180.4.0" and RECORD["buildSha"] in block["contractVersionSource"]
+    ws = surface("182.3.2", MANIFEST)
+    assert ws["buildSha"] == RECORD["buildSha"] and ws["supersedes"]["servedContractVersion"] == "180.4.0"
+    capture = json.loads((ROOT / ws["schema"]).read_text(encoding="utf-8"))
+    assert capture["contractVersion"] == RECORD["contractVersion"] == "182.3.2"
 
 
 def test_the_six_draft_tools_moved_in_one_output_schema_and_no_input():
     """180.4.0 -> 182.3.2: preview_strategy_report's output schema (README v182) and nothing else - no description,
     no input schema. v181 moved no schema."""
+    from tests.manifest_chain import surface
     old = json.loads(SCHEMA_180_4.read_text(encoding="utf-8"))
-    new = stage_schema()
+    new = json.loads((ROOT / surface("182.3.2", MANIFEST)["schema"]).read_text(encoding="utf-8"))
+    assert all(stage_schema()[t] == new[t] for t in MANIFEST["writeSurface"]["tools"])     # 184.3.2 moved none of them
     tools = MANIFEST["writeSurface"]["tools"]
     moved = {(t, part) for t in tools for part in ("description", "inputSchema", "outputSchema", "annotations")
              if old[t].get(part) != new[t].get(part)}
@@ -79,10 +83,12 @@ def test_the_six_draft_tools_moved_in_one_output_schema_and_no_input():
 
 def test_the_other_authoring_tools_are_captured_from_this_contract_on():
     import scripts.capture_write_surface as cws
-    block = MANIFEST["writeSurface"]["authoringTools"]
+    from tests.manifest_chain import surface
+    ws = surface("182.3.2", MANIFEST)
+    block = ws["authoringTools"]
     side = json.loads((ROOT / block["schema"]).read_text(encoding="utf-8"))
     assert (side["contractVersion"], side["buildSha"]) == ("182.3.2", RECORD["buildSha"])
-    assert side["beside"] == Path(MANIFEST["writeSurface"]["schema"]).name and side["_absent"] == []
+    assert side["beside"] == Path(ws["schema"]).name and side["_absent"] == []
     assert set(side["tools"]) == set(cws.AUTHORING_TOOLS)
     for tool in side["tools"].values():
         assert tool["description"] and tool["inputSchema"]["type"] == "object"

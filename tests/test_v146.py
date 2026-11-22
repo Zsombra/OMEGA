@@ -117,7 +117,7 @@ def test_the_capture_names_its_contract_build_and_source():
     # 146.0.0 capture is four `supersedes` down the write surface chain (161.0.0, 149.1.0, 148.1.0, then it)
     # 2026-11-12: found by version, not depth (tests/manifest_chain.py) - the pins moved 169.4.0 -> 171.0.0 that morning
     from tests.manifest_chain import surface
-    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "182.3.2"   # 180.4.0 until 2026-11-20, 171.0.0 until 2026-11-19, 149.1.0 until 2026-11-09, 161.0.0 until 2026-11-11, 168.3.0 / 169.4.0 until 2026-11-12
+    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "184.3.2"   # 182.3.2 until 2026-11-22, 180.4.0 until 2026-11-20, 171.0.0 until 2026-11-19, 149.1.0 until 2026-11-09, 161.0.0 until 2026-11-11, 168.3.0 / 169.4.0 until 2026-11-12
     assert surface("146.0.0")["schema"] == SCHEMA_146
 
 
@@ -331,5 +331,6 @@ def test_the_version_moved_past_v0_10_2():
     # day (the update rules and the last unmeasured items, measured at 171.0.0: tests/test_update_rules_171.py); 0.14.3 on
     # 2026-11-13 (the default menu inside the stop range: tests/test_stop_band_171.py); 0.15.0 on 2026-11-19 (re-extracted
     # at contract 180.4.0: tests/test_reextraction_180_4.py); 0.16.0 on 2026-11-20 (re-extracted at contract 182.3.2:
-    # tests/test_reextraction_182.py)
-    assert 'version = "0.10.2"' not in text and 'version = "0.16.0"' in text
+    # tests/test_reextraction_182.py); 0.17.0 on 2026-11-22 (re-extracted at contract 184.3.2:
+    # tests/test_reextraction_184.py)
+    assert 'version = "0.10.2"' not in text and 'version = "0.17.0"' in text

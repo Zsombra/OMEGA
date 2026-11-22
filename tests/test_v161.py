@@ -217,7 +217,8 @@ def test_the_manifest_records_the_161_extraction():
     # did not move), 168.3.0 its `supersedes`, the 161.0.0 block below that; tests/test_v169.py pins the top block
     # (171.0.0 on top later that morning: by version from here on, tests/manifest_chain.py)
     from tests.manifest_chain import extraction
-    assert current["servedContractVersion"] == "182.3.2"      # since 2026-11-20 (180.4.0 since 2026-11-19, 171.0.0 before)
+    assert current["servedContractVersion"] == "184.3.2"      # since 2026-11-22 (182.3.2 since 2026-11-20, 180.4.0 since
+    # 2026-11-19, 171.0.0 before)
     current = extraction("168.3.0", current)
     assert current["extractedOn"] == "2026-11-11"
     m = current["supersedes"]
@@ -251,5 +252,5 @@ def test_the_manifest_records_the_161_extraction():
     # the 168.3.0 block's structuralShapes stays as recorded: the space has held the chained spread's 660 shapes since
     # 2026-11-12 (OMEGA v0.13.1), when nothing was unmeasured any more
     assert n["structuralShapes"] == 26584
-    assert sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 27424     # at 180.4.0 and 182.3.2
+    assert sum(1 for _ in space.enumerate_shapes(expand_operands=False, contract=c)) == 27424     # at 180.4.0, 182.3.2 and 184.3.2
     assert c.unmeasured_chain_outers == {}
