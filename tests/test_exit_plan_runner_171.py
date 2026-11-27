@@ -149,7 +149,8 @@ def test_an_update_carrying_a_live_minimum_off_its_step_is_refused():
     base = PRESETS["trend-continuation"]
     current = plan(base).axes()
     current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.6          # a live value off the 0.25 step
-    current["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] = tl.default_menu(1.5)
+    # the live bracket as a 185 get_strategy serves it (no tradeLevelMenu: the read schema no longer has one)
+    current["TRADE_LEVEL_POLICY"]["tradeBracket"] = tl.default_bracket(1.5, stop_range=(1, 2))
     carried = plan(Thesis(**{**base.__dict__, "execution": {"minAtrPct": 0.4}}))
     staged = carried.axes_update(current)["TRADE_LEVEL_POLICY"]
     assert staged["minRiskRewardRatio"] == 1.6                              # carried as read
