@@ -15,12 +15,15 @@ runs that bracket. What carries over from the menu, one stop and one plan instea
   * every exit-plan rule of 170 / 171 / 182.3.2: shares, the 0% trail objective, the runner needs Trailing, the order
     of R legs, the pay judged as stated to three decimals (stated_rr of plan_pays_double), the unmeasured tie, a level
     leg judged per decision (TRADE_MENU_EXIT_PLAN_*);
-  * NEW at 185 (vendor pack, not measured live): `commit_strategy_draft` refuses an ATR stop outside the strategy's own
-    band minStopLossAtrMultiple - maxStopLossAtrMultiple, both inclusive, naming
-    `tradeBracket.<DIRECTION>.stop.atrMultiple` - an ERROR here (TRADE_BRACKET_STOP_OUTSIDE_BAND), where v0.14.3 -
-    v0.17.0 warned (TRADE_MENU_STOP_OUTSIDE_RANGE: a decision dropped one stop of several; with one stop nothing is
-    left to trade). The inclusive bounds and the multiple-as-written reading are outside_stop_range's, measured at
-    182.3.2 and 184.3.2.
+  * NEW at 185 (vendor pack 32.0.118; measured live 2026-11-27 at 185.2.0, BRACKET_PROBES b, b2, c1 - c3): an ATR stop
+    outside the strategy's own band minStopLossAtrMultiple - maxStopLossAtrMultiple, both inclusive, is refused,
+    naming `tradeBracket.<DIRECTION>.stop.atrMultiple` - a draft diagnostic error at stage, which commit refuses -
+    an ERROR here (TRADE_BRACKET_STOP_OUTSIDE_BAND), where v0.14.3 - v0.17.0 warned (TRADE_MENU_STOP_OUTSIDE_RANGE: a
+    decision dropped one stop of several; with one stop nothing is left to trade). The inclusive bounds and the
+    multiple-as-written reading are outside_stop_range's, measured at 182.3.2 and 184.3.2. The same record measured
+    the minimum (d, `tradeBracket.LONG.exitPlan`), an unread level stop (e2, `tradeBracket.LONG.stop.level`), the runner
+    with Trailing off (f2) and the shape refusals at input (a, g1, g2, h). The stage names ONE error at a time, LONG
+    first; OMEGA names every one.
 
 Gone with the lists: the list bounds (1 - 8 stops, 1 - 8 plans), pairs, rejected pairs and surviving setups. A 184 menu
 cannot be staged at 185 and is never converted here: the platform converted every stored menu itself (VWAP Reject 4h:
@@ -315,6 +318,7 @@ STOP_BAND_PROBES = "data/audit/stop_band_171_2026-11-12.json"
 RR_PROBES = "data/audit/reextraction_182_2026-11-20.json"      # 182.3.2: stop bounds, R:R at three decimals, entries
 GRID_PROBES = "data/audit/reextraction_184_2026-11-22.json"   # 184.3.2: the same rules, prices on the venue's grid
 DEFAULT_PROBES = "data/audit/default_bracket_185_2026-11-27.json"   # 185.2.0: the platform's default bracket, measured
+BRACKET_PROBES = "data/audit/bracket_refusals_185_2026-11-27.json"  # 185.2.0: what the stage refuses on a bracket
 # The last write-schema capture that served the trade level menu (184.3.2): the menu's functions judge against it when
 # no `schema` is named and the pinned capture serves a bracket (contract 185).
 MENU_SCHEMA = "data/contract/stage_strategy_draft/schema_20261122T045517Z.json"
@@ -913,8 +917,9 @@ def validate_bracket(bracket, *, dials: dict, sections: list[dict], anchor: str,
     `stops` / `exitPlans` lists - fails it, as the stage refuses it at input), and on a well-formed bracket only, per
     direction:
       * an ATR stop outside the band minStopLossAtrMultiple - maxStopLossAtrMultiple, both inclusive: an ERROR on
-        `tradeBracket.<DIR>.stop.atrMultiple` (TRADE_BRACKET_STOP_OUTSIDE_BAND; commit refuses it since 185, vendor
-        pack - not measured live). A LEVEL or PERCENT stop's distance is per coin and per bar: not judged;
+        `tradeBracket.<DIR>.stop.atrMultiple` (TRADE_BRACKET_STOP_OUTSIDE_BAND; refused since 185, measured
+        BRACKET_PROBES b, b2, c1 - c3). A LEVEL or PERCENT stop's distance is per coin and per bar: not judged (a
+        PERCENT 2 stop drew no error at band 1 - 1.8, e1);
       * a LEVEL stop by the level rule (role "stop", TRADE_MENU_LEVEL_*), as a menu's stop option was;
       * the exit plan by every exit-plan rule (_plan_findings, TRADE_MENU_EXIT_PLAN_*), at `tradeBracket.<DIR>.exitPlan`;
       * a level that is both the stop and a leg of one direction (TRADE_MENU_LEVEL_BOTH_SIDES)."""
@@ -938,9 +943,10 @@ def validate_bracket(bracket, *, dials: dict, sections: list[dict], anchor: str,
                 out.append(Finding("error", "TRADE_BRACKET_STOP_OUTSIDE_BAND", f"{spath}.atrMultiple",
                                    f"the {side} ATR {stop['atrMultiple']} stop is outside this strategy's stop band "
                                    f"{lo} - {hi}xATR ({verdict}, {STOP_RANGE_VERDICTS[verdict]}; both bounds "
-                                   f"inclusive): commit_strategy_draft refuses it since contract 185, naming "
-                                   f"tradeBracket.{side}.stop.atrMultiple (vendor pack 32.0.118; until 184 a decision "
-                                   f"dropped it, {STOP_BAND_PROBES}). Move the stop into the band or the band to it"))
+                                   f"inclusive): the stage refuses it since contract 185 as a draft error commit "
+                                   f"refuses, naming tradeBracket.{side}.stop.atrMultiple (measured, {BRACKET_PROBES} "
+                                   f"b, b2, c1 - c3; until 184 a decision dropped it, {STOP_BAND_PROBES}). Move the stop "
+                                   f"into the band or the band to it"))
         elif stop["kind"] == "LEVEL":
             findings, stop_identity = _level_findings(stop["level"], f"{spath}.level", side, "stop", readings, anchor)
             out += findings

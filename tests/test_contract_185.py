@@ -188,6 +188,47 @@ def test_an_atr_stop_outside_the_band_is_an_error_and_both_bounds_are_inclusive(
                   dials) == []
 
 
+REFUSALS = json.loads((ROOT / tl.BRACKET_PROBES).read_text(encoding="utf-8"))
+RULE_CASES = ("b", "b2", "c1", "c2", "c3", "d", "e1", "e2", "f", "f2")
+
+
+@pytest.mark.parametrize("case", RULE_CASES)
+def test_the_bracket_rules_replay_the_live_stages_answers(case):
+    """BRACKET_PROBES: create drafts at band 1 - 1.8 and minimum 2 (no REPORT staged: the platform's starting report,
+    which yields no level - judged here against an empty report). The stage names ONE error at a time, LONG first:
+    OMEGA's first error is the one it named, every path it named is one OMEGA names, and where it named none OMEGA
+    names no error."""
+    from omega.execution import PLATFORM_EXECUTION_DEFAULTS
+    probe = REFUSALS["probes"][case]
+    assert probe["stage"]["diagnostics"] == probe["getStrategyDraft"]["diagnostics"]
+    sent = probe["sent"]["TRADE_LEVEL_POLICY"]
+    trailing = (probe["sent"].get("POSITION_MANAGEMENT") or PLATFORM_EXECUTION_DEFAULTS)["trailingEnabled"]
+    found = tl.validate_bracket(sent["tradeBracket"], dials={k: v for k, v in sent.items() if k != "tradeBracket"},
+                                sections=[], anchor="4h", trailing_enabled=trailing)
+    errors = [f for f in found if f.severity == "error"]
+    named = [e["field"] for e in probe["stage"]["diagnostics"]["errors"]]
+    assert len(named) <= 1                                          # one at a time
+    if not named:
+        assert errors == [], case
+        return
+    assert errors and errors[0].path == named[0], case
+    assert set(named) <= {f.path for f in errors}
+    expected = {"b": "TRADE_BRACKET_STOP_OUTSIDE_BAND", "b2": "TRADE_BRACKET_STOP_OUTSIDE_BAND",
+                "c3": "TRADE_BRACKET_STOP_OUTSIDE_BAND", "d": "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR",
+                "e2": "TRADE_MENU_LEVEL_NOT_YIELDED", "f2": "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING"}[case]
+    assert errors[0].code == expected
+
+
+@pytest.mark.parametrize("case", ("a", "g1", "g2", "h"))
+def test_the_shape_the_stage_refuses_at_input_fails_the_walk(case):
+    probe = REFUSALS["probes"][case]
+    assert probe["stageRefused"]["code"] == "VALIDATION_ERROR"
+    assert _tlp_valid(probe["sent"]["TRADE_LEVEL_POLICY"]) != []
+    bracket = probe["sent"]["TRADE_LEVEL_POLICY"].get("tradeBracket")
+    if bracket is not None and case != "h":                        # h: a valid bracket beside the old menu key
+        assert {f.code for f in _judge(bracket)} == {"TRADE_MENU_SHAPE"}
+
+
 # --- what carries over from the menu ---------------------------------------------------------------------------------
 def test_the_exit_plan_rules_carry_over_on_the_one_plan():
     path = "tradeBracket.LONG.exitPlan"

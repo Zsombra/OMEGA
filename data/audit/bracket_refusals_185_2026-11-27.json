@@ -1,0 +1,1102 @@
+{
+  "_what": "Contract 185.2.0 (build ede1fce5): what the live stage refuses on a trade bracket, measured 2026-11-27 02:31:16Z - 02:41:31Z on CREATE drafts only (strategyId omitted, draftVersion 0), each read back with get_strategy_draft and discarded at draftVersion 1; none committed. Every stage sent IDENTITY {name 'OMEGA-TEST 185 probe <case>'}, TIMEFRAME_PROFILE {timeframe 4h} and the TRADE_LEVEL_POLICY below; f2 also POSITION_MANAGEMENT. No REPORT was staged: each draft held the platform's starting report. Copied verbatim from the session record measure-refusals.md.",
+  "contractVersion": "185.2.0",
+  "buildSha": "ede1fce51a498a371a21bad2511ac00036893356",
+  "measuredAt": {
+    "from": "2026-11-27T02:31:16Z",
+    "to": "2026-11-27T02:41:31Z"
+  },
+  "observations": [
+    "shape refusals (an unknown or a missing key: a, g1, g2, h) refuse the stage itself: VALIDATION_ERROR, no draft minted, issue paths starting at `axes`",
+    "rule refusals (band, minimum, unread level, runner: b, b2, c3, d, e2, f2) write the draft and come back in diagnostics.errors (code VALIDATION_ERROR, `field` the dotted path without the axis, details null), the same on get_strategy_draft",
+    "one error at a time, LONG first: b (both sides 2.5) named LONG alone, b2 (LONG legal) named SHORT; a draft with an error also read warnings [] and impact null",
+    "the Floor-Hard band is inclusive: ATR 1 (c1) and 1.8 (c2) drew no error at band 1 - 1.8",
+    "f: a runner plan with POSITION_MANAGEMENT unstaged on a create drew no diagnostic; f2 (trailingEnabled false staged) drew the runner refusal"
+  ],
+  "probes": {
+    "a": {
+      "heading": "(a) old shape `tradeLevelMenu` (02:31Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeLevelMenu": {
+            "LONG": {
+              "stops": [
+                {
+                  "kind": "ATR",
+                  "atrMultiple": 1.5
+                }
+              ],
+              "exitPlans": [
+                {
+                  "targets": [
+                    {
+                      "method": {
+                        "kind": "R_MULTIPLE",
+                        "multiple": 3
+                      },
+                      "closePct": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            "SHORT": {
+              "stops": [
+                {
+                  "kind": "ATR",
+                  "atrMultiple": 1.5
+                }
+              ],
+              "exitPlans": [
+                {
+                  "targets": [
+                    {
+                      "method": {
+                        "kind": "R_MULTIPLE",
+                        "multiple": 3
+                      },
+                      "closePct": 100
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "stageRefused": {
+        "code": "VALIDATION_ERROR",
+        "message": "Invalid input: expected object, received undefined",
+        "details": {
+          "issueCount": 2,
+          "issues": [
+            {
+              "path": [
+                "axes",
+                "TRADE_LEVEL_POLICY",
+                "tradeBracket"
+              ],
+              "message": "Invalid input: expected object, received undefined"
+            },
+            {
+              "path": [
+                "axes",
+                "TRADE_LEVEL_POLICY"
+              ],
+              "message": "Unrecognized key: \"tradeLevelMenu\""
+            }
+          ],
+          "correlationId": "89f28a72-663c-44cf-b65c-956f40a804da"
+        }
+      }
+    },
+    "b": {
+      "heading": "(b) tradeBracket ATR 2.5 (past the hard stop 1.8), 3R plan (02:32:09Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 2.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 2.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.stop.atrMultiple",
+              "message": "The LONG stop of 2.5 × ATR is past this strategy's hard stop of 1.80 × ATR: no trade could be built from it. Move the stop or the hard stop.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.stop.atrMultiple",
+              "message": "The LONG stop of 2.5 × ATR is past this strategy's hard stop of 1.80 × ATR: no trade could be built from it. Move the stop or the hard stop.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        },
+        "draftVersion": 1
+      }
+    },
+    "b2": {
+      "heading": "(b2, extra) LONG ATR 1.5, SHORT ATR 2.5, 3R plan (02:32:53Z), checks whether SHORT is judged",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 2.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.SHORT.stop.atrMultiple",
+              "message": "The SHORT stop of 2.5 × ATR is past this strategy's hard stop of 1.80 × ATR: no trade could be built from it. Move the stop or the hard stop.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.SHORT.stop.atrMultiple",
+              "message": "The SHORT stop of 2.5 × ATR is past this strategy's hard stop of 1.80 × ATR: no trade could be built from it. Move the stop or the hard stop.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        },
+        "draftVersion": 1
+      }
+    },
+    "c1": {
+      "heading": "(c1) ATR exactly 1 (= minStopLossAtrMultiple), 3R plan (02:33:40Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        },
+        "draftVersion": 1
+      }
+    },
+    "c2": {
+      "heading": "(c2) ATR exactly 1.8 (= maxStopLossAtrMultiple), 3R plan (02:34:20Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.8
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.8
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        },
+        "draftVersion": 1
+      }
+    },
+    "c3": {
+      "heading": "(c3, extra) ATR 0.9 (under the floor 1), 3R plan (02:35:05Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 0.9
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 0.9
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.stop.atrMultiple",
+              "message": "The LONG stop of 0.9 × ATR is under this strategy's floor of 1.00 × ATR: no trade could be built from it. Move the stop or the floor.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.stop.atrMultiple",
+              "message": "The LONG stop of 0.9 × ATR is under this strategy's floor of 1.00 × ATR: no trade could be built from it. Move the stop or the floor.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        },
+        "draftVersion": 1
+      }
+    },
+    "d": {
+      "heading": "(d) ATR 1.5 stop, all-R plan 1R closing 100%, minRiskRewardRatio 2 (02:35:43Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 1
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 1
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.exitPlan",
+              "message": "The LONG exit plan pays 1R, below this strategy's minimum risk-reward of 2.00: no trade could be built from it. Change the plan or lower the minimum.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.exitPlan",
+              "message": "The LONG exit plan pays 1R, below this strategy's minimum risk-reward of 2.00: no trade could be built from it. Change the plan or lower the minimum.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        },
+        "draftVersion": 1
+      }
+    },
+    "e1": {
+      "heading": "(e1) PERCENT stop 2, 3R plan (02:36:19Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "PERCENT",
+                "percent": 2
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "PERCENT",
+                "percent": 2
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        },
+        "draftVersion": 1
+      }
+    },
+    "e2": {
+      "heading": "(e2) LEVEL stop DONCHIAN_LOWER (LONG) / DONCHIAN_UPPER (SHORT), buffer 0.1, 3R plan (02:37:12Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "LEVEL",
+                "level": {
+                  "metric": "DONCHIAN_LOWER",
+                  "timeframe": {
+                    "rel": "anchor"
+                  },
+                  "bars": null,
+                  "offset": 0,
+                  "knobs": {},
+                  "windowExtreme": null
+                },
+                "bufferAtrMultiple": 0.1
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "LEVEL",
+                "level": {
+                  "metric": "DONCHIAN_UPPER",
+                  "timeframe": {
+                    "rel": "anchor"
+                  },
+                  "bars": null,
+                  "offset": 0,
+                  "knobs": {},
+                  "windowExtreme": null
+                },
+                "bufferAtrMultiple": 0.1
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.stop.level",
+              "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.stop.level",
+              "message": "A LONG stop level is not a level this strategy's report yields. Choose one of the report's price levels, or add a column that reads it.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        },
+        "draftVersion": 1
+      }
+    },
+    "f": {
+      "heading": "(f) runner plan 2R closing 50%, POSITION_MANAGEMENT not staged (02:37:52Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 2
+                    },
+                    "closePct": 50
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 2
+                    },
+                    "closePct": 50
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [],
+          "warnings": [
+            {
+              "code": "NO_ENTRY_CONDITION",
+              "field": null,
+              "message": "This strategy declares no required or verdict condition, so it never trades and never enters the arena. Add a required or verdict condition to let it qualify.",
+              "details": null
+            }
+          ]
+        },
+        "draftVersion": 1
+      }
+    },
+    "f2": {
+      "heading": "(f2, extra) f + POSITION_MANAGEMENT staged with trailingEnabled false (02:39:09Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 2
+                    },
+                    "closePct": 50
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 2
+                    },
+                    "closePct": 50
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "POSITION_MANAGEMENT": {
+          "breakEvenEnabled": true,
+          "breakEvenTriggerR": 1.08,
+          "trailingEnabled": false,
+          "trailingTriggerR": 1,
+          "trailingGivebackPct": 45,
+          "trailingBufferPct": 0.25,
+          "timeDecayEnabled": true,
+          "timeDecayGracePeriodMinutes": 60,
+          "timeDecayIntervalMinutes": 15,
+          "timeDecayTightenPct": 5,
+          "timeDecayMaxTightenPct": 50,
+          "timeDecayStaleThresholdTpProgressPct": 25,
+          "decisionInvalidationExitEnabled": true
+        }
+      },
+      "stage": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.exitPlan",
+              "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        }
+      },
+      "getStrategyDraft": {
+        "diagnostics": {
+          "errors": [
+            {
+              "code": "VALIDATION_ERROR",
+              "field": "tradeBracket.LONG.exitPlan",
+              "message": "The LONG exit plan leaves a runner, and Trailing is off: nothing would exit it. Turn Trailing on, or close 100% across the plan's targets.",
+              "details": null
+            }
+          ],
+          "warnings": []
+        },
+        "draftVersion": 1
+      }
+    },
+    "g1": {
+      "heading": "(g1) tradeBracket missing SHORT (02:39Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stageRefused": {
+        "code": "VALIDATION_ERROR",
+        "message": "Invalid input: expected object, received undefined",
+        "details": {
+          "issueCount": 1,
+          "issues": [
+            {
+              "path": [
+                "axes",
+                "TRADE_LEVEL_POLICY",
+                "tradeBracket",
+                "SHORT"
+              ],
+              "message": "Invalid input: expected object, received undefined"
+            }
+          ],
+          "correlationId": "e3518f98-ab11-45dc-9bb5-ceba2a90b64b"
+        }
+      }
+    },
+    "g2": {
+      "heading": "(g2) tradeBracket SHORT carrying an extra key `stops` (02:40Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              },
+              "stops": [
+                {
+                  "kind": "ATR",
+                  "atrMultiple": 1.5
+                }
+              ]
+            }
+          }
+        }
+      },
+      "stageRefused": {
+        "code": "VALIDATION_ERROR",
+        "message": "Unrecognized key: \"stops\"",
+        "details": {
+          "issueCount": 1,
+          "issues": [
+            {
+              "path": [
+                "axes",
+                "TRADE_LEVEL_POLICY",
+                "tradeBracket",
+                "SHORT"
+              ],
+              "message": "Unrecognized key: \"stops\""
+            }
+          ],
+          "correlationId": "f5347905-d188-4412-a4e2-3ce2be69c42f"
+        }
+      }
+    },
+    "h": {
+      "heading": "(h) BOTH tradeLevelMenu and tradeBracket in one axis (02:40Z)",
+      "sent": {
+        "TRADE_LEVEL_POLICY": {
+          "minAtrPct": 0.5,
+          "minStopLossAtrMultiple": 1,
+          "maxStopLossAtrMultiple": 1.8,
+          "minRiskRewardRatio": 2,
+          "tradeLevelMenu": {
+            "LONG": {
+              "stops": [
+                {
+                  "kind": "ATR",
+                  "atrMultiple": 1.5
+                }
+              ],
+              "exitPlans": [
+                {
+                  "targets": [
+                    {
+                      "method": {
+                        "kind": "R_MULTIPLE",
+                        "multiple": 3
+                      },
+                      "closePct": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            "SHORT": {
+              "stops": [
+                {
+                  "kind": "ATR",
+                  "atrMultiple": 1.5
+                }
+              ],
+              "exitPlans": [
+                {
+                  "targets": [
+                    {
+                      "method": {
+                        "kind": "R_MULTIPLE",
+                        "multiple": 3
+                      },
+                      "closePct": 100
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "tradeBracket": {
+            "LONG": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            },
+            "SHORT": {
+              "stop": {
+                "kind": "ATR",
+                "atrMultiple": 1.5
+              },
+              "exitPlan": {
+                "targets": [
+                  {
+                    "method": {
+                      "kind": "R_MULTIPLE",
+                      "multiple": 3
+                    },
+                    "closePct": 100
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "stageRefused": {
+        "code": "VALIDATION_ERROR",
+        "message": "Unrecognized key: \"tradeLevelMenu\"",
+        "details": {
+          "issueCount": 1,
+          "issues": [
+            {
+              "path": [
+                "axes",
+                "TRADE_LEVEL_POLICY"
+              ],
+              "message": "Unrecognized key: \"tradeLevelMenu\""
+            }
+          ],
+          "correlationId": "52ffbfdc-9a6f-4736-9f09-24880df8af52"
+        }
+      }
+    }
+  }
+}
