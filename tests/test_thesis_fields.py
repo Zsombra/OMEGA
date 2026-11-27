@@ -22,7 +22,9 @@ def _names() -> list[str]:
 # Contract 168 (2026-11-11, OMEGA v0.13.0): `trade_level_menu` after `execution` - the menu TRADE_LEVEL_POLICY requires
 # (omega/trade_levels.py); None means the default built from the thesis's minRiskRewardRatio.
 THESIS_FIELDS_108 = ("name", "tagline", "description", "anchor", "weights", "stance", "context",
-                     "coin_selection", "execution", "trade_level_menu", "exits")
+                     "coin_selection", "execution", "trade_bracket", "exits")
+# Contract 185 (2026-11-27, OMEGA v0.18.0): `trade_bracket` at the same position, in place of `trade_level_menu` (the
+# menu is gone; one stop and one exit plan per direction).
 
 
 def test_the_field_list_at_108_is_exactly_this():

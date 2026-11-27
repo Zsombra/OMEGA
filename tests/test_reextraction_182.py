@@ -61,7 +61,8 @@ def test_the_six_draft_tools_moved_in_one_output_schema_and_no_input():
     from tests.manifest_chain import surface
     old = json.loads(SCHEMA_180_4.read_text(encoding="utf-8"))
     new = json.loads((ROOT / surface("182.3.2", MANIFEST)["schema"]).read_text(encoding="utf-8"))
-    assert all(stage_schema()[t] == new[t] for t in MANIFEST["writeSurface"]["tools"])     # 184.3.2 moved none of them
+    s184 = json.loads((ROOT / surface("184.3.2", MANIFEST)["schema"]).read_text(encoding="utf-8"))
+    assert all(s184[t] == new[t] for t in MANIFEST["writeSurface"]["tools"])     # 184.3.2 moved none of them
     tools = MANIFEST["writeSurface"]["tools"]
     moved = {(t, part) for t in tools for part in ("description", "inputSchema", "outputSchema", "annotations")
              if old[t].get(part) != new[t].get(part)}
@@ -883,7 +884,14 @@ def test_the_proof_body_is_what_omega_generates_and_it_staged_clean():
     from omega.preflight import body_sha256
     proof = RECORD["proof"]
     axes = plan(PRESETS[proof["preset"]]).axes()
-    assert axes == proof["sentAxes"] and body_sha256(axes) == proof["bodySha256Sent"]
+    # 2026-11-27, contract 185 (OMEGA v0.18.0): the bracket replaced the menu on TRADE_LEVEL_POLICY. Every other axis
+    # and every dial is the body this proof staged; the sent body still hashes to what was recorded
+    sent = proof["sentAxes"]
+    assert body_sha256(sent) == proof["bodySha256Sent"]
+    assert {k: v for k, v in axes.items() if k != "TRADE_LEVEL_POLICY"} == {
+        k: v for k, v in sent.items() if k != "TRADE_LEVEL_POLICY"}
+    assert {k: v for k, v in axes["TRADE_LEVEL_POLICY"].items() if k != "tradeBracket"} == {
+        k: v for k, v in sent["TRADE_LEVEL_POLICY"].items() if k != "tradeLevelMenu"}
     assert proof["stage"]["answer"] == {"errors": [], "warnings": []}
     assert sorted(proof["stage"]["stagedAxes"]) == sorted(axes)
     read = proof["readBack"]

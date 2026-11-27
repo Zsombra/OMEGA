@@ -74,7 +74,8 @@ def test_the_manifest_is_the_169_re_read_and_its_counts_are_the_corpus():
     # top block against it)
     assert (counts["metrics"], counts["structuralShapes"], counts["operandExpandedShapes"]) == (581, 27244, 508207)
     assert len(c.metrics) == 586
-    assert c.unmeasured_chain_outers == {} and c.unmeasured_transforms == {} and c.unmeasured_metrics == {}
+    # the two keys 185.2.0 added are known by name since 2026-11-27 (_unmeasured_108.json)
+    assert c.unmeasured_chain_outers == {} and c.unmeasured_transforms == {} and set(c.unmeasured_metrics) == {"LIQUIDITY_POOL_ABOVE_AGE", "LIQUIDITY_POOL_BELOW_AGE"}
 
 
 # --- the chained spread and the averaged operand: every probe replayed ------------------------------------------------

@@ -98,7 +98,7 @@ def test_the_retired_transforms_are_the_corpus_minus_the_served_enum():
     # (the 135.2.0 capture since 2026-10-26, the 144.0.0 one since 2026-10-30, the 146.0.0 one since 2026-11-01, the
     # 148.1.0 one since 2026-11-05, the 149.1.0 one since 2026-11-07, the 161.0.0 one since 2026-11-09, the 168.3.0 one
     # since 2026-11-11: data/derived/condition_vocabulary_108.json source.contractVersion, the schema the enum is read from)
-    assert C.retired_transforms["bandTouch"]["servedAt"] == stage_schema()["contractVersion"] == "184.3.2"   # 2026-11-22: was 182.3.2; 2026-11-20: was 180.4.0; 2026-11-19: was 171.0.0; 2026-11-12: was 169.4.0 that morning, 168.3.0 (2026-11-11), 161.0.0 (2026-11-09), 149.1.0 before
+    assert C.retired_transforms["bandTouch"]["servedAt"] == stage_schema()["contractVersion"] == "185.2.0"   # 2026-11-27: was 184.3.2; 2026-11-22: was 182.3.2; 2026-11-20: was 180.4.0; 2026-11-19: was 171.0.0; 2026-11-12: was 169.4.0 that morning, 168.3.0 (2026-11-11), 161.0.0 (2026-11-09), 149.1.0 before
     assert not any("bandTouch" in m.transforms for m in C.metrics.values())
 
 

@@ -117,7 +117,7 @@ def test_the_capture_names_its_contract_build_and_source():
     # 146.0.0 capture is four `supersedes` down the write surface chain (161.0.0, 149.1.0, 148.1.0, then it)
     # 2026-11-12: found by version, not depth (tests/manifest_chain.py) - the pins moved 169.4.0 -> 171.0.0 that morning
     from tests.manifest_chain import surface
-    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "184.3.2"   # 182.3.2 until 2026-11-22, 180.4.0 until 2026-11-20, 171.0.0 until 2026-11-19, 149.1.0 until 2026-11-09, 161.0.0 until 2026-11-11, 168.3.0 / 169.4.0 until 2026-11-12
+    assert C.stage_schema() is not None and C.stage_schema()["contractVersion"] == "185.2.0"   # 184.3.2 until 2026-11-27, 182.3.2 until 2026-11-22, 180.4.0 until 2026-11-20, 171.0.0 until 2026-11-19, 149.1.0 until 2026-11-09, 161.0.0 until 2026-11-11, 168.3.0 / 169.4.0 until 2026-11-12
     assert surface("146.0.0")["schema"] == SCHEMA_146
 
 
@@ -204,9 +204,9 @@ def test_every_generated_section_carries_the_key_and_the_emitted_body_walks_the_
     assert [(f.cls, f.path) for f in P.diff_schema(body, current, current)
             if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
     assert [(f.cls, f.path) for f in P.diff_schema(body, root, root)
-            if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == [("UNDECLARED", "axes.TRADE_LEVEL_POLICY.tradeLevelMenu")]
+            if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == [("UNDECLARED", "axes.TRADE_LEVEL_POLICY.tradeBracket")]   # 185: the bracket
     pre_168 = copy.deepcopy(body)
-    del pre_168["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]
+    del pre_168["axes"]["TRADE_LEVEL_POLICY"]["tradeBracket"]
     findings = P.diff_schema(pre_168, root, root)
     assert [(f.cls, f.path) for f in findings if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
     validator = _section_validator(DOC)
@@ -270,7 +270,9 @@ def test_the_added_metrics_are_served_and_now_in_the_corpus():
     assert moves_168["retired"] == [] and not roster_161 - roster_168
     # 2026-11-19, contract 180.4.0: and the five keys of _moves_180_4.json, none retired
     moves_180 = json.loads((CONTRACT_DIR / "metrics" / "_moves_180_4.json").read_text(encoding="utf-8"))
-    roster_180 = set(C.stage_schema()["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"])
+    # (read off the 184.3.2 capture since 2026-11-27: 185.2.0 added two keys known by name only, _unmeasured_108.json)
+    roster_180 = set(json.loads((ROOT / surface_of("184.3.2")["schema"]).read_text(encoding="utf-8"))
+                     ["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"])
     assert set(moves_180["added"]) == roster_180 - roster_168 and moves_180["retired"] == []
     assert ADDED_METRICS <= set(contract.metrics) and set(contract.metrics) == (
         (served - set(moves_161["retired"])) | added_148 | set(moves_161["added"]) | set(moves_168["added"])
@@ -314,7 +316,9 @@ def test_the_stored_capture_compares_identical_with_nothing_unmeasured():
     # and, since 180.4.0 (2026-11-19), the five keys of _moves_180_4.json
     added_180 = json.loads((CONTRACT_DIR / "metrics" / "_moves_180_4.json").read_text(encoding="utf-8"))["added"]
     assert len(added_161) == 3 and len(added_168) == 47 and len(added_180) == 5
-    assert results["metrics"]["storedNotLive"] == sorted(added_148 + added_161 + added_168 + added_180)
+    # and, since 2026-11-27, the two keys 185.2.0 added, stored by name only (_unmeasured_108.json)
+    assert results["metrics"]["storedNotLive"] == sorted(added_148 + added_161 + added_168 + added_180
+                                                         + ["LIQUIDITY_POOL_ABOVE_AGE", "LIQUIDITY_POOL_BELOW_AGE"])
     assert len(added_148) == 206
     assert (results["metrics"]["live"], results["sectionKeys"]["live"]) == (326, 22)
     assert results["metrics"]["storedUnmeasured"] == []
@@ -333,4 +337,5 @@ def test_the_version_moved_past_v0_10_2():
     # at contract 180.4.0: tests/test_reextraction_180_4.py); 0.16.0 on 2026-11-20 (re-extracted at contract 182.3.2:
     # tests/test_reextraction_182.py); 0.17.0 on 2026-11-22 (re-extracted at contract 184.3.2:
     # tests/test_reextraction_184.py)
-    assert 'version = "0.10.2"' not in text and 'version = "0.17.0"' in text
+    # 0.18.0 on 2026-11-27 (contract 185.2.0: the trade bracket, tests/test_contract_185.py)
+    assert 'version = "0.10.2"' not in text and 'version = "0.18.0"' in text

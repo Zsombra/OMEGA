@@ -348,10 +348,10 @@
  "refreshedBy": "2026-11-22 at contract 184.3.2 (OMEGA v0.17.0): the corpus, the write surface and the vocabulary re-extracted (docs/plans/2026-11-22-omega-reextraction-184.md). 2026-11-20 at contract 182.3.2 (OMEGA v0.16.0): the corpus, the write surface and the vocabulary re-extracted (docs/plans/2026-11-20-omega-reextraction-182.md). 2026-11-19 at contract 180.4.0 (OMEGA v0.15.0): the corpus, the write surface and the vocabulary re-extracted (docs/plans/2026-11-19-omega-reextraction-180-4.md). 2026-11-13 at contract 171.0.0 (OMEGA v0.14.3): what a decision does with a trade level menu ATR stop outside the strategy's stop range - 1 CREATE stage (probe B1, 2026-11-12 23:55Z: the range 0.8 - 1.8 with ATR stops 0.5 / 0.8 / 1 / 1.5 / 1.8 / 2, staged clean, read back, previewed with preview_strategy_trade_levels on its DRAFT, discarded and read null), 3 get_strategy_draft, 1 list_strategy_drafts; none committed; with the three committed-strategy previews read at 168.4.0 on 2026-11-12 00:56Z, data/audit/stop_band_171_2026-11-12.json; no hint re-read, the corpus is as below. 2026-11-12 at contract 171.0.0 (OMEGA v0.14.2): the update rules and the last items v0.14.1 left unmeasured - 4 preview_strategy_report (deep chains on market, reference and benchmark sections), 2 CREATE stages refused at input (the 5% rules on a second leg and a 1% runner), 8 UPDATE stages in 4 drafts on the unbound, archived sandbox OMEGA-TEST: 110.8 stage probe (7 staged, read back and discarded, every draft read null after; 1 refused at input) and 5 preview_strategy_trade_levels on those drafts; none committed, data/audit/update_rules_171_2026-11-12.json; no hint re-read, the corpus is as below. 2026-11-12 at contract 171.0.0 (OMEGA v0.14.1): the chain window limits - 22 preview_strategy_report and 3 CREATE stages (each read back, discarded and read null; none committed), data/audit/authoring_limits_171_2026-11-12.json; the exit plan's runner - 14 CREATE stages, 10 staged, read back, previewed and discarded, 4 refused at input, none committed, data/audit/exit_plan_runner_171_2026-11-12.json; no hint re-read, the corpus is as below. 2026-11-12 at contract 170.0.0 (OMEGA v0.14.0): get_metric_construction_hints x 581 re-read over one mcporter runtime, read-only; the exit plan probes at 170.0.0 (26 create drafts staged and discarded, 6 refused at input), four of them confirmed at 171.0.0. 2026-11-12 at contract 169.4.0 (OMEGA v0.13.1): get_metric_construction_hints x 581 re-read over one mcporter runtime, read-only - identical to 168.3.0's; preview_strategy_report probes of what v0.13.0 left unmeasured (data/audit/authoring_probe_169_2026-11-12*.json, data/audit/sequence_probe_169_2026-11-12*.json); the structural sweep of the 660 chained-spread shapes. 2026-11-11 at contract 168.3.0 (OMEGA v0.13.0): get_metric_construction_hints x 581 over one mcporter runtime, read-only, 13 minutes (47 keys added - EMA55, EQH_LEVEL / EQL_LEVEL, the liquidity pools, the prior-session supply / demand zones, the pending swings, ZONE_SUPPORT / ZONE_RESIST; none retired; the platform re-homed 347 metrics into the new channels / vwapProfile / levels categories; data/contract/metrics/_moves_168.json); the write surface (tradeLevelMenu required, metricKey a pattern, SEQUENCE, three knobs, spread as a chain outer); the trade level menu measured on 30 staged-and-discarded drafts (data/audit/trade_level_menu_168_2026-11-11.json); the structural coverage sweep (557 shapes, 673 headers, 0 refusals, 0 mispredicted, data/audit/coverage_sweep_2026-11-11.json): structural coverage 23,579 / 23,579. a non-spread pass over the three remaining expansions (data/audit/coverage_sweep_2026-11-11-nonspread.json); the knob-spelling probe over the 85 served (metric, knob) cells 168 opened (88 columns, 0 refusals: the known knobs spell on the added keys as before, the new ones _vt / _res in one token and _close; data/audit/knob_spelling_probe_168_2026-11-11-{a,b,c}.json): 191 of 191 served cells rendered. Not measured and refused offline: the chained spread, a spread operand under an average, SEQUENCE (data/contract/metrics/_unmeasured_108.json). Previous: 2026-11-09 / 10 at contract 161.0.0 (OMEGA v0.12.0): get_metric_construction_hints x 534 over the mcporter CLI, read-only (BB_TOUCH retired; DONCHIAN_BROKEN_HI_PRIOR, DONCHIAN_BROKEN_LO_PRIOR, VWMA20 added; roc a transform and a chain outer, the chained-window outers, touchAtr, the ADX / ATR / DI / Ichimoku / VWMA20 knobs - data/contract/metrics/_moves_161.json); the authoring probe (63 previews, 37 rendered, 166 headers, data/audit/authoring_probe_161_2026-11-09.json); the structural coverage sweep (15,876 shapes, 14,623 headers, data/audit/coverage_sweep_2026-11-09.json) and its market, reference and non-spread passes (1,196 + 93 + 9 shapes, 0 refusals, 0 mispredicted): structural coverage 23,022 / 23,022. Record: docs/plans/2026-11-05-omega-reextraction-148.md. Previous: 2026-11-01: NO metric extraction (OMEGA v0.10.2, a patch at contract 146.0.0): the write surface moved to the 146.0.0 capture copied from the battlegrid-manager fixture, the platform templates includeMarketBreadth and includeReferencePairs retired off its sectionKey enum, and the 24 metric keys 146 added listed by name in data/contract/metrics/_unmeasured_108.json; get_metric_construction_hints was not read (record: docs/plans/2026-11-01-omega-v0.10.2-market-scope-146.md). Previous: 2026-10-30: get_metric_construction_hints x 302 at contract 144.0.0 (build beb6b930) over the mcporter CLI, read-only, one worker, 0 failed; scripts/refresh_metric_contracts.py (retired BB_WIDTH, STOCH_RSI14; 78 added - 4 at v136.1, 2 at v137, 66 at v137.2, 3 at v137.3, 1 at v138, ROC9 and SQZ_MOM undocumented; relativeTo added to the catalogue (v142.3); provenance (v138) and rankScope (v136) recorded per metric) then scripts/build_corpus.py; list_strategy_categories + list_strategy_vocabulary x 10 (data/contract/vocabulary/20261030T0345Z/: venue-dislocation's SPOT_CLOSE_BYB column gone (v140), includeBollingerBands' BB_WIDTH column gone (v138); budgets unchanged); render-coverage sweep 2026-10-30 (structural scope: 2,631 shapes, 3,639 headers, 0 refusals, 0 mispredicted - every metric x transform mechanism rendered, 4,252/4,252; second pass: the 35 non-spread expansions; the 80,806 spread operand pairs the 78 added metrics opened are left unrendered by decision, data/audit/coverage_sweep_2026-10-30.json and -expanded.json); targeted probes 2026-10-30 (data/audit/relative_to_probe_144_2026-10-30.json, _144b_, _144c_: 60 renders - relativeTo at every rung, with and without an instrument, in every measured instrument spelling, as a chain inner; scope on an exchange-wide, a chained and a report-scoped rank; the v137 / v138 replacements; OBV's refused level reads; the retired keys; a knob the transform does not declare - every rendered header predicted exactly by omega.fanout except an all-lower-case k symbol). Moves recorded in data/contract/metrics/_moves_144.json. Record: docs/plans/2026-10-30-omega-reextraction-144.md. Previous: 2026-10-26: get_metric_construction_hints x 226 at contract 135.2.0 (build 98d29c45) over the mcporter CLI, read-only, one worker, 0 failed; scripts/refresh_metric_contracts.py (retired none; 43 added - seven at v123, PERP_SPOT_GAP at v134, 35 at v135.1; six transforms added - zscore, stddev, linregSlope, pctl, rollingMin, rollingMax; chainedOuters recorded per transform entry (v135, replaces rankableSpreadOperands), chainOuterParameters to transforms/_chain_outer_parameters.json; a series window's per-metric 'Separate from X's own N-bar length' sentence goes on the metric entry as windowOwnLength so the catalogue stays invariant) then scripts/build_corpus.py; list_strategy_categories + list_strategy_vocabulary x 10 (data/contract/vocabulary/20261026T0708Z/: includeMtfConfluence retired from templates and modules; includeSubTimeframe's CLOSE efficiency window 5 -> 4; includePerpSpotFlow + PERP_SPOT_GAP; budgets columnLookback 64, strategyConditions 32, conditionClauses 32, marketReadChars 4000); render-coverage sweep 2026-10-26. Moves recorded in data/contract/metrics/_moves_135.json. Record: docs/plans/2026-10-26-omega-reextraction-135.md. Previous: 2026-10-15: get_metric_construction_hints x 183 at contract 110.8.0 (build 6cf1bd70) over the mcporter CLI, read-only, two workers, 0 failed; scripts/refresh_metric_contracts.py (retired none; six added: DONCHIAN_UPPER/LOWER_PRIOR, NAKED_/TPO_SINGLE_PRINT_ABOVE/BELOW; every authoring block invariant; levelInteraction's authoring text changed, README v110.6) then scripts/build_corpus.py; list_strategy_categories + list_strategy_vocabulary x 10 (structure 48 -> 54; no platform template moved; no saved section in the account); render-coverage sweep 2026-10-15 (1,154 shapes, 1,738 headers, 0 refusals, 0 mispredicted). Moves recorded in data/contract/metrics/_moves_110_8.json. Record: docs/plans/2026-10-15-omega-reextraction-110-8.md. Previous: 2026-10-14: get_metric_construction_hints x 177 at contract 110.2.0 (build c70a41d8) over the mcporter CLI, read-only, two workers; scripts/refresh_metric_contracts.py (retired KC_MID, MACD, PPO; nine added; every authoring block invariant) then scripts/build_corpus.py; list_strategy_categories + list_strategy_vocabulary x 10 (momentum 22 -> 27, structure 47 -> 48; two platform templates moved: includeMacd, includeRelativeStrength); render-coverage sweep 2026-10-14 (924 shapes, 1,804 headers, 0 refusals, 0 mispredicted). Moves recorded in data/contract/metrics/_moves_110.json. Previous: 2026-10-13: get_metric_construction_hints x 171 at contract 108.4.0 (build 21747aa9) over the mcporter CLI, read-only; scripts/refresh_metric_contracts.py then scripts/build_corpus.py; render-coverage sweep 2026-10-13 (1,394 shapes, 0 refusals, 0 mispredicted). Record: docs/plans/2026-10-13-omega-reextraction-108-4.md",
  "_manifestRefreshedAt": "2026-11-22",
  "writeSurface": {
-  "_what": "The WRITE surface omega authors against, at 184.3.2 (build 8a695c4f). Against the 182.3.2 capture (below, under `supersedes`) the six draft tools are byte-identical: no description, no input schema, no output schema and no annotation moved. Of the ten other authoring tools (`authoringTools`, diffed for the first time) nine are byte-identical and preview_strategy_trade_levels moved, in its description and its output schema (its input schema is byte-identical): a setup row lost the required `stopLossDistanceAtrMultiple` and a refused pair the required `slDistanceAtrMultiple` (README v183; a stop's ATR distance is stated once, on its stop row); the description gained 'Every price is on the venue's price grid, rounded once the way its order rests ... Each pair's stop and target distances and the entry's distance from the mark are measured between those grid prices and stated to 4 decimals; a stop row's distance is its option's own figure' (184.3.x, undocumented); and nine field descriptions were added, removed or reworded (every verdict, stage and reason names the dial that recovers it; the hard stop's ceiling). Each statement was measured live (data/audit/reextraction_184_2026-11-22.json); OMEGA parses no preview.",
-  "servedContractVersion": "184.3.2",
-  "buildSha": "8a695c4f09ae0d0d774caa79e0882c81305acc1c",
-  "schema": "data/contract/stage_strategy_draft/schema_20261122T045517Z.json",
+  "_what": "The WRITE surface omega authors against, at 185.2.0 (build ede1fce5). Against the 184.3.2 capture (below, under `supersedes`) TRADE_LEVEL_POLICY lost the required `tradeLevelMenu` (per direction stops[] 1-8 and exitPlans[] 1-8) and requires `tradeBracket` instead: per direction exactly ONE stop and ONE exit plan ($defs/directionTradeBracket {stop, exitPlan}, the stop arms and the exitPlan $def unchanged); get_strategy and commit_strategy_draft serve `strategy.tradeBracket` (required) in place of `strategy.tradeLevelMenu`; $defs/metricKey gained LIQUIDITY_POOL_ABOVE_AGE and LIQUIDITY_POOL_BELOW_AGE wherever it appears; preview_strategy_trade_levels states one `stop`, one `setup` (or null) and a `refusal` per direction in place of stopCandidates / setups / rejectedPairs / counters. The capture is battlegrid-manager's contract-watch row copied verbatim (no mcporter list this pass): docs/plans/2026-11-27-omega-v0-18-0-bracket-185.md.",
+  "servedContractVersion": "185.2.0",
+  "buildSha": "ede1fce51a498a371a21bad2511ac00036893356",
+  "schema": "data/contract/stage_strategy_draft/schema_20261127T002954Z.json",
   "tools": [
    "stage_strategy_draft",
    "get_strategy_draft",
@@ -360,15 +360,19 @@
    "preview_strategy_report",
    "get_strategy"
   ],
-  "readFrom": "the live surface listed 2026-11-22T04:55Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 184.3.2 / 8a695c4f before and after; mcporter 0.17.1 started by node from the npx cache, `npx` not run). No MANAGER_ROW was passed, so no comparison with battlegrid-manager's stored row was made.",
-  "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; no MANAGER_ROW)",
-  "plan": "docs/plans/2026-11-22-omega-reextraction-184.md",
-  "notedAt": "2026-11-22",
+  "authoringTools": {
+   "_what": "The other authoring tools at 185.2.0, from the same manager row: the row holds the 64 tools the manager calls, so preview_strategy_trade_levels and list_strategies are here and the other eight are named in `_absent` (not read this pass). preview_strategy_trade_levels' output moved (contract 185): per direction one `stop`, one `setup` (or null) and a `refusal` in place of stopCandidates / setups / rejectedPairs / counters.",
+   "schema": "data/contract/stage_strategy_draft/authoring_tools_20261127T002954Z.json"
+  },
+  "readFrom": "battlegrid-manager's manager_schemas row for 185.2.0 / ede1fce5 (at 2026-11-27T00:29:54Z), exported to a file and copied verbatim (description, inputSchema, outputSchema, annotations); GET /mcp/version read 185.2.0 / ede1fce5 at 02:29:41Z and 02:33:11Z. The metric hints and the vocabulary were NOT re-read at 185.2.0: the corpus stays the 184.3.2 extraction (top-level servedContractVersion).",
+  "capturedBy": "a one-off copy of the manager row (session scratch, make_capture.py); scripts/capture_write_surface.py was not run",
+  "plan": "docs/plans/2026-11-27-omega-v0-18-0-bracket-185.md",
+  "notedAt": "2026-11-27",
   "supersedes": {
-   "_what": "The WRITE surface omega authors against, at 182.3.2 (build b3969d0b). Against the 180.4.0 capture (below, under `supersedes`) the six draft tools moved in ONE way and nothing else: preview_strategy_report's OUTPUT schema (README v182) - a condition outcome (`authoring.conditionOutcomes[].outcomes[]`) loses the required boolean `developingRead` and requires `developingAsOf` (an ISO instant or null); a rendered section column and an addendum column gain an optional `asOf` (an ISO instant, present only where a row read a bar in progress); each trade condition register condition requires `developingAsOf`. Every description, every INPUT schema and every other output of the six tools is byte-identical to the 180.4.0 capture: v181 moved no schema (it refuses a column form and narrows the hints' operand lists). OMEGA reads none of the moved fields. The other authoring tools (preview_strategy_trade_levels, discard_strategy_draft, get_metric_construction_hints, list_strategy_vocabulary, list_strategy_categories, get_strategy_column_contract, get_strategy_section_template, list_strategies, save_report_section, remove_saved_report_section) were never captured before this contract, so OMEGA has nothing of its own to diff them against; they are captured from now on (`authoringTools`). What is known of their move: battlegrid-manager's drift events (180.4.0 -> 182.3.1, 2026-11-20T03:52Z) name preview_strategy_trade_levels' description as changed - 'the ATR multiple it measured' became 'the ATR multiple it was judged at (an ATR option's own multiple; bounds are inclusive)', 'R:R below minRiskRewardRatio' became 'R:R - stated to three decimals - below minRiskRewardRatio', and a level entry is now stated 'with how far it sits from the mark (distancePct, distanceAtr) and how long it stays valid (validForMinutes)' - each measured live (data/audit/reextraction_182_2026-11-20.json).",
-   "servedContractVersion": "182.3.2",
-   "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f",
-   "schema": "data/contract/stage_strategy_draft/schema_20261120T142253Z.json",
+   "_what": "The WRITE surface omega authors against, at 184.3.2 (build 8a695c4f). Against the 182.3.2 capture (below, under `supersedes`) the six draft tools are byte-identical: no description, no input schema, no output schema and no annotation moved. Of the ten other authoring tools (`authoringTools`, diffed for the first time) nine are byte-identical and preview_strategy_trade_levels moved, in its description and its output schema (its input schema is byte-identical): a setup row lost the required `stopLossDistanceAtrMultiple` and a refused pair the required `slDistanceAtrMultiple` (README v183; a stop's ATR distance is stated once, on its stop row); the description gained 'Every price is on the venue's price grid, rounded once the way its order rests ... Each pair's stop and target distances and the entry's distance from the mark are measured between those grid prices and stated to 4 decimals; a stop row's distance is its option's own figure' (184.3.x, undocumented); and nine field descriptions were added, removed or reworded (every verdict, stage and reason names the dial that recovers it; the hard stop's ceiling). Each statement was measured live (data/audit/reextraction_184_2026-11-22.json); OMEGA parses no preview.",
+   "servedContractVersion": "184.3.2",
+   "buildSha": "8a695c4f09ae0d0d774caa79e0882c81305acc1c",
+   "schema": "data/contract/stage_strategy_draft/schema_20261122T045517Z.json",
    "tools": [
     "stage_strategy_draft",
     "get_strategy_draft",
@@ -377,15 +381,15 @@
     "preview_strategy_report",
     "get_strategy"
    ],
-   "readFrom": "the live surface listed 2026-11-20T14:22Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 182.3.2 / b3969d0b before and after; mcporter 0.17.1). No MANAGER_ROW was passed. Offline, each of the six draft tools' description / inputSchema / outputSchema was compared with battlegrid-manager's stored 180.4.0 row (system_state.manager_schemas of the backup manager-deploy-20261120T0133Z.dump, observed 2026-11-19T09:22:54Z at build d66d4f98, hash e4b24547): the manager's row and OMEGA's 180.4.0 capture agree, and both differ from this capture only in preview_strategy_report.outputSchema as described.",
+   "readFrom": "the live surface listed 2026-11-22T04:55Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 184.3.2 / 8a695c4f before and after; mcporter 0.17.1 started by node from the npx cache, `npx` not run). No MANAGER_ROW was passed, so no comparison with battlegrid-manager's stored row was made.",
    "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; no MANAGER_ROW)",
-   "plan": "docs/plans/2026-11-20-omega-reextraction-182.md",
-   "notedAt": "2026-11-20",
+   "plan": "docs/plans/2026-11-22-omega-reextraction-184.md",
+   "notedAt": "2026-11-22",
    "supersedes": {
-    "_what": "The WRITE surface omega authors against, at 180.4.0 (build d66d4f98; 180.4.0 first served 2026-11-18 ~18:45Z at build fa339cf2). Against the 171.0.0 capture (below, under `supersedes`) the six draft tools moved in four ways and nothing else: (1) stage_strategy_draft's level ENTRY arm gains the trigger EITHER_SIDE_OF_LEVEL beside STOP_THROUGH_LEVEL / ON_RETEST (the only INPUT change; undocumented - absent from the 171.0.0 capture, present in this one; which contract between them added it is not observed); (2) the draft diagnostics' warning code enum (stage_strategy_draft and get_strategy_draft output) gains ENTRY_LEVEL_USUALLY_SKIPPED; (3) get_strategy and commit_strategy_draft output: `$defs/metricKey` gains ATH (undocumented; between 171 and 180.4.0) and DAY_HIGH, DAY_LOW, WEEK_HIGH, WEEK_LOW (180.4.0 per battlegrid-manager's 180.2.0 -> 180.4.0 review), the stored entry trigger gains EITHER_SIDE_OF_LEVEL and `visibility` loses PROTECTED (README v176); (4) preview_strategy_report output: two descriptions reworded (a column's `bars`: Developing is read 'as it stands at each close of your strategy bar', README v175; `spanFragments`: 'LuxAlgo's defaults' -> 'the defaults'). Every tool description and every other input is byte-identical to the 171.0.0 capture.",
-    "servedContractVersion": "180.4.0",
-    "buildSha": "d66d4f98372f22e870efaebd9b4ccd572a568faf",
-    "schema": "data/contract/stage_strategy_draft/schema_20261119T202415Z.json",
+    "_what": "The WRITE surface omega authors against, at 182.3.2 (build b3969d0b). Against the 180.4.0 capture (below, under `supersedes`) the six draft tools moved in ONE way and nothing else: preview_strategy_report's OUTPUT schema (README v182) - a condition outcome (`authoring.conditionOutcomes[].outcomes[]`) loses the required boolean `developingRead` and requires `developingAsOf` (an ISO instant or null); a rendered section column and an addendum column gain an optional `asOf` (an ISO instant, present only where a row read a bar in progress); each trade condition register condition requires `developingAsOf`. Every description, every INPUT schema and every other output of the six tools is byte-identical to the 180.4.0 capture: v181 moved no schema (it refuses a column form and narrows the hints' operand lists). OMEGA reads none of the moved fields. The other authoring tools (preview_strategy_trade_levels, discard_strategy_draft, get_metric_construction_hints, list_strategy_vocabulary, list_strategy_categories, get_strategy_column_contract, get_strategy_section_template, list_strategies, save_report_section, remove_saved_report_section) were never captured before this contract, so OMEGA has nothing of its own to diff them against; they are captured from now on (`authoringTools`). What is known of their move: battlegrid-manager's drift events (180.4.0 -> 182.3.1, 2026-11-20T03:52Z) name preview_strategy_trade_levels' description as changed - 'the ATR multiple it measured' became 'the ATR multiple it was judged at (an ATR option's own multiple; bounds are inclusive)', 'R:R below minRiskRewardRatio' became 'R:R - stated to three decimals - below minRiskRewardRatio', and a level entry is now stated 'with how far it sits from the mark (distancePct, distanceAtr) and how long it stays valid (validForMinutes)' - each measured live (data/audit/reextraction_182_2026-11-20.json).",
+    "servedContractVersion": "182.3.2",
+    "buildSha": "b3969d0b6eac81ac44087a4367e8e53beef1480f",
+    "schema": "data/contract/stage_strategy_draft/schema_20261120T142253Z.json",
     "tools": [
      "stage_strategy_draft",
      "get_strategy_draft",
@@ -394,15 +398,15 @@
      "preview_strategy_report",
      "get_strategy"
     ],
-    "readFrom": "the live surface listed 2026-11-19T20:24Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 180.4.0 / d66d4f98 before and after); each of the six draft tools' description / inputSchema / outputSchema compared offline to battlegrid-manager's stored 180.4.0 manager_schemas row (tests/fixtures/2026-11-18-contract-180.4.0/manager_schemas_180.4.0.json, observed 2026-11-18T18:49:01Z at build fa339cf2, hash e4b24547): equal on all six tools and all three parts. That row is of another build of the same contract, so it was not passed as MANAGER_ROW (the script refuses a row of another build) and managerRowAgrees is null in the capture.",
+    "readFrom": "the live surface listed 2026-11-20T14:22Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 182.3.2 / b3969d0b before and after; mcporter 0.17.1). No MANAGER_ROW was passed. Offline, each of the six draft tools' description / inputSchema / outputSchema was compared with battlegrid-manager's stored 180.4.0 row (system_state.manager_schemas of the backup manager-deploy-20261120T0133Z.dump, observed 2026-11-19T09:22:54Z at build d66d4f98, hash e4b24547): the manager's row and OMEGA's 180.4.0 capture agree, and both differ from this capture only in preview_strategy_report.outputSchema as described.",
     "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; no MANAGER_ROW)",
-    "plan": "docs/plans/2026-11-19-omega-reextraction-180-4.md",
-    "notedAt": "2026-11-19",
+    "plan": "docs/plans/2026-11-20-omega-reextraction-182.md",
+    "notedAt": "2026-11-20",
     "supersedes": {
-     "_what": "The WRITE surface omega authors against, at 171.0.0 (first served ~2026-11-12T09:13Z; undocumented), whose six draft tools are byte-identical to the 170.0.0 capture's (schema_20261112T090106Z.json, a record beside it that no entry names; 170.0.0 first served 08:25Z). Against the 169.4.0 capture (below, under `supersedes`) one thing moved in the six draft tools: the trade level menu's profit side. Per direction `targets` (1 - 8 R_MULTIPLE / LEVEL) is REMOVED and `exitPlans` REQUIRED: 1 - 8 plans, each {targets: 1 - 4 legs {method: R_MULTIPLE | LEVEL, closePct: an integer 0 - 100}} - a position can scale out (stage_strategy_draft input; get_strategy and commit_strategy_draft output). The platform migrated every stored target to a plan of one leg closing 100%.",
-     "servedContractVersion": "171.0.0",
-     "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
-     "schema": "data/contract/stage_strategy_draft/schema_20261112T093211Z.json",
+     "_what": "The WRITE surface omega authors against, at 180.4.0 (build d66d4f98; 180.4.0 first served 2026-11-18 ~18:45Z at build fa339cf2). Against the 171.0.0 capture (below, under `supersedes`) the six draft tools moved in four ways and nothing else: (1) stage_strategy_draft's level ENTRY arm gains the trigger EITHER_SIDE_OF_LEVEL beside STOP_THROUGH_LEVEL / ON_RETEST (the only INPUT change; undocumented - absent from the 171.0.0 capture, present in this one; which contract between them added it is not observed); (2) the draft diagnostics' warning code enum (stage_strategy_draft and get_strategy_draft output) gains ENTRY_LEVEL_USUALLY_SKIPPED; (3) get_strategy and commit_strategy_draft output: `$defs/metricKey` gains ATH (undocumented; between 171 and 180.4.0) and DAY_HIGH, DAY_LOW, WEEK_HIGH, WEEK_LOW (180.4.0 per battlegrid-manager's 180.2.0 -> 180.4.0 review), the stored entry trigger gains EITHER_SIDE_OF_LEVEL and `visibility` loses PROTECTED (README v176); (4) preview_strategy_report output: two descriptions reworded (a column's `bars`: Developing is read 'as it stands at each close of your strategy bar', README v175; `spanFragments`: 'LuxAlgo's defaults' -> 'the defaults'). Every tool description and every other input is byte-identical to the 171.0.0 capture.",
+     "servedContractVersion": "180.4.0",
+     "buildSha": "d66d4f98372f22e870efaebd9b4ccd572a568faf",
+     "schema": "data/contract/stage_strategy_draft/schema_20261119T202415Z.json",
      "tools": [
       "stage_strategy_draft",
       "get_strategy_draft",
@@ -411,15 +415,15 @@
       "preview_strategy_report",
       "get_strategy"
      ],
-     "readFrom": "the live surface listed 2026-11-12T09:32Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 171.0.0 / 588e449a before and after); each of the six draft tools' description / inputSchema / outputSchema compared to battlegrid-manager's stored observed 171.0.0 manager_schemas row (manager_schemas_171.0.0.json, hash 38f2a2fb)",
-     "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; MANAGER_ROW the watch's stored 171.0.0 manager_schemas row: agrees on all six tools)",
-     "plan": "docs/plans/2026-11-12-omega-v0-14-0-exit-plans-170.md",
-     "notedAt": "2026-11-12",
+     "readFrom": "the live surface listed 2026-11-19T20:24Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 180.4.0 / d66d4f98 before and after); each of the six draft tools' description / inputSchema / outputSchema compared offline to battlegrid-manager's stored 180.4.0 manager_schemas row (tests/fixtures/2026-11-18-contract-180.4.0/manager_schemas_180.4.0.json, observed 2026-11-18T18:49:01Z at build fa339cf2, hash e4b24547): equal on all six tools and all three parts. That row is of another build of the same contract, so it was not passed as MANAGER_ROW (the script refuses a row of another build) and managerRowAgrees is null in the capture.",
+     "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; no MANAGER_ROW)",
+     "plan": "docs/plans/2026-11-19-omega-reextraction-180-4.md",
+     "notedAt": "2026-11-19",
      "supersedes": {
-      "_what": "The WRITE surface omega authors against, at 169.4.0 (first served 2026-11-12T06:15Z; 157 - 169 are not in the vendor README, which stops at v156). The six draft tools are byte-identical to the 168.3.0 capture (below, under `supersedes`, with what 168 moved): 169.0.0 - 169.4.0 moved other tools only. What 168 served and v0.13.0 left unmeasured - `spread` as a chain outer, a spread operand under an average, the condition group op SEQUENCE - is measured and modelled since OMEGA v0.13.1.",
-      "servedContractVersion": "169.4.0",
-      "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
-      "schema": "data/contract/stage_strategy_draft/schema_20261112T070510Z.json",
+      "_what": "The WRITE surface omega authors against, at 171.0.0 (first served ~2026-11-12T09:13Z; undocumented), whose six draft tools are byte-identical to the 170.0.0 capture's (schema_20261112T090106Z.json, a record beside it that no entry names; 170.0.0 first served 08:25Z). Against the 169.4.0 capture (below, under `supersedes`) one thing moved in the six draft tools: the trade level menu's profit side. Per direction `targets` (1 - 8 R_MULTIPLE / LEVEL) is REMOVED and `exitPlans` REQUIRED: 1 - 8 plans, each {targets: 1 - 4 legs {method: R_MULTIPLE | LEVEL, closePct: an integer 0 - 100}} - a position can scale out (stage_strategy_draft input; get_strategy and commit_strategy_draft output). The platform migrated every stored target to a plan of one leg closing 100%.",
+      "servedContractVersion": "171.0.0",
+      "buildSha": "588e449aa4cb93b3d805c360ce1e6c55f0037951",
+      "schema": "data/contract/stage_strategy_draft/schema_20261112T093211Z.json",
       "tools": [
        "stage_strategy_draft",
        "get_strategy_draft",
@@ -428,15 +432,15 @@
        "preview_strategy_report",
        "get_strategy"
       ],
-      "readFrom": "the live surface listed 2026-11-12T07:05Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 169.4.0 / c9703bf9 before and after); each of the six draft tools' description / inputSchema / outputSchema compared to battlegrid-manager's stored observed 169.4.0 manager_schemas row (manager_schemas_169.4.0.json, hash 0c9b4a26)",
-      "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; MANAGER_ROW the watch's stored 169.4.0 manager_schemas row, hash 0c9b4a26: agrees on all six tools)",
-      "plan": "docs/plans/2026-11-12-omega-v0-13-1-unmeasured-168.md",
+      "readFrom": "the live surface listed 2026-11-12T09:32Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 171.0.0 / 588e449a before and after); each of the six draft tools' description / inputSchema / outputSchema compared to battlegrid-manager's stored observed 171.0.0 manager_schemas row (manager_schemas_171.0.0.json, hash 38f2a2fb)",
+      "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; MANAGER_ROW the watch's stored 171.0.0 manager_schemas row: agrees on all six tools)",
+      "plan": "docs/plans/2026-11-12-omega-v0-14-0-exit-plans-170.md",
       "notedAt": "2026-11-12",
       "supersedes": {
-       "_what": "The WRITE surface omega authors against. Contract 168 (first served 168.2.0, 2026-11-11T16:32Z; 157 - 168 are not in the vendor README, which stops at v156, so the served schemas are the source): the author defines the trade levels - stage_strategy_draft REQUIRES TRADE_LEVEL_POLICY.tradeLevelMenu (per direction 1 - 8 stops: ATR / LEVEL / PERCENT, and 1 - 8 targets: R_MULTIPLE / LEVEL) and, on a level-triggered entry (STOP_THROUGH_LEVEL, ON_RETEST), entry.levels; a metric is named by PATTERN (^[A-Z][A-Z0-9_]*$, 'A metric key list_strategy_vocabulary serves') and the roster is the read schema's enum (get_strategy outputSchema $defs/metricKey, 581 keys); a condition group gained the op SEQUENCE with an optional `within`; the knobs supplyDemandResolution, supplyDemandThreshold and usedUpOnClose; spread as a chained transform and transformId / window on a spread input. The menu's rules are not in the tool description: they were measured on thirty staged-and-discarded create drafts, fifteen at 168.2.0 and fifteen at 168.3.0 (data/audit/trade_level_menu_168_2026-11-11.json). 168.3.0 (20:52Z the same day) moved no draft tool: the six are byte-identical to the 168.2.0 capture (schema_20261111T183243Z.json, kept as the surface the menu was measured on). Earlier history: the superseded entries.",
-       "servedContractVersion": "168.3.0",
-       "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
-       "schema": "data/contract/stage_strategy_draft/schema_20261111T213257Z.json",
+       "_what": "The WRITE surface omega authors against, at 169.4.0 (first served 2026-11-12T06:15Z; 157 - 169 are not in the vendor README, which stops at v156). The six draft tools are byte-identical to the 168.3.0 capture (below, under `supersedes`, with what 168 moved): 169.0.0 - 169.4.0 moved other tools only. What 168 served and v0.13.0 left unmeasured - `spread` as a chain outer, a spread operand under an average, the condition group op SEQUENCE - is measured and modelled since OMEGA v0.13.1.",
+       "servedContractVersion": "169.4.0",
+       "buildSha": "c9703bf90d9afc15dae83bc46513d3b49587c8bf",
+       "schema": "data/contract/stage_strategy_draft/schema_20261112T070510Z.json",
        "tools": [
         "stage_strategy_draft",
         "get_strategy_draft",
@@ -445,15 +449,15 @@
         "preview_strategy_report",
         "get_strategy"
        ],
-       "readFrom": "the live surface listed 2026-11-11T21:32Z (mcporter list battlegrid-anbu --schema --output json, 166 tools, GET /mcp/version 168.3.0 / af8b2c96 before and after); each of the six draft tools' description / inputSchema / outputSchema compared to battlegrid-manager's stored observed 168.3.0 manager_schemas row (manager_schemas_168.3.0.json, hash 60f000e7)",
-       "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; MANAGER_ROW the watch's stored 168.3.0 manager_schemas row, hash 60f000e7: agrees on all six tools)",
-       "plan": "docs/plans/2026-11-11-omega-reextraction-168.md",
-       "notedAt": "2026-11-11",
+       "readFrom": "the live surface listed 2026-11-12T07:05Z (mcporter list battlegrid-anbu --schema --output json, 167 tools, GET /mcp/version 169.4.0 / c9703bf9 before and after); each of the six draft tools' description / inputSchema / outputSchema compared to battlegrid-manager's stored observed 169.4.0 manager_schemas row (manager_schemas_169.4.0.json, hash 0c9b4a26)",
+       "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; MANAGER_ROW the watch's stored 169.4.0 manager_schemas row, hash 0c9b4a26: agrees on all six tools)",
+       "plan": "docs/plans/2026-11-12-omega-v0-13-1-unmeasured-168.md",
+       "notedAt": "2026-11-12",
        "supersedes": {
-        "_what": "The WRITE surface omega authors against, separate from the 61.2.0 metric/transform/vocabulary extraction above (which this note does not refresh). Since contract 85.0.0 a strategy changes only through its draft: get_strategy_draft -> stage_strategy_draft -> commit_strategy_draft. Since 108.0.0 the stage takes eight axes: SIGNAL_RULES and SETUP_GATES are refused as unrecognized keys and minAtrPct is required on TRADE_LEVEL_POLICY (README 'Contract history - v108', vendored at .agents/skills/battlegrid/README.md, pack 31.2.94). Since 110.0.0 (README 'Contract history - v110') the metric keys MACD, PPO and KC_MID are refused (MACD_HIST, PPO_HIST, EMA20) and nine keys are added; the schema moved to the 110.2.0 capture on 2026-10-14. Since 110.6 (README 'Contract history - v110.6') DONCHIAN_UPPER_PRIOR and DONCHIAN_LOWER_PRIOR are added, and by 110.8.0 NAKED_SINGLE_PRINT_ABOVE/BELOW and TPO_SINGLE_PRINT_ABOVE/BELOW (undocumented); nothing refused; the schema moved to the 110.8.0 capture on 2026-10-15. Since v111 (served as 110.13.0, 2026-10-16; README 'Contract history - v111') the draft tools take their arguments at the top level: no `request` envelope (omega.preflight.resolve_request and omega.condition_vocabulary read both shapes); the schema moved to the 110.13.0 capture on 2026-10-16. Since v134 (README 'Contract history - v134') includeMtfConfluence is refused wherever a platform section is named; its lower-rung reads are custom columns (MA_ALIGN x value, RSI14 x classifyZone, ADX x classifyZone at {rel:'lower'}); PERP_SPOT_GAP is added. Since v135 an efficiency window counts bar-to-bar changes (reads window + 1 bars), six transforms are added (zscore, stddev, linregSlope, pctl, rollingMin, rollingMax) and columnLookback is 64. Since v135.1 thirty-five metrics are added (the bar clock, trading-session levels and swept flags, opening ranges, IB extensions). The schema moved to the 135.2.0 capture on 2026-10-26 (135.2.0 is undocumented in the README; the manager's watch acknowledged it 2026-10-26T06:27Z). Since v137 (README 'Contract history - v137') STOCH_RSI14 is refused (STOCH_RSI_K / STOCH_RSI_D); since v138 BB_WIDTH is refused (BB_WIDTH_PCT) and CUM_VOLUME_DELTA is added; v136.1 added six spot metrics, v137.2 sixty-six (the anchored VWAP family with bands, week and month profiles) and respelled every metric enum as $defs/metricKey, v137.3 three; v139 removed BUY_PRES_BYB and v140 SPOT_CLOSE_BYB; v142.3 added the relativeTo transform, the `instrument` column knob and the priceRatio unit; v143 is Radar-only. The schema moved to the 144.0.0 capture on 2026-10-30 (144.0.0 itself is undocumented in the README; the manager's watch acknowledged it 2026-10-29T16:26Z). Since 146.0.0 (2026-11-01, undocumented in the README; the manager's watch observed it 2026-11-01T06:17:33Z after a 58-minute 502 outage and acknowledged it 07:56:45Z) a custom section REQUIRES `marketScope` (null = a per-coin section, the shape every OMEGA section has; one of all, crypto, l1, memes, defi, tradfi, stocks, indices, commodities = a MARKET section, which refuses per-coin metrics - probed live 2026-11-01T07:58Z), the platform sections includeMarketBreadth and includeReferencePairs are retired (22 sectionKeys), 24 metric keys are added to $defs/metricKey (MKT_* x13, CROWD_*_Z / _Z_LIVE x8, PAR_DEV, REGIME_WARNING_CRASH, REGIME_WARNING_DIVERGENCE - known by name only from 2026-11-01, measured 2026-11-02 at 146.0.1: data/contract/metrics/_moves_146.json) and the regime enum is bull_trend / bear_trend / bull_range / bear_range / fallback with `volatility` and `warnings[]` beside it. The schema moved to the 146.0.0 capture on 2026-11-01 (OMEGA v0.10.2). 146.0.1 (build a07740c0, live 2026-11-02) moved no tool: the six draft tools listed live are byte-identical to this capture, so the capture stands. Since 146.1 - 146.14 (README 'Contract history - v146.1' to 'v146.14') 206 metric keys are added to $defs/metricKey (the TradingView Pivot Points Standard types on five periods - previous UTC day, ISO week, UTC month, quarter and year - and the LuxAlgo Smart Money Concepts market structure: INTERNAL_ / SWING_STRUCTURE_EVENT, _TREND, _LEVEL, EQH, EQL), the `ema` transform (transformId 25 ids, chainedTransformId 13 with `distance` and `ema`) and six author-set column knobs on the custom-section column (leftBars, rightBars, swingLength, equalBars: integer >= 1; equalThreshold: number >= 0; confluenceFilter: boolean). v147 - v148.1 moved arena / Radar / budget tools only. The schema moved to the 148.1.0 capture on 2026-11-05 (the OMEGA v0.12 branch feat/omega-v0.12 - unreleased: pyproject.toml stays 0.11.0 until the full re-extraction at 148.1.0 lands), read from the live list and identical to the battlegrid-manager fixture of the acknowledged 148.1.0 surface. Since contract 149.0.0 / 149.1.0 (2026-11-05; undocumented in the README, read from the schemas only): a custom column's transformId and chainedTransformId gain cci, rma, rsi and wma; the column gains thirteen optional knobs (atrPeriod, dSmoothing, fast, kSmoothing, period, rsiPeriod, signal, slow - each a $ref to the new $defs/barCount, integer 1 - 2^53-1 - multiplier, stdDev and, at 149.1.0, Parabolic SAR's accelerationStart, accelerationIncrement and accelerationMaximum); leftBars, rightBars, swingLength and equalBars become the same $ref with the same bounds; equalThreshold loses its minimum 0. No metric key and no tool moved. The schema moved to the 149.1.0 capture on 2026-11-07, offline from battlegrid-manager's fixture. Since 150-161 (README 'Contract history' documents v150-v156; 157-161 undocumented at 2026-11-09T16:20Z): v156 refuses a condition on a crowd reading no decided bar can serve (CONDITION_OPERAND_UNSERVABLE: the eight ...Live crowd headers, and any crowd header on a main candle no Market Grid time range settles on); at 161.0.0 the metric key BB_TOUCH is removed and DONCHIAN_BROKEN_HI_PRIOR, DONCHIAN_BROKEN_LO_PRIOR and VWMA20 are added (534); transformId gains roc, chainedTransformId gains roc and levelInteraction; the column gains basePeriod, conversionPeriod, displacement, spanBPeriod and chainedWindow (each $defs/barCount) and touchAtr (number); buffer's maximum rises 500 -> 2^53-1. The schema moved to the 161.0.0 capture on 2026-11-09, read live.",
-        "servedContractVersion": "161.0.0",
-        "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
-        "schema": "data/contract/stage_strategy_draft/schema_20261109T162100Z.json",
+        "_what": "The WRITE surface omega authors against. Contract 168 (first served 168.2.0, 2026-11-11T16:32Z; 157 - 168 are not in the vendor README, which stops at v156, so the served schemas are the source): the author defines the trade levels - stage_strategy_draft REQUIRES TRADE_LEVEL_POLICY.tradeLevelMenu (per direction 1 - 8 stops: ATR / LEVEL / PERCENT, and 1 - 8 targets: R_MULTIPLE / LEVEL) and, on a level-triggered entry (STOP_THROUGH_LEVEL, ON_RETEST), entry.levels; a metric is named by PATTERN (^[A-Z][A-Z0-9_]*$, 'A metric key list_strategy_vocabulary serves') and the roster is the read schema's enum (get_strategy outputSchema $defs/metricKey, 581 keys); a condition group gained the op SEQUENCE with an optional `within`; the knobs supplyDemandResolution, supplyDemandThreshold and usedUpOnClose; spread as a chained transform and transformId / window on a spread input. The menu's rules are not in the tool description: they were measured on thirty staged-and-discarded create drafts, fifteen at 168.2.0 and fifteen at 168.3.0 (data/audit/trade_level_menu_168_2026-11-11.json). 168.3.0 (20:52Z the same day) moved no draft tool: the six are byte-identical to the 168.2.0 capture (schema_20261111T183243Z.json, kept as the surface the menu was measured on). Earlier history: the superseded entries.",
+        "servedContractVersion": "168.3.0",
+        "buildSha": "af8b2c9632fa71620e9dcc1802904ee963d305a4",
+        "schema": "data/contract/stage_strategy_draft/schema_20261111T213257Z.json",
         "tools": [
          "stage_strategy_draft",
          "get_strategy_draft",
@@ -462,13 +466,15 @@
          "preview_strategy_report",
          "get_strategy"
         ],
-        "readFrom": "the live surface listed 2026-11-09T16:21Z (mcporter list battlegrid-anbu --schema --json, 166 tools); the six draft tools' description / inputSchema / outputSchema are identical to battlegrid-manager's stored observed 161.0.0 manager_schemas row (watch, 2026-11-09T06:56:56Z, hash 497d6370)",
-        "plan": "docs/plans/2026-11-05-omega-reextraction-148.md",
-        "notedAt": "2026-11-09",
+        "readFrom": "the live surface listed 2026-11-11T21:32Z (mcporter list battlegrid-anbu --schema --output json, 166 tools, GET /mcp/version 168.3.0 / af8b2c96 before and after); each of the six draft tools' description / inputSchema / outputSchema compared to battlegrid-manager's stored observed 168.3.0 manager_schemas row (manager_schemas_168.3.0.json, hash 60f000e7)",
+        "capturedBy": "scripts/capture_write_surface.py (GET /mcp/version before and after the list; MANAGER_ROW the watch's stored 168.3.0 manager_schemas row, hash 60f000e7: agrees on all six tools)",
+        "plan": "docs/plans/2026-11-11-omega-reextraction-168.md",
+        "notedAt": "2026-11-11",
         "supersedes": {
-         "servedContractVersion": "149.1.0",
-         "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
-         "schema": "data/contract/stage_strategy_draft/schema_20261105T181932Z.json",
+         "_what": "The WRITE surface omega authors against, separate from the 61.2.0 metric/transform/vocabulary extraction above (which this note does not refresh). Since contract 85.0.0 a strategy changes only through its draft: get_strategy_draft -> stage_strategy_draft -> commit_strategy_draft. Since 108.0.0 the stage takes eight axes: SIGNAL_RULES and SETUP_GATES are refused as unrecognized keys and minAtrPct is required on TRADE_LEVEL_POLICY (README 'Contract history - v108', vendored at .agents/skills/battlegrid/README.md, pack 31.2.94). Since 110.0.0 (README 'Contract history - v110') the metric keys MACD, PPO and KC_MID are refused (MACD_HIST, PPO_HIST, EMA20) and nine keys are added; the schema moved to the 110.2.0 capture on 2026-10-14. Since 110.6 (README 'Contract history - v110.6') DONCHIAN_UPPER_PRIOR and DONCHIAN_LOWER_PRIOR are added, and by 110.8.0 NAKED_SINGLE_PRINT_ABOVE/BELOW and TPO_SINGLE_PRINT_ABOVE/BELOW (undocumented); nothing refused; the schema moved to the 110.8.0 capture on 2026-10-15. Since v111 (served as 110.13.0, 2026-10-16; README 'Contract history - v111') the draft tools take their arguments at the top level: no `request` envelope (omega.preflight.resolve_request and omega.condition_vocabulary read both shapes); the schema moved to the 110.13.0 capture on 2026-10-16. Since v134 (README 'Contract history - v134') includeMtfConfluence is refused wherever a platform section is named; its lower-rung reads are custom columns (MA_ALIGN x value, RSI14 x classifyZone, ADX x classifyZone at {rel:'lower'}); PERP_SPOT_GAP is added. Since v135 an efficiency window counts bar-to-bar changes (reads window + 1 bars), six transforms are added (zscore, stddev, linregSlope, pctl, rollingMin, rollingMax) and columnLookback is 64. Since v135.1 thirty-five metrics are added (the bar clock, trading-session levels and swept flags, opening ranges, IB extensions). The schema moved to the 135.2.0 capture on 2026-10-26 (135.2.0 is undocumented in the README; the manager's watch acknowledged it 2026-10-26T06:27Z). Since v137 (README 'Contract history - v137') STOCH_RSI14 is refused (STOCH_RSI_K / STOCH_RSI_D); since v138 BB_WIDTH is refused (BB_WIDTH_PCT) and CUM_VOLUME_DELTA is added; v136.1 added six spot metrics, v137.2 sixty-six (the anchored VWAP family with bands, week and month profiles) and respelled every metric enum as $defs/metricKey, v137.3 three; v139 removed BUY_PRES_BYB and v140 SPOT_CLOSE_BYB; v142.3 added the relativeTo transform, the `instrument` column knob and the priceRatio unit; v143 is Radar-only. The schema moved to the 144.0.0 capture on 2026-10-30 (144.0.0 itself is undocumented in the README; the manager's watch acknowledged it 2026-10-29T16:26Z). Since 146.0.0 (2026-11-01, undocumented in the README; the manager's watch observed it 2026-11-01T06:17:33Z after a 58-minute 502 outage and acknowledged it 07:56:45Z) a custom section REQUIRES `marketScope` (null = a per-coin section, the shape every OMEGA section has; one of all, crypto, l1, memes, defi, tradfi, stocks, indices, commodities = a MARKET section, which refuses per-coin metrics - probed live 2026-11-01T07:58Z), the platform sections includeMarketBreadth and includeReferencePairs are retired (22 sectionKeys), 24 metric keys are added to $defs/metricKey (MKT_* x13, CROWD_*_Z / _Z_LIVE x8, PAR_DEV, REGIME_WARNING_CRASH, REGIME_WARNING_DIVERGENCE - known by name only from 2026-11-01, measured 2026-11-02 at 146.0.1: data/contract/metrics/_moves_146.json) and the regime enum is bull_trend / bear_trend / bull_range / bear_range / fallback with `volatility` and `warnings[]` beside it. The schema moved to the 146.0.0 capture on 2026-11-01 (OMEGA v0.10.2). 146.0.1 (build a07740c0, live 2026-11-02) moved no tool: the six draft tools listed live are byte-identical to this capture, so the capture stands. Since 146.1 - 146.14 (README 'Contract history - v146.1' to 'v146.14') 206 metric keys are added to $defs/metricKey (the TradingView Pivot Points Standard types on five periods - previous UTC day, ISO week, UTC month, quarter and year - and the LuxAlgo Smart Money Concepts market structure: INTERNAL_ / SWING_STRUCTURE_EVENT, _TREND, _LEVEL, EQH, EQL), the `ema` transform (transformId 25 ids, chainedTransformId 13 with `distance` and `ema`) and six author-set column knobs on the custom-section column (leftBars, rightBars, swingLength, equalBars: integer >= 1; equalThreshold: number >= 0; confluenceFilter: boolean). v147 - v148.1 moved arena / Radar / budget tools only. The schema moved to the 148.1.0 capture on 2026-11-05 (the OMEGA v0.12 branch feat/omega-v0.12 - unreleased: pyproject.toml stays 0.11.0 until the full re-extraction at 148.1.0 lands), read from the live list and identical to the battlegrid-manager fixture of the acknowledged 148.1.0 surface. Since contract 149.0.0 / 149.1.0 (2026-11-05; undocumented in the README, read from the schemas only): a custom column's transformId and chainedTransformId gain cci, rma, rsi and wma; the column gains thirteen optional knobs (atrPeriod, dSmoothing, fast, kSmoothing, period, rsiPeriod, signal, slow - each a $ref to the new $defs/barCount, integer 1 - 2^53-1 - multiplier, stdDev and, at 149.1.0, Parabolic SAR's accelerationStart, accelerationIncrement and accelerationMaximum); leftBars, rightBars, swingLength and equalBars become the same $ref with the same bounds; equalThreshold loses its minimum 0. No metric key and no tool moved. The schema moved to the 149.1.0 capture on 2026-11-07, offline from battlegrid-manager's fixture. Since 150-161 (README 'Contract history' documents v150-v156; 157-161 undocumented at 2026-11-09T16:20Z): v156 refuses a condition on a crowd reading no decided bar can serve (CONDITION_OPERAND_UNSERVABLE: the eight ...Live crowd headers, and any crowd header on a main candle no Market Grid time range settles on); at 161.0.0 the metric key BB_TOUCH is removed and DONCHIAN_BROKEN_HI_PRIOR, DONCHIAN_BROKEN_LO_PRIOR and VWMA20 are added (534); transformId gains roc, chainedTransformId gains roc and levelInteraction; the column gains basePeriod, conversionPeriod, displacement, spanBPeriod and chainedWindow (each $defs/barCount) and touchAtr (number); buffer's maximum rises 500 -> 2^53-1. The schema moved to the 161.0.0 capture on 2026-11-09, read live.",
+         "servedContractVersion": "161.0.0",
+         "buildSha": "ab5b62526574ed62c7c3f5d2d1865f882e37b1a7",
+         "schema": "data/contract/stage_strategy_draft/schema_20261109T162100Z.json",
          "tools": [
           "stage_strategy_draft",
           "get_strategy_draft",
@@ -477,19 +483,13 @@
           "preview_strategy_report",
           "get_strategy"
          ],
-         "readFrom": "battlegrid-manager's fixture tests/fixtures/2026-11-05-contract-149.1.0/manager_schemas_149.1.0.json (the watch's stored 149.1.0 row, build aa4ab640, hash 656c9bf6, observed 2026-11-05T18:19:32Z, acknowledged 2026-11-05T20:31:47Z); the entries are the fixture's own (annotations included)",
-         "liveCheckedAt": {
-          "contractVersion": "149.1.0",
-          "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
-          "observedAt": "2026-11-07T03:16:53Z",
-          "how": "battlegrid-manager system_state.surface_tools, re-listed live by the manager's watch at 03:16:53Z (154 tools); the six tools' description and inputSchema compared to this capture's entries: identical (surface_tools stores no outputSchema). OMEGA itself made no platform call. data/audit/contract_149_1_0_vocabulary_2026-11-07.json"
-         },
+         "readFrom": "the live surface listed 2026-11-09T16:21Z (mcporter list battlegrid-anbu --schema --json, 166 tools); the six draft tools' description / inputSchema / outputSchema are identical to battlegrid-manager's stored observed 161.0.0 manager_schemas row (watch, 2026-11-09T06:56:56Z, hash 497d6370)",
          "plan": "docs/plans/2026-11-05-omega-reextraction-148.md",
-         "notedAt": "2026-11-07",
+         "notedAt": "2026-11-09",
          "supersedes": {
-          "servedContractVersion": "148.1.0",
-          "buildSha": "d02121ecdf909505410e079fbaeab2e0f9e290af",
-          "schema": "data/contract/stage_strategy_draft/schema_20261105T093843Z.json",
+          "servedContractVersion": "149.1.0",
+          "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
+          "schema": "data/contract/stage_strategy_draft/schema_20261105T181932Z.json",
           "tools": [
            "stage_strategy_draft",
            "get_strategy_draft",
@@ -498,19 +498,19 @@
            "preview_strategy_report",
            "get_strategy"
           ],
-          "readFrom": "the live surface listed 2026-11-05T09:38:43Z (mcporter list, 154 tools), identical on the six draft tools' description / inputSchema / outputSchema to battlegrid-manager's fixture tests/fixtures/2026-11-04-contract-148.1.0/manager_schemas_148.1.0.json (acknowledged 2026-11-04T19:31:22Z); the entries are the fixture's own (annotations included)",
+          "readFrom": "battlegrid-manager's fixture tests/fixtures/2026-11-05-contract-149.1.0/manager_schemas_149.1.0.json (the watch's stored 149.1.0 row, build aa4ab640, hash 656c9bf6, observed 2026-11-05T18:19:32Z, acknowledged 2026-11-05T20:31:47Z); the entries are the fixture's own (annotations included)",
           "liveCheckedAt": {
-           "contractVersion": "148.1.0",
-           "buildSha": "d02121ecdf909505410e079fbaeab2e0f9e290af",
-           "observedAt": "2026-11-05T09:38:43Z",
-           "how": "mcporter list battlegrid-anbu --schema --all-parameters --json; the six tools' description, inputSchema and outputSchema compared to this capture's entries: identical (annotations are not served by the list)"
+           "contractVersion": "149.1.0",
+           "buildSha": "aa4ab6407e62bd0c2465ca7790b276b39bbf76d4",
+           "observedAt": "2026-11-07T03:16:53Z",
+           "how": "battlegrid-manager system_state.surface_tools, re-listed live by the manager's watch at 03:16:53Z (154 tools); the six tools' description and inputSchema compared to this capture's entries: identical (surface_tools stores no outputSchema). OMEGA itself made no platform call. data/audit/contract_149_1_0_vocabulary_2026-11-07.json"
           },
           "plan": "docs/plans/2026-11-05-omega-reextraction-148.md",
-          "notedAt": "2026-11-05",
+          "notedAt": "2026-11-07",
           "supersedes": {
-           "servedContractVersion": "146.0.0",
-           "buildSha": "1cd4466aace4e047a44672b6d531e4deabc8fe12",
-           "schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
+           "servedContractVersion": "148.1.0",
+           "buildSha": "d02121ecdf909505410e079fbaeab2e0f9e290af",
+           "schema": "data/contract/stage_strategy_draft/schema_20261105T093843Z.json",
            "tools": [
             "stage_strategy_draft",
             "get_strategy_draft",
@@ -519,13 +519,19 @@
             "preview_strategy_report",
             "get_strategy"
            ],
-           "readFrom": "battlegrid-manager system_state.manager_schemas (observed by the watch at 146.0.0 on 2026-11-01T06:17:33Z, build 1cd4466a, on top of README v143 - 146.0.0 is undocumented there; acknowledged 2026-11-01T07:56:45Z on build 04bf38fc, whose 62 manager tools are byte-identical to this row), copied from the manager's fixture tests/fixtures/2026-11-01-surface-146.0.0/manager_schemas_146.0.0.json on 2026-11-01: the stored surface's entries for these tools, as served",
-           "plan": "docs/plans/2026-11-01-omega-v0.10.2-market-scope-146.md",
-           "notedAt": "2026-11-01",
+           "readFrom": "the live surface listed 2026-11-05T09:38:43Z (mcporter list, 154 tools), identical on the six draft tools' description / inputSchema / outputSchema to battlegrid-manager's fixture tests/fixtures/2026-11-04-contract-148.1.0/manager_schemas_148.1.0.json (acknowledged 2026-11-04T19:31:22Z); the entries are the fixture's own (annotations included)",
+           "liveCheckedAt": {
+            "contractVersion": "148.1.0",
+            "buildSha": "d02121ecdf909505410e079fbaeab2e0f9e290af",
+            "observedAt": "2026-11-05T09:38:43Z",
+            "how": "mcporter list battlegrid-anbu --schema --all-parameters --json; the six tools' description, inputSchema and outputSchema compared to this capture's entries: identical (annotations are not served by the list)"
+           },
+           "plan": "docs/plans/2026-11-05-omega-reextraction-148.md",
+           "notedAt": "2026-11-05",
            "supersedes": {
-            "servedContractVersion": "144.0.0",
-            "buildSha": "beb6b930bcf01c914c01d528aa88dc05c32d1d76",
-            "schema": "data/contract/stage_strategy_draft/schema_20261029T152942Z.json",
+            "servedContractVersion": "146.0.0",
+            "buildSha": "1cd4466aace4e047a44672b6d531e4deabc8fe12",
+            "schema": "data/contract/stage_strategy_draft/schema_20261101T061733Z.json",
             "tools": [
              "stage_strategy_draft",
              "get_strategy_draft",
@@ -534,13 +540,13 @@
              "preview_strategy_report",
              "get_strategy"
             ],
-            "readFrom": "battlegrid-manager system_state.manager_schemas (observed by the watch at 144.0.0 on 2026-10-29T15:29:42Z, on top of README v143; acknowledged 2026-10-29T16:26:12Z), copied from the manager's fixture tests/fixtures/2026-10-29-surface-144.0.0/manager_schemas_144.0.0.json on 2026-10-30: the stored surface's entries for these tools, as served",
-            "plan": "docs/plans/2026-10-30-omega-reextraction-144.md",
-            "notedAt": "2026-10-30",
+            "readFrom": "battlegrid-manager system_state.manager_schemas (observed by the watch at 146.0.0 on 2026-11-01T06:17:33Z, build 1cd4466a, on top of README v143 - 146.0.0 is undocumented there; acknowledged 2026-11-01T07:56:45Z on build 04bf38fc, whose 62 manager tools are byte-identical to this row), copied from the manager's fixture tests/fixtures/2026-11-01-surface-146.0.0/manager_schemas_146.0.0.json on 2026-11-01: the stored surface's entries for these tools, as served",
+            "plan": "docs/plans/2026-11-01-omega-v0.10.2-market-scope-146.md",
+            "notedAt": "2026-11-01",
             "supersedes": {
-             "servedContractVersion": "135.2.0",
-             "buildSha": "98d29c45221aa16a7a0160173c0105220160119d",
-             "schema": "data/contract/stage_strategy_draft/schema_20261026T062718Z.json",
+             "servedContractVersion": "144.0.0",
+             "buildSha": "beb6b930bcf01c914c01d528aa88dc05c32d1d76",
+             "schema": "data/contract/stage_strategy_draft/schema_20261029T152942Z.json",
              "tools": [
               "stage_strategy_draft",
               "get_strategy_draft",
@@ -549,13 +555,13 @@
               "preview_strategy_report",
               "get_strategy"
              ],
-             "readFrom": "battlegrid-manager system_state.manager_schemas observed 2026-10-26T06:27:18Z (read-only) - input and output schemas, no platform call by omega",
-             "plan": "docs/plans/2026-10-26-omega-reextraction-135.md",
-             "notedAt": "2026-10-26",
+             "readFrom": "battlegrid-manager system_state.manager_schemas (observed by the watch at 144.0.0 on 2026-10-29T15:29:42Z, on top of README v143; acknowledged 2026-10-29T16:26:12Z), copied from the manager's fixture tests/fixtures/2026-10-29-surface-144.0.0/manager_schemas_144.0.0.json on 2026-10-30: the stored surface's entries for these tools, as served",
+             "plan": "docs/plans/2026-10-30-omega-reextraction-144.md",
+             "notedAt": "2026-10-30",
              "supersedes": {
-              "servedContractVersion": "110.13.0",
-              "buildSha": "86df42d3dd143c87be57490ba78b2005a0527bb7",
-              "schema": "data/contract/stage_strategy_draft/schema_20261016T031811Z.json",
+              "servedContractVersion": "135.2.0",
+              "buildSha": "98d29c45221aa16a7a0160173c0105220160119d",
+              "schema": "data/contract/stage_strategy_draft/schema_20261026T062718Z.json",
               "tools": [
                "stage_strategy_draft",
                "get_strategy_draft",
@@ -564,13 +570,13 @@
                "preview_strategy_report",
                "get_strategy"
               ],
-              "readFrom": "battlegrid-manager system_state.manager_schemas observed 2026-10-16T03:18:11Z (read-only) - input and output schemas, no platform call by omega",
-              "plan": "docs/plans/2026-10-15-omega-reextraction-110-8.md",
-              "notedAt": "2026-10-16",
+              "readFrom": "battlegrid-manager system_state.manager_schemas observed 2026-10-26T06:27:18Z (read-only) - input and output schemas, no platform call by omega",
+              "plan": "docs/plans/2026-10-26-omega-reextraction-135.md",
+              "notedAt": "2026-10-26",
               "supersedes": {
-               "servedContractVersion": "110.8.0",
-               "buildSha": "6cf1bd7015f136f3a380cc506511002977c831e2",
-               "schema": "data/contract/stage_strategy_draft/schema_20261015T015244Z.json",
+               "servedContractVersion": "110.13.0",
+               "buildSha": "86df42d3dd143c87be57490ba78b2005a0527bb7",
+               "schema": "data/contract/stage_strategy_draft/schema_20261016T031811Z.json",
                "tools": [
                 "stage_strategy_draft",
                 "get_strategy_draft",
@@ -579,13 +585,13 @@
                 "preview_strategy_report",
                 "get_strategy"
                ],
-               "readFrom": "battlegrid-manager tests/fixtures/2026-10-15-surface-110.8.0/manager_schemas.json (manager commit 2825893; observed 2026-10-15T01:52:44Z) - input and output schemas, no platform call by omega",
+               "readFrom": "battlegrid-manager system_state.manager_schemas observed 2026-10-16T03:18:11Z (read-only) - input and output schemas, no platform call by omega",
                "plan": "docs/plans/2026-10-15-omega-reextraction-110-8.md",
-               "notedAt": "2026-10-15",
+               "notedAt": "2026-10-16",
                "supersedes": {
-                "servedContractVersion": "110.2.0",
-                "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
-                "schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
+                "servedContractVersion": "110.8.0",
+                "buildSha": "6cf1bd7015f136f3a380cc506511002977c831e2",
+                "schema": "data/contract/stage_strategy_draft/schema_20261015T015244Z.json",
                 "tools": [
                  "stage_strategy_draft",
                  "get_strategy_draft",
@@ -594,41 +600,57 @@
                  "preview_strategy_report",
                  "get_strategy"
                 ],
-                "readFrom": "battlegrid-manager tests/fixtures/2026-10-14-surface-110.2.0/manager_schemas.json (manager commit ef5bf24; observed 2026-10-13T20:06:21Z)",
-                "plan": "docs/plans/2026-10-14-omega-reextraction-110-2.md",
-                "notedAt": "2026-10-14",
+                "readFrom": "battlegrid-manager tests/fixtures/2026-10-15-surface-110.8.0/manager_schemas.json (manager commit 2825893; observed 2026-10-15T01:52:44Z) - input and output schemas, no platform call by omega",
+                "plan": "docs/plans/2026-10-15-omega-reextraction-110-8.md",
+                "notedAt": "2026-10-15",
                 "supersedes": {
-                 "servedContractVersion": "108.0.0",
-                 "buildSha": "1076c4e78456424dd92242eeb30701099c6b9146",
-                 "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
+                 "servedContractVersion": "110.2.0",
+                 "buildSha": "c70a41d8c991e0afd747e6ce2864d0adfd218eeb",
+                 "schema": "data/contract/stage_strategy_draft/schema_20261013T200621Z.json",
+                 "tools": [
+                  "stage_strategy_draft",
+                  "get_strategy_draft",
+                  "commit_strategy_draft",
+                  "list_strategy_drafts",
+                  "preview_strategy_report",
+                  "get_strategy"
+                 ],
+                 "readFrom": "battlegrid-manager tests/fixtures/2026-10-14-surface-110.2.0/manager_schemas.json (manager commit ef5bf24; observed 2026-10-13T20:06:21Z)",
+                 "plan": "docs/plans/2026-10-14-omega-reextraction-110-2.md",
+                 "notedAt": "2026-10-14",
                  "supersedes": {
-                  "servedContractVersion": "91.0.0",
-                  "buildSha": "c8a39a0c1104ccc6a3aa51085845c14ae0c6c0fd",
-                  "schema": "data/contract/stage_strategy_draft/schema_20261005T194629Z.json",
-                  "tools": [
-                   "stage_strategy_draft",
-                   "get_strategy_draft",
-                   "commit_strategy_draft",
-                   "discard_strategy_draft",
-                   "list_strategy_drafts",
-                   "preview_strategy_report"
-                  ],
-                  "readFrom": "battlegrid-manager system_state.surface_tools (watch), observed 2026-10-05T19:46:29Z - input schemas only, no platform call by omega",
-                  "plan": "docs/plans/2026-10-06-omega-draft-lifecycle-re-extraction.md",
-                  "notedAt": "2026-10-06",
-                  "note": "The 91.0.0 write surface (ten axes, SIGNAL_RULES and SETUP_GATES among them). Kept as history; never read as the current write surface."
+                  "servedContractVersion": "108.0.0",
+                  "buildSha": "1076c4e78456424dd92242eeb30701099c6b9146",
+                  "schema": "data/contract/stage_strategy_draft/schema_20261010T215326Z.json",
+                  "supersedes": {
+                   "servedContractVersion": "91.0.0",
+                   "buildSha": "c8a39a0c1104ccc6a3aa51085845c14ae0c6c0fd",
+                   "schema": "data/contract/stage_strategy_draft/schema_20261005T194629Z.json",
+                   "tools": [
+                    "stage_strategy_draft",
+                    "get_strategy_draft",
+                    "commit_strategy_draft",
+                    "discard_strategy_draft",
+                    "list_strategy_drafts",
+                    "preview_strategy_report"
+                   ],
+                   "readFrom": "battlegrid-manager system_state.surface_tools (watch), observed 2026-10-05T19:46:29Z - input schemas only, no platform call by omega",
+                   "plan": "docs/plans/2026-10-06-omega-draft-lifecycle-re-extraction.md",
+                   "notedAt": "2026-10-06",
+                   "note": "The 91.0.0 write surface (ten axes, SIGNAL_RULES and SETUP_GATES among them). Kept as history; never read as the current write surface."
+                  }
                  }
                 }
                }
               }
              }
+            },
+            "liveCheckedAt": {
+             "contractVersion": "146.0.1",
+             "buildSha": "a07740c0baaa1603e766c3f432d267c7b9fe1065",
+             "observedAt": "2026-11-02T05:54:05Z",
+             "how": "mcporter list battlegrid-anbu --schema --all-parameters --json; the six tools' description, inputSchema and outputSchema compared to this capture's entries: identical"
             }
-           },
-           "liveCheckedAt": {
-            "contractVersion": "146.0.1",
-            "buildSha": "a07740c0baaa1603e766c3f432d267c7b9fe1065",
-            "observedAt": "2026-11-02T05:54:05Z",
-            "how": "mcporter list battlegrid-anbu --schema --all-parameters --json; the six tools' description, inputSchema and outputSchema compared to this capture's entries: identical"
            }
           }
          }
@@ -636,16 +658,16 @@
        }
       }
      }
+    },
+    "authoringTools": {
+     "_what": "The other tools an authoring pass calls, captured from 182.3.2 on (description / inputSchema / outputSchema / annotations) so the next re-extraction can diff them: scripts/capture_write_surface.py --authoring-only, a later list of the same contract and build whose six draft tools equal the capture's.",
+     "schema": "data/contract/stage_strategy_draft/authoring_tools_20261120T161029Z.json"
     }
    },
    "authoringTools": {
-    "_what": "The other tools an authoring pass calls, captured from 182.3.2 on (description / inputSchema / outputSchema / annotations) so the next re-extraction can diff them: scripts/capture_write_surface.py --authoring-only, a later list of the same contract and build whose six draft tools equal the capture's.",
-    "schema": "data/contract/stage_strategy_draft/authoring_tools_20261120T161029Z.json"
+    "_what": "The other tools an authoring pass calls (description / inputSchema / outputSchema / annotations), from the same list as the capture (scripts/capture_write_surface.py, the same liveListSha256). Diffed against the 182.3.2 sidecar: preview_strategy_trade_levels moved, the other nine are byte-identical.",
+    "schema": "data/contract/stage_strategy_draft/authoring_tools_20261122T045517Z.json"
    }
-  },
-  "authoringTools": {
-   "_what": "The other tools an authoring pass calls (description / inputSchema / outputSchema / annotations), from the same list as the capture (scripts/capture_write_surface.py, the same liveListSha256). Diffed against the 182.3.2 sidecar: preview_strategy_trade_levels moved, the other nine are byte-identical.",
-   "schema": "data/contract/stage_strategy_draft/authoring_tools_20261122T045517Z.json"
   }
  },
  "conditionVocabulary": {

@@ -111,16 +111,6 @@ def test_trailing_off_alone_is_not_refused_and_a_runner_with_trailing_unknown_is
                             anchor=BASE["anchor"], trailing_enabled=None) == []
 
 
-def test_an_update_with_trailing_unknown_under_a_staged_runner_is_warned():
-    # neither the update nor `current` carries trailingEnabled: the restaged runner is warned, not passed
-    base = PRESETS["trend-continuation"]
-    named = plan(Thesis(**{**base.__dict__, "trade_level_menu": _runner_menu()}))
-    current = {"TRADE_LEVEL_POLICY": dict(BASE["dials"])}
-    assert "POSITION_MANAGEMENT" not in named.axes_update(current)
-    assert {(f.severity, f.code) for f in named.update_menu_findings(current)} == {
-        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN")}
-
-
 def _r_plan(*legs) -> dict:
     side = {"stops": [{"kind": "ATR", "atrMultiple": 1}],
             "exitPlans": [{"targets": [{"method": {"kind": "R_MULTIPLE", "multiple": m}, "closePct": c}
@@ -159,7 +149,8 @@ def test_an_update_carrying_a_live_minimum_off_its_step_is_refused():
     base = PRESETS["trend-continuation"]
     current = plan(base).axes()
     current["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] = 1.6          # a live value off the 0.25 step
-    current["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] = tl.default_menu(1.5)
+    # the live bracket as a 185 get_strategy serves it (no tradeLevelMenu: the read schema no longer has one)
+    current["TRADE_LEVEL_POLICY"]["tradeBracket"] = tl.default_bracket(1.5, stop_range=(1, 2))
     carried = plan(Thesis(**{**base.__dict__, "execution": {"minAtrPct": 0.4}}))
     staged = carried.axes_update(current)["TRADE_LEVEL_POLICY"]
     assert staged["minRiskRewardRatio"] == 1.6                              # carried as read
@@ -240,36 +231,6 @@ def test_the_refused_previews_name_the_draft_error():
 
 def _runner_menu() -> dict:
     return copy.deepcopy(PROBES["T4.runner_trailing_on"]["sent"]["menu"])
-
-
-def test_a_plan_reads_trailing_from_its_own_position_management():
-    base = PRESETS["trend-continuation"]
-    on = plan(Thesis(**{**base.__dict__, "trade_level_menu": _runner_menu()}))
-    assert on.axes()["POSITION_MANAGEMENT"]["trailingEnabled"] is True and on.menu_findings() == []
-    off = plan(Thesis(**{**base.__dict__, "trade_level_menu": _runner_menu(), "execution": {"trailingEnabled": False}}))
-    assert off.axes()["POSITION_MANAGEMENT"]["trailingEnabled"] is False
-    assert {f.code for f in off.menu_findings()} == {"TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING"}
-    # the default menu (every plan closes 100%) stages with Trailing off: probe T3
-    plain = plan(Thesis(**{**base.__dict__, "execution": {"trailingEnabled": False}}))
-    assert plain.menu_findings() == []
-
-
-def test_an_update_that_switches_trailing_off_under_a_live_runner_is_refused():
-    # v0.14.1 warned here (every probe was a create). Measured 2026-11-12 at 171.0.0 (tests/test_update_rules_171.py,
-    # A2): POSITION_MANAGEMENT staged alone with Trailing off draws the runner's draft error on the menu the strategy holds
-    base = PRESETS["trend-continuation"]
-    p = plan(Thesis(**{**base.__dict__, "execution": {"trailingEnabled": False}}))
-    current = plan(base).axes()
-    current["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] = _runner_menu()
-    found = p.update_menu_findings(current)
-    assert found and {(f.severity, f.code) for f in found} == {
-        ("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
-    assert all("A2" in f.message for f in found)
-    # a TRADE_LEVEL_POLICY update beside the live Trailing off is judged as the create was: an error
-    current["POSITION_MANAGEMENT"]["trailingEnabled"] = False
-    named = plan(Thesis(**{**base.__dict__, "trade_level_menu": _runner_menu()}))
-    assert {(f.severity, f.code) for f in named.update_menu_findings(current)} == {
-        ("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
 
 
 def test_the_off_step_minimum_is_an_execution_error_and_on_step_values_are_not():

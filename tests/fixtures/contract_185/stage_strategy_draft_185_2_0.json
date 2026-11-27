@@ -1,0 +1,1383 @@
+{
+ "_what": "stage_strategy_draft's inputSchema at contract 185.2.0 (build ede1fce5), copied verbatim from battlegrid-manager's contract-watch row (manager_schemas, at 2026-11-27T00:29:54Z). tests/test_contract_185.py validates every emitted TRADE_LEVEL_POLICY against it.",
+ "contractVersion": "185.2.0",
+ "buildSha": "ede1fce51a498a371a21bad2511ac00036893356",
+ "rowAt": "2026-11-27T00:29:54.275501+00:00",
+ "rowHash": "1d252ea0161ff286e2869f7aef3e0af9b7d29533d7abbd3c6e1c5645ef5aa154",
+ "inputSchema": {
+  "type": "object",
+  "properties": {
+   "strategyId": {
+    "description": "The strategy whose draft to stage into. Omit it to open a NEW create draft; the response carries the id minted for it, which every later call names.",
+    "type": "string",
+    "format": "uuid",
+    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$"
+   },
+   "draftVersion": {
+    "type": "integer",
+    "minimum": 0,
+    "maximum": 9007199254740991,
+    "description": "The draft version this proposal was made against: the `draftVersion` get_strategy_draft returned, or 0 when it found no draft (and for a new create draft)."
+   },
+   "axes": {
+    "type": "object",
+    "properties": {
+     "IDENTITY": {
+      "type": "object",
+      "properties": {
+       "name": {
+        "type": "string"
+       },
+       "description": {
+        "type": "string"
+       },
+       "tagline": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "name",
+       "description",
+       "tagline"
+      ],
+      "additionalProperties": false
+     },
+     "TIMEFRAME_PROFILE": {
+      "type": "object",
+      "properties": {
+       "timeframe": {
+        "type": "string",
+        "enum": [
+         "1m",
+         "3m",
+         "5m",
+         "15m",
+         "30m",
+         "1h",
+         "2h",
+         "4h",
+         "8h",
+         "12h",
+         "1d",
+         "3d",
+         "1w"
+        ]
+       }
+      },
+      "required": [
+       "timeframe"
+      ],
+      "additionalProperties": false
+     },
+     "REPORT": {
+      "type": "object",
+      "properties": {
+       "sections": {
+        "type": "array",
+        "items": {
+         "oneOf": [
+          {
+           "type": "object",
+           "properties": {
+            "kind": {
+             "type": "string",
+             "const": "platform"
+            },
+            "sectionKey": {
+             "type": "string",
+             "enum": [
+              "includePriceAction",
+              "includeSubTimeframe",
+              "includeRsi",
+              "includeMacd",
+              "includeVolume",
+              "includeVolatility",
+              "includeBollingerBands",
+              "includeMovingAverages",
+              "includeStochastic",
+              "includeFundingRates",
+              "includeOpenInterest",
+              "includeRelativeStrength",
+              "includeSupportResistance",
+              "includeTrendStrength",
+              "includeMfi",
+              "includeCvd",
+              "includeHigherTimeframe",
+              "includeRegimeContext",
+              "includeCrowdIntelligence",
+              "includeCvdCrowdConvergence",
+              "includeStructureZones",
+              "includePerpSpotFlow"
+             ]
+            }
+           },
+           "required": [
+            "kind",
+            "sectionKey"
+           ],
+           "additionalProperties": false
+          },
+          {
+           "type": "object",
+           "properties": {
+            "kind": {
+             "type": "string",
+             "const": "custom"
+            },
+            "sectionKey": {
+             "type": "string",
+             "pattern": "^custom:[0-9a-fA-F-]{36}$"
+            },
+            "title": {
+             "type": "string",
+             "minLength": 1,
+             "maxLength": 60,
+             "pattern": "^[^\\p{Cc}\\p{Cf}]+$"
+            },
+            "benchmarkTicker": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/coinSymbol"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "marketScope": {
+             "anyOf": [
+              {
+               "$ref": "#/$defs/breadthScope"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "notes": {
+             "anyOf": [
+              {
+               "type": "string",
+               "minLength": 1,
+               "maxLength": 400,
+               "pattern": "^[^\\p{Cc}\\p{Cf}\\p{Zl}\\p{Zp}]+$"
+              },
+              {
+               "type": "null"
+              }
+             ]
+            },
+            "columns": {
+             "minItems": 1,
+             "type": "array",
+             "items": {
+              "type": "object",
+              "properties": {
+               "metric": {
+                "$ref": "#/$defs/metricKey"
+               },
+               "transformId": {
+                "type": "string",
+                "enum": [
+                 "value",
+                 "trajectory",
+                 "classifyZone",
+                 "classifyState",
+                 "distance",
+                 "spread",
+                 "relativeTo",
+                 "crossDetect",
+                 "aggregate",
+                 "ema",
+                 "rma",
+                 "wma",
+                 "rsi",
+                 "cci",
+                 "roc",
+                 "efficiency",
+                 "maxShare",
+                 "zscore",
+                 "stddev",
+                 "linregSlope",
+                 "pctl",
+                 "rollingMin",
+                 "rollingMax",
+                 "rank",
+                 "count",
+                 "nearestZoneType",
+                 "nearestZoneRange",
+                 "nearestZoneDist",
+                 "nearestZoneAge",
+                 "levelInteraction"
+                ]
+               },
+               "chainedTransformId": {
+                "type": "string",
+                "enum": [
+                 "trajectory",
+                 "distance",
+                 "spread",
+                 "aggregate",
+                 "ema",
+                 "rma",
+                 "wma",
+                 "rsi",
+                 "cci",
+                 "roc",
+                 "efficiency",
+                 "maxShare",
+                 "zscore",
+                 "stddev",
+                 "linregSlope",
+                 "pctl",
+                 "rollingMin",
+                 "rollingMax",
+                 "rank",
+                 "levelInteraction"
+                ]
+               },
+               "timeframe": {
+                "$ref": "#/$defs/timeframeRef"
+               },
+               "window": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+               },
+               "chainedWindow": {
+                "$ref": "#/$defs/barCount"
+               },
+               "offset": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+               },
+               "side": {
+                "type": "string",
+                "enum": [
+                 "support",
+                 "resistance"
+                ]
+               },
+               "inputs": {
+                "maxItems": 4,
+                "type": "array",
+                "items": {
+                 "type": "object",
+                 "properties": {
+                  "metric": {
+                   "$ref": "#/$defs/metricKey"
+                  },
+                  "transformId": {
+                   "type": "string",
+                   "enum": [
+                    "aggregate",
+                    "ema",
+                    "rma",
+                    "wma"
+                   ]
+                  },
+                  "window": {
+                   "type": "integer",
+                   "minimum": 1,
+                   "maximum": 9007199254740991
+                  }
+                 },
+                 "required": [
+                  "metric"
+                 ],
+                 "additionalProperties": false
+                }
+               },
+               "bars": {
+                "type": "string",
+                "enum": [
+                 "closed",
+                 "all"
+                ]
+               },
+               "ordering": {
+                "type": "string",
+                "enum": [
+                 "hi",
+                 "lo",
+                 "far",
+                 "near"
+                ]
+               },
+               "scope": {
+                "$ref": "#/$defs/breadthScope"
+               },
+               "buffer": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+               },
+               "touchAtr": {
+                "type": "number"
+               },
+               "instrument": {
+                "$ref": "#/$defs/coinSymbol"
+               },
+               "leftBars": {
+                "$ref": "#/$defs/barCount"
+               },
+               "rightBars": {
+                "$ref": "#/$defs/barCount"
+               },
+               "swingLength": {
+                "$ref": "#/$defs/barCount"
+               },
+               "equalBars": {
+                "$ref": "#/$defs/barCount"
+               },
+               "period": {
+                "$ref": "#/$defs/barCount"
+               },
+               "kSmoothing": {
+                "$ref": "#/$defs/barCount"
+               },
+               "dSmoothing": {
+                "$ref": "#/$defs/barCount"
+               },
+               "rsiPeriod": {
+                "$ref": "#/$defs/barCount"
+               },
+               "fast": {
+                "$ref": "#/$defs/barCount"
+               },
+               "slow": {
+                "$ref": "#/$defs/barCount"
+               },
+               "signal": {
+                "$ref": "#/$defs/barCount"
+               },
+               "atrPeriod": {
+                "$ref": "#/$defs/barCount"
+               },
+               "conversionPeriod": {
+                "$ref": "#/$defs/barCount"
+               },
+               "basePeriod": {
+                "$ref": "#/$defs/barCount"
+               },
+               "spanBPeriod": {
+                "$ref": "#/$defs/barCount"
+               },
+               "displacement": {
+                "$ref": "#/$defs/barCount"
+               },
+               "equalThreshold": {
+                "type": "number"
+               },
+               "stdDev": {
+                "type": "number"
+               },
+               "multiplier": {
+                "type": "number"
+               },
+               "accelerationStart": {
+                "type": "number"
+               },
+               "accelerationIncrement": {
+                "type": "number"
+               },
+               "accelerationMaximum": {
+                "type": "number"
+               },
+               "supplyDemandThreshold": {
+                "type": "number"
+               },
+               "supplyDemandResolution": {
+                "type": "number"
+               },
+               "confluenceFilter": {
+                "type": "boolean"
+               },
+               "usedUpOnClose": {
+                "type": "boolean"
+               }
+              },
+              "required": [
+               "metric",
+               "transformId",
+               "timeframe"
+              ],
+              "additionalProperties": false
+             }
+            }
+           },
+           "required": [
+            "kind",
+            "title",
+            "benchmarkTicker",
+            "marketScope",
+            "notes",
+            "columns"
+           ],
+           "additionalProperties": false
+          }
+         ]
+        }
+       }
+      },
+      "required": [
+       "sections"
+      ],
+      "additionalProperties": false
+     },
+     "MARKET_READ": {
+      "type": "object",
+      "properties": {
+       "marketReadText": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "marketReadText"
+      ],
+      "additionalProperties": false
+     },
+     "CONDITIONS": {
+      "type": "object",
+      "properties": {
+       "conditions": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "properties": {
+          "conditionKey": {
+           "type": "string",
+           "pattern": "^[A-Z][A-Z0-9_]{1,39}$"
+          },
+          "name": {
+           "type": "string",
+           "minLength": 1,
+           "maxLength": 80
+          },
+          "definition": {
+           "$ref": "#/$defs/conditionNode"
+          },
+          "verdict": {
+           "anyOf": [
+            {
+             "type": "string",
+             "enum": [
+              "UP",
+              "DOWN",
+              "NEITHER"
+             ]
+            },
+            {
+             "type": "null"
+            }
+           ]
+          },
+          "required": {
+           "type": "boolean"
+          },
+          "exitSide": {
+           "anyOf": [
+            {
+             "type": "string",
+             "enum": [
+              "LONG",
+              "SHORT",
+              "BOTH"
+             ]
+            },
+            {
+             "type": "null"
+            }
+           ]
+          }
+         },
+         "required": [
+          "conditionKey",
+          "name",
+          "definition",
+          "verdict",
+          "required",
+          "exitSide"
+         ],
+         "additionalProperties": false
+        }
+       }
+      },
+      "required": [
+       "conditions"
+      ],
+      "additionalProperties": false
+     },
+     "ENTRY": {
+      "type": "object",
+      "properties": {
+       "entry": {
+        "oneOf": [
+         {
+          "type": "object",
+          "properties": {
+           "trigger": {
+            "type": "string",
+            "enum": [
+             "ON_CANDLE_CLOSE"
+            ]
+           }
+          },
+          "required": [
+           "trigger"
+          ],
+          "additionalProperties": false
+         },
+         {
+          "type": "object",
+          "properties": {
+           "trigger": {
+            "type": "string",
+            "enum": [
+             "STOP_THROUGH_LEVEL",
+             "ON_RETEST",
+             "EITHER_SIDE_OF_LEVEL"
+            ]
+           },
+           "levelOffsetAtrMultiple": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2,
+            "multipleOf": 0.1
+           },
+           "validForBars": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 24
+           },
+           "levels": {
+            "type": "object",
+            "properties": {
+             "LONG": {
+              "$ref": "#/$defs/conditionLevelRef"
+             },
+             "SHORT": {
+              "$ref": "#/$defs/conditionLevelRef"
+             }
+            },
+            "required": [
+             "LONG",
+             "SHORT"
+            ],
+            "additionalProperties": false
+           }
+          },
+          "required": [
+           "trigger",
+           "levelOffsetAtrMultiple",
+           "validForBars",
+           "levels"
+          ],
+          "additionalProperties": false
+         }
+        ]
+       }
+      },
+      "required": [
+       "entry"
+      ],
+      "additionalProperties": false
+     },
+     "TRADE_LEVEL_POLICY": {
+      "type": "object",
+      "properties": {
+       "minAtrPct": {
+        "type": "number"
+       },
+       "minStopLossAtrMultiple": {
+        "type": "number"
+       },
+       "maxStopLossAtrMultiple": {
+        "type": "number"
+       },
+       "minRiskRewardRatio": {
+        "type": "number"
+       },
+       "tradeBracket": {
+        "type": "object",
+        "properties": {
+         "LONG": {
+          "$ref": "#/$defs/directionTradeBracket"
+         },
+         "SHORT": {
+          "$ref": "#/$defs/directionTradeBracket"
+         }
+        },
+        "required": [
+         "LONG",
+         "SHORT"
+        ],
+        "additionalProperties": false
+       }
+      },
+      "required": [
+       "minAtrPct",
+       "minStopLossAtrMultiple",
+       "maxStopLossAtrMultiple",
+       "minRiskRewardRatio",
+       "tradeBracket"
+      ],
+      "additionalProperties": false
+     },
+     "POSITION_MANAGEMENT": {
+      "type": "object",
+      "properties": {
+       "breakEvenEnabled": {
+        "type": "boolean"
+       },
+       "breakEvenTriggerR": {
+        "type": "number"
+       },
+       "trailingEnabled": {
+        "type": "boolean"
+       },
+       "trailingTriggerR": {
+        "type": "number"
+       },
+       "trailingGivebackPct": {
+        "type": "number"
+       },
+       "trailingBufferPct": {
+        "type": "number"
+       },
+       "timeDecayEnabled": {
+        "type": "boolean"
+       },
+       "timeDecayGracePeriodMinutes": {
+        "type": "integer",
+        "minimum": -9007199254740991,
+        "maximum": 9007199254740991
+       },
+       "timeDecayIntervalMinutes": {
+        "type": "integer",
+        "minimum": -9007199254740991,
+        "maximum": 9007199254740991
+       },
+       "timeDecayTightenPct": {
+        "type": "number"
+       },
+       "timeDecayMaxTightenPct": {
+        "type": "number"
+       },
+       "timeDecayStaleThresholdTpProgressPct": {
+        "type": "number"
+       },
+       "decisionInvalidationExitEnabled": {
+        "type": "boolean"
+       }
+      },
+      "required": [
+       "breakEvenEnabled",
+       "breakEvenTriggerR",
+       "trailingEnabled",
+       "trailingTriggerR",
+       "trailingGivebackPct",
+       "trailingBufferPct",
+       "timeDecayEnabled",
+       "timeDecayGracePeriodMinutes",
+       "timeDecayIntervalMinutes",
+       "timeDecayTightenPct",
+       "timeDecayMaxTightenPct",
+       "timeDecayStaleThresholdTpProgressPct",
+       "decisionInvalidationExitEnabled"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "additionalProperties": false,
+    "description": "The proposed axes, each written WHOLE. Axes you omit keep the values the draft has."
+   }
+  },
+  "required": [
+   "draftVersion",
+   "axes"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+   "coinSymbol": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 20,
+    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    "description": "Coin symbol — ticker or exchange symbol, e.g. \"BTC\", \"kPEPE\", \"xyz:BRENTOIL\" (case-insensitive)"
+   },
+   "breadthScope": {
+    "type": "string",
+    "enum": [
+     "all",
+     "crypto",
+     "l1",
+     "memes",
+     "defi",
+     "tradfi",
+     "stocks",
+     "indices",
+     "commodities"
+    ]
+   },
+   "metricKey": {
+    "type": "string",
+    "minLength": 1,
+    "maxLength": 64,
+    "pattern": "^[A-Z][A-Z0-9_]*$",
+    "description": "A metric key list_strategy_vocabulary serves; search it with `query`."
+   },
+   "timeframeRef": {
+    "anyOf": [
+     {
+      "type": "object",
+      "properties": {
+       "rel": {
+        "type": "string",
+        "enum": [
+         "anchor",
+         "lower",
+         "regime"
+        ]
+       }
+      },
+      "required": [
+       "rel"
+      ],
+      "additionalProperties": false
+     },
+     {
+      "type": "object",
+      "properties": {
+       "abs": {
+        "$ref": "#/$defs/timeframe"
+       }
+      },
+      "required": [
+       "abs"
+      ],
+      "additionalProperties": false
+     }
+    ]
+   },
+   "timeframe": {
+    "type": "string",
+    "enum": [
+     "1m",
+     "3m",
+     "5m",
+     "15m",
+     "30m",
+     "1h",
+     "2h",
+     "4h",
+     "8h",
+     "12h",
+     "1d",
+     "3d",
+     "1w"
+    ]
+   },
+   "barCount": {
+    "type": "integer",
+    "minimum": 1,
+    "maximum": 9007199254740991
+   },
+   "conditionNode": {
+    "anyOf": [
+     {
+      "anyOf": [
+       {
+        "anyOf": [
+         {
+          "type": "object",
+          "properties": {
+           "kind": {
+            "type": "string",
+            "const": "clause"
+           },
+           "column": {
+            "$ref": "#/$defs/conditionColumn"
+           },
+           "op": {
+            "type": "string",
+            "enum": [
+             "lt",
+             "lte",
+             "gte",
+             "gt",
+             "crossesAbove",
+             "crossesBelow"
+            ]
+           },
+           "value": {
+            "type": "number"
+           },
+           "hold": {
+            "$ref": "#/$defs/conditionHold"
+           }
+          },
+          "required": [
+           "kind",
+           "column",
+           "op",
+           "value",
+           "hold"
+          ],
+          "additionalProperties": false
+         },
+         {
+          "type": "object",
+          "properties": {
+           "kind": {
+            "type": "string",
+            "const": "clause"
+           },
+           "column": {
+            "$ref": "#/$defs/conditionColumn"
+           },
+           "op": {
+            "type": "string",
+            "const": "between"
+           },
+           "low": {
+            "type": "number"
+           },
+           "high": {
+            "type": "number"
+           },
+           "hold": {
+            "$ref": "#/$defs/conditionHold"
+           }
+          },
+          "required": [
+           "kind",
+           "column",
+           "op",
+           "low",
+           "high",
+           "hold"
+          ],
+          "additionalProperties": false
+         },
+         {
+          "type": "object",
+          "properties": {
+           "kind": {
+            "type": "string",
+            "const": "clause"
+           },
+           "column": {
+            "$ref": "#/$defs/conditionColumn"
+           },
+           "op": {
+            "type": "string",
+            "enum": [
+             "is",
+             "enters",
+             "exits"
+            ]
+           },
+           "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+           },
+           "hold": {
+            "$ref": "#/$defs/conditionHold"
+           }
+          },
+          "required": [
+           "kind",
+           "column",
+           "op",
+           "label",
+           "hold"
+          ],
+          "additionalProperties": false
+         },
+         {
+          "type": "object",
+          "properties": {
+           "kind": {
+            "type": "string",
+            "const": "clause"
+           },
+           "column": {
+            "$ref": "#/$defs/conditionColumn"
+           },
+           "op": {
+            "type": "string",
+            "const": "in"
+           },
+           "labels": {
+            "minItems": 1,
+            "maxItems": 32,
+            "type": "array",
+            "items": {
+             "type": "string",
+             "minLength": 1,
+             "maxLength": 80
+            }
+           },
+           "hold": {
+            "$ref": "#/$defs/conditionHold"
+           }
+          },
+          "required": [
+           "kind",
+           "column",
+           "op",
+           "labels",
+           "hold"
+          ],
+          "additionalProperties": false
+         },
+         {
+          "type": "object",
+          "properties": {
+           "kind": {
+            "type": "string",
+            "const": "clause"
+           },
+           "column": {
+            "$ref": "#/$defs/conditionColumn"
+           },
+           "op": {
+            "type": "string",
+            "enum": [
+             "increased",
+             "decreased"
+            ]
+           },
+           "hold": {
+            "$ref": "#/$defs/conditionHold"
+           }
+          },
+          "required": [
+           "kind",
+           "column",
+           "op",
+           "hold"
+          ],
+          "additionalProperties": false
+         }
+        ]
+       },
+       {
+        "type": "object",
+        "properties": {
+         "kind": {
+          "type": "string",
+          "const": "conditionRef"
+         },
+         "conditionKey": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{1,39}$"
+         }
+        },
+        "required": [
+         "kind",
+         "conditionKey"
+        ],
+        "additionalProperties": false
+       }
+      ]
+     },
+     {
+      "type": "object",
+      "properties": {
+       "kind": {
+        "type": "string",
+        "const": "group"
+       },
+       "op": {
+        "type": "string",
+        "enum": [
+         "ALL",
+         "ANY",
+         "NOT",
+         "N_OF",
+         "SEQUENCE"
+        ]
+       },
+       "n": {
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 64
+       },
+       "within": {
+        "type": "integer",
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991
+       },
+       "hold": {
+        "$ref": "#/$defs/conditionHold"
+       },
+       "members": {
+        "minItems": 1,
+        "maxItems": 64,
+        "type": "array",
+        "items": {
+         "$ref": "#/$defs/conditionNode"
+        }
+       }
+      },
+      "required": [
+       "kind",
+       "op",
+       "hold",
+       "members"
+      ],
+      "additionalProperties": false
+     }
+    ]
+   },
+   "conditionColumn": {
+    "type": "object",
+    "properties": {
+     "sectionKey": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "header": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+     }
+    },
+    "required": [
+     "sectionKey",
+     "header"
+    ],
+    "additionalProperties": false
+   },
+   "conditionHold": {
+    "type": "object",
+    "properties": {
+     "atLeast": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+     },
+     "of": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+     }
+    },
+    "required": [
+     "atLeast",
+     "of"
+    ],
+    "additionalProperties": false
+   },
+   "conditionLevelRef": {
+    "type": "object",
+    "properties": {
+     "metric": {
+      "$ref": "#/$defs/metricKey"
+     },
+     "timeframe": {
+      "$ref": "#/$defs/timeframeRef"
+     },
+     "bars": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "closed",
+         "all"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+     },
+     "knobs": {
+      "type": "object",
+      "properties": {
+       "leftBars": {
+        "$ref": "#/$defs/barCount"
+       },
+       "rightBars": {
+        "$ref": "#/$defs/barCount"
+       },
+       "swingLength": {
+        "$ref": "#/$defs/barCount"
+       },
+       "equalBars": {
+        "$ref": "#/$defs/barCount"
+       },
+       "period": {
+        "$ref": "#/$defs/barCount"
+       },
+       "kSmoothing": {
+        "$ref": "#/$defs/barCount"
+       },
+       "dSmoothing": {
+        "$ref": "#/$defs/barCount"
+       },
+       "rsiPeriod": {
+        "$ref": "#/$defs/barCount"
+       },
+       "fast": {
+        "$ref": "#/$defs/barCount"
+       },
+       "slow": {
+        "$ref": "#/$defs/barCount"
+       },
+       "signal": {
+        "$ref": "#/$defs/barCount"
+       },
+       "atrPeriod": {
+        "$ref": "#/$defs/barCount"
+       },
+       "conversionPeriod": {
+        "$ref": "#/$defs/barCount"
+       },
+       "basePeriod": {
+        "$ref": "#/$defs/barCount"
+       },
+       "spanBPeriod": {
+        "$ref": "#/$defs/barCount"
+       },
+       "displacement": {
+        "$ref": "#/$defs/barCount"
+       },
+       "equalThreshold": {
+        "type": "number"
+       },
+       "stdDev": {
+        "type": "number"
+       },
+       "multiplier": {
+        "type": "number"
+       },
+       "accelerationStart": {
+        "type": "number"
+       },
+       "accelerationIncrement": {
+        "type": "number"
+       },
+       "accelerationMaximum": {
+        "type": "number"
+       },
+       "supplyDemandThreshold": {
+        "type": "number"
+       },
+       "supplyDemandResolution": {
+        "type": "number"
+       },
+       "confluenceFilter": {
+        "type": "boolean"
+       },
+       "usedUpOnClose": {
+        "type": "boolean"
+       }
+      },
+      "additionalProperties": false
+     },
+     "windowExtreme": {
+      "anyOf": [
+       {
+        "type": "object",
+        "properties": {
+         "transformId": {
+          "type": "string",
+          "enum": [
+           "rollingMax",
+           "rollingMin"
+          ]
+         },
+         "window": {
+          "$ref": "#/$defs/barCount"
+         }
+        },
+        "required": [
+         "transformId",
+         "window"
+        ],
+        "additionalProperties": false
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "required": [
+     "metric",
+     "timeframe",
+     "bars",
+     "offset",
+     "knobs",
+     "windowExtreme"
+    ],
+    "additionalProperties": false
+   },
+   "directionTradeBracket": {
+    "type": "object",
+    "properties": {
+     "stop": {
+      "oneOf": [
+       {
+        "type": "object",
+        "properties": {
+         "kind": {
+          "type": "string",
+          "const": "ATR"
+         },
+         "atrMultiple": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 5
+         }
+        },
+        "required": [
+         "kind",
+         "atrMultiple"
+        ],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "properties": {
+         "kind": {
+          "type": "string",
+          "const": "LEVEL"
+         },
+         "level": {
+          "$ref": "#/$defs/conditionLevelRef"
+         },
+         "bufferAtrMultiple": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5
+         }
+        },
+        "required": [
+         "kind",
+         "level",
+         "bufferAtrMultiple"
+        ],
+        "additionalProperties": false
+       },
+       {
+        "type": "object",
+        "properties": {
+         "kind": {
+          "type": "string",
+          "const": "PERCENT"
+         },
+         "percent": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 100
+         }
+        },
+        "required": [
+         "kind",
+         "percent"
+        ],
+        "additionalProperties": false
+       }
+      ]
+     },
+     "exitPlan": {
+      "$ref": "#/$defs/exitPlan"
+     }
+    },
+    "required": [
+     "stop",
+     "exitPlan"
+    ],
+    "additionalProperties": false
+   },
+   "exitPlan": {
+    "type": "object",
+    "properties": {
+     "targets": {
+      "minItems": 1,
+      "maxItems": 4,
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "method": {
+         "oneOf": [
+          {
+           "type": "object",
+           "properties": {
+            "kind": {
+             "type": "string",
+             "const": "R_MULTIPLE"
+            },
+            "multiple": {
+             "type": "number",
+             "exclusiveMinimum": 0,
+             "maximum": 10
+            }
+           },
+           "required": [
+            "kind",
+            "multiple"
+           ],
+           "additionalProperties": false
+          },
+          {
+           "type": "object",
+           "properties": {
+            "kind": {
+             "type": "string",
+             "const": "LEVEL"
+            },
+            "level": {
+             "$ref": "#/$defs/conditionLevelRef"
+            }
+           },
+           "required": [
+            "kind",
+            "level"
+           ],
+           "additionalProperties": false
+          }
+         ]
+        },
+        "closePct": {
+         "type": "integer",
+         "minimum": 0,
+         "maximum": 100
+        }
+       },
+       "required": [
+        "method",
+        "closePct"
+       ],
+       "additionalProperties": false
+      }
+     }
+    },
+    "required": [
+     "targets"
+    ],
+    "additionalProperties": false
+   }
+  }
+ }
+}

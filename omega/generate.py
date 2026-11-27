@@ -314,11 +314,13 @@ class Thesis:
     # MEASURED platform defaults (Decision 1a, 2026-08-28) - since v85 sent whole on their
     # axes, see omega/execution.py.
     execution: dict | None = None
-    # Contract 168 (2026-11-11): the trade level menu the strategy offers - {LONG, SHORT}, each {stops, targets}
-    # (omega/trade_levels.py). None means the ATR / R part of the platform's own migration default, with the R targets
-    # taken from this thesis's minRiskRewardRatio up and (v0.14.3) the ATR stops kept inside its stop range
-    # (trade_levels.default_menu).
-    trade_level_menu: dict | None = None
+    # Contract 185 (OMEGA v0.18.0): the trade bracket the strategy trades - {LONG, SHORT}, each {stop, exitPlan}, one
+    # stop and one exit plan per direction (omega/trade_levels.py), judged whole (validate_bracket). None means OMEGA's
+    # default (trade_levels.default_bracket): the platform's own ATR 1.5 / 3R when it fits this thesis's stop band and
+    # minimum, else OMEGA's fallback stop inside the band and one leg at the minimum. It takes the position of
+    # `trade_level_menu` (contract 168 - 184, {stops, exitPlans} lists), removed rather than aliased: a menu cannot be
+    # staged at 185, and a caller passing it gets a TypeError.
+    trade_bracket: dict | None = None
     # Condition ROLES (EXIT_ROLES: "UP", "CORE_DOWN", ...) whose entry condition is also an
     # exit: each gains the v88 split, an exit rule CLOSE_ON_<key> closing the side its
     # verdict opposes (omega.conditions.close_on). Empty: every condition is an entry
@@ -405,6 +407,29 @@ RETIRED_AXES = ("SETUP_GATES", "SIGNAL_RULES")
 EXIT_ROLES = ("RISK_ON", "CTX_UP", "CTX_DOWN", "CORE_UP", "CORE_DOWN", "UP", "DOWN")
 
 
+class BracketUnknown(ValueError):
+    """An UPDATE that must carry the live strategy's tradeBracket (contract 185) and `current` names none (or names only
+    a 184 tradeLevelMenu): omega never invents or converts one. A ValueError, as every unplannable update is."""
+
+
+def _unread_bracket_dials(policy: dict) -> list[tuple[str, str]]:
+    """[(dial, what it bounds)] of the TRADE_LEVEL_POLICY dials the live bracket's rules read that `policy` (the live
+    axis, `current`'s) carries as no finite number: the band (minStopLossAtrMultiple, maxStopLossAtrMultiple) under an
+    ATR stop, the minimum (minRiskRewardRatio) under any exit plan. validate_bracket reads an absent dial as no bound
+    (outside_stop_range, _plan_findings), so a partial `current` would read clean; get_strategy serves all three,
+    required. A malformed bracket needs none here: the shape walk refuses it first."""
+    from .trade_levels import SIDES, _finite_number
+    bracket = policy.get("tradeBracket")
+    sides = [bracket.get(s) for s in SIDES] if isinstance(bracket, dict) else []
+    sides = [s for s in sides if isinstance(s, dict)]
+    reads = []
+    if any(isinstance(s.get("stop"), dict) and s["stop"].get("kind") == "ATR" for s in sides):
+        reads += [("minStopLossAtrMultiple", "stop band's floor"), ("maxStopLossAtrMultiple", "stop band's hard stop")]
+    if any(isinstance(s.get("exitPlan"), dict) for s in sides):
+        reads.append(("minRiskRewardRatio", "exit plan's minimum risk-reward"))
+    return [(dial, why) for dial, why in reads if not _finite_number(policy.get(dial))]
+
+
 @dataclass
 class StrategyPlan:
     thesis: Thesis
@@ -479,17 +504,16 @@ class StrategyPlan:
         from .execution import PLATFORM_EXECUTION_DEFAULTS, validate_execution
         ov = self.thesis.execution or {}
         out += [f"execution {f.severity}: {f}" for f in validate_execution(ov)]
-        # the menu a CREATE stages; an UPDATE that stages TRADE_LEVEL_POLICY carries the live strategy's menu instead,
-        # judged by update_menu_findings(current)
-        findings = self.menu_findings()
-        out += [f"trade level menu {f.severity}: {f}" for f in findings]
-        menu = self.trade_level_menu()
-        sizes = ("" if any(f.severity == "error" for f in findings) or not isinstance(menu, dict) else
-                 " - " + "; ".join(f"{side} {len(menu[side]['stops'])} stop(s), " + (
-                                       f"{len(menu[side]['exitPlans'])} exit plan(s)" if "exitPlans" in menu[side]
-                                       else f"{len(menu[side]['targets'])} target(s)") for side in menu))
+        # the bracket a CREATE stages; an UPDATE that stages TRADE_LEVEL_POLICY carries the live strategy's bracket
+        # instead, judged by update_bracket_findings(current)
+        findings = self.bracket_findings()
+        out += [f"trade bracket {f.severity}: {f}" for f in findings]
+        bracket = self.trade_bracket()
+        legs = ("" if any(f.severity == "error" for f in findings) or not isinstance(bracket, dict) else
+                " - " + "; ".join(f"{side} stop {json.dumps(bracket[side]['stop'])}, "
+                                  f"{len(bracket[side]['exitPlan']['targets'])} target leg(s)" for side in bracket))
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **ov}
-        out.append("trade level menu: " + self._menu_source(eff) + sizes)
+        out.append("trade bracket: " + self._bracket_source(eff) + legs)
         out.append(
             f"execution: {'platform defaults' if not ov else f'{len(ov)} override(s)'}"
             f" - R:R {eff['minRiskRewardRatio']}, ATR gate {eff['minAtrPct']}%, stop "
@@ -507,25 +531,26 @@ class StrategyPlan:
                 f"wider reports refuse earlier)")
         return out
 
-    def _menu_source(self, eff: dict) -> str:
-        """Where the menu's stops come from, for critique(): the thesis's own menu, the migration's ATR stops inside
-        the stop range, OMEGA's own fallback when none of them is inside (omega.trade_levels.default_stops), or the
-        migration's three as written for a range the default does not follow."""
-        from .trade_levels import DEFAULT_ATR_STOPS, default_stops, default_stops_basis
-        if self.thesis.trade_level_menu is not None:
+    def _bracket_source(self, eff: dict) -> str:
+        """Where the bracket comes from, for critique(): the thesis's own, or the default (omega.trade_levels.
+        default_bracket) - the platform's ATR 1.5 / 3R where it fits, else OMEGA's fallback stop / one leg at the
+        minimum, each named."""
+        from .trade_levels import (PLATFORM_BRACKET_STOP, PLATFORM_BRACKET_TARGET, default_bracket_basis,
+                                   default_bracket_stop, default_bracket_target)
+        if self.thesis.trade_bracket is not None:
             return "the thesis's own"
-        lo, hi = eff["minStopLossAtrMultiple"], eff["maxStopLossAtrMultiple"]
-        migration = " / ".join(str(m) for m in DEFAULT_ATR_STOPS)
-        basis = default_stops_basis((lo, hi))
-        if basis == "fallback":
-            return (f"default (none of the migration's ATR stops {migration} is inside the stop range {lo} - {hi}, so "
-                    f"OMEGA's own fallback instead: ATR {' / '.join(str(m) for m in default_stops((lo, hi)))} - the "
-                    f"range's stageable bounds and, where a 0.1 ATR step fits, a stop strictly between them; R targets "
-                    f"from the minimum up)")
-        if basis == "unjudged":
-            return (f"default (the migration's ATR stops {migration} as written: the stop range {lo} - {hi} is not one "
-                    f"the default menu follows; R targets from the minimum up)")
-        return "default (the platform's migration ATR stops inside the stop range, R targets from the minimum up)"
+        lo, hi, rr = eff["minStopLossAtrMultiple"], eff["maxStopLossAtrMultiple"], eff["minRiskRewardRatio"]
+        basis = default_bracket_basis(rr, (lo, hi))
+        stop = {"platform": f"the platform's ATR {PLATFORM_BRACKET_STOP} (inside the band {lo} - {hi})",
+                "fallback": (f"OMEGA's fallback ATR {default_bracket_stop((lo, hi))} (the platform's ATR "
+                             f"{PLATFORM_BRACKET_STOP} is outside the band {lo} - {hi}: the 0.1 ATR step nearest its "
+                             f"midpoint, else a bound)"),
+                "unjudged": (f"the platform's ATR {PLATFORM_BRACKET_STOP} (the band {lo} - {hi} is not one the "
+                             f"default follows)")}[basis["stop"]]
+        plan = (f"one {default_bracket_target(rr)}R leg closing 100% at the minimum {rr} (the platform's "
+                f"{PLATFORM_BRACKET_TARGET}R pays less)" if basis["exitPlan"] == "minimum" else
+                f"the platform's {PLATFORM_BRACKET_TARGET}R closing 100%")
+        return f"default ({stop}; {plan})"
 
     # -- output -----------------------------------------------------------
     def _assumptions(self) -> list[str]:
@@ -578,32 +603,32 @@ class StrategyPlan:
             for s in all_signals
         ]
 
-    def trade_level_menu(self) -> dict:
-        """The menu this plan stages (contract 168): the thesis's own, else the default built from the effective
-        minRiskRewardRatio. A copy: the caller may rewrite it."""
+    def trade_bracket(self) -> dict:
+        """The bracket this plan stages (contract 185): the thesis's own, else the default built from the effective
+        minRiskRewardRatio and stop band (omega.trade_levels.default_bracket). A copy: the caller may rewrite it. A
+        thesis bracket is staged as written - never migrated or repaired; bracket_findings judges it whole."""
         from .execution import PLATFORM_EXECUTION_DEFAULTS
-        from .trade_levels import default_menu, menu_form, migrate_menu
-        if self.thesis.trade_level_menu is not None:
-            # contract 170: a thesis menu still naming 168's `targets` stages as the platform migrated every stored
-            # one - each target an exit plan of one leg closing 100% (omega.trade_levels.migrate_menu)
-            own = copy.deepcopy(self.thesis.trade_level_menu)
-            return migrate_menu(own) if menu_form() == "exitPlans" else own
+        from .trade_levels import default_bracket
+        if self.thesis.trade_bracket is not None:
+            return copy.deepcopy(self.thesis.trade_bracket)
         eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
-        # v0.14.3: only the default ATR stops inside this plan's stop range - every decision drops the rest
-        # (omega.trade_levels.STOP_BAND_PROBES)
-        return default_menu(eff["minRiskRewardRatio"],
-                            stop_range=(eff["minStopLossAtrMultiple"], eff["maxStopLossAtrMultiple"]))
+        return default_bracket(eff["minRiskRewardRatio"],
+                               stop_range=(eff["minStopLossAtrMultiple"], eff["maxStopLossAtrMultiple"]))
+
+    def bracket_findings(self) -> list:
+        """What the stage would say of this plan's trade bracket, offline (omega.trade_levels.validate_bracket): the
+        bracket against the plan's own dials (the stop band, the minimum), the levels its REPORT yields and the
+        trailingEnabled its POSITION_MANAGEMENT stages (a plan that leaves a runner is refused while Trailing is off)."""
+        from .execution import PLATFORM_EXECUTION_DEFAULTS, TRADE_LEVEL_DIALS
+        from .trade_levels import validate_bracket
+        eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
+        return validate_bracket(self.trade_bracket(), dials={k: eff[k] for k in TRADE_LEVEL_DIALS},
+                                sections=self._sections(), anchor=self.thesis.anchor,
+                                trailing_enabled=eff["trailingEnabled"])
 
     def menu_findings(self) -> list:
-        """What the stage would say of this plan's trade level menu, offline (omega.trade_levels.validate_menu): the
-        menu against the plan's own dials, the levels its REPORT yields and the trailingEnabled its POSITION_MANAGEMENT
-        stages (a plan that leaves a runner is refused while Trailing is off, contract 171)."""
-        from .execution import PLATFORM_EXECUTION_DEFAULTS, TRADE_LEVEL_DIALS
-        from .trade_levels import validate_menu
-        eff = {**PLATFORM_EXECUTION_DEFAULTS, **(self.thesis.execution or {})}
-        return validate_menu(self.trade_level_menu(), dials={k: eff[k] for k in TRADE_LEVEL_DIALS},
-                             sections=self._sections(), anchor=self.thesis.anchor,
-                             trailing_enabled=eff["trailingEnabled"])
+        """v0.18.0 alias of bracket_findings (the menu is gone at contract 185); removed in a later release."""
+        return self.bracket_findings()
 
     def axes(self) -> dict:
         """The `axes` of a CREATE stage_strategy_draft request (no strategyId,
@@ -625,8 +650,9 @@ class StrategyPlan:
             "MARKET_READ": {"marketReadText": self.market_read_text},
             "CONDITIONS": {"conditions": self.conditions},
             "ENTRY": {"entry": dict(ENTRY_MIRROR)},
+            # contract 185: the bracket (`tradeBracket`, required) where 168 - 184 staged `tradeLevelMenu`
             "TRADE_LEVEL_POLICY": {**{k: eff[k] for k in TRADE_LEVEL_DIALS},
-                                   "tradeLevelMenu": self.trade_level_menu()},
+                                   "tradeBracket": self.trade_bracket()},
             "POSITION_MANAGEMENT": {k: eff[k] for k in POSITION_MANAGEMENT_DIALS},
         }
 
@@ -684,7 +710,16 @@ class StrategyPlan:
         Never invents a key. Whether the server honours a key sent back on an UPDATE, rather
         than re-deriving it, is unmeasured: the 2026-08-29 compile-path UPDATE re-minted
         custom keys sent byte-identical (LOCKSTEP_REMINT); the v91 commit of 2026-10-10
-        kept them through nulls."""
+        kept them through nulls.
+
+        Contract 185: TRADE_LEVEL_POLICY carries `tradeBracket` - the thesis's own, else the live strategy's exactly as
+        get_strategy serves it (update_bracket). A `current` without one raises BracketUnknown (a ValueError):
+        omega never invents a live strategy's bracket, and never converts a live `tradeLevelMenu` into one."""
+        return self._axes_update(current, strict=True)
+
+    def _axes_update(self, current: dict | None, *, strict: bool) -> dict:
+        """axes_update; with strict False a bracket neither the thesis nor `current` names is left None in the staged
+        TRADE_LEVEL_POLICY (for update_bracket_findings, which refuses it as TRADE_BRACKET_LIVE_UNKNOWN)."""
         from .execution import POSITION_MANAGEMENT_DIALS, TRADE_LEVEL_DIALS
         out = self.axes()
         del out["ENTRY"]
@@ -718,33 +753,46 @@ class StrategyPlan:
                 out[axis] = complete(axis, dials)
             else:
                 del out[axis]
-        # Contract 168: TRADE_LEVEL_POLICY is staged WHOLE with its menu. The axis goes on an update when the thesis
-        # names one of its dials OR a menu; the part the thesis does not name is the live strategy's own - its dials
-        # (complete) and its menu, carried verbatim. A strategy read with no menu and a thesis naming none raises:
-        # omega never invents a live strategy's menu, any more than a dial.
-        if "TRADE_LEVEL_POLICY" in out or self.thesis.trade_level_menu is not None:
+        # Contract 168 - 184 staged the axis WHOLE with its menu, contract 185 with its bracket. The axis goes on an
+        # update when the thesis names one of its dials OR a bracket; the part the thesis does not name is the live
+        # strategy's own - its dials (complete) and its bracket, carried verbatim. A strategy read with no bracket and a
+        # thesis naming none raises: omega never invents a live strategy's bracket, any more than a dial.
+        if "TRADE_LEVEL_POLICY" in out or self.thesis.trade_bracket is not None:
+            bracket = self.update_bracket(current) if strict else self._update_bracket_or_none(current)
             out["TRADE_LEVEL_POLICY"] = {**(out.get("TRADE_LEVEL_POLICY") or complete("TRADE_LEVEL_POLICY", TRADE_LEVEL_DIALS)),
-                                         "tradeLevelMenu": self.update_menu(current)}
+                                         "tradeBracket": bracket}
         return {axis: out[axis] for axis in AXES if axis in out}          # the published order, whichever path added it
 
-    def update_menu(self, current: dict | None) -> dict:
-        """The menu an UPDATE stages: the thesis's own, else the live strategy's (`current` TRADE_LEVEL_POLICY
-        `tradeLevelMenu`), copied. Neither: ValueError. A thesis menu in 168's `targets` form is migrated as the platform
-        migrated stored menus (contract 170); the live one is copied as the platform holds it."""
-        from .trade_levels import menu_form, migrate_menu
-        if self.thesis.trade_level_menu is not None:
-            own = copy.deepcopy(self.thesis.trade_level_menu)
-            return migrate_menu(own) if menu_form() == "exitPlans" else own
-        live = ((current or {}).get("TRADE_LEVEL_POLICY") or {}).get("tradeLevelMenu")
+    def _update_bracket_or_none(self, current: dict | None) -> dict | None:
+        try:
+            return self.update_bracket(current)
+        except BracketUnknown:
+            return None
+
+    def update_bracket(self, current: dict | None) -> dict:
+        """The bracket an UPDATE stages: the thesis's own, else the live strategy's (`current` TRADE_LEVEL_POLICY
+        `tradeBracket`, exactly as get_strategy serves it), copied. Neither: BracketUnknown (a ValueError). A `current`
+        that carries only a 184 `tradeLevelMenu` is the same refusal: a menu cannot be staged at 185, and which of its
+        stops and plans the platform would keep is not a rule omega knows - it never converts one."""
+        if self.thesis.trade_bracket is not None:
+            return copy.deepcopy(self.thesis.trade_bracket)
+        policy = (current or {}).get("TRADE_LEVEL_POLICY") or {}
+        live = policy.get("tradeBracket")
         if live is None:
-            raise ValueError(
-                "TRADE_LEVEL_POLICY: `tradeLevelMenu` is named neither by the thesis nor by the strategy's current "
-                "axes - pass as `current` the committed strategy's axes (get_strategy) overlaid by the held draft's "
-                "(get_strategy_draft's draft.content holds only the axes the draft staged; contract 168 stages the "
-                "axis whole, menu included); omega never invents a live strategy's menu")
+            menu = " (it carries a contract 184 `tradeLevelMenu`, which is never converted)" if (
+                "tradeLevelMenu" in policy) else ""
+            raise BracketUnknown(
+                f"TRADE_LEVEL_POLICY: `tradeBracket` is named neither by the thesis nor by the strategy's current "
+                f"axes{menu} - pass as `current` the committed strategy's axes (get_strategy, which serves "
+                f"`strategy.tradeBracket` since contract 185) overlaid by the held draft's; omega never invents a live "
+                f"strategy's bracket")
         return copy.deepcopy(live)
 
     def update_menu_findings(self, current: dict | None) -> list:
+        """v0.18.0 alias of update_bracket_findings (the menu is gone at contract 185); removed in a later release."""
+        return self.update_bracket_findings(current)
+
+    def update_bracket_findings(self, current: dict | None) -> list:
         """What the stage would say of the menu and dials the draft holds after an UPDATE, offline. A live strategy's
         migrated menu can hold levels the report does not yield (the platform's migration default names the Donchian
         and Bollinger bands on every strategy, measured 2026-11-11): restaging the axis then is refused, and this says
@@ -764,49 +812,73 @@ class StrategyPlan:
         (get_strategy) overlaid, axis by axis, by the axes the held draft has staged. get_strategy_draft's
         `draft.content` alone is not it - it holds only the axes the draft staged (A3's draft read back REPORT alone: the
         menu A3 was refused on was in no draft). A `current` that leaves out what the stage will judge is never read as
-        clean: no tradeLevelMenu while this update does not stage TRADE_LEVEL_POLICY is an error
-        (TRADE_MENU_LIVE_UNKNOWN, failing closed); no POSITION_MANAGEMENT under a live runner is the rule's own warning
+        clean: no tradeBracket (contract 185; until 184 no tradeLevelMenu, TRADE_MENU_LIVE_UNKNOWN) is an error
+        (TRADE_BRACKET_LIVE_UNKNOWN, failing closed) whether or not this update stages TRADE_LEVEL_POLICY, and a
+        `current` carrying only a 184 menu is the same refusal, and so is a carried live bracket whose band (under an
+        ATR stop) or minimum `current` leaves out (TRADE_BRACKET_LIVE_UNKNOWN on the dial, _unread_bracket_dials); no
+        POSITION_MANAGEMENT under a live runner is the rule's own warning
         (TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN, as on a staged menu - this update changes neither axis of it)."""
-        from .trade_levels import RULE_AXIS, validate_menu
+        from .trade_levels import RULE_AXIS, validate_bracket
         from .validate import Finding
-        axes = self.axes_update(current)
+        axes = self._axes_update(current, strict=False)
         policy = axes.get("TRADE_LEVEL_POLICY")
         # the trailingEnabled the draft will hold: this update's POSITION_MANAGEMENT when it stages one, else the
         # strategy's current one (contract 171: a plan leaving a runner is refused while Trailing is off)
         trailing = (axes.get("POSITION_MANAGEMENT") or (current or {}).get("POSITION_MANAGEMENT") or {}).get(
             "trailingEnabled")
         steps = self._carried_off_step(axes, current)
-        if policy is not None:
-            return validate_menu(policy["tradeLevelMenu"],
-                                 dials={k: v for k, v in policy.items() if k != "tradeLevelMenu"},
-                                 sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
-                                 trailing_enabled=trailing) + steps
-        # The axis is not staged, so the menu and dials stay as the strategy holds them - but REPORT is restaged whole
-        # (the live menu's levels were yielded by the OLD report), and POSITION_MANAGEMENT may be (switching Trailing
-        # off under a runner).
         live = (current or {}).get("TRADE_LEVEL_POLICY") or {}
-        if live.get("tradeLevelMenu") is None:
-            # A3's refusal, unseen: the stage judges the menu the strategy holds against the REPORT this update stages,
-            # and `current` does not carry it - a partial `current` (the held draft's content alone) reads this way
-            unknown = Finding("error", "TRADE_MENU_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.tradeLevelMenu",
-                              "this update does not stage TRADE_LEVEL_POLICY, so the stage judges the menu the "
+        menu_only = ("tradeLevelMenu" in live and live.get("tradeBracket") is None)
+        menu_note = (" `current` carries a contract 184 `tradeLevelMenu` and no `tradeBracket`: a menu cannot be staged "
+                     "at 185 and omega never converts one (which stop and which plan the platform keeps is not a rule "
+                     "it knows), so it refuses rather than guess." if menu_only else "")
+        if policy is not None:
+            if policy.get("tradeBracket") is None:
+                return [Finding("error", "TRADE_BRACKET_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.tradeBracket",
+                                "this update stages TRADE_LEVEL_POLICY whole, so it must carry a tradeBracket, and "
+                                "neither the thesis nor `current` names one: omega never invents a live strategy's "
+                                "bracket." + menu_note + " Pass as `current` the committed strategy's axes "
+                                "(get_strategy, strategy.tradeBracket) overlaid by the held draft's")] + steps
+            return validate_bracket(policy["tradeBracket"],
+                                    dials={k: v for k, v in policy.items() if k != "tradeBracket"},
+                                    sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
+                                    trailing_enabled=trailing) + steps
+        # The axis is not staged, so the bracket and dials stay as the strategy holds them - but REPORT is restaged
+        # whole (the live bracket's levels were yielded by the OLD report), and POSITION_MANAGEMENT may be (switching
+        # Trailing off under a runner).
+        if live.get("tradeBracket") is None:
+            # A3's refusal, unseen: the stage judges the bracket the strategy holds against the REPORT this update
+            # stages, and `current` does not carry it - a partial `current` (the held draft's content alone) reads so
+            unknown = Finding("error", "TRADE_BRACKET_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.tradeBracket",
+                              "this update does not stage TRADE_LEVEL_POLICY, so the stage judges the bracket the "
                               "strategy holds - the held draft's, else the committed one - against the REPORT this "
                               "update stages (probe A3 drew \"not a level this strategy's report yields\" on a "
-                              "committed menu that way), and `current` carries no tradeLevelMenu: omega cannot judge "
-                              "it, so it refuses, failing closed. Pass as `current` the committed strategy's axes "
-                              "(get_strategy) overlaid by the held draft's - get_strategy_draft's draft.content holds "
-                              "only the axes the draft staged")
+                              "committed menu that way), and `current` carries no tradeBracket: omega cannot judge "
+                              "it, so it refuses, failing closed." + menu_note + " Pass as `current` the committed "
+                              "strategy's axes (get_strategy) overlaid by the held draft's - get_strategy_draft's "
+                              "draft.content holds only the axes the draft staged")
             return [unknown] + steps
-        would = validate_menu(live["tradeLevelMenu"], dials={k: v for k, v in live.items() if k != "tradeLevelMenu"},
-                              sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
-                              trailing_enabled=trailing)
+        unread = _unread_bracket_dials(live)
+        if unread:
+            # the live bracket is carried, but a dial its rules read beside it is not: the band (an ATR stop outside it
+            # is refused since 185, bracket_refusals_185 b / b2 / c3) or the minimum (d). Unread is never clean.
+            return [Finding("error", "TRADE_BRACKET_LIVE_UNKNOWN", f"TRADE_LEVEL_POLICY.{dial}",
+                            f"this update does not stage TRADE_LEVEL_POLICY, so the stage judges the bracket the "
+                            f"strategy holds against the {dial} it holds beside it, and `current` carries the bracket "
+                            f"but no finite {dial}: the {why} is unread, so omega cannot judge it and refuses, failing "
+                            f"closed. Pass as `current` the committed strategy's axes (get_strategy serves every "
+                            f"TRADE_LEVEL_POLICY dial, required) overlaid by the held draft's")
+                    for dial, why in unread] + steps
+        would = validate_bracket(live["tradeBracket"], dials={k: v for k, v in live.items() if k != "tradeBracket"},
+                                 sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
+                                 trailing_enabled=trailing)
         out = []
         for f in would:
             if f.code == "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN":
                 # neither TRADE_LEVEL_POLICY nor POSITION_MANAGEMENT staged, and `current` carries no
                 # POSITION_MANAGEMENT: the Trailing beside this runner is the strategy's, unread here
                 out.append(Finding("warning", f.code, f.path,
-                                   f"(the live menu, not staged by this update, and `current` carries no "
+                                   f"(the live bracket, not staged by this update, and `current` carries no "
                                    f"POSITION_MANAGEMENT: the Trailing the strategy holds beside this runner is not "
                                    f"read - pass the committed axes overlaid by the held draft's) {f.message}"))
             elif f.severity == "error":
@@ -820,7 +892,7 @@ class StrategyPlan:
                     why = (f"under a rule {on}: whether the stage re-judges a rule none of whose axes it is sent is "
                            f"unmeasured (A2 and A3 each staged one axis of the rule they measured), so it is refused "
                            f"here, failing closed")
-                out.append(Finding("error", f.code, f.path, f"(the live menu, not staged by this update, {why}) "
+                out.append(Finding("error", f.code, f.path, f"(the live bracket, not staged by this update, {why}) "
                                                             f"{f.message}"))
         return out + steps
 

@@ -71,8 +71,9 @@ def test_the_capture_names_its_contract_build_and_source():
     from tests.manifest_chain import surface as surface_of
     # 2026-11-19: the 180.4.0 capture on top; 2026-11-20: the 182.3.2 one; 2026-11-22: the
     # 184.3.2 one
-    assert C.stage_schema()["contractVersion"] == "184.3.2"
-    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "184.3.2"
+    # 2026-11-27: the 185.2.0 one
+    assert C.stage_schema()["contractVersion"] == "185.2.0"
+    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "185.2.0"
     current = surface_of("168.3.0")
     assert current["servedContractVersion"] == "168.3.0"
     assert current["supersedes"]["servedContractVersion"] == "161.0.0"

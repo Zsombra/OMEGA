@@ -7,7 +7,7 @@ Crucially the metric×transform matrix is a **sparse partial function**, not a g
 only **4771 of 586×29 = 16994** cells are legal
 (**28.1%** density).
 
-Against the column `transformId` enum the contract 184.3.2 write schema serves (`data/contract/stage_strategy_draft/schema_20261122T045517Z.json`):
+Against the column `transformId` enum the contract 185.2.0 write schema serves (`data/contract/stage_strategy_draft/schema_20261127T002954Z.json`):
 
 - **`bandTouch` is retired** — extracted, no longer served; it is dropped from every metric's transforms in doc 01 and here, and `omega.validate` refuses it (`TRANSFORM_RETIRED`). Its reference entry is kept as history.
 
@@ -297,7 +297,7 @@ Classify current price proximity to the canonical upper and lower bands.
 output = bandTouch(base, current price)
 ```
 
-- **Retired** at contract 184.3.2: not in the served enum; the 61.2.0 extraction offered it on 0 metric(s)
+- **Retired** at contract 185.2.0: not in the served enum; the 61.2.0 extraction offered it on 0 metric(s)
 - **Emits:** 1
 - **Null behaviour:** Returns null when the price or band values required by the classifier are unavailable.
 - **Parameters:** none

@@ -1,11 +1,11 @@
 {
  "_what": "The condition vocabulary the saved write schema admits, derived by omega.condition_vocabulary.derive; every entry carries its JSON Pointer (RFC 6901) into the source document. Regenerate with `python scripts/derive_condition_vocabulary.py`; tests/test_condition_vocabulary_108.py re-derives it and fails on any difference. Only what the schema states is here: a rule that lives in a description (README changelog, vendor skill) is not, and neither is which header admits which operator - that is served per header, per strategy (servedPerHeader).",
  "source": {
-  "schema": "data/contract/stage_strategy_draft/schema_20261122T045517Z.json",
-  "sha256": "010e655194dccd525983067889f6f9a65c73aa297fa9ab95528b087b1b2fe111",
-  "contractVersion": "184.3.2",
-  "buildSha": "8a695c4f09ae0d0d774caa79e0882c81305acc1c",
-  "observedAt": null
+  "schema": "data/contract/stage_strategy_draft/schema_20261127T002954Z.json",
+  "sha256": "9d170cb127127c82b763979fb0f60170679edf8a037a2b903d990d7c4837592f",
+  "contractVersion": "185.2.0",
+  "buildSha": "ede1fce51a498a371a21bad2511ac00036893356",
+  "observedAt": "2026-11-27T00:29:54.275501+00:00"
  },
  "clauseOperators": [
   "lt",
@@ -604,7 +604,7 @@
    },
    "enumPointer": "/get_strategy/outputSchema/$defs/metricKey",
    "enumSource": "get_strategy outputSchema $defs/metricKey: since contract 168 the write schema names a metric by pattern, and the read schema keeps the roster",
-   "count": 586,
+   "count": 588,
    "enum": [
     "OPEN",
     "HIGH",
@@ -849,9 +849,11 @@
     "LIQUIDITY_POOL_ABOVE",
     "LIQUIDITY_POOL_ABOVE_INTACT",
     "LIQUIDITY_POOL_ABOVE_TOUCHES",
+    "LIQUIDITY_POOL_ABOVE_AGE",
     "LIQUIDITY_POOL_BELOW",
     "LIQUIDITY_POOL_BELOW_INTACT",
     "LIQUIDITY_POOL_BELOW_TOUCHES",
+    "LIQUIDITY_POOL_BELOW_AGE",
     "LIQUIDITY_POOL_ABOVE_RETIRED",
     "LIQUIDITY_POOL_ABOVE_RECLAIMED",
     "LIQUIDITY_POOL_BELOW_RETIRED",

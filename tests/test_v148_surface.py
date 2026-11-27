@@ -72,7 +72,8 @@ def test_the_capture_names_its_contract_build_and_source():
     # 2026-11-12: by version (tests/manifest_chain.py) - 171.0.0 on top that morning, then 169.4.0, 168.3.0, 161.0.0
     from tests.manifest_chain import surface as surface_of
     # 180.4.0 on top since 2026-11-19; 182.3.2 since 2026-11-20; 184.3.2 since 2026-11-22
-    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "184.3.2"
+    # 185.2.0 since 2026-11-27
+    assert _j(CONTRACT_DIR / "_manifest.json")["writeSurface"]["servedContractVersion"] == "185.2.0"
     surface = surface_of("168.3.0")
     assert [surface["servedContractVersion"], surface["supersedes"]["servedContractVersion"],
             surface["supersedes"]["supersedes"]["servedContractVersion"]] == ["168.3.0", "161.0.0", "149.1.0"]
@@ -132,7 +133,8 @@ def test_the_206_were_listed_by_readme_entry_and_are_measured_since_2026_11_07()
     history = UNMEASURED["history148"]
     metrics = history["formerlyUnmeasured"]
     assert set(metrics) == set(COMPARE["before"]["results"]["metrics"]["liveNotStored"])
-    assert UNMEASURED["metrics"] == {} and load().unmeasured_metrics == {}
+    # since 2026-11-27 the record names the two keys 185.2.0 added (known by name only), none of the 206
+    assert set(UNMEASURED["metrics"]) == set(load().unmeasured_metrics) == {"LIQUIDITY_POOL_ABOVE_AGE", "LIQUIDITY_POOL_BELOW_AGE"}
     assert set(metrics) <= set(load().metrics)
     by_entry: dict[str, set[str]] = {}
     for key, rec in metrics.items():

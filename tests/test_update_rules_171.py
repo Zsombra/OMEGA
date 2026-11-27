@@ -248,40 +248,6 @@ def _r_only(menu: dict) -> dict:
             for side, d in menu.items()}
 
 
-def test_omegas_update_path_refuses_what_the_stage_refused():
-    """StrategyPlan.update_menu_findings, on the update forms measured: each refuses where the stage did (v0.14.1 warned
-    on A2's form and C2's)."""
-    live_pm = copy.deepcopy(COMMITTED["POSITION_MANAGEMENT"])
-    live_tlp = {**{k: v for k, v in COMMITTED["TRADE_LEVEL_POLICY"].items() if k != "tradeLevelMenu"},
-                "tradeLevelMenu": _r_only(COMMITTED["TRADE_LEVEL_POLICY"]["tradeLevelMenu"])}
-    # (1) Trailing switched off alone under the runner the strategy holds (A1's T4 plan): refused, an error
-    held = copy.deepcopy(live_tlp)
-    held["tradeLevelMenu"] = {side: {"stops": d["stops"], "exitPlans": d["exitPlans"][:1]} for side, d in
-                              PROBES["A1.runner_menu_staged"]["sent"]["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"].items()}
-    current = {"TRADE_LEVEL_POLICY": held, "POSITION_MANAGEMENT": live_pm}
-    off = plan(_sandbox_thesis(execution={"trailingEnabled": False}))
-    assert "TRADE_LEVEL_POLICY" not in off.axes_update(current)
-    assert {(f.severity, f.code) for f in off.update_menu_findings(current)} == {
-        ("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
-    # (2) the dial raised alone: the axis is restaged whole with the live menu carried, and the plans below it refused
-    current = {"TRADE_LEVEL_POLICY": live_tlp, "POSITION_MANAGEMENT": live_pm}
-    raised = plan(_sandbox_thesis(execution={"minRiskRewardRatio": 2.5}))
-    staged = raised.axes_update(current)["TRADE_LEVEL_POLICY"]
-    assert staged["tradeLevelMenu"] == live_tlp["tradeLevelMenu"] and staged["minRiskRewardRatio"] == 2.5
-    found = raised.update_menu_findings(current)
-    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR")}
-    assert {f.path for f in found} == {f"tradeLevelMenu.{s}.exitPlans[{i}]" for s in tl.SIDES for i in (0, 1)}
-    # (3) the off-step minimum the draft holds (C2's carriedFrom), carried by an update naming another dial: refused
-    carried_from = PROBES["C2.off_step_min_carried"]["carriedFrom"]["TRADE_LEVEL_POLICY"]
-    assert carried_from["minRiskRewardRatio"] == 1.4
-    current = {"TRADE_LEVEL_POLICY": {**live_tlp, "minRiskRewardRatio": carried_from["minRiskRewardRatio"]},
-               "POSITION_MANAGEMENT": live_pm}
-    atr = plan(_sandbox_thesis(execution={"minAtrPct": 0.4}))
-    found = atr.update_menu_findings(current)
-    assert [(f.severity, f.code, f.path) for f in found] == [
-        ("error", "EXECUTION_CARRIED_OFF_STEP", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
-
-
 def _a1_runner_tlp() -> dict:
     """The committed dials beside A1's R runner plan (1.5R 50% + 3R 30%, a 20% runner) on A1's ATR stops, per side."""
     menu = PROBES["A1.runner_menu_staged"]["sent"]["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]
@@ -294,68 +260,6 @@ def _committed_axes() -> dict:
     return copy.deepcopy({k: COMMITTED[k] for k in ("TRADE_LEVEL_POLICY", "POSITION_MANAGEMENT", "REPORT")})
 
 
-def test_a_partial_current_is_never_read_as_a_clean_menu():
-    """`current` is the committed strategy overlaid by the held draft's axes - what _composed builds, and what the stage
-    judged. get_strategy_draft's draft.content alone holds only the axes the draft staged: after A3 it held REPORT alone
-    (test_every_staged_update_was_read_back_as_sent). Handed that content as `current`, e52f745 found no menu and said
-    nothing, so A3's refusal passed silently (v0.14.2 review); it is refused now, failing closed."""
-    update = plan(_sandbox_thesis())                  # stages neither TRADE_LEVEL_POLICY nor POSITION_MANAGEMENT
-    a3 = PROBES["A3.report_alone_rejudges_committed_menu"]
-    content = {axis: copy.deepcopy(a3["sent"]["axes"][axis]) for axis in a3["readBack"]["draftAxes"]}
-    assert list(content) == ["REPORT"] and "TRADE_LEVEL_POLICY" not in update.axes_update(content)
-    assert [(f.severity, f.code, f.path) for f in update.update_menu_findings(content)] == [
-        ("error", "TRADE_MENU_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.tradeLevelMenu")]
-    # the same draft over the committed strategy, as the stage judged A3: the committed menu's Donchian and Bollinger
-    # entries, neither of which this preset's report reads - refused as the stage refused A3, and labelled measured
-    found = update.update_menu_findings({**_committed_axes(), **content})
-    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_LEVEL_NOT_YIELDED")}
-    assert {f.path for f in found} == {f"tradeLevelMenu.{s}.{k}[{i}]{tail}" for s in tl.SIDES for i in (3, 4)
-                                       for k, tail in (("stops", ".level"), ("exitPlans", ".targets[0].method.level"))}
-    assert all("probe A3" in f.message and "unmeasured" not in f.message for f in found)
-    # a draft holding A1's runner menu alone (its content: TRADE_LEVEL_POLICY only): the Trailing beside the runner is
-    # the committed one, which that content does not carry - warned, as on a staged menu, not passed silently
-    runner = _a1_runner_tlp()
-    found = update.update_menu_findings({"TRADE_LEVEL_POLICY": runner})
-    assert [(f.severity, f.code, f.path) for f in found] == [
-        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN", f"tradeLevelMenu.{s}.exitPlans[0]")
-        for s in tl.SIDES]
-    # over the committed strategy (Trailing on, as committed) it is clean
-    assert COMMITTED["POSITION_MANAGEMENT"]["trailingEnabled"] is True
-    assert update.update_menu_findings({**_committed_axes(), "TRADE_LEVEL_POLICY": runner}) == []
-
-
-def test_a_rule_none_of_whose_axes_the_update_stages_is_refused_as_unmeasured():
-    """A2 and A3 measured a rule tying two axes re-judged when ONE of them is staged. No probe left every axis of a rule
-    unsent (C1 and C2 both sent the off-step minimum in a restaged TRADE_LEVEL_POLICY): omega refuses such a rule,
-    failing closed, and its message says unmeasured instead of citing A2 / A3 as the stage's answer."""
-    runner, committed = _a1_runner_tlp(), _committed_axes()
-    # Trailing switched off BY the update under the runner the strategy holds: one axis staged - measured, A2
-    off = plan(_sandbox_thesis(execution={"trailingEnabled": False}))
-    found = off.update_menu_findings({**committed, "TRADE_LEVEL_POLICY": runner})
-    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
-    assert all("probe A2" in f.message and "unmeasured" not in f.message for f in found)
-    # the runner and Trailing off both held, neither axis staged: unmeasured, refused, failing closed
-    still = plan(_sandbox_thesis())
-    held_off = {**committed, "TRADE_LEVEL_POLICY": runner,
-                "POSITION_MANAGEMENT": {**COMMITTED["POSITION_MANAGEMENT"], "trailingEnabled": False}}
-    found = still.update_menu_findings(held_off)
-    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING")}
-    assert all(s in f.message for f in found for s in ("neither staged", "unmeasured", "failing closed"))
-    # held plans below the held minimum - a rule on TRADE_LEVEL_POLICY alone, which is not staged: unmeasured, refused
-    r_only = _r_only(COMMITTED["TRADE_LEVEL_POLICY"]["tradeLevelMenu"])
-    below = {**committed["TRADE_LEVEL_POLICY"], "minRiskRewardRatio": 2.5, "tradeLevelMenu": r_only}
-    found = still.update_menu_findings({**committed, "TRADE_LEVEL_POLICY": below})
-    assert {(f.severity, f.code) for f in found} == {("error", "TRADE_MENU_EXIT_PLAN_BELOW_MIN_RR")}
-    assert all("TRADE_LEVEL_POLICY alone" in f.message and "unmeasured" in f.message for f in found)
-    # an off-step minimum held in the unstaged axis: unmeasured, refused (C1 and C2 sent the value)
-    (finding,) = still.update_menu_findings({**committed, "TRADE_LEVEL_POLICY": {**below, "minRiskRewardRatio": 1.4}})
-    assert (finding.severity, finding.code) == ("error", "EXECUTION_CARRIED_OFF_STEP")
-    assert "unmeasured, refused, failing closed" in finding.message
-    # RULE_AXIS names only codes the menu rules raise (a misspelt code would leave its rule labelled unmeasured)
-    raised = set(re.findall(r'Finding\("(?:error|warning)", "([A-Z_0-9]+)"', inspect.getsource(tl)))
-    assert set(tl.RULE_AXIS) <= raised and set(tl.RULE_AXIS.values()) == {"REPORT", "POSITION_MANAGEMENT"}
-
-
 # --- (2) the dial alone ---------------------------------------------------------------------------------------------------
 
 def test_the_minimum_cannot_be_staged_without_the_menu():
@@ -366,10 +270,12 @@ def test_the_minimum_cannot_be_staged_without_the_menu():
     assert [i["path"] for i in refusal["issues"]] == [["axes", "TRADE_LEVEL_POLICY", "tradeLevelMenu"]]
     assert "expected object, received undefined" in refusal["message"]
     # omega's walk of the write schema refuses the same field, and omega's update never stages the axis without a menu
-    fails = [f for f in P.diff_schema(sent, tl._axis("TRADE_LEVEL_POLICY"), tl._root(),
-                                      roster=P.read_roster(tl._doc(None))) if f.verdict == "FAIL"]
+    # (judged against the last capture that served a menu, 184.3.2, since the pinned one serves a bracket - 185)
+    menu_doc = tl.menu_schema()
+    fails = [f for f in P.diff_schema(sent, tl._axis("TRADE_LEVEL_POLICY", menu_doc), tl._root(menu_doc),
+                                      roster=P.read_roster(menu_doc)) if f.verdict == "FAIL"]
     assert [(f.cls, f.path) for f in fails] == [("MISSING_REQUIRED", "tradeLevelMenu")]
-    with pytest.raises(ValueError, match="never invents a live strategy's menu"):
+    with pytest.raises(ValueError, match="never invents a live strategy's bracket"):     # 185: the bracket
         plan(_sandbox_thesis(execution={"minRiskRewardRatio": 2.5})).axes_update(
             {"TRADE_LEVEL_POLICY": {k: v for k, v in sent.items()}})
 

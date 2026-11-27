@@ -377,4 +377,5 @@ def test_the_version_moved_past_0_11_0():
     # tests/test_stop_band_171.py); 0.15.0 on 2026-11-19 (the re-extraction at 180.4.0, tests/test_reextraction_180_4.py);
     # 0.16.0 on 2026-11-20 (the re-extraction at 182.3.2, tests/test_reextraction_182.py); 0.17.0 on 2026-11-22 (the
     # re-extraction at 184.3.2, tests/test_reextraction_184.py)
-    assert 'version = "0.17.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    # 0.18.0 on 2026-11-27 (contract 185.2.0, tests/test_contract_185.py)
+    assert 'version = "0.18.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")

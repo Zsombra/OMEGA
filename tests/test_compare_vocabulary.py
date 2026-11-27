@@ -92,8 +92,8 @@ def test_main_exits_0_when_identical_and_1_when_an_enum_moved(tmp_path, capsys):
     # 161.0.0 schema_20261109T162100Z,
     # 149.1.0 schema_20261105T181932Z
     # 180.4.0 since 2026-11-19 (schema_20261119T202415Z); 182.3.2 since 2026-11-20 (schema_20261120T142253Z);
-    # 184.3.2 since 2026-11-22
-    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261122T045517Z.json"
+    # 184.3.2 since 2026-11-22; 185.2.0 since 2026-11-27
+    assert printed["storedStageCapture"] == "data/contract/stage_strategy_draft/schema_20261127T002954Z.json"
 
 
 def test_the_stored_enums_are_read_off_the_saved_108_stage_schema():
@@ -228,10 +228,11 @@ def test_a_168_surface_reads_the_roster_from_the_read_schema_and_compares_identi
     surface = _surface_168(with_read_schema=True)
     assert first_enum(HINT_INPUT_168, "metric") is None          # the input names a pattern: no enum to read
     roster = read_roster({t["name"]: t for t in surface["tools"]})
-    assert len(roster) == 586      # 581 until the 180.4.0 capture (2026-11-19)
+    assert len(roster) == 588      # 581 until the 180.4.0 capture (2026-11-19); 586 until 185.2.0 (2026-11-27)
     results = compare(live_enums(surface), stored_enums(), stored_unmeasured())
-    assert results["metrics"] == {"live": 586, "stored": 586, "liveNotStored": [], "storedNotLive": [],
-                                  "storedUnmeasured": []}
+    # 185.2.0: the two keys 185 added are stored by name (_unmeasured_108.json), so they are not missing
+    assert results["metrics"] == {"live": 588, "stored": 588, "liveNotStored": [], "storedNotLive": [],
+                                  "storedUnmeasured": ["LIQUIDITY_POOL_ABOVE_AGE", "LIQUIDITY_POOL_BELOW_AGE"]}
     assert results["sectionKeys"]["liveNotStored"] == [] and results["sectionKeys"]["storedNotLive"] == []
     assert results["sectionKeys"]["live"] == results["sectionKeys"]["stored"] == 22
 

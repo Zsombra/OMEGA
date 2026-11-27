@@ -219,18 +219,19 @@ def test_whole_axes_send_every_dial_at_the_measured_defaults(name):
     # 2026-11-11, contract 168.3.0: the axis REQUIRES `tradeLevelMenu` as well (the author defines the trade levels), so
     # every plan emits it after the four dials - the 168 capture's `required` order; the four dials did not move
     from omega.contract import stage_schema
-    from omega.trade_levels import default_menu
+    from omega.trade_levels import default_bracket
     axis = stage_schema()["stage_strategy_draft"]["inputSchema"]["properties"]["axes"]["properties"]["TRADE_LEVEL_POLICY"]
-    assert list(a["TRADE_LEVEL_POLICY"]) == [*TRADE_LEVEL_DIALS, "tradeLevelMenu"] == axis["required"]
+    # 2026-11-27, contract 185.2.0: `tradeBracket` in its place, the 185 capture's `required` order
+    assert list(a["TRADE_LEVEL_POLICY"]) == [*TRADE_LEVEL_DIALS, "tradeBracket"] == axis["required"]
     # no preset names a menu, so each sends the default: ATR 1 / 1.5 / 2 stops and, from its minRiskRewardRatio (1.5)
     # up, R 1.5 / 2 / 3 targets, the same for both directions (omega.trade_levels.default_menu); since contract 170 each
     # target is an exit plan of one leg closing 100% (the platform's own migration shape)
-    assert PRESETS[name].trade_level_menu is None and a["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] == 1.5
-    side = {"stops": [{"kind": "ATR", "atrMultiple": 1}, {"kind": "ATR", "atrMultiple": 1.5},
-                      {"kind": "ATR", "atrMultiple": 2}],
-            "exitPlans": [{"targets": [{"method": {"kind": "R_MULTIPLE", "multiple": m}, "closePct": 100}]}
-                          for m in (1.5, 2, 3)]}
-    assert a["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] == default_menu(1.5) == {"LONG": side, "SHORT": side}
+    # since contract 185 the default is ONE bracket: the platform's ATR 1.5 / 3R inside the presets' band 1 - 2
+    assert PRESETS[name].trade_bracket is None and a["TRADE_LEVEL_POLICY"]["minRiskRewardRatio"] == 1.5
+    side = {"stop": {"kind": "ATR", "atrMultiple": 1.5},
+            "exitPlan": {"targets": [{"method": {"kind": "R_MULTIPLE", "multiple": 3}, "closePct": 100}]}}
+    assert a["TRADE_LEVEL_POLICY"]["tradeBracket"] == default_bracket(1.5, stop_range=(1, 2)) == {"LONG": side,
+                                                                                               "SHORT": side}
     sent = {**a["TRADE_LEVEL_POLICY"], **a["POSITION_MANAGEMENT"]}
     assert all(sent[k] == v for k, v in PLATFORM_EXECUTION_DEFAULTS.items())
 
