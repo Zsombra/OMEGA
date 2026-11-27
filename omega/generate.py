@@ -412,6 +412,24 @@ class BracketUnknown(ValueError):
     a 184 tradeLevelMenu): omega never invents or converts one. A ValueError, as every unplannable update is."""
 
 
+def _unread_bracket_dials(policy: dict) -> list[tuple[str, str]]:
+    """[(dial, what it bounds)] of the TRADE_LEVEL_POLICY dials the live bracket's rules read that `policy` (the live
+    axis, `current`'s) carries as no finite number: the band (minStopLossAtrMultiple, maxStopLossAtrMultiple) under an
+    ATR stop, the minimum (minRiskRewardRatio) under any exit plan. validate_bracket reads an absent dial as no bound
+    (outside_stop_range, _plan_findings), so a partial `current` would read clean; get_strategy serves all three,
+    required. A malformed bracket needs none here: the shape walk refuses it first."""
+    from .trade_levels import SIDES, _finite_number
+    bracket = policy.get("tradeBracket")
+    sides = [bracket.get(s) for s in SIDES] if isinstance(bracket, dict) else []
+    sides = [s for s in sides if isinstance(s, dict)]
+    reads = []
+    if any(isinstance(s.get("stop"), dict) and s["stop"].get("kind") == "ATR" for s in sides):
+        reads += [("minStopLossAtrMultiple", "stop band's floor"), ("maxStopLossAtrMultiple", "stop band's hard stop")]
+    if any(isinstance(s.get("exitPlan"), dict) for s in sides):
+        reads.append(("minRiskRewardRatio", "exit plan's minimum risk-reward"))
+    return [(dial, why) for dial, why in reads if not _finite_number(policy.get(dial))]
+
+
 @dataclass
 class StrategyPlan:
     thesis: Thesis
@@ -796,7 +814,9 @@ class StrategyPlan:
         menu A3 was refused on was in no draft). A `current` that leaves out what the stage will judge is never read as
         clean: no tradeBracket (contract 185; until 184 no tradeLevelMenu, TRADE_MENU_LIVE_UNKNOWN) is an error
         (TRADE_BRACKET_LIVE_UNKNOWN, failing closed) whether or not this update stages TRADE_LEVEL_POLICY, and a
-        `current` carrying only a 184 menu is the same refusal; no POSITION_MANAGEMENT under a live runner is the rule's own warning
+        `current` carrying only a 184 menu is the same refusal, and so is a carried live bracket whose band (under an
+        ATR stop) or minimum `current` leaves out (TRADE_BRACKET_LIVE_UNKNOWN on the dial, _unread_bracket_dials); no
+        POSITION_MANAGEMENT under a live runner is the rule's own warning
         (TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN, as on a staged menu - this update changes neither axis of it)."""
         from .trade_levels import RULE_AXIS, validate_bracket
         from .validate import Finding
@@ -838,6 +858,17 @@ class StrategyPlan:
                               "strategy's axes (get_strategy) overlaid by the held draft's - get_strategy_draft's "
                               "draft.content holds only the axes the draft staged")
             return [unknown] + steps
+        unread = _unread_bracket_dials(live)
+        if unread:
+            # the live bracket is carried, but a dial its rules read beside it is not: the band (an ATR stop outside it
+            # is refused since 185, bracket_refusals_185 b / b2 / c3) or the minimum (d). Unread is never clean.
+            return [Finding("error", "TRADE_BRACKET_LIVE_UNKNOWN", f"TRADE_LEVEL_POLICY.{dial}",
+                            f"this update does not stage TRADE_LEVEL_POLICY, so the stage judges the bracket the "
+                            f"strategy holds against the {dial} it holds beside it, and `current` carries the bracket "
+                            f"but no finite {dial}: the {why} is unread, so omega cannot judge it and refuses, failing "
+                            f"closed. Pass as `current` the committed strategy's axes (get_strategy serves every "
+                            f"TRADE_LEVEL_POLICY dial, required) overlaid by the held draft's")
+                    for dial, why in unread] + steps
         would = validate_bracket(live["tradeBracket"], dials={k: v for k, v in live.items() if k != "tradeBracket"},
                                  sections=axes["REPORT"]["sections"], anchor=self.thesis.anchor,
                                  trailing_enabled=trailing)

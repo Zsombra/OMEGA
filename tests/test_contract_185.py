@@ -333,6 +333,33 @@ def test_a_live_body_without_a_bracket_is_refused_never_invented(policy):
     assert own.update_bracket_findings(current) == []
 
 
+def test_a_carried_live_bracket_beside_unread_dials_is_never_read_as_clean():
+    # review 2026-11-27 finding 1: validate_bracket reads an absent band as no bound, so a partial `current` carrying
+    # the live bracket without its dials read clean - and since 185 the band is a refusal, not a warning
+    outside = _bracket(_atr(4.5), (3, 100))
+    pm = CURRENT["POSITION_MANAGEMENT"]
+    bare = plan(BASE).update_bracket_findings({"TRADE_LEVEL_POLICY": {"tradeBracket": outside}, "POSITION_MANAGEMENT": pm})
+    assert [(f.severity, f.code, f.path) for f in bare] == [
+        ("error", "TRADE_BRACKET_LIVE_UNKNOWN", f"TRADE_LEVEL_POLICY.{d}")
+        for d in ("minStopLossAtrMultiple", "maxStopLossAtrMultiple", "minRiskRewardRatio")]
+    assert all("unread" in f.message and "failing closed" in f.message for f in bare)
+    # the band read: the band rule answers; the minimum still unread: refused on that dial alone
+    banded = {"tradeBracket": outside, "minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 1.8}
+    found = plan(BASE).update_bracket_findings({"TRADE_LEVEL_POLICY": banded, "POSITION_MANAGEMENT": pm})
+    assert [(f.code, f.path) for f in found] == [("TRADE_BRACKET_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
+    found = plan(BASE).update_bracket_findings(
+        {"TRADE_LEVEL_POLICY": {**banded, "minRiskRewardRatio": 2, "minAtrPct": 0.8}, "POSITION_MANAGEMENT": pm})
+    assert {(f.code, f.path) for f in found} == {
+        ("TRADE_BRACKET_STOP_OUTSIDE_BAND", f"tradeBracket.{s}.stop.atrMultiple") for s in SIDES}
+    # a PERCENT stop reads no band: only the minimum is needed (a null dial is as unread as an absent one)
+    percent = _bracket({"kind": "PERCENT", "percent": 2}, (3, 100))
+    found = plan(BASE).update_bracket_findings(
+        {"TRADE_LEVEL_POLICY": {"tradeBracket": percent, "minRiskRewardRatio": None}, "POSITION_MANAGEMENT": pm})
+    assert [(f.code, f.path) for f in found] == [("TRADE_BRACKET_LIVE_UNKNOWN", "TRADE_LEVEL_POLICY.minRiskRewardRatio")]
+    # every dial carried (the get_strategy read, all required): nothing unread
+    assert plan(BASE).update_bracket_findings(CURRENT) == []
+
+
 # --- what the manager imports ----------------------------------------------------------------------------------------
 def test_the_interface_the_manager_reads():
     assert list(inspect.signature(tl.default_bracket).parameters) == ["min_rr", "schema", "stop_range"]
