@@ -194,10 +194,11 @@ RULE_CASES = ("b", "b2", "c1", "c2", "c3", "d", "e1", "e2", "f", "f2")
 
 @pytest.mark.parametrize("case", RULE_CASES)
 def test_the_bracket_rules_replay_the_live_stages_answers(case):
-    """BRACKET_PROBES: create drafts at band 1 - 1.8 and minimum 2 (no REPORT staged: each draft held the platform's
-    starting report, which does not yield the DONCHIAN level e2 names - judged here against an empty report, which
-    OMEGA reads the same way for that metric). The stage names ONE error at a time, LONG first: OMEGA's first error is
-    the one it named, every path it named is one OMEGA names, and where it named none OMEGA names no error."""
+    """BRACKET_PROBES: create drafts at band 1 - 1.8 and minimum 2 (no REPORT staged: the pack says such a create starts
+    from the platform's starting report, the draft reads hold no REPORT axis, and the stage said the DONCHIAN level e2
+    names is not one this strategy's report yields - judged here against an empty report, which OMEGA reads the same
+    way for that metric). The stage names ONE error at a time, LONG first: OMEGA's first error is the one it named,
+    every path it named is one OMEGA names, and where it named none OMEGA names no error."""
     from omega.execution import PLATFORM_EXECUTION_DEFAULTS
     probe = REFUSALS["probes"][case]
     assert probe["stage"]["diagnostics"] == probe["getStrategyDraft"]["diagnostics"]
@@ -455,8 +456,9 @@ def test_the_interface_the_manager_reads():
 
 def test_every_trade_level_code_is_listed():
     """The codes the bracket path can emit (validate_bracket and the exit-plan / level rules it calls, the shape walk,
-    and StrategyPlan.update_bracket_findings). TRADE_MENU_STOP_OUTSIDE_RANGE, TRADE_MENU_TARGET_BELOW_MIN_RR and
-    TRADE_MENU_LIVE_UNKNOWN are the menu's alone (validate_menu, history): no bracket finding carries them."""
+    and StrategyPlan.update_bracket_findings). No bracket finding carries TRADE_MENU_STOP_OUTSIDE_RANGE,
+    TRADE_MENU_TARGET_BELOW_MIN_RR or TRADE_MENU_LIVE_UNKNOWN: the first two are the menu's alone (validate_menu,
+    history), and TRADE_MENU_LIVE_UNKNOWN (update_menu_findings until v0.17.0) is emitted nowhere now."""
     source = inspect.getsource(tl)
     in_trade_levels = set(re.findall(r'"(TRADE_(?:MENU|BRACKET)_[A-Z_0-9]+)"', source))
     assert {"TRADE_BRACKET_STOP_OUTSIDE_BAND", "TRADE_MENU_SHAPE", "TRADE_MENU_LEVEL_BOTH_SIDES",
