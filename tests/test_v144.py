@@ -281,7 +281,8 @@ def test_the_condition_vocabulary_carries_the_new_knobs():
     # enum), so the count is the roster the same capture's read schema keeps (get_strategy outputSchema $defs/metricKey),
     # which is the corpus: 534 + the 47 of _moves_168.json
     # 2026-11-19, contract 180.4.0: 586 (the 180.4.0 capture's read roster; _moves_180_4.json)
-    assert col["metric"]["count"] == len(col["metric"]["enum"]) == 586
+    # 2026-11-27, contract 185.2.0: 588 (two keys added, known by name only - _unmeasured_108.json)
+    assert col["metric"]["count"] == len(col["metric"]["enum"]) == 588
     assert col["metric"]["pattern"] == "^[A-Z][A-Z0-9_]*$"
     assert col["metric"]["enumPointer"] == "/get_strategy/outputSchema/$defs/metricKey"
-    assert set(col["metric"]["enum"]) == set(load().metrics)
+    assert set(col["metric"]["enum"]) == set(load().metrics) | set(load().unmeasured_metrics)

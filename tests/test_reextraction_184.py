@@ -20,6 +20,12 @@ ROOT = Path(__file__).resolve().parents[1]
 RECORD = json.loads((ROOT / GRID_PROBES).read_text(encoding="utf-8"))
 AT_182 = json.loads((ROOT / "data" / "audit" / "reextraction_182_2026-11-20.json").read_text(encoding="utf-8"))
 MANIFEST = json.loads((ROOT / "data" / "contract" / "_manifest.json").read_text(encoding="utf-8"))
+
+
+def _s184() -> dict:
+    """The 184.3.2 capture (the pinned one until 2026-11-27; 185.2.0 since, tests/test_contract_185.py)."""
+    from tests.manifest_chain import surface
+    return json.loads((ROOT / surface("184.3.2", MANIFEST)["schema"]).read_text(encoding="utf-8"))
 MOVES = json.loads((ROOT / "data" / "contract" / "metrics" / "_moves_184.json").read_text(encoding="utf-8"))
 R, X, PROOF = RECORD["drafts"]["R"], RECORD["drafts"]["X"], RECORD["proof"]
 STAGES = {s["id"]: s for d in (X, R) for s in d["stages"]}           # T0 is draft R's
@@ -45,18 +51,21 @@ def _results():
 def test_the_extraction_and_the_write_surface_are_184_3_2():
     from tests.manifest_chain import versions
     assert versions(MANIFEST)[:2] == ["184.3.2", "182.3.2"]
-    assert versions(MANIFEST["writeSurface"])[:2] == ["184.3.2", "182.3.2"]
-    assert MANIFEST["writeSurface"]["buildSha"] == RECORD["buildSha"]
-    assert stage_schema()["contractVersion"] == RECORD["contractVersion"] == "184.3.2"
+    # 185.2.0 on top of the write surface since 2026-11-27 (the corpus stays the 184.3.2 extraction)
+    assert versions(MANIFEST["writeSurface"])[:3] == ["185.2.0", "184.3.2", "182.3.2"]
+    from tests.manifest_chain import surface
+    assert surface("184.3.2", MANIFEST)["buildSha"] == RECORD["buildSha"]
+    assert _s184()["contractVersion"] == RECORD["contractVersion"] == "184.3.2"
     index = json.loads((ROOT / "data/contract/metrics/_index.json").read_text(encoding="utf-8"))
     assert (index["contractVersion"], index["buildSha"], index["metricCount"]) == ("184.3.2", RECORD["buildSha"], 586)
-    assert 'version = "0.17.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    # 0.17.0 until 2026-11-27 (0.18.0 since, tests/test_contract_185.py)
+    assert 'version = "0.18.0"' in (ROOT / "pyproject.toml").read_text(encoding="utf-8")
 
 
 def test_the_six_draft_tools_did_not_move():
     from tests.manifest_chain import surface
     old = json.loads((ROOT / surface("182.3.2", MANIFEST)["schema"]).read_text(encoding="utf-8"))
-    new = stage_schema()
+    new = _s184()
     assert len(MANIFEST["writeSurface"]["tools"]) == 6
     for tool in MANIFEST["writeSurface"]["tools"]:
         assert old[tool] == new[tool], tool
@@ -66,11 +75,11 @@ def test_of_the_ten_other_authoring_tools_the_trade_level_preview_alone_moved():
     """The first diff of the sidecar (182.3.2 is its first capture). No input schema moved."""
     import scripts.capture_write_surface as cws
     from tests.manifest_chain import surface
-    block = MANIFEST["writeSurface"]["authoringTools"]
+    block = surface("184.3.2", MANIFEST)["authoringTools"]
     side = json.loads((ROOT / block["schema"]).read_text(encoding="utf-8"))
     assert (side["contractVersion"], side["buildSha"]) == ("184.3.2", RECORD["buildSha"])
-    assert side["beside"] == Path(MANIFEST["writeSurface"]["schema"]).name and side["_absent"] == []
-    assert side["liveListSha256"] == stage_schema()["liveListSha256"]                   # one list wrote both
+    assert side["beside"] == Path(surface("184.3.2", MANIFEST)["schema"]).name and side["_absent"] == []
+    assert side["liveListSha256"] == _s184()["liveListSha256"]                   # one list wrote both
     new = side["tools"]
     old = json.loads((ROOT / surface("182.3.2", MANIFEST)["authoringTools"]["schema"]).read_text(encoding="utf-8"))["tools"]
     assert set(new) == set(old) == set(cws.AUTHORING_TOOLS)
@@ -468,7 +477,14 @@ def test_the_proof_body_is_what_omega_generates_and_it_staged_clean():
     from omega.generate import PRESETS, plan
     from omega.preflight import body_sha256
     axes = plan(PRESETS[PROOF["preset"]]).axes()
-    assert axes == PROOF["sentAxes"] and body_sha256(axes) == PROOF["bodySha256Sent"]
+    # 2026-11-27, contract 185 (OMEGA v0.18.0): the bracket replaced the menu on TRADE_LEVEL_POLICY. Every other axis
+    # and every dial is the body this proof staged; the sent body still hashes to what was recorded
+    sent = PROOF["sentAxes"]
+    assert body_sha256(sent) == PROOF["bodySha256Sent"]
+    assert {k: v for k, v in axes.items() if k != "TRADE_LEVEL_POLICY"} == {
+        k: v for k, v in sent.items() if k != "TRADE_LEVEL_POLICY"}
+    assert {k: v for k, v in axes["TRADE_LEVEL_POLICY"].items() if k != "tradeBracket"} == {
+        k: v for k, v in sent["TRADE_LEVEL_POLICY"].items() if k != "tradeLevelMenu"}
     assert PROOF["stage"]["answer"] == {"errors": [], "warnings": []}
     assert sorted(PROOF["stage"]["stagedAxes"]) == sorted(axes)
     read = PROOF["readBack"]

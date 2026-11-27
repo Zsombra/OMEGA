@@ -48,7 +48,8 @@ def test_the_record_is_thirty_two_stages_none_committed_and_every_staged_one_dis
 
 
 def test_the_pinned_schema_names_exit_plans():
-    assert tl.menu_form() == "exitPlans" and tl.menu_required() is True
+    # since contract 185 the pinned schema serves a bracket; the menu's functions judge against MENU_SCHEMA (184.3.2)
+    assert tl.menu_form() == "exitPlans" and tl.menu_required(tl.menu_schema()) is True and tl.menu_required() is False
     assert tl.list_bounds("stops") == (1, 8) and tl.list_bounds("exitPlans") == (1, 8) and tl.list_bounds("legs") == (1, 4)
 
 
@@ -122,22 +123,10 @@ def test_a_168_menu_migrates_as_the_platform_migrated_every_stored_one():
     assert new["LONG"] == {"stops": [{"kind": "ATR", "atrMultiple": 1}],
                            "exitPlans": [{"targets": [{"method": t, "closePct": 100}]} for t in targets]}
     assert tl.migrate_menu(new) == new and tl.migrate_menu(["not a menu"]) == ["not a menu"]
-    # a thesis still naming 168's targets stages in the 170 form, on a CREATE and on an UPDATE
-    base = PRESETS["trend-continuation"]
-    named = plan(Thesis(**{**base.__dict__, "trade_level_menu": old}))
-    assert named.axes()["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] == new and named.menu_findings() == []
-    current = {"TRADE_LEVEL_POLICY": {**BASE["dials"], "tradeLevelMenu": tl.default_menu(1.5)}}
-    assert named.axes_update(current)["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] == new
-
-
-@pytest.mark.parametrize("preset", sorted(PRESETS))
-def test_every_preset_stages_exit_plans_with_no_finding(preset):
-    p = plan(PRESETS[preset])
-    policy = p.axes()["TRADE_LEVEL_POLICY"]
-    assert all("exitPlans" in policy["tradeLevelMenu"][s] and "targets" not in policy["tradeLevelMenu"][s]
-               for s in tl.SIDES)
-    assert p.menu_findings() == []
-    assert any("exit plan(s)" in line for line in p.render().splitlines())
+    # since contract 185 (OMEGA v0.18.0) no thesis names a menu: the field is `trade_bracket`, and a menu is never
+    # migrated into one (tests/test_contract_185.py)
+    with pytest.raises(TypeError):
+        Thesis(**{**PRESETS["trend-continuation"].__dict__, "trade_level_menu": old})
 
 
 def test_a_side_in_both_forms_is_not_migrated_and_the_shape_walk_refuses_it():

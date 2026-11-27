@@ -67,9 +67,10 @@ def test_the_emitted_body_names_no_retired_header_and_walks_the_161_schema_clean
     # TRADE_LEVEL_POLICY reads as UNDECLARED - exactly that one key. Without it the body walks 161 clean, as before.
     as_emitted = [(f.cls, f.path) for f in P.diff_schema(body, root, root)
                   if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"]
-    assert as_emitted == [("UNDECLARED", "axes.TRADE_LEVEL_POLICY.tradeLevelMenu")]
+    # 2026-11-27, contract 185: the key is `tradeBracket` (the menu is gone); the same one UNDECLARED key
+    assert as_emitted == [("UNDECLARED", "axes.TRADE_LEVEL_POLICY.tradeBracket")]
     before_168 = json.loads(text)
-    del before_168["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]
+    del before_168["axes"]["TRADE_LEVEL_POLICY"]["tradeBracket"]
     assert [(f.cls, f.path) for f in P.diff_schema(before_168, root, root)
             if f.verdict == "FAIL" or f.cls == "UNSUPPORTED"] == []
 

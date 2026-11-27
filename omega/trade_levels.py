@@ -1,4 +1,45 @@
-"""The trade level menu (contract 168): the stops and targets a strategy offers its model, per direction.
+"""The trade bracket (contract 185): the one stop and the one exit plan a strategy trades, per direction. Until 185,
+the trade level menu (contract 168): the stops and targets a strategy offered its model, per direction.
+
+**Contract 185 (185.0.0 2026-11-26, pinned at 185.2.0 / ede1fce5; OMEGA v0.18.0): the menu is gone.**
+`stage_strategy_draft` requires `TRADE_LEVEL_POLICY.tradeBracket` = {LONG, SHORT}, each `$defs/directionTradeBracket`
+{stop: ONE of ATR | LEVEL | PERCENT (the old `stops[]` item, unchanged), exitPlan: ONE `$defs/exitPlan` (unchanged)},
+additionalProperties false at every level; `tradeLevelMenu` is no property any more, so a stage still sending it is
+refused as an unrecognised key (vendor pack 32.0.118, "Contract history - v185"). get_strategy and commit_strategy_draft
+serve `strategy.tradeBracket` (required) in its place. The agent no longer picks a setup: every trade in a direction
+runs that bracket. What carries over from the menu, one stop and one plan instead of lists (validate_bracket):
+
+  * the shape is the write schema's (the axis walk, TRADE_MENU_SHAPE);
+  * a LEVEL stop or a LEVEL leg must be a level the report yields (TRADE_MENU_LEVEL_*), and one level cannot be the
+    stop and a leg of the same direction (TRADE_MENU_LEVEL_BOTH_SIDES);
+  * every exit-plan rule of 170 / 171 / 182.3.2: shares, the 0% trail objective, the runner needs Trailing, the order
+    of R legs, the pay judged as stated to three decimals (stated_rr of plan_pays_double), the unmeasured tie, a level
+    leg judged per decision (TRADE_MENU_EXIT_PLAN_*);
+  * NEW at 185 (vendor pack, not measured live): `commit_strategy_draft` refuses an ATR stop outside the strategy's own
+    band minStopLossAtrMultiple - maxStopLossAtrMultiple, both inclusive, naming
+    `tradeBracket.<DIRECTION>.stop.atrMultiple` - an ERROR here (TRADE_BRACKET_STOP_OUTSIDE_BAND), where v0.14.3 -
+    v0.17.0 warned (TRADE_MENU_STOP_OUTSIDE_RANGE: a decision dropped one stop of several; with one stop nothing is
+    left to trade). The inclusive bounds and the multiple-as-written reading are outside_stop_range's, measured at
+    182.3.2 and 184.3.2.
+
+Gone with the lists: the list bounds (1 - 8 stops, 1 - 8 plans), pairs, rejected pairs and surviving setups. A 184 menu
+cannot be staged at 185 and is never converted here: the platform converted every stored menu itself (VWAP Reject 4h:
+ATR 1 / 1.5 and five plans became ATR 1.5 and 3R closing 100%, read 2026-11-27), and which pair it keeps is not a rule
+OMEGA knows, so a `current` carrying only `tradeLevelMenu` is refused (TRADE_BRACKET_LIVE_UNKNOWN, as a `current` with no
+bracket at all), and a thesis bracket in the menu's shape fails the axis walk.
+
+The default bracket (default_bracket) is the platform's own for a new strategy, measured 2026-11-27 on one create draft
+(DEFAULT_PROBES: preview_strategy_trade_levels on the DRAFT, "composed exactly as commit_strategy_draft would compose
+it"): ATR 1.5 and one 3R leg closing 100%, both directions, beside minStopLossAtrMultiple 1, maxStopLossAtrMultiple 2 and
+minRiskRewardRatio 1.5. OMEGA stages it when it fits the thesis's band and minimum; otherwise the stop is OMEGA's own
+fallback (fallback_inner_stop: the 0.1 ATR step nearest the band's midpoint, strictly inside; a bound when no step fits)
+and the plan is the v0.14.3 R-target rule reduced to one plan (3R when the minimum is at most 3, else one leg at the
+minimum).
+
+Everything below is the menu's history (contracts 168 - 184), kept because each rule above was measured on it. The
+menu's functions (validate_menu, default_menu, menu_form, list_bounds, migrate_menu) still judge a menu against the
+last capture that served one (MENU_SCHEMA, 184.3.2) for the tests that replay those probes; nothing on the generation
+path calls them.
 
 Since contract 168 (first served 168.2.0, 2026-11-11T16:32Z) the AUTHOR defines the trade levels:
 `stage_strategy_draft` requires `TRADE_LEVEL_POLICY.tradeLevelMenu` = {LONG, SHORT}, each
@@ -273,6 +314,14 @@ UPDATE_PROBES = "data/audit/update_rules_171_2026-11-12.json"
 STOP_BAND_PROBES = "data/audit/stop_band_171_2026-11-12.json"
 RR_PROBES = "data/audit/reextraction_182_2026-11-20.json"      # 182.3.2: stop bounds, R:R at three decimals, entries
 GRID_PROBES = "data/audit/reextraction_184_2026-11-22.json"   # 184.3.2: the same rules, prices on the venue's grid
+DEFAULT_PROBES = "data/audit/default_bracket_185_2026-11-27.json"   # 185.2.0: the platform's default bracket, measured
+# The last write-schema capture that served the trade level menu (184.3.2): the menu's functions judge against it when
+# no `schema` is named and the pinned capture serves a bracket (contract 185).
+MENU_SCHEMA = "data/contract/stage_strategy_draft/schema_20261122T045517Z.json"
+# The platform's own bracket for a new strategy (DEFAULT_PROBES, both directions) and the dials it composes beside it.
+PLATFORM_BRACKET_STOP = 1.5            # ATR multiple
+PLATFORM_BRACKET_TARGET = 3            # R, one leg closing 100%
+PLATFORM_BRACKET_DIALS = {"minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 2, "minRiskRewardRatio": 1.5}
 RR_DECIMALS = 3                # a risk-reward is stated, and judged against the minimum, to three decimals (stated_rr)
 # The side of price each level trigger's resting order needs, per direction (182.3.2, RR_PROBES F4 / F5 and the
 # previews of F1 / F2): a buy stop rests above price and a sell stop below, a buy limit below and a sell limit above.
@@ -311,22 +360,52 @@ def _axis(name: str, schema: dict | None = None) -> dict:
     return _root(schema)["properties"]["axes"]["properties"][name]
 
 
+@lru_cache(maxsize=1)
+def menu_schema() -> dict:
+    """The last write-schema capture that served the trade level menu (MENU_SCHEMA, 184.3.2)."""
+    return json.loads((ROOT / MENU_SCHEMA).read_text(encoding="utf-8"))
+
+
+def _serves_menu(schema: dict) -> bool:
+    return "tradeLevelMenu" in schema[STAGE]["inputSchema"]["properties"]["axes"]["properties"]["TRADE_LEVEL_POLICY"].get(
+        "properties", {})
+
+
+def _menu_doc(schema: dict | None) -> dict:
+    """The capture the MENU's functions judge against: `schema` when named, else the pinned capture when it still serves
+    a menu, else MENU_SCHEMA (the pinned capture serves a bracket since contract 185)."""
+    if schema is not None:
+        return schema
+    pinned = stage_schema()
+    return pinned if _serves_menu(pinned) else menu_schema()
+
+
 def menu_required(schema: dict | None = None) -> bool:
-    """Does the write schema require a menu on TRADE_LEVEL_POLICY? (True from the 168 capture on; a capture
-    before it has no such property, and an axis carrying one would be refused as an unrecognized key.)"""
+    """Does the write schema require a menu on TRADE_LEVEL_POLICY? (True from the 168 capture to 184.3.2; a capture
+    before 168 has no such property, and from 185 on the axis requires `tradeBracket` instead: bracket_required.)"""
     return "tradeLevelMenu" in _axis("TRADE_LEVEL_POLICY", schema).get("required", [])
 
 
+def bracket_required(schema: dict | None = None) -> bool:
+    """Does the write schema require a trade bracket on TRADE_LEVEL_POLICY? (True from the 185 capture on.)"""
+    return "tradeBracket" in _axis("TRADE_LEVEL_POLICY", schema).get("required", [])
+
+
 def menu_form(schema: dict | None = None) -> str:
-    """How a direction names its profit side in the write schema: `exitPlans` since contract 170, `targets` at 168."""
-    return "exitPlans" if "exitPlans" in _root(schema)["$defs"]["directionTradeLevelMenu"]["properties"] else "targets"
+    """How a menu direction names its profit side in the write schema: `exitPlans` since contract 170, `targets` at
+    168 (judged against MENU_SCHEMA when no `schema` is named and the pinned capture serves a bracket)."""
+    doc = _menu_doc(schema)
+    return "exitPlans" if "exitPlans" in _root(doc)["$defs"]["directionTradeLevelMenu"]["properties"] else "targets"
 
 
 def list_bounds(kind: str, schema: dict | None = None) -> tuple[int, int]:
     """`stops` | `targets` (168) | `exitPlans` (170) | `legs` (170: the targets of one exit plan) -> (minItems,
-    maxItems), read from the write schema."""
-    node = (_root(schema)["$defs"]["exitPlan"]["properties"]["targets"] if kind == "legs" else
-            _root(schema)["$defs"]["directionTradeLevelMenu"]["properties"][kind])
+    maxItems), read from the write schema (a menu capture: the bracket has no lists but an exit plan's legs, which
+    `legs` reads from whichever capture is named or pinned)."""
+    if kind == "legs":
+        node = _root(schema)["$defs"]["exitPlan"]["properties"]["targets"]
+    else:
+        node = _root(_menu_doc(schema))["$defs"]["directionTradeLevelMenu"]["properties"][kind]
     return node["minItems"], node["maxItems"]
 
 
@@ -343,8 +422,11 @@ def level_ref(metric: str, timeframe: dict | None = None, *, knobs: dict | None 
 
 def atr_stop_bounds(schema: dict | None = None) -> tuple:
     """(exclusiveMinimum, maximum) of an ATR stop's `atrMultiple`, read from the write schema's ATR stop arm: (0, 5)
-    from contract 168 to 171."""
-    for arm in _root(schema)["$defs"]["directionTradeLevelMenu"]["properties"]["stops"]["items"]["oneOf"]:
+    from contract 168 to 185.2.0 (the bracket's `stop` since 185, the menu's `stops[]` items before)."""
+    defs = _root(schema)["$defs"]
+    arms = (defs["directionTradeBracket"]["properties"]["stop"]["oneOf"] if "directionTradeBracket" in defs else
+            defs["directionTradeLevelMenu"]["properties"]["stops"]["items"]["oneOf"])
+    for arm in arms:
         if ((arm.get("properties") or {}).get("kind") or {}).get("const") == "ATR":
             node = arm["properties"]["atrMultiple"]
             return node["exclusiveMinimum"], node["maximum"]
@@ -447,6 +529,82 @@ def default_menu(min_rr, schema: dict | None = None, *, stop_range=None) -> dict
     return {s: copy.deepcopy(side) for s in SIDES}
 
 
+def _platform_stop_fits(stop_range) -> str:
+    """"platform" when the platform's ATR 1.5 stop is inside `stop_range` (inclusive), "outside" when the range is two
+    finite numbers in order and it is not, "unjudged" otherwise."""
+    try:
+        lo, hi = stop_range
+    except (TypeError, ValueError):
+        return "unjudged"
+    if not (_finite_number(lo) and _finite_number(hi)) or _exact(lo) > _exact(hi):
+        return "unjudged"
+    return "platform" if outside_stop_range(PLATFORM_BRACKET_STOP, lo, hi) is None else "outside"
+
+
+def _default_bracket_stop(stop_range, schema: dict | None) -> tuple:
+    """(the ATR multiple, the rule that chose it): default_bracket_stop and default_bracket_basis."""
+    fits = _platform_stop_fits(stop_range)
+    if fits != "outside":
+        return PLATFORM_BRACKET_STOP, fits
+    lo, hi = stop_range
+    inner = fallback_inner_stop(lo, hi, schema)
+    if inner is not None:
+        return inner, "fallback"
+    floor, ceiling = atr_stop_bounds(schema)
+    for bound in (lo, hi):
+        if floor < bound <= ceiling:
+            return bound, "fallback"
+    return PLATFORM_BRACKET_STOP, "unjudged"
+
+
+def default_bracket_stop(stop_range=None, schema: dict | None = None):
+    """The ATR multiple of the default bracket's stop for the band `stop_range` = (minStopLossAtrMultiple,
+    maxStopLossAtrMultiple):
+
+      * the platform's own, ATR 1.5 (DEFAULT_PROBES), when it is inside the band (both bounds inclusive,
+        outside_stop_range) - or when the band is not two finite numbers in order (not this function's to judge);
+      * otherwise OMEGA's own fallback, kept from v0.14.3: the 0.1 ATR step nearest the band's midpoint strictly inside
+        it (fallback_inner_stop) - one stop now, so not a bound when a step fits - else the band's lower bound, else its
+        upper, whichever the write schema stages as an ATR stop (atr_stop_bounds). A stop outside the band is refused at
+        commit since 185 (TRADE_BRACKET_STOP_OUTSIDE_BAND), so the default never offers one;
+      * ATR 1.5 when no stageable stop lies in the band (wholly above 5 ATR): validate_bracket then refuses it."""
+    return _default_bracket_stop(stop_range, schema)[0]
+
+
+def _usable_rr(min_rr) -> bool:
+    return _finite_number(min_rr)
+
+
+def default_bracket_target(min_rr):
+    """The R of the default bracket's one leg (closing 100%): the platform's own 3R (DEFAULT_PROBES) when it pays at
+    least `min_rr`, else one leg at the minimum - the v0.14.3 R-target rule ([1.5, 2, 3] from the minimum up, else the
+    minimum alone) reduced to ONE plan by keeping its farthest target, which is the platform's 3R whenever the list is
+    not empty. A minimum that is not a finite number is not this function's to judge: 3R."""
+    if not _usable_rr(min_rr) or _exact(min_rr) <= _exact(PLATFORM_BRACKET_TARGET):
+        return PLATFORM_BRACKET_TARGET
+    return min_rr
+
+
+def default_bracket_basis(min_rr, stop_range=None, schema: dict | None = None) -> dict:
+    """Which rule default_bracket applied, for a plan's summary: {"stop": "platform" | "fallback" | "unjudged",
+    "exitPlan": "platform" | "minimum" | "unjudged"}."""
+    target = ("unjudged" if not _usable_rr(min_rr) else
+              "platform" if default_bracket_target(min_rr) == PLATFORM_BRACKET_TARGET else "minimum")
+    return {"stop": _default_bracket_stop(stop_range, schema)[1], "exitPlan": target}
+
+
+def default_bracket(min_rr, schema: dict | None = None, *, stop_range=None) -> dict:
+    """The tradeBracket a CREATE stages when its thesis names none (contract 185): per direction {stop: ATR
+    default_bracket_stop(stop_range), exitPlan: one R_MULTIPLE leg of default_bracket_target(min_rr) closing 100%}, the
+    same for LONG and SHORT. With the platform's own dials (band 1 - 2, minimum 1.5) it is exactly the platform's
+    default bracket for a new strategy, ATR 1.5 and 3R (DEFAULT_PROBES); the measured default equals what the platform
+    wrote into VWAP Reject 4h on conversion (band 1 - 1.8, minimum 2), where it fits as well."""
+    side = {"stop": {"kind": "ATR", "atrMultiple": default_bracket_stop(stop_range, schema)},
+            "exitPlan": {"targets": [{"method": {"kind": "R_MULTIPLE", "multiple": default_bracket_target(min_rr)},
+                                      "closePct": EXIT_PLAN_FULL}]}}
+    return {s: copy.deepcopy(side) for s in SIDES}
+
+
 def migrate_side(side: dict) -> dict:
     """One direction of a 168 menu ({stops, targets}) as contract 170 holds it ({stops, exitPlans}): each target an
     exit plan of ONE leg closing 100% - the platform's own migration, read on all 16 account strategies at 170.0.0
@@ -461,7 +619,11 @@ def migrate_menu(menu: dict) -> dict:
     """A whole 168 menu in the 170 form (migrate_side per direction); a menu already in it, or not a menu, as it is.
     Only a menu whose every direction names `targets` and no `exitPlans` is migrated: one carrying both, or one side in
     each form, is left as written, and the write schema's walk refuses it (review 2026-11-12: migrating a side with
-    both silently replaced its exit plans)."""
+    both silently replaced its exit plans).
+
+    History since contract 185: a menu in either form cannot be staged (tradeLevelMenu is no property of the axis), and
+    OMEGA never converts a menu into a bracket - which stop and which plan to keep is not a rule it knows. Only
+    default_menu, judged against a menu capture, calls this."""
     if not isinstance(menu, dict) or not all(isinstance(menu.get(s), dict) and "targets" in menu[s]
                                              and "exitPlans" not in menu[s] for s in SIDES):
         return menu
@@ -690,7 +852,11 @@ def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str, schem
     trailingEnabled the menu stages beside: False refuses a plan that leaves a runner (probes T1, T2); None (not
     known to the caller) cannot judge the rule and warns on each such plan
     (TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN) instead of passing it. A menu the write schema refuses gets its
-    shape findings and nothing else: the rules are judged on a well-formed menu only."""
+    shape findings and nothing else: the rules are judged on a well-formed menu only.
+
+    History since contract 185: with no `schema` named it judges against MENU_SCHEMA (184.3.2), the last capture that
+    served a menu; the pinned write schema serves a bracket (validate_bracket)."""
+    schema = _menu_doc(schema)
     root = "tradeLevelMenu"
     shape = _shape(menu, _axis("TRADE_LEVEL_POLICY", schema)["properties"]["tradeLevelMenu"], root, "TRADE_MENU_SHAPE",
                    schema)
@@ -734,6 +900,58 @@ def validate_menu(menu, *, dials: dict, sections: list[dict], anchor: str, schem
                                    f"the {side} target {identity[0]} is also a {side} stop option "
                                    f"({seen['stops'][identity]}): the stage refuses it (\"one level cannot be both the "
                                    f"loss side and the profit side of a trade\", probe V8; Y9 for an exit plan's leg)"))
+    return out
+
+
+def validate_bracket(bracket, *, dials: dict, sections: list[dict], anchor: str, schema: dict | None = None,
+                     trailing_enabled: bool | None = None) -> list[Finding]:
+    """Every finding on a trade bracket (contract 185) staged with `dials` (the TRADE_LEVEL_POLICY dials) beside the
+    REPORT `sections` (wire form) of a strategy anchored at `anchor`, judged against the pinned write schema (or
+    `schema`, a capture serving `tradeBracket`). `trailing_enabled` as validate_menu takes it.
+
+    The bracket is judged WHOLE: its shape first, by the write schema's walk (TRADE_MENU_SHAPE; a menu-shaped value -
+    `stops` / `exitPlans` lists - fails it, as the stage refuses it at input), and on a well-formed bracket only, per
+    direction:
+      * an ATR stop outside the band minStopLossAtrMultiple - maxStopLossAtrMultiple, both inclusive: an ERROR on
+        `tradeBracket.<DIR>.stop.atrMultiple` (TRADE_BRACKET_STOP_OUTSIDE_BAND; commit refuses it since 185, vendor
+        pack - not measured live). A LEVEL or PERCENT stop's distance is per coin and per bar: not judged;
+      * a LEVEL stop by the level rule (role "stop", TRADE_MENU_LEVEL_*), as a menu's stop option was;
+      * the exit plan by every exit-plan rule (_plan_findings, TRADE_MENU_EXIT_PLAN_*), at `tradeBracket.<DIR>.exitPlan`;
+      * a level that is both the stop and a leg of one direction (TRADE_MENU_LEVEL_BOTH_SIDES)."""
+    if schema is None and not bracket_required():
+        raise ValueError("the pinned write schema serves no tradeBracket: judge a menu with validate_menu")
+    root = "tradeBracket"
+    shape = _shape(bracket, _axis("TRADE_LEVEL_POLICY", schema)["properties"]["tradeBracket"], root,
+                   "TRADE_MENU_SHAPE", schema)
+    if shape:
+        return shape
+    out: list[Finding] = []
+    readings = report_readings(sections, anchor)
+    min_rr = dials.get("minRiskRewardRatio")
+    lo, hi = dials.get("minStopLossAtrMultiple"), dials.get("maxStopLossAtrMultiple")
+    for side in SIDES:
+        stop, spath = bracket[side]["stop"], f"{root}.{side}.stop"
+        stop_identity = None
+        if stop["kind"] == "ATR":
+            verdict = outside_stop_range(stop["atrMultiple"], lo, hi)
+            if verdict is not None:
+                out.append(Finding("error", "TRADE_BRACKET_STOP_OUTSIDE_BAND", f"{spath}.atrMultiple",
+                                   f"the {side} ATR {stop['atrMultiple']} stop is outside this strategy's stop band "
+                                   f"{lo} - {hi}xATR ({verdict}, {STOP_RANGE_VERDICTS[verdict]}; both bounds "
+                                   f"inclusive): commit_strategy_draft refuses it since contract 185, naming "
+                                   f"tradeBracket.{side}.stop.atrMultiple (vendor pack 32.0.118; until 184 a decision "
+                                   f"dropped it, {STOP_BAND_PROBES}). Move the stop into the band or the band to it"))
+        elif stop["kind"] == "LEVEL":
+            findings, stop_identity = _level_findings(stop["level"], f"{spath}.level", side, "stop", readings, anchor)
+            out += findings
+        seen_targets: dict[tuple, str] = {}
+        out += _plan_findings(bracket[side]["exitPlan"], f"{root}.{side}.exitPlan", side, min_rr, readings, anchor,
+                              seen_targets, trailing_enabled)
+        if stop_identity is not None and stop_identity in seen_targets:
+            out.append(Finding("error", "TRADE_MENU_LEVEL_BOTH_SIDES", seen_targets[stop_identity],
+                               f"the {side} target {stop_identity[0]} is also the {side} stop ({spath}.level): the "
+                               f"stage refuses it (\"one level cannot be both the loss side and the profit side of a "
+                               f"trade\", probes V8, Y9)"))
     return out
 
 
@@ -875,7 +1093,17 @@ def _exit_plan_findings(plans: list[dict], side: str, min_rr, readings: tuple, a
     probes)."""
     out: list[Finding] = []
     for p, plan in enumerate(plans):
-        ppath = f"tradeLevelMenu.{side}.exitPlans[{p}]"
+        out += _plan_findings(plan, f"tradeLevelMenu.{side}.exitPlans[{p}]", side, min_rr, readings, anchor,
+                              seen_targets, trailing_enabled)
+    return out
+
+
+def _plan_findings(plan: dict, ppath: str, side: str, min_rr, readings: tuple, anchor: str,
+                   seen_targets: dict, trailing_enabled: bool | None = None) -> list[Finding]:
+    """The findings on ONE well-formed exit plan at `ppath` (a menu's `exitPlans[p]` until 184, a bracket's `exitPlan`
+    since 185: the rules are the plan's own and carried over unchanged)."""
+    out: list[Finding] = []
+    for plan in (plan,):
         legs = plan["targets"]
         closed = sum(leg["closePct"] for leg in legs)
         runner = EXIT_PLAN_FULL - closed

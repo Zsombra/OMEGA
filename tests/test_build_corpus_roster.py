@@ -20,15 +20,36 @@ spec.loader.exec_module(bc)
 CATEGORIES = json.loads((ROOT / "data" / "contract" / "categories.json").read_text(encoding="utf-8"))
 
 
-def test_the_stored_batches_reconcile_with_the_served_roster(capsys):
+AGE = {"LIQUIDITY_POOL_ABOVE_AGE", "LIQUIDITY_POOL_BELOW_AGE"}
+
+
+@pytest.fixture
+def roster_184(monkeypatch):
+    """The roster as it stood at 184.3.2 (2026-11-22 .. 11-27): the 185 roster less the two keys 185.2.0 added, nothing
+    unmeasured - the state categories.json (the 184.3.2 vocabulary read) was taken in."""
+    monkeypatch.setattr(bc, "METRIC_ENUM", [m for m in bc.METRIC_ENUM if m not in AGE])
+    monkeypatch.setattr(bc, "UNMEASURED", set())
+
+
+def test_the_stored_batches_reconcile_with_the_served_roster(capsys, roster_184):
     records = bc.merge_metrics()
     bc.verify(records, CATEGORIES)
     # (532, 206, 326) from 2026-11-05 until the refresh at 149.1.0 on 2026-11-07 folded the 206 in
     # 161.0.0 (2026-11-09): 534 (BB_TOUCH retired, three added); 168.3.0 (2026-11-11): 581 (47 added, _moves_168.json) -
     # the roster is now the read schema's enum (condition_vocabulary_108.json reportColumn.metric.enumSource)
     # 180.4.0 (2026-11-19): 586 (five added, _moves_180_4.json)
-    assert (len(bc.METRIC_ENUM), len(bc.UNMEASURED), len(bc.MEASURED)) == (586, 0, 586)
+    assert (len(bc.METRIC_ENUM), len(bc.UNMEASURED)) == (586, 0)
     assert "586/586 metrics measured;" in capsys.readouterr().out
+
+
+def test_at_185_the_two_keys_known_by_name_leave_the_family_counts_unreconciled():
+    """185.2.0 (2026-11-27, OMEGA v0.18.0): the roster serves 588, the batches hold 586 and the two keys 185 added are
+    known by name (_unmeasured_108.json). categories.json is the 184.3.2 vocabulary read (not re-read at 185), so no
+    family is short and the check refuses, as it did at 148.1.0 until the re-extraction: build_corpus does not run on
+    this corpus until the vocabulary and the two hints are read."""
+    assert (len(bc.METRIC_ENUM), bc.UNMEASURED, len(bc.MEASURED)) == (588, AGE, 586)
+    with pytest.raises(SystemExit, match="but 2 metrics are listed unmeasured"):
+        bc.verify(bc.merge_metrics(), CATEGORIES)
 
 
 def test_a_missing_measured_metric_still_fails():
@@ -38,7 +59,7 @@ def test_a_missing_measured_metric_still_fails():
         bc.verify(records, CATEGORIES)
 
 
-def test_a_family_shortfall_the_unmeasured_do_not_explain_fails():
+def test_a_family_shortfall_the_unmeasured_do_not_explain_fails(roster_184):
     """Since 2026-11-07 no key is unmeasured, so any shortfall is unexplained; the check still fires."""
     records = bc.merge_metrics()
     categories = json.loads(json.dumps(CATEGORIES))
@@ -49,7 +70,7 @@ def test_a_family_shortfall_the_unmeasured_do_not_explain_fails():
         bc.verify(records, categories)
 
 
-def test_a_family_shortfall_the_listed_unmeasured_do_not_explain_fails():
+def test_a_family_shortfall_the_listed_unmeasured_do_not_explain_fails(roster_184):
     """The branch the test above was written for (until 2026-11-07, when UNMEASURED emptied): with a key listed
     unmeasured, a shortfall larger than the unmeasured count is still refused (review 2026-11-08: no test reached it)."""
     records = bc.merge_metrics()

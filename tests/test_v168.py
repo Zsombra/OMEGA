@@ -109,9 +109,11 @@ def test_the_write_schema_names_a_metric_by_pattern_and_the_roster_is_the_read_s
     served = cv.vocabulary()["reportColumn"]["metric"]
     assert served["enumPointer"] == "/get_strategy/outputSchema/$defs/metricKey"
     assert served["enum"] == doc["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"]
-    assert served["count"] == 586 and set(served["enum"]) == set(load().metrics)      # 581 until 180.4.0
+    # 581 until 180.4.0; 586 until 185.2.0, whose two added keys are known by name only (_unmeasured_108.json)
+    assert served["count"] == 588 and set(served["enum"]) == set(load().metrics) | set(load().unmeasured_metrics)
     assert all(__import__("re").fullmatch(key["pattern"], name) for name in served["enum"])
-    assert UNMEASURED["metrics"] == {} and UNMEASURED["servedAt"] == "169.4.0"      # 168.3.0 until 2026-11-12
+    # 168.3.0 until 2026-11-12, 169.4.0 until 2026-11-27: the two keys 185.2.0 added, known by name
+    assert set(UNMEASURED["metrics"]) == {"LIQUIDITY_POOL_ABOVE_AGE", "LIQUIDITY_POOL_BELOW_AGE"} and UNMEASURED["servedAt"] == "169.4.0"   # (each 185 key names its own servedAt)
 
 
 def test_the_moves_record_is_the_corpus_against_161():
@@ -286,7 +288,7 @@ def test_the_schema_walk_refuses_an_unserved_metric_key_through_the_read_schemas
     doc = stage_schema()
     root = doc["stage_strategy_draft"]["inputSchema"]
     roster = P.read_roster(doc)
-    assert len(roster) == 586 and "PATTERN" in P.CLASSES      # 581 until 180.4.0
+    assert len(roster) == 588 and "PATTERN" in P.CLASSES      # 581 until 180.4.0, 586 until 185.2.0
 
     def fails(body, **kw):
         return [(f.cls, f.path) for f in P.diff_schema(body, root, root, **kw) if f.verdict == "FAIL"]
@@ -308,11 +310,12 @@ def test_the_schema_walk_refuses_an_unserved_metric_key_through_the_read_schemas
 
     # a level reference names a metric too: the menu's levels are checked by the same rule
     menu = _stage_body()
-    side = menu["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]["LONG"]
-    side["stops"].append({"kind": "LEVEL", "bufferAtrMultiple": 0,
-                          "level": {"metric": "NOT_A_LEVEL", "timeframe": ANCHOR, "bars": None, "offset": 0,
-                                    "knobs": {}, "windowExtreme": None}})
-    assert fails(menu, roster=roster) == [("ENUM", "axes.TRADE_LEVEL_POLICY.tradeLevelMenu.LONG.stops[3].level.metric")]
+    # (contract 185: the bracket's one stop, where the menu appended a fourth stop option)
+    side = menu["axes"]["TRADE_LEVEL_POLICY"]["tradeBracket"]["LONG"]
+    side["stop"] = {"kind": "LEVEL", "bufferAtrMultiple": 0,
+                    "level": {"metric": "NOT_A_LEVEL", "timeframe": ANCHOR, "bars": None, "offset": 0,
+                              "knobs": {}, "windowExtreme": None}}
+    assert fails(menu, roster=roster) == [("ENUM", "axes.TRADE_LEVEL_POLICY.tradeBracket.LONG.stop.level.metric")]
 
 
 def test_a_capture_before_168_has_no_roster_and_needs_none():
@@ -321,7 +324,7 @@ def test_a_capture_before_168_has_no_roster_and_needs_none():
     root = old["stage_strategy_draft"]["inputSchema"]
     assert "enum" in root["$defs"]["metricKey"]                          # the 161 write schema IS the roster
     body = _stage_body()
-    del body["axes"]["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]             # a 161 body carries no menu
+    del body["axes"]["TRADE_LEVEL_POLICY"]["tradeBracket"]               # a 161 body carries no bracket (185)
     body["axes"]["REPORT"]["sections"][0]["columns"][0]["metric"] = "NOT_A_METRIC"
     found = [(f.cls, f.path) for f in P.diff_schema(body, root, root) if f.verdict == "FAIL"]
     assert found == [("ENUM", "axes.REPORT.sections[0].columns[0].metric")]

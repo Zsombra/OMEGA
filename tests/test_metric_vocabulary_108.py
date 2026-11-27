@@ -55,8 +55,9 @@ def test_the_corpus_plus_the_unmeasured_record_is_the_whole_served_enum():
     # 2026-11-19, contract 180.4.0 (extraction 20261119b): 586 - the five keys of _moves_180_4.json, all measured
     moves_180 = json.loads((CONTRACT_DIR / "metrics" / "_moves_180_4.json").read_text(encoding="utf-8"))
     assert set(c.metrics) | set(c.unmeasured_metrics) == set(SERVED)
-    assert len(SERVED) == 534 + len(moves_168["added"]) + len(moves_180["added"]) == 586
-    assert len(c.metrics) == 586 and RECORD["metrics"] == {} and c.unmeasured_metrics == {}
+    # 2026-11-27, contract 185.2.0: 588 - two keys added (LIQUIDITY_POOL_ABOVE_AGE / _BELOW_AGE), known by name only
+    assert len(SERVED) == 534 + len(moves_168["added"]) + len(moves_180["added"]) + 2 == 588
+    assert len(c.metrics) == 586 and set(RECORD["metrics"]) == set(c.unmeasured_metrics) == {"LIQUIDITY_POOL_ABOVE_AGE", "LIQUIDITY_POOL_BELOW_AGE"}
     assert len(RECORD["history148"]["formerlyUnmeasured"]) == 206
     assert set(RECORD["formerlyUnmeasured"]) == V100 | V101_1 and RECORD["measuredOn"] == "2026-10-13"
     assert len(RECORD["history146"]["formerlyUnmeasured"]) == 24 and RECORD["history146"]["measuredOn"] == "2026-11-02"

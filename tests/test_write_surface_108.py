@@ -116,7 +116,7 @@ def test_the_preflight_refuses_the_two_removed_axes_as_undeclared():
     # closed axis reads as UNDECLARED; it is dropped here so the walk stays about the two removed axes and minAtrPct
     # (the menu against an old capture is pinned in tests/test_write_surface.py and tests/test_v146.py)
     body["TRADE_LEVEL_POLICY"] = {k: v for k, v in body["TRADE_LEVEL_POLICY"].items()
-                                  if k not in ("minAtrPct", "tradeLevelMenu")}
+                                  if k not in ("minAtrPct", "tradeBracket")}   # 185: the bracket
     fails = {(f.cls, f.path) for f in P.diff_axes(body, axis_schemas, root) if f.verdict == "FAIL"}
     assert fails == {("UNDECLARED", "axes.SETUP_GATES"), ("UNDECLARED", "axes.SIGNAL_RULES"),
                      ("MISSING_REQUIRED", "axes.TRADE_LEVEL_POLICY.minAtrPct")}

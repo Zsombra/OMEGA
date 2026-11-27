@@ -305,43 +305,6 @@ def test_a_range_the_builder_cannot_read_keeps_the_three_defaults():
     assert tl.outside_stop_range(0.5, 0.8, 1.8) == "BELOW_FLOOR" and tl.outside_stop_range(2, 0.8, 1.8) == "ABOVE_CEILING"
 
 
-def test_a_plan_stages_the_stops_its_range_keeps():
-    base = PRESETS["trend-continuation"]
-    narrow = plan(Thesis(**{**base.__dict__, "execution": {"minStopLossAtrMultiple": 0.8,
-                                                           "maxStopLossAtrMultiple": 1.8}}))
-    policy = narrow.axes()["TRADE_LEVEL_POLICY"]
-    assert (policy["minStopLossAtrMultiple"], policy["maxStopLossAtrMultiple"]) == (0.8, 1.8)
-    assert _atr_stops(policy["tradeLevelMenu"]["LONG"]) == _atr_stops(policy["tradeLevelMenu"]["SHORT"]) == [1, 1.5]
-    assert narrow.menu_findings() == []
-    assert narrow.trade_level_menu() == tl.default_menu(1.5, stop_range=(0.8, 1.8))
-    # the platform's default range keeps all three: every preset's menu is as before
-    assert _atr_stops(plan(base).axes()["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]["LONG"]) == [1, 1.5, 2]
-    # a thesis's own menu is staged as written, and its stops outside the range are warned, not dropped
-    own = plan(Thesis(**{**base.__dict__, "execution": {"maxStopLossAtrMultiple": 1.8},
-                         "trade_level_menu": tl.default_menu(1.5)}))
-    assert _atr_stops(own.axes()["TRADE_LEVEL_POLICY"]["tradeLevelMenu"]["LONG"]) == [1, 1.5, 2]
-    assert sorted((f.severity, f.code, f.path) for f in own.menu_findings()) == sorted(
-        ("warning", "TRADE_MENU_STOP_OUTSIDE_RANGE", f"tradeLevelMenu.{side}.stops[2].atrMultiple")
-        for side in tl.SIDES)
-
-
-def test_an_update_narrowing_the_range_warns_on_the_live_stops_it_carries():
-    """An UPDATE naming a range dial restages TRADE_LEVEL_POLICY whole with the live menu carried verbatim: the live
-    ATR 2 under a new maximum of 1.8 is a dead option at every decision, and is warned - the stage accepts it."""
-    base = PRESETS["trend-continuation"]
-    p = plan(Thesis(**{**base.__dict__, "execution": {"maxStopLossAtrMultiple": 1.8}}))
-    live = {**{k: v for k, v in DIALS.items()}, "minStopLossAtrMultiple": 1, "maxStopLossAtrMultiple": 2,
-            "tradeLevelMenu": tl.default_menu(1.5)}
-    current = {"TRADE_LEVEL_POLICY": live, "POSITION_MANAGEMENT": copy.deepcopy(SENT["POSITION_MANAGEMENT"]),
-               "REPORT": copy.deepcopy(SENT["REPORT"])}
-    axes = p.axes_update(current)
-    assert axes["TRADE_LEVEL_POLICY"]["tradeLevelMenu"] == live["tradeLevelMenu"]      # carried, never rewritten
-    found = p.update_menu_findings(current)
-    assert [f for f in found if f.severity == "error"] == []
-    assert sorted((f.code, f.path) for f in found) == sorted(
-        ("TRADE_MENU_STOP_OUTSIDE_RANGE", f"tradeLevelMenu.{side}.stops[2].atrMultiple") for side in tl.SIDES)
-
-
 def test_the_range_dials_take_no_quarter_step():
     """B1 staged minStopLossAtrMultiple 0.8 and maxStopLossAtrMultiple 1.8 with no draft error: the 0.25 step the
     stage enforces on minRiskRewardRatio (W2) is not enforced on the two range dials."""
@@ -351,37 +314,3 @@ def test_the_range_dials_take_no_quarter_step():
                 if f.code == "EXECUTION_OFF_STEP"]
 
 
-def test_the_summary_says_when_omegas_own_fallback_replaced_the_migration_stops():
-    base = PRESETS["trend-continuation"]
-
-    def summary(execution):
-        p = plan(Thesis(**{**base.__dict__, "execution": execution}))
-        return next(line for line in p.critique() if line.startswith("trade level menu: "))
-
-    assert summary(None).startswith("trade level menu: default (the platform's migration ATR stops inside the stop "
-                                    "range")
-    assert summary({"minStopLossAtrMultiple": 0.8, "maxStopLossAtrMultiple": 1.8}).startswith(
-        "trade level menu: default (the platform's migration ATR stops inside the stop range")
-    fallback = summary({"minStopLossAtrMultiple": 2.5, "maxStopLossAtrMultiple": 4})
-    assert fallback.startswith("trade level menu: default (none of the migration's ATR stops 1 / 1.5 / 2 is inside "
-                               "the stop range 2.5 - 4, so OMEGA's own fallback instead: ATR 2.5 / 3.2 / 4 - ")
-    assert "platform's migration ATR stops" not in fallback
-    unjudged = summary({"minStopLossAtrMultiple": 6, "maxStopLossAtrMultiple": 8})
-    assert unjudged.startswith("trade level menu: default (the migration's ATR stops 1 / 1.5 / 2 as written: the stop "
-                               "range 6 - 8 is not one the default menu follows")
-    own = plan(Thesis(**{**base.__dict__, "trade_level_menu": tl.default_menu(1.5)}))
-    assert next(line for line in own.critique() if line.startswith("trade level menu: ")).startswith(
-        "trade level menu: the thesis's own")
-
-
-@pytest.mark.parametrize("preset", sorted(PRESETS))
-def test_every_preset_keeps_its_default_menu(preset):
-    """Every preset runs the platform's default stop range 1 - 2, which keeps all three migration stops."""
-    p = plan(PRESETS[preset])
-    policy = p.axes()["TRADE_LEVEL_POLICY"]
-    assert (policy["minStopLossAtrMultiple"], policy["maxStopLossAtrMultiple"]) == (1, 2)
-    for side in tl.SIDES:
-        assert policy["tradeLevelMenu"][side]["stops"] == [{"kind": "ATR", "atrMultiple": 1},
-                                                           {"kind": "ATR", "atrMultiple": 1.5},
-                                                           {"kind": "ATR", "atrMultiple": 2}]
-    assert not [f for f in p.menu_findings() if f.code == "TRADE_MENU_STOP_OUTSIDE_RANGE"]

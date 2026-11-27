@@ -49,7 +49,10 @@ def test_the_extraction_and_the_write_surface_are_180_4():
 
 def test_the_five_metric_keys_added_since_171_are_extracted():
     c = load()
-    roster = set(stage_schema()["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"])
+    # the 184.3.2 roster since 2026-11-27 (185.2.0 added two keys known by name only, _unmeasured_108.json)
+    from tests.manifest_chain import surface
+    roster = set(json.loads((ROOT / surface("184.3.2")["schema"]).read_text(encoding="utf-8"))
+                 ["get_strategy"]["outputSchema"]["$defs"]["metricKey"]["enum"])
     assert {"ATH", "DAY_HIGH", "DAY_LOW", "WEEK_HIGH", "WEEK_LOW"} <= roster == set(c.metrics)
     for metric, code in {"DAY_HIGH": "dayHi", "DAY_LOW": "dayLo", "WEEK_HIGH": "weekHi", "WEEK_LOW": "weekLo"}.items():
         assert c.metrics[metric].code == code
@@ -333,7 +336,14 @@ def test_the_proof_body_is_what_omega_generates_and_it_staged_clean():
     from omega.preflight import body_sha256
     proof = RECORD["proof"]
     axes = plan(PRESETS["trend-continuation"]).axes()
-    assert axes == proof["sentAxes"] and body_sha256(axes) == proof["bodySha256Sent"]
+    # 2026-11-27, contract 185 (OMEGA v0.18.0): the bracket replaced the menu on TRADE_LEVEL_POLICY. Every other axis
+    # and every dial is the body this proof staged; the sent body still hashes to what was recorded
+    sent = proof["sentAxes"]
+    assert body_sha256(sent) == proof["bodySha256Sent"]
+    assert {k: v for k, v in axes.items() if k != "TRADE_LEVEL_POLICY"} == {
+        k: v for k, v in sent.items() if k != "TRADE_LEVEL_POLICY"}
+    assert {k: v for k, v in axes["TRADE_LEVEL_POLICY"].items() if k != "tradeBracket"} == {
+        k: v for k, v in sent["TRADE_LEVEL_POLICY"].items() if k != "tradeLevelMenu"}
     assert proof["stages"][0]["answer"] == {"errors": [], "warnings": []}
     assert proof["readBack"]["contentEqualsSentAsValues"] and proof["discard"]["readAfter"]["draft"] is None
 
