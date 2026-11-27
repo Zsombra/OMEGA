@@ -333,6 +333,45 @@ def test_a_live_body_without_a_bracket_is_refused_never_invented(policy):
     assert own.update_bracket_findings(current) == []
 
 
+def test_a_live_runner_beside_an_unread_or_unstaged_trailing_is_never_read_as_clean():
+    """The bracket forms of the update-path cases v0.18.0 deleted with the menu (review 2026-11-27 finding 3:
+    test_a_partial_current_is_never_read_as_a_clean_menu, test_a_rule_none_of_whose_axes_the_update_stages_is_refused_
+    as_unmeasured, test_an_update_with_trailing_unknown_under_a_staged_runner_is_warned)."""
+    runner = _bracket(_atr(1.5), (3, 50))
+    policy = {**CURRENT["TRADE_LEVEL_POLICY"], "tradeBracket": runner}
+    untouched = plan(BASE)
+    assert BASE.execution is None and "POSITION_MANAGEMENT" not in untouched.axes_update(CURRENT)
+    # (a) neither axis staged, `current` carries no POSITION_MANAGEMENT: the rule's own warning, labelled so
+    found = untouched.update_bracket_findings({"TRADE_LEVEL_POLICY": policy})
+    assert [(f.severity, f.code, f.path) for f in found] == [
+        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN", f"tradeBracket.{s}.exitPlan") for s in SIDES]
+    assert all("carries no POSITION_MANAGEMENT" in f.message for f in found)
+    # (b) Trailing off held, neither axis staged: refused as unmeasured, failing closed (not A2: nothing staged)
+    off = {**CURRENT["POSITION_MANAGEMENT"], "trailingEnabled": False}
+    found = untouched.update_bracket_findings({"TRADE_LEVEL_POLICY": policy, "POSITION_MANAGEMENT": off})
+    assert [(f.severity, f.code, f.path) for f in found] == [
+        ("error", "TRADE_MENU_EXIT_PLAN_RUNNER_WITHOUT_TRAILING", f"tradeBracket.{s}.exitPlan") for s in SIDES]
+    assert all("neither staged" in f.message and "unmeasured" in f.message and "failing closed" in f.message
+               for f in found)
+    # (c) a thesis runner bracket staged over a `current` with no POSITION_MANAGEMENT: the rule's warning
+    staged = plan(replace(BASE, trade_bracket=runner))
+    assert staged.axes_update({"TRADE_LEVEL_POLICY": policy})["TRADE_LEVEL_POLICY"]["tradeBracket"] == runner
+    found = staged.update_bracket_findings({"TRADE_LEVEL_POLICY": policy})
+    assert [(f.severity, f.code, f.path) for f in found] == [
+        ("warning", "TRADE_MENU_EXIT_PLAN_RUNNER_TRAILING_UNKNOWN", f"tradeBracket.{s}.exitPlan") for s in SIDES]
+    # and the same staged runner over Trailing held on reads clean
+    assert staged.update_bracket_findings({"TRADE_LEVEL_POLICY": policy,
+                                           "POSITION_MANAGEMENT": CURRENT["POSITION_MANAGEMENT"]}) == []
+
+
+def test_every_rule_axis_names_a_raised_code_and_one_of_the_two_axes_measured():
+    # (d) RULE_AXIS keys a rule's code to the axis A2 / A3 measured it re-judged against: a key misspelt in a rename
+    # would relabel a measured refusal "unmeasured" and nothing else would catch it
+    raised = set(re.findall(r'Finding\("(?:error|warning)", "([A-Z_0-9]+)"', inspect.getsource(tl)))
+    assert set(tl.RULE_AXIS) <= raised
+    assert set(tl.RULE_AXIS.values()) == {"REPORT", "POSITION_MANAGEMENT"}
+
+
 def test_a_carried_live_bracket_beside_unread_dials_is_never_read_as_clean():
     # review 2026-11-27 finding 1: validate_bracket reads an absent band as no bound, so a partial `current` carrying
     # the live bracket without its dials read clean - and since 185 the band is a refusal, not a warning
